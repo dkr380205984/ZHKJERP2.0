@@ -1,0 +1,97 @@
+.zhInputCtn{
+  height: 40px;
+  line-height: 40px;
+  display: inline-flex;
+  font-size: 14px;
+  position: relative;
+  .zhInputPrepend{
+    height: 40px;
+    padding: 0 12px;
+    background: #f5f7fa;
+    border:1px solid #dcdfe6;
+    border-right: 0;
+    box-sizing: border-box;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+  }
+  .zhInputAppend{
+    height: 40px;
+    padding: 0 12px;
+    background: #f5f7fa;
+    border:1px solid #dcdfe6;
+    border-left: 0;
+    box-sizing: border-box;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+  }
+  .zhInputBox{
+    height: 40px;
+    flex:1;
+    &:hover{
+      .zhInput{
+        border-color: #c0c4cc;
+      }
+    }
+    .zhInput{
+      height: 100%;
+      box-sizing: border-box;
+      font-size: inherit;    
+      padding: 0px 15px;
+      border: 1px solid #dcdfe6;
+      border-radius: 2px;
+      &.hasAppend{
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+      &.hasPrepend{
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
+      &:focus{
+        outline: none;
+        border-color: #1A95FF;
+      }
+      &:disabled{
+        background-color: #f5f7fa;
+        border-color: #e4e7ed;
+        color: #c0c4cc;
+        cursor: not-allowed;
+      }
+      &.typeError{
+        border-color: #F56C6C;
+      }
+    }
+    .zhInputClose{
+      cursor: pointer;
+      position: absolute;
+      top:0;
+      bottom: 0;
+      right: 12px;
+      font-size: 14px;
+      margin: auto 0;
+      width: 14px;
+      height: 14px;
+      text-align: center;
+      line-height: 14px;
+      border-radius: 50%;
+      &:hover{
+        color: #fff;
+        background: #1A95FF;
+      }
+    }
+  }
+  .zhErrorMsg{
+    font-size: 12px;
+    position: absolute;
+    color: #F56C6C;
+    white-space: nowrap;
+    font-weight: bold;
+    &.right{
+      left: 100%;
+      padding-left: 5px;
+    }
+    &.bottom{
+      top: 100%;
+    }
+  }
+}
