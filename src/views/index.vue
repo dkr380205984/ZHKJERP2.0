@@ -1,5 +1,7 @@
 <template>
-  <div id="index"></div>
+  <div id="index">
+    <button @click="$router.go(-1)">返回上一页</button>
+  </div>
 </template>
 
 <script>

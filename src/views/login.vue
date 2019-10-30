@@ -11,11 +11,12 @@
         前置元素
       </template>
     </zh-input>
+    <div style="height:2000px;background:#ccc">增加页面滚动条</div>
+    <button @click="$router.push('/index')">点击跳转页面</button>
   </div>
 </template>
 
 <script>
-import { login } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -28,12 +29,7 @@ export default {
     }
   },
   mounted () {
-    login({
-      telephone: '17764530174',
-      password: '123456'
-    }).then((res) => {
 
-    })
   }
 }
 </script>
