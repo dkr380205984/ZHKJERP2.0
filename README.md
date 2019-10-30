@@ -17,7 +17,7 @@
 - resize
 
 ### 使用示例
-```javaScript
+```html
 
 <zh-input v-model="msg"
   placeholder="输入数字测试"
@@ -49,28 +49,28 @@ export default {
 
 ### 详细参数
 
-- type [String] [default:'text'] [输入类型] 
-  1. text 文本 
-  2. number 数字
-  3. positiveNumber 正数
-  4. mobile 手机号
-  5. telephone 固定电话
-  6. email 邮箱
-  7. webUrl 网址
-  8. Chinese 中文
-  9. IDcard 身份证
-  10. custom 自定义
-- customReg [String] [type为custom时生效，接收一个正则表达式字符串，用于自定义数据类型判断]
-- errorMsg [String] [type值不为空时生效，用于自定义错误提示信息]
-- errorPosition [String] [default:'right'] [错误信息提示位置]
-  1. right 右侧
-  2. bottom 下方
-  3. 没有上和左
-- errorShow [Boolean] [default:false] [是否展示错误信息，输入数据类型错误时不会展示错误信息，但边框仍会变"红"提示输入错误]  
-- mustFill [Boolean] [default:false] [输入框是否必填，该项会验证输入框的初始值是否为空]
-- clearable [Boolean] [default:false] [是否可清空]
-- maxLength [String,Number] [default:99] [字符数最大值]
-- minLenght [String,Number] [default:0] [字符数最小值]
+#### type [String] [default:'text'] [输入类型] 
+  - text 文本 
+  - number 数字
+  - positiveNumber 正数
+  - mobile 手机号
+  - telephone 固定电话
+  - email 邮箱
+  - webUrl 网址
+  - Chinese 中文
+  - IDcard 身份证
+  - custom 自定义
+#### customReg [String] [type为custom时生效，接收一个正则表达式字符串，用于自定义数据类型判断]
+#### errorMsg [String] [type值不为空时生效，用于自定义错误提示信息]
+#### errorPosition [String] [default:'right'] [错误信息提示位置]
+  - right 右侧
+  - bottom 下方
+  - 没有上和左
+#### errorShow [Boolean] [default:false] [是否展示错误信息，输入数据类型错误时不会展示错误信息，但边框仍会变"红"提示输入错误]  
+#### mustFill [Boolean] [default:false] [输入框是否必填，该项会验证输入框的初始值是否为空]
+#### clearable [Boolean] [default:false] [是否可清空]
+#### maxLength [String,Number] [default:99] [字符数最大值]
+#### minLenght [String,Number] [default:0] [字符数最小值]
 
 ## 使用keep-alive解决列表页状态记忆问题
 
