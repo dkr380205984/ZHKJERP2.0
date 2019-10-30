@@ -2,7 +2,7 @@
 
 ## zh-input组件
 
-该组件高仿element-ui的input组件，主要针对项目中需要的输入框做了正则验证，在遇到需要输入特定内容的输入框可使用本组件，由于该组件没有搜索功能，因此遇到需要支持搜索的输入框建议使用el-input
+>该组件高仿element-ui的input组件，主要针对项目中需要的输入框做了正则验证，在遇到需要输入特定内容的输入框可使用本组件，由于该组件没有搜索功能，因此遇到需要支持搜索的输入框建议使用el-input
 代码路径：src/components/zhInput
 
 ### 新增功能
@@ -18,18 +18,19 @@
 
 ### 使用示例
 ```html
-
-<zh-input v-model="msg"
-  placeholder="输入数字测试"
-  type="number"
-  clearable
-  minLength="5"
-  maxLength="10"
-  @change="test">
-  <template slot="prepend">
-    前置元素
-  </template>
-</zh-input>
+<template>
+  <zh-input v-model="msg"
+    placeholder="输入数字测试"
+    type="number"
+    clearable
+    minLength="5"
+    maxLength="10"
+    @change="test">
+    <template slot="prepend">
+      前置元素
+    </template>
+  </zh-input>
+</template>
 <script>
 export default {
   data () {
@@ -74,7 +75,7 @@ export default {
 
 ## 使用keep-alive解决列表页状态记忆问题
 
-keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存，从而节省性能,被包裹在keep-alive中的组件的状态将会被保留
+>keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存，从而节省性能,被包裹在keep-alive中的组件的状态将会被保留
 
 ### 使用方式
 
