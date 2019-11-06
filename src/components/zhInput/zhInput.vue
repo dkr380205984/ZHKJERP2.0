@@ -159,7 +159,6 @@ export default {
     },
     // 输入触发父组件value更新
     handleInput (ev) {
-      console.log(ev.target.value.length)
       this.$emit('input', ev.target.value)
       if (ev.target.value.length >= Number(this.minLength) && ev.target.value.length <= Number(this.maxLength)) {
         this.errorMessageInit()

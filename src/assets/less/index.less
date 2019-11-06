@@ -1,0 +1,113 @@
+#index{
+  width: 100%;
+  height: 100%;
+  background: #F0F2F5;
+  .header{
+    width: 100%;
+    height: 64px;
+    background:rgba(46,57,79,1);
+    box-shadow:0px 1px 4px rgba(0,21,41,0.13);
+    .navCtn{
+      width: 1366px;
+      margin: auto;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      .leftCtn{
+        display: flex;
+        justify-content: start;
+        .companyCtn{
+          display: flex;
+          justify-content: start;
+          align-items: center;
+          margin-right: 22px;
+          cursor: pointer;
+          .logo{
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            img{
+              width: 36px;
+              height: 36px;
+            }
+          }
+          .name{
+            font-size:22px;
+            color: #fff;
+            margin-left: 12px;
+          }
+        }
+      }
+      .rightCtn{
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        .el-dropdown{
+          font-size: 16px;
+          color: #fff;
+          cursor: pointer;
+        }
+        .headImg{
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #fff;
+          margin-right: 5px;
+        }
+        .elIcon{
+          color: #fff;
+          font-size: 24px;
+          margin-left: 18px;
+          cursor: pointer;
+          &.el-icon-setting{
+            margin-right: 18px;
+          }
+        }
+      }
+    }
+  }
+  .breadCtn{
+    width: 100%;
+    height: 36px;
+    background:#fff;
+    .bread{
+      width: 1366px;
+      margin: auto;
+      height: 100%;
+      line-height: 36px;
+      .breadText{
+        color: #666;
+        cursor: pointer;
+        &:hover{
+          color:#1A94FF;
+        }
+      }
+    }
+  }
+  .titleCtn{
+    width: 100%;
+    height: 52px;
+    background:#fff;
+    box-shadow:0px 3px 5px rgba(0,21,41,0.12);
+    .title{
+      width: 1366px;
+      margin: auto;
+      height: 100%;
+      line-height: 52px;
+      font-size: 20px;
+      color:rgba(0,0,0,0.85);
+      font-weight: bold;
+    }
+  }
+  .body{
+    width: 100%;
+    height: calc(100% - 152px);
+    overflow-y: auto;
+    .main{
+      width: 1366px;
+      margin:32px auto;
+      min-height: calc(100% - 64px);
+    }
+  }
+}
