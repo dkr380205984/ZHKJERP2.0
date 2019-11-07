@@ -16,9 +16,6 @@
 }
 .indexMain{
   width: 100%;
-  &.height100{
-    min-height: 100%;
-  }
   .module{
     background: #fff;
     margin-bottom: 24px;
@@ -110,7 +107,146 @@
     }
     // 列表页公共样式
     .listCtn{
-
+      padding: 20px 32px;
+      .filterCtn{
+        height: 32px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        .leftCtn{
+          display: flex;
+          justify-content: flex-start;
+          .label{
+            font-size: @fontMiddle;
+            line-height: 32px;
+            color: @font85;
+            white-space: nowrap;
+          }
+          .inputs{
+            width:190px;
+            margin-right: 16px;
+          }
+        }
+      }
+      .list{
+        font-size: @fontMiddle;
+        text-align: left;
+        min-height: 605px;
+        .title{
+          height: 55px;
+          border-bottom: 1px solid #E8E8E8;
+          background: #FAFAFA;
+          color: @font85;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+          padding: 5px 0;
+          font-weight: bold;
+          .col{
+            .text{
+              display: inline-block;
+              height: 32px;
+              line-height: 32px;
+              vertical-align: middle;
+            }
+            .iconBtn{
+              font-weight: bold;
+              cursor: pointer;
+              vertical-align: -1px;
+              &:hover{
+                color: @blue;
+              }
+            }
+            .iconCtn{
+              height: 32px;
+              display: inline-flex;
+              flex-direction: column;
+              vertical-align: middle;
+              justify-content: center;
+              cursor: pointer;
+              .el-icon-caret-top{
+                transform: translateY(4px);
+                &.active{
+                  color: @blue;
+                }
+              }
+              .el-icon-caret-bottom{
+                transform: translateY(-4px);
+                &.active{
+                  color: @blue;
+                }
+              }
+            }
+            .filterBox{
+              position: absolute;
+              left: 10px;
+              right: 10px;
+              top: 0;
+              bottom: 0;
+              height: 32px;
+              overflow: hidden;
+            }
+          }
+        }
+        .row{
+          height: 55px;
+          border-bottom: 1px solid #E8E8E8;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+          padding: 5px 0;
+          color: @font65;
+        }
+        .col{
+          flex:1;
+          text-align: left;
+          flex-wrap: wrap;
+          padding: 0 10px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          .stateCtn{
+            margin-right: 8px;
+            display: flex;
+            flex-direction: column;
+            &.active{
+              .state{
+                background:#01B48C ;
+              }
+              .name{
+                color: #01B48C;
+              }
+            }
+            .state{
+              width:6px;
+              height:6px;
+              border-radius: 50%;
+              background: #ccc;
+              margin:5px auto;
+            }
+          }
+          .opr{
+            color:@blue;
+            padding: 0 8px;
+            border-right: 1px solid #E9E9E9;
+            cursor: pointer;
+            &:nth-last-child(1){
+              border-right: 0;
+            }
+            &:nth-child(1){
+              padding-left: 0;
+            }
+            .el-dropdown{
+              color: @blue!important;
+            }
+          }
+        }
+      }
+      .pageCtn{
+        margin-top: 16px;
+        display: flex;
+        justify-content: flex-end;
+      }
     } 
   }
   .bottomFixBar{
@@ -133,25 +269,25 @@
         display: flex;
         align-items: center;
         height: 100%;
-        .btn{
-          padding: 0 23px;
-          margin-left: 16px;
-          cursor: pointer;
-          &.btnBlue{
-            height:32px;
-            line-height: 32px;
-            background: @blue;
-            color: #fff;
-            border-radius: 4px;
-          }
-          &.btnGray{
-            color: @font65;
-            border: 1px solid #D9D9D9;
-            line-height: 30px;
-            border-radius: 4px;
-          }
-        }
       }
+    }
+  }
+  .btn{
+    padding: 0 23px;
+    margin-left: 16px;
+    cursor: pointer;
+    &.btnBlue{
+      height:32px;
+      line-height: 32px;
+      background: @blue;
+      color: #fff;
+      border-radius: 4px;
+    }
+    &.btnGray{
+      color: @font65;
+      border: 1px solid #D9D9D9;
+      line-height: 30px;
+      border-radius: 4px;
     }
   }
 }
