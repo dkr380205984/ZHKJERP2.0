@@ -2,6 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '@/store/index.js'
 Vue.use(VueRouter)
+// 解决ele组件点击当前页路由时出错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 
 const routes = [
   {
@@ -60,16 +65,16 @@ let router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 获取标题
   store.commit('getTitle', to.name ? to.name : from.name)
-  if (from.name) {
-    if (to.name !== store.state.breadUrl[store.state.breadUrl.length - 1].name) {
-      store.commit('routerChange', {
-        name: to.name,
-        url: to.fullPath
-      })
-    } else {
-      store.commit('hashChange', to.fullPath)
-    }
+  // if (from.name) {
+  if (to.name !== store.state.breadUrl[store.state.breadUrl.length - 1].name) {
+    store.commit('routerChange', {
+      name: to.name,
+      url: to.fullPath
+    })
+  } else {
+    store.commit('hashChange', to.fullPath)
   }
+  // }
   next()
 })
 
