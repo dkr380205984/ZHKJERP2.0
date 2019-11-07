@@ -6,6 +6,7 @@
 @font85:rgba(0,0,0,0.85);
 @font65:rgba(0,0,0,0.65);
 @font45:rgba(0,0,0,0.45);
+@font25:rgba(0,0,0,0.25);
 @fontBig:16px;
 @fontMiddle:14px;
 @fontSmall:12px;
@@ -15,5 +16,185 @@
 }
 .indexMain{
   width: 100%;
-  font-family: 'systemfont';
+  &.height100{
+    min-height: 100%;
+  }
+  .module{
+    background: #fff;
+    margin-bottom: 24px;
+    .titleCtn{
+      height: 55px;
+      border-bottom: 1px solid #E9E9E9;
+      line-height: 55px;
+      padding: 0 32px;
+      .title{
+        font-size: @fontBig;
+        color:@font85;
+        font-weight: bold;
+      }
+      .atTitle{
+        margin-left: 12px;
+      }
+    }
+    // 添加/修改页面公共样式
+    .editCtn{
+      padding: 20px 0;
+      .rowCtn{
+        padding: 0 32px;
+        margin: 18px 0;
+        display: flex;
+        justify-content: flex-start;
+        .colCtn{
+          flex:1;
+          margin-right: 72px;
+          box-sizing: border-box;
+          position: relative;
+          &.flex2{
+            max-width: 579px;
+          }
+          &.flex3{
+            max-width: 362px;
+          }
+          &.flex4{
+            max-width: 253.5px;
+          }
+          .label{
+            display: block;
+            height: 38px;
+            line-height: 38px;
+            font-size: @fontMiddle;
+            .text{
+              color: @font85;
+            }
+            .explanation{
+              margin-left: 5px;
+              color: @font25;
+            }
+          }
+          .content{
+            display: block;
+            height:32px;
+            .uploadBtn{
+              font-size: 14px;
+              color: @font65;
+              border:1px solid #D9D9D9;
+              padding: 4px 12px;
+              border-radius: 4px;
+            }
+            &.autoHeight{
+              height: auto;
+            }
+          }
+          .editBtn{
+            position: absolute;
+            line-height: 32px;
+            cursor: pointer;
+            left: 100%;
+            bottom: 0;
+            white-space: nowrap;
+            margin-left: 24px;
+            font-size: @fontMiddle;
+            &.addBtn{
+              color: @blue;
+            }
+            &.deleteBtn{
+              color: @red;
+            }
+          }
+        }
+      }
+    }
+    // 详情页面公共样式
+    .detailCtn{
+
+    }
+    // 列表页公共样式
+    .listCtn{
+
+    } 
+  }
+  .bottomFixBar{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    display: flex;
+    background: #fff;
+    align-items: center;
+    z-index: 99;
+    box-shadow:0px -1px 2px rgba(0,0,0,0.03);
+    .main{
+      width: 1366px;
+      height: 100%;
+      margin: auto;
+      .btnCtn{
+        float: right;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        .btn{
+          padding: 0 23px;
+          margin-left: 16px;
+          cursor: pointer;
+          &.btnBlue{
+            height:32px;
+            line-height: 32px;
+            background: @blue;
+            color: #fff;
+            border-radius: 4px;
+          }
+          &.btnGray{
+            color: @font65;
+            border: 1px solid #D9D9D9;
+            line-height: 30px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+.table {
+  margin: 20px;
+  width: 1200px;
+  border: 1px solid #ccc;
+  .thead {
+    background: #ddd;
+    height: 40px;
+  }
+  .tbody {
+    background: #fff;
+  }
+  .trow {
+    width: 100%;
+    min-height: 40px;
+    border-bottom: 1px solid #ccc;
+    &:nth-last-child(1) {
+      border-bottom: 0;
+    }
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    &.important {
+      color: #1a95ff;
+    }
+  }
+  .tcolumn {
+    min-height: 40px;
+    border-right: 1px solid #ccc;
+    justify-content: center;
+    text-align: center;
+    &:nth-last-child(1) {
+      border-right: 0;
+    }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    &.important {
+      color: #1a95ff;
+    }
+  }
 }

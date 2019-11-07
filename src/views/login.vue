@@ -1,212 +1,150 @@
 <template>
   <div id="login">
-    <zh-input v-model="msg"
-      placeholder="输入数字测试"
-      type="number"
-      clearable
-      minLength="5"
-      maxLength="10"
-      @change="test">
-      <template slot="prepend">
-        前置元素
-      </template>
-    </zh-input>
-    <div class="table">
-      <div class="thead">
-        <div class="trow">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow">
-              <div class="tcolumn">标题</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
-        </div>
+    <!-- 背景组件 -->
+    <vue-particles color="#fff"
+      :particleOpacity="0.7"
+      :particlesNumber="60"
+      shapeType="circle"
+      :particleSize="4"
+      linesColor="#fff"
+      :linesWidth="1"
+      :lineLinked="true"
+      :lineOpacity="0.4"
+      :linesDistance="150"
+      :moveSpeed="2"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+      class="background"></vue-particles>
+    <div class="loginCtn">
+      <div class="atLeft">
+        <el-carousel height="370px"
+          indicator-position="none">
+          <el-carousel-item v-for="(item,index) in picArr"
+            :key="index">
+            <img class="rotateImg"
+              :src="item" />
+          </el-carousel-item>
+        </el-carousel>
       </div>
-      <div class="tbody">
-        <div class="trow">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow ">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">
-                不是很短
-              </div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn important">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
+      <div class="atRight">
+        <div class="title">织为云</div>
+        <div class="welcome">欢迎登录</div>
+        <div class="inputCtn">
+          <input type="text"
+            placeholder="请输入手机号"
+            v-model="telephone"
+            @keydown.enter="goLogin" />
         </div>
-        <div class="trow">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow ">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn important">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
+        <div class="inputCtn">
+          <input type="password"
+            placeholder="请输入密码"
+            v-model="password"
+            @keydown.enter="goLogin" />
         </div>
-        <div class="trow">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow ">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn important">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
+        <div class="psdOp">
+          <el-checkbox v-model="remPsd">记住密码</el-checkbox>
+          <div class="fogotPsd"
+            @click="$router.push('/changePsd')">忘记密码？</div>
         </div>
-        <div class="trow important">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow ">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn important">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
-        </div>
-        <div class="trow">
-          <div class="tcolumn"
-            style="flex:2">
-            <div class="trow ">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">比较短</div>
-              <div class="tcolumn">不是很短</div>
-            </div>
-          </div>
-          <div class="tcolumn important">比较短</div>
-          <div class="tcolumn">不是很短</div>
-          <div class="tcolumn">这个算普通</div>
-          <div class="tcolumn">这个就比较长</div>
-          <div class="tcolumn">这个特别特别长</div>
-        </div>
+        <div class="loginBtn"
+          @click="goLogin">登录</div>
+        <div class="regBtn"
+          @click="goRegister">注册账号</div>
       </div>
     </div>
-    <button @click="$router.push('/index')">进入首页</button>
   </div>
 </template>
 
 <script>
+import { login } from '@/assets/js/api.js'
 export default {
+  name: 'home',
   data () {
     return {
-      msg: ''
+      telephone: window.localStorage.getItem('zhUsername'),
+      password: window.localStorage.getItem('zhPassword'),
+      remPsd: true,
+      picArr: [require('../assets/image/login/rotation1.jpg'), require('../assets/image/login/rotation2.jpg'), require('../assets/image/login/rotation3.jpg'), require('../assets/image/login/rotation4.png')]
     }
   },
   methods: {
-    test () {
-      console.log(this.msg)
+    // 登录
+    goLogin () {
+      let _this = this
+      login({
+        telephone: _this.telephone,
+        password: _this.password
+      }).then((res) => {
+        console.log(res)
+        if (res.data.code === 200) {
+          this.$message.success({
+            message: '登录成功'
+          })
+          window.sessionStorage.setItem('token', res.data.data.token)
+          window.sessionStorage.setItem('user_id', res.data.data.user_id)
+          window.sessionStorage.setItem('company_id', res.data.data.company_id)
+          window.localStorage.setItem('zhUsername', _this.telephone)
+          if (_this.remPsd) {
+            window.localStorage.setItem('zhPassword', _this.password)
+          } else {
+            window.localStorage.setItem('zhPassword', '')
+          }
+          console.log(_this.$route)
+          if (_this.$route.query.nextUrl) {
+            _this.$router.push(_this.$route.query.nextUrl)
+          } else {
+            _this.$router.push('/index')
+          }
+        } else {
+          this.$message.error({
+            message: res.data.message
+          })
+          _this.password = ''
+        }
+      })
+    },
+    // 注册
+    goRegister () {
+      this.$message.warning({
+        message: '注册功能暂不开放'
+      })
     }
   },
-  mounted () {
-
+  created () {
+    console.log(window.sessionStorage.getItem('user_id'))
   }
 }
 </script>
-
 <style lang="less" scoped>
-.table {
-  margin: 20px;
-  width: 1200px;
-  border: 1px solid #ccc;
-  .thead {
-    background: #ddd;
-    height: 40px;
+@import "~@/assets/less/login.less";
+</style>
+<style lang="less">
+//登录页 轮播图的样式
+#login {
+  .el-carousel__arrow {
+    display: none;
   }
-  .tbody {
-    background: #fff;
+  .el-checkbox__label {
+    font-size: 12px;
+    color: #888888;
+    padding-left: 4px;
   }
-  .trow {
-    width: 100%;
-    min-height: 40px;
-    border-bottom: 1px solid #ccc;
-    &:nth-last-child(1) {
-      border-bottom: 0;
-    }
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    text-align: center;
-    &.important {
-      color: #1a95ff;
+  .el-checkbox__input.is-checked .el-checkbox__inner,
+  .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+    border-color: #fff !important;
+    background-color: #fff;
+    &:hover {
+      border-color: #fff !important;
     }
   }
-  .tcolumn {
-    min-height: 40px;
-    border-right: 1px solid #ccc;
-    justify-content: center;
-    text-align: center;
-    &:nth-last-child(1) {
-      border-right: 0;
-    }
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    &.important {
-      color: #1a95ff;
-    }
+  .el-checkbox__inner::after {
+    border-color: #888;
+    border-width: 2px;
+  }
+  .el-checkbox__inner:hover {
+    border-color: #fff;
   }
 }
 </style>

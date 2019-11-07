@@ -26,7 +26,8 @@
       <slot name="append"></slot>
     </div>
     <!-- 错误信息 -->
-    <div class="zhErrorMsg right"
+    <div class="zhErrorMsg"
+      :class="errorPosition"
       v-show="!unShowError && errorShow">{{errorMessage}}</div>
   </div>
 </template>

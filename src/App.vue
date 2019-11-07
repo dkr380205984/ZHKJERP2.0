@@ -31,4 +31,27 @@ body {
   border-radius: 2px;
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+// 统一placeholder
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+// IOS输入框内阴影去除
+input,
+textarea {
+  -webkit-appearance: none;
+}
 </style>
