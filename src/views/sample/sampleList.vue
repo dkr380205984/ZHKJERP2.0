@@ -78,6 +78,7 @@
             <div class="col">花纹</div>
             <div class="col">非常非常非常非常非常长的名字</div>
             <div class="col">
+              <zh-img-list :list="list"></zh-img-list>
             </div>
             <div class="col">陈春燕</div>
             <div class="col">2018-03-05</div>
@@ -267,7 +268,8 @@ export default {
             label: '顶部导航'
           }]
         }]
-      }]
+      }],
+      list: ['https://zhihui.tlkrzf.com/1572666116000.jpg?imageView2/1/w/100/100', 'https://zhihui.tlkrzf.com/1572225791000.png?imageView2/1/w/100/100', 'https://zhihui.tlkrzf.com/1572225798000.png?imageView2/1/w/100/100']
     }
   },
   methods: {
