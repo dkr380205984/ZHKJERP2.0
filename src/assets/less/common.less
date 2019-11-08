@@ -103,7 +103,50 @@
     }
     // 详情页面公共样式
     .detailCtn{
-
+      padding: 20px 0;
+      .rowCtn{
+        padding: 0 32px;
+        margin: 18px 0;
+        display: flex;
+        justify-content: flex-start;
+        .colCtn{
+          flex:1;
+          margin-right: 72px;
+          box-sizing: border-box;
+          position: relative;
+          display: flex;
+          &.flex2{
+            max-width: 579px;
+          }
+          &.flex3{
+            max-width: 362px;
+          }
+          &.flex4{
+            max-width: 253.5px;
+          }
+          .label{
+            display: inline-block;
+            height: 38px;
+            line-height: 38px;
+            font-size: @fontMiddle;
+            width: 5em;
+            white-space: nowrap;
+          }
+          .text{
+            display: inline-block;
+            min-height: 38px;
+            line-height: 38px;
+            font-size: @fontMiddle;
+          }
+          .imgCtn{
+            display: inline-block;
+            img{
+              height: 116px;
+              vertical-align: text-top;
+            }
+          }
+        }
+      }
     }
     // 列表页公共样式
     .listCtn{
@@ -249,6 +292,7 @@
       }
     } 
   }
+  // 底部操作栏
   .bottomFixBar{
     position: fixed;
     left: 0;
@@ -272,6 +316,7 @@
       }
     }
   }
+  // 按钮样式
   .btn{
     padding: 0 23px;
     margin-left: 16px;

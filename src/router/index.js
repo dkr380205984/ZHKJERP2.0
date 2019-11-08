@@ -65,7 +65,6 @@ let router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 获取标题
   store.commit('getTitle', to.name ? to.name : from.name)
-  // if (from.name) {
   if (to.name !== store.state.breadUrl[store.state.breadUrl.length - 1].name) {
     store.commit('routerChange', {
       name: to.name,
@@ -74,7 +73,6 @@ router.beforeEach((to, from, next) => {
   } else {
     store.commit('hashChange', to.fullPath)
   }
-  // }
   next()
 })
 
