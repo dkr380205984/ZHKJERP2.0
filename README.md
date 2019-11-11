@@ -79,13 +79,17 @@ export default {
 
 公共样式目前包含两个部分
 1.common.less
+ 
 2.element.less
+ 
 
 common.less需要在每个less文件中引入
+
 element.less已经在App.vue里面引入
 
 ## 外层框架
 外层框架样式在index.less中
+
 包含以下结构
 
 ```html
@@ -116,7 +120,9 @@ element.less已经在App.vue里面引入
 
 ## 子页面公共样式
 子页面公共样式在common.less中,每个子页面需要建立单独的页面样式,并引入公共样式
+
 子页面最外层容器需要标明id,跟子页面文件名保持一致
+
 子页面公共样式包含以下结构
 
 ```html
@@ -155,7 +161,9 @@ element.less已经在App.vue里面引入
 
 ## 编辑页
 编辑页包含添加/修改页面,用editCtn做父级容器
+
 包含以下通用样式
+
 参考样式参考编辑页
 
 ```html
@@ -263,7 +271,9 @@ element.less已经在App.vue里面引入
 
 ## 详情页
 详情页用detailCtn做父容器
+
 大部分样式看起来和编辑页十分相似
+
 参考样式参考详情页
 
 ```html
@@ -401,7 +411,9 @@ element.less已经在App.vue里面引入
 
 ## 列表页
 列表页用listCtn做父容器
+
 主要包含筛选框,列表,分页组件
+
 参考样式参考列表页
 
 ```html
