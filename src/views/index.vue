@@ -42,7 +42,7 @@
         <el-breadcrumb separator="/">
           <el-breadcrumb-item v-for="(item,index) in breadUrl"
             :key="index"><span class="breadText"
-              @click="goBack(index)">{{item.name}}</span>
+              @click="goBack(index)">{{item}}</span>
           </el-breadcrumb-item>
         </el-breadcrumb>
       </div>
@@ -68,6 +68,19 @@ export default {
   data () {
     return {
       navData: [{
+        name: '样式参考',
+        icon: require('@/assets/image/index/样品管理.png'),
+        children: [{
+          name: '编辑页面',
+          url: '/css/edit'
+        }, {
+          name: '详情页',
+          url: '/css/detail'
+        }, {
+          name: '列表页',
+          url: '/css/list'
+        }]
+      }, {
         name: '样品管理',
         icon: require('@/assets/image/index/样品管理.png'),
         children: [{
@@ -75,7 +88,7 @@ export default {
           url: '/sample/sampleCreate'
         }, {
           name: '样品列表',
-          url: '/sample/sampleList'
+          url: '/sample/sampleList/page=1'
         }, {
           name: '样单添加',
           url: '/sample/sampleOrderCreate'
@@ -258,7 +271,13 @@ export default {
 
     },
     goBack (index) {
-      this.$store.commit('routerSlice', index)
+      if (index < (this.breadUrl.length - 1)) {
+        if (index === 0) {
+
+        } else {
+          this.$router.go(index - (this.breadUrl.length - 1))
+        }
+      }
     }
   }
 }

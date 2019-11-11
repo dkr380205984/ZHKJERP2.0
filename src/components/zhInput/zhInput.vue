@@ -132,6 +132,8 @@ export default {
         if (reg instanceof RegExp) {
           this.unShowError = this.mustFill ? reg.test(val) : !val || reg.test(val)
         }
+      } else {
+        this.unShowError = !(this.mustFill && !val)
       }
     },
     errorMessageInit () {
@@ -156,6 +158,8 @@ export default {
         if (reg instanceof RegExp) {
           this.errorMessage = this.errorMsg || '请输入正确值'
         }
+      } else {
+        this.errorMessage = this.errorMsg
       }
     },
     // 输入触发父组件value更新

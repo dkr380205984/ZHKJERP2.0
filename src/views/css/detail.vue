@@ -1,14 +1,13 @@
 <template>
-  <div id="sampleDetail"
-    class="indexMain">
+  <div class="indexMain">
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">基本信息</span>
+        <span class="title hasBorder">基本用法(hasBorder表示有绿线)</span>
       </div>
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <div class="btn btnBlue">打印标签</div>
+            <div class="btn btnBlue">右侧悬浮框按钮</div>
           </div>
           <div class="otherInfo">
             <div class="block">
@@ -187,7 +186,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">复杂表格样式</span>
+        <span class="title">复杂表格样式(待定)</span>
       </div>
       <div class="detailCtn">
         <div class="flexTb">
@@ -254,9 +253,9 @@
 </template>
 <script>
 export default {
-  mounted () { }
+
 }
 </script>
 <style lang="less" scoped>
-@import "~@/assets/less/sample/sampleDetail.less";
+@import "~@/assets/less/common.less";
 </style>

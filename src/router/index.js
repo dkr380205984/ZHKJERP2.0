@@ -28,6 +28,22 @@ const routes = [
     name: '首页',
     component: () => import('../views/index.vue'),
     children: [{
+      path: '/css/edit',
+      name: '编辑页',
+      component: () => import('../views/css/edit.vue')
+    }, {
+      path: '/css/detail',
+      name: '详情页',
+      component: () => import('../views/css/detail.vue')
+    }, {
+      path: '/css/list',
+      name: '列表页',
+      component: () => import('../views/css/list.vue')
+    }, {
+      path: '/sample/sampleOrderCreate',
+      name: '样单添加',
+      component: () => import('../views/sample/sampleOrderCreate.vue')
+    }, {
       path: '/sample/sampleCreate',
       name: '样品添加',
       component: () => import('../views/sample/sampleCreate.vue')
@@ -40,7 +56,7 @@ const routes = [
       name: '样品修改',
       component: () => import('../views/sample/sampleUpdate.vue')
     }, {
-      path: '/sample/sampleList',
+      path: '/sample/sampleList/:params',
       name: '样品列表',
       component: () => import('../views/sample/sampleList.vue')
     }, {
@@ -65,14 +81,15 @@ let router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 获取标题
   store.commit('getTitle', to.name ? to.name : from.name)
-  if (to.name !== store.state.breadUrl[store.state.breadUrl.length - 1].name) {
-    store.commit('routerChange', {
-      name: to.name,
-      url: to.fullPath
-    })
-  } else {
-    store.commit('hashChange', to.fullPath)
+  const routerTable = {
+    '编辑页': ['织为云', '编辑页'],
+    '详情页': ['织为云', '详情页'],
+    '列表页': ['织为云', '列表页'],
+    '样品添加': ['织为云', '样品添加'],
+    '样品详情': ['织为云', '样品列表', '样品详情'],
+    '样品列表': ['织为云', '样品列表']
   }
+  store.commit('getRoute', routerTable[to.name])
   next()
 })
 

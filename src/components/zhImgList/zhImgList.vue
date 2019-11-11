@@ -8,7 +8,10 @@
         <span class="right el-icon-arrow-right handle_btn_item"
           @click.stop="lastFlag ? false : index++"></span>
       </div>
-      <div class="index_info">{{(index+1) + '/' + list.length}}</div>
+      <div class="index_info">
+        <span>{{(index+1) + ' / ' + list.length}}</span>
+        <span>点击查看</span>
+      </div>
     </div>
     <img :src="list[index]"
       class="img"
