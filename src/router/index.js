@@ -67,6 +67,10 @@ const routes = [
       path: '/sample/sampleOrderList',
       name: '样单列表',
       component: () => import('../views/sample/sampleOrderList.vue')
+    }, {
+      path: '/product/productCreate',
+      name: '产品添加',
+      component: () => import('../views/product/productCreate.vue')
     }]
   }
 ]
@@ -87,7 +91,8 @@ router.beforeEach((to, from, next) => {
     '列表页': ['织为云', '列表页'],
     '样品添加': ['织为云', '样品添加'],
     '样品详情': ['织为云', '样品列表', '样品详情'],
-    '样品列表': ['织为云', '样品列表']
+    '样品列表': ['织为云', '样品列表'],
+    '产品添加': ['织为云', '产品添加']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

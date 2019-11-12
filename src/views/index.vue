@@ -101,13 +101,13 @@ export default {
         icon: require('@/assets/image/index/产品管理.png'),
         children: [{
           name: '添加新产品',
-          url: '/index/productCreate'
+          url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/index/productList'
+          url: '/product/productList'
         }, {
           name: '产品库存列表',
-          url: '/index/productStockList'
+          url: '/product/productStockList'
         }]
       }, {
         name: '工艺单管理',
