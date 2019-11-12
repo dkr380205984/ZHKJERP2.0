@@ -11,7 +11,6 @@
           <div class="colCtn">
             <span class="label">
               <span class="text">样品名称</span>
-              <span class="explanation">(选填)</span>
             </span>
             <span class="content">
               <zh-input v-model="sampleName"
@@ -21,6 +20,7 @@
           <div class="colCtn">
             <span class="label">
               <span class="text">样品分类</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-cascader v-model="types"
@@ -33,6 +33,7 @@
           <div class="colCtn">
             <span class="label">
               <span class="text">样品花型</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="flower"
@@ -93,6 +94,7 @@
             <span class="label"
               v-if="indSize === 0">
               <span class="text">样品规格</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="itemSize.size"
@@ -148,6 +150,7 @@
             <span class="label"
               v-if="indColor === 0">
               <span class="text">样品配色组</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-autocomplete class="inline-input"
@@ -187,6 +190,7 @@
             <div class="colCtn flex3">
               <span class="label">
                 <span class="text">配件名称</span>
+                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <zh-input placeholder="请输入配件名称"
@@ -196,6 +200,7 @@
             <div class="colCtn flex3">
               <span class="label">
                 <span class="text">配件分类</span>
+                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <el-cascader v-model="itemFitting.type"
@@ -213,6 +218,7 @@
               <span class="label"
                 v-if="indColor === 0">
                 <span class="text">配件色组</span>
+                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <el-autocomplete class="inline-input"
@@ -226,6 +232,7 @@
               <span class="label"
                 v-if="indColor === 0">
                 <span class="text">配件数量</span>
+                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <zh-input type="number"
