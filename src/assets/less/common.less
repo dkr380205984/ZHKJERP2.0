@@ -21,7 +21,6 @@
     margin-bottom: 24px;
     .titleCtn{
       height: 55px;
-      border-bottom: 1px solid #E9E9E9;
       line-height: 55px;
       padding: 0 32px;
       .title{
@@ -48,7 +47,19 @@
     }
     // 添加/修改页面公共样式
     .editCtn{
+      border-top: 1px solid #E9E9E9;
       padding: 20px 0;
+      position: relative;
+      .titleNum{
+        position: absolute;
+        top: 0;
+        left: 32px;
+        transform: translateY(-50%);
+        background: #FFF;
+        color: @blue;
+        line-height: 1em;
+        font-size: @fontMiddle;
+      }
       .rowCtn{
         padding: 0 32px;
         margin: 18px 0;
@@ -116,6 +127,7 @@
     }
     // 详情页面公共样式
     .detailCtn{
+      border-top: 1px solid #E9E9E9;
       padding: 20px 0;
       .rowCtn{
         padding: 0 32px;
@@ -280,6 +292,9 @@
     // 列表页公共样式
     .listCtn{
       padding: 20px 32px;
+      &.hasBorderTop{        
+        border-top: 1px solid #E9E9E9;
+      }
       .filterCtn{
         height: 32px;
         margin-bottom: 16px;
@@ -493,6 +508,18 @@
     &.btnGray{
       color: @font65;
       border: 1px solid #D9D9D9;
+      line-height: 30px;
+      border-radius: 4px;
+    }
+    &.btnWhiteBlue{
+      color: @blue;
+      border: 1px solid @blue;
+      line-height: 30px;
+      border-radius: 4px;
+    }
+    &.btnWhiteRed{
+      color: @red;
+      border: 1px solid @red;
       line-height: 30px;
       border-radius: 4px;
     }
