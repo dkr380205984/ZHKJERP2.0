@@ -16,6 +16,8 @@
               style="margin-left:0">重置</div>
           </div>
           <div class="leftCtn">
+            <div class="btn btnWhiteBlue">白底蓝字</div>
+            <div class="btn btnWhiteRed">白底红字</div>
             <div class="btn btnGray">灰色按钮</div>
             <div class="btn btnBlue"
               @click="showPopup=true">点击打开弹窗样式</div>
