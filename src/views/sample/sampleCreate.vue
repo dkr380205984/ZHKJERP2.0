@@ -4,7 +4,7 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">大身信息</span>
-        <span class="content">{{product_code_cmp}}</span>
+        <span class="content">{{product_code.join('')}}</span>
       </div>
       <div class="editCtn">
         <div class="rowCtn">
@@ -39,9 +39,9 @@
               <el-select v-model="flower"
                 placeholder="请选择样品花型">
                 <el-option v-for="item in flowerArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
             </span>
@@ -100,9 +100,9 @@
               <el-select v-model="itemSize.size"
                 placeholder="请选择规格">
                 <el-option v-for="item in sizeArr"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </span>
@@ -115,7 +115,8 @@
             <span class="content">
               <zh-input v-model="itemSize.weight"
                 type="number"
-                placeholder="请输入克重">
+                placeholder="请输入克重"
+                @input="cmpTotalWeight(itemSize)">
                 <template slot="append">
                   <span>g</span>
                 </template>
@@ -190,7 +191,6 @@
             <div class="colCtn flex3">
               <span class="label">
                 <span class="text">配件名称</span>
-                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <zh-input placeholder="请输入配件名称"
@@ -228,30 +228,6 @@
                 </el-autocomplete>
               </span>
             </div>
-            <div class="colCtn flex3">
-              <span class="label"
-                v-if="indColor === 0">
-                <span class="text">配件数量</span>
-                <span class="explanation">(必填)</span>
-              </span>
-              <span class="content">
-                <zh-input type="number"
-                  errorPosition="bottom"
-                  errorMsg="请输入数字"
-                  placeholder="请输入配件数量"
-                  v-model="itemColor.fitting_number">
-                  <template slot="append">
-                    <span>个</span>
-                  </template>
-                </zh-input>
-              </span>
-              <div class="editBtn addBtn"
-                v-if="indColor === 0"
-                @click="addColour(itemFitting.color,true)">添加</div>
-              <div class="editBtn deleteBtn"
-                v-else
-                @click="deleteColour(itemFitting.color,indColor)">删除</div>
-            </div>
           </div>
           <div class="rowCtn"
             v-for="(itemIngred,indIngred) in itemFitting.ingredient"
@@ -260,7 +236,6 @@
               <span class="label"
                 v-if="indIngred === 0">
                 <span class="text">配件成分</span>
-                <span class="explanation">(选填)</span>
               </span>
               <span class="content">
                 <el-autocomplete class="inline-input"
@@ -297,24 +272,25 @@
           <div class="rowCtn"
             v-for="(itemSize,indSize) in itemFitting.size"
             :key="indSize + 'size'">
-            <div class="colCtn flex3">
+            <div class="colCtn flex4">
               <span class="label"
                 v-if="indSize === 0">
                 <span class="text">配件规格</span>
-                <span class="explanation">(选填)</span>
+                <span class="explanation">(必填)</span>
               </span>
               <span class="content">
                 <el-select v-model="itemSize.size"
+                  disabled
                   placeholder="请选择规格">
                   <el-option v-for="item in sizeArr"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name">
                   </el-option>
                 </el-select>
               </span>
             </div>
-            <div class="colCtn flex3">
+            <div class="colCtn flex4">
               <span class="label"
                 v-if="indSize === 0">
                 <span class="text"></span>
@@ -322,14 +298,15 @@
               <span class="content">
                 <zh-input v-model="itemSize.weight"
                   type="number"
-                  placeholder="请输入克重">
+                  placeholder="请输入克重"
+                  @input="cmpTotalWeight(itemSize)">
                   <template slot="append">
                     <span>g</span>
                   </template>
                 </zh-input>
               </span>
             </div>
-            <div class="colCtn flex3">
+            <div class="colCtn flex4">
               <span class="label"
                 v-if="indSize === 0">
                 <span class="text"></span>
@@ -342,12 +319,29 @@
                   </template>
                 </zh-input>
               </span>
-              <div class="editBtn addBtn"
+              <!-- <div class="editBtn addBtn"
                 v-if="indSize === 0"
                 @click="addSize(itemFitting.size)">添加</div>
               <div class="editBtn deleteBtn"
                 v-else
-                @click="deleteSize(itemFitting.size,indSize)">删除</div>
+                @click="deleteSize(itemFitting.size,indSize)">删除</div> -->
+            </div>
+            <div class="colCtn flex4">
+              <span class="label"
+                v-if="indSize === 0">
+                <span class="text"></span>
+              </span>
+              <span class="content">
+                <zh-input type="number"
+                  errorPosition="bottom"
+                  errorMsg="请输入数字"
+                  placeholder="请输入配件数量"
+                  v-model="itemSize.fitting_number">
+                  <template slot="append">
+                    <span>个</span>
+                  </template>
+                </zh-input>
+              </span>
             </div>
           </div>
         </div>
@@ -360,11 +354,32 @@
         <span class="title">其他信息</span>
       </div>
       <div class="editCtn">
+        <div class="rowCtn"
+          v-for="(item,index) in size"
+          :key="index">
+          <div class="colCtn flex3">
+            <span class="label"
+              v-if="index === 0">
+              <span class="text">总克重</span>
+            </span>
+            <span class="content">
+              <zh-input type="number"
+                v-model="item.total_weight"
+                placeholder="请输入总克重">
+                <template slot="append">
+                  <span>g</span>
+                </template>
+                <template slot="prepend">
+                  <span>{{item.size}}</span>
+                </template>
+              </zh-input>
+            </span>
+          </div>
+        </div>
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <span class="label">
               <span class="text">样品图片</span>
-              <span class="explanation">(选填)</span>
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
@@ -389,7 +404,6 @@
           <div class="colCtn">
             <span class="label">
               <span class="text">备注信息</span>
-              <span class="explanation">(选填)</span>
             </span>
             <span class="content autoHeight">
               <el-input type="textarea"
@@ -404,8 +418,10 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnGray">返回</div>
-          <div class="btn btnBlue">提交</div>
+          <div class="btn btnGray"
+            @click="this.$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="submit">提交</div>
         </div>
       </div>
     </div>
@@ -413,11 +429,12 @@
 </template>
 <script>
 import { productType, flower, ingredient, colour, getToken } from '@/assets/js/api.js'
-import { chinaNum } from '@/assets/js/dictionary.js'
+import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
       loading: true,
+      product_code: ['00', 'Y', 'X', 'X', 'X', '00'],
       sampleName: '',
       treeData: [],
       types: [],
@@ -427,7 +444,7 @@ export default {
       ingredient: [{ ingredient_name: '', ingredient_value: '' }],
       ingredientArr: [],
       showError: false,
-      size: [{ size: '', weight: '', desc: '' }],
+      size: [{ size: '', weight: '', desc: '', total_weight: '' }],
       sizeArr: [],
       color: [{ color: '' }],
       colorArr: [],
@@ -438,23 +455,23 @@ export default {
       fittingInfo: [{
         fitting_name: '',
         type: [],
-        color: [{ color: '', fitting_number: '' }],
         ingredient: [{
           ingredient_name: '',
           ingredient_value: ''
         }],
-        size: [{ size: '', weight: '', desc: '' }]
+        size: [{ size: '', weight: '', fitting_number: 1, desc: '' }]
       }],
-      chinaNum: chinaNum
+      chinaNum: chinaNum,
+      letterArr: letterArr
     }
   },
   methods: {
     searchIngredient (queryString, cb) {
-      let result = queryString ? this.ingredientArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.ingredientArr
+      let result = queryString ? this.ingredientArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.ingredientArr
       cb(result)
     },
     searchColor (queryString, cb) {
-      let result = queryString ? this.colorArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.colorArr
+      let result = queryString ? this.colorArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.colorArr
       cb(result)
     },
     beforeAvatarUpload () {
@@ -470,7 +487,6 @@ export default {
       item.splice(index, 1)
     },
     addSize (item) {
-      console.log('size', item)
       item.push({ size: '', weight: '', desc: '' })
     },
     deleteSize (item, index) {
@@ -478,7 +494,7 @@ export default {
     },
     addColour (item, hasNum) {
       if (hasNum) {
-        item.push({ color: '', fitting_number: '' })
+        item.push({ color: '', fitting_number: 1 })
       } else {
         item.push({ color: '' })
       }
@@ -504,7 +520,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.fittingInfo.splice(index)
+        this.fittingInfo.splice(index, 1)
+        this.cmpTotalWeight()
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -515,6 +532,20 @@ export default {
           message: '已取消'
         })
       })
+    },
+    cmpTotalWeight () {
+      this.size.forEach(item => { item.total_weight = (item.weight ? item.weight : 0) })
+      this.fittingInfo.forEach(val => {
+        val.size.forEach(valSize => {
+          let flag = this.size.find(item => item.size === valSize.size)
+          if (flag) {
+            flag.total_weight = Number(flag.total_weight ? flag.total_weight : 0) + Number(valSize.weight ? valSize.weight : 0)
+          }
+        })
+      })
+    },
+    submit () {
+
     }
   },
   computed: {
@@ -523,6 +554,7 @@ export default {
     }
   },
   mounted () {
+    this.product_code[0] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),
       flower.list(),
@@ -560,8 +592,74 @@ export default {
         item.value = item.name
       })
       this.postData.token = res[4].data.data
+      this.totalWeight = this.size.map(item => {
+        return {
+          size: item.size,
+          weight: item.weight ? item.weight : 0
+        }
+      })
       this.loading = false
     })
+  },
+  watch: {
+    'size': {
+      deep: true,
+      handler (newVal) {
+        this.fittingInfo.forEach(items => {
+          items.size = newVal.map((item, key) => {
+            return {
+              size: item.size,
+              weight: items.size[key] ? items.size[key].weight : '',
+              fitting_number: items.size[key] ? items.size[key].fitting_number : 1,
+              desc: items.size[key] ? items.size[key].desc : ''
+            }
+          })
+        })
+      }
+    },
+    'types': {
+      deep: true,
+      handler (newVal) {
+        this.product_code[2] = 'X'
+        this.product_code[3] = 'X'
+        this.product_code[4] = 'X'
+        if (newVal.length !== 0) {
+          const obj = this.treeData.find((item) => item.value === newVal[0])
+          this.sizeArr = obj.child_size
+          this.child_size = obj.sizeArr
+        }
+        this.treeData.forEach((item, index) => {
+          if (item.value === newVal[0]) {
+            this.$set(this.product_code, 2, letterArr[index])
+          }
+          if (item.children) {
+            item.children.forEach((item2, index2) => {
+              if (item2.value === newVal[1]) {
+                this.$set(this.product_code, 3, letterArr[index2])
+              }
+              if (item2.children) {
+                item2.children.forEach((item3, index3) => {
+                  if (item3.value === newVal[2]) {
+                    this.$set(this.product_code, 4, letterArr[index3])
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+    },
+    flower (newVal) {
+      this.flowerArr.forEach((item, index) => {
+        if (item.id === newVal) {
+          let code = index + 1
+          if (code < 10) {
+            code = '0' + code
+          }
+          this.$set(this.product_code, 5, code)
+        }
+      })
+    }
   }
 }
 </script>

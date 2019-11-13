@@ -97,6 +97,16 @@ export default {
           url: '/sample/sampleOrderList'
         }]
       }, {
+        name: '报价管理',
+        icon: require('@/assets/image/index/报价单管理.png'),
+        children: [{
+          name: '添加报价单',
+          url: '/price/priceCreate'
+        }, {
+          name: '报价单列表',
+          url: '/price/priceList'
+        }]
+      }, {
         name: '产品管理',
         icon: require('@/assets/image/index/产品管理.png'),
         children: [{

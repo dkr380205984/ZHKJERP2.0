@@ -78,7 +78,7 @@ export default {
     }
   },
   created () {
-    if (this.list.length === 1) {
+    if (this.list.length === 1 || this.list.length === 0) {
       this.firstFlag = true
       this.lastFlag = true
     }

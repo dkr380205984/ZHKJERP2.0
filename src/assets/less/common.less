@@ -47,9 +47,11 @@
     }
     // 添加/修改页面公共样式
     .editCtn{
-      border-top: 1px solid #E9E9E9;
       padding: 20px 0;
       position: relative;
+      &.hasBorderTop{        
+        border-top: 1px solid #E9E9E9;
+      }
       .titleNum{
         position: absolute;
         top: 0;
@@ -141,8 +143,10 @@
     }
     // 详情页面公共样式
     .detailCtn{
-      border-top: 1px solid #E9E9E9;
       padding: 20px 0;
+      &.hasBorderTop{        
+        border-top: 1px solid #E9E9E9;
+      }
       .rowCtn{
         padding: 0 32px;
         margin: 18px 0;

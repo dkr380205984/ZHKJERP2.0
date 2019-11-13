@@ -71,6 +71,22 @@ const routes = [
       path: '/product/productCreate',
       name: '产品添加',
       component: () => import('../views/product/productCreate.vue')
+    }, {
+      path: '/price/priceCreate',
+      name: '报价单添加',
+      component: () => import('../views/price/priceCreate.vue')
+    }, {
+      path: '/price/priceUpdate',
+      name: '报价单修改',
+      component: () => import('../views/price/priceUpdate.vue')
+    }, {
+      path: '/price/priceList',
+      name: '报价单列表',
+      component: () => import('../views/price/priceList.vue')
+    }, {
+      path: '/price/priceDetail',
+      name: '报价单详情',
+      component: () => import('../views/price/priceDetail.vue')
     }]
   }
 ]
@@ -92,7 +108,11 @@ router.beforeEach((to, from, next) => {
     '样品添加': ['织为云', '样品添加'],
     '样品详情': ['织为云', '样品列表', '样品详情'],
     '样品列表': ['织为云', '样品列表'],
-    '产品添加': ['织为云', '产品添加']
+    '产品添加': ['织为云', '产品添加'],
+    '报价单添加': ['织为云', '报价单添加'],
+    '报价单修改': ['织为云', '报价单修改'],
+    '报价单列表': ['织为云', '报价单列表'],
+    '报价单详情': ['织为云', '报价单列表', '报价单详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

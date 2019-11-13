@@ -1,6 +1,7 @@
 <template>
   <div id="sampleList"
-    class="indexMain">
+    class="indexMain"
+    v-loading="loading">
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -16,10 +17,10 @@
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
           </div>
-          <div class="leftCtn">
+          <!-- <div class="leftCtn">
             <div class="btn btnGray">新建样单</div>
             <div class="btn btnBlue">新建样品</div>
-          </div>
+          </div> -->
         </div>
         <div class="list">
           <div class="title">
@@ -72,30 +73,32 @@
               <span class="text">操作</span>
             </div>
           </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
+          <div class="row"
+            v-for="(item,index) in list"
+            :key="index">
+            <div class="col">{{item.product_code}}</div>
+            <div class="col">{{item|filterType}}</div>
+            <div class="col">{{item.flower_id}}</div>
+            <div class="col">{{item.sample_title}}</div>
             <div class="col">
-              <zh-img-list :list="list"></zh-img-list>
+              <zh-img-list :list="item.img"></zh-img-list>
             </div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
+            <div class="col">{{item.user_name}}</div>
+            <div class="col">{{item.create_time}}</div>
             <div class="col">
-              <div class="stateCtn active">
+              <div :class="{'stateCtn':true, 'green':item.has_craft === 1}">
                 <div class="state"></div>
                 <span class="name">工</span>
               </div>
-              <div class="stateCtn">
+              <div :class="{'stateCtn':true, 'green':item.has_plan === 1}">
                 <div class="state"></div>
                 <span class="name">配</span>
               </div>
-              <div class="stateCtn active">
+              <div :class="{'stateCtn':true, 'green':item.quotation_id === 1}">
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>
-              <div class="stateCtn">
+              <div :class="{'stateCtn':true, 'green':false}">
                 <div class="state"></div>
                 <span class="name">样</span>
               </div>
@@ -103,118 +106,19 @@
             <div class="col">
               <span class="opr">详情</span>
               <span class="opr">
-                <el-dropdown>
+                <el-dropdown @command="handleCommand($event,item.id)">
                   <span class="el-dropdown-link">
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+                    <el-dropdown-item command='change'
+                      style="color:#e6a23c">修改</el-dropdown-item>
+                    <el-dropdown-item command='delete'
+                      style="color:#f5222d">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
             </div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
-          </div>
-          <div class="row">
-            <div class="col">19ABA012345</div>
-            <div class="col">围巾/针织/长巾</div>
-            <div class="col">花纹</div>
-            <div class="col">非常非常非常非常非常长的名字</div>
-            <div class="col">图片</div>
-            <div class="col">陈春燕</div>
-            <div class="col">2018-03-05</div>
-            <div class="col">状态</div>
-            <div class="col">操作</div>
           </div>
         </div>
         <div class="pageCtn">
@@ -231,12 +135,14 @@
   </div>
 </template>
 <script>
+import { sample } from '@/assets/js/api'
 export default {
   data () {
     return {
+      loading: true,
       searchTypeFlag: false,
       value: '',
-      total: 100,
+      total: 0,
       pages: 1,
       treeData: [{
         value: 'zhinan',
@@ -269,12 +175,68 @@ export default {
           }]
         }]
       }],
-      list: ['https://zhihui.tlkrzf.com/1572666116000.jpg?imageView2/1/w/100/100', 'https://zhihui.tlkrzf.com/1572225791000.png?imageView2/1/w/100/100', 'https://zhihui.tlkrzf.com/1572225798000.png?imageView2/1/w/100/100']
+      list: []
     }
   },
   methods: {
     getList () {
-
+      this.loading = true
+      sample.list({
+        limit: 10,
+        page: this.pages,
+        type: 2
+      }).then(res => {
+        if (res.data.status === false) {
+          this.$message({
+            type: 'error',
+            message: res.data.message
+          })
+        } else {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.list.forEach(item => {
+            item.img = item.img.map(val => val.image_url)
+          })
+        }
+        this.loading = false
+      })
+    },
+    handleCommand (type, id) {
+      if (type === 'change') {
+        this.$router.push('/sample/sampleUpdate/' + id)
+      } else if (type === 'delete') {
+        this.$confirm('此操作将永久删除该样品, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          setTimeout(() => {
+            window.location.reload()
+          }, 500)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '未知命令'
+        })
+      }
+    }
+  },
+  created () {
+    this.getList()
+  },
+  filters: {
+    filterType (item) {
+      return [item.category_info.product_category, item.type_name, item.style_name].join('/')
     }
   }
 }
