@@ -84,6 +84,8 @@
         <span class="title">其他样式</span>
       </div>
       <div class="editCtn">
+        <span class="titleNum">模块1</span>
+        <span class="deleteIcon el-icon-close"></span>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
