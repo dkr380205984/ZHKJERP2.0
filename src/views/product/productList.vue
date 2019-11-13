@@ -1,6 +1,7 @@
 <template>
   <div id="productList"
-    class="indexMain">
+    class="indexMain"
+    v-loading="loading">
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -23,11 +24,92 @@
         <div class="list">
           <div class="title">
             <div class="col">
-              <span class="text">编号</span>
+              <div class="col"><span class="text">编号</span></div>
             </div>
+            <div class="col"
+              style="flex:1.5">
+              <transition v-show="!searchTypeFlag"
+                name="el-zoom-in-bottom">
+                <span class="text">品类
+                  <i class="el-icon-search iconBtn"
+                    @click="searchTypeFlag=true"></i>
+                </span>
+              </transition>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchTypeFlag"
+                  class="filterBox">
+                  <el-cascader class="filter"
+                    placeholder="筛选品类"
+                    :options="typeArr"
+                    clearable
+                    filterable>
+                  </el-cascader>
+                </div>
+              </transition>
+            </div>
+            <div class="col"
+              style="flex:0.5"><span class="text">花型</span></div>
+            <div class="col"><span class="text">名称</span></div>
+            <div class="col"><span class="text middle">图片</span></div>
+            <div class="col"><span class="text">创建人</span></div>
+            <div class="col">
+              <span class="text">创建时间
+                <span class="iconCtn">
+                  <i class="el-icon-caret-top green"></i>
+                  <i class="el-icon-caret-bottom"></i>
+                </span>
+              </span>
+            </div>
+            <div class="col"><span class="text">状态</span></div>
+            <div class="col"><span class="text">操作</span></div>
           </div>
-          <div class="row">
-
+          <div class="row"
+            v-for="(item,index) in list"
+            :key="index">
+            <div class="col">{{item.product_code}}</div>
+            <div class="col"
+              style="flex:1.5">{{item.category_info.product_category + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
+            <div class="col"
+              style="flex:0.5">{{item.flower_id}}</div>
+            <div class="col">{{item.sample_title?item.sample_title:'无'}}</div>
+            <div class="col">
+              <zh-img-list :list="item.img"></zh-img-list>
+            </div>
+            <div class="col">{{item.user_name}}</div>
+            <div class="col">{{item.create_time}}</div>
+            <div class="col">
+              <div class="stateCtn"
+                :class="{'green':item.has_craft===1}">
+                <div class="state"></div>
+                <span class="name">工</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'green':item.has_plan===1}">
+                <div class="state"></div>
+                <span class="name">配</span>
+              </div>
+              <div class="stateCtn green"
+                :class="{'green':item.quotation_id>0}">
+                <div class="state"></div>
+                <span class="name">报</span>
+              </div>
+            </div>
+            <div class="col">
+              <span class="opr">详情</span>
+              <span class="opr">
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    操作<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item>黄金糕</el-dropdown-item>
+                    <el-dropdown-item>狮子头</el-dropdown-item>
+                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                    <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </span>
+            </div>
           </div>
         </div>
         <div class="pageCtn">
@@ -35,8 +117,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
-            @current-change="getList">
+            :current-page.sync="page">
           </el-pagination>
         </div>
       </div>
@@ -45,19 +126,51 @@
 </template>
 
 <script>
+import { product } from '@/assets/js/api.js'
+import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      searchTypeFlag: false,
+      typeArr: [],
+      loading: true,
+      list: [],
       keyword: '',
       date: '',
-      total: 100,
-      pages: 1
+      total: 1,
+      page: 1
+    }
+  },
+  watch: {
+    page (newVal) {
+      this.$router.push('/product/productList/page=' + this.page)
+    },
+    $route (newVal) {
+      // 点击返回的时候更新下筛选条件
+      let params = getHash(this.$route.params.params)
+      this.page = Number(params.page)
+      this.getList()
     }
   },
   methods: {
     getList () {
-
+      this.loading = true
+      product.list({
+        limit: 10,
+        page: this.page,
+        type: 1
+      }).then((res) => {
+        console.log(res)
+        this.list = res.data.data
+        this.total = res.data.meta.total
+        this.loading = false
+      })
     }
+  },
+  mounted () {
+    let params = getHash(this.$route.params.params)
+    this.page = Number(params.page)
+    this.getList()
   }
 }
 </script>

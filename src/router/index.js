@@ -72,7 +72,7 @@ const routes = [
       name: '产品添加',
       component: () => import('../views/product/productCreate.vue')
     }, {
-      path: '/product/productList',
+      path: '/product/productList/:params',
       name: '产品列表',
       component: () => import('../views/product/productList.vue')
     }]

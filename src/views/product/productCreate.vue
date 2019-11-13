@@ -544,6 +544,7 @@ export default {
       let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
       let formData = {
         product_code: this.product_code.join(''),
+        sample_title: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
@@ -552,7 +553,6 @@ export default {
         description: this.desc,
         img: imgArr,
         color: this.colour.map((item) => item.colour),
-        sample_title: null,
         materials: this.ingredient,
         size: this.size.map(item => {
           return {

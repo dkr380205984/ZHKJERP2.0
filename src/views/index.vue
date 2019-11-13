@@ -55,9 +55,7 @@
     <div class="body">
       <div class="main">
         <!-- keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存  -->
-        <keep-alive>
-          <router-view />
-        </keep-alive>
+        <router-view />
       </div>
     </div>
   </div>
@@ -105,7 +103,7 @@ export default {
           url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/product/productList'
+          url: '/product/productList/page=1'
         }, {
           name: '产品库存列表',
           url: '/product/productStockList'
