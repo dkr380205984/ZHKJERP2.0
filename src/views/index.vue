@@ -29,7 +29,7 @@
                 <el-dropdown-item command="sendMsg">发布通知</el-dropdown-item>
                 <el-dropdown-item command="personManage"
                   divided>人员管理</el-dropdown-item>
-                <el-dropdown-item command="login"
+                <el-dropdown-item command="logout"
                   divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -55,15 +55,14 @@
     <div class="body">
       <div class="main">
         <!-- keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存  -->
-        <keep-alive>
-          <router-view />
-        </keep-alive>
+        <router-view />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { logout } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -114,7 +113,7 @@ export default {
           url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/product/productList'
+          url: '/product/productList/page=1'
         }, {
           name: '产品库存列表',
           url: '/product/productStockList'
@@ -277,8 +276,25 @@ export default {
     }
   },
   methods: {
-    commondHandler () {
+    commondHandler (cmd) {
+      if (cmd === 'personManage') {
 
+      } else if (cmd === 'logout') {
+        logout().then((res) => {
+          if (res.data.status) {
+            window.sessionStorage.setItem('token', '')
+            window.sessionStorage.setItem('user_id', '')
+            window.sessionStorage.setItem('company_id', '')
+            window.localStorage.setItem('zhUsername', '')
+            this.$message.success('已退出登录')
+          } else {
+            this.$message.error(res.data.message)
+          }
+          this.$router.push('/login')
+        })
+      } else if (cmd === 'sendMsg') {
+
+      }
     },
     goBack (index) {
       if (index < (this.breadUrl.length - 1)) {

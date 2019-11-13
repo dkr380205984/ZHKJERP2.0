@@ -169,7 +169,7 @@ export default {
         this.errorMessageInit()
         this.errorRegExp(ev.target.value)
       } else {
-        this.errorMessage = '请输入' + Number(this.minLength) + '~' + Number(this.maxLength) + '个字符!'
+        this.errorMessage = this.errorMsg || '请输入' + Number(this.minLength) + '~' + Number(this.maxLength) + '个字符!'
         this.unShowError = false
       }
     },

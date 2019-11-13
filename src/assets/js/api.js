@@ -2,6 +2,8 @@ import http from './http.js'
 const baseUrl = '/api'
 // 登录
 const login = (params) => http.post(`${baseUrl}/auth/login`, params, 'application/json')
+// 注销
+const logout = (params) => http.post(`${baseUrl}/auth/logout`, params, 'application/json')
 // token
 const getToken = (params) => http.get(`${baseUrl}/upload/token`, params)
 
@@ -43,13 +45,22 @@ const colour = {
   delete: (params) => http.post(`${baseUrl}/product/color/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/color/list`, params)
 }
+// 辅料
+const material = {
+  create: (params) => http.post(`${baseUrl}/product/material/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/product/material/delete`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/material/one`, params),
+  list: (params) => http.get(`${baseUrl}/product/material/list`, params)
+}
 export {
   login,
+  logout,
   getToken,
   sample,
   product,
   productType,
   flower,
   ingredient,
-  colour
+  colour,
+  material
 }

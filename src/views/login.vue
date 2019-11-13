@@ -77,7 +77,6 @@ export default {
         telephone: _this.telephone,
         password: _this.password
       }).then((res) => {
-        console.log(res)
         if (res.data.code === 200) {
           this.$message.success({
             message: '登录成功'
@@ -91,7 +90,6 @@ export default {
           } else {
             window.localStorage.setItem('zhPassword', '')
           }
-          console.log(_this.$route)
           if (_this.$route.query.nextUrl) {
             _this.$router.push(_this.$route.query.nextUrl)
           } else {
@@ -113,7 +111,6 @@ export default {
     }
   },
   created () {
-    console.log(window.sessionStorage.getItem('user_id'))
   }
 }
 </script>

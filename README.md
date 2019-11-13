@@ -61,19 +61,6 @@ export default {
 |maxLength|String,Number|否|99|字符数最大值|
 |minLenght|String,Number|否|0|字符数最小值|
 
-## 使用keep-alive解决列表页状态记忆问题
-
->keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存，从而节省性能,被包裹在keep-alive中的组件的状态将会被保留
-
-### 使用方式
-
-```html
-
-<keep-alive>
-  <router-view />
-</keep-alive>
-
-```
 
 ## 公共样式统一
 

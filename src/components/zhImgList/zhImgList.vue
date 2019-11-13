@@ -9,27 +9,27 @@
           @click.stop="lastFlag ? false : index++"></span>
       </div>
       <div class="index_info">
-        <span>{{(index+1) + ' / ' + list.length}}</span>
+        <span>{{(index+1) + ' / ' + selfList.length}}</span>
         <span>点击查看</span>
       </div>
     </div>
-    <img :src="list[index]"
+    <img :src="selfList[index].thumb"
       class="img"
-      alt="">
+      :onerror="defaultImg">
     <div class="zh_img_screen"
       v-show="isClickFlag">
       <div class="close"
         @click.stop="isClickFlag = !isClickFlag">点此退出预览</div>
       <div class="zh_img_box">
-        <img :src="list[index]"
-          alt=""
+        <img :src="selfList[index].image_url"
+          :onerror="defaultImg"
           class="screen_img">
         <div class="left handle_btn_item el-icon-arrow-left"
           @click.stop="firstFlag ? false : index--"></div>
         <div class="right handle_btn_item el-icon-arrow-right"
           @click.stop="lastFlag ? false : index++"></div>
         <ul class="handle_indicator">
-          <li v-for="(item,key) in list"
+          <li v-for="(item,key) in selfList"
             :class="index === key ? 'active' : false"
             :key="key"
             @click="index = key"></li>
@@ -44,9 +44,7 @@ export default {
   props: {
     list: {
       type: Array,
-      default: () => {
-        return []
-      }
+      required: true
     }
   },
   data () {
@@ -54,12 +52,14 @@ export default {
       index: 0,
       lastFlag: false,
       firstFlag: true,
-      isClickFlag: false
+      isClickFlag: false,
+      selfList: [],
+      defaultImg: 'this.src="' + require('@/assets/image/index/noPic.jpg') + '"'
     }
   },
   watch: {
     index (newVal) {
-      if (newVal === this.list.length - 1) {
+      if (newVal === this.selfList.length - 1) {
         this.lastFlag = true
       } else {
         this.lastFlag = false
@@ -82,6 +82,10 @@ export default {
       this.firstFlag = true
       this.lastFlag = true
     }
+    this.selfList = this.list.length === 0 ? [{
+      image_url: '',
+      thumb: ''
+    }] : this.list
   }
 }
 </script>
