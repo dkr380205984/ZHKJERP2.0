@@ -198,7 +198,7 @@
         <div class="rowCtn"
           v-for="item in checkedProList"
           :key="item.id">
-          <div class="colCtn flex3">
+          <div class="colCtn flex3 more_btn">
             <span class="content">
               <el-select v-model="item.id"
                 disabled
@@ -209,6 +209,12 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <div class="editBtn deleteBtn">
+                <span class="blue"
+                  @click="showProductCard(item)">预览</span>
+                <span @click="cancleChecked(item)"
+                  class="red">删除</span>
+              </div>
             </span>
           </div>
         </div>
@@ -851,13 +857,21 @@ export default {
     },
     checkedPro (flag, item) {
       if (flag) {
-        this.checkedProList.push(item)
+        this.checkedProList.push({ ...item })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
           canclePro.checked = false
           this.checkedProList = this.checkedProList.filter(val => val.checked)
         }
+      }
+    },
+    cancleChecked (item) {
+      item.checked = false
+      this.checkedProList = this.checkedProList.filter(val => val.checked)
+      let isCheckedItem = this.productList.find(val => val.id === item.id)
+      if (isCheckedItem) {
+        isCheckedItem.checked = false
       }
     }
   },

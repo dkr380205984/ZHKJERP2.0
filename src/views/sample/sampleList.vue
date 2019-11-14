@@ -194,9 +194,6 @@ export default {
         } else {
           this.list = res.data.data
           this.total = res.data.meta.total
-          this.list.forEach(item => {
-            item.img = item.img.map(val => val.image_url)
-          })
         }
         this.loading = false
       })

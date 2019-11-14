@@ -53,7 +53,6 @@ export default {
       lastFlag: false,
       firstFlag: true,
       isClickFlag: false,
-      selfList: [],
       defaultImg: 'this.src="' + require('@/assets/image/index/noPic.jpg') + '"'
     }
   },
@@ -77,15 +76,19 @@ export default {
       console.log(1)
     }
   },
-  created () {
+  computed: {
+    selfList () {
+      return this.list.length === 0 ? [{
+        image_url: '',
+        thumb: ''
+      }] : this.list
+    }
+  },
+  mounted () {
     if (this.list.length === 1 || this.list.length === 0) {
       this.firstFlag = true
       this.lastFlag = true
     }
-    this.selfList = this.list.length === 0 ? [{
-      image_url: '',
-      thumb: ''
-    }] : this.list
   }
 }
 </script>
