@@ -33,6 +33,12 @@ const flower = {
   delete: (params) => http.post(`${baseUrl}/product/flower/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/flower/list`, params)
 }
+// 原料纱线
+const yarn = {
+  // create: (params) => http.post(`${baseUrl}/product/flower/save`, params, 'application/json'),
+  // delete: (params) => http.post(`${baseUrl}/product/flower/delete`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/yarn/list`, params)
+}
 // 产品成分
 const ingredient = {
   create: (params) => http.post(`${baseUrl}/product/component/save`, params, 'application/json'),
@@ -52,7 +58,31 @@ const material = {
   detail: (params) => http.get(`${baseUrl}/product/material/one`, params),
   list: (params) => http.get(`${baseUrl}/product/material/list`, params)
 }
+// 客户管理
+const client = {
+  create: (params) => http.post(`${baseUrl}/client/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/client/delete`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/client/one`, params),
+  list: (params) => http.get(`${baseUrl}/client/list`, params)
+}
+const group = {
+  create: (params) => http.post(`${baseUrl}/user/group/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/user/group/delete`, params, 'application/json'),
+  // detail: (params) => http.get(`${baseUrl}/client/one`, params),
+  list: (params) => http.get(`${baseUrl}/user/group/list`, params)
+}
+// 工序
+const course = {
+  create: (params) => http.post(`${baseUrl}/production/flow/save`, params, 'application/json'),
+  // delete: (params) => http.post(`${baseUrl}/client/delete`, params, 'application/json'),
+  // detail: (params) => http.get(`${baseUrl}/client/one`, params),
+  list: (params) => http.get(`${baseUrl}/production/flow/list`, params)
+}
 export {
+  yarn,
+  group,
+  course,
+  client,
   login,
   logout,
   getToken,

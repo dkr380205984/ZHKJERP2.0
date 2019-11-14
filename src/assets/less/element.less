@@ -1,3 +1,4 @@
+@import './common.less';
 // 面包屑样式修改
 .el-breadcrumb{
   line-height: 36px!important;
@@ -121,5 +122,20 @@
     .el-input__inner{
       border-color:#1A94FF!important;
     }
+  }
+}
+// 下拉菜单增删改查
+.el-dropdown-menu__item{
+  &.updated{
+    color: @orange!important;
+  }
+  &.delete{
+    color: @red!important;
+  }
+  &.create{
+    color: @blue!important;
+  }
+  &.detail{
+    color: @green!important;
   }
 }

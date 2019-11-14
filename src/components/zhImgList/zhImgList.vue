@@ -73,7 +73,6 @@ export default {
   methods: {
     showBig () {
       this.isClickFlag = true
-      console.log(1)
     }
   },
   computed: {

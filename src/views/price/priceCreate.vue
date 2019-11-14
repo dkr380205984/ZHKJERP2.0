@@ -15,7 +15,10 @@
             </span>
             <span class="content">
               <el-select v-model="client_id"
-                placeholder="请选择外贸公司">
+                filterable
+                default-first-option
+                placeholder="请选择外贸公司"
+                @change="getContact">
                 <el-option v-for="item in clientArr"
                   :key="item.id"
                   :label="item.name"
@@ -46,6 +49,8 @@
             </span>
             <span class="content">
               <el-select v-model="unit"
+                filterable
+                default-first-option
                 placeholder="请选择结算单位">
                 <el-option v-for="item in unitArr"
                   :key="item.id"
@@ -95,7 +100,8 @@
               style="margin-left:0">重置</div>
           </div>
         </div>
-        <div class="list">
+        <div class="list"
+          style="min-height:330px">
           <div class="title">
             <div class="col">
               <span class="text">编号</span>
@@ -182,6 +188,15 @@
             </div>
           </div>
         </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="total"
+            :current-page.sync="pages"
+            @current-change="getList">
+          </el-pagination>
+        </div>
       </div>
       <div class="editCtn"
         style="padding-top:0">
@@ -217,6 +232,84 @@
               </div>
             </span>
           </div>
+          <div class="colCtn flex3">
+            <span class="content">
+              <el-select v-model="item.sizeColor"
+                placeholder="请选择产品">
+                <el-option v-for="item in item.sizeColorList"
+                  :key="item.sizeColor"
+                  :label="item.sizeColor"
+                  :value="item.sizeColor">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">产品图片</span>
+              <span class="explanation">(选填，无选中产品时添加)</span>
+            </span>
+            <span class="content autoHeight">
+              <el-upload class="upload"
+                action="https://upload.qiniup.com/"
+                accept="image/jpeg,image/gif,image/png,image/bmp"
+                :before-upload="beforeAvatarUpload"
+                :data="postData"
+                ref="uploada"
+                list-type="picture">
+                <div class="uploadBtn">
+                  <i class="el-icon-upload"></i>
+                  <span>上传文件</span>
+                </div>
+                <div slot="tip"
+                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+              </el-upload>
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">起订数量</span>
+            </span>
+            <span class="content">
+              <zh-input v-model="setNum"
+                type="number"
+                errorPosition="bottom"
+                errorMsg="请输入数字"
+                placeholder="请输入起订数量">
+                <template slot="append">件</template>
+              </zh-input>
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">
+              <span class="text">起订数量备注</span>
+            </span>
+            <span class="content autoHeight">
+              <el-input type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                v-model="setNumRemake"
+                placeholder="请输入备注信息"></el-input>
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">
+              <span class="text">产品需求</span>
+            </span>
+            <span class="content autoHeight">
+              <el-input type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                v-model="productDemand"
+                placeholder="请输入需求信息"></el-input>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -236,11 +329,16 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
-                placeholder="请选择原料">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                clearable
+                filterable
+                allow-create
+                default-first-option
+                placeholder="请选择原料"
+                @change="checkedYarn(item)">
+                <el-option v-for="item in yarn_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -255,7 +353,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="克重"
-                v-model="item.weight">
+                v-model="item.weight"
+                @input="computedPrice(item,true)">
                 <template slot="append">g</template>
               </zh-input>
               <zh-input type="number"
@@ -263,7 +362,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="单价"
-                v-model="item.price">
+                v-model="item.price"
+                @input="computedPrice(item,true)">
                 <template slot="append">元/kg</template>
               </zh-input>
             </span>
@@ -278,7 +378,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="损耗"
-                v-model="item.prop">
+                v-model="item.prop"
+                @input="computedPrice(item,true)">
                 <template slot="append">%</template>
               </zh-input>
               <zh-input type="number"
@@ -286,7 +387,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="总价"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -309,11 +411,15 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
+                clearable
+                filterable
+                allow-create
+                default-first-option
                 placeholder="请选择辅料">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in material_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -328,7 +434,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="克重"
-                v-model="item.weight">
+                v-model="item.weight"
+                @input="computedPrice(item)">
                 <template slot="append">g</template>
               </zh-input>
               <zh-input type="number"
@@ -336,7 +443,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="单价"
-                v-model="item.price">
+                v-model="item.price"
+                @input="computedPrice(item)">
                 <template slot="append">元/kg</template>
               </zh-input>
             </span>
@@ -351,7 +459,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="损耗"
-                v-model="item.prop">
+                v-model="item.prop"
+                @input="computedPrice(item)">
                 <template slot="append">%</template>
               </zh-input>
               <zh-input type="number"
@@ -359,7 +468,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="总价"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -382,11 +492,15 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
+                clearable
+                filterable
+                allow-create
+                default-first-option
                 placeholder="请选择织造明细">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in weave_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -398,18 +512,20 @@
             </span>
             <span class="content samllInput">
               <zh-input type="number"
+                v-if="item.name !== '制版费'"
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="明细"
                 v-model="item.number">
-                <template slot="append">针</template>
+                <template slot="append">{{item.name ? item.name[0] : '针'}}</template>
               </zh-input>
               <zh-input type="number"
-                class="hasMarginLeft"
+                :class="{hasMarginLeft:item.name !== '制版费'}"
                 errorPosition="bottom"
                 errorMsg="请输入数字"
-                placeholder="总价"
-                v-model="item.total_price">
+                :placeholder="item.name !== '制版费' ? '总价' : '请输入金额'"
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -432,11 +548,15 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
+                clearable
+                filterable
+                allow-create
+                default-first-option
                 placeholder="请选择半成品加工工序">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in semi_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -451,7 +571,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -474,11 +595,15 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
+                clearable
+                filterable
+                allow-create
+                default-first-option
                 placeholder="请选择成品加工工序">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in finished_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -493,7 +618,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -516,11 +642,15 @@
             </span>
             <span class="content">
               <el-select v-model="item.name"
+                clearable
+                filterable
+                allow-create
+                default-first-option
                 placeholder="请选择包装辅料">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                <el-option v-for="item in packag_list"
+                  :key="item.value"
+                  :label="item.value"
+                  :value="item.value">
                 </el-option>
               </el-select>
             </span>
@@ -535,7 +665,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -571,7 +702,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="item.total_price">
+                v-model="item.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
               <div class="editBtn addBtn"
@@ -593,7 +725,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="exchangeRate">
+                v-model="priceInfo.no_production_fee.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
             </span>
@@ -607,7 +740,8 @@
                 errorPosition="bottom"
                 errorMsg="请输入数字"
                 placeholder="请输入金额"
-                v-model="exchangeRate">
+                v-model="priceInfo.transport.total_price"
+                @input="computedCost">
                 <template slot="append">元</template>
               </zh-input>
             </span>
@@ -620,7 +754,7 @@
               <zh-input type="number"
                 disabled
                 placeholder="请输入金额"
-                v-model="exchangeRate">
+                v-model="priceInfo.product_cost">
                 <template slot="append">元</template>
               </zh-input>
             </span>
@@ -667,7 +801,8 @@
             </span>
             <span class="content">
               <zh-input placeholder="请输入费用比例"
-                v-model="priceInfo.basic_tax.prop">
+                v-model="priceInfo.basic_tax.prop"
+                @input="computedProfits">
                 <template slot="append">%</template>
               </zh-input>
             </span>
@@ -679,7 +814,8 @@
             <span class="content">
               <zh-input placeholder="请输入金额"
                 disabled
-                v-model="priceInfo.basic_tax.price">
+                v-model="priceInfo.basic_tax.price"
+                @input="computedProfits">
                 <template slot="append">元</template>
               </zh-input>
             </span>
@@ -693,7 +829,8 @@
             </span>
             <span class="content">
               <zh-input placeholder="请输入费用比例"
-                v-model="priceInfo.basic_profits.prop">
+                v-model="priceInfo.basic_profits.prop"
+                @input="computedProfits">
                 <template slot="append">%</template>
               </zh-input>
             </span>
@@ -717,7 +854,7 @@
 </template>
 
 <script>
-import { sample } from '@/assets/js/api'
+import { product, client, productType, flower, group, yarn, material, course } from '@/assets/js/api'
 export default {
   data () {
     return {
@@ -730,73 +867,20 @@ export default {
       unitArr: [],
       exchangeRate: '',
       priceInfo: {
-        raw_material: [
-          {
-            name: '',
-            weight: '',
-            price: '',
-            prop: '',
-            total_price: ''
-          }
-        ],
-        other_material: [
-          {
-            name: '',
-            weight: '',
-            price: '',
-            prop: '',
-            total_price: ''
-          }
-        ],
-        weave: [
-          {
-            name: '',
-            number: '',
-            total_price: ''
-          }
-        ],
-        semi_process: [
-          {
-            name: '',
-            total_price: ''
-          }
-        ],
-        finished_process: [
-          {
-            name: '',
-            total_price: ''
-          }
-        ],
-        packag: [
-          {
-            name: '',
-            total_price: ''
-          }
-        ],
-        other_fee: [
-          {
-            name: '',
-            total_price: ''
-          }
-        ],
-        no_production_fee: {
-          total_price: ''
-        },
-        transport: {
-          total_price: ''
-        },
-        basic_fee: {
-          price: '',
-          prop: ''
-        },
-        basic_tax: {
-          price: '',
-          prop: ''
-        },
-        basic_profits: {
-          price: '',
-          prop: ''
-        }
+        raw_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
+        other_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
+        weave: [{ name: '', number: '', total_price: '' }],
+        semi_process: [{ name: '', total_price: '' }],
+        finished_process: [{ name: '', total_price: '' }],
+        packag: [{ name: '', total_price: '' }],
+        other_fee: [{ name: '', total_price: '' }],
+        no_production_fee: { total_price: '' },
+        transport: { total_price: '' },
+        product_cost: '',
+        product_total_price: '',
+        basic_fee: { price: '', prop: '' },
+        basic_tax: { price: '', prop: '' },
+        basic_profits: { price: '', prop: '' }
       },
       productList: [],
       searchTypeFlag: false,
@@ -805,30 +889,48 @@ export default {
       treeData: [],
       total: 0,
       pages: 1,
-      checkedProList: []
+      checkedProList: [],
+      postData: { token: '' },
+      setNum: '',
+      setNumRemake: '',
+      productDemand: '',
+      yarn_list: [],
+      material_list: [],
+      weave_list: [
+        { value: '针织织造' },
+        { value: '梭织织造' },
+        { value: '制版费' }
+      ],
+      finished_list: [
+        { value: '车标' },
+        { value: '包装' },
+        { value: '人工' },
+        { value: '检验' },
+        { value: '水洗' }
+      ],
+      semi_list: [],
+      packag_list: [
+        { value: '纸箱' },
+        { value: '包装袋' },
+        { value: '礼盒' },
+        { value: '干燥剂' },
+        { value: '衣架' },
+        { value: '警报器' },
+        { value: '洗标' }]
     }
   },
   methods: {
+    getContact () {
+      let contact = this.clientArr.find(item => item.id === this.client_id)
+      this.contactsArr = contact.contacts || []
+    },
     addInfo (item, type) {
       if (type === 'material') {
-        item.push({
-          name: '',
-          weight: '',
-          price: '',
-          prop: '',
-          total_price: ''
-        })
+        item.push({ name: '', weight: '', price: '', prop: '', total_price: '' })
       } else if (type === 'weave') {
-        item.push({
-          name: '',
-          number: '',
-          total_price: ''
-        })
+        item.push({ name: '', number: '', total_price: '' })
       } else if (type === 'other') {
-        item.push({
-          name: '',
-          total_price: ''
-        })
+        item.push({ name: '', total_price: '' })
       }
     },
     deleteInfo (item, index) {
@@ -836,8 +938,8 @@ export default {
     },
     getList () {
       this.loading = true
-      sample.list({
-        limit: 10,
+      product.list({
+        limit: 5,
         page: this.pages
       }).then(res => {
         if (res.data.status === false) {
@@ -846,18 +948,30 @@ export default {
             message: res.data.message
           })
         } else {
-          this.productList = res.data.data
-          this.total = res.data.meta.total
-          this.productList.forEach(item => {
-            item.img = item.img.map(val => val.image_url)
+          this.productList = res.data.data.map(item => {
+            if (this.checkedProList.find(vals => vals.id === item.id)) {
+              return { ...item, checked: true }
+            } else {
+              return { ...item, checked: false }
+            }
           })
+          this.total = res.data.meta.total
         }
         this.loading = false
       })
     },
     checkedPro (flag, item) {
       if (flag) {
-        this.checkedProList.push({ ...item })
+        let sizeColor = []
+        item.size.forEach(size => {
+          item.color.forEach(color => {
+            sizeColor.push({
+              sizeColor: size.measurement + '/' + color.color_name,
+              id: size.id + '/' + color.id // 预留size和color的id
+            })
+          })
+        })
+        this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -873,10 +987,125 @@ export default {
       if (isCheckedItem) {
         isCheckedItem.checked = false
       }
+    },
+    showProductCard (item) {
+
+    },
+    beforeAvatarUpload () {
+
+    },
+    computedPrice (item, flag) {
+      if (item.weight && item.prop && item.price) {
+        item.total_price = ((item.weight / (flag ? 1000 : 1)) * (item.prop / 100 + 1) * item.price).toFixed(2)
+      }
+      this.computedCost()
+    },
+    computedCost () {
+      let total = 0
+      total += Number(this.priceInfo.raw_material.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.other_material.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.weave.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.semi_process.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.finished_process.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.packag.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.other_fee.map(item => Number(item.total_price) ? Number(item.total_price) : 0).reduce((total, item) => {
+        return total + item
+      }))
+      total += Number(this.priceInfo.no_production_fee.total_price)
+      total += Number(this.priceInfo.transport.total_price)
+      this.priceInfo.product_cost = total
+      this.computedProfits()
+    },
+    computedProfits () {
+      if (this.priceInfo.basic_fee.prop && this.priceInfo.basic_tax.prop && this.priceInfo.basic_profits.prop) {
+        this.priceInfo.product_total_price = this.priceInfo.product_cost / (1 - (Number(this.priceInfo.basic_fee.prop) + Number(this.priceInfo.basic_tax.prop) + Number(this.priceInfo.basic_profits.prop)) / 100)
+        this.priceInfo.basic_fee.price = (this.priceInfo.product_total_price * this.priceInfo.basic_fee.prop / 100).toFixed(2)
+        this.priceInfo.basic_tax.price = (this.priceInfo.product_total_price * this.priceInfo.basic_tax.prop / 100).toFixed(2)
+        this.priceInfo.basic_profits.price = (this.priceInfo.product_total_price * this.priceInfo.basic_profits.prop / 100).toFixed(2)
+        this.priceInfo.product_total_price = this.priceInfo.product_total_price.toFixed(2)
+      }
     }
   },
   created () {
     this.getList()
+    let firstInput = document.getElementsByTagName('input')[0]
+    firstInput.focus()
+    // document.getElementsByTagName('input')[0].focus()
+    Promise.all([
+      client.list({
+        company_id: this.companyId,
+        keyword: '',
+        status: ''
+      }),
+      productType.list({
+        company_id: this.companyId
+      }),
+      flower.list({
+        company_id: this.companyId
+      }),
+      group.list({
+        company_id: this.companyId
+      }),
+      yarn.list({
+        keyword: ''
+      }),
+      material.list({
+        company_id: this.companyId
+      }),
+      course.list({
+        company_id: this.companyId,
+        type: 2
+      })
+    ]).then((res) => {
+      this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
+      this.treeData = res[1].data.data.map((item) => {
+        return {
+          value: item.id,
+          label: item.name,
+          child_footage: item.child_footage,
+          child_size: item.child_size,
+          children: item.child.length === 0 ? null : item.child.map((item) => {
+            return {
+              value: item.id,
+              label: item.name,
+              children: item.child.length === 0 ? null : item.child.map((item) => {
+                return {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }
+          })
+        }
+      })
+      this.flowerArr = res[2].data.data
+      this.groupArr = res[3].data.data
+      this.yarn_list = res[4].data.data.map(item => { return { value: item.name } })
+      this.material_list = res[5].data.data.map(item => { return { value: item.name } })
+      this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
+      this.loading = false
+      if (this.$route.fullPath.split('?')[1]) {
+        let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
+        if (hasProFlag) {
+          hasProFlag.checked = true
+          this.getProduct(true, this.$route.fullPath.split('?')[1])
+        } else {
+          this.getProductFId(this.$route.fullPath.split('?')[1])
+        }
+      }
+    })
   },
   filters: {
     filterType (item) {

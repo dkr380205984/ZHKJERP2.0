@@ -112,9 +112,9 @@
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command='change'
-                      style="color:#e6a23c">修改</el-dropdown-item>
+                      class="updated">修改</el-dropdown-item>
                     <el-dropdown-item command='delete'
-                      style="color:#f5222d">删除</el-dropdown-item>
+                      class="delete">删除</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>

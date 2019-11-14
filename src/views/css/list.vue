@@ -115,10 +115,10 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+                    <el-dropdown-item class="updated">更新</el-dropdown-item>
+                    <el-dropdown-item class="delete">删除</el-dropdown-item>
+                    <el-dropdown-item class="create">添加</el-dropdown-item>
+                    <el-dropdown-item class="detail">查看</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
