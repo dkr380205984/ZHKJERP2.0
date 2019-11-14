@@ -144,9 +144,7 @@
     // 详情页面公共样式
     .detailCtn{
       padding: 20px 0;
-      &.hasBorderTop{        
-        border-top: 1px solid #E9E9E9;
-      }
+      border-top: 1px solid #E9E9E9;
       .rowCtn{
         padding: 0 32px;
         margin: 18px 0;
@@ -180,6 +178,9 @@
             min-height: 38px;
             line-height: 38px;
             font-size: @fontMiddle;
+            &.blue{
+              color: @blue;
+            }
           }
           .lineCtn{
             font-size: @fontMiddle;
@@ -199,6 +200,25 @@
               border:1px solid #E8E8E8;
               box-shadow:0px 3px 8px rgba(0,0,0,0.09);
               margin-right: 32px;
+              position: relative;
+              .tab{
+                position: absolute;
+                right: 24px;
+                top: 0px;
+                line-height: 24px;
+                .circle{
+                  width: 5px;
+                  height: 5px;
+                  display: inline-block;
+                  border-radius: 50%;
+                  background: @font25;
+                  margin-left: 6px;
+                  cursor: pointer;
+                  &.active{
+                    background: @blue;
+                  }
+                }
+              }
               .main{
                 padding: 24px;
                 display: flex;
@@ -209,6 +229,9 @@
                   padding:4px;
                   border-radius: 50%;
                   margin-right: 16px;
+                  &.gray{
+                    background: #999999;
+                  }
                   &.yellow{
                      background: @orange;
                   }
@@ -268,6 +291,7 @@
       .floatRight{
         float: right;
         padding-right: 32px;
+        margin: 18px 0;
         .btnCtn{
           display: flex;
           justify-content: flex-end;;
@@ -520,6 +544,11 @@
     padding: 0 23px;
     margin-left: 16px;
     cursor: pointer;
+    &.noBorder{
+      height:32px;
+      line-height: 32px;
+      color:@blue;
+    }
     &.btnBlue{
       height:32px;
       line-height: 32px;
