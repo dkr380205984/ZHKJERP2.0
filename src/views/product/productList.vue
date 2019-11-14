@@ -88,24 +88,51 @@
                 <div class="state"></div>
                 <span class="name">配</span>
               </div>
-              <div class="stateCtn green"
+              <div class="stateCtn"
                 :class="{'green':item.quotation_id>0}">
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>
             </div>
             <div class="col">
-              <span class="opr">详情</span>
+              <span class="opr"
+                @click="$router.push('/product/productDetail/' + item.id)">详情</span>
               <span class="opr">
-                <el-dropdown>
+                <el-dropdown trigger="click">
                   <span class="el-dropdown-link">
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>黄金糕</el-dropdown-item>
-                    <el-dropdown-item>狮子头</el-dropdown-item>
-                    <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                    <el-dropdown-item disabled>双皮奶</el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="edit">修改产品</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="delete">删除产品</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="!item.has_craft">
+                      <span class="create">添加工艺单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_craft">
+                      <span class="detail">工艺单详情</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_craft">
+                      <span class="edit">修改工艺单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_craft">
+                      <span class="delete">删除工艺单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="!item.has_plan">
+                      <span class="create">添加配料单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_plan">
+                      <span class="detail">配料单详情</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_plan">
+                      <span class="edit">修改配料单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item v-if="item.has_plan">
+                      <span class="delete">删除配料单</span>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
@@ -167,7 +194,7 @@ export default {
       })
     }
   },
-  mounted () {
+  created () {
     let params = getHash(this.$route.params.params)
     this.page = Number(params.page)
     this.getList()

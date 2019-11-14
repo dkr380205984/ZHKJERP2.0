@@ -331,7 +331,7 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
-            @click="this.$router.go(-1)">返回</div>
+            @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="submit">提交</div>
         </div>
