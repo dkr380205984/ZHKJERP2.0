@@ -113,7 +113,7 @@ export default {
           url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/product/productList/page=1'
+          url: '/product/productList/page=1&&keyword=&&date='
         }, {
           name: '产品库存列表',
           url: '/product/productStockList'

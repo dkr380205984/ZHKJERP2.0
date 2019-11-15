@@ -10,10 +10,17 @@
             <el-input class="inputs"
               v-model="keyword"
               placeholder="请输入编号查询"></el-input>
-            <el-date-picker class="inputs"
-              v-model="date"
-              type="date"
-              placeholder="选择日期">
+            <el-date-picker v-model="date"
+              style="width:290px"
+              class="inputs"
+              type="daterange"
+              align="right"
+              unlink-panels
+              value-format="yyyy-MM-dd"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              @change="getDate">
             </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
@@ -164,18 +171,47 @@ export default {
       list: [],
       keyword: '',
       date: '',
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
       total: 1,
       page: 1
     }
   },
   watch: {
     page (newVal) {
-      this.$router.push('/product/productList/page=' + this.page)
+      this.$router.push('/product/productList/page=' + this.page + '&&keyword=' + this.keyword + '&&date=' + this.date)
+    },
+    keyword (newVal) {
+      this.$router.push('/product/productList/page=1' + '&&keyword=' + this.keyword + '&&date=' + this.date)
     },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
-      let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.getFilters()
       this.getList()
     }
   },
@@ -183,20 +219,37 @@ export default {
     getList () {
       this.loading = true
       product.list({
+        product_code: this.keyword,
         limit: 10,
         page: this.page,
-        type: 1
+        type: 1,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then((res) => {
         console.log(res)
         this.list = res.data.data
         this.total = res.data.meta.total
         this.loading = false
       })
+    },
+    // 更新筛选条件
+    getFilters () {
+      let params = getHash(this.$route.params.params)
+      this.page = Number(params.page)
+      this.keyword = params.keyword
+      if (params.date !== 'null' && params.date !== '') {
+        this.date = params.date.split(',')
+      } else {
+        this.date = ''
+      }
+    },
+    // 这里不直接监听date是防止监听事件触发两次
+    getDate () {
+      this.$router.push('/product/productList/page=1' + '&&keyword=' + this.keyword + '&&date=' + this.date)
     }
   },
   created () {
-    let params = getHash(this.$route.params.params)
-    this.page = Number(params.page)
+    this.getFilters()
     this.getList()
   }
 }
