@@ -78,7 +78,34 @@ const course = {
   // detail: (params) => http.get(`${baseUrl}/client/one`, params),
   list: (params) => http.get(`${baseUrl}/production/flow/list`, params)
 }
+// 报价单管理
+const price = {
+  create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/quotation/detail`, params),
+  list: (params) => http.get(`${baseUrl}/product/quotation/list`, params)
+}
+// 物料价格管理
+const yarnPrice = {
+  // create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
+  // delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
+  // check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
+  // detail: (params) => http.get(`${baseUrl}/product/quotation/detail`, params),
+  list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
+}
+// 配料单管理
+const planList = {
+  // create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
+  // delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
+  // check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
+  detail_code: (params) => http.get(`${baseUrl}/product/plan/product/one`, params)
+  // list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
+}
 export {
+  planList,
+  yarnPrice,
+  price,
   yarn,
   group,
   course,
