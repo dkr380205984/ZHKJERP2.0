@@ -9,7 +9,53 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <div class="btn noBorder">预览标签</div>
+            <div class="btn noBorder">预览标签
+              <div class="printInfo">
+                <div class="items">
+                  <span class="labels">编号:</span>
+                  <div class="contents">{{detail.product_code}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">品类:</span>
+                  <div class="contents">{{detail.category_info.product_category + ' / ' + detail.type_name + ' / ' + detail.style_name}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">成分:</span>
+                  <div class="contents">{{detail.materials|filterMaterials}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">规格:</span>
+                  <div class="contents col"
+                    style="align-items:flex-start">
+                    <span style="white-space:nowrap;"></span>
+                    <span style="word-break: break-word;"></span>
+                  </div>
+                </div>
+                <div class="items">
+                  <span class="labels">克重:</span>
+                  <div class="contents"></div>
+                </div>
+                <div class="items">
+                  <span class="labels">颜色:</span>
+                  <div class="contents"></div>
+                </div>
+                <div class="items">
+                  <span class="labels">描述:</span>
+                  <div class="contents">
+                    <span>{{detail.description ? detail.description : '无'}}</span>
+                  </div>
+                </div>
+                <div class="items"
+                  style="margin-top:30px;">
+                  <div class="contents col">
+                    <img :src="qrCodeUrl"
+                      class="qrCode"
+                      alt="">
+                    <span class="littleBlack">扫码查看更多</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="btn btnBlue">打印标签</div>
           </div>
         </div>
@@ -196,69 +242,34 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-for="(item,index) in detail.part_data"
+      :key="index">
       <div class="titleCtn">
-        <span class="title hasBorder">配件一</span>
+        <span class="title hasBorder">配件{{chinaNum[index]}}</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">配件名称：</span>
-            <span class="text">拉链</span>
+            <span class="text">{{item.part_title}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">配件成分：</span>
-            <span class="text">拉链100%</span>
+            <span class="text">{{item.part_component|filterMaterials}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">配件规格：</span>
             <div class="lineCtn">
-              <div class="line">儿童款 10*20*30cm xxx 1个</div>
-              <div class="line">成人款 10*20*30cm xxx 2个</div>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">关联单据：</span>
-            <div class="rectCtn">
-              <div class="rect">
-                <div class="main">
-                  <div class="icon yellow">
-                    <img src="../../assets/image/sample/craft_icon.png" />
-                  </div>
-                  <div class="content">
-                    <div class="text title">工艺单</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
-                  </div>
-                </div>
-                <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
-                </div>
-              </div>
-              <div class="rect">
-                <div class="main">
-                  <div class="icon blue">
-                    <img src="../../assets/image/sample/plan_icon.png" />
-                  </div>
-                  <div class="content">
-                    <div class="text title">配料单</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
-                  </div>
-                </div>
-                <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
-                </div>
+              <div class="line"
+                v-for="(item,index) in item.size"
+                :key="index">
+                <span style="margin-right:8px">{{item.measurement}}</span>
+                <span style="margin-right:8px">{{item.size_info}}cm</span>
+                <span style="margin-right:8px">{{item.weight}}g</span>
+                <span style="color:#1A95FF">{{item.number}}个</span>
               </div>
             </div>
           </div>
@@ -307,19 +318,30 @@ export default {
         description: ''
       },
       quotation_index: 0,
-      chinaNum: chinaNum
+      chinaNum: chinaNum,
+      qrCodeUrl: ''
     }
   },
   filters: {
     filterMaterials (arr) {
       let str = ''
-      arr.forEach((item) => {
-        str += item.ingredient_name + item.ingredient_value + '%' + ' / '
-      })
-      return str.substring(0, str.length - 2)
+      if (arr[0] && arr[0].ingredient_name) {
+        arr.forEach((item) => {
+          str += item.ingredient_name + item.ingredient_value + '%' + ' / '
+        })
+        return str.substring(0, str.length - 2)
+      } else {
+        return '无'
+      }
     }
   },
   mounted () {
+    const QRCode = require('qrcode')
+    QRCode.toDataURL(window.location.href, { errorCorrectionLevel: 'H' }, (err, url) => {
+      if (!err) {
+        this.qrCodeUrl = url
+      }
+    })
     product.detail({
       id: this.$route.params.id
     }).then((res) => {

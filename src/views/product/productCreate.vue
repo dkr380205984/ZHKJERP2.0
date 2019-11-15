@@ -1,12 +1,13 @@
 <template>
   <div class="indexMain"
-    id="productCreate">
+    id="productCreate"
+    v-loading="loading">
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
         <span class="productCode">{{productCode}}</span>
       </div>
-      <div class="editCtn">
+      <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
@@ -163,7 +164,7 @@
         </el-switch>
       </div>
       <div v-show="hasFitting"
-        class="editCtn"
+        class="editCtn hasBorderTop"
         v-for="(item,index) in fittingInfo"
         :key="index">
         <div class="titleNum">配件{{chinaNum[index]}}</div>
@@ -287,7 +288,7 @@
       <div class="titleCtn">
         <span class="title">其他信息</span>
       </div>
-      <div class="editCtn">
+      <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
@@ -346,6 +347,7 @@ import { productType, flower, ingredient, colour, getToken, material, product } 
 export default {
   data () {
     return {
+      loading: true,
       product_code: ['00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
       name: '',
@@ -640,7 +642,8 @@ export default {
       flower.list(),
       ingredient.list(),
       colour.list(),
-      getToken(), material.list()]).then((res) => {
+      getToken(),
+      material.list()]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
           value: item.id,

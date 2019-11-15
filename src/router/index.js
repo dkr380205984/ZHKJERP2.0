@@ -80,6 +80,10 @@ const routes = [
       name: '产品详情',
       component: () => import('../views/product/productDetail.vue')
     }, {
+      path: '/product/productUpdate/:id',
+      name: '产品修改',
+      component: () => import('../views/product/productUpdate.vue')
+    }, {
       path: '/price/priceCreate',
       name: '报价单添加',
       component: () => import('../views/price/priceCreate.vue')
@@ -119,6 +123,7 @@ router.beforeEach((to, from, next) => {
     '产品添加': ['织为云', '产品添加'],
     '产品列表': ['织为云', '产品列表'],
     '产品详情': ['织为云', '产品列表', '产品详情'],
+    '产品修改': ['织为云', '产品列表', '产品修改'],
     '报价单添加': ['织为云', '报价单添加'],
     '报价单修改': ['织为云', '报价单修改'],
     '报价单列表': ['织为云', '报价单列表'],

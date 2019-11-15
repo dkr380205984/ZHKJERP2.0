@@ -103,8 +103,8 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>
-                      <span class="edit">修改产品</span>
+                    <el-dropdown-item @click.native="$router.push('/product/productUpdate/'+ item.id)">
+                      <span class="updated">修改产品</span>
                     </el-dropdown-item>
                     <el-dropdown-item>
                       <span class="delete">删除产品</span>
@@ -116,7 +116,7 @@
                       <span class="detail">工艺单详情</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_craft">
-                      <span class="edit">修改工艺单</span>
+                      <span class="updated">修改工艺单</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_craft">
                       <span class="delete">删除工艺单</span>
@@ -128,7 +128,7 @@
                       <span class="detail">配料单详情</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_plan">
-                      <span class="edit">修改配料单</span>
+                      <span class="updated">修改配料单</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_plan">
                       <span class="delete">删除配料单</span>
