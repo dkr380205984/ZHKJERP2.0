@@ -51,11 +51,15 @@
               <el-select v-model="unit"
                 filterable
                 default-first-option
-                placeholder="请选择结算单位">
+                placeholder="请选择结算单位"
+                @change="unit === '元' ? exchangeRate = 100 : false">
                 <el-option v-for="item in unitArr"
-                  :key="item.id"
+                  :key="item.name"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.name"
+                  class="between">
+                  <span>{{ item.name }}</span>
+                  <span class="gray">{{item.short}}</span>
                 </el-option>
               </el-select>
             </span>
@@ -65,7 +69,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">汇率</span>
-              <span class="explanation">(必填,例：100人民币=600美元)</span>
+              <span class="explanation">(必填,例：100人民币=600美元,填入"600"。)</span>
             </span>
             <span class="content">
               <zh-input type="number"
@@ -225,8 +229,10 @@
                 </el-option>
               </el-select>
               <div class="editBtn deleteBtn">
-                <span class="blue"
-                  @click="showProductCard(item)">预览</span>
+                <zh-card :data="setCardData(item)">
+                  <span @click="showProductCard(item)"
+                    class="blue">预览</span>
+                </zh-card>
                 <span @click="cancleChecked(item)"
                   class="red">删除</span>
               </div>
@@ -307,7 +313,7 @@
               <el-input type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
                 v-model="productDemand"
-                placeholder="请输入需求信息"></el-input>
+                placeholder="请输入产品需求，如品名、尺寸、针型、克重、配色、成分等"></el-input>
             </span>
           </div>
         </div>
@@ -334,6 +340,7 @@
                 allow-create
                 default-first-option
                 placeholder="请选择原料"
+                :disabled="item.disabled"
                 @change="checkedYarn(item)">
                 <el-option v-for="item in yarn_list"
                   :key="item.value"
@@ -363,7 +370,8 @@
                 errorMsg="请输入数字"
                 placeholder="单价"
                 v-model="item.price"
-                @input="computedPrice(item,true)">
+                @input="computedPrice(item,true)"
+                @focus="item.isReferencePrice = false">
                 <template slot="append">元/kg</template>
               </zh-input>
             </span>
@@ -850,11 +858,34 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="this.$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="submit">提交</div>
+        </div>
+        <div class="priceCtn">
+          <span class="title">总价：</span>
+          <span class="content">
+            <span class="price">{{priceInfo.product_total_price ? priceInfo.product_total_price : 0}}</span>
+            元
+          </span>
+          <span class="content marginLeft"
+            v-if="unit && unit !== '元'">
+            <span class="price">{{filterUnit}}</span>
+            {{unit}}
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { product, client, productType, flower, group, yarn, material, course } from '@/assets/js/api'
+import { product, client, productType, flower, group, yarn, material, course, yarnPrice, planList } from '@/assets/js/api'
+import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -864,7 +895,7 @@ export default {
       contact_id: '',
       contactsArr: [],
       unit: '',
-      unitArr: [],
+      unitArr: moneyArr,
       exchangeRate: '',
       priceInfo: {
         raw_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
@@ -916,7 +947,9 @@ export default {
         { value: '干燥剂' },
         { value: '衣架' },
         { value: '警报器' },
-        { value: '洗标' }]
+        { value: '洗标' }
+      ],
+      yarnPriceList: []
     }
   },
   methods: {
@@ -972,6 +1005,63 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
+        planList.detail_code({
+          product_key: item.product_code
+        }).then(res => {
+          if (res.data.status) {
+            res.data.data.material_data.forEach(item => {
+              let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
+              let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
+              let number = item.colour.reduce((totalColour, currentColour) => {
+                return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
+                  return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
+                    return totalSize + Number(currentSize.number)
+                  }, 0)
+                }, 0)
+              }, 0)
+              if (!findedYarn && item.type === 0) {
+                if (this.priceInfo.raw_material[0].name) {
+                  let obj = {
+                    name: item.material,
+                    price: '',
+                    weight: number,
+                    prop: '',
+                    total_price: '',
+                    disabled: true
+                  }
+                  this.checkedYarn(obj)
+                  this.priceInfo.raw_material.push(obj)
+                } else {
+                  this.priceInfo.raw_material[0].name = item.material
+                  this.priceInfo.raw_material[0].weight = number
+                  this.priceInfo.raw_material[0].disabled = true
+                  this.checkedYarn(this.priceInfo.raw_material[0])
+                }
+              } else if (findedYarn && item.type === 0) {
+                findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
+              }
+              if (!findedOther && item.type === 1) {
+                if (this.priceInfo.other_material[0].name) {
+                  let obj = {
+                    name: item.material,
+                    price: '',
+                    weight: number,
+                    prop: '',
+                    total_price: '',
+                    disabled: true
+                  }
+                  this.priceInfo.other_material.push(obj)
+                } else {
+                  this.priceInfo.other_material[0].name = item.material
+                  this.priceInfo.other_material[0].weight = number
+                  this.priceInfo.other_material[0].disabled = true
+                }
+              } else if (findedOther && item.type === 1) {
+                findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
+              }
+            })
+          }
+        })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -993,6 +1083,22 @@ export default {
     },
     beforeAvatarUpload () {
 
+    },
+    checkedYarn (newVal) {
+      if (this.yarnPriceList.length === 0) {
+        yarnPrice.list({
+
+        }).then(res => {
+          this.yarnPriceList = res.data.data
+          this.checkedYarn(newVal)
+        })
+      }
+      let yarnPriceInfo = this.yarnPriceList.find(items => items.name === newVal.name)
+      if (yarnPriceInfo) {
+        newVal.price = yarnPriceInfo.price
+        newVal.isReferencePrice = true
+        this.computedPrice(newVal, true)
+      }
     },
     computedPrice (item, flag) {
       if (item.weight && item.prop && item.price) {
@@ -1036,13 +1142,25 @@ export default {
         this.priceInfo.basic_profits.price = (this.priceInfo.product_total_price * this.priceInfo.basic_profits.prop / 100).toFixed(2)
         this.priceInfo.product_total_price = this.priceInfo.product_total_price.toFixed(2)
       }
+    },
+    setCardData (item) {
+      return {
+        product_code: item.product_code,
+        img: item.img.map(val => val.image_url),
+        category_name: item.category_info.product_category,
+        type_name: item.type_name,
+        style_name: item.style_name,
+        color: item.color.map(val => val.color_name),
+        size: item.size,
+        description: item.description
+      }
+    },
+    submit () {
+
     }
   },
   created () {
     this.getList()
-    let firstInput = document.getElementsByTagName('input')[0]
-    firstInput.focus()
-    // document.getElementsByTagName('input')[0].focus()
     Promise.all([
       client.list({
         company_id: this.companyId,
@@ -1107,9 +1225,23 @@ export default {
       }
     })
   },
+  mounted () {
+    let firstInput = document.getElementsByTagName('input')[0]
+    firstInput.focus()
+    // document.getElementsByTagName('input')[0].focus()
+  },
   filters: {
     filterType (item) {
       return [item.category_info.product_category, item.type_name, item.style_name].join('/')
+    }
+  },
+  computed: {
+    filterUnit () {
+      if (!this.exchangeRate || !this.priceInfo.product_total_price) {
+        return 0
+      } else {
+        return ((this.priceInfo.product_total_price ? this.priceInfo.product_total_price : 0) / (this.exchangeRate ? this.exchangeRate / 100 : 0)).toFixed(2)
+      }
     }
   }
 }
