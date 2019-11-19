@@ -50,6 +50,20 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">针型名称</span>
+            </div>
+            <div class="content">
+              <zh-input errorMsg="针型名称不能超过5个字"
+                placeholder="请输入针型名称"
+                maxLength="5"
+                v-model="needleType">
+              </zh-input>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in ingredient"
           :key="'ingredient' + index">
@@ -381,7 +395,8 @@ export default {
         size: [{ size: '', weight: '', desc: '', number: '' }]
       }],
       // 配件类型从辅料里面选
-      materialArr: []
+      materialArr: [],
+      needleType: ''
     }
   },
   methods: {
@@ -551,6 +566,7 @@ export default {
         style_id: this.type[2],
         type: 1,
         flower_id: this.flower,
+        needle_type: this.needleType,
         description: this.desc,
         img: imgArr,
         color: this.colour.map((item) => item.colour),
@@ -672,6 +688,7 @@ export default {
           })
         }
       })
+      this.needleType = productInfo.needle_type
       this.loading = false
     })
   }

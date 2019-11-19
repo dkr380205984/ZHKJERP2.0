@@ -9,7 +9,9 @@
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
               v-model="keyword"
-              placeholder="请输入编号查询"></el-input>
+              @change="changeRouter(1)"
+              placeholder="输入编号按回车键查询">
+            </el-input>
             <el-date-picker v-model="date"
               style="width:290px"
               class="inputs"
@@ -20,7 +22,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              @change="getDate">
+              @change="changeRouter(1)">
             </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0"
@@ -36,39 +38,39 @@
             </div>
             <div class="col"
               style="flex:1.5">
-              <transition v-show="!searchTypeFlag"
-                name="el-zoom-in-bottom">
-                <span class="text">品类
+              <span class="text">
+                <span class="text"
+                  v-show="!searchTypeFlag">品类
                   <i class="el-icon-search iconBtn"
                     @click="searchTypeFlag=true"></i>
                 </span>
-              </transition>
-              <transition name="el-zoom-in-top">
-                <div v-show="searchTypeFlag"
-                  class="filterBox">
-                  <el-cascader class="filter"
-                    placeholder="筛选品类"
-                    :options="typeArr"
-                    @change="getType"
-                    clearable
-                    filterable>
-                  </el-cascader>
-                </div>
-              </transition>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchTypeFlag"
+                    class="filterBox">
+                    <el-cascader class="filter"
+                      v-model="type"
+                      placeholder="筛选品类"
+                      :options="typeArr"
+                      @change="getType"
+                      clearable
+                      filterable>
+                    </el-cascader>
+                  </div>
+                </transition>
+              </span>
             </div>
             <div class="col">
               <span class="text">
-                <transition v-show="!searchFlowerFlag"
-                  name="el-zoom-in-bottom">
-                  <span class="text">花型
-                    <i class="el-icon-search iconBtn"
-                      @click="searchFlowerFlag=true"></i>
-                  </span>
-                </transition>
+                <span class="text"
+                  v-show="!searchFlowerFlag">花型
+                  <i class="el-icon-search iconBtn"
+                    @click="searchFlowerFlag=true"></i>
+                </span>
                 <transition name="el-zoom-in-top">
                   <div v-show="searchFlowerFlag"
                     class="filterBox">
                     <el-select v-model="flower"
+                      @change="changeRouter(1)"
                       clearable
                       placeholder="筛选花型">
                       <el-option v-for="(item,index) in flowerArr"
@@ -94,28 +96,52 @@
             </div>
             <div class="col">
               <span class="text">
-                <transition v-show="!searchStateFlag"
-                  name="el-zoom-in-bottom">
-                  <span class="text">状态
-                    <i class="el-icon-search iconBtn"
-                      @click="searchStateFlag=true"></i>
-                  </span>
-                </transition>
+                <span class="text"
+                  v-show="!searchStateFlag">状态
+                  <i class="el-icon-search iconBtn"
+                    @click="searchStateFlag=true"></i>
+                </span>
                 <transition name="el-zoom-in-top">
                   <div v-show="searchStateFlag"
                     class="filterBox">
-                    <el-select v-model="state"
-                      clearable
-                      style="height:32px"
-                      multiple
-                      @change="getState"
-                      placeholder="筛选状态">
-                      <el-option v-for="(item,index) in stateArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.value">
-                      </el-option>
-                    </el-select>
+                    <el-dropdown :hide-on-click="false"
+                      trigger="click"
+                      style="cursor:pointer">
+                      <span class="el-dropdown-link">
+                        状态筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>
+                          工艺单：
+                          <el-radio-group v-model="has_craft"
+                            @change="changeRouter(1)">
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          配料单：
+                          <el-radio-group v-model="has_plan"
+                            @change="changeRouter(1)"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          报价单：
+                          <el-radio-group v-model="has_quotation"
+                            @change="changeRouter(1)"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
                   </div>
                 </transition>
               </span>
@@ -226,17 +252,6 @@ export default {
       style_id: '',
       flowerArr: [],
       flower: '',
-      stateArr: [{
-        name: '有工艺单',
-        value: 'has_craft'
-      }, {
-        name: '有配料单',
-        value: 'has_plan'
-      }, {
-        name: '有报价单',
-        value: 'has_quotation'
-      }],
-      state: [],
       has_plan: '',
       has_craft: '',
       has_quotation: '',
@@ -278,12 +293,6 @@ export default {
   watch: {
     page (newVal) {
       this.changeRouter(newVal)
-    },
-    keyword (newVal) {
-      this.changeRouter()
-    },
-    flower (newVal) {
-      this.changeRouter()
     },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
@@ -327,14 +336,20 @@ export default {
       this.category_id = params.category_id ? params.category_id : ''
       this.type_id = params.type_id ? params.type_id : ''
       this.style_id = params.style_id ? params.style_id : ''
+      if (this.category_id) {
+        this.type = [this.category_id, this.type_id, this.style_id]
+        this.searchTypeFlag = true
+      }
       this.flower = params.flower_id ? Number(params.flower_id) : ''
+      if (this.flower) {
+        this.searchFlowerFlag = true
+      }
       this.has_plan = params.has_plan ? params.has_plan : ''
       this.has_craft = params.has_craft ? params.has_craft : ''
       this.has_quotation = params.has_quotation ? params.has_quotation : ''
-    },
-    // 这里不直接监听date是防止监听事件触发两次
-    getDate () {
-      this.changeRouter()
+      if (this.has_craft === '0' || this.has_craft === '1' || this.has_plan === '0' || this.has_plan === '1' || this.has_quotation === '0' || this.has_quotation === '1') {
+        this.searchStateFlag = true
+      }
     },
     getType (type) {
       if (type.length === 3) {
@@ -346,12 +361,6 @@ export default {
         this.type_id = ''
         this.style_id = ''
       }
-      this.changeRouter()
-    },
-    getState (state) {
-      this.has_plan = state.find((item) => item === 'has_plan') ? 1 : ''
-      this.has_craft = state.find((item) => item === 'has_craft') ? 1 : ''
-      this.has_quotation = state.find((item) => item === 'has_quotation') ? 1 : ''
       this.changeRouter()
     },
     changeRouter (page) {

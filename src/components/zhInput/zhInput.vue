@@ -10,6 +10,7 @@
       @mouseleave="hovering = false">
       <input class="zhInput"
         :class="{'typeError':!unShowError,'hasAppend':$slots.append,'hasPrepend':$slots.prepend}"
+        :type="type"
         @input="handleInput"
         @focus="handleFocus"
         @blur="handleBlur"
