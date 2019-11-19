@@ -45,6 +45,14 @@ export default {
     list: {
       type: Array,
       required: true
+    },
+    pro_id: [String, Number],
+    type: {
+      type: String,
+      default: 'show',
+      validator: (value) => {
+        return value === 'show' || value === 'open'
+      }
     }
   },
   data () {

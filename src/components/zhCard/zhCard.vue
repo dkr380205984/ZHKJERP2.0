@@ -1,8 +1,6 @@
 <template>
   <div class="zh_card">
-    <!-- <span class="zh_card_title"> -->
     <slot></slot>
-    <!-- </span> -->
     <div class="zh_card_main is_active">
       <div class="zh_card_left">
         <img :src="data.img[0] ? data.img[0] : require('@/assets/image/index/noPic.jpg')"
@@ -13,7 +11,7 @@
         <span>{{data|filterType}}</span>
       </div>
       <ul class="zh_card_right">
-        <!-- <li>
+        <li>
           <span class="title">产品编号:</span>
           <span class="info blue">{{data.product_code}}</span>
         </li>
@@ -23,7 +21,7 @@
         </li>
         <li>
           <span class="title">颜色色组:</span>
-          <span class="info">{{data|filterColor}}</span>
+          <span class="info">{{data.color.join('/')}}</span>
         </li>
         <li>
           <span class="title">尺码规格:</span>
@@ -42,7 +40,7 @@
         <li>
           <span class="title">产品描述:</span>
           <span class="info">{{data.description ? data.description : '暂无描述信息'}}</span>
-        </li> -->
+        </li>
       </ul>
     </div>
   </div>
@@ -68,17 +66,7 @@ export default {
   },
   data () {
     return {
-      defaultImg: 'this.src="' + require('@/assets/image/index/noPic.jpg') + '"'
     }
-  },
-  watch: {
-  },
-  methods: {
-  },
-  computed: {
-  },
-  mounted () {
-    console.log(this.data)
   },
   filters: {
     filterType (item) {

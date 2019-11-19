@@ -135,7 +135,7 @@
             <div class="col">
               <span class="text">名称</span>
             </div>
-            <div class="col">
+            <div class="col middle">
               <span class="text">图片</span>
             </div>
             <div class="col">
@@ -217,7 +217,7 @@
         <div class="rowCtn"
           v-for="item in checkedProList"
           :key="item.id">
-          <div class="colCtn flex3 more_btn">
+          <div class="colCtn flex3">
             <span class="content">
               <el-select v-model="item.id"
                 disabled
@@ -228,13 +228,13 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <div class="editBtn deleteBtn">
-                <zh-card :data="setCardData(item)">
-                  <span @click="showProductCard(item)"
-                    class="blue">预览</span>
-                </zh-card>
-                <span @click="cancleChecked(item)"
-                  class="red">删除</span>
+              <div class="editBtn deleteBtn"
+                @click="cancleChecked(item)">删除
+                <!-- <zh-card :data="setCardData(item)"> -->
+                <!-- <span @click="showProductCard(item)"
+                  class="blue">预览</span> -->
+                <!-- </zh-card> -->
+                <!-- <span class="red"></span> -->
               </div>
             </span>
           </div>
@@ -263,7 +263,7 @@
                 accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
-                ref="uploada"
+                ref="imgUpload"
                 list-type="picture">
                 <div class="uploadBtn">
                   <i class="el-icon-upload"></i>
@@ -783,7 +783,8 @@
             </span>
             <span class="content">
               <zh-input placeholder="请输入费用比例"
-                v-model="priceInfo.basic_fee.prop">
+                v-model="priceInfo.basic_fee.prop"
+                @input="computedProfits">
                 <template slot="append">%</template>
               </zh-input>
             </span>
@@ -822,8 +823,7 @@
             <span class="content">
               <zh-input placeholder="请输入金额"
                 disabled
-                v-model="priceInfo.basic_tax.price"
-                @input="computedProfits">
+                v-model="priceInfo.basic_tax.price">
                 <template slot="append">元</template>
               </zh-input>
             </span>
@@ -864,7 +864,7 @@
           <div class="btn btnGray"
             @click="this.$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="submit">提交</div>
+            @click="verifyData">提交</div>
         </div>
         <div class="priceCtn">
           <span class="title">总价：</span>
@@ -884,7 +884,7 @@
 </template>
 
 <script>
-import { product, client, productType, flower, group, yarn, material, course, yarnPrice, planList } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, yarnPrice, planList, price } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -949,7 +949,8 @@ export default {
         { value: '警报器' },
         { value: '洗标' }
       ],
-      yarnPriceList: []
+      yarnPriceList: [],
+      lock: true
     }
   },
   methods: {
@@ -1135,7 +1136,9 @@ export default {
       this.computedProfits()
     },
     computedProfits () {
+      console.log('change', new Date().getTime())
       if (this.priceInfo.basic_fee.prop && this.priceInfo.basic_tax.prop && this.priceInfo.basic_profits.prop) {
+        console.log('change', new Date().getTime())
         this.priceInfo.product_total_price = this.priceInfo.product_cost / (1 - (Number(this.priceInfo.basic_fee.prop) + Number(this.priceInfo.basic_tax.prop) + Number(this.priceInfo.basic_profits.prop)) / 100)
         this.priceInfo.basic_fee.price = (this.priceInfo.product_total_price * this.priceInfo.basic_fee.prop / 100).toFixed(2)
         this.priceInfo.basic_tax.price = (this.priceInfo.product_total_price * this.priceInfo.basic_tax.prop / 100).toFixed(2)
@@ -1155,8 +1158,109 @@ export default {
         description: item.description
       }
     },
-    submit () {
-
+    verifyData () {
+      if (this.lock) {
+        if (!this.client_id) {
+          this.$message({ type: 'error', message: '请选择外贸公司' })
+          return
+        }
+        if (!this.unit) {
+          this.$message({ type: 'error', message: '请选择结算单位' })
+          return
+        }
+        if (!this.exchangeRate) {
+          this.$message({ type: 'error', message: '请输入汇率' })
+          return
+        }
+        if (!this.priceInfo.product_cost) {
+          this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
+          return
+        }
+        if (!this.priceInfo.basic_fee.prop) {
+          this.$message({ type: 'error', message: '请输入基本佣金占比' })
+          return
+        }
+        if (!this.priceInfo.basic_tax.prop) {
+          this.$message({ type: 'error', message: '请输入基本税费占比' })
+          return
+        }
+        if (!this.priceInfo.basic_profits.prop) {
+          this.$message({ type: 'error', message: '请输入基本利润占比' })
+          return
+        }
+        if (this.checkedProList.length === 0) {
+          this.$confirm('检测到未选择产品, 是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.saveAll()
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消提交'
+            })
+          })
+        } else {
+          let flag = true
+          this.checkedProList.forEach(items => {
+            if (!items.sizeColor) {
+              this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
+              flag = false
+            }
+          })
+          if (flag) {
+            this.saveAll()
+          }
+        }
+      } else {
+        this.$message({ type: 'warning', message: '请勿频繁点击' })
+      }
+    },
+    saveAll () {
+      // 生成产品报价单编号
+      let quotationCode = ''
+      this.checkedProList.forEach((item) => {
+        quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
+      })
+      let img = this.$refs.imgUpload
+      console.log(img)
+      // price.create({
+      //   id: null,
+      //   client_id: this.client_id,
+      //   quotation_code: quotationCode,
+      //   client_contact: this.contact_id,
+      //   exchange_rate: this.exchangeRate,
+      //   account_unit: this.unit,
+      //   product_info: JSON.stringify(this.checkedProList.map(item => {
+      //     return {
+      //       id: item.id,
+      //       colorSize: item.sizeColor
+      //     }
+      //   })),
+      //   number: this.startNum,
+      //   product_need: this.productDemand,
+      //   material_info: JSON.stringify(this.priceInfo.raw_material),
+      //   assist_info: JSON.stringify(this.priceInfo.other_material),
+      //   weave_info: JSON.stringify(this.priceInfo.weave),
+      //   semi_product_info: JSON.stringify(this.priceInfo.semi_process),
+      //   production_info: JSON.stringify(this.priceInfo.finished_process),
+      //   pack_material_info: JSON.stringify(this.priceInfo.packag),
+      //   desc_info: JSON.stringify(this.priceInfo.other_fee),
+      //   no_product_cost: this.priceInfo.no_production_fee.total_price,
+      //   transport_cost: this.priceInfo.transport.total_price,
+      //   commission: JSON.stringify(this.priceInfo.basic_fee),
+      //   tax: JSON.stringify(this.priceInfo.basic_tax),
+      //   profit: JSON.stringify(this.priceInfo.basic_profits),
+      //   total_price: this.priceInfo.product_total_price,
+      //   desc: null
+      // }).then(res => {
+      //   if (res.data.status) {
+      //     this.$message({ type: 'success', message: '提交成功' })
+      //   } else {
+      //     this.$message({ type: 'error', message: res.data.message })
+      //   }
+      // })
     }
   },
   created () {
@@ -1185,7 +1289,8 @@ export default {
       course.list({
         company_id: this.companyId,
         type: 2
-      })
+      }),
+      getToken({})
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
       this.treeData = res[1].data.data.map((item) => {
@@ -1223,6 +1328,7 @@ export default {
           this.getProductFId(this.$route.fullPath.split('?')[1])
         }
       }
+      this.postData.token = res[7].data.data
     })
   },
   mounted () {

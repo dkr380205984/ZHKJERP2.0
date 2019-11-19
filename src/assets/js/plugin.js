@@ -8,9 +8,9 @@ const plugin = {
     }
     let nowDate = date ? new Date(date) : new Date()
     const year = nowDate.getFullYear()
-    const month = nowDate.getMonth()
+    const month = nowDate.getMonth() + 1
     const data = nowDate.getDate()
-    return [year, month, data].join('-')
+    return [year, month[1] ? month : '0' + month, data[1] ? data : '0' + data].join('-')
   }
 }
 export default {
