@@ -1223,44 +1223,46 @@ export default {
       this.checkedProList.forEach((item) => {
         quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
       })
-      let img = this.$refs.imgUpload
+      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return 'https://zhihui.tlkrzf.com/' + vals.response.key })
       console.log(img)
-      // price.create({
-      //   id: null,
-      //   client_id: this.client_id,
-      //   quotation_code: quotationCode,
-      //   client_contact: this.contact_id,
-      //   exchange_rate: this.exchangeRate,
-      //   account_unit: this.unit,
-      //   product_info: JSON.stringify(this.checkedProList.map(item => {
-      //     return {
-      //       id: item.id,
-      //       colorSize: item.sizeColor
-      //     }
-      //   })),
-      //   number: this.startNum,
-      //   product_need: this.productDemand,
-      //   material_info: JSON.stringify(this.priceInfo.raw_material),
-      //   assist_info: JSON.stringify(this.priceInfo.other_material),
-      //   weave_info: JSON.stringify(this.priceInfo.weave),
-      //   semi_product_info: JSON.stringify(this.priceInfo.semi_process),
-      //   production_info: JSON.stringify(this.priceInfo.finished_process),
-      //   pack_material_info: JSON.stringify(this.priceInfo.packag),
-      //   desc_info: JSON.stringify(this.priceInfo.other_fee),
-      //   no_product_cost: this.priceInfo.no_production_fee.total_price,
-      //   transport_cost: this.priceInfo.transport.total_price,
-      //   commission: JSON.stringify(this.priceInfo.basic_fee),
-      //   tax: JSON.stringify(this.priceInfo.basic_tax),
-      //   profit: JSON.stringify(this.priceInfo.basic_profits),
-      //   total_price: this.priceInfo.product_total_price,
-      //   desc: null
-      // }).then(res => {
-      //   if (res.data.status) {
-      //     this.$message({ type: 'success', message: '提交成功' })
-      //   } else {
-      //     this.$message({ type: 'error', message: res.data.message })
-      //   }
-      // })
+      price.create({
+        id: null,
+        client_id: this.client_id,
+        quotation_code: quotationCode,
+        client_contact: this.contact_id,
+        exchange_rate: this.exchangeRate,
+        account_unit: this.unit,
+        product_info: JSON.stringify(this.checkedProList.map(item => {
+          return {
+            id: item.id,
+            colorSize: item.sizeColor
+          }
+        })),
+        number: this.startNum,
+        product_need: this.productDemand,
+        material_info: JSON.stringify(this.priceInfo.raw_material),
+        assist_info: JSON.stringify(this.priceInfo.other_material),
+        weave_info: JSON.stringify(this.priceInfo.weave),
+        semi_product_info: JSON.stringify(this.priceInfo.semi_process),
+        production_info: JSON.stringify(this.priceInfo.finished_process),
+        pack_material_info: JSON.stringify(this.priceInfo.packag),
+        desc_info: JSON.stringify(this.priceInfo.other_fee),
+        no_product_cost: this.priceInfo.no_production_fee.total_price,
+        transport_cost: this.priceInfo.transport.total_price,
+        commission: JSON.stringify(this.priceInfo.basic_fee),
+        tax: JSON.stringify(this.priceInfo.basic_tax),
+        profit: JSON.stringify(this.priceInfo.basic_profits),
+        total_price: this.priceInfo.product_total_price,
+        desc: null,
+        file_url: img,
+        product_need_desc: this.setNumRemake
+      }).then(res => {
+        if (res.data.status) {
+          this.$message({ type: 'success', message: '提交成功' })
+        } else {
+          this.$message({ type: 'error', message: res.data.message })
+        }
+      })
     }
   },
   created () {
