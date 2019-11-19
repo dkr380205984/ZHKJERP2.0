@@ -119,12 +119,18 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
+          <div class="colCtn"
+            style="flex:2">
             <span class="label">配色方案：</span>
             <span class="text">
               <span v-for="(item,index) in detail.color"
                 :key="index">{{(index+1) + '. ' +item.color_name + ' '}}</span>
             </span>
+          </div>
+          <div class="colCtn"
+            style="flex:1;margin-left:72px">
+            <span class="label">产品针型：</span>
+            <span class="text">{{detail.needle_type?detail.needle_type:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -179,7 +185,7 @@
                   <div class="content">
                     <div class="text title">配料单</div>
                     <div class="text"
-                      v-if="detail.has_craft===0">待添加</div>
+                      v-if="detail.has_plan===0">待添加</div>
                     <div class="text"
                       v-if="detail.has_plan===1">{{detail.product_plan_info.user_name}}</div>
                     <div class="text"
@@ -315,7 +321,8 @@ export default {
         product_code: '',
         sample_title: '',
         size: [],
-        description: ''
+        description: '',
+        needle_type: ''
       },
       quotation_index: 0,
       chinaNum: chinaNum,

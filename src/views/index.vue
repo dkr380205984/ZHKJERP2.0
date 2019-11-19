@@ -87,7 +87,7 @@ export default {
           url: '/sample/sampleCreate'
         }, {
           name: '样品列表',
-          url: '/sample/sampleList/page=1'
+          url: '/sample/sampleList/page=&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
         }, {
           name: '样单添加',
           url: '/sample/sampleOrderCreate'
@@ -113,7 +113,7 @@ export default {
           url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/product/productList/page=1&&keyword=&&date='
+          url: '/product/productList/page=&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
         }, {
           name: '产品库存列表',
           url: '/product/productStockList'

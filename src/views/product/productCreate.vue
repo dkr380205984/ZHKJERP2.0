@@ -50,6 +50,20 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">针型名称</span>
+            </div>
+            <div class="content">
+              <zh-input errorMsg="针型名称不能超过5个字"
+                placeholder="请输入针型名称"
+                maxLength="5"
+                v-model="needleType">
+              </zh-input>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in ingredient"
           :key="'ingredient' + index">
@@ -348,11 +362,12 @@ export default {
   data () {
     return {
       loading: true,
-      product_code: ['00', 'X', 'X', 'X', '00'],
+      product_code: ['C', '00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
       name: '',
       type: [],
       typeArr: [],
+      needleType: '',
       flower: '',
       flowerArr: [],
       ingredientArr: [],
@@ -552,6 +567,7 @@ export default {
         style_id: this.type[2],
         type: 1,
         flower_id: this.flower,
+        needle_type: this.needleType,
         description: this.desc,
         img: imgArr,
         color: this.colour.map((item) => item.colour),
@@ -575,9 +591,9 @@ export default {
   },
   watch: {
     type (newVal) {
-      this.product_code[1] = 'X'
       this.product_code[2] = 'X'
       this.product_code[3] = 'X'
+      this.product_code[4] = 'X'
       if (newVal.length !== 0) {
         const obj = this.typeArr.find((item) => item.value === newVal[0])
         this.sizeArr = obj.child_size
@@ -585,17 +601,17 @@ export default {
       }
       this.typeArr.forEach((item, index) => {
         if (item.value === newVal[0]) {
-          this.$set(this.product_code, 1, letterArr[index])
+          this.$set(this.product_code, 2, letterArr[index])
         }
         if (item.children) {
           item.children.forEach((item2, index2) => {
             if (item2.value === newVal[1]) {
-              this.$set(this.product_code, 2, letterArr[index2])
+              this.$set(this.product_code, 3, letterArr[index2])
             }
             if (item2.children) {
               item2.children.forEach((item3, index3) => {
                 if (item3.value === newVal[2]) {
-                  this.$set(this.product_code, 3, letterArr[index3])
+                  this.$set(this.product_code, 4, letterArr[index3])
                 }
               })
             }
@@ -610,7 +626,7 @@ export default {
           if (code < 10) {
             code = '0' + code
           }
-          this.$set(this.product_code, 4, code)
+          this.$set(this.product_code, 5, code)
         }
       })
     },
@@ -636,7 +652,7 @@ export default {
     }
   },
   mounted () {
-    this.product_code[0] = new Date().getFullYear().toString().substring(2, 4)
+    this.product_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),
       flower.list(),

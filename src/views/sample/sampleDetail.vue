@@ -1,6 +1,7 @@
 <template>
   <div id="sampleDetail"
-    class="indexMain">
+    class="indexMain"
+    v-loading="loading">
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">基本信息</span>
@@ -8,45 +9,137 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
+            <div class="btn noBorder">预览标签
+              <div class="printInfo">
+                <div class="items">
+                  <span class="labels">编号:</span>
+                  <div class="contents">{{detail.product_code}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">品类:</span>
+                  <div class="contents">{{detail.category_info.product_category + ' / ' + detail.type_name + ' / ' + detail.style_name}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">成分:</span>
+                  <div class="contents">{{detail.materials|filterMaterials}}</div>
+                </div>
+                <div class="items">
+                  <span class="labels">规格:</span>
+                  <div class="contents col"
+                    style="align-items:flex-start">
+                    <span style="white-space:nowrap;"></span>
+                    <span style="word-break: break-word;"></span>
+                  </div>
+                </div>
+                <div class="items">
+                  <span class="labels">克重:</span>
+                  <div class="contents"></div>
+                </div>
+                <div class="items">
+                  <span class="labels">颜色:</span>
+                  <div class="contents"></div>
+                </div>
+                <div class="items">
+                  <span class="labels">描述:</span>
+                  <div class="contents">
+                    <span>{{detail.description ? detail.description : '无'}}</span>
+                  </div>
+                </div>
+                <div class="items"
+                  style="margin-top:30px;">
+                  <div class="contents col">
+                    <img :src="qrCodeUrl"
+                      class="qrCode"
+                      alt="">
+                    <span class="littleBlack">扫码查看更多</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="btn btnBlue">打印标签</div>
-          </div>
-          <div class="otherInfo">
-            <div class="block">
-              <span class="label">订单金额</span>
-              <span class="text">￥568.903</span>
-            </div>
-            <div class="block">
-              <span class="label">状态</span>
-              <span class="text blue">进行中</span>
-            </div>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">样单编号：</span>
-            <span class="text">19YABB041</span>
+            <span class="label">样品编号：</span>
+            <span class="text">{{detail.product_code}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">样品名称：</span>
-            <span class="text">2019新款披肩</span>
+            <span class="text"
+              :class="{'blue':detail.sample_title}">{{detail.sample_title?detail.sample_title:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">创建人：</span>
-            <span class="text">张春霞</span>
+            <span class="text">{{detail.user_name}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">创建时间：</span>
-            <span class="text">2018-09-09</span>
+            <span class="text">{{detail.create_time}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">样品图片：</span>
             <div class="imgCtn">
-              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573130321838&di=2d6a137902474c73459a7832e3d7b5e1&imgtype=0&src=http%3A%2F%2Fwx4.sinaimg.cn%2Fbmiddle%2Fa6d0124fly1fawg8nu0o2j20k00ez0tx0.jpg" />
-              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573130341226&di=449a9010a3ec49e9a8e2c4e41966acaa&imgtype=0&src=http%3A%2F%2Fwww.itmop.com%2Fupload%2F2017-9%2F15046867122689390.jpeg" />
+              <img v-for="(item,index) in detail.img"
+                :key="index"
+                :src="item.image_url" />
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">备注信息：</span>
+            <span class="text"
+              :class="{'blue':detail.description}">{{detail.description?detail.description:'无'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title hasBorder">大身信息</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">样品品类：</span>
+            <span class="text">{{detail.category_info.product_category + ' / ' + detail.type_name + ' / ' + detail.style_name}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">样品花型：</span>
+            <span class="text">{{detail.flower_id}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">样品成分：</span>
+            <span class="text">{{detail.materials|filterMaterials}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="flex:2">
+            <span class="label">配色方案：</span>
+            <span class="text">
+              <span v-for="(item,index) in detail.color"
+                :key="index">{{(index+1) + '. ' +item.color_name + ' '}}</span>
+            </span>
+          </div>
+          <div class="colCtn"
+            style="flex:1;margin-left:72px">
+            <span class="label">样品针型：</span>
+            <span class="text">{{detail.needle_type?detail.needle_type:'无'}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">样品规格：</span>
+            <div class="lineCtn">
+              <div class="line"
+                v-for="(item,index) in detail.size"
+                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -55,208 +148,242 @@
             <span class="label">关联单据：</span>
             <div class="rectCtn">
               <div class="rect">
+                <div class="tab"
+                  v-if="detail.craft_info&&detail.craft_info.length>1">
+                  <div class="circle"
+                    :class="{'active':craft_index===index}"
+                    v-for="index in detail.craft_info.length"
+                    :key="index"
+                    @click="craft_index=index">
+                  </div>
+                </div>
                 <div class="main">
-                  <div class="icon yellow">
+                  <div class="icon"
+                    :class="{'yellow':detail.has_craft===1,'gray':detail.has_craft===0}">
                     <img src="../../assets/image/sample/craft_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">工艺单</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
+                    <div class="text"
+                      v-if="detail.has_craft===0">待添加</div>
+                    <div class="text"
+                      v-if="detail.has_craft===1">{{detail.craft_info[craft_index].user_name}}</div>
+                    <div class="text"
+                      v-if="detail.has_craft===1">{{detail.craft_info[craft_index].create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
+                  <span v-if="detail.has_craft===0"
+                    class="opration">添加</span>
+                  <span v-if="detail.has_craft===1"
+                    class="opration">预览</span>
+                  <span v-if="detail.has_craft===1"
+                    class="opration">打印</span>
+                  <span v-if="detail.has_craft===1"
+                    class="opration">详情</span>
+                  <span v-if="detail.has_craft===1"
+                    class="opration">...</span>
                 </div>
               </div>
               <div class="rect">
+                <div class="tab"
+                  v-if="detail.product_plan_info&&detail.product_plan_info.length>1">
+                  <div class="circle"
+                    :class="{'active':plan_index===index}"
+                    v-for="index in detail.product_plan_info.length"
+                    :key="index"
+                    @click="plan_index=index">
+                  </div>
+                </div>
                 <div class="main">
-                  <div class="icon blue">
+                  <div class="icon"
+                    :class="{'blue':detail.has_plan===1,'gray':detail.has_plan===0}">
                     <img src="../../assets/image/sample/plan_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">配料单</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
+                    <div class="text"
+                      v-if="detail.has_plan===0">待添加</div>
+                    <div class="text"
+                      v-if="detail.has_plan===1">{{detail.product_plan_info[plan_index].user_name}}</div>
+                    <div class="text"
+                      v-if="detail.has_plan===1">{{detail.product_plan_info[plan_index].create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
+                  <span v-if="detail.has_plan===0"
+                    class="opration">添加</span>
+                  <span v-if="detail.has_plan===1"
+                    class="opration">预览</span>
+                  <span v-if="detail.has_plan===1"
+                    class="opration">打印</span>
+                  <span v-if="detail.has_plan===1"
+                    class="opration">详情</span>
+                  <span v-if="detail.has_plan===1"
+                    class="opration">...</span>
                 </div>
               </div>
               <div class="rect">
+                <div class="tab"
+                  v-if="detail.quotation_info.length>1">
+                  <div class="circle"
+                    :class="{'active':quotation_index===index}"
+                    v-for="index in detail.quotation_info.length"
+                    :key="index"
+                    @click="quotation_index=index"></div>
+                </div>
                 <div class="main">
-                  <div class="icon green">
+                  <div class="icon"
+                    :class="{'green': detail.quotation_info.length > 0,'gray': detail.quotation_info.length===0}">
                     <img src="../../assets/image/sample/price_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">报价单</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
+                    <div class="text"
+                      v-if="detail.quotation_info.length ===0">待添加</div>
+                    <div class="text"
+                      v-if="detail.quotation_info.length > 0"
+                      style="color:#1A95FF">{{detail.quotation_info.length>0?detail.quotation_info[quotation_index].total_price + '元':''}}</div>
+                    <div class="text"
+                      v-if="detail.quotation_info.length > 0">{{detail.quotation_info.length>0?detail.quotation_info[quotation_index].client_name:''}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
+                  <span v-if="detail.quotation_info.length===0"
+                    class="opration">添加</span>
+                  <span v-if="detail.quotation_info.length > 0"
+                    class="opration">预览</span>
+                  <span v-if="detail.quotation_info.length > 0"
+                    class="opration">打印</span>
+                  <span v-if="detail.quotation_info.length > 0"
+                    class="opration">详情</span>
+                  <span v-if="detail.quotation_info.length > 0"
+                    class="opration">...</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="module"
+      v-for="(item,index) in detail.part_data"
+      :key="index">
+      <div class="titleCtn">
+        <span class="title hasBorder">配件{{chinaNum[index]}}</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">配件名称：</span>
+            <span class="text">{{item.part_title}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">配件成分：</span>
+            <span class="text">{{item.part_component|filterMaterials}}</span>
+          </div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">多行情况：</span>
+            <span class="label">配件规格：</span>
             <div class="lineCtn">
-              <div class="line">1. 均码 10*20*30</div>
-              <div class="line">1. 均码 10*20*30</div>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">样品描述：</span>
-            <span class="text">此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title">简单表格样式</span>
-      </div>
-      <div class="detailCtn">
-        <div class="normalTb">
-          <div class="thead">
-            <div class="trow">
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-            </div>
-          </div>
-          <div class="tbody">
-            <div class="trow">
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-            </div>
-            <div class="trow">
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-              <div class="tcolumn">简单表格</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title">复杂表格样式</span>
-      </div>
-      <div class="detailCtn">
-        <div class="flexTb">
-          <div class="thead">
-            <div class="trow">
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-            </div>
-          </div>
-          <div class="tbody">
-            <div class="trow">
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn">复杂表格</div>
-              <div class="tcolumn"
-                style="flex:3">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1">复杂表格</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <div class="trow">
-                      <div class="tcolumn">复杂表格</div>
-                      <div class="tcolumn">复杂表格</div>
-                    </div>
-                    <div class="trow">
-                      <div class="tcolumn">复杂表格</div>
-                      <div class="tcolumn">复杂表格</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1">复杂表格</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <div class="trow">
-                      <div class="tcolumn">复杂表格</div>
-                      <div class="tcolumn">复杂表格</div>
-                    </div>
-                    <div class="trow">
-                      <div class="tcolumn">复杂表格</div>
-                      <div class="tcolumn">复杂表格</div>
-                    </div>
-                  </div>
-                </div>
+              <div class="line"
+                v-for="(item,index) in item.size"
+                :key="index">
+                <span style="margin-right:8px">{{item.measurement}}</span>
+                <span style="margin-right:8px">{{item.size_info}}cm</span>
+                <span style="margin-right:8px">{{item.weight}}g</span>
+                <span style="color:#1A95FF">{{item.number}}个</span>
               </div>
-              <div class="tcolumn">复杂表格</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleUpdate/'+$route.params.id)">修改</div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
+import { chinaNum } from '@/assets/js/dictionary.js'
+import { sample } from '@/assets/js/api.js'
 export default {
-  mounted () { }
+  data () {
+    return {
+      loading: true,
+      detail: {
+        category_info: {
+          product_category: '',
+          name: ''
+        },
+        style_name: '',
+        type_name: '',
+        flower_id: '',
+        color: [],
+        has_craft: 0,
+        craft_info: [],
+        has_plan: 0,
+        product_plan_info: [],
+        quotation_info: [],
+        img: [],
+        materials: [],
+        product_code: '',
+        sample_title: '',
+        size: [],
+        description: '',
+        needle_type: ''
+      },
+      plan_index: 0,
+      craft_index: 0,
+      quotation_index: 0,
+      chinaNum: chinaNum,
+      qrCodeUrl: ''
+    }
+  },
+  filters: {
+    filterMaterials (arr) {
+      let str = ''
+      if (arr[0] && arr[0].ingredient_name) {
+        arr.forEach((item) => {
+          str += item.ingredient_name + item.ingredient_value + '%' + ' / '
+        })
+        return str.substring(0, str.length - 2)
+      } else {
+        return '无'
+      }
+    }
+  },
+  mounted () {
+    const QRCode = require('qrcode')
+    QRCode.toDataURL(window.location.href, { errorCorrectionLevel: 'H' }, (err, url) => {
+      if (!err) {
+        this.qrCodeUrl = url
+      }
+    })
+    sample.detail({
+      id: this.$route.params.id
+    }).then((res) => {
+      if (res.data.status) {
+        this.detail = res.data.data
+        if (this.detail.img.length === 0) {
+          this.detail.img = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
+        }
+        this.loading = false
+      }
+    })
+  }
 }
 </script>
+
 <style lang="less" scoped>
 @import "~@/assets/less/sample/sampleDetail.less";
 </style>
