@@ -241,6 +241,7 @@
           <div class="colCtn flex3">
             <span class="content">
               <el-select v-model="item.sizeColor"
+                multiple
                 placeholder="请选择产品">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
@@ -423,7 +424,8 @@
                 filterable
                 allow-create
                 default-first-option
-                placeholder="请选择辅料">
+                placeholder="请选择辅料"
+                @change="resUnit(item,item.name)">
                 <el-option v-for="item in material_list"
                   :key="item.value"
                   :label="item.value"
@@ -444,7 +446,7 @@
                 placeholder="克重"
                 v-model="item.weight"
                 @input="computedPrice(item)">
-                <template slot="append">g</template>
+                <template slot="append">{{item.unit ? item.unit : '个'}}</template>
               </zh-input>
               <zh-input type="number"
                 class="hasMarginLeft"
@@ -453,7 +455,7 @@
                 placeholder="单价"
                 v-model="item.price"
                 @input="computedPrice(item)">
-                <template slot="append">元/kg</template>
+                <template slot="append">元/{{item.unit ? item.unit : '个'}}</template>
               </zh-input>
             </span>
           </div>
@@ -1238,7 +1240,7 @@ export default {
             colorSize: item.sizeColor
           }
         })),
-        number: this.startNum,
+        number: this.setNum,
         product_need: this.productDemand,
         material_info: JSON.stringify(this.priceInfo.raw_material),
         assist_info: JSON.stringify(this.priceInfo.other_material),
@@ -1263,6 +1265,11 @@ export default {
           this.$message({ type: 'error', message: res.data.message })
         }
       })
+    },
+    // 切换辅料单位
+    resUnit (item, value) {
+      console.log(item, value)
+      item.unit = this.material_list.find(key => key.value === value) ? this.material_list.find(key => key.value === value).unit : '个'
     }
   },
   created () {
@@ -1318,7 +1325,7 @@ export default {
       this.flowerArr = res[2].data.data
       this.groupArr = res[3].data.data
       this.yarn_list = res[4].data.data.map(item => { return { value: item.name } })
-      this.material_list = res[5].data.data.map(item => { return { value: item.name } })
+      this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
       this.loading = false
       if (this.$route.fullPath.split('?')[1]) {
@@ -1334,9 +1341,8 @@ export default {
     })
   },
   mounted () {
-    let firstInput = document.getElementsByTagName('input')[0]
-    firstInput.focus()
-    // document.getElementsByTagName('input')[0].focus()
+    // let firstInput = document.getElementsByTagName('input')[0]
+    // firstInput.focus()
   },
   filters: {
     filterType (item) {

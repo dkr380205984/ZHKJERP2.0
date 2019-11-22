@@ -102,7 +102,12 @@ const planList = {
   detail_code: (params) => http.get(`${baseUrl}/product/plan/product/one`, params)
   // list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
 }
+// 工厂信息管理
+const company = {
+  detail: (params) => http.get(`${baseUrl}/company/detail`, params)
+}
 export {
+  company,
   planList,
   yarnPrice,
   price,

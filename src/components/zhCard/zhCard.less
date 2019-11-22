@@ -1,26 +1,11 @@
 @import '~@/assets/less/common.less';
 .zh_card{
-  display: inline;
-  position: relative;
-  background: #DDD;
   color: @font65;
-  &:hover{
-    .zh_card_main{
-      display: flex;
-    }
-  }
-  .zh_card_title{
-    display: flex;
-    flex-direction: row;
-  }
   .zh_card_main{
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
+    display: flex;
     width: 145px;
     height: 212px;
-    box-shadow:0px 3px 6px rgba(0,0,0,0.1);
+    box-shadow:0px 0px 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     box-sizing: border-box;
     font-size: @fontMiddle;
@@ -29,9 +14,7 @@
     align-items: center;
     overflow: hidden;
     transition: width 0.2s ease-in-out;
-    margin-right: 24px;
-    z-index: 999;
-    transform: translate(-10%,-100%);
+    // margin-right: 24px;
     background: #FFF;
     &.is_active{
       width: 654px;
