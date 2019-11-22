@@ -92,7 +92,7 @@ const routes = [
       name: '报价单修改',
       component: () => import('../views/price/priceUpdate.vue')
     }, {
-      path: '/price/priceList',
+      path: '/price/priceList/:params',
       name: '报价单列表',
       component: () => import('../views/price/priceList.vue')
     }, {

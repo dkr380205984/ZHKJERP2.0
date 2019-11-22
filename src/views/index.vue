@@ -103,7 +103,7 @@ export default {
           url: '/price/priceCreate'
         }, {
           name: '报价单列表',
-          url: '/price/priceList'
+          url: '/price/priceList/page=&&keyword=&&date=&&status=&&client_id='
         }]
       }, {
         name: '产品管理',
