@@ -313,6 +313,7 @@
                 action="https://upload.qiniup.com/"
                 accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
+                :before-remove="beforeRemove"
                 :file-list="fileArr"
                 :data="postData"
                 ref="uploada"
@@ -357,7 +358,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, product } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, product, deleteFile } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -489,9 +490,48 @@ export default {
         return false
       }
       if (!isLt2M) {
-        this.$message.error('图片大小不能超过 6MB!')
+        this.$message.error('图片大小不能超过 10MB!')
         return false
       }
+    },
+    beforeRemove (file, fileList) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteFile({
+          id: file.id ? file.id : null,
+          file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            let deleteIndex = 0
+            fileList.forEach((item, index) => {
+              if (file.response) {
+                if (item.response && (item.response.key === file.response.key)) {
+                  deleteIndex = index
+                }
+              } else {
+                if (item.url === file.url) {
+                  deleteIndex = index
+                }
+              }
+            })
+            fileList.splice(deleteIndex, 1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+      // return false 禁用自带的删除功能
+      return false
     },
     submit () {
       let error = false
@@ -583,6 +623,7 @@ export default {
       product.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
+          this.$router.push('/product/productDetail/' + this.$route.params.id)
         }
       })
     }
@@ -653,6 +694,7 @@ export default {
       this.sampleName = productInfo.sample_title
       this.fileArr = productInfo.img.map(item => {
         return {
+          id: item.id,
           url: item.image_url
         }
       })
