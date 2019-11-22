@@ -2,17 +2,10 @@
   <div id="productDesignWeavingTable"
     @click.right="goTop"
     v-loading='loading'>
-    <!-- <h2>{{company_name + '产品报价单'}}</h2>
-    <div class="processCodeTime">
-      <span>报价单编号：{{price_code}}</span>
-      <span>创建时间：{{create_time}}</span>
-    </div> -->
     <div class="head">
       <div class="left">
         <p class="company">{{company_name + '产品报价单'}}</p>
         <span>报价单编号：{{price_code}}</span>
-        <!-- <span><span class="label">创建人:</span>{{create_user}}</span> -->
-        <!-- <span><span class="label">联系人电话:</span>{{linkman_tel}}</span> -->
         <span><span class="label">创建日期:</span>{{create_time}}</span>
       </div>
       <div class="right">
@@ -63,14 +56,6 @@
           <span>{{product_need}}</span>
         </span>
       </div>
-      <!-- <div>
-        <span>
-          <span>生产单位</span>
-          <span>{{client_name === 'null' ? '仓库' : client_name}}</span>
-          <span>总价</span>
-          <span>{{total_price|fixedFilter}}{{'元'}}</span>
-        </span>
-      </div> -->
       <div>
         <ul class="tables"
           style="width:inherit">
