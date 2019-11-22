@@ -17,7 +17,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">状态</span>
-              <span :class="['text',status === 0 ? 'blue' : (status === 2 ? 'green' : 'red')]">{{status|filterStatus}}</span>
+              <span :class="['text',status === 1 ? 'blue' : (status === 2 ? 'green' : 'red')]">{{status|filterStatus}}</span>
             </div>
             <div class="block">
               <span class="label">订单金额</span>
@@ -25,6 +25,7 @@
             </div>
           </div>
         </div>
+        <div :class="['statuIcon',status === 1 ? 'reasoning' : false,status === 3 ? 'pass' : false,status === 2 ? 'tongguo' : false]"></div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">报价单号：</span>
@@ -246,11 +247,11 @@ export default {
       }
     },
     filterStatus (statu) {
-      if (statu === 0) {
+      if (statu === 1) {
         return '待审核'
       } else if (statu === 2) {
         return '已通过'
-      } else if (statu === 1) {
+      } else if (statu === 3) {
         return '驳回'
       }
     },

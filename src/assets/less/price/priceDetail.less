@@ -1,5 +1,28 @@
 @import '../common.less';
 #priceDetail{
+  .detailCtn{
+    position: relative;
+  }
+  .statuIcon{
+    position: absolute;
+    top: 0px;
+    left: 700px;
+    display: block;
+    width: 140px;
+    height: 140px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    &.pass{
+      background-image: url('../../image/price/pass.png');
+    }
+    &.reasoning{
+      background-image: url('../../image/price/reasoning.png');
+    }
+    &.tongguo{
+      background-image: url('../../image/price/tongguo.png');
+    }
+  }
   ul{
     margin: 0;
     padding: 0;
