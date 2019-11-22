@@ -109,7 +109,7 @@ export default {
         name: '产品管理',
         icon: require('@/assets/image/index/产品管理.png'),
         children: [{
-          name: '添加新产品',
+          name: '产品添加',
           url: '/product/productCreate'
         }, {
           name: '产品列表',
@@ -117,32 +117,6 @@ export default {
         }, {
           name: '产品库存列表',
           url: '/product/productStockList'
-        }]
-      }, {
-        name: '工艺单管理',
-        icon: require('@/assets/image/index/工艺单管理.png'),
-        children: [{
-          name: '添加工艺单',
-          url: '/index/designFormAdd'
-        }, {
-          name: '工艺单列表',
-          url: '/index/designFormList'
-        }, {
-          name: '添加设计单',
-          url: '/index/designFormPlanCreate'
-        }, {
-          name: '设计单列表',
-          url: '/index/designFormPlanList'
-        }]
-      }, {
-        name: '配料单管理',
-        icon: require('@/assets/image/index/配料单管理.png'),
-        children: [{
-          name: '添加配料单',
-          url: '/index/productPlanAdd'
-        }, {
-          name: '配料单列表',
-          url: '/index/productPlanList'
         }]
       }, {
         name: '订单管理',

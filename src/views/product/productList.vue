@@ -193,10 +193,12 @@
                     <el-dropdown-item>
                       <span class="delete">删除产品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="!item.has_craft">
+                    <el-dropdown-item v-if="!item.has_craft"
+                      @click.native="$router.push('/craft/craftCreate/'+ item.id)">
                       <span class="create">添加工艺单</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft">
+                    <el-dropdown-item v-if="item.has_craft"
+                      @click.native="$router.push('/craft/craftDetail/'+item.id)">
                       <span class="detail">工艺单详情</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_craft">
