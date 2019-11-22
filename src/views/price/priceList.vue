@@ -17,10 +17,6 @@
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
           </div>
-          <!-- <div class="leftCtn">
-            <div class="btn btnGray">新建样单</div>
-            <div class="btn btnBlue">新建样品</div>
-          </div> -->
         </div>
         <div class="list">
           <div class="title">
@@ -90,7 +86,8 @@
               </div>
             </div>
             <div class="col middle">
-              <span class="opr">审核</span>
+              <span class="opr"
+                @click="$router.push('/price/priceDetail/' + item.id)">审核</span>
               <span class="opr">
                 <el-dropdown @command="handleCommand($event,item.id)">
                   <span class="el-dropdown-link">
@@ -179,10 +176,20 @@ export default {
           })
         } else {
           this.list = res.data.data.map(item => {
+            let img = item.file_url ? JSON.parse(item.file_url).map(vals => {
+              return {
+                image_url: vals,
+                thumb: vals
+              }
+            }).concat(...(item.product_info.map(vals => {
+              return vals.product_info.images
+            }))) : [].concat(...(item.product_info.map(vals => {
+              return vals.product_info.images
+            })))
             return {
               code: item.quotation_code,
               client_name: item.client_name,
-              img: item.img ? item.img : [],
+              img: img,
               price: item.total_price,
               setNum: item.number,
               create_time: item.created_at ? item.created_at.split(' ')[0] : '',
@@ -197,20 +204,31 @@ export default {
     },
     handleCommand (type, id) {
       if (type === 'change') {
-        this.$router.push('/sample/sampleUpdate/' + id)
+        this.$router.push('/price/priceUpdate/' + id)
       } else if (type === 'delete') {
-        this.$confirm('此操作将永久删除该样品, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该报价单, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          price.delete({
+            id: id
+          }).then(res => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              setTimeout(() => {
+                window.location.reload()
+              }, 100)
+            } else {
+              this.$message({
+                type: 'error',
+                message: res.data.massage
+              })
+            }
           })
-          setTimeout(() => {
-            window.location.reload()
-          }, 500)
         }).catch(() => {
           this.$message({
             type: 'info',

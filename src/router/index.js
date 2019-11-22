@@ -88,7 +88,7 @@ const routes = [
       name: '报价单添加',
       component: () => import('../views/price/priceCreate.vue')
     }, {
-      path: '/price/priceUpdate',
+      path: '/price/priceUpdate/:id',
       name: '报价单修改',
       component: () => import('../views/price/priceUpdate.vue')
     }, {
@@ -96,10 +96,14 @@ const routes = [
       name: '报价单列表',
       component: () => import('../views/price/priceList.vue')
     }, {
-      path: '/price/priceDetail',
+      path: '/price/priceDetail/:id',
       name: '报价单详情',
       component: () => import('../views/price/priceDetail.vue')
     }]
+  }, {
+    path: '/pricePrintTable/:id',
+    name: 'pricePrintTable',
+    component: () => import('../views/price/pricePrintTable.vue')
   }
 ]
 

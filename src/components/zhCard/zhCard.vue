@@ -1,12 +1,11 @@
 <template>
   <div class="zh_card">
-    <slot></slot>
     <div class="zh_card_main is_active">
       <div class="zh_card_left">
-        <img :src="data.img[0] ? data.img[0] : require('@/assets/image/index/noPic.jpg')"
-          :alt="data.category_name + '图片'"
-          :title="data.category_name"
-          class="imgItem">
+        <el-image class="imgItem"
+          :src="data.img[0] ? data.img[0].thumb : require('@/assets/image/index/noPic.jpg')"
+          :preview-src-list="data.img.map(vals=>vals.image_url)">
+        </el-image>
         <span class="blue">{{data.product_code}}</span>
         <span>{{data|filterType}}</span>
       </div>
