@@ -11,11 +11,15 @@ const plugin = {
     const month = nowDate.getMonth() + 1
     const data = nowDate.getDate()
     return [year, month[1] ? month : '0' + month, data[1] ? data : '0' + data].join('-')
+  },
+  cloneData: (data) => {
+    return JSON.parse(JSON.stringify(data))
   }
 }
 export default {
   install (Vue) {
     Vue.prototype.$openUrl = plugin.openUrl
     Vue.prototype.$getTime = plugin.getTime
+    Vue.prototype.$clone = plugin.cloneData
   }
 }

@@ -8,11 +8,21 @@
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
-              placeholder="请输入编号查询"></el-input>
-            <el-date-picker class="inputs"
-              v-model="value"
-              type="date"
-              placeholder="选择日期">
+              v-model="keyword"
+              @change="changeRouter(1)"
+              placeholder="输入编号按回车键查询">
+            </el-input>
+            <el-date-picker v-model="date"
+              style="width:290px"
+              class="inputs"
+              type="daterange"
+              align="right"
+              unlink-panels
+              value-format="yyyy-MM-dd"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              @change="changeRouter(1)">
             </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
@@ -34,11 +44,17 @@
               <transition name="el-zoom-in-top">
                 <div v-show="searchTypeFlag"
                   class="filterBox">
-                  <el-cascader class="filter"
-                    placeholder="筛选品类"
-                    :options="treeData"
+                  <el-select v-model="client_id"
+                    @change="changeRouter(1)"
+                    filterable
                     clearable
-                    filterable></el-cascader>
+                    placeholder="筛选公司">
+                    <el-option v-for="(item,index) in clientArr"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
                 </div>
               </transition>
             </div>
@@ -61,7 +77,28 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">审核状态</span>
+              <span class="text">
+                <span class="text"
+                  v-show="!searchStatusFlag">审核状态
+                  <i class="el-icon-search iconBtn"
+                    @click="searchStatusFlag=true"></i></span>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchStatusFlag"
+                    class="filterBox">
+                    <el-select v-model="status"
+                      @change="changeRouter(1)"
+                      filterable
+                      clearable
+                      placeholder="筛选状态">
+                      <el-option v-for="(item,index) in statusArr"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </transition>
+              </span>
             </div>
             <div class="col middle">
               <span class="text">操作</span>
@@ -118,46 +155,33 @@
   </div>
 </template>
 <script>
-import { price } from '@/assets/js/api'
+import { price, client } from '@/assets/js/api'
+import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
       loading: true,
       searchTypeFlag: false,
-      value: '',
+      keyword: '',
+      date: '',
+      client_id: '',
+      clientArr: [],
+      searchStatusFlag: false,
+      status: '',
+      statusArr: [
+        {
+          id: 1,
+          name: '待审核'
+        }, {
+          id: 2,
+          name: '已通过'
+        }, {
+          id: 3,
+          name: '驳回'
+        }
+      ],
       total: 0,
       pages: 1,
-      treeData: [{
-        value: 'zhinan',
-        label: '指南',
-        children: [{
-          value: 'shejiyuanze',
-          label: '设计原则',
-          children: [{
-            value: 'yizhi',
-            label: '一致'
-          }, {
-            value: 'fankui',
-            label: '反馈'
-          }, {
-            value: 'xiaolv',
-            label: '效率'
-          }, {
-            value: 'kekong',
-            label: '可控'
-          }]
-        }, {
-          value: 'daohang',
-          label: '导航',
-          children: [{
-            value: 'cexiangdaohang',
-            label: '侧向导航'
-          }, {
-            value: 'dingbudaohang',
-            label: '顶部导航'
-          }]
-        }]
-      }],
       list: []
     }
   },
@@ -167,7 +191,12 @@ export default {
       price.list({
         limit: 10,
         page: this.pages,
-        type: 2
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+        status: this.status,
+        client_id: this.client_id,
+        code: this.keyword,
+        product_code: ''
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -241,10 +270,43 @@ export default {
           message: '未知命令'
         })
       }
+    },
+    // 更新筛选条件
+    getFilters () {
+      let params = getHash(this.$route.params.params)
+      this.page = Number(params.page)
+      this.keyword = params.keyword
+      if (params.date !== 'null' && params.date !== '') {
+        this.date = params.date.split(',')
+      } else {
+        this.date = ''
+      }
+      this.status = params.status ? Number(params.status) : ''
+      this.client_id = params.client_id ? params.client_id : ''
+    },
+    changeRouter (page) {
+      let pages = page || 1
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id)
     }
   },
   created () {
+    this.getFilters()
     this.getList()
+    client.list({}).then(res => {
+      if (res.data.status) {
+        this.clientArr = res.data.data.map(item => {
+          return {
+            name: item.name,
+            id: item.id
+          }
+        })
+      } else {
+        this.$message({
+          type: 'error',
+          message: res.data.message
+        })
+      }
+    })
   },
   filters: {
     filterStatus (item) {
@@ -255,6 +317,16 @@ export default {
       } else if (item === 3) {
         return '驳回'
       }
+    }
+  },
+  watch: {
+    page (newVal) {
+      this.changeRouter(newVal)
+    },
+    $route (newVal) {
+      // 点击返回的时候更新下筛选条件
+      this.getFilters()
+      this.getList()
     }
   }
 }

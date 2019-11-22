@@ -94,11 +94,18 @@
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
               placeholder="请输入编号查询"
-              v-model="searchCode"></el-input>
-            <el-date-picker class="inputs"
-              v-model="date"
-              type="date"
-              placeholder="选择日期">
+              v-model="searchCode"
+              @change="searchCodeChange"></el-input>
+            <el-date-picker v-model="date"
+              style="width:290px"
+              class="inputs"
+              type="daterange"
+              align="right"
+              unlink-panels
+              value-format="yyyy-MM-dd"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
             </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
@@ -122,15 +129,33 @@
                 <div v-show="searchTypeFlag"
                   class="filterBox">
                   <el-cascader class="filter"
+                    v-model="type"
                     placeholder="筛选品类"
-                    :options="treeData"
+                    :options="typeArr"
                     clearable
-                    filterable></el-cascader>
+                    filterable>
+                  </el-cascader>
                 </div>
               </transition>
             </div>
             <div class="col">
               <span class="text">花型</span>
+              <i class="el-icon-search iconBtn"
+                @click="searchFlowerFlag=true"></i>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchFlowerFlag"
+                  class="filterBox">
+                  <el-select v-model="flower_id"
+                    clearable
+                    placeholder="筛选花型">
+                    <el-option v-for="(item,index) in flowerArr"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </transition>
             </div>
             <div class="col">
               <span class="text">名称</span>
@@ -144,13 +169,59 @@
             <div class="col">
               <span class="text">创建时间
                 <span class="iconCtn">
-                  <i class="el-icon-caret-top active"></i>
+                  <i class="el-icon-caret-top"></i>
                   <i class="el-icon-caret-bottom"></i>
                 </span>
               </span>
             </div>
             <div class="col">
-              <span class="text">状态</span>
+              <span class="text">
+                <span class="text"
+                  v-show="!searchStateFlag">状态
+                  <i class="el-icon-search iconBtn"
+                    @click="searchStateFlag=true"></i>
+                </span>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchStateFlag"
+                    class="filterBox">
+                    <el-dropdown :hide-on-click="false"
+                      trigger="click"
+                      style="cursor:pointer">
+                      <span class="el-dropdown-link">
+                        状态筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>
+                          工艺单：
+                          <el-radio-group v-model="has_craft">
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          配料单：
+                          <el-radio-group v-model="has_plan"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          报价单：
+                          <el-radio-group v-model="has_quotation"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
+                </transition>
+              </span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -180,10 +251,6 @@
               <div :class="{'stateCtn':true, 'green':item.quotation_id === 1}">
                 <div class="state"></div>
                 <span class="name">报</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':false}">
-                <div class="state"></div>
-                <span class="name">样</span>
               </div>
             </div>
             <div class="col">
@@ -916,10 +983,18 @@ export default {
         basic_profits: { price: '', prop: '' }
       },
       productList: [],
-      searchTypeFlag: false,
       searchCode: '',
       date: '',
-      treeData: [],
+      searchTypeFlag: false,
+      type: [],
+      typeArr: [],
+      searchFlowerFlag: false,
+      flower_id: '',
+      flowerArr: [],
+      searchStateFlag: false,
+      has_plan: '',
+      has_craft: '',
+      has_quotation: '',
       total: 0,
       pages: 1,
       checkedProList: [],
@@ -976,7 +1051,17 @@ export default {
       this.loading = true
       product.list({
         limit: 5,
-        page: this.pages
+        page: this.pages,
+        product_code: this.searchCode,
+        category_id: this.category_id,
+        type_id: this.type_id,
+        style_id: this.style_id,
+        flower_id: this.flower_id,
+        has_plan: this.has_plan,
+        has_craft: this.has_craft,
+        has_quotation: this.has_quotation,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -1270,6 +1355,11 @@ export default {
     resUnit (item, value) {
       console.log(item, value)
       item.unit = this.material_list.find(key => key.value === value) ? this.material_list.find(key => key.value === value).unit : '个'
+    },
+    // 筛选产品编号，用watch不太好
+    searchCodeChange (newVal) {
+      this.pages = 1
+      this.getList()
     }
   },
   created () {
@@ -1302,11 +1392,11 @@ export default {
       getToken({})
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
-      this.treeData = res[1].data.data.map((item) => {
+      this.typeArr = res[1].data.data.map((item) => {
         return {
           value: item.id,
           label: item.name,
-          child_footage: item.child_footage,
+          sizeArr: item.sizeArr,
           child_size: item.child_size,
           children: item.child.length === 0 ? null : item.child.map((item) => {
             return {
@@ -1343,6 +1433,42 @@ export default {
   mounted () {
     // let firstInput = document.getElementsByTagName('input')[0]
     // firstInput.focus()
+  },
+  watch: {
+    type: {
+      deep: true,
+      handler (newVal) {
+        this.pages = 1
+        this.category_id = newVal[0] ? newVal[0] : ''
+        this.type_id = newVal[1] ? newVal[1] : ''
+        this.style_id = newVal[2] ? newVal[2] : ''
+        this.getList()
+      }
+    },
+    date: {
+      deep: true,
+      handler (newVal) {
+        this.pages = 1
+        this.getList()
+      }
+    },
+    flower_id (newVal) {
+      console.log(newVal)
+      this.pages = 1
+      this.getList()
+    },
+    has_plan (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_craft (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_quotation (newVal) {
+      this.pages = 1
+      this.getList()
+    }
   },
   filters: {
     filterType (item) {
