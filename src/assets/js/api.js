@@ -134,7 +134,14 @@ const planList = {
 const company = {
   detail: (params) => http.get(`${baseUrl}/company/detail`, params)
 }
+const order = {
+  create: (params) => http.post(`${baseUrl}/order/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/order/delete`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/order/list`, params),
+  detail: (params) => http.get(`${baseUrl}/order/detail`, params)
+}
 export {
+  order,
   company,
   planList,
   craftConfig,

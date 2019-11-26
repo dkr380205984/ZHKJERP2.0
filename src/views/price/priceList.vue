@@ -65,7 +65,7 @@
               <span class="text">产品报价</span>
             </div>
             <div class="col right flex08">
-              <span class="text">起订数量</span>
+              <span class="text">起订数量(件)</span>
             </div>
             <div class="col flex05"></div>
             <div class="col">
@@ -110,10 +110,11 @@
             <div class="col">{{item.code}}</div>
             <div class="col flex15">{{item.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.img"
+                type='open'></zh-img-list>
             </div>
             <div class="col right flex08"><span class="price">{{item.price}}</span>元</div>
-            <div class="col right flex08">{{item.setNum ? item.setNum : 0}}件</div>
+            <div class="col right flex08">{{item.setNum ? item.setNum : 0}}</div>
             <div class="col flex05"></div>
             <div class="col">{{item.create_time}}</div>
             <div class="col">
@@ -208,11 +209,18 @@ export default {
             let img = item.file_url ? JSON.parse(item.file_url).map(vals => {
               return {
                 image_url: vals,
-                thumb: vals
+                thumb: vals,
+                id: null
               }
             }).concat(...(item.product_info.map(vals => {
+              vals.product_info.images.forEach(valImg => {
+                valImg.product_id = vals.product_info.product_id
+              })
               return vals.product_info.images
             }))) : [].concat(...(item.product_info.map(vals => {
+              vals.product_info.images.forEach(valImg => {
+                valImg.product_id = vals.product_info.product_id
+              })
               return vals.product_info.images
             })))
             return {

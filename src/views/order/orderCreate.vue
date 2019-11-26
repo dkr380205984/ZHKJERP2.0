@@ -373,7 +373,7 @@
           <div class="colCtn flex3">
             <span class="content timeCtn">
               <span class="label">交货日期</span>
-              <el-date-picker v-model="order_time"
+              <el-date-picker v-model="itemBatch.time"
                 value-format="yyyy-MM-dd"
                 type="date"
                 placeholder="请选择下单日期">
@@ -601,7 +601,7 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group } from '@/assets/js/api.js'
+import { product, client, group, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -689,6 +689,7 @@ export default {
         return
       }
       item.splice(index, 1)
+      this.computedTotalPrice()
     },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
@@ -807,6 +808,15 @@ export default {
         return
       }
       item.editStatu = false
+      this.computedTotalPrice()
+    },
+    computedTotalPrice () { // 计算总价
+      this.total_price = 0
+      this.batchDate.forEach(itemBtach => {
+        itemBtach.batch_info.filter(val => !val.editStatu).forEach(itemPro => {
+          this.total_price += (itemPro.price * itemPro.number)
+        })
+      })
     },
     saveAll () {
       let flag = true
@@ -843,7 +853,7 @@ export default {
         this.$message.error('请输入税率')
         return
       }
-      if (!this.date) {
+      if (!this.order_time) {
         this.$message.error('请选择下单日期')
         return
       }
@@ -871,7 +881,51 @@ export default {
         this.$message.error('请输入总价')
         return
       }
-      console.log('验证通过')
+      const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      let data = {
+        order_code: this.order_code.map(item => {
+          return item.code
+        }).join(';'),
+        client_id: this.client_id,
+        contacts: this.contact_id,
+        account_unit: this.unit,
+        group_id: this.group_id,
+        exchange_rate: this.exchange_rate,
+        tax_rate: this.tax_prop,
+        order_time: this.order_time,
+        order_info: this.batchDate.map((item, index) => {
+          console.log(item.batch_info.filter(items => (!items.editStatu)))
+          return {
+            batch_info: item.batch_info.filter(items => (!items.editStatu)).map(itemPro => {
+              return {
+                productCode: itemPro.product_code,
+                size: itemPro.size_color
+              }
+            }),
+            delivery_time: item.time,
+            batch_id: parseInt(index + 1)
+          }
+        }),
+        total_price: this.total_price,
+        remark: this.remark,
+        total_price_RMB: this.total_price * this.exchange_rate / 100,
+        order_contract: JSON.stringify(orderContract),
+        pack_means: JSON.stringify(packMeans),
+        store_means: JSON.stringify(storeMeans),
+        others_info: JSON.stringify(otherInfo),
+        type: 1
+      }
+      order.create(data).then(res => {
+        if (res.data.status) {
+          this.$message.success('添加成功')
+          this.$router.push('/order/orderDetail/' + res.data.data.id)
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
     },
     getContact (eve) { // 外贸公司chang时更新联系人列表
       this.contact_id = ''
