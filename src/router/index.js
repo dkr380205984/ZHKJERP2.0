@@ -111,6 +111,22 @@ const routes = [
       path: '/craft/craftDetail/:id',
       name: '工艺单详情',
       component: () => import('../views/craft/craftDetail.vue')
+    }, {
+      path: '/order/orderList/:params',
+      name: '订单列表',
+      component: () => import('../views/order/orderList.vue')
+    }, {
+      path: '/order/orderDetail/:id',
+      name: '订单详情',
+      component: () => import('../views/order/orderDetail.vue')
+    }, {
+      path: '/order/orderCreate',
+      name: '订单添加',
+      component: () => import('../views/order/orderCreate.vue')
+    }, {
+      path: '/order/orderUpdate/:id',
+      name: '订单修改',
+      component: () => import('../views/order/orderUpdate.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -146,7 +162,11 @@ router.beforeEach((to, from, next) => {
     '报价单详情': ['织为云', '报价单列表', '报价单详情'],
     '工艺单添加': ['织为云', '产品列表', '工艺单添加'],
     '工艺单修改': ['织为云', '产品列表', '工艺单修改'],
-    '工艺单详情': ['织为云', '产品列表', '工艺单详情']
+    '工艺单详情': ['织为云', '产品列表', '工艺单详情'],
+    '订单添加': ['织为云', '订单添加'],
+    '订单列表': ['织为云', '订单列表'],
+    '订单修改': ['织为云', '订单列表', '订单修改'],
+    '订单详情': ['织为云', '订单列表', '订单详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

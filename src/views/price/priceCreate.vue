@@ -1169,8 +1169,22 @@ export default {
     showProductCard (item) {
 
     },
-    beforeAvatarUpload () {
-
+    beforeAvatarUpload (file) {
+      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      let fileNameLength = file.name.length// 取到文件名长度
+      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 10
+      if (!isJPG && !isPNG) {
+        this.$message.error('图片只能是 JPG/PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 10MB!')
+        return false
+      }
     },
     checkedYarn (newVal) {
       if (this.yarnPriceList.length === 0) {

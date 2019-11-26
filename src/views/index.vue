@@ -122,14 +122,14 @@ export default {
         name: '订单管理',
         icon: require('@/assets/image/index/订单管理.png'),
         children: [{
-          name: '添加新订单',
-          url: '/index/orderCreate'
+          name: '添加订单',
+          url: '/order/orderCreate'
         }, {
           name: '订单列表',
-          url: '/index/orderList'
+          url: '/order/orderList/page=&&keyword=&&date=&&client_id=&&group_id='
         }, {
           name: '订单发货列表',
-          url: '/index/orderStat'
+          url: '/order/orderStat'
         }]
       }, {
         name: '计划生产管理',

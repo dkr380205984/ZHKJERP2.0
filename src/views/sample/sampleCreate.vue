@@ -598,24 +598,24 @@ export default {
           part_component: item.ingredient
         }
       })
-      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return { filr_url: 'https://zhihui.tlkrzf.com/' + item.response.key } })
       let formData = {
-        sample_code: this.sample_code.join(''),
-        sample_title: this.name,
+        sample_product_code: this.sample_code.join(''),
+        name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
-        type: 1,
+        // type: 1,
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        img: imgArr,
-        color: this.colour.map((item) => item.colour),
-        materials: this.ingredient,
-        size: this.size.map(item => {
+        data_image: imgArr,
+        data_color: this.colour.map((item) => { return { color_name: item.colour } }),
+        data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
+        data_size: this.size.map(item => {
           return {
             weight: item.weight,
-            measurement: item.size,
+            size_name: item.size,
             size_info: item.desc
           }
         }),
