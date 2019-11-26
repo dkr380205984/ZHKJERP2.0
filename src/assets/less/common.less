@@ -45,23 +45,23 @@
         margin-left: 12px;
       }
     }
+    .titleNum{
+      position: absolute;
+      top: 0;
+      left: 32px;
+      transform: translateY(-50%);
+      background: #FFF;
+      color: @blue;
+      line-height: 1em;
+      font-size: @fontMiddle;
+      font-weight: bold;
+    }
     // 添加/修改页面公共样式
     .editCtn{
       padding: 20px 0;
       position: relative;
       &.hasBorderTop{        
         border-top: 1px solid #E9E9E9;
-      }
-      .titleNum{
-        position: absolute;
-        top: 0;
-        left: 32px;
-        transform: translateY(-50%);
-        background: #FFF;
-        color: @blue;
-        line-height: 1em;
-        font-size: @fontMiddle;
-        font-weight: bold;
       }
       .deleteIcon{
         position: absolute;
@@ -145,6 +145,7 @@
     .detailCtn{
       padding: 20px 0;
       border-top: 1px solid #E9E9E9;
+      position: relative;
       .rowCtn{
         padding: 0 32px;
         margin: 18px 0;
@@ -593,9 +594,11 @@
       border-radius: 4px;
     }
   }
+  // 简单表格
   .normalTb{
     display: block;
     margin: 0 32px;
+    font-size: @fontMiddle;
     .thead {
       background: #FAFAFA;
       height: 54px;
@@ -627,11 +630,26 @@
       flex-direction: column;
       overflow: hidden;
     }
+    .addRow{
+      line-height: 30px;
+      border: 1px dashed #D9D9D9;
+      text-align: center;
+      margin-top: 12px;
+      color: @font65;
+      font-size: @fontMiddle;
+      cursor: pointer;
+      &:hover{
+        color: @blue;
+        border-color: @blue;
+      }
+    }
   }
+  // 复杂表格
   .flexTb {
     display: block;
     margin: 0 32px;
-    border: 1px solid #E9E9E9;
+    border:1px solid transparent;
+    border-bottom-color:#E9E9E9;
     .thead {
       background: #FAFAFA;
       height: 54px;
@@ -662,6 +680,9 @@
       border-right: 1px solid #E9E9E9;
       justify-content: center;
       text-align: center;
+      &:nth-first-child(1) {
+        border-left: 0;
+      }
       &:nth-last-child(1) {
         border-right: 0;
       }
@@ -674,6 +695,7 @@
       }
     }
   }
+  // 弹出框
   .popup{
     z-index: 999;
     position: fixed;

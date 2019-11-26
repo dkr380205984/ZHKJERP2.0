@@ -90,6 +90,10 @@
             <div class="content">
               <el-select v-model="item.value"
                 class="element">
+                <el-option v-for="item in colourArr"
+                  :key="item.id"
+                  :label="item.color_name"
+                  :value="item.color_name"></el-option>
               </el-select>
               <div class="editBtn"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
@@ -1102,6 +1106,7 @@ export default {
         }]
       },
       colorArr: [],
+      colourArr: [],
       colour: [{
         value: '',
         colorWeft: [],
@@ -1725,6 +1730,26 @@ export default {
     }
   },
   methods: {
+    afterSave (data) {
+      this.msgFlag = data.msgFlag
+    },
+    sendMsg () {
+      // let data = JSON.parse(window.localStorage.getItem(this.localName))
+      // let formData = {
+      //   title: data.title,
+      //   type: data.type,
+      //   tag: '工序',
+      //   content: this.content,
+      //   router_url: this.msgUrl,
+      //   receive_user: data.receive_user
+      // }
+      // notifySave(formData).then((res) => {
+      //   if (res.data.status) {
+      //     this.$message.success('添加成功')
+      //     this.$router.push(this.msgUrl)
+      //   }
+      // })
+    },
     // 匹配主/夹名称
     filterMethods (index) {
       if (index === 0) {
@@ -2415,7 +2440,7 @@ export default {
           material_data: [{
             material_name: this.yarn.yarnWarp,
             type_material: 1,
-            apply: this.colorLength.filter((item) => {
+            apply: this.warpJia.filter((item) => {
               return !(this.yarn.yarnOtherWarp.find((itemFind) => {
                 return itemFind.array.find((itemArr) => {
                   return itemArr === item.value
@@ -2443,7 +2468,7 @@ export default {
           warp_rank: this.$refs.warp.hotInstance.getData().map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.colorLength.find((itemFind) => itemFind.label === itemJia).value
+                return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
               return item
@@ -2454,7 +2479,7 @@ export default {
           warp_rank_back: this.$refs.warpBack.hotInstance.getData().map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.colorLength.find((itemFind) => itemFind.label === itemJia) ? this.colorLength.find((itemFind) => itemFind.label === itemJia).value : ''
+                return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
               return item
@@ -2495,7 +2520,7 @@ export default {
           material_data: [{
             material_name: this.yarn.yarnWeft,
             type_material: 1,
-            apply: this.colorLength.filter((item) => {
+            apply: this.weftJia.filter((item) => {
               return !(this.yarn.yarnOtherWeft.find((itemFind) => {
                 return itemFind.array.find((itemArr) => {
                   return itemArr === item.value
@@ -2523,7 +2548,7 @@ export default {
           weft_rank: this.$refs.weft.hotInstance.getData().map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.colorLength.find((itemFind) => itemFind.label === itemJia).value
+                return this.weftJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
               return item
@@ -2534,7 +2559,7 @@ export default {
           weft_rank_back: this.$refs.weftBack.hotInstance.getData().map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.colorLength.find((itemFind) => itemFind.label === itemJia) ? this.colorLength.find((itemFind) => itemFind.label === itemJia).value : ''
+                return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
               return item
@@ -2588,12 +2613,12 @@ export default {
       craft.create(formData).then((res) => {
         if (res.data.code === 200) {
           if (this.msgFlag) {
-            this.msgUrl = '/index/designFormDetail/' + res.data.data.id
+            this.msgUrl = '/craft/craftDetail/' + res.data.data.id
             this.content = '<span style="color:#1A95FF">添加</span>了一张新工艺单<span style="color:#1A95FF">' + res.data.data.craft_code + '</span>'
             this.sendMsg()
           } else {
             this.$message.success('添加成功')
-            this.$router.push('/index/designFormDetail/' + res.data.data.id)
+            this.$router.push('/craft/craftDetail/' + res.data.data.id)
           }
         } else {
           this.$message.error({
@@ -2612,13 +2637,13 @@ export default {
     material.list(),
     penetrationMethod.list()
     ]).then((res) => {
-      console.log(res)
       this.productInfo = res[0].data.data
       this.yarn.yarnArr = res[1].data.data.map((item) => {
         return {
           value: item.name
         }
       })
+      this.colourArr = this.productInfo.color
       this.sideArr = res[2].data.data.side
       this.modeleArr = res[2].data.data.type
       this.methodArr = res[2].data.data.method
