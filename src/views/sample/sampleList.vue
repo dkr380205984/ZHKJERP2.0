@@ -314,7 +314,7 @@ export default {
         has_plan: this.has_plan,
         has_craft: this.has_craft,
         has_quotation: this.has_quotation,
-        type: 2,
+        // type: 2,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then((res) => {

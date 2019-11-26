@@ -284,7 +284,7 @@
         <div class="rowCtn"
           v-for="item in checkedProList"
           :key="item.id">
-          <div class="colCtn flex3">
+          <div class="colCtn flex3 more_btn">
             <span class="content">
               <el-select v-model="item.id"
                 disabled
@@ -295,13 +295,13 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <div class="editBtn deleteBtn"
-                @click="cancleChecked(item)">删除
-                <!-- <zh-card :data="setCardData(item)"> -->
-                <!-- <span @click="showProductCard(item)"
-                  class="blue">预览</span> -->
-                <!-- </zh-card> -->
-                <!-- <span class="red"></span> -->
+              <div class="editBtn">
+                <zh-card-position :data="setCardData(item)">
+                  <span @click="showProductCard(item)"
+                    class="blue">预览</span>
+                </zh-card-position>
+                <span class="red"
+                  @click="cancleChecked(item)">删除</span>
               </div>
             </span>
           </div>
@@ -309,7 +309,7 @@
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
-                placeholder="请选择产品">
+                placeholder="请选择尺码颜色">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -1250,7 +1250,7 @@ export default {
     setCardData (item) {
       return {
         product_code: item.product_code,
-        img: item.img.map(val => val.image_url),
+        img: item.img.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
         type_name: item.type_name,
         style_name: item.style_name,

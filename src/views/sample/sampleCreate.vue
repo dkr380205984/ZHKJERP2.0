@@ -582,20 +582,20 @@ export default {
       }
       let partData = this.fittingInfo.map((item) => {
         return {
-          part_title: item.fitting_name,
-          part_category: '',
-          part_color: this.colour.map((item) => {
-            return { color_name: item.colour }
-          }),
-          part_size: item.size.map((itemSize) => {
+          name: item.fitting_name,
+          // part_category: '',
+          // part_color: this.colour.map((item) => {
+          //   return { color_name: item.colour }
+          // }),
+          data_size: item.size.map((itemSize) => {
             return {
               weight: itemSize.weight,
-              measurement: itemSize.size,
+              size_name: itemSize.size,
               size_info: itemSize.desc,
               number: itemSize.number
             }
           }),
-          part_component: item.ingredient
+          data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
       let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return { filr_url: 'https://zhihui.tlkrzf.com/' + item.response.key } })

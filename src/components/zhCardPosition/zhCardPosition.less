@@ -1,0 +1,43 @@
+
+@keyframes aniin {
+  0% {
+    display: block;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+// @keyframes aniout {
+//   0% {
+//     display: block;
+//     opacity: 1;
+//   }
+//   99% {
+//     display: block;
+//     opacity: 0;
+//   }
+//   100% {
+//     display: none;
+//   }
+// }
+.zh_card_position{
+  position: relative;
+  width: auto;
+  height: auto;
+  display: inline-block;
+  &:hover .zh_card_position__item{
+    display: block;
+    animation: aniin 0.3s linear;
+  }
+  .zh_card_position__item{
+    position: absolute;
+    // bottom: 0;
+    // left: 0;
+    transform: translateY(-2em);
+    display: none;
+    z-index: 99;  
+    // animation: aniout 0.3s linear;
+    // animation-fill-mode: forwards;
+  }
+}
