@@ -14,9 +14,9 @@ const pantongList = (params) => http.get(`${baseUrl}/pan/color/list`, params)
 // 样品管理
 const sample = {
   create: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
-  update: (params) => http.post(`${baseUrl}/product/save`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/product/one`, params),
-  list: (params) => http.get(`${baseUrl}/product/list`, params)
+  update: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/sample/product/detail`, params),
+  list: (params) => http.get(`${baseUrl}/sample/product/list`, params)
 }
 // 产品管理
 const product = {

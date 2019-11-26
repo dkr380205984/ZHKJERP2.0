@@ -71,6 +71,9 @@ export default {
     filterType (item) {
       return [item.category_name, item.type_name, item.style_name].join('/')
     }
+  },
+  created () {
+    console.log(this.data)
   }
 }
 </script>

@@ -685,7 +685,7 @@ export default {
     },
     deleteItem (item, index) {
       if (item.length === 1) {
-        this.$message.warning('至少保留一项')
+        this.$message.warning('至少存在一项')
         return
       }
       item.splice(index, 1)
