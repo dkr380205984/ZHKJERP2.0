@@ -80,6 +80,7 @@ const penetrationMethod = {
 // 工艺单
 const craft = {
   create: (params) => http.post(`${baseUrl}/product/craft/save`, params, 'application/json'),
+  update: (params) => http.post(`${baseUrl}/product/craft/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/product/craft/draft/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/craft/one`, params),
   getByProduct: (params) => http.get(`${baseUrl}/craft/product/one`, params),

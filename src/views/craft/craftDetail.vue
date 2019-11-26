@@ -1016,11 +1016,13 @@ export default {
       while (col < length) {
         if (mergeArr[mergeIndex]) {
           if (col < mergeArr[mergeIndex].col) {
-            saveMerge.push({
-              col: col,
-              colspan: mergeArr[mergeIndex].col - col,
-              row: row
-            })
+            for (let i = 0; i < mergeArr[mergeIndex].col - col; i++) {
+              saveMerge.push({
+                col: i + col,
+                colspan: 1,
+                row: row
+              })
+            }
             col = mergeArr[mergeIndex].col
           } else {
             saveMerge.push({
