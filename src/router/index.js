@@ -139,6 +139,22 @@ const routes = [
       path: '/productPlan/productPlanDetail/:id',
       name: '配料单详情',
       component: () => import('../views/productPlan/productPlanDetail.vue')
+    }, {
+      path: '/materialPlan/materialPlanCreate/:id',
+      name: '物料计划单添加',
+      component: () => import('../views/materialPlan/materialPlanCreate.vue')
+    }, {
+      path: '/materialPlan/materialPlanUpdate/:id',
+      name: '物料计划单修改',
+      component: () => import('../views/materialPlan/materialPlanUpdate.vue')
+    }, {
+      path: '/materialPlan/materialPlanDetail/:id',
+      name: '物料计划单详情',
+      component: () => import('../views/materialPlan/materialPlanDetail.vue')
+    }, {
+      path: '/materialPlan/materialPlanList',
+      name: '物料计划单列表',
+      component: () => import('../views/materialPlan/materialPlanList.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -181,7 +197,11 @@ router.beforeEach((to, from, next) => {
     '订单详情': ['织为云', '订单列表', '订单详情'],
     '配料单添加': ['织为云', '产品列表', '配料单添加'],
     '配料单修改': ['织为云', '产品列表', '配料单修改'],
-    '配料单详情': ['织为云', '产品列表', '配料单详情']
+    '配料单详情': ['织为云', '产品列表', '配料单详情'],
+    '物料计划单添加': ['织为云', '物料计划单列表', '物料计划单添加'],
+    '物料计划单列表': ['织为云', '物料计划单列表'],
+    '物料计划单修改': ['织为云', '物料计划单列表', '物料计划单修改'],
+    '物料计划单详情': ['织为云', '物料计划单列表', '物料计划单详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
