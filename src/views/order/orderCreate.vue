@@ -397,7 +397,7 @@
                 <el-select v-model="itemPro.id"
                   class="editInput"
                   placeholder="请选择产品"
-                  @change="selectPro(itemPro,$event)">
+                  @change="selectPro($event,itemBatch.batch_info,indexPro)">
                   <el-option v-for="item in checkedProList"
                     :key="item.id"
                     :label="item.product_code"
@@ -413,7 +413,8 @@
                     <el-cascader v-model="itemSize.size_color"
                       class="editInput"
                       placeholder="请选择尺码颜色"
-                      :options="itemPro.sizeColor"></el-cascader>
+                      :options="itemPro.sizeColor"
+                      @change="selectSize($event,itemPro.product_info,indexSize)"></el-cascader>
                   </span>
                   <span class="tb_row">
                     <zh-input placeholder="请输入单价"
@@ -791,44 +792,35 @@ export default {
         cancleProFlag.checked = false
       }
     },
-    selectPro (item, event) {
-      let selectFlag = this.checkedProList.find(val => val.id === item.id)
+    selectPro (event, item, index) {
+      let itemPro = item[index]
+      if (item.filter(itemBatch => itemBatch.id === event).length > 1) {
+        this.$message.warning('检测到同批次中已选中该产品，不可重复选择')
+        itemPro.id = ''
+        return
+      }
+      let selectFlag = this.checkedProList.find(val => val.id === event)
       if (selectFlag) {
-        item.product_info = []
-        console.log(selectFlag)
+        itemPro.product_info = []
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
-            item.product_info.push({
+            itemPro.product_info.push({
               size_color: [itemSize.measurement, itemColor.color_name],
               price: '',
               number: ''
             })
           })
         })
-        item.sizeColor = selectFlag.sizeColor
-        item.unit = selectFlag.category_info.name || '个'
+        itemPro.sizeColor = selectFlag.sizeColor
+        itemPro.unit = selectFlag.category_info.name || '个'
       }
     },
-    // verifyData (item) {
-    //   if (!item.id) {
-    //     this.$message.error('检测到未选择产品，请选择')
-    //     return
-    //   }
-    //   if (item.size_color.length < 2) {
-    //     this.$message.error('检测到未选择尺码颜色，请选择')
-    //     return
-    //   }
-    //   if (!item.price) {
-    //     this.$message.error('检测到未填写价格，请输入')
-    //     return
-    //   }
-    //   if (!item.number) {
-    //     this.$message.error('检测到未填写数量，请输入')
-    //     return
-    //   }
-    //   item.editStatu = false
-    //   this.computedTotalPrice()
-    // },
+    selectSize (event, item, index) {
+      if (item.filter(itemSize => (itemSize.size_color[0] === event[0] && itemSize.size_color[1] === event[1])).length > 1) {
+        this.$message.warning('检测到该批次中该产品已选中该尺码颜色，不可重复选择')
+        item[index].size_color = ''
+      }
+    },
     computedTotalPrice () { // 计算总价
       this.total_price = 0
       this.batchDate.forEach(itemBtach => {
