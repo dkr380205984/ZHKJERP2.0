@@ -132,14 +132,14 @@ export default {
           url: '/order/orderStat'
         }]
       }, {
-        name: '计划生产管理',
+        name: '物料计划生产管理',
         icon: require('@/assets/image/index/计划生产管理.png'),
         children: [{
-          name: '新建生产计划单',
-          url: '/index/productDesignCreateList'
+          name: '新建物料计划单',
+          url: '/material/materialPlanCreate'
         }, {
-          name: '生产计划单列表',
-          url: '/index/productDesignList'
+          name: '物料计划单列表',
+          url: '/material/materialPlanList'
         }]
       }, {
         name: '物料管理',

@@ -151,13 +151,13 @@
           <div class="row"
             v-for="(item,index) in list"
             :key="index">
-            <div class="col">{{item.product_code}}</div>
+            <div class="col">{{item.sample_product_code}}</div>
             <div class="col"
-              style="flex:1.5">{{item.category_info.product_category + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
-            <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title?item.sample_title:'无'}}</div>
+              style="flex:1.5">{{item.category_name + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
+            <div class="col">{{item.flower_name}}</div>
+            <div class="col">{{item.name?item.name:'无'}}</div>
             <div class="col">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.image"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>

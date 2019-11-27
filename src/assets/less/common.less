@@ -773,4 +773,88 @@
       }
     }
   }
+  //复杂表格2  
+  .tableCtnLv2{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    font-size: @fontMiddle;
+    .tb_header,
+    .tb_content{
+      display: flex;
+      padding: 0 22px;
+      min-height: 54px;
+      height: auto;
+      line-height: 54px;
+      align-items: center;
+      color: @font65;
+      .tb_col,
+      .tb_row{
+        flex: 1;
+        display: flex;
+        &.middle{
+          justify-content: center;
+        }
+        &.right{
+          justify-content: flex-end;
+        }
+        .editInput{
+          max-width: 200px;
+          height: 32px;
+        }   
+      }
+      .tb_row{   
+        align-items: center;   
+        &.tb_row_handle_btn{
+          border: 1px dashed #D9D9D9;
+          box-sizing: border-box;
+          border-radius: 4px;
+          cursor: pointer;
+          height: 32px;
+          line-height: 32px;
+          justify-content: center;
+          &:hover{
+            color: @blue;
+            border-color: @blue;
+          }
+        }
+        .tb_handle_btn{
+          padding:  0 8px;
+          height: 1em;
+          line-height: 1em;
+          cursor: pointer;
+          &:nth-of-type(n+2){
+            border-left: 1px solid #eee;
+          }
+          &.blue{
+            color: @blue;
+          }
+          &.red{
+            color: @red;
+          }
+        }
+      }     
+      .tb_col{
+        flex-direction: column;
+        .tb_col_item{
+          width: 100%;
+          flex: 1;
+          min-height: 54px;
+          border-bottom: 1px solid #e8e8e8;
+          display: flex;
+          &:last-of-type{
+            border-bottom: none;
+          }
+        }
+      }
+    }
+    .tb_header{
+      color: @font85;
+      background-color: #FAFAFA;
+    }
+    .tb_content{
+      border-top: 1px solid #E8E8E8;
+    }
+  }
 }

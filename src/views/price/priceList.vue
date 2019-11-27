@@ -210,18 +210,26 @@ export default {
               return {
                 image_url: vals,
                 thumb: vals,
-                id: null
+                product_id: null
               }
             }).concat(...(item.product_info.map(vals => {
               vals.product_info.images.forEach(valImg => {
                 valImg.product_id = vals.product_info.product_id
               })
-              return vals.product_info.images
+              return vals.product_info.images.length === 0 ? {
+                image_url: '',
+                thumb: '',
+                product_id: vals.product_info.product_id
+              } : vals.product_info.images
             }))) : [].concat(...(item.product_info.map(vals => {
               vals.product_info.images.forEach(valImg => {
                 valImg.product_id = vals.product_info.product_id
               })
-              return vals.product_info.images
+              return vals.product_info.images.length === 0 ? {
+                image_url: '',
+                thumb: '',
+                product_id: vals.product_info.product_id
+              } : vals.product_info.images
             })))
             return {
               code: item.quotation_code,

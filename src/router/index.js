@@ -139,6 +139,18 @@ const routes = [
       path: '/productPlan/productPlanDetail/:id',
       name: '配料单详情',
       component: () => import('../views/productPlan/productPlanDetail.vue')
+    }, {
+      path: '/material/materialPlanCreate',
+      name: '新建物料计划单',
+      component: () => import('../views/material/materialPlanCreate.vue')
+    }, {
+      path: '/material/materialPlanDetail/:id',
+      name: '物料计划单详情',
+      component: () => import('../views/material/materialPlanDetail.vue')
+    }, {
+      path: '/material/materialPlanList',
+      name: '物料计划单列表',
+      component: () => import('../views/material/materialPlanList.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -181,7 +193,10 @@ router.beforeEach((to, from, next) => {
     '订单详情': ['织为云', '订单列表', '订单详情'],
     '配料单添加': ['织为云', '产品列表', '配料单添加'],
     '配料单修改': ['织为云', '产品列表', '配料单修改'],
-    '配料单详情': ['织为云', '产品列表', '配料单详情']
+    '配料单详情': ['织为云', '产品列表', '配料单详情'],
+    '新建物料计划单': ['织为云', '新建物料计划'],
+    '物料计划单列表': ['织为云', '物料计划单列表'],
+    '物料计划单详情': ['织为云', '物料计划列表', '物料计划单详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

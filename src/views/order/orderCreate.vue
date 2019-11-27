@@ -298,7 +298,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.sample_title}}</div>
             <div class="col">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.images"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -382,69 +382,65 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="editBatchCtn">
-            <div class="header">
-              <span>产品</span>
-              <span>尺码颜色</span>
-              <span>单价</span>
-              <span>数量</span>
-              <span class="middle">操作</span>
+          <div class="tableCtnLv2">
+            <div class="tb_header">
+              <span class="tb_row">产品</span>
+              <span class="tb_row">尺码颜色</span>
+              <span class="tb_row">单价</span>
+              <span class="tb_row">数量</span>
+              <span class="tb_row middle">操作</span>
             </div>
-            <div class="batch_info"
+            <div class="tb_content"
               v-for="(itemPro,indexPro) in itemBatch.batch_info"
               :key="indexPro">
-              <template v-if="!itemPro.editStatu">
-                <span>{{itemPro.product_code}}</span>
-                <span>{{itemPro.size_color ? itemPro.size_color.join('/') : '/'}}</span>
-                <span>{{itemPro.price}}元/{{itemPro.unit}}</span>
-                <span>{{itemPro.number}}{{itemPro.unit}}</span>
-              </template>
-              <template v-else>
-                <span>
-                  <el-select v-model="itemPro.id"
-                    class="editInput"
-                    placeholder="请选择产品"
-                    @change="selectPro(itemPro,$event)">
-                    <el-option v-for="item in checkedProList"
-                      :key="item.id"
-                      :label="item.product_code"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
+              <span class="tb_row">
+                <el-select v-model="itemPro.id"
+                  class="editInput"
+                  placeholder="请选择产品"
+                  @change="selectPro(itemPro,$event)">
+                  <el-option v-for="item in checkedProList"
+                    :key="item.id"
+                    :label="item.product_code"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </span>
+              <span class="flex40 tb_row tb_col">
+                <span class="tb_col_item"
+                  v-for="(itemSize,indexSize) in itemPro.product_info"
+                  :key="indexSize">
+                  <span class="tb_row">
+                    <el-cascader v-model="itemSize.size_color"
+                      class="editInput"
+                      placeholder="请选择尺码颜色"
+                      :options="itemPro.sizeColor"></el-cascader>
+                  </span>
+                  <span class="tb_row">
+                    <zh-input placeholder="请输入单价"
+                      class="editInput"
+                      v-model="itemSize.price"
+                      type='number'
+                      @input="computedTotalPrice"></zh-input>
+                  </span>
+                  <span class="tb_row">
+                    <zh-input placeholder="请输入数量"
+                      class="editInput"
+                      v-model="itemSize.number"
+                      type='number'
+                      @input="computedTotalPrice"></zh-input>
+                  </span>
+                  <span class="tb_row middle"
+                    style="user-select: none;">
+                    <span class="tb_handle_btn blue"
+                      @click="addItem(itemPro.product_info,'sizeColor')">添加色组</span>
+                    <span class="tb_handle_btn red"
+                      @click="deleteItem(itemPro.product_info,indexSize)">删除</span>
+                  </span>
                 </span>
-                <span>
-                  <el-cascader v-model="itemPro.size_color"
-                    class="editInput"
-                    placeholder="请选择尺码颜色"
-                    :options="itemPro.sizeColor"></el-cascader>
-                </span>
-                <span>
-                  <zh-input placeholder="请输入单价"
-                    class="editInput"
-                    v-model="itemPro.price"
-                    type='number'></zh-input>
-                </span>
-                <span>
-                  <zh-input placeholder="请输入数量"
-                    class="editInput"
-                    v-model="itemPro.number"
-                    type='number'></zh-input>
-                </span>
-              </template>
-              <span class="middle"
-                style="user-select: none;">
-                <span class="edit_btn blue"
-                  v-show="!itemPro.editStatu"
-                  @click="itemPro.editStatu = true">编辑</span>
-                <span class="edit_btn blue"
-                  v-show="itemPro.editStatu"
-                  @click="verifyData(itemPro)">完成</span>
-                <span class="edit_btn red"
-                  @click="deleteItem(itemBatch.batch_info,indexPro)">删除</span>
               </span>
             </div>
-            <div class="batch_info">
-              <span class="edit_add_btn"
+            <div class="tb_content">
+              <span class="tb_row tb_row_handle_btn"
                 @click="addItem(itemBatch.batch_info,'batch_pro')">+新增产品</span>
             </div>
           </div>
@@ -469,6 +465,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="taxt">总价</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <zh-input placeholder="请输入总价"
@@ -601,7 +598,7 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order } from '@/assets/js/api.js'
+import { product, client, group, order, getToken } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -613,11 +610,11 @@ export default {
       contactArr: [],
       group_id: '',
       groupArr: [],
-      unit: '',
+      unit: '元',
       unitArr: moneyArr,
-      exchange_rate: '',
-      tax_prop: '',
-      order_time: '',
+      exchange_rate: 100,
+      tax_prop: 12,
+      order_time: this.$getTime(),
       searchCode: '',
       date: '',
       searchTypeFlag: false,
@@ -639,13 +636,15 @@ export default {
         {
           time: '',
           batch_info: [{
-            product_code: '',
             id: '',
-            size_color: '',
-            price: '',
-            number: '',
             unit: '个',
-            editStatu: true
+            product_info: [
+              {
+                size_color: '',
+                price: '',
+                number: ''
+              }
+            ]
           }]
         }
       ],
@@ -662,24 +661,34 @@ export default {
         item.push({
           time: '',
           batch_info: [{
-            product_code: '',
             id: '',
-            size_color: '',
-            price: '',
-            number: '',
             unit: '个',
-            editStatu: true
+            product_info: [
+              {
+                size_color: '',
+                price: '',
+                number: ''
+              }
+            ]
           }]
         })
       } else if (type === 'batch_pro') {
         item.push({
-          product_code: '',
           id: '',
+          unit: '个',
+          product_info: [
+            {
+              size_color: '',
+              price: '',
+              number: ''
+            }
+          ]
+        })
+      } else if (type === 'sizeColor') {
+        item.push({
           size_color: '',
           price: '',
-          number: '',
-          unit: '个',
-          editStatu: true
+          number: ''
         })
       }
     },
@@ -785,36 +794,50 @@ export default {
     selectPro (item, event) {
       let selectFlag = this.checkedProList.find(val => val.id === item.id)
       if (selectFlag) {
-        item.product_code = selectFlag.product_code
+        item.product_info = []
+        console.log(selectFlag)
+        selectFlag.size.forEach(itemSize => {
+          selectFlag.color.forEach(itemColor => {
+            item.product_info.push({
+              size_color: [itemSize.measurement, itemColor.color_name],
+              price: '',
+              number: ''
+            })
+          })
+        })
         item.sizeColor = selectFlag.sizeColor
         item.unit = selectFlag.category_info.name || '个'
       }
     },
-    verifyData (item) {
-      if (!item.id) {
-        this.$message.error('检测到未选择产品，请选择')
-        return
-      }
-      if (item.size_color.length < 2) {
-        this.$message.error('检测到未选择尺码颜色，请选择')
-        return
-      }
-      if (!item.price) {
-        this.$message.error('检测到未填写价格，请输入')
-        return
-      }
-      if (!item.number) {
-        this.$message.error('检测到未填写数量，请输入')
-        return
-      }
-      item.editStatu = false
-      this.computedTotalPrice()
-    },
+    // verifyData (item) {
+    //   if (!item.id) {
+    //     this.$message.error('检测到未选择产品，请选择')
+    //     return
+    //   }
+    //   if (item.size_color.length < 2) {
+    //     this.$message.error('检测到未选择尺码颜色，请选择')
+    //     return
+    //   }
+    //   if (!item.price) {
+    //     this.$message.error('检测到未填写价格，请输入')
+    //     return
+    //   }
+    //   if (!item.number) {
+    //     this.$message.error('检测到未填写数量，请输入')
+    //     return
+    //   }
+    //   item.editStatu = false
+    //   this.computedTotalPrice()
+    // },
     computedTotalPrice () { // 计算总价
       this.total_price = 0
       this.batchDate.forEach(itemBtach => {
-        itemBtach.batch_info.filter(val => !val.editStatu).forEach(itemPro => {
-          this.total_price += (itemPro.price * itemPro.number)
+        itemBtach.batch_info.forEach(itemPro => {
+          itemPro.product_info.forEach(itemSize => {
+            if (itemSize.price && itemSize.number) {
+              this.total_price += (itemSize.price * itemSize.number)
+            }
+          })
         })
       })
     },
@@ -857,24 +880,28 @@ export default {
         this.$message.error('请选择下单日期')
         return
       }
-      let proFlag = true // 是否选择了产品的flag
+      let timeFlag = true // 是否选择了交货时间的flag
       this.batchDate.forEach(item => {
         if (!item.time) {
-          flag = false
+          timeFlag = false
         }
-        if (item.batch_info.filter(val => !val.editStatu).length < 0) {
-          proFlag = false
-        }
-        if (item.batch_info.filter(val => val.editStatu).length > 0) {
-          proFlag = false
-        }
+        item.batch_info.forEach(itemBtach => {
+          if (!itemBtach.id) {
+            flag = false
+          }
+          itemBtach.product_info.forEach(itemPro => {
+            if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+              flag = false
+            }
+          })
+        })
       })
-      if (!flag) {
+      if (!timeFlag) {
         this.$message.error('请选择交货日期')
         return
       }
-      if (!proFlag) {
-        this.$message.error('检测到有还未编辑完成的批次信息，请在填写完成后点击完成按钮')
+      if (!flag) {
+        this.$message.error('检测到批次信息内有还未填写项，请检查批次内是否填写完成')
         return
       }
       if (!this.total_price) {
@@ -897,12 +924,18 @@ export default {
         tax_rate: this.tax_prop,
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {
-          console.log(item.batch_info.filter(items => (!items.editStatu)))
           return {
-            batch_info: item.batch_info.filter(items => (!items.editStatu)).map(itemPro => {
+            batch_info: item.batch_info.map(itemPro => {
               return {
-                productCode: itemPro.product_code,
-                size: itemPro.size_color
+                product_id: itemPro.id,
+                product_info: itemPro.product_info.map(itemSize => {
+                  return {
+                    size_name: itemSize.size_color[0],
+                    color_name: itemSize.size_color[1],
+                    numbers: itemSize.number,
+                    unit_price: itemSize.price
+                  }
+                })
               }
             }),
             delivery_time: item.time,
@@ -915,8 +948,7 @@ export default {
         order_contract: JSON.stringify(orderContract),
         pack_means: JSON.stringify(packMeans),
         store_means: JSON.stringify(storeMeans),
-        others_info: JSON.stringify(otherInfo),
-        type: 1
+        others_info: JSON.stringify(otherInfo)
       }
       order.create(data).then(res => {
         if (res.data.status) {
@@ -939,10 +971,12 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list()
+      group.list(),
+      getToken()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
+      this.postData.token = res[2].data.data
     })
   },
   filters: {
