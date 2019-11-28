@@ -132,10 +132,12 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'
-                      class="updated">修改</el-dropdown-item>
-                    <el-dropdown-item command='delete'
-                      class="delete">删除</el-dropdown-item>
+                    <el-dropdown-item command='change'>
+                      <span class="updated">修改</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item command='delete'>
+                      <span class="delete">删除</span>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>

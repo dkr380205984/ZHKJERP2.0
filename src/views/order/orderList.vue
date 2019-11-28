@@ -106,10 +106,12 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'
-                      class="updated">修改</el-dropdown-item>
-                    <el-dropdown-item command='delete'
-                      class="delete">删除</el-dropdown-item>
+                    <el-dropdown-item command='change'>
+                      <span class="updated">修改</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item command='delete'>
+                      <span class="delete">删除</span>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
@@ -152,14 +154,10 @@ export default {
       }).then(res => {
         this.list = res.data.data.map(item => {
           let img = []
-          let number = 0
-          for (let prop in item.order_batch) {
-            let val = item.order_batch[prop]
-            val.forEach(valBatch => {
-              number += Number(valBatch.numbers)
-              img.push(...valBatch.category_info.images)
-            })
-          }
+          console.log(this.$flatten(item.product_info))
+          let number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+            return Number(total) + Number(itemNum)
+          })
           return {
             id: item.id,
             order_code: item.order_code,

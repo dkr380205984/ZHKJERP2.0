@@ -116,10 +116,18 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item class="updated">更新</el-dropdown-item>
-                    <el-dropdown-item class="delete">删除</el-dropdown-item>
-                    <el-dropdown-item class="create">添加</el-dropdown-item>
-                    <el-dropdown-item class="detail">查看</el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="updated">更新</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="delete">删除</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="create">添加</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <span class="detail">查看</span>
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
               </span>
