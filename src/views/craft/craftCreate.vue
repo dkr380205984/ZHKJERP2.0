@@ -33,7 +33,7 @@
           <div class="colCtn">
             <span class="label">产品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.sample_title}">{{productInfo.sample_title?productInfo.sample_title:'无'}}</span>
+              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
           </div>
           <div class="colCtn">
             <span class="label">产品品类：</span>
@@ -43,7 +43,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">产品成分：</span>
-            <span class="text">{{productInfo.materials|filterMaterials}}</span>
+            <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
           <div class="colCtn">
             <span class="label">产品配色：</span>
@@ -1063,11 +1063,11 @@ export default {
           name: ''
         },
         color: [],
-        materials: [],
+        component: [],
         create_time: '',
         user_name: '',
         size: [],
-        sample_title: ''
+        name: ''
       },
       methodArr: [],
       method: '',
@@ -1671,9 +1671,9 @@ export default {
   filters: {
     filterMaterials (arr) {
       let str = ''
-      if (arr[0] && arr[0].ingredient_name) {
+      if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.ingredient_name + item.ingredient_value + '%' + ' / '
+          str += item.component_name + item.number + '%' + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {

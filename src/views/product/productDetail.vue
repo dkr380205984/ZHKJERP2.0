@@ -21,7 +21,7 @@
                 </div>
                 <div class="items">
                   <span class="labels">成分:</span>
-                  <div class="contents">{{detail.materials|filterMaterials}}</div>
+                  <div class="contents">{{detail.component|filterMaterials}}</div>
                 </div>
                 <div class="items">
                   <span class="labels">规格:</span>
@@ -84,7 +84,7 @@
           <div class="colCtn">
             <span class="label">产品图片：</span>
             <div class="imgCtn">
-              <img v-for="(item,index) in detail.img"
+              <img v-for="(item,index) in detail.image"
                 :key="index"
                 :src="item.image_url" />
             </div>
@@ -115,7 +115,7 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">产品成分：</span>
-            <span class="text">{{detail.materials|filterMaterials}}</span>
+            <span class="text">{{detail.component|filterMaterials}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -150,58 +150,58 @@
               <div class="rect">
                 <div class="main">
                   <div class="icon"
-                    :class="{'yellow':detail.has_craft===1,'gray':detail.has_craft===0}">
+                    :class="{'yellow':detail.craft_info,'gray':!detail.craft_info}">
                     <img src="../../assets/image/sample/craft_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="detail.has_craft===0">待添加</div>
+                      v-if="!detail.has_craft">待添加</div>
                     <div class="text"
-                      v-if="detail.has_craft===1">{{detail.craft_info.user_name}}</div>
+                      v-if="detail.has_craft">{{detail.craft_info.user_name}}</div>
                     <div class="text"
-                      v-if="detail.has_craft===1">{{detail.craft_info.create_time.slice(0,10)}}</div>
+                      v-if="detail.has_craft">{{detail.craft_info.updated_at.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="detail.has_craft===0"
+                  <span v-if="!detail.has_craft"
                     class="opration">添加</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.has_craft"
                     class="opration">预览</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.has_craft"
                     class="opration">打印</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.has_craft"
                     class="opration">详情</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.has_craft"
                     class="opration">...</span>
                 </div>
               </div>
               <div class="rect">
                 <div class="main">
                   <div class="icon"
-                    :class="{'blue':detail.has_plan===1,'gray':detail.has_plan===0}">
+                    :class="{'blue':detail.product_plan_info,'gray':!detail.product_plan_info}">
                     <img src="../../assets/image/sample/plan_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">配料单</div>
                     <div class="text"
-                      v-if="detail.has_plan===0">待添加</div>
+                      v-if="!detail.product_plan_info">待添加</div>
                     <div class="text"
-                      v-if="detail.has_plan===1">{{detail.product_plan_info.user_name}}</div>
+                      v-if="detail.product_plan_info">{{detail.product_plan_info.user_name}}</div>
                     <div class="text"
-                      v-if="detail.has_plan===1">{{detail.product_plan_info.create_time.slice(0,10)}}</div>
+                      v-if="detail.product_plan_info">{{detail.product_plan_info.updated_at.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="detail.has_plan===0"
+                  <span v-if="!detail.product_plan_info"
                     class="opration">添加</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.product_plan_info"
                     class="opration">预览</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.product_plan_info"
                     class="opration">打印</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.product_plan_info"
                     class="opration">详情</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.product_plan_info"
                     class="opration">...</span>
                 </div>
               </div>
@@ -316,8 +316,8 @@ export default {
         has_plan: 0,
         product_plan_info: '',
         quotation_info: [],
-        img: [],
-        materials: [],
+        image: [],
+        component: [],
         product_code: '',
         sample_title: '',
         size: [],
@@ -332,9 +332,9 @@ export default {
   filters: {
     filterMaterials (arr) {
       let str = ''
-      if (arr[0] && arr[0].ingredient_name) {
+      if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.ingredient_name + item.ingredient_value + '%' + ' / '
+          str += item.component_name + item.number + '%' + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {
@@ -355,8 +355,8 @@ export default {
       console.log(res)
       if (res.data.status) {
         this.detail = res.data.data
-        if (this.detail.img.length === 0) {
-          this.detail.img = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
+        if (this.detail.image.length === 0) {
+          this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
         }
         this.loading = false
       }

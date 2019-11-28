@@ -103,7 +103,7 @@
               </div>
             </div>
             <div class="col">
-              <div class="stateCtn row red">
+              <div class="stateCtn rowFlex red">
                 <div class="state"></div>
                 <span class="name">待审核</span>
               </div>
@@ -153,7 +153,7 @@
               </div>
             </div>
             <div class="col">
-              <div class="stateCtn row blue">
+              <div class="stateCtn rowFlex blue">
                 <div class="state"></div>
                 <span class="name">待审核</span>
               </div>
@@ -203,7 +203,7 @@
               </div>
             </div>
             <div class="col">
-              <div class="stateCtn row green">
+              <div class="stateCtn rowFlex green">
                 <div class="state"></div>
                 <span class="name">待审核</span>
               </div>

@@ -1154,7 +1154,8 @@ export default {
   },
   created () {
     craft.getByProduct({
-      product_id: this.$route.params.id
+      product_id: this.$route.params.id,
+      type: 1
     }).then((res) => {
       if (res.data.status) {
         let data = res.data.data
@@ -1242,12 +1243,14 @@ export default {
           const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
           const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
           const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
+          this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
           this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
         }
         for (let i = 0; i < arrWeftBack[0].length; i++) {
           const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
           const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
           const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
+          this.colorNumber.warp[arrWeftBack[0][i]] = this.colorNumber.warp[arrWeftBack[0][i]] ? this.colorNumber.warp[arrWeftBack[0][i]] : 0
           this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
         }
         this.warpInfo.material_data.forEach((item) => {

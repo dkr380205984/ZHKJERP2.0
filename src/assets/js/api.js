@@ -23,6 +23,7 @@ const product = {
   create: (params) => http.post(`${baseUrl}/product/save`, params, 'application/json'),
   update: (params) => http.post(`${baseUrl}/product/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/one`, params),
+  delete: (params) => http.post(`${baseUrl}/product/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/list`, params)
 }
 // 产品类型
@@ -93,6 +94,7 @@ const client = {
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
   list: (params) => http.get(`${baseUrl}/client/list`, params)
 }
+// 小组
 const group = {
   create: (params) => http.post(`${baseUrl}/user/group/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/user/group/delete`, params, 'application/json'),
@@ -130,6 +132,11 @@ const planList = {
   detail_code: (params) => http.get(`${baseUrl}/product/plan/product/one`, params),
   list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
 }
+// 配料单管理
+const productPlan = {
+  create: (params) => http.post(`${baseUrl}/material/match/card/save`, params, 'application/json'),
+  getByProduct: (params) => http.get(`${baseUrl}/material/match/card/product`, params)
+}
 // 工厂信息管理
 const company = {
   detail: (params) => http.get(`${baseUrl}/company/detail`, params)
@@ -144,6 +151,7 @@ export {
   order,
   company,
   planList,
+  productPlan,
   craftConfig,
   craft,
   penetrationMethod,

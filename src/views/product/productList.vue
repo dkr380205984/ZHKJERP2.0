@@ -34,7 +34,7 @@
         <div class="list">
           <div class="title">
             <div class="col">
-              <div class="col"><span class="text">编号</span></div>
+              <span class="text">编号</span>
             </div>
             <div class="col"
               style="flex:1.5">
@@ -155,9 +155,9 @@
             <div class="col"
               style="flex:1.5">{{item.category_info.product_category + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title?item.sample_title:'无'}}</div>
+            <div class="col">{{item.name?item.name:'无'}}</div>
             <div class="col">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.images"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -190,7 +190,7 @@
                     <el-dropdown-item @click.native="$router.push('/product/productUpdate/'+ item.id)">
                       <span class="updated">修改产品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item>
+                    <el-dropdown-item @click.native="deletePro(item.id)">
                       <span class="delete">删除产品</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="!item.has_craft"
@@ -375,6 +375,17 @@ export default {
     },
     reset () {
       this.$router.push('/product/productList/page=&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation=')
+    },
+    // 删除产品
+    deletePro (id) {
+      product.delete({
+        id: id
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('删除成功')
+          this.getList()
+        }
+      })
     }
   },
   created () {

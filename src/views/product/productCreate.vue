@@ -205,8 +205,7 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="indexIngredient===0">
-              <span class="text">产品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
+              <span class="text">配件成分</span>
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
@@ -421,7 +420,7 @@ export default {
         })
       })
     },
-    deleteFitting (index) {
+    deleteFitting (index, id) {
       if (this.fittingInfo.length === 1) {
         this.$message.error('配件数量不能小于1,如不需要配件可以直接关闭配件选项')
         return
@@ -595,13 +594,18 @@ export default {
               number: itemSize.number
             }
           }),
-          part_component: item.ingredient
+          part_component: item.ingredient.map((item) => {
+            return {
+              component_name: item.ingredient_name,
+              number: item.ingredient_value
+            }
+          })
         }
       })
       let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
       let formData = {
         product_code: this.product_code.join(''),
-        sample_title: this.name,
+        name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
@@ -609,9 +613,14 @@ export default {
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        img: imgArr,
+        image: imgArr,
         color: this.colour.map((item) => item.colour),
-        materials: this.ingredient,
+        component: this.ingredient.map((item) => {
+          return {
+            component_name: item.ingredient_name,
+            number: item.ingredient_value
+          }
+        }),
         size: this.size.map(item => {
           return {
             weight: item.weight,
@@ -624,7 +633,7 @@ export default {
       product.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('保存成功')
-          this.$router.push('/product/productDetail/' + res.data.id)
+          this.$router.push('/product/productDetail/' + res.data.data.id)
         }
       })
       console.log(formData)

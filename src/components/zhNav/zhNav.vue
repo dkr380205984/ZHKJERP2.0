@@ -7,41 +7,107 @@
       background-color="#2E394F"
       router
       @select="hanldeSelect">
-      <el-submenu v-for="(item,index) in renderData"
-        :key="index"
-        :index="index.toString()">
-        <template slot="title">
-          <img v-if="item.icon"
-            :src="item.icon"
-            class="img">
-          <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
-        </template>
-        <template v-if="item.name==='...'">
-          <el-submenu v-for="(itemChild,indexChild) in item.children"
-            :key="indexChild"
-            :index="index + '-' + indexChild">
-            <template slot="title">
-              <div>
-                <img :src="itemChild.icon"
-                  style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;">
-                {{itemChild.name}}
-              </div>
-            </template>
-            <el-menu-item v-for="(itemGrandSon,indexGrandSon) in itemChild.children"
-              :key="indexGrandSon"
-              :index="itemGrandSon.url">
-              <template slot="title">{{itemGrandSon.name}}</template>
+      <!-- <template v-for="(item,index) in renderData">
+        <el-submenu v-if="!item.url"
+          :key="index"
+          :index="item.url?item.url:index.toString()">
+          <template slot="title">
+            <img v-if="item.icon"
+              :src="item.icon"
+              class="img">
+            <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
+          </template>
+          <template v-if="item.name==='...'&&!item.url">
+            <el-submenu v-for="(itemChild,indexChild) in item.children"
+              :key="indexChild"
+              :index="index + '-' + indexChild">
+              <template slot="title">
+                <div>
+                  <img :src="itemChild.icon"
+                    style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;">
+                  {{itemChild.name}}
+                </div>
+              </template>
+              <el-menu-item v-for="(itemGrandSon,indexGrandSon) in itemChild.children"
+                :key="indexGrandSon"
+                :index="itemGrandSon.url">
+                <template slot="title">{{itemGrandSon.name}}</template>
+              </el-menu-item>
+            </el-submenu>
+          </template>
+          <template v-if="item.name!=='...'">
+            <el-menu-item v-for="(itemChild,indexChild) in item.children"
+              :key="indexChild"
+              :index="itemChild.url">
+              <template slot="title">{{itemChild.name}}</template>
             </el-menu-item>
+          </template>
+        </el-submenu>
+        <el-menu-item v-else
+          :key="index">
+          <template slot="title">
+            <img v-if="item.icon"
+              :src="item.icon"
+              class="img">
+            <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
+          </template>
+        </el-menu-item>
+      </template> -->
+      <template v-for="(item,index) in renderData">
+        <template v-if="item.children&&item.children.length>0">
+          <el-submenu :key="index"
+            :index="index.toString() + 'item'">
+            <template slot="title">
+              <img v-if="item.icon"
+                :src="item.icon"
+                class="img" />
+              <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
+            </template>
+            <template v-for="(itemChild,indexChild) in item.children">
+              <template v-if="itemChild.children&&itemChild.children.length>0">
+                <el-submenu :key="indexChild"
+                  :index="indexChild.toString() + 'itemChild'">
+                  <template slot="title">
+                    <img v-if="itemChild.icon"
+                      :src="itemChild.icon"
+                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" />
+                    <span style="font-size:14px;vertical-align: 0px;">{{itemChild.name}}</span>
+                  </template>
+                  <el-menu-item v-for="(itemGrand,indexGrand) in itemChild.children"
+                    :key="indexGrand"
+                    :index="itemGrand.url">
+                    <template slot="title">
+                      <span>{{itemGrand.name}}</span>
+                    </template>
+                  </el-menu-item>
+                </el-submenu>
+              </template>
+              <template v-else>
+                <el-menu-item :key="indexChild"
+                  :index="itemChild.url">
+                  <template slot="title">
+                    <img v-if="itemChild.icon"
+                      :src="itemChild.icon"
+                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" />
+                    <span style="font-size:14px;vertical-align: 0px;">{{itemChild.name}}</span>
+                  </template>
+                </el-menu-item>
+              </template>
+            </template>
           </el-submenu>
         </template>
-        <template v-if="item.name!=='...'">
-          <el-menu-item v-for="(itemChild,indexChild) in item.children"
-            :key="indexChild"
-            :index="itemChild.url">
-            <template slot="title">{{itemChild.name}}</template>
+        <template v-else>
+          <el-menu-item :key="index"
+            :index="item.url">
+            <template slot="title">
+              <img v-if="item.icon"
+                :src="item.icon"
+                class="img" />
+              <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
+            </template>
           </el-menu-item>
         </template>
-      </el-submenu>
+      </template>
     </el-menu>
     <!-- 使用elment-ui组件 -->
     <!-- <div class="zhNav"

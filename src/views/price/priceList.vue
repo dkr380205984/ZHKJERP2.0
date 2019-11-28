@@ -118,7 +118,7 @@
             <div class="col flex05"></div>
             <div class="col">{{item.create_time}}</div>
             <div class="col">
-              <div :class="['stateCtn', 'row', item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue']">
+              <div :class="['stateCtn', 'rowFlex', item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue']">
                 <div class="state"></div>
                 <span class="name">{{item.status|filterStatus}}</span>
               </div>
