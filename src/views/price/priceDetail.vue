@@ -104,10 +104,6 @@
                     :key="index"></zh-card>
                 </el-carousel-item>
               </el-carousel>
-              <!-- <template v-for="(item,index) in product_info">
-                <zh-card :data="item"
-                  :key="index"></zh-card>
-              </template> -->
             </span>
           </div>
         </div>

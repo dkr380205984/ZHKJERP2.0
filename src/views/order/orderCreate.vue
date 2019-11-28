@@ -39,7 +39,7 @@
             </span>
             <span class="content">
               <el-select v-model="client_id"
-                placeholder="请选择产品"
+                placeholder="请选择订单公司"
                 @change="getContact($event)">
                 <el-option v-for="item in clientArr"
                   :key="item.id"
@@ -376,7 +376,7 @@
               <el-date-picker v-model="itemBatch.time"
                 value-format="yyyy-MM-dd"
                 type="date"
-                placeholder="请选择下单日期">
+                placeholder="请选择交货日期">
               </el-date-picker>
             </span>
           </div>
@@ -388,7 +388,8 @@
               <span class="tb_row">尺码颜色</span>
               <span class="tb_row">单价</span>
               <span class="tb_row">数量</span>
-              <span class="tb_row middle">操作</span>
+              <span class="tb_row middle">色组操作</span>
+              <span class="tb_row middle flex06">产品操作</span>
             </div>
             <div class="tb_content"
               v-for="(itemPro,indexPro) in itemBatch.batch_info"
@@ -414,6 +415,7 @@
                       class="editInput"
                       placeholder="请选择尺码颜色"
                       :options="itemPro.sizeColor"
+                      :key="isResouceShow"
                       @change="selectSize($event,itemPro.product_info,indexSize)"></el-cascader>
                   </span>
                   <span class="tb_row">
@@ -435,9 +437,13 @@
                     <span class="tb_handle_btn blue"
                       @click="addItem(itemPro.product_info,'sizeColor')">添加色组</span>
                     <span class="tb_handle_btn red"
-                      @click="deleteItem(itemPro.product_info,indexSize)">删除</span>
+                      @click="deleteItem(itemPro.product_info,indexSize)">删除色组</span>
                   </span>
                 </span>
+              </span>
+              <span class="tb_row middle flex06">
+                <span class="tb_handle_btn red"
+                  @click="deleteItem(itemBatch.batch_info,indexPro)">删除产品</span>
               </span>
             </div>
             <div class="tb_content">
@@ -651,7 +657,8 @@ export default {
       ],
       postData: { token: '' },
       total_price: '',
-      remark: ''
+      remark: '',
+      isResouceShow: 0 // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
     }
   },
   methods: {
@@ -699,6 +706,7 @@ export default {
         return
       }
       item.splice(index, 1)
+      this.isResouceShow++
       this.computedTotalPrice()
     },
     beforeAvatarUpload (file) {
@@ -758,7 +766,6 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
-      console.log(ev, item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
@@ -776,7 +783,45 @@ export default {
           }
         })
         this.checkedProList.push(item)
+        this.batchDate.forEach(itemBatch => {
+          this.checkedProList.forEach((itemPro, indexPro) => {
+            let arr = []
+            itemPro.size.forEach(itemSize => {
+              itemPro.color.forEach(itemColor => {
+                arr.push({
+                  size_color: [itemSize.measurement, itemColor.color_name],
+                  price: '',
+                  number: ''
+                })
+              })
+            })
+            if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
+              if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
+                itemBatch.batch_info[0].id = itemPro.id
+                itemBatch.batch_info[0].unit = itemPro.category_info.name
+                itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
+                itemBatch.batch_info[0].product_info = arr
+              } else {
+                itemBatch.batch_info.push({
+                  id: itemPro.id,
+                  unit: itemPro.category_info.name,
+                  sizeColor: itemPro.sizeColor,
+                  product_info: arr
+                })
+              }
+            }
+            this.isResouceShow++
+          })
+        })
+        this.batchDate = this.$clone(this.batchDate)
       } else {
+        // 产品取消选中时，批次内删除该产品
+        this.batchDate.forEach(itemBatch => {
+          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info.splice(index, 1)
+          }
+        })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
         if (cancleProFlag) {
           cancleProFlag.checked = false
@@ -785,6 +830,14 @@ export default {
       }
     },
     cancleChecked (item) {
+      // 产品取消选中时，批次内删除该产品
+      this.batchDate.forEach(itemBatch => {
+        let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+        if (index !== -1) {
+          itemBatch.batch_info.splice(index, 1)
+          this.isResouceShow++
+        }
+      })
       item.checked = false
       this.checkedProList = this.checkedProList.filter(items => items.checked)
       let cancleProFlag = this.productList.find(items => items.id === item.id)
@@ -801,7 +854,10 @@ export default {
       }
       let selectFlag = this.checkedProList.find(val => val.id === event)
       if (selectFlag) {
+        itemPro.sizeColor = selectFlag.sizeColor
+        this.isResouceShow++
         itemPro.product_info = []
+        itemPro.unit = selectFlag.category_info.name || '个'
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
@@ -811,8 +867,6 @@ export default {
             })
           })
         })
-        itemPro.sizeColor = selectFlag.sizeColor
-        itemPro.unit = selectFlag.category_info.name || '个'
       }
     },
     selectSize (event, item, index) {
@@ -873,12 +927,24 @@ export default {
         return
       }
       let timeFlag = true // 是否选择了交货时间的flag
+      if (this.batchDate.length < 1) {
+        this.$message.error('检测到没有批次数据，请添加')
+        return
+      }
       this.batchDate.forEach(item => {
         if (!item.time) {
           timeFlag = false
         }
+        if (item.batch_info.length < 1) {
+          this.$message.error('检测到批次内没有产品信息，请添加')
+          flag = false
+        }
         item.batch_info.forEach(itemBtach => {
           if (!itemBtach.id) {
+            flag = false
+          }
+          if (itemBtach.product_info.length < 1) {
+            this.$message.error('检测到产品内没有尺码颜色信息，请添加')
             flag = false
           }
           itemBtach.product_info.forEach(itemPro => {

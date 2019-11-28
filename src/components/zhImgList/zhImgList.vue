@@ -102,7 +102,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.list)
     if (this.list.length === 1 || this.list.length === 0) {
       this.firstFlag = true
       this.lastFlag = true

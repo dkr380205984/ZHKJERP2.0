@@ -61,7 +61,7 @@
           <el-collapse accordion>
             <el-collapse-item>
               <div slot="title"
-                class="tb_collapse tb_content">
+                class="tb_collapse tb_content bigPadding">
                 <span class="tb_row two_line">19<br />666</span>
                 <span class="tb_row">a</span>
                 <span class="tb_row">s</span>
@@ -82,21 +82,57 @@
                   <span class="tb_row flex08">最终数量</span>
                   <span class="tb_row middle flex08">操作</span>
                 </div>
-                <div class="tb_content bigPadding">
-                  <span class="tb_row"></span>
-                  <span class="tb_row flex12"></span>
-                  <span class="tb_row"></span>
-                  <span class="tb_row flex08"></span>
-                  <span class="tb_row flex08"></span>
-                  <span class="tb_row flex08"></span>
-                  <span class="tb_row flex08"></span>
+                <div class="tb_collapse tb_content bigPadding smallHeight">
+                  <span class="tb_row">不唯一</span>
+                  <span class="tb_row flex12">36支晴纶</span>
+                  <span class="tb_row">tx-165284</span>
+                  <span class="tb_row flex08">100g</span>
+                  <span class="tb_row flex08">500g</span>
+                  <span class="tb_row flex08">10%</span>
+                  <span class="tb_row flex08">1kg</span>
                   <span class="tb_row middle flex08">
-                    <span class="tb_handle_btn blue">编辑</span>
+                    <span class="tb_handle_btn blue"
+                      @click="change">编辑</span>
                   </span>
                 </div>
               </div>
             </el-collapse-item>
           </el-collapse>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">所需物料</span>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="tableCtnLv2">
+          <div class="tb_header">
+            <span class="tb_row flex12">名称</span>
+            <span class="tb_row">颜色</span>
+            <span class="tb_row flex08">所需数量</span>
+            <span class="tb_row flex08">原料损耗</span>
+            <span class="tb_row flex08">最终数量</span>
+          </div>
+          <div class="tb_content">
+            <span class="tb_row flex12">36支晴纶</span>
+            <span class="tb_row">绿色</span>
+            <span class="tb_row flex08">7kg</span>
+            <span class="tb_row flex08">10%</span>
+            <span class="tb_row flex08">
+              <span class="align"><em class="bigNum">7</em>kg</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="this.$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="saveAll">提交</div>
         </div>
       </div>
     </div>
@@ -111,7 +147,12 @@ export default {
     }
   },
   methods: {
+    saveAll () {
 
+    },
+    change () {
+
+    }
   }
 }
 </script>
@@ -123,7 +164,6 @@ export default {
 #materialPlanCreate {
   .el-collapse-item__header {
     position: relative;
-    padding: 0 0 0 40px;
     min-height: 54px;
     display: flex;
     .el-collapse-item__arrow {
