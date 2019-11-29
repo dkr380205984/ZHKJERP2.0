@@ -15,7 +15,7 @@
           <div class="colCtn">
             <span class="label">产品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
+              :class="{'blue':productInfo.name||productInfo.product_title}">{{productInfo.name||productInfo.product_title?productInfo.name||productInfo.product_title:'无'}}</span>
           </div>
           <div class="colCtn">
             <span class="label">产品品类：</span>
@@ -38,7 +38,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size_measurement"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.measurement || item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -49,10 +49,20 @@
               :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
           </div>
         </div>
+        <div class="swichCtn"
+          v-if="$route.params.type==='2' && list.length>0">
+          <div class="swich"
+            v-for="index in list.length"
+            :key="index"
+            :class="{'active':listIndex===index-1}"
+            @click="changePlan(index-1)">配料单{{index}}</div>
+          <div class="btn btnBlue"
+            @click="setDefault">设为默认</div>
+        </div>
       </div>
     </div>
     <div class="module"
-      v-for="(item,index) in list"
+      v-for="(item,index) in list[listIndex].data"
       :key="index">
       <div class="titleCtn">
         <span class="title">{{item.name}}</span>
@@ -81,7 +91,7 @@
                   :key="indexMat">
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
-                  <div class="tcolumn">{{itemMat.number}}{{itemMat.type===1?'g':'个'}}</div>
+                  <div class="tcolumn">{{itemMat.number}}{{itemMat.unit}}</div>
                 </div>
               </div>
             </div>
@@ -95,7 +105,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="$router.push('/productPlan/productPlanUpdate/'+$route.params.id)">修改</div>
+            @click="$router.push('/productPlan/productPlanUpdate/'+list[listIndex].id + '/' + $route.params.type)">修改</div>
         </div>
       </div>
     </div>
@@ -121,7 +131,12 @@ export default {
         size_measurement: [],
         name: ''
       },
-      list: []
+      list: [{
+        data: [],
+        id: ''
+      }],
+      listIndex: 0,
+      plan_id: 0
     }
   },
   filters: {
@@ -137,44 +152,100 @@ export default {
       }
     }
   },
+  methods: {
+    changePlan (index) {
+      this.listIndex = index
+      this.plan_id = this.list[this.listIndex].id
+    },
+    // 设为默认
+    setDefault () {
+      productPlan.setDefault({
+        id: this.plan_id
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('设置成功')
+        }
+      })
+    }
+  },
   mounted () {
     this.loading = false
     productPlan.getByProduct({
       product_id: this.$route.params.id,
-      type: 1
+      product_type: this.$route.params.type
     }).then((res) => {
       let data = res.data.data
       this.productInfo = data[0].product_info
-      this.list = data.map((item) => {
-        let json = {
-          name: item.part_type === 1 ? '大身物料' : item.product_info.product_title,
-          colourSizeArr: []
+      this.list = data.map((item, index) => {
+        if (item.is_default === 1) {
+          this.listIndex = index
         }
+        let mainArr = [{
+          name: '大身信息',
+          colourSizeArr: []
+        }] // 大身
+        let partArr = [] // 配件
         item.material_info.forEach((itemMat) => {
-          let finded = json.colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
+          let finded = mainArr[0].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
           if (finded) {
             finded.materials.push({
               name: itemMat.material_name,
               attr: itemMat.material_attribute,
               number: itemMat.weight,
-              type: itemMat.type
+              type: itemMat.type,
+              unit: itemMat.unit
             })
           } else {
-            json.colourSizeArr.push({
+            mainArr[0].colourSizeArr.push({
               size_name: itemMat.product_size,
               colour_name: itemMat.product_color,
               materials: [{
                 name: itemMat.material_name,
                 attr: itemMat.material_attribute,
                 number: itemMat.weight,
-                type: itemMat.type
+                type: itemMat.type,
+                unit: itemMat.unit
               }]
             })
           }
         })
-        return json
+        item.part_info.forEach((itemPart, indexPart) => {
+          partArr.push({
+            name: itemPart.product_info.product_title,
+            colourSizeArr: []
+          })
+          itemPart.material_info.forEach((itemMat) => {
+            let finded = partArr[indexPart].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
+            if (finded) {
+              finded.materials.push({
+                name: itemMat.material_name,
+                attr: itemMat.material_attribute,
+                number: itemMat.weight,
+                type: itemMat.type,
+                unit: itemMat.unit
+              })
+            } else {
+              partArr[indexPart].colourSizeArr.push({
+                size_name: itemMat.product_size,
+                colour_name: itemMat.product_color,
+                materials: [{
+                  name: itemMat.material_name,
+                  attr: itemMat.material_attribute,
+                  number: itemMat.weight,
+                  type: itemMat.type,
+                  unit: itemMat.unit
+                }]
+              })
+            }
+          })
+        })
+        return {
+          data: mainArr.concat(partArr),
+          id: item.id
+        }
       })
-      console.log(this.list)
+      this.plan_id = this.list[0].id
+      console.log(this.plan_id)
     })
   }
 }

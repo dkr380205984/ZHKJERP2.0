@@ -4,31 +4,31 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">产品信息</span>
+        <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品编号：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
             <span class="text">{{productInfo.product_code}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品名称：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.sample_title}">{{productInfo.sample_title?productInfo.sample_title:'无'}}</span>
+              :class="{'blue':productInfo.title}">{{productInfo.title?productInfo.title:'无'}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品品类：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
             <span class="text">{{productInfo.category_info.product_category}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">产品成分：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
             <span class="text">{{productInfo.materials|filterMaterials}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品配色：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
             <span class="text">
               <span v-for="(item,index) in productInfo.color"
                 :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
@@ -38,11 +38,11 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品规格：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -52,6 +52,16 @@
             <span class="text"
               :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
           </div>
+        </div>
+        <div class="swichCtn"
+          v-if="$route.params.type==='2' && data.length>1">
+          <div class="swich"
+            v-for="index in data.length"
+            :key="index"
+            :class="{'active':craftIndex===index-1}"
+            @click="init(data[index - 1],index-1)">工艺单{{index}}</div>
+          <div class="btn btnBlue"
+            @click="setDefault">设为默认</div>
         </div>
       </div>
     </div>
@@ -604,7 +614,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <div class="btn btnOrange">修改</div>
+          <div class="btn btnOrange"
+            @click="$router.push('/craft/craftUpdate/' + craftId + '/' + $route.params.type)">修改</div>
           <div class="btn btnBlue">打印</div>
         </div>
       </div>
@@ -626,6 +637,8 @@ export default {
   data () {
     return {
       loading: true,
+      data: [], // 有多张工艺单的时候保存原始数据
+      craftIndex: 0, // 样单有多张工艺单
       craftId: '', // 记录一下工艺单id用于删除接口
       productInfo: {
         product_code: '',
@@ -915,9 +928,9 @@ export default {
   filters: {
     filterMaterials (arr) {
       let str = ''
-      if (arr[0] && arr[0].ingredient_name) {
+      if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.ingredient_name + item.ingredient_value + '%' + ' / '
+          str += item.component_name + item.number + '%' + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {
@@ -963,6 +976,16 @@ export default {
       if (cmd === '添加配料单') {
         this.$router.push('/index/productPlanCreate/' + this.productInfo.product_id)
       }
+    },
+    // 设为默认
+    setDefault () {
+      craft.setDefault({
+        id: this.craftId
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('设置成功')
+        }
+      })
     },
     // 展平合并信息
     getFlatTable (table, type, merge) {
@@ -1150,396 +1173,410 @@ export default {
         imgBack.src = domBack.toDataURL()
         this.loading = false
       }, 100)
-    }
-  },
-  created () {
-    craft.getByProduct({
-      product_id: this.$route.params.id,
-      type: 1
-    }).then((res) => {
-      if (res.data.status) {
-        let data = res.data.data
-        this.craftId = data.id
-        this.productInfo = data.product_info
-        this.warpInfo = data.warp_data
-        this.weftInfo = data.weft_data
-        this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)
-        this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1)
-        this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2)
-        this.yarn.yarnOtherWeft = this.weftInfo.material_data.filter((item) => item.type_material === 2)
-        this.material.materialWarp = this.warpInfo.assist_material
-        this.material.materialWeft = this.weftInfo.assist_material
-        this.coefficient = data.yarn_coefficient
-        this.desc = data.desc
-        this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-        this.tableData.weft.data = JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-        this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-        this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-        this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
-        this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
-        this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
-        this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
-        this.GL = data.draft_method.GL
-        this.GLFlag = data.draft_method.GLFlag
-        this.PM = data.draft_method.PM
-        this.PMFlag = data.draft_method.PMFlag
-        this.remarkPM = data.draft_method.desc
-        // 计算克重信息
-        let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
-        this.tableData.warp.mergeCells.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
-            }
+    },
+    init (data, index) {
+      this.craftIndex = index
+      this.selectColour = -1
+      this.craftId = data.id
+      this.productInfo = data.product_info
+      this.warpInfo = data.warp_data
+      this.weftInfo = data.weft_data
+      this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)
+      this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1)
+      this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2)
+      this.yarn.yarnOtherWeft = this.weftInfo.material_data.filter((item) => item.type_material === 2)
+      this.material.materialWarp = this.warpInfo.assist_material
+      this.material.materialWeft = this.weftInfo.assist_material
+      this.coefficient = data.yarn_coefficient
+      this.desc = data.desc
+      this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
+        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      })
+      this.tableData.weft.data = JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
+        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      })
+      this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
+        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      })
+      this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
+        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      })
+      this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
+      this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
+      this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
+      this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
+      this.GL = data.draft_method.GL
+      this.GLFlag = data.draft_method.GLFlag
+      this.PM = data.draft_method.PM
+      this.PMFlag = data.draft_method.PMFlag
+      this.remarkPM = data.draft_method.desc
+      // 计算克重信息
+      let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
+      this.tableData.warp.mergeCells.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
           }
-        })
-        let arrWeft = JSON.parse(this.weftInfo.weft_rank).slice(1, 5)
-        this.tableData.weft.mergeCells.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
-            }
-          }
-        })
-        let arrWarpBack = JSON.parse(this.warpInfo.warp_rank_back).slice(1, 5)
-        this.tableData.warpBack.mergeCells.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
-            }
-          }
-        })
-        let arrWeftBack = JSON.parse(this.weftInfo.weft_rank_back).slice(1, 5)
-        this.tableData.weftBack.mergeCells.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
-            }
-          }
-        })
-        for (let i = 0; i < arrWarp[0].length; i++) {
-          const x = arrWarp[1][i] ? arrWarp[1][i] : 1
-          const y = arrWarp[2][i] ? arrWarp[2][i] : 1
-          const z = arrWarp[3][i] ? arrWarp[3][i] : 1
-          this.colorNumber.warp[arrWarp[0][i]] = this.colorNumber.warp[arrWarp[0][i]] ? this.colorNumber.warp[arrWarp[0][i]] : 0
-          this.colorNumber.warp[arrWarp[0][i]] += x * y * z
         }
-        for (let i = 0; i < arrWeft[0].length; i++) {
-          const x = arrWeft[1][i] ? arrWeft[1][i] : 1
-          const y = arrWeft[2][i] ? arrWeft[2][i] : 1
-          const z = arrWeft[3][i] ? arrWeft[3][i] : 1
-          this.colorNumber.weft[arrWeft[0][i]] = this.colorNumber.weft[arrWeft[0][i]] ? this.colorNumber.weft[arrWeft[0][i]] : 0
-          this.colorNumber.weft[arrWeft[0][i]] += x * y * z
+      })
+      let arrWeft = JSON.parse(this.weftInfo.weft_rank).slice(1, 5)
+      this.tableData.weft.mergeCells.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
+          }
         }
-        for (let i = 0; i < arrWarpBack[0].length; i++) {
-          const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
-          const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
-          const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
-          this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
-          this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
+      })
+      let arrWarpBack = JSON.parse(this.warpInfo.warp_rank_back).slice(1, 5)
+      this.tableData.warpBack.mergeCells.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
+          }
         }
-        for (let i = 0; i < arrWeftBack[0].length; i++) {
-          const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
-          const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
-          const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-          this.colorNumber.warp[arrWeftBack[0][i]] = this.colorNumber.warp[arrWeftBack[0][i]] ? this.colorNumber.warp[arrWeftBack[0][i]] : 0
-          this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
+      })
+      let arrWeftBack = JSON.parse(this.weftInfo.weft_rank_back).slice(1, 5)
+      this.tableData.weftBack.mergeCells.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
+          }
         }
-        this.warpInfo.material_data.forEach((item) => {
-          item.apply.forEach((itemChild) => {
-            this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
-          })
+      })
+      for (let i = 0; i < arrWarp[0].length; i++) {
+        const x = arrWarp[1][i] ? arrWarp[1][i] : 1
+        const y = arrWarp[2][i] ? arrWarp[2][i] : 1
+        const z = arrWarp[3][i] ? arrWarp[3][i] : 1
+        this.colorNumber.warp[arrWarp[0][i]] = this.colorNumber.warp[arrWarp[0][i]] ? this.colorNumber.warp[arrWarp[0][i]] : 0
+        this.colorNumber.warp[arrWarp[0][i]] += x * y * z
+      }
+      for (let i = 0; i < arrWeft[0].length; i++) {
+        const x = arrWeft[1][i] ? arrWeft[1][i] : 1
+        const y = arrWeft[2][i] ? arrWeft[2][i] : 1
+        const z = arrWeft[3][i] ? arrWeft[3][i] : 1
+        this.colorNumber.weft[arrWeft[0][i]] = this.colorNumber.weft[arrWeft[0][i]] ? this.colorNumber.weft[arrWeft[0][i]] : 0
+        this.colorNumber.weft[arrWeft[0][i]] += x * y * z
+      }
+      for (let i = 0; i < arrWarpBack[0].length; i++) {
+        const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
+        const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
+        const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
+        this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
+        this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
+      }
+      for (let i = 0; i < arrWeftBack[0].length; i++) {
+        const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
+        const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
+        const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
+        this.colorNumber.warp[arrWeftBack[0][i]] = this.colorNumber.warp[arrWeftBack[0][i]] ? this.colorNumber.warp[arrWeftBack[0][i]] : 0
+        this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
+      }
+      this.warpInfo.material_data.forEach((item) => {
+        item.apply.forEach((itemChild) => {
+          this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
-        this.weftInfo.material_data.forEach((item) => {
-          item.apply.forEach((itemChild) => {
-            this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
-          })
+      })
+      this.weftInfo.material_data.forEach((item) => {
+        item.apply.forEach((itemChild) => {
+          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
-        this.colorWeight.warp.forEach((item) => {
-          this.weight += item === 'NaN' ? 0 : Number(item)
-        })
-        this.colorWeight.weft.forEach((item) => {
-          this.weight += item === 'NaN' ? 0 : Number(item)
-        })
-        this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / this.warpInfo.reed_width * 600 * 4
-        // 展平合并信息
-        let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
-          if (!item.GLorPM) {
-            item.GLorPM = 'Ⅰ'
-          }
-          return item
-        })
-        let weftTable = this.getFlatTable(this.weftInfo.weft_rank, 'weftInfo', 'merge_data').map((item) => {
-          if (!item.GLorPM) {
-            item.GLorPM = 'A'
-          }
-          return item
-        })
-        let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
-          if (!item.GLorPM) {
-            item.GLorPM = 'Ⅰ'
-          }
-          return item
-        })
-        let weftTableBack = this.getFlatTable(this.weftInfo.weft_rank_back, 'weftInfo', 'merge_data_back').map((item) => {
-          if (!item.GLorPM) {
-            item.GLorPM = 'A'
-          }
-          return item
-        })
-        // 将展开的合并信息结合穿综和纹版信息
-        let warpGetPMNum = []
-        let weftGetGLNum = []
-        let warpGetPMNumBack = []
-        let weftGetGLNumBack = []
-        warpTable.forEach((item) => {
-          let len = warpGetPMNum.length
-          if (len > 0) {
-            if (warpGetPMNum[len - 1].PM === item.GLorPM) {
-              warpGetPMNum[len - 1].number += parseInt(item.number)
-            } else {
-              warpGetPMNum.push({
-                PM: item.GLorPM,
-                number: parseInt(item.number)
-              })
-            }
+      })
+      this.colorWeight.warp.forEach((item) => {
+        this.weight += item === 'NaN' ? 0 : Number(item)
+      })
+      this.colorWeight.weft.forEach((item) => {
+        this.weight += item === 'NaN' ? 0 : Number(item)
+      })
+      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / this.warpInfo.reed_width * 600 * 4
+      // 展平合并信息
+      let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'Ⅰ'
+        }
+        return item
+      })
+      let weftTable = this.getFlatTable(this.weftInfo.weft_rank, 'weftInfo', 'merge_data').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'A'
+        }
+        return item
+      })
+      let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'Ⅰ'
+        }
+        return item
+      })
+      let weftTableBack = this.getFlatTable(this.weftInfo.weft_rank_back, 'weftInfo', 'merge_data_back').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'A'
+        }
+        return item
+      })
+      // 将展开的合并信息结合穿综和纹版信息
+      let warpGetPMNum = []
+      let weftGetGLNum = []
+      let warpGetPMNumBack = []
+      let weftGetGLNumBack = []
+      warpTable.forEach((item) => {
+        let len = warpGetPMNum.length
+        if (len > 0) {
+          if (warpGetPMNum[len - 1].PM === item.GLorPM) {
+            warpGetPMNum[len - 1].number += parseInt(item.number)
           } else {
             warpGetPMNum.push({
               PM: item.GLorPM,
               number: parseInt(item.number)
             })
           }
-        })
-        weftTable.forEach((item) => {
-          let len = weftGetGLNum.length
-          if (len > 0) {
-            if (weftGetGLNum[len - 1].GL === item.GLorPM) {
-              weftGetGLNum[len - 1].number += parseInt(item.number)
-            } else {
-              weftGetGLNum.push({
-                GL: item.GLorPM,
-                number: parseInt(item.number)
-              })
-            }
+        } else {
+          warpGetPMNum.push({
+            PM: item.GLorPM,
+            number: parseInt(item.number)
+          })
+        }
+      })
+      weftTable.forEach((item) => {
+        let len = weftGetGLNum.length
+        if (len > 0) {
+          if (weftGetGLNum[len - 1].GL === item.GLorPM) {
+            weftGetGLNum[len - 1].number += parseInt(item.number)
           } else {
             weftGetGLNum.push({
               GL: item.GLorPM,
               number: parseInt(item.number)
             })
           }
-        })
-        warpTableBack.forEach((item) => {
-          let len = warpGetPMNumBack.length
-          if (len > 0) {
-            if (warpGetPMNumBack[len - 1].PM === item.GLorPM) {
-              warpGetPMNumBack[len - 1].number += parseInt(item.number)
-            } else {
-              warpGetPMNumBack.push({
-                PM: item.GLorPM,
-                number: parseInt(item.number)
-              })
-            }
+        } else {
+          weftGetGLNum.push({
+            GL: item.GLorPM,
+            number: parseInt(item.number)
+          })
+        }
+      })
+      warpTableBack.forEach((item) => {
+        let len = warpGetPMNumBack.length
+        if (len > 0) {
+          if (warpGetPMNumBack[len - 1].PM === item.GLorPM) {
+            warpGetPMNumBack[len - 1].number += parseInt(item.number)
           } else {
             warpGetPMNumBack.push({
               PM: item.GLorPM,
               number: parseInt(item.number)
             })
           }
-        })
-        weftTableBack.forEach((item) => {
-          let len = weftGetGLNumBack.length
-          if (len > 0) {
-            if (weftGetGLNumBack[len - 1].GL === item.GLorPM) {
-              weftGetGLNumBack[len - 1].number += parseInt(item.number)
-            } else {
-              weftGetGLNumBack.push({
-                GL: item.GLorPM,
-                number: parseInt(item.number)
-              })
-            }
+        } else {
+          warpGetPMNumBack.push({
+            PM: item.GLorPM,
+            number: parseInt(item.number)
+          })
+        }
+      })
+      weftTableBack.forEach((item) => {
+        let len = weftGetGLNumBack.length
+        if (len > 0) {
+          if (weftGetGLNumBack[len - 1].GL === item.GLorPM) {
+            weftGetGLNumBack[len - 1].number += parseInt(item.number)
           } else {
             weftGetGLNumBack.push({
               GL: item.GLorPM,
               number: parseInt(item.number)
             })
           }
-        })
-        let warpGetPM = []
-        let weftGetGL = []
-        let warpGetPMBack = []
-        let weftGetGLBack = []
-        warpGetPMNum.forEach((item) => {
-          // 高级穿综
-          if (this.PMFlag === 'complex') {
-            let PM = this.PM[this.romanNum.indexOf(item.PM)]
-            let PMFlatArr = []
-            PM.children.forEach((itemPM) => {
-              let PMVal = []
-              itemPM.children.forEach((itemChildren) => {
-                for (let i = 0; i < parseInt(itemChildren.repeat); i++) {
-                  PMVal = PMVal.concat(itemChildren.value.split(','))
-                }
-              })
-              let times = parseInt(itemPM.number / PMVal.length) // 循环次数
-              let remainder = itemPM.number % PMVal.length // 取余数
-              for (let i = 0; i < times; i++) {
-                PMFlatArr = PMFlatArr.concat(PMVal)
-              }
-              PMFlatArr = PMFlatArr.concat(PMVal.filter((item, index) => index < remainder))
-            })
-            let times = parseInt(item.number / PMFlatArr.length)
-            let remainder = item.number % PMFlatArr.length
-            for (let i = 0; i < times; i++) {
-              warpGetPM = warpGetPM.concat(PMFlatArr)
-            }
-            warpGetPM = warpGetPM.concat(PMFlatArr.filter((item, index) => index < remainder))
-          } else {
-            // 穿综法普通逻辑
-            // let PM = this.PM[this.romanNum.indexOf(item.PM)]
-            // let PMArr = PM.value.split(',')
-            // let times = parseInt(item.number / PMArr.length)
-            // let remainder = PM.number % PMArr.length
-            // for (let i = 0; i < times; i++) {
-            //   warpGetPM = warpGetPM.concat(PMArr)
-            // }
-            // warpGetPM = warpGetPM.concat(PMArr.filter((item, index) => index < remainder))
-          }
-        })
-        // 穿综法普通逻辑独立
-        if (this.PMFlag === 'normal') {
-          this.PM.forEach((item) => {
-            let PMArr = item.value.split(',')
-            let times = parseInt(item.number / PMArr.length)
-            let remainder = item.number % PMArr.length
-            for (let i = 0; i < times; i++) {
-              warpGetPM = warpGetPM.concat(PMArr)
-            }
-            warpGetPM = warpGetPM.concat(PMArr.filter((item, index) => index < remainder))
+        } else {
+          weftGetGLNumBack.push({
+            GL: item.GLorPM,
+            number: parseInt(item.number)
           })
         }
-        weftGetGLNum.forEach((item) => {
-          let GL = this.mergeArray(this.GL[this.alphabet.indexOf(item.GL)]).filter((item) => item) // 剔除null
-          let times = parseInt(item.number / GL.length)
-          let remainder = item.number % GL.length
-          for (let i = 0; i < times; i++) {
-            weftGetGL = weftGetGL.concat(GL)
-          }
-          weftGetGL = weftGetGL.concat(GL.filter((item, index) => index < remainder))
-        })
-        warpGetPMNumBack.forEach((item) => {
-          // 高级穿综
-          if (this.PMFlag === 'complex') {
-            let PM = this.PM[this.romanNum.indexOf(item.PM)]
-            let PMFlatArr = []
-            PM.children.forEach((itemPM) => {
-              let PMVal = []
-              itemPM.children.forEach((itemChildren) => {
-                for (let i = 0; i < parseInt(itemChildren.repeat); i++) {
-                  PMVal = PMVal.concat(itemChildren.value.split(','))
-                }
-              })
-              let times = parseInt(itemPM.number / PMVal.length) // 循环次数
-              let remainder = itemPM.number % PMVal.length // 取余数
-              for (let i = 0; i < times; i++) {
-                PMFlatArr = PMFlatArr.concat(PMVal)
+      })
+      let warpGetPM = []
+      let weftGetGL = []
+      let warpGetPMBack = []
+      let weftGetGLBack = []
+      warpGetPMNum.forEach((item) => {
+        // 高级穿综
+        if (this.PMFlag === 'complex') {
+          let PM = this.PM[this.romanNum.indexOf(item.PM)]
+          let PMFlatArr = []
+          PM.children.forEach((itemPM) => {
+            let PMVal = []
+            itemPM.children.forEach((itemChildren) => {
+              for (let i = 0; i < parseInt(itemChildren.repeat); i++) {
+                PMVal = PMVal.concat(itemChildren.value.split(','))
               }
-              PMFlatArr = PMFlatArr.concat(PMVal.filter((item, index) => index < remainder))
             })
-            let times = parseInt(item.number / PMFlatArr.length)
-            let remainder = item.number % PMFlatArr.length
+            let times = parseInt(itemPM.number / PMVal.length) // 循环次数
+            let remainder = itemPM.number % PMVal.length // 取余数
             for (let i = 0; i < times; i++) {
-              warpGetPMBack = warpGetPMBack.concat(PMFlatArr)
+              PMFlatArr = PMFlatArr.concat(PMVal)
             }
-            warpGetPMBack = warpGetPMBack.concat(PMFlatArr.filter((item, index) => index < remainder))
-          } else {
-            // let PM = this.PM[this.romanNum.indexOf(item.PM)]
-            // let PMArr = PM.value.split(',')
-            // let times = parseInt(PM.number / PMArr.length)
-            // let remainder = item.number % PMArr.length
-            // for (let i = 0; i < times; i++) {
-            //   warpGetPMBack = warpGetPMBack.concat(PMArr)
-            // }
-            // warpGetPMBack = warpGetPMBack.concat(PMArr.filter((item, index) => index < remainder))
+            PMFlatArr = PMFlatArr.concat(PMVal.filter((item, index) => index < remainder))
+          })
+          let times = parseInt(item.number / PMFlatArr.length)
+          let remainder = item.number % PMFlatArr.length
+          for (let i = 0; i < times; i++) {
+            warpGetPM = warpGetPM.concat(PMFlatArr)
           }
+          warpGetPM = warpGetPM.concat(PMFlatArr.filter((item, index) => index < remainder))
+        } else {
+          // 穿综法普通逻辑
+          // let PM = this.PM[this.romanNum.indexOf(item.PM)]
+          // let PMArr = PM.value.split(',')
+          // let times = parseInt(item.number / PMArr.length)
+          // let remainder = PM.number % PMArr.length
+          // for (let i = 0; i < times; i++) {
+          //   warpGetPM = warpGetPM.concat(PMArr)
+          // }
+          // warpGetPM = warpGetPM.concat(PMArr.filter((item, index) => index < remainder))
+        }
+      })
+      // 穿综法普通逻辑独立
+      if (this.PMFlag === 'normal') {
+        this.PM.forEach((item) => {
+          let PMArr = item.value.split(',')
+          let times = parseInt(item.number / PMArr.length)
+          let remainder = item.number % PMArr.length
+          for (let i = 0; i < times; i++) {
+            warpGetPM = warpGetPM.concat(PMArr)
+          }
+          warpGetPM = warpGetPM.concat(PMArr.filter((item, index) => index < remainder))
         })
-        // 穿综法普通逻辑独立 -背面
-        if (this.PMFlag === 'normal') {
-          this.PM.forEach((item) => {
-            let PMArr = item.value.split(',')
-            let times = parseInt(item.number / PMArr.length)
-            let remainder = item.number % PMArr.length
+      }
+      weftGetGLNum.forEach((item) => {
+        let GL = this.mergeArray(this.GL[this.alphabet.indexOf(item.GL)]).filter((item) => item) // 剔除null
+        let times = parseInt(item.number / GL.length)
+        let remainder = item.number % GL.length
+        for (let i = 0; i < times; i++) {
+          weftGetGL = weftGetGL.concat(GL)
+        }
+        weftGetGL = weftGetGL.concat(GL.filter((item, index) => index < remainder))
+      })
+      warpGetPMNumBack.forEach((item) => {
+        // 高级穿综
+        if (this.PMFlag === 'complex') {
+          let PM = this.PM[this.romanNum.indexOf(item.PM)]
+          let PMFlatArr = []
+          PM.children.forEach((itemPM) => {
+            let PMVal = []
+            itemPM.children.forEach((itemChildren) => {
+              for (let i = 0; i < parseInt(itemChildren.repeat); i++) {
+                PMVal = PMVal.concat(itemChildren.value.split(','))
+              }
+            })
+            let times = parseInt(itemPM.number / PMVal.length) // 循环次数
+            let remainder = itemPM.number % PMVal.length // 取余数
             for (let i = 0; i < times; i++) {
-              warpGetPMBack = warpGetPMBack.concat(PMArr)
+              PMFlatArr = PMFlatArr.concat(PMVal)
             }
-            warpGetPMBack = warpGetPMBack.concat(PMArr.filter((item, index) => index < remainder))
+            PMFlatArr = PMFlatArr.concat(PMVal.filter((item, index) => index < remainder))
+          })
+          let times = parseInt(item.number / PMFlatArr.length)
+          let remainder = item.number % PMFlatArr.length
+          for (let i = 0; i < times; i++) {
+            warpGetPMBack = warpGetPMBack.concat(PMFlatArr)
+          }
+          warpGetPMBack = warpGetPMBack.concat(PMFlatArr.filter((item, index) => index < remainder))
+        } else {
+          // let PM = this.PM[this.romanNum.indexOf(item.PM)]
+          // let PMArr = PM.value.split(',')
+          // let times = parseInt(PM.number / PMArr.length)
+          // let remainder = item.number % PMArr.length
+          // for (let i = 0; i < times; i++) {
+          //   warpGetPMBack = warpGetPMBack.concat(PMArr)
+          // }
+          // warpGetPMBack = warpGetPMBack.concat(PMArr.filter((item, index) => index < remainder))
+        }
+      })
+      // 穿综法普通逻辑独立 -背面
+      if (this.PMFlag === 'normal') {
+        this.PM.forEach((item) => {
+          let PMArr = item.value.split(',')
+          let times = parseInt(item.number / PMArr.length)
+          let remainder = item.number % PMArr.length
+          for (let i = 0; i < times; i++) {
+            warpGetPMBack = warpGetPMBack.concat(PMArr)
+          }
+          warpGetPMBack = warpGetPMBack.concat(PMArr.filter((item, index) => index < remainder))
+        })
+      }
+      weftGetGLNumBack.forEach((item) => {
+        let GL = this.mergeArray(this.GL[this.alphabet.indexOf(item.GL)]).filter((item) => item) // 剔除null
+        let times = parseInt(item.number / GL.length)
+        let remainder = item.number % GL.length
+        for (let i = 0; i < times; i++) {
+          weftGetGLBack = weftGetGLBack.concat(GL)
+        }
+        weftGetGLBack = weftGetGLBack.concat(GL.filter((item, index) => index < remainder))
+      })
+      // 获取画图数据
+      let warpCanvas = []
+      let weftCanvas = []
+      let warpCanvasBack = []
+      let weftCanvasBack = []
+      warpTable.forEach((item) => {
+        for (let i = 0; i < item.number; i++) {
+          warpCanvas.push({
+            color: item.color,
+            PM: warpGetPM[warpCanvas.length]
           })
         }
-        weftGetGLNumBack.forEach((item) => {
-          let GL = this.mergeArray(this.GL[this.alphabet.indexOf(item.GL)]).filter((item) => item) // 剔除null
-          let times = parseInt(item.number / GL.length)
-          let remainder = item.number % GL.length
-          for (let i = 0; i < times; i++) {
-            weftGetGLBack = weftGetGLBack.concat(GL)
-          }
-          weftGetGLBack = weftGetGLBack.concat(GL.filter((item, index) => index < remainder))
-        })
-        // 获取画图数据
-        let warpCanvas = []
-        let weftCanvas = []
-        let warpCanvasBack = []
-        let weftCanvasBack = []
-        warpTable.forEach((item) => {
-          for (let i = 0; i < item.number; i++) {
-            warpCanvas.push({
-              color: item.color,
-              PM: warpGetPM[warpCanvas.length]
-            })
-          }
-        })
-        weftTable.forEach((item) => {
-          for (let i = 0; i < item.number; i++) {
-            weftCanvas.push({
-              color: item.color,
-              GL: weftGetGL[weftCanvas.length]
-            })
-          }
-        })
-        warpTableBack.forEach((item) => {
-          for (let i = 0; i < item.number; i++) {
-            warpCanvasBack.push({
-              color: item.color,
-              PM: warpGetPMBack[warpCanvasBack.length]
-            })
-          }
-        })
-        weftTableBack.forEach((item) => {
-          for (let i = 0; i < item.number; i++) {
-            weftCanvasBack.push({
-              color: item.color,
-              GL: weftGetGLBack[weftCanvasBack.length]
-            })
-          }
-        })
-        // 保存下画图数据，方便在切换配色的时候使用
-        this.warpCanvas = warpCanvas
-        this.weftCanvas = weftCanvas
-        if (this.warpInfo.back_status === 1 && this.weftInfo.back_status === 1) {
-          this.warpCanvasBack = warpCanvasBack
-          this.weftCanvasBack = weftCanvasBack
-        } else if (this.warpInfo.back_status === 1 && this.weftInfo.back_status === 0) {
-          this.warpCanvasBack = warpCanvasBack
-          this.weftCanvasBack = weftCanvas
-        } else if (this.warpInfo.back_status === 0 && this.weftInfo.back_status === 1) {
-          this.warpCanvasBack = warpCanvas
-          this.weftCanvasBack = weftCanvasBack
+      })
+      weftTable.forEach((item) => {
+        for (let i = 0; i < item.number; i++) {
+          weftCanvas.push({
+            color: item.color,
+            GL: weftGetGL[weftCanvas.length]
+          })
+        }
+      })
+      warpTableBack.forEach((item) => {
+        for (let i = 0; i < item.number; i++) {
+          warpCanvasBack.push({
+            color: item.color,
+            PM: warpGetPMBack[warpCanvasBack.length]
+          })
+        }
+      })
+      weftTableBack.forEach((item) => {
+        for (let i = 0; i < item.number; i++) {
+          weftCanvasBack.push({
+            color: item.color,
+            GL: weftGetGLBack[weftCanvasBack.length]
+          })
+        }
+      })
+      // 保存下画图数据，方便在切换配色的时候使用
+      this.warpCanvas = warpCanvas
+      this.weftCanvas = weftCanvas
+      if (this.warpInfo.back_status === 1 && this.weftInfo.back_status === 1) {
+        this.warpCanvasBack = warpCanvasBack
+        this.weftCanvasBack = weftCanvasBack
+      } else if (this.warpInfo.back_status === 1 && this.weftInfo.back_status === 0) {
+        this.warpCanvasBack = warpCanvasBack
+        this.weftCanvasBack = weftCanvas
+      } else if (this.warpInfo.back_status === 0 && this.weftInfo.back_status === 1) {
+        this.warpCanvasBack = warpCanvas
+        this.weftCanvasBack = weftCanvasBack
+      }
+    }
+  },
+  created () {
+    craft.getByProduct({
+      product_id: this.$route.params.id,
+      product_type: this.$route.params.type
+    }).then((res) => {
+      if (res.data.status) {
+        if (this.$route.params.type === '1') {
+          this.init(res.data.data, 0)
+        } else {
+          this.data = res.data.data
+          this.data.forEach((item, index) => {
+            if (item.is_default === 1) {
+              this.craftIndex = index
+            }
+          })
+          this.init(this.data[this.craftIndex], this.craftIndex)
         }
         this.loading = false
       }

@@ -100,15 +100,15 @@ const routes = [
       name: '报价单详情',
       component: () => import('../views/price/priceDetail.vue')
     }, {
-      path: '/craft/craftCreate/:id',
+      path: '/craft/craftCreate/:id/:type',
       name: '工艺单添加',
       component: () => import('../views/craft/craftCreate.vue')
     }, {
-      path: '/craft/craftUpdate/:id',
+      path: '/craft/craftUpdate/:id/:type',
       name: '工艺单修改',
       component: () => import('../views/craft/craftUpdate.vue')
     }, {
-      path: '/craft/craftDetail/:id',
+      path: '/craft/craftDetail/:id/:type',
       name: '工艺单详情',
       component: () => import('../views/craft/craftDetail.vue')
     }, {
@@ -128,15 +128,15 @@ const routes = [
       name: '订单修改',
       component: () => import('../views/order/orderUpdate.vue')
     }, {
-      path: '/productPlan/productPlanCreate/:id',
+      path: '/productPlan/productPlanCreate/:id/:type',
       name: '配料单添加',
       component: () => import('../views/productPlan/productPlanCreate.vue')
     }, {
-      path: '/productPlan/productPlanUpdate/:id',
+      path: '/productPlan/productPlanUpdate/:id/:type',
       name: '配料单修改',
       component: () => import('../views/productPlan/productPlanUpdate.vue')
     }, {
-      path: '/productPlan/productPlanDetail/:id',
+      path: '/productPlan/productPlanDetail/:id/:type',
       name: '配料单详情',
       component: () => import('../views/productPlan/productPlanDetail.vue')
     }, {

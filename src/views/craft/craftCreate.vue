@@ -4,7 +4,7 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title">产品信息</span>
+        <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
         <div class="selectCtn">
           <el-select filterable
             remote
@@ -27,26 +27,26 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品编号：</span>
-            <span class="text">{{productInfo.product_code}}</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品名称：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
               :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品品类：</span>
-            <span class="text">{{productInfo.category_info.product_category}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">产品成分：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
             <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品配色：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
             <span class="text">
               <span v-for="(item,index) in productInfo.color"
                 :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
@@ -56,11 +56,11 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品规格：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -1039,7 +1039,7 @@
 </template>
 
 <script>
-import { product, yarn, yarnColor, material, craftConfig, penetrationMethod, craft } from '@/assets/js/api.js'
+import { product, sample, yarn, yarnColor, material, craftConfig, penetrationMethod, craft } from '@/assets/js/api.js'
 import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
@@ -2408,6 +2408,7 @@ export default {
       let formData = {
         id: null,
         is_draft: 1,
+        product_type: this.$route.params.type,
         company_id: window.sessionStorage.getItem('company_id'),
         product_id: this.$route.params.id,
         weight: this.weight,
@@ -2613,12 +2614,12 @@ export default {
       craft.create(formData).then((res) => {
         if (res.data.code === 200) {
           if (this.msgFlag) {
-            this.msgUrl = '/craft/craftDetail/' + res.data.data.id
+            this.msgUrl = '/craft/craftDetail/' + this.$route.params.id + '/' + this.$route.params.type
             this.content = '<span style="color:#1A95FF">添加</span>了一张新工艺单<span style="color:#1A95FF">' + res.data.data.craft_code + '</span>'
             this.sendMsg()
           } else {
             this.$message.success('添加成功')
-            this.$router.push('/craft/craftDetail/' + res.data.data.id)
+            this.$router.push('/craft/craftDetail/' + this.$route.params.id + '/' + this.$route.params.type)
           }
         } else {
           this.$message.error({
@@ -2629,7 +2630,8 @@ export default {
     }
   },
   mounted () {
-    Promise.all([product.detail({
+    let sampleOrProduct = this.$route.params.type === '1' ? product : sample
+    Promise.all([sampleOrProduct.detail({
       id: this.$route.params.id
     }), yarn.list(),
     craftConfig.getAll(),

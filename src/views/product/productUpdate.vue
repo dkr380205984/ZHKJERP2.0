@@ -419,26 +419,30 @@ export default {
       })
     },
     deleteFitting (index, id) {
-      if (this.fittingInfo.length === 1) {
-        this.$message.error('配件数量不能小于1,如不需要配件可以直接关闭配件选项')
-        return
-      }
       this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        product.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.fittingInfo.splice(index)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }
-        })
+        if (id) {
+          product.delete({
+            id: id
+          }).then((res) => {
+            if (res.data.status) {
+              this.fittingInfo.splice(index)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            }
+          })
+        } else {
+          this.fittingInfo.splice(index)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',

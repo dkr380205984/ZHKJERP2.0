@@ -156,23 +156,23 @@
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="!detail.has_craft">待添加</div>
+                      v-if="!detail.craft_info">待添加</div>
                     <div class="text"
-                      v-if="detail.has_craft">{{detail.craft_info.user_name}}</div>
+                      v-if="detail.craft_info">{{detail.craft_info.user_name}}</div>
                     <div class="text"
-                      v-if="detail.has_craft">{{detail.craft_info.updated_at.slice(0,10)}}</div>
+                      v-if="detail.craft_info">{{detail.craft_info.create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="!detail.has_craft"
+                  <span v-if="!detail.craft_info"
                     class="opration">添加</span>
-                  <span v-if="detail.has_craft"
+                  <span v-if="detail.craft_info"
                     class="opration">预览</span>
-                  <span v-if="detail.has_craft"
+                  <span v-if="detail.craft_info"
                     class="opration">打印</span>
-                  <span v-if="detail.has_craft"
+                  <span v-if="detail.craft_info"
                     class="opration">详情</span>
-                  <span v-if="detail.has_craft"
+                  <span v-if="detail.craft_info"
                     class="opration">...</span>
                 </div>
               </div>
@@ -189,7 +189,7 @@
                     <div class="text"
                       v-if="detail.product_plan_info">{{detail.product_plan_info.user_name}}</div>
                     <div class="text"
-                      v-if="detail.product_plan_info">{{detail.product_plan_info.updated_at.slice(0,10)}}</div>
+                      v-if="detail.product_plan_info">{{detail.product_plan_info.update_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
@@ -312,9 +312,9 @@ export default {
         flower_id: '',
         color: [],
         has_craft: 0,
-        craft_info: {},
+        craft_info: null,
         has_plan: 0,
-        product_plan_info: '',
+        product_plan_info: null,
         quotation_info: [],
         image: [],
         component: [],
