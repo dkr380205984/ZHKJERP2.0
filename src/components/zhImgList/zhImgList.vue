@@ -1,6 +1,6 @@
 <template>
   <div class="zh_img_list"
-    @click.stop="(type === 'show' ? showBig : goRouter())">
+    @click.stop="(type === 'show' ? showBig() : goRouter())">
     <div class="hover_bg">
       <div class="handle_btn_context">
         <span class="left el-icon-arrow-left handle_btn_item"
@@ -13,17 +13,16 @@
         <span>{{type === 'show' ? '点击查看' : '查看详情'}}</span>
       </div>
     </div>
-    <img :src="selfList[index].thumb"
+    <img :src="selfList[index].thumb || defaultImage"
       class="img"
       :onerror="defaultImg">
     <div class="zh_img_screen"
-      v-show="isClickFlag"
-      @click.stop="false">
+      v-show="isClickFlag">
       <!--此处click事件是为了防止冒泡，prevent修饰符不知为何没用了-->
       <div class="close"
         @click.stop="isClickFlag = !isClickFlag">点此退出预览</div>
       <div class="zh_img_box">
-        <img :src="selfList[index].image_url"
+        <img :src="selfList[index].image_url || defaultImage"
           :onerror="defaultImg"
           class="screen_img">
         <div class="left handle_btn_item el-icon-arrow-left"
@@ -32,7 +31,7 @@
           @click.stop="lastFlag ? false : index++"></div>
         <ul class="handle_indicator">
           <li v-for="(item,key) in selfList"
-            :class="index === key ? 'active' : false"
+            :class="index === key ? 'active' : ''"
             :key="key"
             @click="index = key"></li>
         </ul>
@@ -63,6 +62,7 @@ export default {
       lastFlag: false,
       firstFlag: true,
       isClickFlag: false,
+      defaultImage: require('@/assets/image/index/noPic.jpg'),
       defaultImg: 'this.src="' + require('@/assets/image/index/noPic.jpg') + '"'
     }
   },
@@ -95,13 +95,14 @@ export default {
   },
   computed: {
     selfList () {
-      return this.list.length === 0 ? [{
+      return !this.list || this.list.length === 0 ? [{
         image_url: '',
         thumb: ''
       }] : this.list
     }
   },
   mounted () {
+    console.log(this.list)
     if (this.list.length === 1 || this.list.length === 0) {
       this.firstFlag = true
       this.lastFlag = true

@@ -153,17 +153,16 @@ export default {
         page: this.pages
       }).then(res => {
         this.list = res.data.data.map(item => {
-          let img = []
-          console.log(this.$flatten(item.product_info))
-          let number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
-            return Number(total) + Number(itemNum)
-          })
           return {
             id: item.id,
             order_code: item.order_code,
             client_name: item.client_name,
-            image: img,
-            number: number,
+            image: this.$mergeData(item.product_info, { mainRule: 'product_code', otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => item.image).reduce((total, item) => {
+              return total.concat(item)
+            }),
+            number: item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+              return Number(total) + Number(itemNum)
+            }),
             group_name: item.group_name,
             order_time: item.order_time
           }

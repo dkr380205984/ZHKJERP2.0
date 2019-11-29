@@ -233,9 +233,9 @@
             <div class="col">{{item.product_code}}</div>
             <div class="col">{{item|filterType}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title}}</div>
+            <div class="col">{{item.name}}</div>
             <div class="col">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.images"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
