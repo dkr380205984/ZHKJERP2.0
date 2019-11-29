@@ -5,7 +5,7 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
-        <span class="productCode">{{product_code}}</span>
+        <span class="productCode">{{sample_product_code}}</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -183,7 +183,7 @@
         :key="index">
         <div class="titleNum">配件{{chinaNum[index]}}</div>
         <div class="deleteIcon el-icon-close"
-          @click="deleteFitting(index)"></div>
+          @click="deleteFitting(index,item.part_id)"></div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
@@ -363,7 +363,7 @@ export default {
   data () {
     return {
       loading: true,
-      product_code: '',
+      sample_product_code: '',
       chinaNum: chinaNum,
       name: '',
       type: [],
@@ -419,21 +419,31 @@ export default {
         })
       })
     },
-    deleteFitting (index) {
-      if (this.fittingInfo.length === 1) {
-        this.$message.error('配件数量不能小于1,如不需要配件可以直接关闭配件选项')
-        return
-      }
+    deleteFitting (index, id) {
       this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.fittingInfo.splice(index)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        if (id) {
+          sample.delete({
+            id: id
+          }).then((res) => {
+            if (res.data.status) {
+              this.fittingInfo.splice(index)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            }
+          })
+        } else {
+          this.fittingInfo.splice(index)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -550,6 +560,7 @@ export default {
         this.$message.error('请将样品成分信息填写完整')
         return
       }
+
       let arr = this.ingredient.map(item => {
         return item.ingredient_value
       })
@@ -580,6 +591,7 @@ export default {
       }
       let partData = this.fittingInfo.map((item) => {
         return {
+          part_id: item.part_id ? item.part_id : '',
           part_title: item.fitting_name,
           part_category: '',
           part_color: this.colour.map((item) => {
@@ -599,22 +611,21 @@ export default {
       const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         id: this.$route.params.id,
-        product_code: this.product_code,
-        sample_title: this.name,
+        sample_product_code: this.sample_product_code,
+        name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
-        type: 1,
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        img: imgArr,
-        color: this.colour.map((item) => item.colour),
-        materials: this.ingredient,
-        size: this.size.map(item => {
+        data_image: imgArr,
+        data_color: this.colour.map((item) => { return { color_name: item.colour } }),
+        data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
+        data_size: this.size.map(item => {
           return {
             weight: item.weight,
-            measurement: item.size,
+            size_name: item.size,
             size_info: item.desc
           }
         }),
@@ -653,7 +664,7 @@ export default {
       colour.list(),
       getToken(),
       material.list(),
-      sample.detail({
+      sample.editDetail({
         id: this.$route.params.id
       })]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
@@ -691,15 +702,16 @@ export default {
         item.value = item.name
       })
       let productInfo = res[6].data.data
-      this.sampleName = productInfo.sample_title
-      this.fileArr = productInfo.img.map(item => {
+      this.sample_product_code = productInfo.sample_product_code
+      this.sampleName = productInfo.name
+      this.fileArr = productInfo.image.map(item => {
         return {
           url: item.image_url
         }
       })
       this.size = productInfo.size.map(item => {
         return {
-          size: item.measurement,
+          size: item.size_name,
           desc: item.size_info,
           weight: item.weight
         }
@@ -712,13 +724,24 @@ export default {
       })
       this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
       this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
-      this.flower = productInfo.flower_id_new
-      this.ingredient = productInfo.materials
+      this.flower = productInfo.flower_id
+      this.ingredient = productInfo.component.map((item) => {
+        return {
+          ingredient_name: item.component_name,
+          ingredient_value: item.number
+        }
+      })
       this.hasFitting = productInfo.part_data.length > 0
       this.fittingInfo = productInfo.part_data.map((item) => {
         return {
-          fitting_name: item.part_title,
-          ingredient: item.part_component,
+          part_id: item.id,
+          fitting_name: item.name,
+          ingredient: item.component.map((item) => {
+            return {
+              ingredient_name: item.component_name,
+              ingredient_value: item.number
+            }
+          }),
           size: item.size.map((itemSize) => {
             return {
               size: itemSize.measurement,

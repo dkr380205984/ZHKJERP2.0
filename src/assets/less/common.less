@@ -332,6 +332,33 @@
           }
         }
       }
+      .swichCtn{
+        padding: 0 32px;
+        margin-top: 18px;
+        line-height: 64px;
+        margin-bottom: -22px;
+        border-top: 16px solid #F0F2F5;
+        .swich{
+          cursor: pointer;
+          margin: 0 16px;
+          border-bottom: 2px solid transparent;
+          display: inline-block;
+          font-size: @fontBig;
+          color:@font65;
+          letter-spacing: 1px;
+          &:nth-child(1){
+            margin-left: 0;
+          }
+          &.active{
+            color: @blue;
+            border-color: @blue;
+          }
+        }
+        .btn{
+          float: right;
+          margin: 16px 0;
+        }
+      }
     }
     // 列表页公共样式
     .listCtn{

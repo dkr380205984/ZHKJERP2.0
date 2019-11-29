@@ -147,90 +147,90 @@
           <div class="colCtn">
             <span class="label">关联单据：</span>
             <div class="rectCtn">
-              <!-- <div class="rect">
+              <div class="rect">
                 <div class="tab"
                   v-if="detail.craft_info&&detail.craft_info.length>1">
                   <div class="circle"
-                    :class="{'active':craft_index===index}"
+                    :class="{'active':craft_index===index-1}"
                     v-for="index in detail.craft_info.length"
                     :key="index"
-                    @click="craft_index=index">
+                    @click="craft_index=index-1">
                   </div>
                 </div>
                 <div class="main">
                   <div class="icon"
-                    :class="{'yellow':detail.has_craft===1,'gray':detail.has_craft===0}">
+                    :class="{'yellow':detail.craft_info&&detail.craft_info.length>0,'gray':!detail.craft_info||detail.craft_info.length===0}">
                     <img src="../../assets/image/sample/craft_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="detail.has_craft===0">待添加</div>
+                      v-if="!detail.craft_info||detail.craft_info.length===0">待添加</div>
                     <div class="text"
-                      v-if="detail.has_craft===1">{{detail.craft_info[craft_index].user_name}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].user_name}}</div>
                     <div class="text"
-                      v-if="detail.has_craft===1">{{detail.craft_info[craft_index].create_time.slice(0,10)}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="detail.has_craft===0"
+                  <span v-if="!detail.craft_info||detail.craft_info.length===0"
                     class="opration">添加</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">预览</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">打印</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">详情</span>
-                  <span v-if="detail.has_craft===1"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">...</span>
                 </div>
-              </div> -->
-              <!-- <div class="rect">
+              </div>
+              <div class="rect">
                 <div class="tab"
-                  v-if="detail.product_plan_info&&detail.product_plan_info.length>1">
+                  v-if="detail.plan_info&&detail.plan_info.length>1">
                   <div class="circle"
-                    :class="{'active':plan_index===index}"
-                    v-for="index in detail.product_plan_info.length"
+                    :class="{'active':plan_index===index-1}"
+                    v-for="index in detail.plan_info.length"
                     :key="index"
-                    @click="plan_index=index">
+                    @click="plan_index=index-1">
                   </div>
                 </div>
                 <div class="main">
                   <div class="icon"
-                    :class="{'blue':detail.has_plan===1,'gray':detail.has_plan===0}">
+                    :class="{'blue':detail.plan_info&&detail.plan_info.length>1,'gray':!detail.plan_info||detail.plan_info.length===0}">
                     <img src="../../assets/image/sample/plan_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">配料单</div>
                     <div class="text"
-                      v-if="detail.has_plan===0">待添加</div>
+                      v-if="!detail.plan_info||detail.plan_info.length===0">待添加</div>
                     <div class="text"
-                      v-if="detail.has_plan===1">{{detail.product_plan_info[plan_index].user_name}}</div>
+                      v-if="detail.plan_info&&detail.plan_info.length>1">{{detail.plan_info[plan_index].user_name}}</div>
                     <div class="text"
-                      v-if="detail.has_plan===1">{{detail.product_plan_info[plan_index].create_time.slice(0,10)}}</div>
+                      v-if="detail.plan_info&&detail.plan_info.length>1">{{detail.plan_info[plan_index].update_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="detail.has_plan===0"
+                  <span v-if="!detail.plan_info||detail.plan_info.length===0"
                     class="opration">添加</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">预览</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">打印</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">详情</span>
-                  <span v-if="detail.has_plan===1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">...</span>
                 </div>
-              </div> -->
-              <!-- <div class="rect">
+              </div>
+              <div class="rect">
                 <div class="tab"
                   v-if="detail.quotation_info.length>1">
                   <div class="circle"
-                    :class="{'active':quotation_index===index}"
+                    :class="{'active':quotation_index===index-1}"
                     v-for="index in detail.quotation_info.length"
                     :key="index"
-                    @click="quotation_index=index"></div>
+                    @click="quotation_index=index-1"></div>
                 </div>
                 <div class="main">
                   <div class="icon"
@@ -260,7 +260,7 @@
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration">...</span>
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
@@ -332,7 +332,7 @@ export default {
         has_craft: 0,
         craft_info: [],
         has_plan: 0,
-        product_plan_info: [],
+        plan_info: [],
         quotation_info: [],
         img: [],
         materials: [],
@@ -351,16 +351,6 @@ export default {
   },
   filters: {
     filterMaterials (arr) {
-      console.log(arr)
-      // let str = ''
-      // if (arr[0] && arr[0].component_name) {
-      //   arr.forEach((item) => {
-      //     str += item.component_name + item.number + '%' + ' / '
-      //   })
-      //   return str.substring(0, str.length - 2)
-      // } else {
-      //   return '无'
-      // }
       if (arr) {
         let newArr = arr.filter(item => item.component_name && item.number).map(item => {
           return item.component_name + item.number + '%'
@@ -385,6 +375,9 @@ export default {
         this.detail = res.data.data
         if (this.detail.image.length === 0) {
           this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
+        }
+        if (!this.detail.quotation_info) {
+          this.detail.quotation_info = []
         }
         this.loading = false
       }

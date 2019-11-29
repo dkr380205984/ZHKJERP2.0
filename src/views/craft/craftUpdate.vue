@@ -4,31 +4,31 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title">产品信息</span>
+        <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品编号：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
             <span class="text">{{productInfo.product_code}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品名称：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
+              :class="{'blue':productInfo.title}">{{productInfo.title?productInfo.title:'无'}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品品类：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
             <span class="text">{{productInfo.category_info.product_category}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">产品成分：</span>
-            <span class="text">{{productInfo.component|filterMaterials}}</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
+            <span class="text">{{productInfo.materials|filterMaterials}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品配色：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
             <span class="text">
               <span v-for="(item,index) in productInfo.color"
                 :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
@@ -38,11 +38,11 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品规格：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -1042,7 +1042,7 @@ export default {
           name: ''
         },
         color: [],
-        component: [],
+        materials: [],
         create_time: '',
         user_name: '',
         size: [],
@@ -2249,9 +2249,10 @@ export default {
       }
       let formData = {
         id: this.craftId,
+        product_id: this.productInfo.product_id,
+        product_type: this.$route.params.type,
         is_draft: 1,
         company_id: window.sessionStorage.getItem('company_id'),
-        product_id: this.$route.params.id,
         weight: this.weight,
         desc: this.desc,
         yarn_coefficient: this.allMaterial.map((item, index) => {
@@ -2416,6 +2417,7 @@ export default {
           xiachiya: this.weftInfo.xiachiya,
           neichang: this.weftInfo.neichang,
           rangwei: this.weftInfo.rangwei,
+
           total: this.weftInfo.total,
           contract_ratio: 100 // 缩率工艺单用不到，默认100
         },
@@ -2460,7 +2462,7 @@ export default {
             this.sendMsg()
           } else {
             this.$message.success('修改成功')
-            this.$router.push('/craft/craftDetail/' + res.data.data.id)
+            this.$router.push('/craft/craftDetail/' + this.productInfo.product_id + '/2')
           }
         } else {
           this.$message.error({
@@ -2476,11 +2478,10 @@ export default {
       yarnColor.list(),
       material.list(),
       penetrationMethod.list(),
-      craft.getByProduct({
-        product_id: this.$route.params.id
+      craft.detail({
+        id: this.$route.params.id
       })
     ]).then((res) => {
-      console.log(res)
       this.yarn.yarnArr = res[0].data.data.map((item) => {
         return {
           value: item.name

@@ -125,6 +125,14 @@
             <span class="text">此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行</span>
           </div>
         </div>
+        <div class="swichCtn">
+          <div class="swich active">工艺单1</div>
+          <div class="swich">工艺单2</div>
+          <div class="swich">工艺单3</div>
+          <div class="swich">工艺单4</div>
+          <div class="swich">工艺单5</div>
+          <div class="btn btnBlue">设为默认</div>
+        </div>
       </div>
     </div>
     <div class="module">

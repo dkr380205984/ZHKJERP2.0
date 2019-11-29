@@ -193,29 +193,18 @@
                     <el-dropdown-item>
                       <span class="delete">删除样品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="!item.has_craft">
+                    <el-dropdown-item @click.native="$router.push('/craft/craftCreate/'+ item.id + '/' + 2)">
                       <span class="create">添加工艺单</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft">
+                    <el-dropdown-item v-if="item.has_craft"
+                      @click.native="$router.push('/craft/craftDetail/'+ item.id + '/' + 2)">
                       <span class="detail">工艺单详情</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft">
-                      <span class="updated">修改工艺单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft">
-                      <span class="delete">删除工艺单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="!item.has_plan">
+                    <el-dropdown-item @click.native="$router.push('/productPlan/productPlanCreate/'+ item.id + '/' + 2)">
                       <span class="create">添加配料单</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_plan">
+                    <el-dropdown-item @click.native="$router.push('/productPlan/productPlanDetail/'+ item.id + '/' + 2)">
                       <span class="detail">配料单详情</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_plan">
-                      <span class="updated">修改配料单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_plan">
-                      <span class="delete">删除配料单</span>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>

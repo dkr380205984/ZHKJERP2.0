@@ -605,7 +605,6 @@ export default {
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
-        // type: 1,
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,

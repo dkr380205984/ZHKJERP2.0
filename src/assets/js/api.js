@@ -16,6 +16,8 @@ const sample = {
   create: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
   update: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/sample/product/detail`, params),
+  editDetail: (params) => http.get(`${baseUrl}/sample/product/edit`, params), // 样品修改时获取的详情数据
+  delete: (params) => http.post(`${baseUrl}/sample/product/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/sample/product/list`, params)
 }
 // 产品管理
@@ -85,6 +87,7 @@ const craft = {
   delete: (params) => http.post(`${baseUrl}/product/craft/draft/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/craft/one`, params),
   getByProduct: (params) => http.get(`${baseUrl}/craft/product/one`, params),
+  setDefault: (params) => http.post(`${baseUrl}/product/craft/default`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/craft/list`, params)
 }
 // 客户管理
@@ -135,7 +138,9 @@ const planList = {
 // 配料单管理
 const productPlan = {
   create: (params) => http.post(`${baseUrl}/material/match/card/save`, params, 'application/json'),
-  getByProduct: (params) => http.get(`${baseUrl}/material/match/card/product`, params)
+  detail: (params) => http.get(`${baseUrl}/material/match/card/one`, params),
+  getByProduct: (params) => http.get(`${baseUrl}/material/match/card/product`, params),
+  setDefault: (params) => http.post(`${baseUrl}/material/match/card/default`, params, 'application/json') // 设置默认配料单
 }
 // 工厂信息管理
 const company = {

@@ -4,32 +4,31 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title">产品信息</span>
-        <span class="atRight">填写示例</span>
+        <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品编号：</span>
-            <span class="text">{{productInfo.product_code}}</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品名称：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
               :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品品类：</span>
-            <span class="text">{{productInfo.category_info.product_category}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">产品成分：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
             <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
           <div class="colCtn">
-            <span class="label">产品配色：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
             <span class="text">
               <span v-for="(item,index) in productInfo.color"
                 :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
@@ -39,11 +38,11 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">产品规格：</span>
+            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -128,7 +127,7 @@
                   </div>
                   <div class="tcolumn">
                     <span class="inputs">
-                      <el-input placeholder="请输入物料属性"
+                      <el-input :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
                         v-model="itemMaterial.attr"></el-input>
                     </span>
                   </div>
@@ -137,9 +136,10 @@
                       <zh-input placeholder="请输入物料数量"
                         type="number"
                         v-model="itemMaterial.number">
-                        <template v-if="item.chooseMaterial===1"
-                          slot="append">g</template>
                       </zh-input>
+                      <zh-input v-model="itemMaterial.unit"
+                        class="unit"
+                        placeholder="单位"></zh-input>
                     </span>
                   </div>
                   <div class="tcolumn flexCenter">
@@ -170,7 +170,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { product, craft, yarn, material, yarnColor, productPlan } from '@/assets/js/api.js'
+import { product, sample, craft, yarn, material, yarnColor, productPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -219,10 +219,12 @@ export default {
   methods: {
     // 添加原料
     addMaterial (index) {
+      let unit = this.list[index].chooseMaterial === 1 ? 'g' : ''
       this.list[index].colourSizeArr[this.list[index].colourSizeIndex].materials.push({
         name: '',
         attr: '',
-        number: ''
+        number: '',
+        unit: unit
       })
     },
     deleteMaterial (index, indexMaterial) {
@@ -249,7 +251,6 @@ export default {
     },
     // 快捷操作 同步尺寸或者配色相同的信息
     shortcutOpr (index) {
-      console.log(this.list)
       let nowList = this.list[index]
       let nowColorSize = nowList.colourSizeArr[nowList.colourSizeIndex]
       // 第一步，找尺码相同的数据
@@ -272,6 +273,7 @@ export default {
           return {
             name: item.name,
             number: item.number,
+            unit: item.unit,
             attr: colourArr[index] ? colourArr[index].attr : ''
           }
         })
@@ -280,21 +282,20 @@ export default {
           return {
             name: item.name,
             attr: item.attr,
+            unit: item.unit,
             number: sizeArr[index] ? sizeArr[index].number : ''
           }
         })
       }
     },
     submit () {
-      this.loading = true
       let formData = []
-      console.log(this.list)
       this.list.forEach((item, index) => {
         let json = {
           part_type: index === 0 ? 1 : 2,
           id: null,
           product_id: item.product_id,
-          product_type: 1,
+          product_type: this.$route.params.type,
           material_info: []
         }
         item.colourSizeArr.forEach((itemCS) => {
@@ -305,38 +306,61 @@ export default {
               product_size: itemCS.size_name,
               material_name: itemMat.name,
               material_attribute: itemMat.attr,
-              weight: itemMat.number
+              weight: itemMat.number,
+              unit: itemMat.unit
             })
           })
         })
         formData.push(json)
       })
+      let error = null
+      formData.forEach((item) => {
+        item.material_info.forEach((item) => {
+          if (!item.material_name) {
+            error = '检测到有未填写物料名称，请填写'
+          }
+          if (!item.material_attribute) {
+            error = '检测到有未填写物料属性/颜色，请填写'
+          }
+          if (!item.weight) {
+            error = '检测到有未填写物料数量，请填写'
+          }
+          if (!item.unit) {
+            error = '检测到有未填写物料单位名称，请填写'
+          }
+        })
+      })
+      if (error) {
+        this.$message.error(error)
+        return
+      }
+      this.loading = true
       productPlan.create({ data: formData }).then((res) => {
         if (res.data.status) {
           this.$message.success('添加成功')
           this.loading = false
-          this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id)
+          this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
         }
       })
     }
   },
   mounted () {
-    Promise.all([product.detail({
+    let sampleOrProduct = this.$route.params.type === '1' ? product : sample
+    Promise.all([sampleOrProduct.detail({
       id: this.$route.params.id
     }), yarn.list(),
     material.list(),
     yarnColor.list(),
     craft.getByProduct({
       product_id: this.$route.params.id,
-      type: 1
+      product_type: this.$route.params.type
     })]).then((res) => {
-      console.log(res[4])
       this.productInfo = res[0].data.data
       this.list[0].product_id = this.productInfo.id
       this.productInfo.size.forEach((itemSize) => {
         this.productInfo.color.forEach((itemColour) => {
           this.list[0].colourSizeArr.push({
-            size_name: itemSize.measurement,
+            size_name: itemSize.measurement || itemSize.size_name,
             size_id: itemSize.id,
             colour_name: itemColour.color_name,
             colour_id: itemColour.id,
@@ -344,9 +368,10 @@ export default {
           })
         })
       })
-      this.productInfo.part_data.forEach((itemPart) => {
+      let part = this.productInfo.part_info || this.productInfo.part_data
+      part.forEach((itemPart) => {
         let json = {
-          name: itemPart.part_title,
+          name: itemPart.part_title || itemPart.name,
           product_id: itemPart.id,
           chooseMaterial: 0,
           colourSizeArr: [],
@@ -354,7 +379,7 @@ export default {
         }
         let colourSizeArr = JSON.parse(JSON.stringify(this.list[0].colourSizeArr))
         colourSizeArr.forEach((item) => {
-          item.partNum = itemPart.size.find((itemFind) => itemFind.measurement === item.size_name).number
+          item.partNum = itemPart.size.find((itemFind) => itemFind.measurement === item.size_name || itemFind.size_name === item.size_name).number
         })
         json.colourSizeArr = colourSizeArr
         this.list.push(json)
@@ -371,11 +396,11 @@ export default {
       })
       // 导入工艺单数据
       let craft = res[4].data.data
-      if (craft) {
+      if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft)) {
         this.$alert('检测到该产品已有工艺单信息，已自动为您同步了工艺单原料信息', '提示', {
           confirmButtonText: '确定'
         })
-        let craftMat = craft.peise_yarn_wight
+        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_wight : craft[0].peise_yarn_wight
         this.list[0].colourSizeArr.forEach((item) => {
           if (craftMat[item.colour_name]) {
             let arr = []
@@ -384,7 +409,8 @@ export default {
                 arr.push({
                   name: keyMat,
                   attr: keyColor,
-                  number: craftMat[item.colour_name][keyMat][keyColor]
+                  number: craftMat[item.colour_name][keyMat][keyColor],
+                  unit: 'g'
                 })
               })
             })
@@ -400,4 +426,16 @@ export default {
 
 <style lang="less" scoped>
 @import "~@/assets/less/productPlan/productPlanCreate.less";
+</style>
+<style lang="less">
+#productPlanCreate {
+  .unit {
+    .zhInput {
+      padding: 0;
+      border: 0;
+      height: 28px;
+      text-align: center;
+    }
+  }
+}
 </style>

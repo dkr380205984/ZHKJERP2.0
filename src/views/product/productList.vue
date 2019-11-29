@@ -194,34 +194,20 @@
                       <span class="delete">删除产品</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="!item.has_craft"
-                      @click.native="$router.push('/craft/craftCreate/'+ item.id)">
+                      @click.native="$router.push('/craft/craftCreate/'+ item.id + '/' + 1)">
                       <span class="create">添加工艺单</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_craft"
-                      @click.native="$router.push('/craft/craftDetail/'+item.id)">
+                      @click.native="$router.push('/craft/craftDetail/'+item.id + '/' + 1)">
                       <span class="detail">工艺单详情</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft"
-                      @click.native="$router.push('/craft/craftUpdate/'+item.id)">
-                      <span class="updated">修改工艺单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_craft">
-                      <span class="delete">删除工艺单</span>
-                    </el-dropdown-item>
                     <el-dropdown-item v-if="!item.has_plan"
-                      @click.native="$router.push('/productPlan/productPlanCreate/'+item.id)">
+                      @click.native="$router.push('/productPlan/productPlanCreate/'+item.id+ '/' + 1)">
                       <span class="create">添加配料单</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_plan"
-                      @click.native="$router.push('/productPlan/productPlanDetail/'+item.id)">
+                      @click.native="$router.push('/productPlan/productPlanDetail/'+item.id+ '/' + 1)">
                       <span class="detail">配料单详情</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_plan"
-                      @click.native="$router.push('/productPlan/productPlanUpdate/'+item.id)">
-                      <span class="updated">修改配料单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item v-if="item.has_plan">
-                      <span class="delete">删除配料单</span>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
