@@ -178,10 +178,13 @@
                 style="width:172px"
                 v-model="material.materialWarp[index].value"
                 placeholder="请输入辅助原料"></el-input>
-              <el-input class="element"
+              <zh-input class="element"
+                type="custom"
+                :customReg="/^[+]{0,1}(\d+)$/"
+                errorMsg="请输入正整数"
                 style="width:172px;margin-left:16px"
                 v-model="material.materialWarp[index].number"
-                placeholder="请输入数量"></el-input>
+                placeholder="请输入数量"></zh-input>
               <div class="editBtn"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
                 @click="index===0?addMaterial('Warp'):deleteMaterial('Warp',index)">
