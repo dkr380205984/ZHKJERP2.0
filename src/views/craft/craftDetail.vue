@@ -1302,7 +1302,7 @@ export default {
         item.apply = item.apply.map((index) => {
           return {
             number: index,
-            weight: (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
           }
         })
       })
@@ -1310,7 +1310,7 @@ export default {
         item.apply = item.apply.map((index) => {
           return {
             number: index,
-            weight: (this.colorNumber.weft[index] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+            weight: item.number * (this.colorNumber.weft[index] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
           }
         })
       })
