@@ -150,7 +150,7 @@
                   :key="index">
                   <el-tooltip class="item"
                     effect="dark"
-                    :content="item.weight+'g'"
+                    :content="item.weight.toFixed(1)+'g'"
                     placement="top">
                     <span class="colorText">{{filterMethods(item.number)}}</span>
                   </el-tooltip>
@@ -494,7 +494,7 @@
                   :key="index">
                   <el-tooltip class="item"
                     effect="dark"
-                    :content="item.weight+'g'"
+                    :content="item.weight.toFixed(1)+'g'"
                     placement="top">
                     <span class="colorText">{{filterMethods(item.number)}}</span>
                   </el-tooltip>
