@@ -17,7 +17,7 @@
             <i class="el-icon-bell elIcon"></i>
           </el-badge>
           <i class="el-icon-setting elIcon"
-            @click="showSetting=true"></i>
+            @click="$router.push('/setting/setting')"></i>
           <div class="headImg"></div>
           <div class="selectCtn">
             <el-dropdown @command="commondHandler"
@@ -142,101 +142,14 @@ export default {
           url: '/material/materialPlanList'
         }]
       }, {
-        name: '物料管理',
+        name: '预定购管理',
         icon: require('@/assets/image/index/物料管理.png'),
         children: [{
-          name: '原料预订购',
-          url: '/index/rawMaterialPurchase'
+          name: '物料预订购',
+          url: '/materialOrder/materialOrderCreate'
         }, {
-          name: '预订购入库',
-          url: '/index/rawMaterialPurchaseList'
-        }, {
-          name: '物料订购加工',
-          url: '/index/rawMaterialOrderList'
-        }, {
-          name: '物料出库入库',
-          url: '/index/rawMaterialStockList'
-        }]
-      }, {
-        name: '织造加工管理',
-        icon: require('@/assets/image/index/织造加工管理.png'),
-        children: [{
-          name: '织造加工分配',
-          url: '/index/productDesignList2'
-        }]
-      }, {
-        name: '收发管理',
-        icon: require('@/assets/image/index/收发管理.png'),
-        children: [{
-          name: '产品出入库列表',
-          url: '/index/orderStockList'
-        }]
-      }, {
-        name: '检验管理',
-        icon: require('@/assets/image/index/检验管理.png'),
-        children: [{
-          name: '产品检验列表',
-          url: '/index/productExaminationList'
-        }]
-      }, {
-        name: '装箱出库管理',
-        icon: require('@/assets/image/index/装箱出库管理.png'),
-        children: [{
-          name: '装箱出库列表',
-          url: '/index/packagOutStockList'
-        }]
-      }, {
-        name: '库存管理',
-        icon: require('@/assets/image/index/库存管理.png'),
-        children: [
-          {
-            name: '添加仓库',
-            url: '/index/stockCreate'
-          }, {
-            name: '仓库列表',
-            url: '/index/stockList'
-          }]
-      }, {
-        name: '财务管理',
-        icon: require('@/assets/image/index/财务管理.png'),
-        children: [{
-          name: '订单财务统计',
-          url: '/index/orderFinancialList'
-        }, {
-          name: '合作公司财务统计',
-          url: '/index/foreignTradeFinancialList'
-        }, {
-          name: '产品产量统计',
-          url: '/index/productFinancialList'
-        }, {
-          name: '物料使用统计',
-          url: '/index/materialFinancialList'
-        }]
-      }, {
-        name: '客户管理',
-        icon: require('@/assets/image/index/客户管理.png'),
-        children: [{
-          name: '添加客户',
-          url: '/index/foreignTradeCreate'
-        }, {
-          name: '客户列表',
-          url: '/index/foreignTradeList'
-        }]
-      }, {
-        name: '系统设置',
-        icon: require('@/assets/image/index/系统设置.png'),
-        children: [{
-          name: '系统设置',
-          url: '/index/setting'
-        }, {
-          name: '权限设置',
-          url: '/index/permissionsAdd'
-        }, {
-          name: '添加权限',
-          url: '/index/permissionsAppend'
-        }, {
-          name: '工厂信息设置',
-          url: '/index/companyInfoSetting'
+          name: '物料预定购列表',
+          url: '/materialOrder/materialOrderList'
         }]
       }]
     }
