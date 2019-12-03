@@ -21,7 +21,9 @@
           <div class="list active">产品尺码</div>
           <div class="list">产品分类</div>
         </div>
-        <div class="mainCtn"></div>
+        <div class="mainCtn">
+
+        </div>
       </div>
     </div>
   </div>

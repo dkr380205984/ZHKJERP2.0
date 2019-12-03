@@ -168,7 +168,7 @@ const routes = [
       name: '物料预定购入库',
       component: () => import('../views/materialOrder/materialOrderDetail.vue')
     }, {
-      path: '/materialOrder/materialOrderList',
+      path: '/materialOrder/materialOrderList/:params',
       name: '物料预定购列表',
       component: () => import('../views/materialOrder/materialOrderList.vue')
     }, {
