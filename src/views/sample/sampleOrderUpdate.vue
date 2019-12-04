@@ -385,7 +385,7 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
-            @click="this.$router.go(-1)">返回</div>
+            @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="saveAll">提交</div>
         </div>
@@ -561,7 +561,7 @@ export default {
     },
     saveAll () {
       if (!this.lock) {
-        this.$message.error('请勿频繁点击')
+        this.$message.warning('请勿频繁点击')
         return
       }
       this.lock = false
@@ -613,6 +613,7 @@ export default {
         return
       }
       let data = {
+        id: this.$route.params.id,
         title: this.sample_order_title,
         type: this.sample_type,
         order_time: this.order_time,
@@ -637,7 +638,7 @@ export default {
       sampleOrder.create(data).then(res => {
         this.lock = true
         if (res.data.status) {
-          this.$message.success('添加成功')
+          this.$message.success('修改成功')
           this.$router.push('/sample/sampleOrderDetail/' + res.data.data.id)
         } else {
           this.$message.error(res.data.message)
@@ -656,10 +657,48 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list()
+      group.list(),
+      sampleOrder.editDetail({
+        id: this.$route.params.id
+      })
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
+      // 数据初始化
+      let sampleOrderInfo = res[2].data.data
+      this.sample_order_title = sampleOrderInfo.title
+      this.sample_type = sampleOrderInfo.type
+      this.order_time = sampleOrderInfo.order_time
+      this.group_id = sampleOrderInfo.group_id
+      this.client_id = sampleOrderInfo.client_id.toString()
+      this.getContact(this.client_id)
+      this.contact_id = sampleOrderInfo.contacts_id
+      this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+      this.checkedProList = this.checkedProList.map(itemPro => {
+        itemPro.sample_product_code = itemPro.product_info.product_code
+        itemPro.sizeColor = itemPro.product_info.size_measurement.map(itemSize => {
+          return {
+            value: itemSize.size_name,
+            label: itemSize.size_name,
+            children: itemPro.product_info.color.map(itemColor => {
+              return {
+                value: itemColor.color_name,
+                label: itemColor.color_name
+              }
+            })
+          }
+        })
+        itemPro.sizeInfo = itemPro.sizeInfo.map(items => {
+          return {
+            size_color: [items.size, items.color],
+            number: items.number
+          }
+        })
+        itemPro.unit = itemPro.product_info.unit
+        return itemPro
+      })
+      this.compiled_time = sampleOrderInfo.deliver_time
+      this.remark = sampleOrderInfo.desc
       this.loading = false
     })
   },

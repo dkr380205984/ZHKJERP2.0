@@ -1,0 +1,123 @@
+@import '../common.less';
+#sampleOrderDetail{
+  .flex32{
+    flex:3.2
+  }
+  .flex12{
+    flex:1.2
+  }
+  .flex40{
+    flex: 4.0;
+  }
+  .lineH54{
+    line-height: 54px;
+  }
+  .flexColCenter{    
+    display: flex;
+    align-items: center;
+  }
+  .flexColumn{
+    display: flex;
+    flex-direction: column;
+    .flexColumn_item{
+      margin: 4px 0;
+    }
+  }
+  .popup_input{
+    width: 380px;
+  }
+  .popup_input_small{
+    width: 186px;
+    margin-right: 8px;
+    &:last-of-type{
+      margin-right: 0;
+    }
+  }
+  .progress_box{
+    height: 20px;
+    margin: 32px;
+    width: calc(100% - 64px);
+    position: relative;
+    box-sizing: border-box;
+    &::after{
+      content: '';
+      display: block;
+      position: absolute;
+      height: 20px;
+      width: 100%;
+      background-color: #f0f0f0;
+    }
+    .progress_contact{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: inherit;
+      background-color: @blue;
+      z-index: 2;
+      transition: width 0.8s linear;
+    }
+    .timeCtn{
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: auto;
+      transform: translate(-50%,-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      white-space: nowrap;
+      .time{
+        margin-bottom: 11px;
+        background-color: rgba(255,255,255,0.8);
+      }
+      .line{
+        width: 2px;
+        height: 35px;
+        background-color: @red;
+        margin-bottom: 11px;
+        position: relative;
+        &::before{
+          display: block;
+          content: '';
+          width: 5px;
+          height: 3px;
+          background-color: @red;
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        &::after{
+          display: block;
+          content: '';
+          width: 5px;
+          height: 3px;
+          background-color: @red;
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+      }
+      .time_name{
+        background-color: rgba(255,255,255,0.8);
+      }
+    }
+  }
+  .twoLineText{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    &.middle{
+      align-items: center;
+    }
+    line-height: 1em;
+    .blue{
+      color: @blue;
+    }
+  }
+}

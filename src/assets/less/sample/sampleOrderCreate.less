@@ -1,24 +1,17 @@
 @import '../common.less';
 #sampleOrderCreate{
-  .checkProBox{
+  .checkSizeColorBox{
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
     height: auto;
-    .flexWarp{
-      position: relative;
-      width: 33%;
-      padding-right: 72px;
-      box-sizing: border-box;
-      margin: 4px 0;
-      .editBtn{
-        position: absolute;
-        left: auto;
-        width: 72px;
-        right: 0;
+    .flexWarpBox{
+      width: 100%;
+      display: flex;
+      margin-bottom: 8px;
+      &:last-of-type{
         margin: 0;
-        text-align: center;
       }
     }
   }

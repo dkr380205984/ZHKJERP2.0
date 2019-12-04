@@ -598,7 +598,7 @@ export default {
           data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
-      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return { filr_url: 'https://zhihui.tlkrzf.com/' + item.response.key } })
+      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return { file_url: 'https://zhihui.tlkrzf.com/' + item.response.key } })
       let formData = {
         sample_product_code: this.sample_code.join(''),
         name: this.name,

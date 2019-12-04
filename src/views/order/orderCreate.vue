@@ -436,13 +436,13 @@
                     style="user-select: none;">
                     <span class="tb_handle_btn blue"
                       @click="addItem(itemPro.product_info,'sizeColor')">添加色组</span>
-                    <span class="tb_handle_btn red"
+                    <span class="tb_handle_btn blue"
                       @click="deleteItem(itemPro.product_info,indexSize)">删除色组</span>
                   </span>
                 </span>
               </span>
               <span class="tb_row middle flex06">
-                <span class="tb_handle_btn red"
+                <span class="tb_handle_btn blue"
                   @click="deleteItem(itemBatch.batch_info,indexPro)">删除产品</span>
               </span>
             </div>

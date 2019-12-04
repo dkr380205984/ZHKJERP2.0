@@ -40,10 +40,6 @@ const routes = [
       name: '列表页',
       component: () => import('../views/css/list.vue')
     }, {
-      path: '/sample/sampleOrderCreate',
-      name: '样单添加',
-      component: () => import('../views/sample/sampleOrderCreate.vue')
-    }, {
       path: '/sample/sampleCreate',
       name: '样品添加',
       component: () => import('../views/sample/sampleCreate.vue')
@@ -61,12 +57,20 @@ const routes = [
       component: () => import('../views/sample/sampleList.vue')
     }, {
       path: '/sample/sampleOrderCreate',
-      name: '样单添加',
+      name: '样品订单添加',
       component: () => import('../views/sample/sampleOrderCreate.vue')
     }, {
-      path: '/sample/sampleOrderList',
-      name: '样单列表',
+      path: '/sample/sampleOrderUpdate/:id',
+      name: '样品订单修改',
+      component: () => import('../views/sample/sampleOrderUpdate.vue')
+    }, {
+      path: '/sample/sampleOrderList/:params',
+      name: '样品订单列表',
       component: () => import('../views/sample/sampleOrderList.vue')
+    }, {
+      path: '/sample/sampleOrderDetail/:id',
+      name: '样品订单详情',
+      component: () => import('../views/sample/sampleOrderDetail.vue')
     }, {
       path: '/product/productCreate',
       name: '产品添加',
@@ -180,6 +184,10 @@ router.beforeEach((to, from, next) => {
     '样品添加': ['织为云', '样品添加'],
     '样品详情': ['织为云', '样品列表', '样品详情'],
     '样品列表': ['织为云', '样品列表'],
+    '样品订单添加': ['织为云', '样品订单添加'],
+    '样品订单详情': ['织为云', '样品订单列表', '样品订单详情'],
+    '样品订单修改': ['织为云', '样品订单列表', '样品订单修改'],
+    '样品订单列表': ['织为云', '样品订单列表'],
     '产品添加': ['织为云', '产品添加'],
     '产品列表': ['织为云', '产品列表'],
     '产品详情': ['织为云', '产品列表', '产品详情'],

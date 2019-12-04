@@ -89,11 +89,11 @@ export default {
           name: '样品列表',
           url: '/sample/sampleList/page=&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
         }, {
-          name: '样单添加',
+          name: '样品订单添加',
           url: '/sample/sampleOrderCreate'
         }, {
-          name: '样单列表',
-          url: '/sample/sampleOrderList'
+          name: '样品订单列表',
+          url: '/sample/sampleOrderList/page=&&keyword=&&date=&&client_id=&&group_id='
         }]
       }, {
         name: '报价管理',
@@ -136,10 +136,10 @@ export default {
         icon: require('@/assets/image/index/计划生产管理.png'),
         children: [{
           name: '新建物料计划单',
-          url: '/material/materialPlanCreate'
+          url: '/materialPlan/materialPlanCreate'
         }, {
           name: '物料计划单列表',
-          url: '/material/materialPlanList'
+          url: '/materialPlan/materialPlanList'
         }]
       }, {
         name: '物料管理',

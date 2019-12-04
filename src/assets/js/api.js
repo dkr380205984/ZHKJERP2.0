@@ -146,13 +146,22 @@ const productPlan = {
 const company = {
   detail: (params) => http.get(`${baseUrl}/company/detail`, params)
 }
+// 订单管理
 const order = {
   create: (params) => http.post(`${baseUrl}/order/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/order/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/order/list`, params),
   detail: (params) => http.get(`${baseUrl}/order/detail`, params)
 }
+const sampleOrder = {
+  create: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
+  // delete: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
+  editDetail: (params) => http.get(`${baseUrl}/sample/orders/edit`, params),
+  list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
+  detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params)
+}
 export {
+  sampleOrder,
   order,
   company,
   planList,

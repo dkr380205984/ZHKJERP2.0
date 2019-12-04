@@ -1250,7 +1250,7 @@ export default {
     setCardData (item) {
       return {
         product_code: item.product_code,
-        img: item.img.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
+        img: item.images.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
         type_name: item.type_name,
         style_name: item.style_name,
