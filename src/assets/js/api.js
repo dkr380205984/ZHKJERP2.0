@@ -146,7 +146,11 @@ const productPlan = {
 const company = {
   detail: (params) => http.get(`${baseUrl}/company/detail`, params)
 }
-// 订单管理
+// 仓库
+const stock = {
+  list: (params) => http.get(`${baseUrl}/factory/store/list`, params)
+}
+// 订单
 const order = {
   create: (params) => http.post(`${baseUrl}/order/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/order/delete`, params, 'application/json'),
@@ -160,8 +164,21 @@ const sampleOrder = {
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params)
 }
+
+// 物料预定购
+const materialOrder = {
+  create: (params) => http.post(`${baseUrl}/material/reserve/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/material/reserve/list`, params),
+  detail: (params) => http.get(`${baseUrl}/material/reserve/detail`, params),
+  stockIn: (params) => http.post(`${baseUrl}/material/stock/reserve/push`, params, 'application/json'),
+  log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
+  logDelete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json')
+}
+
 export {
   sampleOrder,
+  stock,
+  materialOrder,
   order,
   company,
   planList,

@@ -144,11 +144,16 @@
                 v-for="(item,index) in material.materialWarp"
                 :key="index">
                 <span>{{item.material_name}}</span>
-                <span style="margin-left:16px">{{item.number}}(数量)</span>
+                <span style="margin-left:16px">数量({{item.number}})</span>
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <span class="colorText">{{filterMethods(item)}}</span>
+                  <el-tooltip class="item"
+                    effect="dark"
+                    :content="item.weight.toFixed(1)+'g'"
+                    placement="top">
+                    <span class="colorText">{{filterMethods(item.number)}}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -452,7 +457,7 @@
           </div>
         </div>
         <div class="rowCtn"
-          v-show="yarn.yarnOtherWarp.length>0">
+          v-show="yarn.yarnOtherWeft.length>0">
           <div class="colCtn">
             <span class="label">次要原料：</span>
             <div class="lineCtn">
@@ -483,11 +488,16 @@
                 v-for="(item,index) in material.materialWeft"
                 :key="index">
                 <span>{{item.material_name}}</span>
-                <span style="margin-left:16px">{{item.number}}(数量)</span>
+                <span style="margin-left:16px">数量({{item.number}})</span>
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <span class="colorText">{{filterMethods(item)}}</span>
+                  <el-tooltip class="item"
+                    effect="dark"
+                    :content="item.weight.toFixed(1)+'g'"
+                    placement="top">
+                    <span class="colorText">{{filterMethods(item.number)}}</span>
+                  </el-tooltip>
                 </div>
               </div>
             </div>
@@ -530,6 +540,12 @@
                 :key="index">{{item.name}}：{{item.value}}g
               </div>
             </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">产品净重：</div>
+            <div class="text blue">{{weight}}g</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -1177,6 +1193,7 @@ export default {
     init (data, index) {
       this.craftIndex = index
       this.selectColour = -1
+      this.weight = 0
       this.craftId = data.id
       this.productInfo = data.product_info
       this.warpInfo = data.warp_data
@@ -1281,12 +1298,39 @@ export default {
           this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
       })
+      this.material.materialWarp.forEach((item) => {
+        item.apply = item.apply.map((index) => {
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+          }
+        })
+      })
+      this.material.materialWeft.forEach((item) => {
+        item.apply = item.apply.map((index) => {
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.weft[index] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+          }
+        })
+      })
       this.colorWeight.warp.forEach((item) => {
         this.weight += item === 'NaN' ? 0 : Number(item)
       })
       this.colorWeight.weft.forEach((item) => {
         this.weight += item === 'NaN' ? 0 : Number(item)
       })
+      this.material.materialWarp.forEach((item) => {
+        item.apply.forEach((itemApply) => {
+          this.weight += Number(itemApply.weight)
+        })
+      })
+      this.material.materialWeft.forEach((item) => {
+        item.apply.forEach((itemApply) => {
+          this.weight += Number(itemApply.weight)
+        })
+      })
+      this.weight = this.weight.toFixed(1)
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / this.warpInfo.reed_width * 600 * 4
       // 展平合并信息
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {

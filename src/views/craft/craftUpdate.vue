@@ -2524,6 +2524,12 @@ export default {
           type_material: item.type_material
         }
       })
+      if (this.yarn.yarnOtherWarp.length === 0) {
+        this.yarn.yarnOtherWarp = [{
+          value: '',
+          array: []
+        }]
+      }
       this.yarn.yarnOtherWeft = this.weftInfo.material_data.filter((item) => item.type_material === 2).map((item) => {
         return {
           type: item.type,
@@ -2532,6 +2538,12 @@ export default {
           type_material: item.type_material
         }
       })
+      if (this.yarn.yarnOtherWeft.length === 0) {
+        this.yarn.yarnOtherWeft = [{
+          value: '',
+          array: []
+        }]
+      }
       this.material.materialWarp = this.warpInfo.assist_material.map((item) => {
         return {
           value: item.material_name,
@@ -2539,6 +2551,13 @@ export default {
           array: item.apply
         }
       })
+      if (this.material.materialWarp.length === 0) {
+        this.material.materialWarp = [{
+          value: '',
+          array: [],
+          number: ''
+        }]
+      }
       this.material.materialWeft = this.weftInfo.assist_material.map((item) => {
         return {
           value: item.material_name,
@@ -2546,6 +2565,13 @@ export default {
           array: item.apply
         }
       })
+      if (this.material.materialWeft.length === 0) {
+        this.material.materialWeft = [{
+          value: '',
+          array: [],
+          number: ''
+        }]
+      }
       this.$refs.warp.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
         return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
       }))

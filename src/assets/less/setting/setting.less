@@ -1,0 +1,47 @@
+@import '../common.less';
+#setting{
+  .settingCtn{
+    display: flex;
+    height: 568px;
+    border-top: 1px solid #E9E9E9;
+    .navFather{
+      width: 200px;
+      border-right: 1px solid #E9E9E9;
+      font-size: @fontBig;
+    }
+    .navSon{
+      width: 150px;
+      border-right: 1px solid #E9E9E9;
+      font-size: @fontMiddle;
+    }
+    .list{
+      width: 75%;
+      padding-left: 15px;
+      line-height: 40px;
+      border: 1px solid #E9E9E9;
+      border-left: 0;
+      border-top-right-radius: 2px;
+      border-bottom-right-radius: 2px;
+      color: @font65;
+      margin: 8px 0;
+      box-shadow: 2px 2px 4px 1px rgba(0,0,0,0.15);
+      background: #eeeeee;
+      transition: 0.1s linear;
+      box-sizing: border-box;
+      cursor: pointer;
+      &:hover{
+        width: 88%;
+        background: #fafafa;
+        color: @blue;
+      }
+      &.active{
+        width: 88%;
+        background: #fafafa;
+        color: @blue;
+      }
+    }
+    .mainCtn{
+      flex: 1;
+    }
+  }
+}
