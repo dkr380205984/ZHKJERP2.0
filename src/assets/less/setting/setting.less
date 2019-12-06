@@ -42,6 +42,102 @@
     }
     .mainCtn{
       flex: 1;
+      padding: 20px;
+      overflow: auto;
+      .addBtn{
+        line-height: 32px;
+        width: 6em;
+        margin-left: auto;
+        margin-bottom: 16px;
+        color: #fff;
+        background: @blue;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 2px;
+        font-size: @fontMiddle;
+      }
+      .normalTb{
+        margin: 0;
+        min-height: 330px;
+        .tcolumn{
+          &.right{
+            text-align: right;
+          }
+          &.padding40{
+            padding: 0 40px;
+          }
+          &.flexRow{
+            flex-direction: row;
+            justify-content: flex-start;
+            line-height: 54px;
+            white-space: nowrap;
+          }
+          .red{
+            color: @red;
+            cursor: pointer;
+          }
+          .blue{
+            color: @blue;
+            cursor: pointer;
+          }
+          .border{
+            width: 1px;
+            height: 14px;
+            background: #E9E9E9;
+            margin: 20px 5px;
+          }
+          .rect{
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+          }
+        }
+        .trow{
+          &:nth-last-child(1){
+            border-bottom: 1px solid #E9E9E9;
+          }
+        }
+      }
+      .pageCtn{
+        margin-top: 22px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .companySetting{
+        padding: 20px;
+        overflow: auto;
+        .row{
+          display: flex;
+          margin-bottom: 16px;
+          .label{
+            width: 6em;
+            font-size: @fontMiddle;
+            color: @font65;
+            line-height: 32px;
+          }
+          .content{
+            min-height: 32px;
+            .input-item{
+              width: 600px;
+            }
+          }
+          .prompt{
+            font-size: @fontSmall;
+            color: @font45;
+          }
+        }
+        .btnCtn{
+          margin-top: 32px;
+          display: flex;
+          flex-direction: row;
+          width: 682px;
+          justify-content: flex-end;
+        }
+      }
     }
+  }
+  .flex{
+    display: flex;
   }
 }

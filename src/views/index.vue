@@ -6,9 +6,9 @@
           <div class="companyCtn"
             @click="$router.push('/index')">
             <div class="logo"></div>
-            <div class="name">预留企业名称</div>
+            <div class="name">{{companyName}}</div>
           </div>
-          <zh-nav :data="navData"
+          <zh-nav :data="navCmp"
             maxLength="5">
           </zh-nav>
         </div>
@@ -66,6 +66,7 @@ import { logout } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      companyName: window.sessionStorage.getItem('company_name') || '未登录',
       navData: [{
         name: '样式参考',
         icon: require('@/assets/image/index/样品管理.png'),
@@ -82,6 +83,7 @@ export default {
       }, {
         name: '样品管理',
         icon: require('@/assets/image/index/样品管理.png'),
+        id: 1,
         children: [{
           name: '样品添加',
           url: '/sample/sampleCreate'
@@ -98,6 +100,7 @@ export default {
       }, {
         name: '报价管理',
         icon: require('@/assets/image/index/报价单管理.png'),
+        id: 2,
         children: [{
           name: '添加报价单',
           url: '/price/priceCreate'
@@ -107,6 +110,7 @@ export default {
         }]
       }, {
         name: '产品管理',
+        id: 3,
         icon: require('@/assets/image/index/产品管理.png'),
         children: [{
           name: '产品添加',
@@ -120,6 +124,7 @@ export default {
         }]
       }, {
         name: '订单管理',
+        id: 5,
         icon: require('@/assets/image/index/订单管理.png'),
         children: [{
           name: '添加订单',
@@ -133,6 +138,7 @@ export default {
         }]
       }, {
         name: '物料计划生产管理',
+        id: 6,
         icon: require('@/assets/image/index/计划生产管理.png'),
         children: [{
           name: '新建物料计划单',
@@ -143,6 +149,7 @@ export default {
         }]
       }, {
         name: '预定购管理',
+        id: 7,
         icon: require('@/assets/image/index/物料管理.png'),
         children: [{
           name: '物料预订购',
@@ -160,6 +167,16 @@ export default {
     },
     breadUrl () {
       return this.$store.state.breadUrl
+    },
+    navCmp () {
+      let moduleArr = window.sessionStorage.getItem('module_id')
+      if (moduleArr) {
+        return this.navData.filter((item) => {
+          return moduleArr.indexOf(Number(item.id)) !== -1
+        })
+      } else {
+        return this.navData
+      }
     }
   },
   methods: {
