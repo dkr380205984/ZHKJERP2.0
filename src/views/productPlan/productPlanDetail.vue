@@ -57,7 +57,8 @@
             :class="{'active':listIndex===index-1}"
             @click="changePlan(index-1)">配料单{{index}}</div>
           <div class="btn btnBlue"
-            @click="setDefault">设为默认</div>
+            @click="setDefault"
+            :style="{'display':listIndex===defaultIndex?'none':'block'}">设为默认</div>
         </div>
       </div>
     </div>
@@ -136,6 +137,7 @@ export default {
         id: ''
       }],
       listIndex: 0,
+      defaultIndex: 0,
       plan_id: 0
     }
   },
@@ -164,12 +166,12 @@ export default {
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('设置成功')
+          this.defaultIndex = this.listIndex
         }
       })
     }
   },
   mounted () {
-    this.loading = false
     productPlan.getByProduct({
       product_id: this.$route.params.id,
       product_type: this.$route.params.type
@@ -179,6 +181,7 @@ export default {
       this.list = data.map((item, index) => {
         if (item.is_default === 1) {
           this.listIndex = index
+          this.defaultIndex = index
         }
         let mainArr = [{
           name: '大身信息',
@@ -245,7 +248,7 @@ export default {
         }
       })
       this.plan_id = this.list[0].id
-      console.log(this.plan_id)
+      this.loading = false
     })
   }
 }
