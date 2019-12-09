@@ -155,7 +155,8 @@ const order = {
   create: (params) => http.post(`${baseUrl}/order/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/order/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/order/list`, params),
-  detail: (params) => http.get(`${baseUrl}/order/detail`, params)
+  detail: (params) => http.get(`${baseUrl}/order/detail`, params),
+  editDetail: (params) => http.get(`${baseUrl}/order/one`, params)
 }
 const sampleOrder = {
   create: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
@@ -174,8 +175,16 @@ const materialOrder = {
   log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
   logDelete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json')
 }
+// 物料计划单
+const materialPlan = {
+  init: (params) => http.get(`${baseUrl}/order/material/plan/init`, params),
+  create: (params) => http.post(`${baseUrl}/order/material/plan/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
+  editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params)
+}
 
 export {
+  materialPlan,
   sampleOrder,
   stock,
   materialOrder,

@@ -67,14 +67,12 @@
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="itemOrder.image"></zh-img-list>
+              <zh-img-list :list="itemOrder.image"
+                type='open'
+                order_type='sample'></zh-img-list>
             </div>
-            <div class="col flex08">
-              {{itemOrder.number}}
-            </div>
-            <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div>
+            <div class="col flex08">{{itemOrder.number}}</div>
+            <div class="col flex08">{{itemOrder.group_name}}</div>
             <div class="col">
               <div :class="{'stateCtn':true, 'green':true}">
                 <div class="state"></div>
@@ -109,6 +107,12 @@
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item command='change'>
                       <span class="updated">修改</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item command='materialCreate'>
+                      <span class="updated">添加物料计划单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item command='materialDetail'>
+                      <span class="updated">物料计划单详情</span>
                     </el-dropdown-item>
                     <el-dropdown-item command='delete'>
                       <span class="delete">删除</span>
@@ -154,12 +158,32 @@ export default {
         page: this.pages
       }).then(res => {
         this.list = res.data.data.map(item => {
+          let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })
+          let img = item.images || []
+          img = img.map(itemImg => {
+            return {
+              thumb: itemImg.thumb,
+              image_url: itemImg.image_url,
+              product_id: itemImg.sample_product_id
+            }
+          })
+          proArr.forEach(itemPro => {
+            if (!img.find(itemImg => itemImg.product_id === itemPro.product_id)) {
+              img.push({
+                thumb: '',
+                image_url: '',
+                product_id: itemPro.product_id
+              })
+            }
+          })
           return {
             id: item.id,
             order_code: item.title,
             client_name: item.client_name,
-            image: item.images,
-            number: item.total_number,
+            image: img,
+            number: item.total_number.map(item => Number(item.numbers)).reduce((total, item) => {
+              return total + item
+            }),
             status: item.status,
             group_name: item.group_name,
             deliver_time: item.deliver_time
@@ -196,6 +220,10 @@ export default {
             message: '已取消删除'
           })
         })
+      } else if (type === 'materialCreate') {
+        this.$router.push('/materialPlan/materialPlanCreate/' + id + '/2')
+      } else if (type === 'materialDetail') {
+        this.$router.push('/materialPlan/materialPlanDetail/' + id + '/2')
       } else {
         this.$message.warning('未知命令')
       }

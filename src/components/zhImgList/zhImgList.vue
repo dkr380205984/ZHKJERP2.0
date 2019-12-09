@@ -54,6 +54,13 @@ export default {
       validator: (value) => {
         return value === 'show' || value === 'open'
       }
+    },
+    order_type: {
+      type: String,
+      default: 'product',
+      validator: (value) => {
+        return value === 'product' || value === 'sample'
+      }
     }
   },
   data () {
@@ -90,7 +97,11 @@ export default {
         this.showBig()
         return
       }
-      this.$openUrl('/product/productDetail/' + this.list[this.index].product_id)
+      if (this.order_type === 'sample') {
+        this.$openUrl('/sample/sampleDetail/' + this.list[this.index].product_id)
+      } else {
+        this.$openUrl('/product/productDetail/' + this.list[this.index].product_id)
+      }
     }
   },
   computed: {

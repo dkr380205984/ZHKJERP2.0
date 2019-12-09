@@ -1041,7 +1041,7 @@ export default {
       client.list(),
       group.list(),
       getToken(),
-      order.detail({
+      order.editDetail({
         id: this.$route.params.id
       })
     ]).then(res => {
@@ -1050,7 +1050,8 @@ export default {
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
       // 初始化修改订单数据
-      let orderInfo = res[3].data.data.order_info
+      let orderInfo = res[3].data.data
+      console.log(orderInfo)
       this.order_code = orderInfo.order_code.split(';').map(item => {
         return {
           code: item

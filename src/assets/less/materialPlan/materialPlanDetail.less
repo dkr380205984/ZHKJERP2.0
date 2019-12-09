@@ -1,1 +1,80 @@
 @import '../common.less';
+#materialPlanDetail{
+  .flex20{
+    flex: 2.0;
+  }
+  .flexTb,
+  .normalTb{
+    position: relative;
+    .positionBtn{
+      position: absolute;
+      top: -8px;
+      right: 0;
+      transform: translateY(-100%);
+      display: flex;
+    }
+  }
+  .paddingTop60{
+    padding-top: 60px;
+  }
+  .swichCtn{
+    border-top: 0;
+    margin-top: 0;
+    margin-bottom: 40px;
+    position: relative;
+    height: 66px;
+    overflow: hidden;
+    .swich:hover{
+      background-color: rgba(26, 149, 255, 0.25);
+    }
+    .handleBtn{
+      position: absolute;
+      top: 50%;
+      width: 32px;
+      height: 66px;
+      line-height: 66px;
+      text-align: center;
+      background-color: #FFF;
+      transform: translateY(-50%);
+      cursor: pointer;
+      &::after{
+        content: '';
+        display: block;
+        border: 9px solid transparent;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+      }
+      &.right{
+        right: 0;
+        &:after{
+          border-left-color: @blue;
+        }
+      }
+      &.left{
+        left: 0;
+        &:after{
+          border-right-color: @blue;
+        }
+      }
+    }
+    .swichCtnBox{      
+      display: flex;
+      flex-wrap: nowrap;
+      transition: all 0.3s linear;
+      position: absolute;
+    }
+  }
+  .tb_collapse{
+    width: 100%;
+    border: none;
+    .two_line{
+      line-height: calc(1em + 8px)
+    }
+  }  
+  .bigPadding{
+    padding: 0 0 0 40px;
+    box-sizing: border-box;
+  }
+}

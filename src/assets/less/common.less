@@ -887,7 +887,7 @@
         }
       }
       .tb_row{   
-        align-items: center;   
+        align-items: center; 
         &.tb_row_handle_btn{
           border: 1px dashed #D9D9D9;
           box-sizing: border-box;
@@ -899,6 +899,9 @@
           &:hover{
             color: @blue;
             border-color: @blue;
+          }
+          &:nth-of-type(n+2){
+            margin-left: 16px;
           }
         }
         .tb_handle_btn{

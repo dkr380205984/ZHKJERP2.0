@@ -109,6 +109,12 @@
                     <el-dropdown-item command='change'>
                       <span class="updated">修改</span>
                     </el-dropdown-item>
+                    <el-dropdown-item command='materialCreate'>
+                      <span class="updated">添加物料计划单</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item command='materialDetail'>
+                      <span class="updated">物料计划单详情</span>
+                    </el-dropdown-item>
                     <el-dropdown-item command='delete'>
                       <span class="delete">删除</span>
                     </el-dropdown-item>
@@ -198,6 +204,10 @@ export default {
             message: '已取消删除'
           })
         })
+      } else if (type === 'materialCreate') {
+        this.$router.push('/materialPlan/materialPlanCreate/' + id + '/1')
+      } else if (type === 'materialDetail') {
+        this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1')
       } else {
         this.$message.warning('未知命令')
       }

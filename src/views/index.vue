@@ -136,10 +136,13 @@ export default {
         icon: require('@/assets/image/index/计划生产管理.png'),
         children: [{
           name: '新建物料计划单',
-          url: '/materialPlan/materialPlanCreate'
+          url: '/materialPlan/materialPlanCreate/6/1'
         }, {
           name: '物料计划单列表',
           url: '/materialPlan/materialPlanList'
+        }, {
+          name: '物料计划单详情',
+          url: '/materialPlan/materialPlanDetail/6/1'
         }]
       }, {
         name: '预定购管理',
