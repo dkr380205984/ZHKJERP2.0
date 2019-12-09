@@ -34,21 +34,42 @@ const productType = {
   delete: (params) => http.post(`${baseUrl}/product/category/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/category/list`, params)
 }
+// 产品尺码
+const productSize = {
+  create: (params) => http.post(`${baseUrl}/product/size/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/product/size/delete`, params, 'application/json')
+}
+// 产品规格
+const measurement = {
+  create: (params) => http.post(`${baseUrl}/product/measurement/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/product/measurement/delete`, params, 'application/json')
+}
 // 花型
 const flower = {
   create: (params) => http.post(`${baseUrl}/product/flower/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/product/flower/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/product/flower/list`, params)
 }
+// 工艺单设置
+const craftSetting = {
+  list: (params) => http.get(`${baseUrl}/production/edit/list`, params),
+  createSide: (params) => http.post(`${baseUrl}/production/side/save`, params, 'application/json'),
+  deleteSide: (params) => http.post(`${baseUrl}/production/side/delete`, params, 'application/json'),
+  createMachine: (params) => http.post(`${baseUrl}/production/type/save`, params, 'application/json'),
+  deleteMachine: (params) => http.post(`${baseUrl}/production/type/delete`, params, 'application/json'),
+  createMethods: (params) => http.post(`${baseUrl}/production/method/save`, params, 'application/json'),
+  deleteMethods: (params) => http.post(`${baseUrl}/production/method/delete`, params, 'application/json')
+}
 // 原料纱线
 const yarn = {
-  create: (params) => http.post(`${baseUrl}/product/flower/save`, params, 'application/json'),
-  delete: (params) => http.post(`${baseUrl}/product/flower/delete`, params, 'application/json'),
+  create: (params) => http.post(`${baseUrl}/yarn/private/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/yarn/private/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/yarn/list`, params)
 }
 // 原料纱线颜色管理
 const yarnColor = {
   create: (params) => http.post(`${baseUrl}/yarn/color/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/yarn/color/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/yarn/color/list`, params)
 }
 // 产品成分
@@ -96,6 +117,13 @@ const client = {
   delete: (params) => http.post(`${baseUrl}/client/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
   list: (params) => http.get(`${baseUrl}/client/list`, params)
+}
+// 人员管理
+const auth = {
+  create: (params) => http.post(`${baseUrl}/user/save`, params, 'application/json'),
+  update: (params) => http.post(`${baseUrl}/user/save`, params, 'application/json'),
+  ban: (params) => http.post(`${baseUrl}/user/check_status`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/user/list`, params)
 }
 // 小组
 const group = {
@@ -182,9 +210,19 @@ const materialPlan = {
   detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params)
 }
-
+// 加工工序
+const process = {
+  create: (params) => http.post(`${baseUrl}/production/flow/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/production/flow/delete`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/production/flow/list`, params)
+}
 export {
   materialPlan,
+  auth,
+  process,
+  craftSetting,
+  measurement,
+  productSize,
   sampleOrder,
   stock,
   materialOrder,

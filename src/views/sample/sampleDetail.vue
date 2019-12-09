@@ -267,7 +267,7 @@
       </div>
     </div>
     <div class="module"
-      v-for="(item,index) in detail.part_data"
+      v-for="(item,index) in detail.part_info"
       :key="index">
       <div class="titleCtn">
         <span class="title hasBorder">配件{{chinaNum[index]}}</span>
@@ -325,6 +325,7 @@ export default {
           product_category: '',
           name: ''
         },
+        part_info: [],
         style_name: '',
         type_name: '',
         flower_id: '',
