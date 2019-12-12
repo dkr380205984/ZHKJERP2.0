@@ -9,7 +9,7 @@
             <div class="name">{{companyName}}</div>
           </div>
           <zh-nav :data="navCmp"
-            maxLength="5">
+            maxLength="4">
           </zh-nav>
         </div>
         <div class="rightCtn">
@@ -95,7 +95,7 @@ export default {
           url: '/sample/sampleOrderCreate'
         }, {
           name: '样品订单列表',
-          url: '/sample/sampleOrderList/page=&&keyword=&&date=&&client_id=&&group_id='
+          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&client_id=&&group_id='
         }]
       }, {
         name: '报价管理',
@@ -106,7 +106,7 @@ export default {
           url: '/price/priceCreate'
         }, {
           name: '报价单列表',
-          url: '/price/priceList/page=&&keyword=&&date=&&status=&&client_id='
+          url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id='
         }]
       }, {
         name: '产品管理',
@@ -131,7 +131,7 @@ export default {
           url: '/order/orderCreate'
         }, {
           name: '订单列表',
-          url: '/order/orderList/page=&&keyword=&&date=&&client_id=&&group_id='
+          url: '/order/orderList/page=1&&keyword=&&date=&&client_id=&&group_id='
         }, {
           name: '订单发货列表',
           url: '/order/orderStat'
@@ -160,6 +160,14 @@ export default {
         }, {
           name: '物料预定购列表',
           url: '/materialOrder/materialOrderList/page=1&&keyword=&&date='
+        }]
+      }, {
+        name: '库存管理',
+        id: 7,
+        icon: require('@/assets/image/index/库存管理.png'),
+        children: [{
+          name: '仓库列表',
+          url: '/stock/stockList/page=1&&keyword=&&type='
         }]
       }]
     }

@@ -238,6 +238,17 @@ const plugin = {
     } else if (number % 0.01 === 0 || number % 0.01 !== 0) {
       return Number(number.toFixed(2))
     }
+  },
+  newSplice: (data, index, arr) => {
+    let _this = plugin
+    if (!arr) {
+      arr = []
+    }
+    arr.push(data.splice(0, 5))
+    if (data.length > 0) {
+      _this.newSplice(data, index, arr)
+    }
+    return arr
   }
 }
 export default {
@@ -248,5 +259,6 @@ export default {
     Vue.prototype.$flatten = (data) => { return plugin.flatten(plugin.flatten(data)) }
     Vue.prototype.$mergeData = plugin.mergeData
     Vue.prototype.$toFixed = plugin.toFixedAuto
+    Vue.prototype.$newSplice = plugin.newSplice
   }
 }

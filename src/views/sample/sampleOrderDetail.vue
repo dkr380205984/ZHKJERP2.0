@@ -330,6 +330,8 @@
                     </el-option>
                   </el-select>
                 </span>
+                <span class="editBtn red"
+                  @click="deleteItem(changeSampleOrderInfo.product_info,indexPro)">删除</span>
               </div>
               <div class="row"
                 v-for="(itemSize,indexSize) in itemPro.sizeInfo"
@@ -339,13 +341,19 @@
                   <el-cascader v-model="itemSize.size_color"
                     class="popup_input_small"
                     :options="itemPro.sizeColorArr"
-                    disabled></el-cascader>
+                    @change="changeFlag(itemPro.sizeInfo,$event,itemSize)"></el-cascader>
                   <zh-input v-model="itemSize.number"
                     class="popup_input_small"
                     type='number'>
                     <span slot="append">{{itemPro.unit}}</span>
                   </zh-input>
                 </span>
+                <span class="editBtn blue"
+                  v-if="indexSize === 0"
+                  @click="addItem(itemPro.sizeInfo,'sampleOrderInfoChange')">添加</span>
+                <span class="editBtn red"
+                  v-else
+                  @click="deleteItem(itemPro.sizeInfo,indexSize,true)">删除</span>
               </div>
             </template>
             <div class="row">
@@ -561,15 +569,23 @@ export default {
         return
       }
       let flag = true
+      let sizeFlag = true
       this.changeSampleOrderInfo.product_info.forEach(itemPro => {
         itemPro.sizeInfo.forEach(itemSize => {
           if (!itemSize.number && itemSize.number.toString() !== '0') {
             flag = false
           }
+          if (itemSize.size_color.length !== 2) {
+            sizeFlag = false
+          }
         })
       })
+      if (!sizeFlag) {
+        this.$message.error('检测到有未填写的尺码颜色')
+        return
+      }
       if (!flag) {
-        this.$message.error('检测到打样数量未填写，如该样品或该尺码颜色不需要继续打样，请输入"0"')
+        this.$message.error('检测到打样数量未填写')
         return
       }
       if (!this.changeSampleOrderInfo.compiled_time) {
@@ -691,6 +707,44 @@ export default {
       })
       this.customer_pay_info = customerPayInfo
       this.loading = false
+    },
+    deleteItem (item, index) {
+      if (item.length < 2) {
+        this.$message.warning('至少保留一项')
+      } else {
+        this.$confirm('此操作将删除该项, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          item.splice(index, 1)
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      }
+    },
+    addItem (item, type) {
+      if (type === 'sampleOrderInfoChange') {
+        item.push({
+          number: '',
+          size_color: ''
+        })
+      } else {
+        this.$message.error('未知操作')
+      }
+    },
+    changeFlag (item, $event, value) {
+      if (item.filter(itemSize => itemSize.size_color[0] === $event[0] && itemSize.size_color[1] === $event[1]).length >= 2) {
+        this.$message.warning('检测到该打样产品中已有该尺码颜色')
+        value.size_color = ''
+      }
     }
   },
   created () {

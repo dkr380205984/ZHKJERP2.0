@@ -64,7 +64,9 @@ const craftSetting = {
 const yarn = {
   create: (params) => http.post(`${baseUrl}/yarn/private/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/yarn/private/delete`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/yarn/list`, params)
+  detail: (params) => http.get(`${baseUrl}/yarn/one`, params),
+  list: (params) => http.get(`${baseUrl}/yarn/list`, params),
+  priceLog: (params) => http.get(`${baseUrl}//yarn/one`, params)
 }
 // 原料纱线颜色管理
 const yarnColor = {
@@ -89,7 +91,8 @@ const material = {
   create: (params) => http.post(`${baseUrl}/product/material/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/product/material/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/material/one`, params),
-  list: (params) => http.get(`${baseUrl}/product/material/list`, params)
+  list: (params) => http.get(`${baseUrl}/product/material/list`, params),
+  priceLog: (params) => http.get(`${baseUrl}/product/material/one`, params)
 }
 // 工艺单设置管理 边形/机型/组织法
 const craftConfig = {
@@ -172,11 +175,41 @@ const productPlan = {
 }
 // 工厂信息管理
 const company = {
+  create: (params) => http.post(`${baseUrl}/company/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/company/detail`, params)
 }
 // 仓库
 const stock = {
-  list: (params) => http.get(`${baseUrl}/factory/store/list`, params)
+  create: (params) => http.post(`${baseUrl}/factory/store/save`, params, 'application/json'),
+  update: (params) => http.post(`${baseUrl}/factory/store/edit`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/factory/store/list`, params),
+  detail: (params) => http.get(`${baseUrl}/factory/store/one`, params),
+  yarnStock: (params) => http.post(`${baseUrl}/material/push`, params, 'application/json'),
+  materialStock: (params) => http.post(`${baseUrl}/material/push`, params, 'application/json'),
+  packStock: (params) => http.post(`${baseUrl}/pack/material/stock/save`, params, 'application/json'),
+  productStock: (params) => http.post(`${baseUrl}/product/stock/save`, params, 'application/json')
+}
+// 物料库存（原料辅料都在这）
+const yarnStock = {
+  list: (params) => http.get(`${baseUrl}/stock/material/list`, params),
+  log: (params) => http.get(`${baseUrl}/stock/material/detail`, params)
+}
+// 包装库存
+const packStock = {
+  list: (params) => http.get(`${baseUrl}/pack/material/stock/list`, params),
+  log: (params) => http.get(`${baseUrl}/pack/material/stock/log/list`, params)
+}
+// 包装
+const packag = {
+  create: (params) => http.post(`${baseUrl}/pack/material/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/pack/material/delete`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/pack/material/list`, params),
+  priceLog: (params) => http.get(`${baseUrl}/pack/material/one`, params)
+}
+// 产品库存
+const productStock = {
+  list: (params) => http.get(`${baseUrl}/product/stock/list`, params),
+  log: (params) => http.get(`${baseUrl}/product/stock/detail`, params)
 }
 // 订单
 const order = {
@@ -186,6 +219,7 @@ const order = {
   detail: (params) => http.get(`${baseUrl}/order/detail`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/one`, params)
 }
+// 样品订单
 const sampleOrder = {
   create: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
   // delete: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
@@ -193,7 +227,6 @@ const sampleOrder = {
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params)
 }
-
 // 物料预定购
 const materialOrder = {
   create: (params) => http.post(`${baseUrl}/material/reserve/save`, params, 'application/json'),
@@ -217,6 +250,10 @@ const process = {
   list: (params) => http.get(`${baseUrl}/production/flow/list`, params)
 }
 export {
+  productStock,
+  packag,
+  packStock,
+  yarnStock,
   materialPlan,
   auth,
   process,

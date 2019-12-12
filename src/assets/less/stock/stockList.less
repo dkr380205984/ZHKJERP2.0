@@ -1,0 +1,28 @@
+@import '../common.less';
+#stockList{
+  .flex12{
+    flex: 1.2;
+  }
+  .flex08{
+    flex: 0.8;
+  }
+  .orange{
+    color: @orange;
+  }
+  .typeCtn{
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    border: 1px solid @green;
+    color: @green;
+    border-radius: 50%;
+    margin: 0 4px;
+    text-align: center;
+    line-height: 25px;
+    cursor: pointer;
+    &.active{
+      color: #FFF;
+      background-color: @green;
+    }
+  }
+}

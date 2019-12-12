@@ -318,13 +318,14 @@
           <template v-if="cName==='纱线名称'">
             <div class="flowerCtn">
               <div class="addBtn"
-                @click="showPopup=true"
+                @click="updataYarn('add')"
                 style="width:6em">添加纱线</div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn padding40">纱线名称</div>
-                    <div class="tcolumn right padding40">操作</div>
+                    <div class="tcolumn padding40">最新报价</div>
+                    <div class="tcolumn middle padding40">操作</div>
                   </div>
                 </div>
                 <div class="tbody">
@@ -332,9 +333,16 @@
                     v-for="(item,index) in yarnNameArr"
                     :key="index">
                     <div class="tcolumn padding40">{{item.name}}</div>
-                    <div class="tcolumn right padding40">
-                      <span class="red"
-                        @click="deleteYarnName(item.id)">删除</span>
+                    <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? '元/kg' : ''}}</div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="getDetailInfo('yarn',item)">详情</span>
+                        <span class="blue"
+                          @click="updataYarn('updata',item)">更新</span>
+                        <span class="red"
+                          @click="deleteYarnName(item.id)">删除</span>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -384,6 +392,94 @@
                   layout="prev, pager, next"
                   :total="yarnColorTotal"
                   :current-page.sync="yarnColorPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='装饰辅料'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="updataMaterial('add')"
+                style="width:6em">添加辅料</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">辅料名称</div>
+                    <div class="tcolumn padding40">计量单位</div>
+                    <div class="tcolumn padding40">最新报价</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in materialNameArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn padding40">{{item.unit}}</div>
+                    <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0 && item.unit) ? '元/' + item.unit : ''}}</div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="getDetailInfo('material',item)">详情</span>
+                        <span class="blue"
+                          @click="updataMaterial('updata',item)">更新</span>
+                        <span class="red"
+                          @click="deleteMaterialName(item.id)">删除</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="materialNameTotal"
+                  :current-page.sync="materialNamePage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='包装辅料'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="updataPack('add')"
+                style="width:6em">添加包装</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">包装名称</div>
+                    <div class="tcolumn padding40">计量单位</div>
+                    <div class="tcolumn padding40">最新报价</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in packMaterialNameArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn padding40">{{item.unit}}</div>
+                    <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? (item.type === 1 ? '元/㎡' : (item.unit ? '元/' + item.unit : '')):''}}</div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="getDetailInfo('pack',item)">详情</span>
+                        <span class="blue"
+                          @click="updataPack('updata',item)">更新</span>
+                        <span class="red"
+                          @click="deletePackName(item.id)">删除</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="packMaterialNameTotal"
+                  :current-page.sync="packMaterialNamePage">
                 </el-pagination>
               </div>
             </div>
@@ -576,8 +672,23 @@
               </div>
               <div class="row">
                 <span class="label">公司图片：</span>
-                <div class="content">
-
+                <div class="content clientImg">
+                  <el-upload action="https://upload.qiniup.com/"
+                    drag
+                    :before-upload="beforeUpload"
+                    :data="postData"
+                    :file-list="companyInfo.file_image"
+                    list-type="picture-card"
+                    ref="uploada_image">
+                    <i slot="default"
+                      class="el-icon-plus"
+                      style="font-size:30px;"></i>
+                  </el-upload>
+                  <!-- <el-dialog :visible.sync="dialogVisible">
+                    <img width="100%"
+                      alt="">
+                  </el-dialog> -->
+                  <div class="prompt">点击或拖拽至上传框,只能上传jpg/png文件，且不超过6MB</div>
                 </div>
               </div>
               <div class="row">
@@ -814,7 +925,7 @@
       <template v-if="cName==='纱线名称'">
         <div class="main">
           <div class="title">
-            <div class="text">添加纱线名称</div>
+            <div class="text">{{yarn_handle_type === 'add' ? '添加纱线名称' : '更新纱线信息'}}</div>
             <i class="el-icon-close"
               @click="showPopup=false"></i>
           </div>
@@ -823,11 +934,11 @@
               <div class="label">纱线名称：</div>
               <div class="info">
                 <el-input placeholder="请输入纱线名称"
-                  v-model="yarnName"></el-input>
+                  v-model="changeYarnInfo.yarnName"></el-input>
               </div>
             </div>
             <div class="row"
-              v-for="(item,index) in yarnPriceArr"
+              v-for="(item,index) in changeYarnInfo.yarnPriceArr"
               :key="index">
               <div class="label">报价信息：</div>
               <div class="info flex">
@@ -840,16 +951,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-input v-model="item.price"
+                <zh-input v-model="item.price"
+                  type='number'
                   placeholder="请输入报价">
-                  <template slot="append">元</template>
-                </el-input>
+                  <template slot="append">元/kg</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
-                @click="addClient"
+                @click="addClient(changeYarnInfo.yarnPriceArr)"
                 v-if="index===0">添加</div>
               <div class="editBtn red"
-                @click="deleteClient(index)"
+                @click="deleteClient(changeYarnInfo.yarnPriceArr,index)"
                 v-if="index>0">删除</div>
             </div>
           </div>
@@ -888,6 +1000,134 @@
               @click="showPopup=false">取消</div>
             <div class="btn btnBlue"
               @click="saveYarnColor">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='装饰辅料'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{yarn_handle_type === 'add' ? '添加辅料信息' : '更新辅料信息'}}</div>
+            <i class="el-icon-close"
+              @click="closeAndResetInfo('material')"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">辅料名称：</div>
+              <div class="info">
+                <zh-input placeholder="请输入装饰辅料名称"
+                  v-model="changeMaterialInfo.materialName"></zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">计量单位：</div>
+              <div class="info">
+                <zh-input placeholder="请输入计量单位"
+                  v-model="changeMaterialInfo.unit"></zh-input>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in changeMaterialInfo.materialPriceArr"
+              :key="index">
+              <div class="label">报价信息：</div>
+              <div class="info flex">
+                <el-select v-model="item.company"
+                  style="margin-right:16px"
+                  filterable
+                  placeholder="请选择公司">
+                  <el-option v-for="item in clientList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <zh-input v-model="item.price"
+                  type='number'
+                  placeholder="请输入报价">
+                  <template slot="append">元/{{changeMaterialInfo.unit ? changeMaterialInfo.unit : '个'}}</template>
+                </zh-input>
+              </div>
+              <div class="editBtn blue"
+                @click="addClient(changeMaterialInfo.materialPriceArr)"
+                v-if="index===0">添加</div>
+              <div class="editBtn red"
+                @click="deleteClient(changeMaterialInfo.materialPriceArr,index)"
+                v-if="index>0">删除</div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="closeAndResetInfo('material')">取消</div>
+            <div class="btn btnBlue"
+              @click="saveMaterial">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='包装辅料'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{yarn_handle_type === 'add' ? '添加包装信息' : '更新包装信息'}}</div>
+            <i class="el-icon-close"
+              @click="closeAndResetInfo('pack')"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">包装名称：</div>
+              <div class="info">
+                <zh-input placeholder="请输入包装名称"
+                  v-model="changePackMaterialInfo.packName"></zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">计量单位：</div>
+              <div class="info">
+                <zh-input placeholder="请输入计量单位"
+                  v-model="changePackMaterialInfo.unit"></zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">辅料价格：</div>
+              <div class="info"
+                style="line-height:32px">
+                <el-radio-group v-model="changePackMaterialInfo.type">
+                  <el-radio label="area">面积</el-radio>
+                  <el-radio label="other">其他</el-radio>
+                </el-radio-group>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in changePackMaterialInfo.packMaterialPriceArr"
+              :key="index">
+              <div class="label">报价信息：</div>
+              <div class="info flex">
+                <el-select v-model="item.company"
+                  style="margin-right:16px"
+                  filterable
+                  placeholder="请选择公司">
+                  <el-option v-for="item in clientList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <zh-input v-model="item.price"
+                  type='number'
+                  placeholder="请输入报价">
+                  <template slot="append">元/{{changePackMaterialInfo.type === 'area' ? '㎡' : changePackMaterialInfo.unit ? changePackMaterialInfo.unit : '个'}}
+                  </template>
+                </zh-input>
+              </div>
+              <div class="editBtn blue"
+                @click="addClient(changePackMaterialInfo.packMaterialPriceArr)"
+                v-if="index===0">添加
+              </div>
+              <div class="editBtn red"
+                @click="deleteClient(changePackMaterialInfo.packMaterialPriceArr,index)"
+                v-if="index>0">删除</div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="closeAndResetInfo('pack')">取消</div>
+            <div class="btn btnBlue"
+              @click="savePack">确定</div>
           </div>
         </div>
       </template>
@@ -1090,16 +1330,71 @@
         </div>
       </div>
     </div>
+    <!-- 纱线/辅料/包装详情 -->
+    <div class="popup"
+      v-show="showDetailPopup">
+      <div class="main">
+        <div class="title">
+          <div class="text">{{detailType === 'yarn' ? '纱线原料' : detailType === 'material' ? '装饰辅料' : '包装辅料'}}详情</div>
+          <i class="el-icon-close"
+            @click="showDetailPopup=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="label">{{detailType === 'yarn' ? '纱线' : detailType === 'material' ? '辅料' : '包装'}}名称：</div>
+            <div class="info">{{detailInfo.name}}</div>
+          </div>
+          <div class="row"
+            v-if="detailType === 'material' || detailType === 'pack'">
+            <div class="label">计量单位：</div>
+            <div class="info">{{detailInfo.unit}}</div>
+          </div>
+          <div class="row">
+            <div class="label">{{detailType === 'yarn' ? '纱线' : detailType === 'material' ? '辅料' : '包装'}}报价：</div>
+            <div class="info popup_inner_box">
+              <span class="popup_inner_line"
+                v-for="(itemPrice,indexPrice) in detailInfo.price"
+                :key="indexPrice">
+                <span class="popup_inner_item flex12">{{itemPrice.client_name}}</span>
+                <span class="popup_inner_item flex06"><em class="blue">{{itemPrice.price}}</em>{{itemPrice.unit ? itemPrice.unit : (detailInfo.unit ? '元/' + detailInfo.unit : '元/kg')}}</span>
+                <span class="popup_inner_item flex08">{{itemPrice.time}}</span>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">更新日志：</div>
+            <div class="info popup_inner_box">
+              <div class="info popup_inner_box">
+                <span class="popup_inner_line"
+                  v-for="(itemLog,indexLog) in detailInfo.log"
+                  :key="indexLog">
+                  <span class="popup_inner_item flex12">{{itemLog.client_name}}</span>
+                  <span class="popup_inner_item flex06"><em class="blue">{{itemLog.price}}</em>{{itemLog.unit ? itemLog.unit : (detailInfo.unit ? '元/' + detailInfo.unit : 'kg')}}</span>
+                  <span class="popup_inner_item flex08">{{itemLog.time}}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="measurementFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="deleteMeasurement">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       showPopup: false,
+      yarn_handle_type: '',
       nav: {
         '产品设置': ['产品分类', '产品花型', '产品成分', '产品配色', '产品尺码'],
         '工艺单设置': ['边型', '机型', '组织法'],
@@ -1155,19 +1450,58 @@ export default {
       methodsTotal: 1,
       methodsPage: 1,
       yarnNameList: [],
-      yarnName: '',
+      changeYarnInfo: {
+        id: '',
+        yarnName: '',
+        yarnPriceArr: [{
+          price: '',
+          company: ''
+        }]
+      },
       yarnNameTotal: 1,
       yarnNamePage: 1,
-      yarnPriceArr: [{
-        price: '',
-        company: ''
-      }],
       clientList: [],
       yarnColorList: [],
       yarnColor: '',
       yarnColorCode: '',
       yarnColorTotal: 1,
       yarnColorPage: 1,
+      // 装饰辅料
+      materialNameList: [],
+      materialNameTotal: 1,
+      materialNamePage: 1,
+      changeMaterialInfo: {
+        id: '',
+        materialName: '',
+        materialUnit: '',
+        materialPriceArr: [{
+          company: '',
+          price: ''
+        }]
+      },
+      // 包装辅料
+      packMaterialNameList: [],
+      packMaterialNameTotal: 1,
+      packMaterialNamePage: 1,
+      changePackMaterialInfo: {
+        id: '',
+        packMaterialName: '',
+        packMaterialUnit: '',
+        type: 'area',
+        packMaterialPriceArr: [{
+          company: '',
+          price: ''
+        }]
+      },
+      showDetailPopup: false,
+      detailType: 'yarn',
+      detailInfo: {
+        name: '',
+        unit: '',
+        price: [],
+        log: []
+      },
+      // 加工工序
       materialProcessList: [],
       materialProcess: '',
       materialProcessTotal: 1,
@@ -1231,6 +1565,10 @@ export default {
         this.getYarnName()
       } else if (val === '纱线颜色') {
         this.getYarnColor()
+      } else if (val === '装饰辅料') {
+        this.getMaterialName()
+      } else if (val === '包装辅料') {
+        this.getPackName()
       } else if (val === '原料工序') {
         this.getMaterialProcess()
       } else if (val === '半成品加工') {
@@ -1274,6 +1612,12 @@ export default {
     },
     yarnColorArr () {
       return this.yarnColorList.slice((this.yarnColorPage - 1) * 5, this.yarnColorPage * 5)
+    },
+    materialNameArr () {
+      return this.materialNameList.slice((this.materialNamePage - 1) * 5, this.materialNamePage * 5)
+    },
+    packMaterialNameArr () {
+      return this.packMaterialNameList.slice((this.packMaterialNamePage - 1) * 5, this.packMaterialNamePage * 5)
     },
     materialProcessArr () {
       return this.materialProcessList.slice((this.materialProcessPage - 1) * 5, this.materialProcessPage * 5)
@@ -1828,14 +2172,21 @@ export default {
       })
     },
     saveYarnName () {
-      if (this.yarnName) {
+      if (this.changeYarnInfo.yarnName) {
         yarn.create({
-          name: this.yarnName
+          id: this.changeYarnInfo.id,
+          name: this.changeYarnInfo.yarnName,
+          price_data: this.changeYarnInfo.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+            return {
+              client_id: itemPrice.company,
+              price: itemPrice.price
+            }
+          })
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
-            this.yarnName = ''
             this.getYarnName()
+            this.closeAndResetInfo('yarn')
           }
         })
       } else {
@@ -1857,6 +2208,15 @@ export default {
               message: '删除成功!'
             })
             this.getYarnName()
+            this.showPopup = false
+            this.changeYarnInfo = {
+              id: '',
+              yarnName: '',
+              yarnPriceArr: [{
+                price: '',
+                company: ''
+              }]
+            }
           }
         })
       }).catch(() => {
@@ -1866,14 +2226,34 @@ export default {
         })
       })
     },
-    addClient () {
-      this.yarnPriceArr.push({
+    updataYarn (type, item) {
+      this.yarn_handle_type = type
+      this.showPopup = true
+      if (item) {
+        this.changeYarnInfo.yarnName = item.name
+        this.changeYarnInfo.id = item.id
+        this.changeYarnInfo.yarnPriceArr = item.price.map(itemPrice => {
+          return {
+            company: itemPrice.client_id.toString(),
+            price: itemPrice.price
+          }
+        })
+        if (this.changeYarnInfo.yarnPriceArr.length === 0) {
+          this.changeYarnInfo.yarnPriceArr = [{
+            company: '',
+            price: ''
+          }]
+        }
+      }
+    },
+    addClient (item) {
+      item.push({
         price: '',
         company: ''
       })
     },
-    deleteClient (index) {
-      this.yarnPriceArr.splice(index, 1)
+    deleteClient (item, index) {
+      item.splice(index, 1)
     },
     getYarnColor () {
       yarnColor.list().then((res) => {
@@ -1913,6 +2293,210 @@ export default {
               message: '删除成功!'
             })
             this.getYarnColor()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getMaterialName () {
+      if (this.clientList.length === 0) {
+        client.list().then((res) => {
+          this.clientList = res.data.data
+        })
+      }
+      material.list().then(res => {
+        if (res.data.status === false) {
+          this.$message.error('获取装饰辅料列表失败，' + res.data.message)
+        } else {
+          this.materialNameList = res.data.data
+          this.materialNameTotal = this.materialNameList.length
+        }
+      })
+    },
+    updataMaterial (type, item) {
+      this.yarn_handle_type = type
+      this.showPopup = true
+      if (item) {
+        this.changeMaterialInfo.materialName = item.name
+        this.changeMaterialInfo.id = item.id
+        this.changeMaterialInfo.unit = item.unit
+        this.changeMaterialInfo.materialPriceArr = item.price.map(itemPrice => {
+          return {
+            company: itemPrice.client_id.toString(),
+            price: itemPrice.price
+          }
+        })
+        if (this.changeMaterialInfo.materialPriceArr.length === 0) {
+          this.changeMaterialInfo.materialPriceArr = [{
+            company: '',
+            price: ''
+          }]
+        }
+      }
+    },
+    saveMaterial () {
+      if (this.changeMaterialInfo.materialName && this.changeMaterialInfo.unit) {
+        material.create({
+          id: this.changeMaterialInfo.id,
+          unit: this.changeMaterialInfo.unit,
+          name: this.changeMaterialInfo.materialName,
+          price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+            return {
+              client_id: itemPrice.company,
+              price: itemPrice.price
+            }
+          })
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('添加失败，' + res.data.message)
+          } else {
+            this.$message.success('添加成功')
+            this.closeAndResetInfo('material')
+            this.getMaterialName()
+          }
+        })
+      } else {
+        this.$message.error('检测到辅料名称或计量单位未填写，请填写')
+      }
+    },
+    deleteMaterialName (id) {
+      this.$confirm('此操作将永久删除该包装辅料, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        material.delete({
+          id: id
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('删除失败')
+          } else {
+            this.$message.success('删除成功')
+            this.getMaterialName()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getPackName () {
+      if (this.clientList.length === 0) {
+        client.list().then((res) => {
+          this.clientList = res.data.data
+        })
+      }
+      packag.list().then(res => {
+        if (res.data.status === false) {
+          this.$message.error('获取包装辅料列表失败，' + res.data.message)
+        } else {
+          this.packMaterialNameList = res.data.data
+          this.packMaterialNameTotal = this.packMaterialNameList.length
+        }
+      })
+    },
+    updataPack (type, item) {
+      this.yarn_handle_type = type
+      this.showPopup = true
+      if (item) {
+        this.changePackMaterialInfo.packName = item.name
+        this.changePackMaterialInfo.id = item.id
+        this.changePackMaterialInfo.unit = item.unit
+        this.changePackMaterialInfo.packPriceArr = item.price.map(itemPrice => {
+          return {
+            company: itemPrice.client_id.toString(),
+            price: itemPrice.price
+          }
+        })
+        if (this.changePackMaterialInfo.packPriceArr.length === 0) {
+          this.changePackMaterialInfo.packPriceArr = [{
+            company: '',
+            price: ''
+          }]
+        }
+      }
+    },
+    closeAndResetInfo (type) {
+      this.showPopup = false
+      if (type === 'yarn') {
+        this.changeYarnInfo = {
+          id: '',
+          yarnName: '',
+          yarnPriceArr: [{
+            price: '',
+            company: ''
+          }]
+        }
+      } else if (type === 'material') {
+        this.changeMaterialInfo = {
+          id: '',
+          materialName: '',
+          materialUnit: '',
+          materialNamePrice: [{
+            company: '',
+            price: ''
+          }]
+        }
+      } else if (type === 'pack') {
+        this.changePackMaterialInfo = {
+          id: '',
+          packMaterialName: '',
+          packMaterialUnit: '',
+          type: 'area',
+          packMaterialPriceArr: [{
+            company: '',
+            price: ''
+          }]
+        }
+      }
+    },
+    savePack () {
+      if (this.changePackMaterialInfo.packName && this.changePackMaterialInfo.unit) {
+        packag.create({
+          id: this.changePackMaterialInfo.id,
+          unit: this.changePackMaterialInfo.unit,
+          name: this.changePackMaterialInfo.packName,
+          type: this.changePackMaterialInfo.type === 'area' ? 1 : 2,
+          price_data: this.changePackMaterialInfo.packMaterialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+            return {
+              client_id: itemPrice.company,
+              price: itemPrice.price,
+              unit: this.changePackMaterialInfo.type === 'area' ? '元/㎡' : '元/' + this.changePackMaterialInfo.unit
+            }
+          })
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('添加失败，' + res.data.message)
+          } else {
+            this.$message.success('添加成功')
+            this.closeAndResetInfo('pack')
+            this.getPackName()
+          }
+        })
+      } else {
+        this.$message.error('检测到包装名称或计量单位未填写，请填写')
+      }
+    },
+    deletePackName (id) {
+      this.$confirm('此操作将永久删除该包装辅料, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        packag.delete({
+          id: id
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('删除失败')
+          } else {
+            this.$message.success('删除成功')
+            this.getPackName()
           }
         })
       }).catch(() => {
@@ -2064,6 +2648,13 @@ export default {
       })
     },
     getCompany () {
+      getToken().then(res => {
+        if (res.data.status) {
+          this.postData.token = res.data.data
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
       company.detail().then((res) => {
         let companyInfo = res.data.data
         this.companyInfo.logoUrl = companyInfo.logo
@@ -2072,6 +2663,12 @@ export default {
         this.companyInfo.client_tel = companyInfo.phone
         this.companyInfo.client_email = companyInfo.email
         this.companyInfo.client_address = companyInfo.address
+        this.companyInfo.file_logo = [{ url: companyInfo.logo }]
+        this.companyInfo.file_image = companyInfo.image.map(itemImg => {
+          return {
+            url: itemImg
+          }
+        })
       })
     },
     handleAvatarSuccess (res, file) {
@@ -2095,7 +2692,52 @@ export default {
       }
     },
     saveCompany () {
-
+      const logoUrl = this.$refs.uploada_logo.uploadFiles.map((items) => { return (items.response ? ('https://zhihui.tlkrzf.com/' + items.response.key) : items.url) })
+      const imageUrl = this.$refs.uploada_image.uploadFiles.map((items) => { return (items.response ? ('https://zhihui.tlkrzf.com/' + items.response.key) : items.url) })
+      if (logoUrl.length === 0 || !logoUrl) {
+        this.$message.error('请上传公司LOGO')
+        return
+      }
+      if (!this.companyInfo.client_name) {
+        this.$message.error('请填写公司名称')
+        return
+      }
+      if (!this.companyInfo.client_about) {
+        this.$message.error('请填写公司简介')
+        return
+      }
+      if (imageUrl.length === 0 || !imageUrl) {
+        this.$message.error('请上传公司图片')
+        return
+      }
+      if (!this.companyInfo.client_tel) {
+        this.$message.error('请填写公司电话')
+        return
+      }
+      if (!this.companyInfo.client_email) {
+        this.$message.error('请填写公司邮箱')
+        return
+      }
+      if (!this.companyInfo.client_address) {
+        this.$message.error('请填写公司地址')
+        return
+      }
+      company.create({
+        address: this.companyInfo.client_address,
+        phone: this.companyInfo.client_tel,
+        logo: logoUrl.reverse()[0],
+        contacts: '1',
+        introduce: this.companyInfo.client_about,
+        email: this.companyInfo.client_email,
+        images: imageUrl,
+        id: window.sessionStorage.getItem('company_id')
+      }).then(res => {
+        if (res.data.status) {
+          this.$message.success('保存成功')
+        } else {
+          this.$message.error(res.data.message)
+        }
+      })
     },
     getAuth () {
       if (this.groupList.length === 0) {
@@ -2147,11 +2789,70 @@ export default {
           }
         })
       }
+    },
+    comPrice (item) {
+      if (!item.price) {
+        return ''
+      }
+      if (item.price.length === 0) {
+        return '-'
+      } else if (item.price.length === 1) {
+        return item.price[0].price
+      } else if (item.price.length > 1) {
+        let priceData = this.$clone(item.price).sort((a, b) => {
+          return a.price - b.price
+        })
+        return priceData[0].price + '~' + priceData[priceData.length - 1].price
+      } else {
+        return ''
+      }
+    },
+    getDetailInfo (type, item) {
+      console.log(type, item)
+      if (type === 'yarn') {
+        yarn.priceLog({
+          id: item.id
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('获取历史价格失败，' + res.data.message)
+          } else {
+
+          }
+        })
+      } else if (type === 'material') {
+        material.priceLog({
+          id: item.id
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('获取历史价格失败，' + res.data.message)
+          } else {
+
+          }
+        })
+      } else if (type === 'pack') {
+        packag.priceLog({
+          id: item.id
+        }).then(res => {
+          if (res.data.status === false) {
+            this.$message.error('获取历史价格失败，' + res.data.message)
+          } else {
+
+          }
+        })
+      } else {
+        this.$message.error('未知错误，请尝试刷新页面')
+        return
+      }
+      this.detailType = type
+      this.detailInfo.name = item.name
+      this.detailInfo.unit = item.unit
+      this.detailInfo.price = item.price
+      this.showDetailPopup = true
     }
   },
   created () {
     this.pName = '物料设置'
-    this.cName = '纱线名称'
+    this.cName = '包装辅料'
   }
 }
 </script>
@@ -2204,6 +2905,18 @@ export default {
 #setting {
   .el-checkbox {
     margin-right: 12px;
+  }
+  .clientImg {
+    width: 600px;
+    height: auto;
+    .el-upload-list {
+      width: 100% !important;
+    }
+    .el-upload-dragger {
+      width: 100% !important;
+      height: 100% !important;
+      border: none;
+    }
   }
 }
 </style>

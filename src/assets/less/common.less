@@ -608,6 +608,13 @@
       color: #fff;
       border-radius: 4px;
     }
+    &.btnGreen{
+      height:32px;
+      line-height: 32px;
+      background: @green;
+      color: #fff;
+      border-radius: 4px;
+    }
     &.btnGray{
       color: @font65;
       border: 1px solid #D9D9D9;
@@ -625,6 +632,30 @@
       border: 1px solid @red;
       line-height: 30px;
       border-radius: 4px;
+    }
+    &.btnDashed{
+      display: flex;
+      width: 100%;
+      border: 1px dashed #D9D9D9;
+      box-sizing: border-box;
+      border-radius: 4px;
+      cursor: pointer;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      &:hover{
+        color: @blue;
+        border-color: @blue;
+      }
+      &>.btn{
+        flex: 1;
+        margin: 0;
+        text-align: center;
+        height: 100%;
+        box-sizing: border-box;
+      }
     }
   }
   // 简单表格
@@ -821,6 +852,12 @@
     flex-direction: column;
     font-size: @fontMiddle;
     position: relative;
+    &.minHeight5{
+      min-height: 330px;
+    }
+    &.minHeight10{
+      min-height: 605px;
+    }
     .tb_header,
     .tb_content{
       display: flex;

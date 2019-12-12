@@ -1,0 +1,52 @@
+@import '../common.less';
+#stockDetail{
+  .bgGary_page{
+    background-color: #FBFBFB;
+    margin: 16px 0;
+  }
+  .bgBlue_page{
+    &:hover{
+      background-color: @blue;
+      color: #FFF;
+    }
+  }
+  .middle_page{
+    display: flex;
+    &.row{
+      justify-content: center;
+    }
+    &.col{      
+      align-items: center;
+    }
+  }
+  .btnCtn_page{
+    display: flex;
+    &.right{
+      justify-content: flex-end;
+    }
+    &.marginTop20{        
+      margin-top: 20px;
+    }
+    .noMargin{
+      margin: 0!important;
+    }
+  }
+  .closeIcon_page{
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: @red;
+    z-index: 3;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .flex08{
+    flex:0.8!important;
+  }
+  .flex04{
+    flex:0.2!important;
+  }
+  .two_line{
+    line-height: 1em;
+  }
+}

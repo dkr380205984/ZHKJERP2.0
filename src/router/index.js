@@ -179,6 +179,14 @@ const routes = [
       path: '/setting/setting',
       name: '系统设置',
       component: () => import('../views/setting/setting.vue')
+    }, {
+      path: '/stock/stockList/:params',
+      name: '仓库列表',
+      component: () => import('../views/stock/stockList.vue')
+    }, {
+      path: '/stock/stockDetail/:id/:type',
+      name: '仓库详情',
+      component: () => import('../views/stock/stockDetail.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -234,7 +242,9 @@ router.beforeEach((to, from, next) => {
     '物料预定购列表': ['织为云', '物料预定购列表'],
     '物料预定购入库': ['织为云', '物料预定购列表', '物料预定购入库'],
     '物料预定购修改': ['织为云', '物料预定购列表', '物料预定购修改'],
-    '系统设置': ['织为云', '系统设置']
+    '系统设置': ['织为云', '系统设置'],
+    '仓库列表': ['织为云', '仓库列表'],
+    '仓库详情': ['织为云', '仓库列表', '仓库详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

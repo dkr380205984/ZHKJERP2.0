@@ -210,7 +210,7 @@ export default {
   created () {
     materialPlan.detail({
       order_id: this.$route.params.id,
-      order_type: this.$router.params.type
+      order_type: this.$route.params.type
     }).then(res => {
       if (res.data.status) {
         let data = res.data.data

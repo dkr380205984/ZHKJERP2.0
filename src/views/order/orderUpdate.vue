@@ -775,6 +775,7 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
+      console.log(item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
@@ -1051,7 +1052,6 @@ export default {
       this.postData.token = res[2].data.data
       // 初始化修改订单数据
       let orderInfo = res[3].data.data
-      console.log(orderInfo)
       this.order_code = orderInfo.order_code.split(';').map(item => {
         return {
           code: item
@@ -1067,60 +1067,134 @@ export default {
       this.order_time = orderInfo.order_time
       let orderBatch = []
       let arr = [] // 存储产品id
-      for (let indexBatch in orderInfo.order_batch) {
-        let itemBatch = orderInfo.order_batch[indexBatch].map(item => {
-          item.category_info = JSON.stringify(item.category_info)
-          return item
-        })
-        arr.push(itemBatch)
-        orderBatch.push(this.$mergeData(itemBatch, { mainRule: 'delivery_time/time', childrenName: 'batch_info', childrenRule: { mainRule: 'product_id/id', childrenName: 'product_info', childrenRule: { mainRule: ['size_name', 'color_name', 'unit_price'], otherRule: [{ name: 'numbers', type: 'add' }] } } }))
-      }
-      arr = this.$mergeData(this.$flatten(arr), { mainRule: 'product_id', otherRule: [{ name: 'category_info' }] })
-      this.checkedProList = arr.map(item => {
-        item.category_info = JSON.parse(item.category_info)
-        let obj = {}
-        obj.category_info = {
-          name: item.category_info.unit,
-          product_category: item.category_info.category_name
-        }
-        obj.size = item.category_info.size_measurement
-        obj.color = item.category_info.color
-        obj.checked = true
-        obj.id = item.product_id.toString()
-        obj.product_code = item.category_info.product_code
-        obj.sizeColor = item.category_info.size_measurement.map(valSize => {
-          return {
-            value: valSize.measurement,
-            label: valSize.measurement,
-            children: item.category_info.color.map(valColor => {
-              return {
-                value: valColor.color_name,
-                label: valColor.color_name
-              }
-            })
-          }
-        })
-        return obj
-      })
-      this.batchDate = orderBatch.map(item => { return item[0] }).map(item => {
-        return {
-          time: item.time,
-          batch_info: item.batch_info.map(itemBatch => {
-            let sizeColor = this.checkedProList.find(val => val.id === itemBatch.id.toString())
+      orderInfo.order_batch.forEach(itemBatch => {
+        let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
+          items.id = items.product_info.product_id.toString()
+          items.unit = items.product_info.unit
+          items.sizeColor = items.product_info.size_measurement.map(valSize => {
             return {
-              id: itemBatch.id.toString(),
-              sizeColor: sizeColor ? sizeColor.sizeColor : [],
-              product_info: itemBatch.product_info.map(itemPro => {
+              value: valSize.measurement,
+              label: valSize.measurement,
+              children: items.product_info.color.map(valColor => {
                 return {
-                  size_color: [itemPro.size_name, itemPro.color_name],
-                  price: itemPro.unit_price,
-                  number: itemPro.numbers
+                  value: valColor.color_name,
+                  label: valColor.color_name
                 }
               })
             }
           })
+          delete items.product_info
+          delete items.image
+          return items
+        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_name/size', 'color_name/color', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+        orderBatch.push({
+          time: itemBatch.delivery_time,
+          batch_info: productInfo
+        })
+        itemBatch.product_info.forEach(itemPro => {
+          let flag = arr.find(itemId => itemId.id === itemPro.product_info.product_id.toString())
+          if (!flag) {
+            arr.push({
+              category_info: {
+                name: itemPro.product_info.unit,
+                product_category: itemPro.product_info.category_name
+              },
+              checked: true,
+              color: itemPro.product_info.color,
+              flower_id: itemPro.product_info.flower_name,
+              id: itemPro.product_info.product_id.toString(),
+              product_code: itemPro.product_info.product_code,
+              sizeColor: itemPro.product_info.size_measurement.map(valSize => {
+                return {
+                  value: valSize.measurement,
+                  label: valSize.measurement,
+                  children: itemPro.product_info.color.map(valColor => {
+                    return {
+                      value: valColor.color_name,
+                      label: valColor.color_name
+                    }
+                  })
+                }
+              }),
+              size: itemPro.product_info.size_measurement
+            })
+          }
+        })
+      })
+      this.checkedProList = arr
+      this.batchDate = orderBatch.map(itemBatch => {
+        return {
+          time: itemBatch.time,
+          batch_info: itemBatch.batch_info.map(itemPro => {
+            return {
+              id: itemPro.id,
+              product_info: itemPro.product_info.map(itemSize => {
+                return {
+                  size_color: [itemSize.size, itemSize.color],
+                  number: itemSize.number,
+                  price: itemSize.price
+                }
+              }),
+              sizeColor: itemPro.sizeColor,
+              unit: itemPro.unit
+            }
+          })
         }
       })
+      // for (let indexBatch in orderInfo.order_batch) {
+      //   let itemBatch = orderInfo.order_batch[indexBatch].map(item => {
+      //     item.category_info = JSON.stringify(item.category_info)
+      //     return item
+      //   })
+      //   arr.push(itemBatch)
+      //   orderBatch.push(this.$mergeData(itemBatch, { mainRule: 'delivery_time/time', childrenName: 'batch_info', childrenRule: { mainRule: 'product_id/id', childrenName: 'product_info', childrenRule: { mainRule: ['size_name', 'color_name', 'unit_price'], otherRule: [{ name: 'numbers', type: 'add' }] } } }))
+      // }
+      // arr = this.$mergeData(this.$flatten(arr), { mainRule: 'product_id', otherRule: [{ name: 'category_info' }] })
+      // this.checkedProList = arr.map(item => {
+      //   item.category_info = JSON.parse(item.category_info)
+      //   let obj = {}
+      //   obj.category_info = {
+      //     name: item.category_info.unit,
+      //     product_category: item.category_info.category_name
+      //   }
+      //   obj.size = item.category_info.size_measurement
+      //   obj.color = item.category_info.color
+      //   obj.checked = true
+      //   obj.id = item.product_id.toString()
+      //   obj.product_code = item.category_info.product_code
+      //   obj.sizeColor = item.category_info.size_measurement.map(valSize => {
+      //     return {
+      //       value: valSize.measurement,
+      //       label: valSize.measurement,
+      //       children: item.category_info.color.map(valColor => {
+      //         return {
+      //           value: valColor.color_name,
+      //           label: valColor.color_name
+      //         }
+      //       })
+      //     }
+      //   })
+      //   return obj
+      // })
+      // this.batchDate = orderBatch.map(item => { return item[0] }).map(item => {
+      //   return {
+      //     time: item.time,
+      //     batch_info: item.batch_info.map(itemBatch => {
+      //       let sizeColor = this.checkedProList.find(val => val.id === itemBatch.id.toString())
+      //       return {
+      //         id: itemBatch.id.toString(),
+      //         sizeColor: sizeColor ? sizeColor.sizeColor : [],
+      //         product_info: itemBatch.product_info.map(itemPro => {
+      //           return {
+      //             size_color: [itemPro.size_name, itemPro.color_name],
+      //             price: itemPro.unit_price,
+      //             number: itemPro.numbers
+      //           }
+      //         })
+      //       }
+      //     })
+      //   }
+      // })
       this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
         return {
           name: items.replace('https://zhihui.tlkrzf.com/', ''),
