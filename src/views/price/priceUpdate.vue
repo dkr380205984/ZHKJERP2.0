@@ -375,6 +375,23 @@
                 @focus="item.isReferencePrice = false">
                 <template slot="append">元/kg</template>
               </zh-input>
+              <div class="editBtn addBtn"
+                v-if="item.name"
+                style="margin-left:8px">
+                <el-popover placement="right"
+                  width="330"
+                  trigger="click">
+                  <el-table :data="item.priceArr">
+                    <el-table-column width="230"
+                      property="client_name"
+                      label="报价公司"></el-table-column>
+                    <el-table-column width="100"
+                      property="price"
+                      label="价格"></el-table-column>
+                  </el-table>
+                  <span slot="reference">查看报价</span>
+                </el-popover>
+              </div>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -457,6 +474,23 @@
                 @input="computedPrice(item)">
                 <template slot="append">元/{{item.unit ? item.unit : '个'}}</template>
               </zh-input>
+              <div class="editBtn addBtn"
+                v-if="item.name"
+                style="margin-left:8px">
+                <el-popover placement="right"
+                  width="330"
+                  trigger="click">
+                  <el-table :data="item.priceArr">
+                    <el-table-column width="230"
+                      property="client_name"
+                      label="报价公司"></el-table-column>
+                    <el-table-column width="100"
+                      property="price"
+                      label="价格"></el-table-column>
+                  </el-table>
+                  <span slot="reference">查看报价</span>
+                </el-popover>
+              </div>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -888,7 +922,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, yarnPrice, planList, price } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1087,18 +1121,19 @@ export default {
 
     },
     checkedYarn (newVal) {
-      if (this.yarnPriceList.length === 0) {
-        yarnPrice.list({
-
-        }).then(res => {
-          this.yarnPriceList = res.data.data
-          this.checkedYarn(newVal)
-        })
-      }
-      let yarnPriceInfo = this.yarnPriceList.find(items => items.name === newVal.name)
+      let yarnPriceInfo = this.yarn_list.find(items => items.value === newVal.name)
       if (yarnPriceInfo) {
-        newVal.price = yarnPriceInfo.price
-        newVal.isReferencePrice = true
+        if (yarnPriceInfo.priceArr.length > 0) {
+          newVal.price = yarnPriceInfo.priceArr.sort((a, b) => {
+            return a.price - b.price
+          })[0].price
+          newVal.priceArr = yarnPriceInfo.priceArr
+          newVal.isReferencePrice = true
+        } else {
+          newVal.price = ''
+          newVal.priceArr = []
+          newVal.isReferencePrice = false
+        }
         this.computedPrice(newVal, true)
       }
     },
@@ -1366,7 +1401,22 @@ export default {
     },
     // 切换辅料单位
     resUnit (item, value) {
-      item.unit = this.material_list.find(key => key.value === value) ? this.material_list.find(key => key.value === value).unit : '个'
+      let materialPriceInfo = this.material_list.find(key => key.value === value)
+      item.unit = materialPriceInfo ? materialPriceInfo.unit : '个'
+      if (materialPriceInfo) {
+        if (materialPriceInfo.priceArr.length > 0) {
+          item.price = materialPriceInfo.priceArr.sort((a, b) => {
+            return a.price - b.price
+          })[0].price
+          item.priceArr = materialPriceInfo.priceArr
+          item.isReferencePrice = true
+        } else {
+          item.price = ''
+          item.priceArr = []
+          item.isReferencePrice = false
+        }
+        this.computedPrice(item)
+      }
     }
   },
   created () {
@@ -1421,8 +1471,8 @@ export default {
       })
       this.flowerArr = res[2].data.data
       this.groupArr = res[3].data.data
-      this.yarn_list = res[4].data.data.map(item => { return { value: item.name } })
-      this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit } })
+      this.yarn_list = res[4].data.data.map(item => { return { value: item.name, priceArr: item.price } })
+      this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
       if (this.$route.fullPath.split('?')[1]) {
         let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])

@@ -184,6 +184,10 @@ const routes = [
       name: '物料订购列表',
       component: () => import('../views/material/materialList.vue')
     }, {
+      path: '/materialStock/materialStockDetail/:id/:type',
+      name: '物料出入库详情',
+      component: () => import('../views/materialStock/materialStockDetail.vue')
+    }, {
       path: '/setting/setting',
       name: '系统设置',
       component: () => import('../views/setting/setting.vue')
@@ -258,7 +262,8 @@ router.beforeEach((to, from, next) => {
     '物料预订购修改': ['织为云', '物料预订购列表', '物料预订购修改'],
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
-    '系统设置': ['织为云', '系统设置']
+    '系统设置': ['织为云', '系统设置'],
+    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

@@ -239,6 +239,13 @@ const plugin = {
       return Number(number.toFixed(2))
     }
   },
+  /************************************
+   *data:需要处理的数据
+   *index:切割数值
+   *arr:处理好的数据保留在这个参数
+   *type:Array|----|Number|----|Array
+   *return:Array
+   ***********************************/
   newSplice: (data, index, arr) => {
     let _this = plugin
     if (!arr) {

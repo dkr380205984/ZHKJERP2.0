@@ -115,6 +115,9 @@
                     <el-dropdown-item command='materialDetail'>
                       <span class="updated">物料计划单详情</span>
                     </el-dropdown-item>
+                    <el-dropdown-item command='materialStock'>
+                      <span class="updated">物料出入库</span>
+                    </el-dropdown-item>
                     <el-dropdown-item command='delete'>
                       <span class="delete">删除</span>
                     </el-dropdown-item>
@@ -208,6 +211,8 @@ export default {
         this.$router.push('/materialPlan/materialPlanCreate/' + id + '/1')
       } else if (type === 'materialDetail') {
         this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1')
+      } else if (type === 'materialStock') {
+        this.$router.push('/materialStock/materialStockDetail/' + id + '/1')
       } else {
         this.$message.warning('未知命令')
       }
