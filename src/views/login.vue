@@ -85,7 +85,7 @@ export default {
           window.sessionStorage.setItem('user_id', res.data.data.user_id)
           window.sessionStorage.setItem('company_id', res.data.data.company_id)
           window.sessionStorage.setItem('company_name', res.data.data.company_name)
-          window.sessionStorage.setItem('module_id', res.data.data.module_id)
+          window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))
           window.localStorage.setItem('zhUsername', _this.telephone)
           if (_this.remPsd) {
             window.localStorage.setItem('zhPassword', _this.password)

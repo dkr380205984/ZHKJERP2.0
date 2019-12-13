@@ -236,7 +236,7 @@ export default {
             this.$message.success('入库成功')
             this.detail.stock_total_weight = Number(this.detail.stock_total_weight || 0) + Number(item.in_weight)
             this.detail.stock_total_price = Number(this.detail.stock_total_price || 0) + Number(item.in_weight) * item.price
-            item.weight = Number(item.weight) + Number(item.in_weight)
+            item.stock_total_weight = Number(item.stock_total_weight) + Number(item.in_weight)
             item.editing = false
           }
         })

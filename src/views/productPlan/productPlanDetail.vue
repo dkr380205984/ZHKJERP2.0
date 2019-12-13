@@ -73,9 +73,14 @@
           <div class="thead">
             <div class="trow">
               <div class="tcolumn">尺码/配色</div>
-              <div class="tcolumn">物料名称</div>
-              <div class="tcolumn">物料属性</div>
-              <div class="tcolumn">物料数量</div>
+              <div class="tcolumn noPad"
+                style="flex:3">
+                <div class="trow">
+                  <div class="tcolumn">物料名称</div>
+                  <div class="tcolumn">物料属性</div>
+                  <div class="tcolumn">物料数量</div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="tbody">
@@ -85,7 +90,7 @@
               <div class="tcolumn">
                 {{itemCS.size_name}}/{{itemCS.colour_name}}
               </div>
-              <div class="tcolumn"
+              <div class="tcolumn noPad"
                 style="flex:3">
                 <div class="trow"
                   v-for="(itemMat,indexMat) in itemCS.materials"
