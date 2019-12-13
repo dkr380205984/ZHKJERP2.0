@@ -151,13 +151,13 @@ const price = {
   list: (params) => http.get(`${baseUrl}/product/quotation/list`, params)
 }
 // 物料价格管理
-const yarnPrice = {
-  create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
-  delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
-  check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/product/quotation/detail`, params),
-  list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
-}
+// const yarnPrice = {
+//   create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
+//   delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
+//   check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
+//   detail: (params) => http.get(`${baseUrl}/product/quotation/detail`, params),
+//   list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
+// }
 // 配料单管理
 const planList = {
   create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
@@ -270,7 +270,7 @@ export {
   craftConfig,
   craft,
   penetrationMethod,
-  yarnPrice,
+  // yarnPrice,
   price,
   yarn,
   yarnColor,
