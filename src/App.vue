@@ -9,6 +9,7 @@ html,
 body {
   margin: 0;
   height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
   min-width: 1366px;
 }
 #app {

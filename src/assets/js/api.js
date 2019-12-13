@@ -210,13 +210,34 @@ const materialPlan = {
   detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params)
 }
+// 物料管理
+const materialManage = {
+  create: (params) => http.post(`${baseUrl}/material/order/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/material/order/list`, params),
+  delete: (params) => http.post(`${baseUrl}/material/order/delete`, params, 'application/json'), // 订购调取撤销
+  init: (params) => http.get(`${baseUrl}/material/order/init`, params) // 物料调取仓库初始化
+}
 // 加工工序
 const process = {
   create: (params) => http.post(`${baseUrl}/production/flow/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/production/flow/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/production/flow/list`, params)
 }
+// 物料加工
+const materialProcess = {
+  create: (params) => http.post(`${baseUrl}/material/process/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/material/process/list`, params),
+  delete: (params) => http.post(`${baseUrl}/material/process/delete`, params, 'application/json')
+}
+// 补纱 补辅料
+const replenish = {
+  create: (params) => http.post(`${baseUrl}/production/yarn/replenish/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/production/yarn/replenish/list`, params)
+}
 export {
+  replenish,
+  materialProcess,
+  materialManage,
   materialPlan,
   auth,
   process,

@@ -9,7 +9,7 @@
             <div class="name">{{companyName}}</div>
           </div>
           <zh-nav :data="navCmp"
-            maxLength="5">
+            :maxLength="4">
           </zh-nav>
         </div>
         <div class="rightCtn">
@@ -151,15 +151,18 @@ export default {
           url: '/materialPlan/materialPlanDetail/6/1'
         }]
       }, {
-        name: '预定购管理',
+        name: '物料管理',
         id: 7,
         icon: require('@/assets/image/index/物料管理.png'),
         children: [{
           name: '物料预订购',
           url: '/materialOrder/materialOrderCreate'
         }, {
-          name: '物料预定购列表',
+          name: '物料预订购列表',
           url: '/materialOrder/materialOrderList/page=1&&keyword=&&date='
+        }, {
+          name: '订单物料列表',
+          url: '/material/materialList/page=1&&keyword=&&date='
         }]
       }]
     }
@@ -172,7 +175,7 @@ export default {
       return this.$store.state.breadUrl
     },
     navCmp () {
-      let moduleArr = window.sessionStorage.getItem('module_id')
+      let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : null
       if (moduleArr) {
         return this.navData.filter((item) => {
           return moduleArr.indexOf(Number(item.id)) !== -1

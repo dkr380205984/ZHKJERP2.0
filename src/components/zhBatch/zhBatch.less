@@ -1,0 +1,100 @@
+.zhBatch{
+  .blue{
+    color: #1A95FF;
+    cursor: pointer;
+  }
+  .zhPopup{
+    z-index: 999;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(64,64,64,0.6);
+    .main{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      margin:auto;
+      width: 880px;
+      background: #fff;
+      border-radius: 4px;
+      .title{
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        font-weight: bold;
+        .text{
+          font-size: 16px;
+          color: rgba(0,0,0,0.85);
+        }
+        .el-icon-close{
+          color: #999999;
+          font-size: 18px;
+          cursor: pointer;
+        }
+      }
+      .content{
+        padding: 16px 50px;
+        border-top: 1px solid #E9E9E9;
+        border-bottom: 1px solid #E9E9E9;
+        max-height: 300px;
+        overflow-y: auto;
+        .zhTable{
+          display: block;
+          margin: 0 32px;
+          border:1px solid transparent;
+          border-bottom-color:#E9E9E9;
+          font-size: 14px;
+          .thead {
+            background: #FAFAFA;
+            height: 54px;
+            color: rgba(0,0,0,0.85);
+            border-bottom: 1px solid #E9E9E9;
+          }
+          .tbody {
+            background: #fff;
+            color: rgba(0,0,0,0.65);
+          }
+          .trow {
+            width: 100%;
+            min-height: 54px;
+            border-bottom: 1px solid #E9E9E9;
+            &:nth-last-child(1) {
+              border-bottom: 0;
+            }
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            text-align: center;
+            &.important {
+              color: #1a95ff;
+            }
+          }
+          .tcolumn {
+            min-height: 54px;
+            border-right: 1px solid #E9E9E9;
+            justify-content: center;
+            text-align: center;
+            &:nth-first-child(1) {
+              border-left: 0;
+            }
+            &:nth-last-child(1) {
+              border-right: 0;
+            }
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            &.important {
+              color: #1a95ff;
+            }
+          }
+        }
+      }
+    }
+  }
+}
