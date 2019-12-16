@@ -74,6 +74,11 @@ const plugin = {
         if (itemType === 'Object') {
           let deleteProp = _this.cloneData(item) // 保存一份需要处理的数据
           delete oldData[index]
+          for (let hasKey in oldData) {
+            if (deleteProp.hasOwnProperty(hasKey)) {
+              throw new TypeError('存在相同的key值，无法执行')
+            }
+          }
           return _this.flatten({ ...oldData, ...deleteProp })
         } else if (itemType === 'Array') {
           let newData = []

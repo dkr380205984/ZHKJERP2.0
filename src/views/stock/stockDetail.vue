@@ -84,7 +84,8 @@
               :page-size="5"
               layout="prev, pager, next"
               :total="yarnTotal"
-              :current-page.sync="yarnPages">
+              :current-page.sync="yarnPages"
+              @current-change='getYarnList'>
             </el-pagination>
           </div>
           <div class="editCtn bgGary_page"
@@ -232,7 +233,7 @@
               <span class="tb_row middle flex08">备注信息</span>
             </div>
             <div class="tb_content"
-              v-for="(itemLog,indexLog) in yarnLog[yarnLogPages-1]"
+              v-for="(itemLog,indexLog) in yarnLog"
               :key="indexLog">
               <span class="tb_row flex04">
                 <el-checkbox v-model="itemLog.checked"></el-checkbox>
@@ -260,10 +261,11 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="1"
+              :page-size="5"
               layout="prev, pager, next"
               :total="yarnLogTotal"
-              :current-page.sync="yarnLogPages">
+              :current-page.sync="yarnLogPages"
+              @current-change='getYarnLog'>
             </el-pagination>
           </div>
         </div>
@@ -317,7 +319,8 @@
               :page-size="5"
               layout="prev, pager, next"
               :total="materialTotal"
-              :current-page.sync="materialPages">
+              :current-page.sync="materialPages"
+              @current-change='getMaterialList'>
             </el-pagination>
           </div>
           <div class="editCtn bgGary_page"
@@ -465,7 +468,7 @@
               <span class="tb_row middle flex08">备注信息</span>
             </div>
             <div class="tb_content"
-              v-for="(itemLog,indexLog) in materialLog[materialLogPages-1]"
+              v-for="(itemLog,indexLog) in materialLog"
               :key="indexLog">
               <span class="tb_row flex04">
                 <el-checkbox v-model="itemLog.checked"></el-checkbox>
@@ -493,10 +496,11 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="1"
+              :page-size="5"
               layout="prev, pager, next"
               :total="materialLogTotal"
-              :current-page.sync="materialLogPages">
+              :current-page.sync="materialLogPages"
+              @current-change='getMaterialLog'>
             </el-pagination>
           </div>
         </div>
@@ -552,7 +556,8 @@
               :page-size="5"
               layout="prev, pager, next"
               :total="packTotal"
-              :current-page.sync="packPages">
+              :current-page.sync="packPages"
+              @current-change='getPackList'>
             </el-pagination>
           </div>
           <div class="editCtn bgGary_page"
@@ -704,7 +709,7 @@
               <span class="tb_row middle flex08">备注信息</span>
             </div>
             <div class="tb_content"
-              v-for="(itemLog,indexLog) in packLog[packLogPages - 1]"
+              v-for="(itemLog,indexLog) in packLog"
               :key="indexLog">
               <span class="tb_row flex04">
                 <el-checkbox v-model="itemLog.checked"></el-checkbox>
@@ -733,10 +738,11 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="1"
+              :page-size="5"
               layout="prev, pager, next"
               :total="packLogTotal"
-              :current-page.sync="packLogPages">
+              :current-page.sync="packLogPages"
+              @current-change='getPackLog'>
             </el-pagination>
           </div>
         </div>
@@ -1143,7 +1149,7 @@ export default {
         this.getProductList(1)
         this.getProductLog(1)
         if (this.productNameList.length === 0) {
-          product.list({}).then(res => {
+          product.list().then(res => {
             if (res.data.status === false) {
               this.$message.error('获取产品列表失败，' + res.data.message)
             } else {
@@ -1160,7 +1166,7 @@ export default {
         stock_id: this.$route.params.id,
         type: 1,
         material_name: this.searchYarn,
-        page: page
+        page: page || this.yarnPages
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取原料库存列表失败，' + res.data.message)
@@ -1171,24 +1177,25 @@ export default {
         this.loading = false
       })
     },
-    getYarnLog () {
+    getYarnLog (page) {
       this.loading = true
       yarnStock.log({
         stock_id: this.$route.params.id,
         type: 1,
         material_name: this.searchYarnLog,
-        action: this.yarnAction
+        action: this.yarnAction,
+        page: page || this.yarnLogPages,
+        limit: 5
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取原料日志失败，' + res.data.message)
         } else {
           this.yarnLog = []
-          let data = res.data.data.reverse().map(item => {
+          this.yarnLog = res.data.data.map(item => {
             item.checked = false
             return item
           })
-          this.yarnLog = this.$newSplice(this.$clone(data), 5)
-          this.yarnLogTotal = this.yarnLog.length
+          this.yarnLogTotal = res.data.meta.total
         }
         this.loading = false
       })
@@ -1197,7 +1204,7 @@ export default {
       this.loading = true
       yarnStock.list({
         limit: 5,
-        page: page,
+        page: page || this.materialPages,
         stock_id: this.$route.params.id,
         type: 2,
         material_name: this.searchMaterial
@@ -1211,24 +1218,25 @@ export default {
         this.loading = false
       })
     },
-    getMaterialLog () {
+    getMaterialLog (page) {
       this.loading = true
       yarnStock.log({
         stock_id: this.$route.params.id,
         type: 2,
         material_name: this.searchMaterialLog,
-        action: this.materialAction
+        action: this.materialAction,
+        page: page || this.materialLogPages,
+        limit: 5
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取原料日志失败，' + res.data.message)
         } else {
           this.materialLog = []
-          let data = res.data.data.reverse().map(item => {
+          this.materialLog = res.data.data.map(item => {
             item.checked = false
             return item
           })
-          this.materialLog = this.$newSplice(this.$clone(data), 5)
-          this.materialLogTotal = this.materialLog.length
+          this.materialLogTotal = res.data.meta.total
         }
         this.loading = false
       })
@@ -1237,7 +1245,7 @@ export default {
       this.loading = true
       packStock.list({
         limit: 5,
-        page: page,
+        page: page || this.packPages,
         stock_id: this.$route.params.id,
         material_name: this.searchPack
       }).then(res => {
@@ -1250,22 +1258,22 @@ export default {
         this.loading = false
       })
     },
-    getPackLog () {
+    getPackLog (page) {
       this.loading = true
       packStock.log({
         stock_id: this.$route.params.id,
-        material_name: this.searchPackLog
+        material_name: this.searchPackLog,
+        limit: 5,
+        page: page || this.packLogPages
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取包装出入库日志失败，' + res.data.message)
         } else {
-          this.packLog = []
-          let data = res.data.data.reverse().map(item => {
+          this.packLog = res.data.data.map(item => {
             item.checked = false
             return item
           })
-          this.packLog = this.$newSplice(this.$clone(data), 5)
-          this.packLogTotal = this.packLog.length
+          this.packLogTotal = res.data.meta.total
         }
         this.loading = false
       })
@@ -1275,7 +1283,7 @@ export default {
       productStock.list({
         stock_id: this.$route.params.id,
         limit: 5,
-        page: page,
+        page: page || this.productPages,
         product_code: this.searchProduct
       }).then(res => {
         if (res.data.status === false) {
@@ -1292,20 +1300,18 @@ export default {
       productStock.log({
         stock_id: this.$route.params.id,
         type: 1,
-        product_code: this.searchProductLog
-        // page: 2,
-        // limit: 1
+        product_code: this.searchProductLog,
+        page: page || this.productLogPages,
+        limit: 5
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取产品出入库日志失败，' + res.data.message)
         } else {
-          this.productLog = []
-          let data = res.data.data.reverse().map(item => {
+          this.productLog = res.data.data.map(item => {
             item.checked = false
             return item
           })
-          this.productLog = this.$newSplice(this.$clone(data), 5)
-          this.productLogTotal = this.productLog.length
+          this.productLogTotal = res.data.meta.total
         }
         this.loading = false
       })
@@ -2008,9 +2014,6 @@ export default {
     }
   },
   watch: {
-    yarnPages (newVal) {
-      this.getYarnList(newVal)
-    },
     packPages (newVal) {
       this.getPackList(newVal)
       // },
