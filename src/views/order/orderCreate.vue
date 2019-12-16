@@ -296,7 +296,7 @@
             <div class="col">{{item.product_code}}</div>
             <div class="col">{{item|filterType}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title}}</div>
+            <div class="col">{{item.name}}</div>
             <div class="col">
               <zh-img-list :list="item.images"></zh-img-list>
             </div>

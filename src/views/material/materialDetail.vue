@@ -5,9 +5,6 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
-        <span class="btn btnBlue"
-          style="float:right"
-          @click="bushaFlag=true">补纱入口按钮</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -108,7 +105,7 @@
                   </div>
                   <div class="tcolumn"
                     v-if="type==='1'">
-                    <a class="blue"
+                    <a class="orange"
                       @click="easyStockBatch(item.material_name,item.childrenMergeInfo)">批量调取白胚</a>
                   </div>
                 </div>
@@ -335,49 +332,32 @@
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
-                  <div class="tcolumn">织造单位</div>
-                  <div class="tcolumn">承担方</div>
-                  <div class="tcolumn noPad"
-                    style="flex:5">
-                    <div class="trow">
-                      <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
-                      <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
-                      <div class="tcolumn">补充数量</div>
-                      <div class="tcolumn">已补数量</div>
-                      <div class="tcolumn">操作</div>
-                    </div>
-                  </div>
+                  <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
+                  <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
+                  <div class="tcolumn">补充数量</div>
+                  <div class="tcolumn">已补数量</div>
+                  <div class="tcolumn">操作</div>
                 </div>
               </div>
               <div class="tbody">
                 <div class="trow"
                   v-for="item in replenishList"
                   :key="item.id">
-                  <div class="tcolumn">{{item.replenish_name}}</div>
-                  <div class="tcolumn">承担方</div>
-                  <div class="tcolumn noPad"
-                    style="flex:5">
-                    <div class="trow"
-                      v-for="(itemChild,indexChild) in item.yarn_info"
-                      :key="indexChild">
-                      <div class="tcolumn">{{itemChild.name}}</div>
-                      <div class="tcolumn">{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.weight}}</div>
-                      <div class="tcolumn">
-                        <span :class="{'blue':itemChild.total_weight<itemChild.weight,'green':itemChild.total_weight>=itemChild.weight}">{{itemChild.total_weight}}</span></div>
-                      <div class="tcolumn"
-                        style="flex-direction:row;line-height:54px;justify-content:start">
-                        <a href="#order"
-                          class="blue"
-                          @click="normalOrder(itemChild.name,itemChild.color,item.id,itemChild.weight-itemChild.total_weight,true)">订购</a>
-                        <span class="border"
-                          style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
-                          v-if="type==='1'"></span>
-                        <span class="blue"
-                          @click="easyStock(itemChild.name,itemChild.color,itemChild.weight-itemChild.total_weight, item.id,true)"
-                          v-if="type==='1'">调取</span>
-                      </div>
-                    </div>
+                  <div class="tcolumn">{{item.material_name}}</div>
+                  <div class="tcolumn">{{item.material_color}}</div>
+                  <div class="tcolumn">{{item.need_weight}}</div>
+                  <div class="tcolumn">{{item.order_weight}}</div>
+                  <div class="tcolumn"
+                    style="flex-direction:row;line-height:54px;justify-content:start">
+                    <a href="#order"
+                      class="blue"
+                      @click="normalOrder(item.material_name,item.material_color,item.id,item.need_weight-item.order_weight,true)">订购</a>
+                    <span class="border"
+                      style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
+                      v-if="type==='1'"></span>
+                    <span class="blue"
+                      @click="easyStock(item.material_name,item.material_color,item.need_weight-item.order_weight, item.id,true)"
+                      v-if="type==='1'">调取</span>
                   </div>
                 </div>
               </div>
@@ -780,6 +760,63 @@
       </div>
     </div>
     <div class="popup"
+      v-show="easyProcessFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">快捷填写</div>
+          <i class="el-icon-close"
+            @click="easyProcessFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="tips">
+            提示信息：一键添加操作可以统一选择加工单位,加工单价和加工工序，如不需要可以选择直接跳过该步骤。
+          </div>
+          <div class="row">
+            <div class="label">加工单位：</div>
+            <div class="info">
+              <el-select v-model="commonProcessCompany"
+                filterable
+                placeholder="请选择加工单位">
+                <el-option v-for="item in processCompany"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">加工单价：</div>
+            <div class="info">
+              <el-input v-model="commonProcessPrice"
+                placeholder="请输入加工单价">
+                <template slot="append">元</template>
+              </el-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">加工工序：</div>
+            <div class="info">
+              <el-select v-model="commonProcess"
+                filterable
+                multiple
+                placeholder="请选择加工工序">
+                <el-option v-for="item in processList"
+                  :key="item.id"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="easyProcessFlag = false">直接跳过</div>
+          <div class="btn btnBlue"
+            @click="commonFnProcess">确定</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
       v-show="easyStockFlag">
       <div class="main">
         <div class="title">
@@ -877,7 +914,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -929,6 +966,9 @@ export default {
       processList: [],
       commonCompany: '',
       commonPrice: [],
+      commonProcessCompany: '', // 一键加工公共单位
+      commonProcessPrice: '',
+      commonProcess: [],
       replenishList: [],
       replenishFlag: false,
       replenishId: '', // 补纱flag为true时传replenishId
@@ -1118,6 +1158,16 @@ export default {
       })
     },
     saveStock () {
+      // 数据验证
+      let flattenData = this.$flatten(this.stock_data)
+      let errorFlag = false
+      errorFlag = flattenData.some((item) => {
+        return !item.weight
+      })
+      if (errorFlag) {
+        this.$message.error('请填写调取数量')
+        return
+      }
       let stockData = []
       let orderData = []
       this.stock_data.forEach((item) => {
@@ -1193,6 +1243,58 @@ export default {
       }
     },
     saveOrder () {
+      // 数据验证
+      let flattenData = this.$flatten(this.order_data)
+      let errorFlag = false
+      errorFlag = flattenData.some((item) => {
+        return !item.company_id
+      })
+      if (errorFlag) {
+        this.$message.error('请选择订购公司')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.material_id
+      })
+      if (errorFlag) {
+        this.$message.error('请选择物料')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.price
+      })
+      if (errorFlag) {
+        this.$message.error('请输入单价信息')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.name
+      })
+      if (errorFlag) {
+        this.$message.error('请填写原料名称')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.color
+      })
+      if (errorFlag) {
+        this.$message.error('请填写原料颜色')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.number
+      })
+      if (errorFlag) {
+        this.$message.error('请填写原料数量')
+        return
+      }
+      errorFlag = flattenData.some((item) => {
+        return !item.complete_time
+      })
+      if (errorFlag) {
+        this.$message.error('请选择截止日期')
+        return
+      }
       let formData = this.$flatten(this.order_data).map((item) => {
         return {
           desc: item.desc,
@@ -1266,6 +1368,17 @@ export default {
       this.commonPrice = []
       this.easyOrderFlag = false
     },
+    commonFnProcess () {
+      this.process_data.forEach((item) => {
+        item.processList[0].price = this.commonProcessPrice
+        item.processList[0].process = this.commonProcess
+        item.company_id = this.commonProcessCompany
+      })
+      this.commonProcessCompany = ''
+      this.commonProcessPrice = ''
+      this.commonProcess = []
+      this.easyProcessFlag = false
+    },
     addMaterial (index) {
       this.order_data[index].material.push({
         color: '',
@@ -1307,9 +1420,49 @@ export default {
           })
         })
       })
+      this.easyProcessFlag = true
       this.process_flag = true
     },
     saveProcess () {
+      let errorFlag = false
+      let errorMsg = ''
+      this.process_data.forEach((item) => {
+        if (!item.company_id) {
+          errorFlag = true
+          errorMsg = '请选择加工单位'
+          return
+        }
+        if (!item.material_id) {
+          errorFlag = true
+          errorMsg = '请选择物料'
+          return
+        }
+        if (!item.complete_time) {
+          errorFlag = true
+          errorMsg = '请选择截止日期'
+          return
+        }
+        item.processList.formEach((itemChild) => {
+          if (!itemChild.number) {
+            errorFlag = true
+            errorMsg = '请输入数量'
+            return
+          }
+          if (!itemChild.price) {
+            errorFlag = true
+            errorMsg = '请输入单价'
+            return
+          }
+          if (itemChild.process.length === 0) {
+            errorFlag = true
+            errorMsg = '请选择加工工序'
+          }
+        })
+      })
+      if (errorFlag) {
+        this.$message.error(errorMsg)
+        return
+      }
       let formData = []
       this.process_data.forEach((item) => {
         item.processList.forEach((itemChild) => {
@@ -1391,41 +1544,7 @@ export default {
           message: '已取消删除'
         })
       })
-    },
-    // 补纱方法用完删除
-    gotoBusha () {
-      let formData = {
-        type: 1,
-        id: null,
-        order_id: this.$route.params.id,
-        yarn_info: [{
-          weight: 10,
-          name: '26支晴纶绞纱',
-          color: '白胚'
-        }, {
-          weight: 15,
-          name: '36支晴纶仿羊绒绞纱',
-          color: '粉色'
-        }],
-        client_info: [{
-          percent: 30,
-          client_name: '本厂',
-          client_id: null
-        }, {
-          percent: 70,
-          client_name: '织造厂',
-          client_id: this.bushaInfo.replenish_client
-        }],
-        desc: this.bushaInfo.desc,
-        replenish_client: this.bushaInfo.replenish_client
-      }
-      replenish.create(formData).then((res) => {
-        if (res.data.status) {
-          this.$message.success('补纱成功，刷新页面看补纱列表')
-        }
-      })
     }
-    // 删除分界线
   },
   created () {
     Promise.all([order.detail({
@@ -1444,6 +1563,10 @@ export default {
       order_id: this.$route.params.id
     }), replenish.list({
       order_id: this.$route.params.id
+    }), yarnStock.list({
+      type: this.$route.params.type,
+      page: 1,
+      limit: 5
     })]).then((res) => {
       this.orderInfo = res[0].data.data
       this.materialArr = res[1].data.data.total_data.filter((item) => {
@@ -1499,13 +1622,6 @@ export default {
           return total + current.price * current.weight
         }, 0))
       })
-
-      // 下面是补纱所需的信息，到时候删掉
-      this.zhizaodanwei = res[2].data.data.filter((item) => {
-        return item.type.indexOf(4) !== -1
-      })
-      // 分割线
-
       this.replenishList = res[9].data.data.filter(item => item.type === Number(this.type))
       this.loading = false
     })
