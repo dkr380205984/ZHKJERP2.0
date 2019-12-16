@@ -165,8 +165,19 @@ export default {
           url: '/material/materialList/page=1&&keyword=&&date='
         }]
       }, {
+        name: '织造加工分配',
+        id: 8,
+        icon: require('@/assets/image/index/织造加工管理.png'),
+        children: [{
+          name: '织造分配列表',
+          url: '/weavingProcessing/weavingList/page=1&&keyword=&&type='
+        }, {
+          name: '半成品加工分配列表',
+          url: '/weavingProcessing/processingList/page=1&&keyword=&&type='
+        }]
+      }, {
         name: '库存管理',
-        id: 7,
+        id: 12,
         icon: require('@/assets/image/index/库存管理.png'),
         children: [{
           name: '仓库列表',
