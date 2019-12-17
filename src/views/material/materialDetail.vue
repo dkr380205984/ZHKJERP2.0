@@ -886,30 +886,6 @@
         </div>
       </div>
     </div>
-    <!-- 临时补纱入口 -->
-    <div class="popup"
-      v-show="bushaFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">临时补纱入口</div>
-          <i class="el-icon-close"
-            @click="bushaFlag=false"></i>
-        </div>
-        <div class="content">
-          <el-select v-model="bushaInfo.replenish_client"
-            placeholder="补给哪家织造单位">
-            <el-option v-for="item in zhizaodanwei"
-              :key="item.id"
-              :value="item.id"
-              :label="item.name"></el-option>
-          </el-select>
-          <el-input placeholder="备注信息"
-            v-model="bushaInfo.desc"></el-input>
-          补纱信息，承担方，承担比例全部写死
-          <button @click="gotoBusha">点击确定提交</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
