@@ -478,13 +478,13 @@ export default {
     Promise.all([
       materialPlan.init({
         order_id: this.$route.params.id,
-        order_type: this.$router.params.type
+        order_type: this.$route.params.type
       }),
       yarn.list(),
       material.list(),
       materialPlan.editDetail({
         order_id: this.$route.params.id,
-        order_type: this.$router.params.type
+        order_type: this.$route.params.type
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
