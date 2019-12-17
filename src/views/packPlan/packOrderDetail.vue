@@ -378,7 +378,7 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { packag, order } from '@/assets/js/api.js'
+// import { packag, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
