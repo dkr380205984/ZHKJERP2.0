@@ -953,7 +953,7 @@
               <span class="tb_row middle flex08">操作</span>
             </div>
             <div class="tb_content"
-              v-for="(itemLog,indexLog) in productLog[productLogPages-1]"
+              v-for="(itemLog,indexLog) in productLog"
               :key="indexLog">
               <span class="tb_row flex04">
                 <el-checkbox v-model="itemLog.checked"></el-checkbox>
@@ -985,10 +985,11 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="1"
+              :page-size="5"
               layout="prev, pager, next"
               :total="productLogTotal"
-              :current-page.sync="productLogPages">
+              :current-page.sync="productLogPages"
+              @current-change='getProductLog'>
             </el-pagination>
           </div>
         </div>
@@ -1899,16 +1900,16 @@ export default {
     goLog (item, type) {
       if (type === 'yarn') {
         this.searchYarnLog = item.material_name
-        this.getMaterialLog()
+        this.getYarnLog(1)
       } else if (type === 'material') {
         this.searchMaterialLog = item.material_name
-        this.getMaterialLog()
+        this.getMaterialLog(1)
       } else if (type === 'pack') {
         this.searchPackLog = item.material_name
-        this.getPackLog()
+        this.getPackLog(1)
       } else if (type === 'product') {
-        this.searchProductLog = item.material_name
-        this.getProductLog()
+        this.searchProductLog = item.product_code
+        this.getProductLog(1)
       } else {
         this.$message.error('出现未知错误，请尝试刷新页面')
         return
@@ -2014,12 +2015,6 @@ export default {
     }
   },
   watch: {
-    packPages (newVal) {
-      this.getPackList(newVal)
-      // },
-      // packLogPages (newVal) {
-      //   this.getPackLog(newVal)
-    }
   }
 }
 </script>

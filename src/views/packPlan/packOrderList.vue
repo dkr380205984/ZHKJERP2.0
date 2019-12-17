@@ -73,57 +73,13 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col flex12">
-              <div :class="{'stateCtn':true, 'green':true}">
-                <div class="state"></div>
-                <span class="name">物</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':true}">
-                <div class="state"></div>
-                <span class="name">生</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':true}">
-                <div class="state"></div>
-                <span class="name">收</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':true}">
-                <div class="state"></div>
-                <span class="name">检</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':true}">
-                <div class="state"></div>
-                <span class="name">出</span>
-              </div>
             </div>
             <div class="col">
               {{itemOrder.order_time}}
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                @click="$router.push('/order/orderDetail/' + itemOrder.id)">详情</span>
-              <span class="opr">
-                <el-dropdown @command="handleCommand($event,itemOrder.id)">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'>
-                      <span class="updated">修改</span>
-                    </el-dropdown-item>
-                    <!-- <el-dropdown-item command='materialCreate'>
-                      <span class="updated">添加物料计划单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='materialDetail'>
-                      <span class="updated">物料计划单详情</span>
-                    </el-dropdown-item> -->
-                    <el-dropdown-item command='materialStock'>
-                      <span class="updated">物料出入库</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='delete'>
-                      <span class="delete">删除</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span>
+                @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">订购详情</span>
             </div>
           </div>
         </div>
@@ -179,44 +135,44 @@ export default {
         this.total = res.data.meta.total
         this.loading = false
       })
-    },
-    handleCommand (type, id) {
-      if (type === 'change') {
-        this.$router.push('/order/orderUpdate/' + id)
-      } else if (type === 'delete') {
-        this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          order.delete({
-            id: id
-          }).then(res => {
-            if (res.data.status) {
-              this.$message.success('删除成功')
-              setTimeout(() => {
-                window.location.reload()
-              }, 300)
-            } else {
-              this.$message.error(res.data.message)
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-        // } else if (type === 'materialCreate') {
-        //   this.$router.push('/materialPlan/materialPlanCreate/' + id + '/1')
-        // } else if (type === 'materialDetail') {
-        //   this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1')
-      } else if (type === 'materialStock') {
-        this.$router.push('/materialStock/materialStockDetail/' + id + '/1')
-      } else {
-        this.$message.warning('未知命令')
-      }
     }
+    // handleCommand (type, id) {
+    //   if (type === 'change') {
+    //     this.$router.push('/order/orderUpdate/' + id)
+    //   } else if (type === 'delete') {
+    //     this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
+    //       confirmButtonText: '确定',
+    //       cancelButtonText: '取消',
+    //       type: 'warning'
+    //     }).then(() => {
+    //       order.delete({
+    //         id: id
+    //       }).then(res => {
+    //         if (res.data.status) {
+    //           this.$message.success('删除成功')
+    //           setTimeout(() => {
+    //             window.location.reload()
+    //           }, 300)
+    //         } else {
+    //           this.$message.error(res.data.message)
+    //         }
+    //       })
+    //     }).catch(() => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除'
+    //       })
+    //     })
+    //   } else if (type === 'materialCreate') {
+    //     this.$router.push('/materialPlan/materialPlanCreate/' + id + '/1')
+    //   } else if (type === 'materialDetail') {
+    //     this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1')
+    //   } else if (type === 'materialStock') {
+    //     this.$router.push('/materialStock/materialStockDetail/' + id + '/1')
+    //   } else {
+    //     this.$message.warning('未知命令')
+    //   }
+    // }
   },
   created () {
     this.getOrderList()

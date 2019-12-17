@@ -199,6 +199,26 @@ const routes = [
       path: '/stock/stockDetail/:id/:type',
       name: '仓库详情',
       component: () => import('../views/stock/stockDetail.vue')
+    }, {
+      path: '/packPlan/packPlanList/:params',
+      name: '装箱计划单列表',
+      component: () => import('../views/packPlan/packPlanList.vue')
+    }, {
+      path: '/packPlan/packPlanCreate/:id',
+      name: '装箱计划单详情',
+      component: () => import('../views/packPlan/packPlanCreate.vue')
+    }, {
+      path: '/packPlan/packStock/:id',
+      name: '装箱出库详情',
+      component: () => import('../views/packPlan/packStock.vue')
+    }, {
+      path: '/packPlan/packOrderList/:params',
+      name: '包装订购列表',
+      component: () => import('../views/packPlan/packOrderList.vue')
+    }, {
+      path: '/packPlan/packOrderDetail/:id',
+      name: '包装订购详情',
+      component: () => import('../views/packPlan/packOrderDetail.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -263,7 +283,9 @@ router.beforeEach((to, from, next) => {
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
     '系统设置': ['织为云', '系统设置'],
-    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情']
+    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
+    '装箱计划单列表': ['织为云', '装箱计划单列表'],
+    '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

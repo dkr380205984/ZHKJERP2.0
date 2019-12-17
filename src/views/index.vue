@@ -141,14 +141,14 @@ export default {
         id: 6,
         icon: require('@/assets/image/index/计划生产管理.png'),
         children: [{
-          name: '新建物料计划单',
-          url: '/materialPlan/materialPlanCreate/6/1'
-        }, {
+          //   name: '新建物料计划单',
+          //   url: '/materialPlan/materialPlanCreate/6/1'
+          // }, {
           name: '物料计划单列表',
           url: '/materialPlan/materialPlanList'
-        }, {
-          name: '物料计划单详情',
-          url: '/materialPlan/materialPlanDetail/6/1'
+          // }, {
+          //   name: '物料计划单详情',
+          //   url: '/materialPlan/materialPlanDetail/6/1'
         }]
       }, {
         name: '物料管理',
@@ -171,6 +171,17 @@ export default {
         children: [{
           name: '仓库列表',
           url: '/stock/stockList/page=1&&keyword=&&type='
+        }]
+      }, {
+        name: '装箱管理',
+        id: 7,
+        icon: require('@/assets/image/index/装箱管理.png'),
+        children: [{
+          name: '装箱计划单列表',
+          url: '/packPlan/packPlanList/page=1&&keyword=&&date='
+        }, {
+          name: '包装订购列表',
+          url: '/packPlan/packOrderList/page=1&&keyword=&&date='
         }]
       }]
     }
