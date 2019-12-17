@@ -267,7 +267,14 @@ const replenish = {
   create: (params) => http.post(`${baseUrl}/production/yarn/replenish/save`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/production/yarn/replenish/list`, params)
 }
+// 织造分配
+const weave = {
+  create: (params) => http.post(`${baseUrl}/production/weave/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/production/weave/list`, params),
+  delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json')
+}
 export {
+  weave,
   productStock,
   packag,
   packStock,

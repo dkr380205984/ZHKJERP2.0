@@ -1,1 +1,85 @@
 @import '../common.less';
+#processingDetail{
+  .blue{
+    color: @blue;
+    cursor: pointer;
+  }
+  .green{
+    color: @green;
+  }
+  .createModule{
+    position: relative;
+    background: #f8f8f8;
+    padding: 16px 0;
+    margin: 16px 0;
+    .text{
+      color: @font65;
+    }
+    .deleteIconBtn{
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      background: @orange;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .flex3{
+      max-width: 319.3px;
+    }
+  }
+  .flexTb{
+    border-bottom: 0;
+  }
+  .popup{
+    .tips{
+      color: @font65;
+      background: #f4f4f4;
+      padding: 12px;
+      font-size: @fontMiddle;
+    }
+    .content{
+      max-height: 800px;
+      border-bottom: 0;
+      &:nth-last-child(2){
+        border-bottom: 1px solid #E9E9E9;
+      }
+      .hasMargin{
+        margin-bottom: 16px;
+        height: 32px;
+      }
+      .text{
+        line-height: 32px;
+        font-size: @fontMiddle;
+        color: @font65;
+        margin-right: 16px;
+        &.blue{
+          color: @blue;
+        }
+      }
+      .column{
+        background: #f4f4f4;
+      }
+    }
+  }
+  .input{
+    line-height: 32px;
+    border: 1px solid #DCDFE6;
+    background: #F5F7FA;
+    color: @font65;
+    border-radius: 4px;
+    display: flex;
+    .span{
+      flex: 1;
+      padding: 0 20px;
+    }
+    .append{
+      padding: 0 20px;
+      border-left: 1px solid #DCDFE6;
+    }
+  }
+}
