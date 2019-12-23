@@ -1,5 +1,5 @@
 <template>
-  <div id='material'
+  <div id='receiveDispatchList'
     class='indexMain'
     v-loading='loading'>
     <div class="module">
@@ -49,10 +49,7 @@
               <span class="text">负责小组</span>
             </div>
             <div class="col flex12">
-              <span class="text">采购进度(原)</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">采购进度(辅)</span>
+              <span class="text">收发进度</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
@@ -76,17 +73,9 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.y_percent<100?'orange':'green'">
+              <div class="stateCtn rowFlex">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.y_percent}}%</span>
-              </div>
-            </div>
-            <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.f_percent<100?'orange':'green'">
-                <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.f_percent}}%</span>
+                <span class="name">0%</span>
               </div>
             </div>
             <div class="col">
@@ -94,25 +83,8 @@
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                v-if="itemOrder.has_plan!==0"
-                style="padding-right:0">
-                <el-dropdown>
-                  <span class="el-dropdown-link">
-                    {{itemOrder.material_order_progress.y_percent>=100&&itemOrder.material_order_progress.f_percent>=100?'查看详情':'订购物料'}}<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/1')">
-                      <span class="detail">订购原料</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/2')">
-                      <span class="detail">订购辅料</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span>
-              <span class="opr"
-                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.has_plan===0">暂无物料计划</span>
+                style="padding-right:0"
+                @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + itemOrder.id)">产品收发</span>
             </div>
           </div>
         </div>
@@ -179,5 +151,5 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/material/materialList.less";
+@import "~@/assets/less/receiveDispatch/receiveDispatchList.less";
 </style>

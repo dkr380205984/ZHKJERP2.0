@@ -140,16 +140,7 @@ export default {
         name: '物料计划生产管理',
         id: 6,
         icon: require('@/assets/image/index/计划生产管理.png'),
-        children: [{
-          //   name: '新建物料计划单',
-          //   url: '/materialPlan/materialPlanCreate/6/1'
-          // }, {
-          name: '物料计划单列表',
-          url: '/materialPlan/materialPlanList'
-          // }, {
-          //   name: '物料计划单详情',
-          //   url: '/materialPlan/materialPlanDetail/6/1'
-        }]
+        url: '/materialPlan/materialPlanList'
       }, {
         name: '物料管理',
         id: 7,
@@ -175,6 +166,16 @@ export default {
           name: '半成品加工分配列表',
           url: '/weavingProcessing/processingList/page=1&&keyword=&&type='
         }]
+      }, {
+        name: '产品收发管理',
+        id: 9,
+        icon: require('@/assets/image/index/收发管理.png'),
+        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&type='
+      }, {
+        name: '产品检验管理',
+        id: 10,
+        icon: require('@/assets/image/index/检验管理.png'),
+        url: '/inspection/inspectionList/page=1&&keyword=&&type='
       }, {
         name: '库存管理',
         id: 12,

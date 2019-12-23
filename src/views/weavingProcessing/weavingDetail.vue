@@ -377,6 +377,79 @@
       <div class="titleCtn">
         <span class="title">原料分配信息</span>
       </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">织造单位</div>
+                  <div class="tcolumn noPad"
+                    style="flex:6">
+                    <div class="trow">
+                      <div class="tcolumn">产品信息</div>
+                      <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn">分配数量</div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow">
+                          <div class="tcolumn">原料名称</div>
+                          <div class="tcolumn">原料颜色</div>
+                          <div class="tcolumn">原料数量</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in weaving_detail"
+                  :key="index">
+                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:6">
+                    <div class="trow"
+                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
+                      :key="indexChild">
+                      <div class="tcolumn">
+                        <span>{{itemChild.product_info.code}}</span>
+                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                      </div>
+                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.number}}</div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow"
+                          v-for="(itemMat,indexMat) in itemChild.material_assign"
+                          :key="indexMat">
+                          <div class="tcolumn">{{itemMat.material_name}}</div>
+                          <div class="tcolumn">{{itemMat.material_attribute}}</div>
+                          <div class="tcolumn">{{parseInt(itemMat.material_weight/1000)}}kg</div>
+                        </div>
+                        <div class="trow"
+                          v-if="itemChild.material_assign.length===0">
+                          <div class="tcolumn"
+                            style="text-align: center;flex-direction: row;align-items: center;">
+                            无法统计原料分配信息，这可能是因为物料计划单未
+                            <span class="blue">填写</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0"
+                      @click="replenishFn(item)">补纱</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="popup"
       v-show="easyWeaving_flag">
@@ -431,11 +504,88 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="replenish_flag">
+      <div class="main">
+        <div class="title">
+          <div class="text">补纱</div>
+          <i class="el-icon-close"
+            @click="replenish_flag=false"></i>
+        </div>
+        <div class="content">
+          <div class="tips">
+            提示信息：请按实际情况填写金额承担比例。
+          </div>
+          <div class="row"
+            v-for="(item,index) in replenish_data.yarn_info"
+            :key="index">
+            <div class="label"
+              :style="{'visibility':index>0?'hidden':'inhert'}">补纱信息：</div>
+            <div class="info"
+              style="display:flex">
+              <el-select v-model="item.yarn"
+                filterable
+                placeholder="请选择纱线">
+                <el-option v-for="item in replenish_yarn"
+                  :key="item.name"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+              <el-input style="margin-left:5px"
+                v-model="item.weight"
+                placeholder="请输入重量">
+                <template slot="append">kg</template>
+              </el-input>
+            </div>
+            <div class="editBtn blue"
+              v-if="index===0"
+              @click="addReplenish">添加</div>
+            <div class="editBtn red"
+              v-if="index>0"
+              @click="deleteReplenish(index)">删除</div>
+          </div>
+          <div class="row">
+            <div class="label">承担比例：</div>
+            <div class="info">
+              <zh-input v-model="replenish_data.client_info.partyA.percent"
+                placeholder="请输入比例">
+                <template slot="append">%</template>
+                <template slot="prepend">{{replenish_data.client_info.partyA.name}}</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label"
+              style="visibility: hidden;">承担比例：</div>
+            <div class="info">
+              <zh-input v-model="replenish_data.client_info.partyB.percent"
+                placeholder="请输入比例">
+                <template slot="append">%</template>
+                <template slot="prepend">{{replenish_data.client_info.partyB.name}}</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">备注信息：</div>
+            <div class="info">
+              <el-input v-model="replenish_data.desc"
+                placeholder="请输入备注信息"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="replenish_flag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveReplenish">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { order, materialPlan, client, weave } from '@/assets/js/api.js'
+import { order, materialPlan, client, weave, replenish } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -459,7 +609,25 @@ export default {
       easyWeaving_flag: false,
       commonCompany: '',
       commonPrice: '',
-      commonDate: ''
+      commonDate: '',
+      replenish_flag: false,
+      replenish_yarn: [],
+      replenish_data: {
+        yarn_info: [],
+        client_info: {
+          partyA: {
+            name: '',
+            id: '',
+            percent: ''
+          },
+          partyB: {
+            name: '',
+            id: '',
+            percent: ''
+          }
+        },
+        desc: '补纱'
+      }
     }
   },
   methods: {
@@ -616,6 +784,94 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    replenishFn (data) {
+      data.childrenMergeInfo.forEach((item) => {
+        item.material_assign.forEach((itemMat) => {
+          let name = itemMat.material_name + '/' + itemMat.material_attribute
+          if (!this.replenish_yarn.find((itemFind) => itemFind.name === name)) {
+            this.replenish_yarn.push({
+              name: name
+            })
+          }
+        })
+      })
+      this.replenish_data.yarn_info.push({
+        yarn: '',
+        weight: ''
+      })
+      this.replenish_data.client_info = {
+        partyA: {
+          name: data.client_name,
+          id: data.client_id,
+          percent: ''
+        },
+        partyB: {
+          name: '本厂',
+          id: null,
+          percent: ''
+        }
+      }
+      this.replenish_flag = true
+    },
+    addReplenish () {
+      this.replenish_data.yarn_info.push({
+        yarn: '',
+        weight: ''
+      })
+    },
+    deleteReplenish (index) {
+      this.replenish_data.yarn_info.splice(index, 1)
+    },
+    saveReplenish () {
+      let errorFlag = false
+      let errMsg = ''
+      if (Number(this.replenish_data.client_info.partyA.percent) + Number(this.replenish_data.client_info.partyB.percent) !== 100) {
+        errorFlag = true
+        errMsg = '请保证承担比例相加等于100%'
+      }
+      this.replenish_data.yarn_info.forEach((item) => {
+        if (!item.yarn) {
+          errorFlag = true
+          errMsg = '你有未选择的纱线原料'
+        } else if (!item.weight) {
+          errorFlag = true
+          errMsg = '你有未填写的补纱重量'
+        }
+      })
+      if (errorFlag) {
+        this.$message.error(errMsg)
+        return
+      }
+      let formData = {
+        type: 1,
+        id: null,
+        order_id: this.$route.params.id,
+        yarn_info: this.replenish_data.yarn_info.map((item) => {
+          return {
+            weight: item.weight,
+            name: item.yarn.split('/')[0],
+            color: item.yarn.split('/')[1]
+          }
+        }),
+        client_info: [{
+          percent: this.replenish_data.client_info.partyA.percent,
+          client_name: this.replenish_data.client_info.partyA.name,
+          client_id: this.replenish_data.client_info.partyA.id
+        }, {
+          percent: this.replenish_data.client_info.partyB.percent,
+          client_name: this.replenish_data.client_info.partyB.name,
+          client_id: this.replenish_data.client_info.partyB.id
+        }],
+        desc: this.replenish_data.desc,
+        replenish_client: this.replenish_data.client_info.partyA.id
+      }
+      replenish.create(formData).then((res) => {
+        if (res.data.status) {
+          this.$message.success('补纱成功,请通知物料管理员订购/调取所需物料')
+          this.replenish_flag = false
+        }
+      })
     }
   },
   mounted () {
@@ -660,7 +916,7 @@ export default {
         return item.type.indexOf(4) !== -1
       })
       this.weaving_log = res[3].data.data
-      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name' })
+      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {

@@ -273,7 +273,28 @@ const weave = {
   detail: (params) => http.get(`${baseUrl}/production/weave/list`, params),
   delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json')
 }
+// 半成品加工分配
+const processing = {
+  create: (params) => http.post(`${baseUrl}/production/semi_product/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/production/semi_product/list`, params),
+  delete: (params) => http.post(`${baseUrl}/production/semi_product/delete`, params, 'application/json')
+}
+// 产品收发入库
+const receive = {
+  create: (params) => http.post(`${baseUrl}/product/order/push`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/order/push/list`, params),
+  delete: (params) => http.post(`${baseUrl}/product/order/push/delete`, params, 'application/json')
+}
+// 产品收发出库
+const dispatch = {
+  create: (params) => http.post(`${baseUrl}/product/order/pop`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/order/pop/list`, params),
+  delete: (params) => http.post(`${baseUrl}/product/order/pop/delete`, params, 'application/json')
+}
 export {
+  receive,
+  dispatch,
+  processing,
   weave,
   productStock,
   packag,

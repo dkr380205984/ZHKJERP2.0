@@ -571,13 +571,18 @@ export default {
       error = this.colour.some((item) => !item.colour)
       if (error) {
         this.$message.error('请将产品配色信息填写完整')
+        return
+      }
+      error = this.colour.some((item) => item.colour.search('/') !== -1)
+      if (error) {
+        this.$message.error('配色信息里面不得包含斜杠字符')
+        return
       }
       if (this.hasFitting) {
         error = this.fittingInfo.some((item) => !item.fitting_name)
       }
       if (error) {
         this.$message.error('请输入配件名称')
-        return
       }
       let partData = this.fittingInfo.map((item) => {
         return {
@@ -636,7 +641,6 @@ export default {
           this.$router.push('/product/productDetail/' + res.data.data.id)
         }
       })
-      console.log(formData)
     }
   },
   watch: {

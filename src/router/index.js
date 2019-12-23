@@ -235,6 +235,26 @@ const routes = [
       path: '/packPlan/packOrderDetail/:id',
       name: '包装订购详情',
       component: () => import('../views/packPlan/packOrderDetail.vue')
+    }, {
+      path: '/receiveDispatch/receiveDispatchList/:params',
+      name: '产品收发列表',
+      component: () => import('../views/receiveDispatch/receiveDispatchList.vue')
+    }, {
+      path: '/receiveDispatch/receiveDispatchDetail/:id',
+      name: '产品收发详情',
+      component: () => import('../views/receiveDispatch/receiveDispatchDetail.vue')
+    }, {
+      path: '/inspection/inspectionList/:params',
+      name: '产品检验列表',
+      component: () => import('../views/inspection/inspectionList.vue')
+    }, {
+      path: '/inspection/finishedDetail/:id',
+      name: '成品检验详情',
+      component: () => import('../views/inspection/finishedDetail.vue')
+    }, {
+      path: '/inspection/semiFinishedDetail/:id',
+      name: '半成品检验详情',
+      component: () => import('../views/inspection/semiFinishedDetail.vue')
     }]
   }, {
     path: '/pricePrintTable/:id',
@@ -305,7 +325,12 @@ router.beforeEach((to, from, next) => {
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
     '装箱计划单列表': ['织为云', '装箱计划单列表'],
-    '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情']
+    '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情'],
+    '产品收发列表': ['织为云', '产品收发列表'],
+    '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
+    '产品检验列表': ['织为云', '产品检验列表'],
+    '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
+    '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

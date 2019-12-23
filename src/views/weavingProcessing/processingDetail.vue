@@ -84,10 +84,11 @@
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
                       <div class="tcolumn">{{itemChild.numbers}}</div>
-                      <div class="tcolumn">0</div>
+                      <div class="tcolumn">{{itemChild.processNum}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
-                          style="padding:0;margin:0">半成品加工分配</span>
+                          style="padding:0;margin:0"
+                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.numbers - itemChild.processNum)">半成品加工分配</span>
                       </div>
                     </div>
                   </div>
@@ -140,7 +141,7 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.process"
+                      <el-select v-model="item.process_type"
                         filterable
                         multiple
                         placeholder="请选择加工工序">
@@ -156,22 +157,25 @@
                   v-for="(itemChild,indexChild) in item.product_info"
                   :key="indexChild">
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">尺码颜色</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <el-select v-model="itemChild.colorSize"
-                        placeholder="请选择尺码颜色">
+                        placeholder="请选择尺码颜色"
+                        no-data-text="请先选择产品">
                         <el-option v-for="(items,indexs) in item.colorSizeArr"
                           :key="indexs"
-                          :value="item.name"
-                          :label="item.name"></el-option>
+                          :value="items.name"
+                          :label="items.name"></el-option>
                       </el-select>
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">单价</span>
                       <span class="explanation">(必填)</span>
                     </div>
@@ -184,16 +188,23 @@
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">数量</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <zh-input placeholder="请输入单价"
+                      <zh-input placeholder="请输入数量"
                         v-model="itemChild.number"
                         type="number">
                       </zh-input>
                     </div>
+                    <div class="editBtn addBtn"
+                      @click="addColorSize(index)"
+                      v-if="indexChild===0">添加</div>
+                    <div class="editBtn deleteBtn"
+                      @click="deleteColorSize(index,indexChild)"
+                      v-if="indexChild>0">删除</div>
                   </div>
                 </div>
                 <div class="rowCtn">
@@ -204,7 +215,7 @@
                     </div>
                     <div class="content">
                       <div class="input">
-                        <span class="span">0</span>
+                        <span class="span">{{totalPrice(item)}}</span>
                         <span class="append">元</span>
                       </div>
                     </div>
@@ -216,6 +227,7 @@
                     <div class="content">
                       <el-select v-model="item.part_id"
                         multiple
+                        no-data-text="请先选择有辅料的产品"
                         placeholder="请选择辅料">
                         <el-option v-for="items in item.partDataArr"
                           :key="items.id"
@@ -273,11 +285,283 @@
         </div>
       </div>
     </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">半成品加工分配信息</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">加工单位</div>
+                  <div class="tcolumn noPad"
+                    style="flex:8">
+                    <div class="trow">
+                      <div class="tcolumn">产品信息</div>
+                      <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn">工序</div>
+                      <div class="tcolumn">所需辅料</div>
+                      <div class="tcolumn">单价(元)</div>
+                      <div class="tcolumn">数量(元)</div>
+                      <div class="tcolumn">总价</div>
+                      <div class="tcolumn">完成时间</div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in process_detail"
+                  :key="index">
+                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:8">
+                    <div class="trow"
+                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
+                      :key="indexChild">
+                      <div class="tcolumn">
+                        <span>{{itemChild.product_info.code}}</span>
+                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                      </div>
+                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.type}}</div>
+                      <div class="tcolumn">
+                        <span v-for="(itemIng,indexIng) in itemChild.part_assign"
+                          :key="indexIng">{{itemIng.name}}</span>
+                      </div>
+                      <div class="tcolumn">{{itemChild.price}}</div>
+                      <div class="tcolumn">{{itemChild.number}}</div>
+                      <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
+                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0">打印</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module log">
+      <div class="titleCtn">
+        <span class="title">半成品加工分配日志</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="normalTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:1.3">完成日期</div>
+                  <div class="tcolumn"
+                    style="flex:1.5">织造单位</div>
+                  <div class="tcolumn"
+                    style="flex:1.5">产品名称</div>
+                  <div class="tcolumn"
+                    style="flex:1.2">尺码颜色</div>
+                  <div class="tcolumn">所需辅料</div>
+                  <div class="tcolumn">单价(元)</div>
+                  <div class="tcolumn">数量</div>
+                  <div class="tcolumn">总价(元)</div>
+                  <div class="tcolumn">备注</div>
+                  <div class="tcolumn">操作人</div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in process_log"
+                  :key="index">
+                  <div class="tcolumn"
+                    style="flex:1.3">{{item.complete_time.slice(0,10)}}</div>
+                  <div class="tcolumn"
+                    style="flex:1.5">
+                    <span style="color:#01B48C">
+                      {{item.type}}
+                    </span>
+                    <span>{{item.client_name}}</span></div>
+                  <div class="tcolumn"
+                    style="flex:1.5">
+                    <span>{{item.product_info.code}}</span>
+                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                  </div>
+                  <div class="tcolumn"
+                    style="flex:1.2">
+                    <span>{{item.size}}</span>
+                    <span>{{item.color}}</span>
+                  </div>
+                  <div class="tcolumn">
+                    <span v-for="(itemIng,indexIng) in item.part_assign"
+                      :key="indexIng">{{itemIng.name}}</span>
+                  </div>
+                  <div class="tcolumn">{{item.price}}</div>
+                  <div class="tcolumn">{{item.number}}</div>
+                  <div class="tcolumn">{{item.price*item.number}}</div>
+                  <div class="tcolumn">{{item.desc}}</div>
+                  <div class="tcolumn">{{item.user_name}}</div>
+                  <div class="tcolumn">
+                    <span style="color:#F5222D;cursor:pointer"
+                      @click="deleteLog(item.id,index)">删除</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">辅料分配信息</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">加工单位</div>
+                  <div class="tcolumn noPad"
+                    style="flex:6">
+                    <div class="trow">
+                      <div class="tcolumn">产品信息</div>
+                      <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn">分配数量</div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow">
+                          <div class="tcolumn">辅料名称</div>
+                          <div class="tcolumn">辅料属性</div>
+                          <div class="tcolumn">辅料数量</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in process_detail"
+                  :key="index">
+                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:6">
+                    <div class="trow"
+                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
+                      :key="indexChild">
+                      <div class="tcolumn">
+                        <span>{{itemChild.product_info.code}}</span>
+                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                      </div>
+                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.number}}</div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow"
+                          v-for="(itemMat,indexMat) in itemChild.part_assign"
+                          :key="indexMat">
+                          <div class="tcolumn">{{itemMat.name}}</div>
+                          <div class="tcolumn">{{itemMat.material_attribute?itemMat.material_attribute:'无'}}</div>
+                          <div class="tcolumn">{{parseInt(itemMat.number)}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tcolumn">
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0">打印</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-show="easyProcess_flag">
+      <div class="main">
+        <div class="title">
+          <div class="text">快捷填写</div>
+          <i class="el-icon-close"
+            @click="easyProcess_flag=false"></i>
+        </div>
+        <div class="content">
+          <div class="tips">
+            提示信息：本步骤可以统一选择加工单位,加工工序，加工单价和截止日期，如不需要可以选择直接跳过该步骤。
+          </div>
+          <div class="row">
+            <div class="label">加工单位：</div>
+            <div class="info">
+              <el-select v-model="commonCompany"
+                filterable
+                placeholder="请选择加工单位">
+                <el-option v-for="item in companyArr"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">加工工序：</div>
+            <div class="info">
+              <el-select v-model="commonProcess"
+                filterable
+                multiple
+                placeholder="请选择加工工序">
+                <el-option v-for="item in processArr"
+                  :key="item.name"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">单价：</div>
+            <div class="info">
+              <zh-input v-model="commonPrice"
+                placeholder="请输入单价">
+                <template slot="append">元</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">截止日期：</div>
+            <div class="info">
+              <el-date-picker v-model="commonDate"
+                style="width:100%"
+                type="date"
+                placeholder="选择截止日期">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="easyProcess_flag = false">直接跳过</div>
+          <div class="btn btnBlue"
+            @click="commonFn">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { order, materialPlan, client, process } from '@/assets/js/api.js'
+import { order, materialPlan, client, process, processing } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -295,22 +579,35 @@ export default {
       processArr: [],
       process_data: [],
       process_info: [],
-      process_flag: false
+      process_log: [],
+      process_detail: [],
+      easyProcess_flag: false,
+      process_flag: false,
+      commonCompany: '',
+      commonPrice: '',
+      commonDate: '',
+      commonProcess: []
     }
   },
   methods: {
-    normalProcess () {
+    normalProcess (id, size, color, number) {
+      if (number !== 'undefined' && number <= 0) {
+        this.$message.warning('该产品已分配完毕')
+        return
+      }
       this.process_flag = true
       this.process_data.push({
-        product_id: '',
+        product_id: id || '',
         company_id: '',
         process_type: [],
-        colorSizeArr: [],
-        partDataArr: [],
+        colorSizeArr: id ? this.process_info.find((item) => item.product_id === id).childrenMergeInfo.map((item) => {
+          return { name: item.size + '/' + item.color }
+        }) : [],
+        partDataArr: id ? this.process_info.find((item) => item.product_id === id).childrenMergeInfo[0].part_data : [],
         product_info: [{
-          colorSize: '',
+          colorSize: size ? size + '/' + color : '',
           price: '',
-          number: ''
+          number: number || ''
         }],
         part_id: [],
         complete_time: '',
@@ -318,7 +615,34 @@ export default {
       })
     },
     easyProcess () {
-
+      this.process_data = []
+      this.process_info.forEach((item) => {
+        this.process_data.push({
+          product_id: item.product_id,
+          company_id: '',
+          process_type: [],
+          colorSizeArr: item.childrenMergeInfo.map((itemChild) => {
+            return { name: itemChild.size + '/' + itemChild.color }
+          }),
+          partDataArr: item.childrenMergeInfo[0].part_data,
+          product_info: item.childrenMergeInfo.map((itemChild) => {
+            return {
+              colorSize: itemChild.size + '/' + itemChild.color,
+              price: '',
+              number: itemChild.numbers - itemChild.processNum
+            }
+          }),
+          part_id: [],
+          complete_time: '',
+          desc: ''
+        })
+      })
+      if (this.process_data.length === 0) {
+        this.$message.warning('所有产品已分配完毕')
+      } else {
+        this.process_flag = true
+        this.easyProcess_flag = true
+      }
     },
     addProcess () {
       this.process_data.push({
@@ -347,11 +671,118 @@ export default {
       this.process_flag = false
     },
     saveProcess () {
-
+      let errorFlag = false
+      let errMsg = ''
+      this.process_data.forEach((item) => {
+        if (!item.company_id) {
+          errorFlag = true
+          errMsg = '请选择加工单位'
+        } else if (!item.product_id) {
+          errorFlag = true
+          errMsg = '请选择产品'
+        } else if (!item.complete_time) {
+          errorFlag = true
+          errMsg = '请选择截至日期'
+        }
+        item.product_info.forEach((itemChild) => {
+          if (!itemChild.number) {
+            errorFlag = true
+            errMsg = '请输入分配数量'
+          } else if (!itemChild.price) {
+            errorFlag = true
+            errMsg = '请输入单价信息'
+          } else if (!itemChild.colorSize) {
+            errorFlag = true
+            errMsg = '请选择尺码颜色'
+          }
+        })
+      })
+      if (errorFlag) {
+        this.$message.error(errMsg)
+        return
+      }
+      let formData = []
+      this.process_data.forEach((item) => {
+        item.product_info.forEach((itemChild) => {
+          formData.push({
+            order_type: 1,
+            order_id: this.$route.params.id,
+            product_id: item.product_id,
+            size: itemChild.colorSize.split('/')[0],
+            color: itemChild.colorSize.split('/')[1],
+            client_id: item.company_id,
+            price: itemChild.price,
+            number: itemChild.number,
+            ingredients: item.part_id,
+            complete_time: this.$getTime(item.complete_time),
+            desc: item.desc,
+            type: item.process_type.join('/')
+          })
+        })
+      })
+      processing.create({ data: formData }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('分配成功，请刷新页面查看分配数量')
+        }
+      })
     },
     selectProduct (id, index) {
       let finded = this.process_info.find((item) => item.product_id === id)
       this.process_data[index].partDataArr = finded.childrenMergeInfo[0].part_data
+      this.process_data[index].colorSizeArr = finded.childrenMergeInfo.map((item) => {
+        return { name: item.size + '/' + item.color }
+      })
+    },
+    addColorSize (index) {
+      this.process_data[index].product_info.push({
+        colorSize: '',
+        price: '',
+        number: ''
+      })
+    },
+    deleteColorSize (index, indexChild) {
+      this.process_data[index].product_info.splice(indexChild, 1)
+    },
+    // 计算总价
+    totalPrice (item) {
+      return item.product_info.reduce((total, current) => {
+        return total + current.price * current.number
+      }, 0)
+    },
+    commonFn () {
+      this.process_data.forEach((item) => {
+        item.company_id = this.commonCompany
+        item.complete_time = this.commonDate
+        item.process_type = this.commonProcess
+        item.product_info.forEach((item) => {
+          item.price = this.commonPrice
+        })
+      })
+      this.easyProcess_flag = false
+    },
+    deleteLog (id, index) {
+      this.$confirm('请确认该分配信息还未出库物料', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        processing.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!请刷新页面后查看分配信息变化'
+            })
+            this.weaving_log.splice(index, 1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   mounted () {
@@ -360,14 +791,31 @@ export default {
     }), materialPlan.init({
       order_id: this.$route.params.id,
       order_type: 1
-    }), client.list(), process.list()]).then((res) => {
+    }), client.list(),
+    process.list(),
+    processing.detail({
+      order_id: this.$route.params.id,
+      order_type: 1
+    })]).then((res) => {
       this.orderInfo = res[0].data.data
       this.process_info = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_id' }] })
-      console.log(this.process_info)
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(5) !== -1
       })
       this.processArr = res[3].data.data
+      this.process_log = res[4].data.data
+      this.process_detail = this.$mergeData(this.process_log, { mainRule: 'client_name' })
+      // 根据分配日志统计一下分配数量
+      this.process_info.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.processNum = this.process_log.filter((itemFilter) => {
+            return item.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color
+          }).reduce((total, current) => {
+            return total + current.number
+          }, 0)
+        })
+      })
+      console.log(this.process_detail)
       this.loading = false
     })
   }

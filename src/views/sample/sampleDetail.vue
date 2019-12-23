@@ -174,13 +174,15 @@
                 </div>
                 <div class="menu">
                   <span v-if="!detail.craft_info||detail.craft_info.length===0"
-                    class="opration">添加</span>
+                    class="opration"
+                    @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/2')">添加</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">预览</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">打印</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
-                    class="opration">详情</span>
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">详情</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration">...</span>
                 </div>
@@ -212,13 +214,15 @@
                 </div>
                 <div class="menu">
                   <span v-if="!detail.plan_info||detail.plan_info.length===0"
-                    class="opration">添加</span>
+                    class="opration"
+                    @click="$router.push('/productPlan/productPlanCreate/'+ $route.params.id + '/2')">添加</span>
                   <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">预览</span>
                   <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">打印</span>
                   <span v-if="detail.plan_info&&detail.plan_info.length>1"
-                    class="opration">详情</span>
+                    class="opration"
+                    @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/2')">详情</span>
                   <span v-if="detail.plan_info&&detail.plan_info.length>1"
                     class="opration">...</span>
                 </div>

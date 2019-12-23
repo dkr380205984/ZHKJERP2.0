@@ -769,7 +769,7 @@
         </div>
         <div class="content">
           <div class="tips">
-            提示信息：一键添加操作可以统一选择加工单位,加工单价和加工工序，如不需要可以选择直接跳过该步骤。
+            提示信息：一键加工操作可以统一选择加工单位,加工单价,加工工序和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
           <div class="row">
             <div class="label">加工单位：</div>
@@ -805,6 +805,16 @@
                   :value="item.name"
                   :label="item.name"></el-option>
               </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">截止日期：</div>
+            <div class="info">
+              <el-date-picker v-model="commonDate"
+                style="width:100%"
+                type="date"
+                placeholder="选择截止日期">
+              </el-date-picker>
             </div>
           </div>
         </div>
@@ -890,7 +900,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -945,6 +955,7 @@ export default {
       commonProcessCompany: '', // 一键加工公共单位
       commonProcessPrice: '',
       commonProcess: [],
+      commonDate: '',
       replenishList: [],
       replenishFlag: false,
       replenishId: '', // 补纱flag为true时传replenishId
@@ -968,6 +979,7 @@ export default {
       })
     },
     normalOrder (name, color, id, number, replenishFlag) {
+      console.log(id)
       this.replenishFlag = replenishFlag // 补纱需要特殊处理
       this.replenishId = id
       this.order_flag = true
@@ -979,7 +991,7 @@ export default {
           unit: ''
         }],
         price: '',
-        material_id: replenishFlag ? id : null,
+        material_id: id || null,
         company_id: '',
         complete_time: this.$getTime(new Date()),
         desc: ''
@@ -1149,6 +1161,7 @@ export default {
       this.stock_data.forEach((item) => {
         item.stock.forEach((itemChild) => {
           stockData.push({
+            order_type: 1,
             material_name: itemChild.name,
             color_code: itemChild.color,
             weight: itemChild.weight,
@@ -1161,6 +1174,7 @@ export default {
             desc: item.desc
           })
           orderData.push({
+            order_type: 1,
             desc: item.desc,
             complete_time: this.$getTime(new Date()),
             total_price: 0,
@@ -1273,6 +1287,7 @@ export default {
       }
       let formData = this.$flatten(this.order_data).map((item) => {
         return {
+          order_type: 1,
           desc: item.desc,
           complete_time: item.complete_time,
           total_price: 0,
@@ -1349,10 +1364,12 @@ export default {
         item.processList[0].price = this.commonProcessPrice
         item.processList[0].process = this.commonProcess
         item.company_id = this.commonProcessCompany
+        item.complete_time = this.commonDate
       })
       this.commonProcessCompany = ''
       this.commonProcessPrice = ''
       this.commonProcess = []
+      this.commonDate = ''
       this.easyProcessFlag = false
     },
     addMaterial (index) {
@@ -1418,7 +1435,7 @@ export default {
           errorMsg = '请选择截止日期'
           return
         }
-        item.processList.formEach((itemChild) => {
+        item.processList.forEach((itemChild) => {
           if (!itemChild.number) {
             errorFlag = true
             errorMsg = '请输入数量'
@@ -1443,6 +1460,7 @@ export default {
       this.process_data.forEach((item) => {
         item.processList.forEach((itemChild) => {
           formData.push({
+            order_type: 1,
             process_type: itemChild.process.join('/'),
             type: this.type,
             order_id: this.$route.params.id,
@@ -1532,10 +1550,12 @@ export default {
     }), client.list(),
     yarnColor.list(), yarn.list(),
     materialManage.detail({
+      order_type: 1,
       order_id: this.$route.params.id
     }), materialManage.init({
       order_id: this.$route.params.id
     }), process.list(), materialProcess.detail({
+      order_type: 1,
       order_id: this.$route.params.id
     }), replenish.list({
       order_id: this.$route.params.id
@@ -1543,7 +1563,7 @@ export default {
       type: this.$route.params.type,
       page: 1,
       limit: 5
-    })]).then((res) => {
+    }), material.list()]).then((res) => {
       this.orderInfo = res[0].data.data
       this.materialArr = res[1].data.data.total_data.filter((item) => {
         return item.material_type === Number(this.$route.params.type)
@@ -1571,13 +1591,21 @@ export default {
           value: item.name
         }
       })
-      this.yarnList = res[4].data.data.map((item) => {
-        return {
-          value: item.name
-        }
-      })
+      if (this.$route.params.type === '1') {
+        this.yarnList = res[4].data.data.map((item) => {
+          return {
+            value: item.name
+          }
+        })
+      } else {
+        this.yarnList = res[11].data.data.map((item) => {
+          return {
+            value: item.name
+          }
+        })
+      }
       // 如果没有公司名称，说明是调取，把调取仓库赋值给client_name
-      this.order_stock_log = res[5].data.map((item) => {
+      this.order_stock_log = res[5].data.data.map((item) => {
         if (!item.client_name) {
           item.client_name = item.stock_name
         }

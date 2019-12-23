@@ -22,6 +22,9 @@ const permissions = [{
   module: '物料订购管理',
   id: 7
 }, {
+  module: '物料出入库管理',
+  id: 15
+}, {
   module: '织造加工管理',
   id: 8
 }, {
