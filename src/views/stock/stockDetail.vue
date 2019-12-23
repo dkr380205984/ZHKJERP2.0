@@ -1007,7 +1007,7 @@ export default {
       stockInfo: {
         type: []
       },
-      nowTime: this.$getTime(new Date()),
+      nowTime: this.$getTime(),
       yarnList: [],
       yarnTotal: 1,
       yarnPages: 1,

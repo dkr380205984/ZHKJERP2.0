@@ -993,7 +993,7 @@ export default {
         price: '',
         material_id: id || null,
         company_id: '',
-        complete_time: this.$getTime(new Date()),
+        complete_time: this.$getTime(),
         desc: ''
       })
     },
@@ -1013,7 +1013,7 @@ export default {
               price: '',
               material_id: itemChild.id,
               company_id: '',
-              complete_time: this.$getTime(new Date()),
+              complete_time: this.$getTime(),
               desc: ''
             })
           }
@@ -1176,7 +1176,7 @@ export default {
           orderData.push({
             order_type: 1,
             desc: item.desc,
-            complete_time: this.$getTime(new Date()),
+            complete_time: this.$getTime(),
             total_price: 0,
             price: 0,
             total_weight: itemChild.weight,
@@ -1222,7 +1222,7 @@ export default {
         price: '',
         material_id: '',
         company_id: '',
-        complete_time: this.$getTime(new Date()),
+        complete_time: this.$getTime(),
         desc: ''
       })
     },

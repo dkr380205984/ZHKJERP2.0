@@ -308,7 +308,7 @@ export default {
             material_type: itemMa.type,
             material_attribute: itemMa.color,
             loss: itemMa.material_loss,
-            single_weight: itemMa.number,
+            single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
             reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
             total_weight: itemMa.total_number,
             size_name: itemPro.size,

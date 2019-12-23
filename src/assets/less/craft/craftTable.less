@@ -1,0 +1,225 @@
+@import '../common.less';
+.craftTable{
+  .w100{
+    min-width: 100px;
+    max-width: 100px;
+  }
+  .w130{
+    min-width: 130px;
+    max-width: 130px;
+  }
+  .w140{
+    min-width: 140px;
+    max-width: 140px;
+  }
+  .h331{
+    height: 331px!important;
+  }
+  .h261{
+    height: 261px!important;
+  }
+  .h252{
+    height: 252px!important;
+  }
+  .h80{
+    height: 80px!important;
+  }
+  .h60{
+    min-height: 60px!important;
+  }
+  .h40{
+    min-height: 40px!important;
+  }
+  .h35{
+    min-height: 35px!important;
+  }
+  .h31{
+    min-height: 31px!important;
+  }
+  .maxHeight{
+    flex: 1;
+  }
+  .col_title{
+    padding: 24px 0;
+    box-sizing: border-box;
+    max-width: 50px;
+    writing-mode:vertical-lr;
+    line-height: 50px;
+    text-align: justify;
+    text-align-last: justify;
+    border-right: 1px solid @font25;
+    &.noPadding{
+      padding: 0;
+    }
+  }
+  .noBorder{
+    border: none!important;
+  }
+  .row_item{
+    .index{
+      width: 28px;
+      height: 28px;
+      border: 1px solid @font25;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 28px;
+    }
+    .detail{
+      margin-left: 30px;
+      width: 40%;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      .item{
+        position: relative;
+        height: 24px;
+        &::before{
+          content: '';
+          display: inline-block;
+          width: 20px;
+          height: 1px;
+          background-color: @font25;
+          position: absolute;
+          top: 50%;
+          left: -5px;
+        }
+        &:nth-of-type(1)::before{
+          transform-origin: left;
+          transform: rotateZ(-210deg);
+        }
+        &:nth-of-type(2)::before{
+          transform-origin: left;
+          transform: translateX(-100%);
+        }
+        &:nth-of-type(3)::before{
+          transform-origin: left;
+          transform: rotateZ(210deg);
+        }
+      }
+    }
+    &.two_line{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start!important;
+      justify-content: center;
+      .top{
+        font-size: 12px;
+        &::before{
+          content: '上';
+          margin-right: 8px;
+          color: @font45;
+        }
+      }
+      .bottom{
+        font-size: 12px;
+        &::before{
+          content: '下';
+          margin-right: 8px;
+          color: @font45;
+        }
+      }
+    }
+    &.special_title{
+      height: 60px;
+      position: relative;
+      font-size: 16px;
+      &::after{
+        content: '';
+        display: block;
+        width: 153px;
+        border-top: 1px solid @font25;
+        position: absolute;
+        top: 30px;
+        left: -7px;
+        transform: rotateZ(23deg)
+      }
+      .top_right{
+        position: absolute;
+        top: 5px;
+        right: 6px;
+      }
+      .bottom_left{
+        position: absolute;
+        bottom: 5px;
+        left: 6px;
+      }
+    }
+  }  
+  .row_item_span{
+    display: inline-block;
+    min-width: calc(100% / 16);
+    max-width: calc(100% /16);
+    border-right: 1px solid @font25;
+    text-align: center;
+    line-height: 31px;
+    box-sizing: border-box;
+    position: relative;
+    &.bgGray{
+      background-color: #DDD!important;
+    }
+    &:last-of-type{
+      border: none;
+    }
+    .jiantou{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: @font45;
+      &.left{
+        left: 0;
+      }
+      &.right{
+        right: 0;
+      }
+      &.hiddle{
+        opacity: 0;
+      }
+    }
+  }
+  .outTable{
+    width: 1082px!important;
+    height: auto;
+    min-height: 0!important;
+    padding: 30px 50px 30px 140px!important;
+    box-sizing: border-box;
+    font-size: 18px;
+    line-height: 1em;
+    .outItem{
+      page-break-before: auto;
+      page-break-after: auto;
+      position: relative;
+      padding: 16px 0;
+      // margin: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      .label{
+        position: absolute;
+        left: 0;
+        top: 16px;
+        transform: translate(-100%);
+      }
+      .print_body{        
+        border-top:1px solid @font25;
+        margin-top: 0!important;
+        margin-bottom: 8px;
+        &.noBorder{
+          border: none;
+        }
+        &:last-of-type{
+          margin: 0;
+        }
+        .print_row{
+          &.canWarp{
+            display: flex;
+            flex-wrap: wrap;
+            .row_item{
+              min-width: 20%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

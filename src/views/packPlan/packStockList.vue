@@ -48,9 +48,9 @@
             <div class="col flex08">
               <span class="text">负责小组</span>
             </div>
-            <!-- <div class="col flex12">
+            <div class="col flex12">
               <span class="text">流程进度</span>
-            </div> -->
+            </div>
             <div class="col">
               <span class="text">下单时间</span>
             </div>
@@ -66,28 +66,19 @@
             <div class="col middle">
               <zh-img-list :list="itemOrder.image"></zh-img-list>
             </div>
-            <div class="col flex08">{{itemOrder.number}}</div>
-            <div class="col flex08">{{itemOrder.group_name}}</div>
-            <!-- <div class="col flex12"> </div> -->
-            <div class="col">{{itemOrder.order_time}}</div>
+            <div class="col flex08">
+              {{itemOrder.number}}
+            </div>
+            <div class="col flex08">
+              {{itemOrder.group_name}}
+            </div>
+            <div class="col flex12">装箱进度</div>
+            <div class="col">
+              {{itemOrder.order_time}}
+            </div>
             <div class="col middle flex08">
-              <span class="opr">
-                <el-dropdown @command="handleCommand($event,itemOrder.id)">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='materialCreate'
-                      v-if="itemOrder.has_plan === 0">
-                      <span class="detail">添加物料计划单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='materialDetail'
-                      v-if="itemOrder.has_plan > 0">
-                      <span class="create">物料计划单详情</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span>
+              <span class="opr"
+                @click="$router.push('/packPlan/packStock/' + itemOrder.id + '/1' )">详情</span>
             </div>
           </div>
         </div>
@@ -137,22 +128,12 @@ export default {
               return Number(total) + Number(itemNum)
             }),
             group_name: item.group_name,
-            order_time: item.order_time,
-            has_plan: item.has_plan
+            order_time: item.order_time
           }
         })
         this.total = res.data.meta.total
         this.loading = false
       })
-    },
-    handleCommand (type, id) {
-      if (type === 'materialCreate') {
-        this.$router.push('/materialPlan/materialPlanCreate/' + id + '/1')
-      } else if (type === 'materialDetail') {
-        this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1')
-      } else {
-        this.$message.warning('未知命令')
-      }
     }
   },
   created () {

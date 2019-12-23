@@ -184,6 +184,10 @@ const routes = [
       name: '物料订购列表',
       component: () => import('../views/material/materialList.vue')
     }, {
+      path: '/materialStock/materialStockList/:params',
+      name: '物料出入库列表',
+      component: () => import('../views/materialStock/materialStockList.vue')
+    }, {
       path: '/materialStock/materialStockDetail/:id/:type',
       name: '物料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
@@ -224,7 +228,11 @@ const routes = [
       name: '装箱计划单详情',
       component: () => import('../views/packPlan/packPlanCreate.vue')
     }, {
-      path: '/packPlan/packStock/:id',
+      path: '/packPlan/packStockList/:params',
+      name: '装箱出库列表',
+      component: () => import('../views/packPlan/packStockList.vue')
+    }, {
+      path: '/packPlan/packStock/:id/:type',
       name: '装箱出库详情',
       component: () => import('../views/packPlan/packStock.vue')
     }, {
@@ -256,6 +264,18 @@ const routes = [
       name: '半成品检验详情',
       component: () => import('../views/inspection/semiFinishedDetail.vue')
     }]
+  }, {
+    path: '/tagProductPrint/:id/:info',
+    name: 'tagProductPrint',
+    component: () => import('../views/product/tagPrint.vue')
+  }, {
+    path: '/tagSamplePrint/:id/:info',
+    name: 'tagSamplePrint',
+    component: () => import('../views/sample/tagPrint.vue')
+  }, {
+    path: '/craftTable/:id/:type',
+    name: 'craftTable',
+    component: () => import('../views/craft/craftTable.vue')
   }, {
     path: '/pricePrintTable/:id',
     name: 'pricePrintTable',
@@ -330,7 +350,9 @@ router.beforeEach((to, from, next) => {
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
     '产品检验列表': ['织为云', '产品检验列表'],
     '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
-    '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情']
+    '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情'],
+    '装箱出库列表': ['织为云', '装箱出库列表'],
+    '装箱出库详情': ['织为云', '装箱出库列表', '装箱出库详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

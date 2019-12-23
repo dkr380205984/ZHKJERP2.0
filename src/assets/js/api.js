@@ -291,10 +291,15 @@ const dispatch = {
   detail: (params) => http.get(`${baseUrl}/product/order/pop/list`, params),
   delete: (params) => http.post(`${baseUrl}/product/order/pop/delete`, params, 'application/json')
 }
+// 物料出入库
+const materialStock = {
+  init: (params) => http.get(`${baseUrl}/order/material/push/init`, params)
+}
 export {
   receive,
   dispatch,
   processing,
+  materialStock,
   weave,
   productStock,
   packag,
