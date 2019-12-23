@@ -56,7 +56,8 @@
                 </div>
               </div>
             </div>
-            <div class="btn btnBlue">打印标签</div>
+            <div class="btn btnBlue"
+              @click="printFlag = true">打印标签</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -292,6 +293,53 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="printFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">打印标签</span>
+          <span class="el-icon-close"
+            @click="printFlag = false"></span>
+        </div>
+        <div class="content">
+          <span class="row">
+            <span class="label">产品编号：</span>
+            <span class="info colCenter blue">{{detail.product_code}}</span>
+          </span>
+          <span class="row">
+            <span class="label">产品规格：</span>
+            <span class="info colCenter">
+              <el-checkbox :indeterminate="isIndeterminateSize"
+                v-model="checkAllSize"
+                @change="handleCheckAllSize">全选</el-checkbox>
+              <el-checkbox v-for="size in detail.size"
+                :label="size.measurement"
+                :key="size.measurement"
+                v-model="size.checked"
+                @change="handleCheckSize">{{size.measurement}}</el-checkbox>
+            </span>
+          </span>
+          <span class="row">
+            <span class="label">产品配色：</span>
+            <span class="info colCenter">
+              <el-checkbox :indeterminate="isIndeterminateColor"
+                v-model="checkAllColor"
+                @change="handleCheckAllColor">全选</el-checkbox>
+              <el-checkbox v-for="color in detail.color"
+                :label="color.color_name"
+                :key="color.color_name"
+                v-model="color.checked"
+                @change="handleCheckColor">{{color.color_name}}</el-checkbox>
+            </span>
+          </span>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray">取消</div>
+          <div class="btn btnBlue"
+            @click="openTagPrint">去打印</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -326,7 +374,14 @@ export default {
       },
       quotation_index: 0,
       chinaNum: chinaNum,
-      qrCodeUrl: ''
+      qrCodeUrl: '',
+      printFlag: true,
+      isIndeterminateSize: true,
+      checkAllSize: false,
+      checkedSize: [],
+      isIndeterminateColor: true,
+      checkAllColor: false,
+      checkedColor: []
     }
   },
   filters: {
@@ -342,6 +397,62 @@ export default {
       }
     }
   },
+  methods: {
+    handleCheckAllSize ($event) {
+      this.isIndeterminateSize = false
+      this.detail.size.forEach(itemSize => {
+        itemSize.checked = $event
+      })
+    },
+    handleCheckSize () {
+      let data = this.detail.size.filter(itemSize => !itemSize.checked)
+      if (data.length > 0) {
+        this.checkAllSize = false
+        if (data.length === this.detail.size.length) {
+          this.isIndeterminateSize = false
+        } else {
+          this.isIndeterminateSize = true
+        }
+      } else {
+        this.checkAllSize = true
+        this.isIndeterminateSize = false
+      }
+    },
+    handleCheckAllColor ($event) {
+      this.isIndeterminateColor = false
+      this.detail.color.forEach(itemColor => {
+        itemColor.checked = $event
+      })
+    },
+    handleCheckColor () {
+      let data = this.detail.color.filter(itemColor => !itemColor.checked)
+      if (data.length > 0) {
+        this.checkAllColor = false
+        if (data.length === this.detail.color.length) {
+          this.isIndeterminateColor = false
+        } else {
+          this.isIndeterminateColor = true
+        }
+      } else {
+        this.checkAllColor = true
+        this.isIndeterminateColor = false
+      }
+    },
+    openTagPrint () {
+      this.printFlag = false
+      let checkSize = this.detail.size.filter(itemSize => itemSize.checked).map(itemSize => itemSize.measurement)
+      let checkColor = this.detail.color.filter(itemColor => itemColor.checked).map(itemColor => itemColor.color_name)
+      if (checkSize.length === 0) {
+        this.$message.error('检测到未选择尺码规格')
+        return
+      }
+      if (checkColor.length === 0) {
+        this.$message.error('检测到未选择配色')
+        return
+      }
+      this.$openUrl('/tagProductPrint/' + this.$route.params.id + '/' + checkSize.join('&') + '&&' + checkColor.join('&'))
+    }
+  },
   mounted () {
     const QRCode = require('qrcode')
     QRCode.toDataURL(window.location.href, { errorCorrectionLevel: 'H' }, (err, url) => {
@@ -355,6 +466,22 @@ export default {
       console.log(res)
       if (res.data.status) {
         this.detail = res.data.data
+        this.detail.size.forEach((itemSize, indexSize) => {
+          if (indexSize === 0) {
+            itemSize.checked = true
+          } else {
+            itemSize.checked = false
+          }
+        })
+        this.detail.color.forEach((itemColor, indexColor) => {
+          if (indexColor === 0) {
+            itemColor.checked = true
+          } else {
+            itemColor.checked = false
+          }
+        })
+        this.handleCheckSize()
+        this.handleCheckColor()
         if (this.detail.image.length === 0) {
           this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
         }

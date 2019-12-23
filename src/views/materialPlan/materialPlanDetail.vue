@@ -297,6 +297,7 @@ export default {
   methods: {
     changeActiveProId (item) {
       this.activeProId = item.product_id
+      this.showSizeArr = item.sizeArr
       this.showMaterialInfo = item.material_info
     }
   },

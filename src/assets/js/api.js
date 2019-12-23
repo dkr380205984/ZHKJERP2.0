@@ -273,7 +273,12 @@ const weave = {
   detail: (params) => http.get(`${baseUrl}/production/weave/list`, params),
   delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json')
 }
+// 物料出入库
+const materialStock = {
+  init: (params) => http.get(`${baseUrl}/order/material/push/init`, params)
+}
 export {
+  materialStock,
   weave,
   productStock,
   packag,

@@ -600,7 +600,7 @@ export default {
           type: this.changeSampleOrderInfo.type,
           title: this.sampleOrderInfoSave.title,
           pid: this.$route.params.id,
-          order_time: this.$getTime(new Date()),
+          order_time: this.$getTime(),
           group_id: this.sampleOrderInfoSave.group_id,
           client_id: this.sampleOrderInfoSave.client_id,
           contacts_id: this.sampleOrderInfoSave.contacts_id,
@@ -683,7 +683,7 @@ export default {
         time: this.sampleOrderInfo.deliver_time,
         prog: 100
       })
-      let nowDate = this.$getTime(new Date())
+      let nowDate = this.$getTime()
       let totalTime = new Date(this.sampleOrderInfo.deliver_time).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()
       let prog = (new Date(nowDate).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()) / totalTime * 100 > 100 ? 100 : (new Date(nowDate).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()) / totalTime * 100
       this.timeProgressInfo.push({

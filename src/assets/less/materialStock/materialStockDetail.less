@@ -7,8 +7,12 @@
     position: relative;
     height: 66px;
     overflow: hidden;
-    .swich:hover{
-      background-color: rgba(26, 149, 255, 0.25);
+    .swich{
+      margin: 0;
+      padding: 0 16px;      
+      &:hover{
+        background-color: rgba(26, 149, 255, 0.25);
+      }
     }
     .handleBtn{
       position: absolute;
@@ -79,5 +83,18 @@
     .noMargin{
       margin: 0!important;
     }
+  }
+  .noPadding{
+    padding: 0!important;
+  }
+  .content{
+    display: flex;
+    align-items: center;
+  }
+  .flex3{
+    max-width: 340px;
+  }
+  .elInput{
+    width: 100%;
   }
 }

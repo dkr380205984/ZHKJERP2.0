@@ -558,7 +558,18 @@
         display: flex;
         justify-content: flex-end;
       }
-    } 
+    }
+    //无数据样式
+    .normalCtn{
+      padding: 20px 32px;
+      color: @orange;
+      font-size: 20px;
+      font-weight: 500;
+      &.hasBorderTop{        
+        border-top: 1px solid #E9E9E9;
+      }
+
+    }
   }
   // 底部操作栏
   .bottomFixBar{
@@ -589,6 +600,9 @@
     padding: 0 23px;
     margin-left: 16px;
     cursor: pointer;
+    &.noMargin{
+      margin: 0;
+    }
     &.noBorder{
       height:32px;
       line-height: 32px;
@@ -815,7 +829,7 @@
   }
   // 弹出框
   .popup{
-    z-index: 999;
+    z-index: 9999;
     position: fixed;
     left: 0;
     right: 0;
@@ -868,6 +882,14 @@
           }
           .info{
             flex: 1;
+            &.colCenter{
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+            }
+            &.blue{
+              color: @blue;
+            }
           }
           .editBtn{
             position: absolute;
@@ -1040,6 +1062,196 @@
         top: -8px;
         right: 0;
         transform: translateY(-100%);
+      }
+    }
+  }
+}
+#printHtml{
+  .printTable{
+    padding: 30px 50px;
+    height: auto;
+    min-height: 1490px;
+    width: 982px;
+    color: @font65;
+    font-size: 18px;
+    .print_head{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      .left{
+        display: flex;
+        flex-direction: column;
+        .title{
+          font-size: 24px;
+          font-weight: 600;
+        }
+        .item{
+          display: flex;
+          align-items: center;
+          margin-top: 16px;
+          .label{
+            width: 6em;
+          }
+        }
+      }
+      .right{
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        width: auto;
+        height: auto;
+        .text{
+          line-height: 1.3em;
+          margin-right: 8px;
+        }
+        .qrCode_box{
+          width: 120px;
+          height: 120px;
+          border: 1px solid @font25;
+          box-sizing: border-box;
+          img{
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+    .print_body{
+      margin-top: 8px;
+      border-left: 1px solid @font25;
+      border-right: 1px solid @font25;
+      border-bottom: 1px solid @font25;
+      overflow: hidden;
+      width: 100%;
+      .col{
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .bgGray{
+        background-color: #F5F5F5;
+      }
+      .print_row{
+        page-break-before: auto;
+        page-break-after: auto;
+        min-height: 50px;
+        border-top: 1px solid @font25;
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        &.has_marginBottom{
+          margin-bottom: 16px;
+          border-bottom:1px solid @font25;
+        }
+        &.noBorder{
+          border: 0;
+        }
+        .row_item{
+          flex: 1;
+          border-right: 1px solid @font25;
+          display: flex;
+          align-items: center;
+          height: auto;
+          position: relative;
+          // &::after{
+          //   content: '';
+          //   display: inline-block;
+          //   width: 1px;
+          //   height: 100%;
+          //   background-color: @font25;
+          //   position: absolute;
+          //   right: 0;
+          //   top: 0;
+          // }
+          &:last-of-type{
+            border-right: 0;
+          }
+          &.w180{
+            min-width: 180px;
+            max-width: 180px;
+          }
+          &.left{            
+            padding-left: 24px;
+            box-sizing: border-box;
+          }
+          &.right{
+            padding-right: 36px;
+            box-sizing: border-box;
+          }
+          &.center{            
+            justify-content: center;
+          }
+          .flex3{
+            display: flex;
+            width: 100%;
+            min-height: 30px;
+            align-items: center;
+            .code{
+              flex: 1;
+            }
+            .type{
+              flex: 1.8;
+              margin-left: 24px;
+            }
+            .number{
+              flex: 2.5;
+              margin-left: 24px;
+            }
+          }
+          &.unit{
+            position: relative;
+            .text{
+              position: absolute;
+              font-size: 12px;
+              color: @font25;
+              top: 50%;
+              right: 0;
+              transform: translate(-8px,-50%);
+            }
+          }
+        }
+      }
+    }
+  }
+  .printTag{
+    page-break-before: always;
+    page-break-after: always;
+    height: auto;
+    max-height: 330px;
+    max-width: 226px;
+    padding: 24px 36px;
+    box-sizing: border-box;
+    font-size: @fontMiddle;
+    color: @font65;
+    overflow: hidden;
+    line-height: 1em;
+    .tag_item{
+      height: auto;
+      margin-bottom: 8px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      &.col{
+        flex-direction: column;
+      }
+      .tag_label{
+        width: 3em;
+        text-align: left;
+      }
+      .tag_info{
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        word-wrap: break-word;
+      }      
+      .tag_qrCode{
+        width: 90px;
+        height: 90px;
+        margin: 0 auto;        
+      }
+      .tag_text{
+        margin: 0 auto;
+        color: @font25;
       }
     }
   }

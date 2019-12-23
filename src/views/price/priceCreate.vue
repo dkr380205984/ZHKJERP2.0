@@ -661,6 +661,7 @@
               <el-select v-model="item.name"
                 clearable
                 filterable
+                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择半成品加工工序">
@@ -708,6 +709,7 @@
               <el-select v-model="item.name"
                 clearable
                 filterable
+                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择成品加工工序">
@@ -755,6 +757,7 @@
               <el-select v-model="item.name"
                 clearable
                 filterable
+                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择包装辅料">
