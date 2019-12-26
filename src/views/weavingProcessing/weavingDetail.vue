@@ -451,6 +451,49 @@
         </div>
       </div>
     </div>
+    <div class="module log"
+      v-if="replenish_log.length>0">
+      <div class="titleCtn">
+        <span class="title">补纱日志</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="normalTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">补纱日期</div>
+                  <div class="tcolumn">纱线名称</div>
+                  <div class="tcolumn">纱线颜色</div>
+                  <div class="tcolumn">承担比例</div>
+                  <div class="tcolumn">备注信息</div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in replenish_log"
+                  :key="index">
+                  <div class="tcolumn">{{item.created_at.slice(0,10)}}</div>
+                  <div class="tcolumn">{{item.material_name}}</div>
+                  <div class="tcolumn">{{item.material_color}}</div>
+                  <div class="tcolumn">
+                    <span v-for="(itemChild,indexChild) in item.client_info"
+                      :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}%)</span>
+                  </div>
+                  <div class="tcolumn">{{item.desc}}</div>
+                  <div class="tcolumn">
+                    <span style="color:#F5222D;cursor:pointer"
+                      @click="deleteReplenishLog(item.id,index)">删除</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="popup"
       v-show="easyWeaving_flag">
       <div class="main">
@@ -627,7 +670,8 @@ export default {
           }
         },
         desc: '补纱'
-      }
+      },
+      replenish_log: []
     }
   },
   methods: {
@@ -872,6 +916,30 @@ export default {
           this.replenish_flag = false
         }
       })
+    },
+    deleteReplenishLog (id, index) {
+      this.$confirm('请确认是否删除该日志', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        replenish.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!请刷新页面后查看补纱信息变化'
+            })
+            this.replenish_log.splice(index, 1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   mounted () {
@@ -881,6 +949,9 @@ export default {
       order_id: this.$route.params.id,
       order_type: 1
     }), client.list(), weave.detail({
+      order_id: this.$route.params.id,
+      order_type: 1
+    }), replenish.list({
       order_id: this.$route.params.id,
       order_type: 1
     })]).then((res) => {
@@ -929,6 +1000,7 @@ export default {
           })
         })
       })
+      this.replenish_log = res[4].data.data
       this.loading = false
     })
   }

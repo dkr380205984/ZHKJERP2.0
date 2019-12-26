@@ -979,7 +979,6 @@ export default {
       })
     },
     normalOrder (name, color, id, number, replenishFlag) {
-      console.log(id)
       this.replenishFlag = replenishFlag // 补纱需要特殊处理
       this.replenishId = id
       this.order_flag = true

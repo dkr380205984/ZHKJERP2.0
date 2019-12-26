@@ -2851,8 +2851,8 @@ export default {
     }
   },
   created () {
-    this.pName = '物料设置'
-    this.cName = '包装辅料'
+    this.pName = '产品设置'
+    this.cName = '产品分类'
   }
 }
 </script>
