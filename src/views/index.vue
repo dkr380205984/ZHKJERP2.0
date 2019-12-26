@@ -13,6 +13,8 @@
           </zh-nav>
         </div>
         <div class="rightCtn">
+          <i class="el-icon-cpu elIcon"
+            @click="$router.push('/equipment')"></i>
           <el-badge is-dot>
             <i class="el-icon-bell elIcon"></i>
           </el-badge>
