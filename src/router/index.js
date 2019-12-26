@@ -185,12 +185,20 @@ const routes = [
       component: () => import('../views/material/materialList.vue')
     }, {
       path: '/materialStock/materialStockList/:params',
-      name: '物料出入库列表',
+      name: '原料出入库列表',
       component: () => import('../views/materialStock/materialStockList.vue')
     }, {
+      path: '/materialStock/materialStockList2/:params',
+      name: '辅料出入库列表',
+      component: () => import('../views/materialStock/materialStockList2.vue')
+    }, {
       path: '/materialStock/materialStockDetail/:id/:type',
-      name: '物料出入库详情',
+      name: '原料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
+    }, {
+      path: '/materialStock/materialStockDetail2/:id/:type',
+      name: '辅料出入库详情',
+      component: () => import('../views/materialStock/materialStockDetail2.vue')
     }, {
       path: '/weavingProcessing/weavingDetail/:id',
       name: '织造分配详情',
@@ -277,6 +285,14 @@ const routes = [
     name: 'craftTable',
     component: () => import('../views/craft/craftTable.vue')
   }, {
+    path: '/productPlanTable/:id/:type/:index',
+    name: 'productPlanTable',
+    component: () => import('../views/productPlan/productPlanTable.vue')
+  }, {
+    path: '/materialPlanTable/:id/:type/:params',
+    name: 'materialPlanTable',
+    component: () => import('../views/materialPlan/materialPlanTable.vue')
+  }, {
     path: '/pricePrintTable/:id',
     name: 'pricePrintTable',
     component: () => import('../views/price/pricePrintTable.vue')
@@ -339,7 +355,10 @@ router.beforeEach((to, from, next) => {
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
     '系统设置': ['织为云', '系统设置'],
-    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
+    '原料出入库列表': ['织为云', '原料出入库列表'],
+    '原料出入库详情': ['织为云', '原料出入库列表', '原料出入库详情'],
+    '辅料出入库列表': ['织为云', '辅料出入库列表'],
+    '辅料出入库详情': ['织为云', '辅料出入库列表', '辅料出入库详情'],
     '织造分配列表': ['织为云', '织造分配列表'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],

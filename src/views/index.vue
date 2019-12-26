@@ -203,8 +203,11 @@ export default {
         id: 7,
         icon: require('@/assets/image/index/装箱管理.png'),
         children: [{
-          name: '物料出入库列表',
+          name: '原料出入库列表',
           url: '/materialStock/materialStockList/page=1&&keyword=&&date='
+        }, {
+          name: '辅料出入库列表',
+          url: '/materialStock/materialStockList2/page=1&&keyword=&&date='
         }]
       }]
     }

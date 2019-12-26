@@ -115,8 +115,10 @@
         </div>
         <div class="normalTb">
           <div class="positionBtn">
-            <div class="btn btnWhiteBlue">打印原料单</div>
-            <div class="btn btnWhiteBlue">打印辅料单</div>
+            <div class="btn btnWhiteBlue"
+              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1&proId=' + activeProId)">打印原料单</div>
+            <div class="btn btnWhiteBlue"
+              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2&proId=' + activeProId)">打印辅料单</div>
           </div>
           <div class="thead">
             <span class="trow">
@@ -148,14 +150,20 @@
       <div class="detailCtn paddingTop60">
         <div class="flexTb">
           <div class="positionBtn">
-            <div class="btn btnWhiteBlue">打印原料单</div>
-            <div class="btn btnWhiteBlue">打印辅料单</div>
+            <div class="btn btnWhiteBlue"
+              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
+            <div class="btn btnWhiteBlue"
+              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2')">打印辅料单</div>
           </div>
           <div class="thead">
             <span class="trow">
               <span class="tcolumn">物料名称</span>
-              <span class="tcolumn">颜色</span>
-              <span class="tcolumn">重量/数量</span>
+              <span class="tcolumn flex20 noPad">
+                <span class="trow">
+                  <span class="tcolumn">颜色</span>
+                  <span class="tcolumn">重量/数量</span>
+                </span>
+              </span>
               <span class="tcolumn">总计</span>
             </span>
           </div>
@@ -164,7 +172,7 @@
               v-for="(itemMa,indexMa) in materialPlanTotalInfo"
               :key="indexMa">
               <span class="tcolumn">{{itemMa.material_name}}</span>
-              <span class="tcolumn flex20">
+              <span class="tcolumn flex20 noPad">
                 <span class="trow"
                   v-for="(itemColor,indexColor) in itemMa.color_info"
                   :key="indexColor">

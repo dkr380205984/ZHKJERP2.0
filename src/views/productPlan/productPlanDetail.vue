@@ -110,6 +110,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnOrange"
+            @click="$openUrl('/productPlanTable/' + $route.params.id + '/' + $route.params.type + '/' + list[listIndex].id)">打印</div>
           <div class="btn btnBlue"
             @click="$router.push('/productPlan/productPlanUpdate/'+list[listIndex].id + '/' + $route.params.type)">修改</div>
         </div>

@@ -293,9 +293,20 @@ const dispatch = {
 }
 // 物料出入库
 const materialStock = {
-  init: (params) => http.get(`${baseUrl}/order/material/push/init`, params)
+  init: (params) => http.get(`${baseUrl}/order/material/push/init`, params),
+  create: (params) => http.post(`${baseUrl}/order/material/push`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/order/material/push/detail`, params),
+  delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json')
+}
+// 装箱计划
+const packPlan = {
+  // init: (params) => http.get(`${baseUrl}/order/material/push/init`, params),
+  create: (params) => http.post(`${baseUrl}/pack/info/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/pack/info/list`, params)
+  // delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json')
 }
 export {
+  packPlan,
   receive,
   dispatch,
   processing,

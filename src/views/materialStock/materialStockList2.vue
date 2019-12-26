@@ -81,10 +81,10 @@
               {{itemOrder.order_time}}
             </div>
             <div class="col middle flex08">
+              <!--<span class="opr"
+                @click="$router.push('/materialStock/materialStockDetail/' + itemOrder.id + '/1/1')">原料</span> -->
               <span class="opr"
-                @click="$router.push('/materialStock/materialStockDetail/' + itemOrder.id + '/1')">详情</span>
-              <!-- <span class="opr"
-                @click="$router.push('/materialStock/materialStockDetail/' + itemOrder.id + '/1/2')">辅料</span> -->
+                @click="$router.push('/materialStock/materialStockDetail2/' + itemOrder.id + '/1')">详情</span>
             </div>
           </div>
         </div>
