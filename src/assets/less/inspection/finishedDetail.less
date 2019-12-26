@@ -1,0 +1,53 @@
+@import '../common.less';
+#finishedDetail{
+  .green{
+    color: @green;
+  }
+  .orange{
+    color: @orange;
+  }
+  .blue{
+    color: @blue;
+    cursor: pointer;
+  }
+  .red{
+    color: @red;
+    cursor: pointer;
+  }
+  .createModule{
+    position: relative;
+    background: #f8f8f8;
+    padding: 16px 0;
+    margin: 16px 0;
+    .text{
+      color: @font65;
+    }
+    .deleteIconBtn{
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      background: @orange;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .flex3{
+      max-width: 319.3px;
+    }
+    .rowCtn{
+      flex-wrap: wrap;
+      &.width100{
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+  .flexTb{
+    border-bottom: 0;
+  }
+}

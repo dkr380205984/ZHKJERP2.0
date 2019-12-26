@@ -265,7 +265,8 @@ const materialProcess = {
 // 补纱 补辅料
 const replenish = {
   create: (params) => http.post(`${baseUrl}/production/yarn/replenish/save`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/production/yarn/replenish/list`, params)
+  list: (params) => http.get(`${baseUrl}/production/yarn/replenish/list`, params),
+  delete: (params) => http.post(`${baseUrl}/production/yarn/replenish/delete`, params, 'application/json')
 }
 // 织造分配
 const weave = {
@@ -305,8 +306,18 @@ const packPlan = {
   detail: (params) => http.get(`${baseUrl}/pack/info/list`, params)
   // delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json')
 }
+// 产品检验
+const inspection = {
+  semiFinishedCreate: (params) => http.post(`${baseUrl}/production/semi/inspection`, params, 'application/json'),
+  semiFinishedDetail: (params) => http.get(`${baseUrl}/production/semi/inspection/list`, params),
+  semiFinishedDelete: (params) => http.post(`${baseUrl}/production/semi/inspection/delete`, params, 'application/json'),
+  finishedCreate: (params) => http.post(`${baseUrl}/production/inspection`, params, 'application/json'),
+  finishedDetail: (params) => http.get(`${baseUrl}/production/inspection/list`, params),
+  finishedDelete: (params) => http.post(`${baseUrl}/production/inspection/delete`, params, 'application/json')
+}
 export {
   packPlan,
+  inspection,
   receive,
   dispatch,
   processing,

@@ -271,6 +271,10 @@ const routes = [
       path: '/inspection/semiFinishedDetail/:id',
       name: '半成品检验详情',
       component: () => import('../views/inspection/semiFinishedDetail.vue')
+    }, {
+      path: '/equipment',
+      name: '设备管理',
+      component: () => import('../views/equipment/equipment.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -371,7 +375,8 @@ router.beforeEach((to, from, next) => {
     '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
     '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情'],
     '装箱出库列表': ['织为云', '装箱出库列表'],
-    '装箱出库详情': ['织为云', '装箱出库列表', '装箱出库详情']
+    '装箱出库详情': ['织为云', '装箱出库列表', '装箱出库详情'],
+    '设备管理': ['织为云', '设备管理']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
