@@ -771,10 +771,11 @@ export default {
         return
       }
       let formData = this.weaving_data.map((item) => {
-        let finded = this.partDataArr = this.productArr.find((itemFind) => itemFind.name === item.product_name)
+        let finded = this.productArr.find((itemFind) => itemFind.name === item.product_name)
+        let partFlag = item.part_data.find((itemFind) => itemFind.id === item.part_id).name === '大身' // 判断是否为大身
         return {
           order_id: this.$route.params.id,
-          order_type: 1,
+          order_type: this.$route.params.orderType,
           product_id: item.part_id, // 配件id
           client_id: item.company_id,
           complete_time: this.$getTime(item.complete_time),
@@ -782,7 +783,8 @@ export default {
           price: item.price,
           number: item.number,
           size: finded.size,
-          color: finded.color
+          color: finded.color,
+          is_part: partFlag ? 1 : 2
         }
       })
       weave.create({
@@ -790,6 +792,8 @@ export default {
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('分配成功，请刷新页面后查看织造分配数量')
+          this.weaving_data = []
+          this.weaving_flag = false
         }
       })
     },
@@ -947,19 +951,19 @@ export default {
       id: this.$route.params.id
     }), materialPlan.init({
       order_id: this.$route.params.id,
-      order_type: 1
+      order_type: this.$route.params.orderType
     }), client.list(), weave.detail({
       order_id: this.$route.params.id,
-      order_type: 1
+      order_type: this.$route.params.orderType
     }), replenish.list({
       order_id: this.$route.params.id,
-      order_type: 1
+      order_type: this.$route.params.orderType
     })]).then((res) => {
       this.orderInfo = res[0].data.data
       let productInfo = res[1].data.data.product_info
       productInfo.forEach((item) => {
         item.part_data.forEach((itemChild) => {
-          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size).number * item.numbers
+          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.numbers
           itemChild.color = item.color
           itemChild.size = item.size
         })

@@ -196,19 +196,19 @@ const routes = [
       name: '辅料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
-      path: '/weavingProcessing/weavingDetail/:id',
+      path: '/weavingProcessing/weavingDetail/:id/:orderType',
       name: '织造分配详情',
       component: () => import('../views/weavingProcessing/weavingDetail.vue')
     }, {
-      path: '/weavingProcessing/weavingList/:params',
+      path: '/weavingProcessing/weavingList/:params/:type',
       name: '织造分配列表',
       component: () => import('../views/weavingProcessing/weavingList.vue')
     }, {
-      path: '/weavingProcessing/processingDetail/:id',
+      path: '/weavingProcessing/processingDetail/:id/:orderType',
       name: '半成品加工分配详情',
       component: () => import('../views/weavingProcessing/processingDetail.vue')
     }, {
-      path: '/weavingProcessing/processingList/:params',
+      path: '/weavingProcessing/processingList/:params/:type',
       name: '半成品加工分配列表',
       component: () => import('../views/weavingProcessing/processingList.vue')
     }, {

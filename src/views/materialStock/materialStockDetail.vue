@@ -53,7 +53,7 @@
       <template v-if="materialStockInfo.length > 0">
         <div class="listCtn hasBorderTop"
           style="padding:20px 0">
-          <div class="swichCtn">
+          <!-- <div class="swichCtn">
             <div class="swichCtnBox"
               :style="'left:' + leftNum + 'px;'"
               ref="scroll_dom">
@@ -66,7 +66,10 @@
               @click.stop="leftNum += 300"></span>
             <span class="handleBtn right"
               @click.stop="leftNum -= 300"></span>
-          </div>
+          </div> -->
+          <zh-transition :list="materialStockInfo"
+            markId="1"
+            @changed="catActiveMaterial"></zh-transition>
           <div class="flexTb"
             style="margin:20px 32px 0 ">
             <div class="thead">
@@ -252,7 +255,7 @@
         <span class="title">原料织造出库</span>
       </div>
       <template v-if="weaveInfo.concat(processInfo).length !== 0">
-        <div class="swichCtn">
+        <!-- <div class="swichCtn">
           <div class="swichCtnBox"
             :style="'left:' + leftNum2 + 'px'"
             ref="scroll_dom2">
@@ -265,7 +268,10 @@
             @click.stop="leftNum2 += 300"></span>
           <span class="handleBtn right"
             @click.stop="leftNum2 -= 300"></span>
-        </div>
+        </div> -->
+        <zh-transition :list="weaveInfo.concat(processInfo)"
+          markId="2"
+          @changed="catActiveClient"></zh-transition>
         <div class="listCtn">
           <div class="flexTb"
             style="margin:1px">
@@ -876,6 +882,7 @@ export default {
         let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1)
         this.orderInfo = res[0].data.data.order_info
         this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
+        this.materialStockInfo.forEach((item) => { item.name = item.material_name })
         this.activeStockMa = this.materialStockInfo[0] ? this.materialStockInfo[0].material_name : ''
         this.activeMaterialInfo = this.materialStockInfo[0] ? this.materialStockInfo[0].color_info : []
         this.materialClient = this.$mergeData(res[0].data.data.material_order_client, { mainRule: ['client_name', 'client_id'] })

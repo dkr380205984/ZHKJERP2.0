@@ -112,20 +112,9 @@
         </div>
       </div>
       <div class="detailCtn">
-        <div class="swichCtn">
-          <div class="swichCtnBox"
-            :style="'left:' + leftNum + 'px;'"
-            ref="scroll_dom">
-            <span :class="{'swich':true,'active':activeProId === itemPro.product_id}"
-              v-for="(itemPro,indexPro) in productMaterialTotal"
-              :key="indexPro"
-              @click="changeActiveProId(itemPro)">{{itemPro.product_code}}</span>
-          </div>
-          <span class="handleBtn left"
-            @click.stop="leftNum += 300"></span>
-          <span class="handleBtn right"
-            @click.stop="leftNum -= 300"></span>
-        </div>
+        <zh-transition :list="productMaterialTotal"
+          style="margin-bottom:16px"
+          @changed="changeActiveProId"></zh-transition>
         <div class="normalTb">
           <div class="thead">
             <span class="trow">
@@ -269,7 +258,7 @@ export default {
             }
           })
           return {
-            product_code: itemPro.product_code,
+            name: itemPro.product_code,
             product_id: itemPro.product_id,
             material_info: materialInfo
           }

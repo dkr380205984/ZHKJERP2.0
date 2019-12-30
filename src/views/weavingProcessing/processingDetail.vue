@@ -705,7 +705,7 @@ export default {
       this.process_data.forEach((item) => {
         item.product_info.forEach((itemChild) => {
           formData.push({
-            order_type: 1,
+            order_type: this.$route.params.orderType,
             order_id: this.$route.params.id,
             product_id: item.product_id,
             size: itemChild.colorSize.split('/')[0],
@@ -723,6 +723,8 @@ export default {
       processing.create({ data: formData }).then((res) => {
         if (res.data.status) {
           this.$message.success('分配成功，请刷新页面查看分配数量')
+          this.process_data = []
+          this.process_flag = false
         }
       })
     },
@@ -790,12 +792,12 @@ export default {
       id: this.$route.params.id
     }), materialPlan.init({
       order_id: this.$route.params.id,
-      order_type: 1
+      order_type: this.$route.params.orderType
     }), client.list(),
     process.list(),
     processing.detail({
       order_id: this.$route.params.id,
-      order_type: 1
+      order_type: this.$route.params.orderType
     })]).then((res) => {
       this.orderInfo = res[0].data.data
       this.process_info = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_id' }] })
@@ -815,7 +817,6 @@ export default {
           }, 0)
         })
       })
-      console.log(this.process_detail)
       this.loading = false
     })
   }

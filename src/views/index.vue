@@ -158,15 +158,15 @@ export default {
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
       }, {
-        name: '织造加工分配',
+        name: '织造加工管理',
         id: 8,
         icon: require('@/assets/image/index/织造加工管理.png'),
         children: [{
           name: '织造分配列表',
-          url: '/weavingProcessing/weavingList/page=1&&keyword=&&type='
+          url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }, {
           name: '半成品加工分配列表',
-          url: '/weavingProcessing/processingList/page=1&&keyword=&&type='
+          url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
       }, {
         name: '产品收发管理',
