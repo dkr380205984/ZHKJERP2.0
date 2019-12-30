@@ -144,12 +144,14 @@
                 <div class="content elInput middle">
                   <zh-input type='number'
                     placeholder='起始箱'
-                    v-model="itemOut.start_num">
+                    v-model="itemOut.start_num"
+                    @input="itemOut.total_box = (Number(itemOut.end_num) || 0) - (Number(itemOut.start_num) || 0) + 1">
                   </zh-input>
                   ~
                   <zh-input type='number'
                     placeholder='末尾箱'
-                    v-model="itemOut.end_num">
+                    v-model="itemOut.end_num"
+                    @input="itemOut.total_box = (Number(itemOut.end_num) || 0) - (Number(itemOut.start_num) || 0) + 1">
                   </zh-input>
                 </div>
                 <zh-input type='number'
@@ -269,8 +271,8 @@
             <span class="trow">
               <span class="tcolumn">产品</span>
               <span class="tcolumn">尺码/颜色</span>
-              <span class="tcolumn">实际装箱</span>
               <span class="tcolumn">计划数量</span>
+              <span class="tcolumn">实际装箱</span>
               <span class="tcolumn">装箱差值</span>
             </span>
           </div>
@@ -358,7 +360,7 @@
               <div class="content">
                 <zh-input placeholder="请输入实际装箱数量"
                   class="elInput"
-                  v-model="itemOut.number"
+                  v-model="itemPro.actual_number"
                   type="number"></zh-input>
               </div>
             </div>
@@ -499,7 +501,8 @@
                     <div class="content">
                       <zh-input type='number'
                         placeholder='箱数'
-                        v-model="itemOut.cube_number">
+                        v-model="itemOut.cube_number"
+                        @input="itemOut.total_price = $toFixed((Number(itemOut.cube_number) || 0) * (Number(itemOut.transport_price) || 0))">
                         <template slot="append">m³</template>
                       </zh-input>
                     </div>
@@ -520,7 +523,8 @@
                     <div class="content">
                       <zh-input type='number'
                         placeholder='箱数'
-                        v-model="itemOut.transport_price">
+                        v-model="itemOut.transport_price"
+                        @input="itemOut.total_price = $toFixed((Number(itemOut.cube_number) || 0) * (Number(itemOut.transport_price) || 0))">
                         <template slot="append">元/m³</template>
                       </zh-input>
                     </div>
@@ -548,18 +552,6 @@
                 <span class="text">出库国家</span>
               </div>
               <div class="content">
-                <!-- <el-select v-model="itemOut.out_country"
-                  filterable
-                  default-first-option
-                  clearable
-                  class="elInput"
-                  placeholder="请选择需要操作的原料颜色">
-                  <el-option v-for="item in []"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.name">
-                  </el-option>
-                </el-select> -->
                 <el-autocomplete v-model="itemOut.out_country"
                   :fetch-suggestions="querySearchCountry"
                   placeholder="请选择出库国家"></el-autocomplete>
@@ -790,7 +782,7 @@ export default {
       planTb: [{
         id: 6
       }],
-      activePlanId: 6,
+      activePlanId: '',
       activePlanInfo: [],
       // lastLvPackArr: [],
       actualPackingEditInfo: [],
@@ -815,17 +807,28 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let data = res.data.data
-          let filterLog = data.filter(item => item.pack_plan_id === this.activePlanId)
-          this.activePlanInfo.forEach(itemPack => {
-            itemPack.product_info.forEach(itemPro => {
-              let flag = filterLog.filter(item => item.product_id === itemPro.product_id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
-              console.log(flag)
-              if (flag.length > 0) {
-                itemPro.actual_number = flag.map(item => Number(item.pack_number || 0)).reduce((total, item) => {
-                  return total + item
-                })
-              }
+          if (this.activePlanInfo && this.activePlanInfo.length > 0) {
+            let filterLog = data.filter(item => item.pack_plan_id === this.activePlanId)
+            this.activePlanInfo.forEach(itemPack => {
+              itemPack.product_info.forEach(itemPro => {
+                let flag = filterLog.filter(item => item.product_id === itemPro.product_id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
+                // console.log(flag)
+                if (flag.length > 0) {
+                  itemPro.actual_number = flag.map(item => Number(item.pack_number || 0)).reduce((total, item) => {
+                    return total + item
+                  })
+                }
+              })
             })
+            this.actualPackingLogTotal = this.actualPackingLog.length
+          }
+          this.productInfo.forEach(itemPro => {
+            let flag = data.filter(item => item.product_id === itemPro.id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
+            if (flag.length > 0) {
+              itemPro.actual_number = flag.map(item => Number(item.pack_number || 0)).reduce((total, item) => {
+                return total + item
+              })
+            }
           })
           this.actualPackingLog = this.$newSplice(this.$clone(data).map(itemPro => {
             let flag = this.productInfo.find(item => item.id === itemPro.product_id)
@@ -836,108 +839,133 @@ export default {
               ...itemPro
             }
           }), 5)
-          this.actualPackingLogTotal = this.actualPackingLog.length
         }
       })
     },
     cutPlanTb (id, info) {
-      this.activePlanId = id
-      // 自动计算包装数量
-      let data = []
-      let cloneData = this.$clone(info)
-      let packNumArr = []
-      let activePlanInfo = [] // 最终处理完成的数据
-      cloneData.forEach(item => {
-        data = data.concat(item)
-      })
-      data.forEach(item => {
-        let newData = []
-        item.pack_info.forEach(itemPro => {
-          let flag = data.find(items => items.pack_code === itemPro.name)
-          if (flag) {
-            let innerFlag = packNumArr.find(items => items.pack_code === itemPro.name)
-            if (innerFlag) {
-              innerFlag.product_info.forEach(itemPro2 => {
-                newData.push({
-                  product_id: itemPro2.product_id,
-                  size_color: itemPro2.size_color,
-                  number: itemPro2.number * Number(itemPro.number || 0)
+      this.$confirm('此操作切换装箱计划单，会重置实际装箱填写的数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.actualPackingEditInfo = []
+        this.activePlanId = id
+        // 自动计算包装数量
+        let data = []
+        let cloneData = this.$clone(info)
+        let packNumArr = []
+        let activePlanInfo = [] // 最终处理完成的数据
+        cloneData.forEach(item => {
+          data = data.concat(item)
+        })
+        data.forEach(item => {
+          let newData = []
+          item.pack_info.forEach(itemPro => {
+            let flag = data.find(items => items.pack_code === itemPro.name)
+            if (flag) {
+              let innerFlag = packNumArr.find(items => items.pack_code === itemPro.name)
+              if (innerFlag) {
+                innerFlag.product_info.forEach(itemPro2 => {
+                  newData.push({
+                    product_id: itemPro2.product_id,
+                    size_color: itemPro2.size_color,
+                    number: itemPro2.number * Number(itemPro.number || 0)
+                  })
                 })
+              }
+            } else {
+              newData.push({
+                product_id: itemPro.name,
+                size_color: itemPro.size_color,
+                number: Number(itemPro.number || 0)
               })
             }
-          } else {
-            newData.push({
-              product_id: itemPro.name,
-              size_color: itemPro.size_color,
-              number: Number(itemPro.number || 0)
+          })
+          packNumArr.push({
+            pack_code: item.pack_code,
+            pack_name: item.pack_name,
+            product_info: this.$mergeData(newData, { mainRule: ['product_id', 'size_color'], otherRule: [{ name: 'number', type: 'add' }] }).map(items => {
+              return {
+                product_id: items.product_id,
+                size_color: items.size_color,
+                number: items.number
+              }
             })
-          }
-        })
-        packNumArr.push({
-          pack_code: item.pack_code,
-          pack_name: item.pack_name,
-          product_info: this.$mergeData(newData, { mainRule: ['product_id', 'size_color'], otherRule: [{ name: 'number', type: 'add' }] }).map(items => {
-            return {
-              product_id: items.product_id,
-              size_color: items.size_color,
-              number: items.number
-            }
           })
         })
-      })
-      cloneData[cloneData.length - 1].forEach(item => {
-        let flag = packNumArr.find(items => items.pack_code === item.pack_code)
-        activePlanInfo.push({
-          pack_code: item.pack_code,
-          pack_name: item.pack_name,
-          start_num: item.start_box,
-          end_num: item.end_box,
-          total_box: item.total_box,
-          product_info: flag ? flag.product_info.map(items => {
-            let proFlag = this.productInfo.find(itemInner => itemInner.id === items.product_id)
-            return {
-              product_id: items.product_id,
-              sizeColor: proFlag ? proFlag.sizeColor : [],
-              unit: proFlag ? proFlag.unit : [],
-              type: proFlag ? proFlag.type : [],
-              product_code: proFlag ? proFlag.product_code : [],
-              size_color: items.size_color,
-              number: items.number * Number(item.total_box || 0)
-            }
-          }) : []
+        cloneData[cloneData.length - 1].forEach(item => {
+          let flag = packNumArr.find(items => items.pack_code === item.pack_code)
+          activePlanInfo.push({
+            pack_code: item.pack_code,
+            pack_name: item.pack_name,
+            start_num: item.start_box,
+            end_num: item.end_box,
+            total_box: item.total_box,
+            product_info: flag ? flag.product_info.map(items => {
+              let proFlag = this.productInfo.find(itemInner => itemInner.id === items.product_id)
+              return {
+                product_id: items.product_id,
+                sizeColor: proFlag ? proFlag.sizeColor : [],
+                unit: proFlag ? proFlag.unit : [],
+                type: proFlag ? proFlag.type : [],
+                product_code: proFlag ? proFlag.product_code : [],
+                size_color: items.size_color,
+                number: items.number * Number(item.total_box || 0)
+              }
+            }) : []
+          })
+        })
+        this.activePlanInfo = activePlanInfo
+        this.getActualPackingLog()
+      }).catch(() => {
+        this.$message({
+          message: '已取消'
         })
       })
-      this.activePlanInfo = activePlanInfo
-      this.getActualPackingLog()
     },
     saveActual (flag) {
-      let data = []
-      this.actualPackingEditInfo.forEach(itemPack => {
-        itemPack.product_info.forEach(itemPro => {
-          data.push({
-            order_id: this.$route.params.id,
-            order_type: 1,
-            pack_plan_id: this.activePlanId,
-            pack_code: itemPack.pack_code,
-            product_id: itemPro.product_id,
-            size: itemPro.size_color[0],
-            color: itemPro.size_color[1],
-            number: itemPro.number,
-            pack_number: itemPro.actual_number,
-            start_box: itemPack.start_num,
-            end_box: itemPack.end_num,
-            total_box: itemPack.total_box
+      if (this.lock) {
+        let data = []
+        if (flag) {
+          this.actualPackingEditInfo.forEach(itemPack => {
+            itemPack.product_info.filter(items => items.actual_number).forEach(itemPro => {
+              data.push({
+                order_id: this.$route.params.id,
+                order_type: 1,
+                pack_plan_id: this.activePlanId,
+                pack_code: itemPack.pack_code,
+                product_id: itemPro.product_id || itemPro.id,
+                size: itemPro.size_color[0],
+                color: itemPro.size_color[1],
+                number: itemPro.number || itemPro.order_number,
+                pack_number: itemPro.actual_number,
+                start_box: itemPack.start_num,
+                end_box: itemPack.end_num,
+                total_box: itemPack.total_box
+              })
+            })
           })
-        })
-      })
-      packPlan.packActual({
-        data: data
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.getActualPackingLog()
-          this.$message.success('添加成功')
+        } else {
+
         }
-      })
+        if (data.length === 0) {
+          this.$message.error('检测到没有可提交的数据')
+          return
+        }
+        this.lock = false
+        packPlan.packActual({
+          data: data
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.getActualPackingLog()
+            this.actualPackingEditInfo = []
+            this.$message.success('添加成功')
+          }
+          this.lock = true
+        })
+      } else {
+        this.$message.warning('请勿频繁点击')
+      }
     },
     getOutPackingLog () {
       this.loading = true
@@ -953,8 +981,8 @@ export default {
               client_name: item.client_name,
               number: item.number,
               cube_number: item.cubic_number,
-              price: '',
-              total_price: item.cost,
+              price: item.price,
+              total_price: item.total_price,
               other_info: [
                 {
                   name: '出库国家',
@@ -974,7 +1002,12 @@ export default {
             }
           })
           this.outPackingInfo = this.$clone(data)
-          this.outPackingLog = this.$newSplice(this.$clone(data), 5)
+          this.outPackingLog = this.$newSplice(this.$clone(data).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
           this.outPackingLogTotal = this.outPackingLog.length
         }
         this.loading = false
@@ -1003,7 +1036,7 @@ export default {
           if (!item.total_price) {
             flag.price = false
           }
-          if (!item.address) {
+          if (!item.out_address) {
             flag.address = false
           }
           if (!item.compile_time) {
@@ -1058,6 +1091,7 @@ export default {
           if (res.data.status !== false) {
             this.$message.success('保存成功')
             this.getOutPackingLog()
+            this.outPackingEditInfo = []
           }
           this.lock = true
         })
@@ -1108,7 +1142,10 @@ export default {
           })
         } else {
           this.actualPackingEditInfo.push({
-            product_info: this.productInfo
+            product_info: this.$clone(this.productInfo).map(item => {
+              item.actual_number = ''
+              return item
+            })
           })
         }
       }
@@ -1143,11 +1180,11 @@ export default {
     },
     computedDif (num1, num2) {
       if (Number(num1) > Number(num2)) {
-        return ['green', '+' + (num1 - num2)]
+        return ['orange', '-' + (num1 - num2)]
       } else if (Number(num1) === Number(num2)) {
         return ['blue', 0]
       } else if (Number(num1) < Number(num2)) {
-        return ['orange', '-' + (Number(num2) - Number(num1))]
+        return ['green', '+' + (Number(num2) - Number(num1))]
       }
     },
     getPackInfo (eve, item) {
@@ -1216,8 +1253,76 @@ export default {
         }
       })
       if (this.planTb.length > 0) {
-        this.cutPlanTb(this.planTb[0].id, this.planTb[0].pack_info)
+        this.actualPackingEditInfo = []
+        this.activePlanId = this.planTb[0].id
+        // 自动计算包装数量
+        let data = []
+        let cloneData = this.$clone(this.planTb[0].pack_info)
+        let packNumArr = []
+        let activePlanInfo = [] // 最终处理完成的数据
+        cloneData.forEach(item => {
+          data = data.concat(item)
+        })
+        data.forEach(item => {
+          let newData = []
+          item.pack_info.forEach(itemPro => {
+            let flag = data.find(items => items.pack_code === itemPro.name)
+            if (flag) {
+              let innerFlag = packNumArr.find(items => items.pack_code === itemPro.name)
+              if (innerFlag) {
+                innerFlag.product_info.forEach(itemPro2 => {
+                  newData.push({
+                    product_id: itemPro2.product_id,
+                    size_color: itemPro2.size_color,
+                    number: itemPro2.number * Number(itemPro.number || 0)
+                  })
+                })
+              }
+            } else {
+              newData.push({
+                product_id: itemPro.name,
+                size_color: itemPro.size_color,
+                number: Number(itemPro.number || 0)
+              })
+            }
+          })
+          packNumArr.push({
+            pack_code: item.pack_code,
+            pack_name: item.pack_name,
+            product_info: this.$mergeData(newData, { mainRule: ['product_id', 'size_color'], otherRule: [{ name: 'number', type: 'add' }] }).map(items => {
+              return {
+                product_id: items.product_id,
+                size_color: items.size_color,
+                number: items.number
+              }
+            })
+          })
+        })
+        cloneData[cloneData.length - 1].forEach(item => {
+          let flag = packNumArr.find(items => items.pack_code === item.pack_code)
+          activePlanInfo.push({
+            pack_code: item.pack_code,
+            pack_name: item.pack_name,
+            start_num: item.start_box,
+            end_num: item.end_box,
+            total_box: item.total_box,
+            product_info: flag ? flag.product_info.map(items => {
+              let proFlag = this.productInfo.find(itemInner => itemInner.id === items.product_id)
+              return {
+                product_id: items.product_id,
+                sizeColor: proFlag ? proFlag.sizeColor : [],
+                unit: proFlag ? proFlag.unit : [],
+                type: proFlag ? proFlag.type : [],
+                product_code: proFlag ? proFlag.product_code : [],
+                size_color: items.size_color,
+                number: items.number * Number(item.total_box || 0)
+              }
+            }) : []
+          })
+        })
+        this.activePlanInfo = activePlanInfo
       }
+      this.getActualPackingLog()
       this.getOutPackingLog()
       this.loading = false
     })
