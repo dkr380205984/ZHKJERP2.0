@@ -254,6 +254,9 @@ const plugin = {
    *return:Array
    ***********************************/
   newSplice: (data, index, arr) => {
+    if (data.length === 0 || !data) {
+      return []
+    }
     let _this = plugin
     if (!arr) {
       arr = []
@@ -263,7 +266,23 @@ const plugin = {
       _this.newSplice(data, index, arr)
     }
     return arr
+  },
+  /************************************
+   *el:到达其视图的id
+   *type:String
+   ***********************************/
+  goElView: (el) => {
+    if (!el) {
+      throw new TypeError('请传入element的"id"')
+    }
+    let ele = document.getElementById(el)
+    if (ele) {
+      ele.scrollIntoView(true)
+    } else {
+      return false
+    }
   }
+
 }
 export default {
   install (Vue) {
@@ -274,5 +293,6 @@ export default {
     Vue.prototype.$mergeData = plugin.mergeData
     Vue.prototype.$toFixed = plugin.toFixedAuto
     Vue.prototype.$newSplice = plugin.newSplice
+    Vue.prototype.$goElView = plugin.goElView
   }
 }

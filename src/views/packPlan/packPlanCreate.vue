@@ -85,16 +85,19 @@
                   @click="copyItem(itemPlan,indexPlan,indexPack)">复制</span></span><!-- {{indexPack + 1}}{{letterArr[indexPlan]}} -->
               <span class="content">
                 <span class="content__inner">
-                  <el-select v-model="itemPack.pack_name"
+                  <!-- <el-select v-model="itemPack.pack_name"
                     placeholder="请选择包装"
                     filterable
                     default-first-option>
                     <el-option v-for="item in packList"
                       :key="item.id"
                       :label="item.name"
-                      :value="item.id">
+                      :value="item.name">
                     </el-option>
-                  </el-select>
+                  </el-select> -->
+                  <el-autocomplete v-model="itemPack.pack_name"
+                    :fetch-suggestions="querySearchPack"
+                    placeholder="请选择包装"></el-autocomplete>
                 </span>
               </span>
             </div>
@@ -230,10 +233,10 @@
               <el-select v-model="itemPack.pack_name"
                 placeholder="请选择包装"
                 disabled>
-                <el-option v-for="item in packList"
+                <el-option v-for="item in packPlanTotal"
                   :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+                  :label="item.pack_name"
+                  :value="item.pack_name">
                 </el-option>
               </el-select>
             </div>
@@ -285,6 +288,60 @@
               <zh-input v-model="itemPack.number"
                 placeholder="请输入所需数量"
                 type='number'></zh-input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module"
+      v-if="activePlanId">
+      <div class="titleCtn">
+        <span class="title">计划装箱信息</span>
+        <div class="btn noBorder">打印装箱单</div>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="flexTb">
+          <div class="thead">
+            <div class="trow">
+              <span class="tcolumn flex2">包装类型</span>
+              <span class="tcolumn flex3 noPad">
+                <span class="trow">
+                  <span class="tcolumn">产品/包装</span>
+                  <span class="tcolumn">尺码颜色</span>
+                  <span class="tcolumn">产品数量</span>
+                </span>
+              </span>
+              <span class="tcolumn">包装数量</span>
+              <span class="tcolumn">重量</span>
+              <span class="tcolumn">序号</span>
+            </div>
+          </div>
+          <div class="tbody">
+            <div class="trow"
+              v-for="(item,index) in planPackInfo"
+              :key="index">
+              <span class="tcolumn flex2"><span class="green">{{item.pack_code}}</span>{{item|filterPack}}</span>
+              <span class="tcolumn flex3 noPad">
+                <span class="trow"
+                  v-for="(itemInner,indexInner) in item.pack_info"
+                  :key="indexInner">
+                  <span class="tcolumn">
+                    <span :class="{'green':itemInner.packInfo}">{{itemInner.product_info ? itemInner.product_info.product_code : itemInner.name}}</span>
+                    {{itemInner|filterName}}
+                  </span>
+                  <span class="tcolumn">{{itemInner.size_color? itemInner.size_color.join('/') : '/'}}</span>
+                  <span class="tcolumn">{{itemInner.number ? itemInner.number + (itemInner.product_info ? itemInner.product_info.unit : itemInner.packInfo ? itemInner.packInfo.unit : '') + '/' + (item.unit ? item.unit : '') : '/'}}</span>
+                </span>
+              </span>
+              <span class="tcolumn">{{item.packNum ? item.packNum + (item.unit ? item.unit : '') : '/'}}</span>
+              <span class="tcolumn"
+                v-if="item.gross_weight || item.net_weight">毛重：{{item.gross_weight + 'kg'}}<br />净重：{{item.net_weight + 'kg'}}</span>
+              <span class="tcolumn"
+                v-else>/</span>
+              <span class="tcolumn"
+                v-if="item.start_box || item.end_box">{{[item.start_box,item.end_box].join('-')}}</span>
+              <span class="tcolumn"
+                v-else>/</span>
             </div>
           </div>
         </div>
@@ -345,7 +402,9 @@ export default {
       ],
       planTb: [],
       activePlanId: '',
-      showHiddle: false
+      planPackInfo: [],
+      showHiddle: false,
+      lock: true
     }
   },
   methods: {
@@ -509,10 +568,8 @@ export default {
       } else {
         let arr = item[index - 1]
         return arr.map((itemInner, indexInner) => {
-          let pack = this.packList.find(itemPack => itemPack.id === itemInner.pack_name)
           return {
-            pack_name: pack ? pack.name : '',
-            pack_id: itemInner.pack_name,
+            pack_name: itemInner.pack_name,
             value: itemInner.pack_code
           }
         })
@@ -530,7 +587,7 @@ export default {
             item_id: itemInner.pack_code,
             size_info: '',
             attr: '',
-            number: itemInner.total_box
+            number: ''
           })
         })
       })
@@ -538,6 +595,34 @@ export default {
       this.packPlanTotal = packPlanTotal.map(item => {
         item.item_id = item.item_id.map(value => value.item_id)
         return item
+      })
+      // 自动计算包装数量
+      let data = this.$clone(this.packPlanInfo).reverse()
+      let packNumArr = [] // 数据存放
+      data.forEach((item, key) => {
+        item.forEach(value => {
+          if (key === 0) { // 当最后一级时直接加箱数
+            packNumArr.push({
+              pack_id: value.pack_code,
+              number: Number(value.total_box || 0)
+            })
+          }
+          value.pack_info.forEach(val => {
+            if (key !== data.length - 1) {
+              packNumArr.push({
+                pack_id: val.name,
+                number: Number(val.number || 0) * Number(value.total_box || 1)
+              })
+            }
+          })
+        })
+      })
+      // 将计算结果合并至统计数据中
+      packNumArr.forEach(item => {
+        let flag = this.packPlanTotal.find(value => value.item_id.indexOf(item.pack_id) !== -1)
+        if (flag) {
+          flag.number = Number(flag.number || 0) + item.number
+        }
       })
     },
     cutPlanTb (id) {
@@ -605,57 +690,60 @@ export default {
       }
     },
     saveAll () {
-      let data = {
-        id: this.activePlanId,
-        order_id: this.$route.params.id,
-        order_type: 1,
-        pack_info: JSON.stringify(this.packPlanInfo),
-        material_info: JSON.stringify(this.packPlanTotal),
-        desc: ''
-      }
-      // let packInfo = this.$clone(this.packPlanInfo).map((itemOut, indexOut) => {
-      //   itemOut = itemOut.map((itemInner, indexInner) => {
-      //     return {
-      //       pack_code: itemInner.pack_code,
-      //       pack_material_name: itemInner.pack_name,
-      //       weight: itemInner.gross_weight,
-      //       net_weight: itemInner.net_weight,
-      //       desc: '',
-      //       start_chest: itemInner.start_box,
-      //       end_chest: itemInner.end_box,
-      //       total_chest: itemInner.total_box,
-      //       product_info: itemInner.pack_info.map(value => {
-      //         return {
-      //           product_code: value.name,
-      //           size_name: value.size_color ? value.size_color[0] : '',
-      //           color_name: value.size_color ? value.size_color[1] : '',
-      //           number: value.number
-      //         }
-      //       })
-      //     }
-      //   })
-      //   return itemOut
-      // })
-      // let arr = []
-      // this.$clone(packInfo).forEach(item => {
-      //   arr = arr.concat(item)
-      // })
-      // data.pack_info = arr
-      // data.pack_info_material = this.packPlanTotal.map(item => {
-      //   return {
-      //     pack_material_name: item.pack_name,
-      //     apply: JSON.stringify(item.item_id),
-      //     pack_size: item.size_info,
-      //     pack_attribute: item.attr,
-      //     number: item.number
-      //   }
-      // })
-      packPlan.create(data).then(res => {
-        if (res.data.status !== false) {
-          this.$message.success('添加成功')
+      if (this.lock) {
+        let flag = {
+          pack: true,
+          pack_info: true,
+          number: true
         }
-      })
-      console.log(data)
+        this.packPlanInfo.forEach(item => {
+          item.forEach(itemInner => {
+            if (!itemInner.pack_name) {
+              flag.pack = false
+            }
+            itemInner.pack_info.forEach(itemPack => {
+              if (!itemPack.name || !itemPack.number) {
+                flag.pack_info = false
+              }
+            })
+          })
+        })
+        if (!flag.pack) {
+          this.$message.error('检测到未选择包装，请选择')
+          return
+        }
+        if (!flag.pack_info) {
+          this.$message.error('检测到包装内信息未选择包装产品或未填写包装数量，请填写完整')
+          return
+        }
+        this.packPlanTotal.forEach(item => {
+          if (!item.number) {
+            flag.number = false
+          }
+        })
+        if (!flag.number) {
+          this.$message.error('检测到包装辅料信息模块内，有未填写的所需数量，请填写完整')
+          return
+        }
+        let data = {
+          id: this.activePlanId,
+          order_id: this.$route.params.id,
+          order_type: 1,
+          pack_info: JSON.stringify(this.packPlanInfo),
+          material_info: JSON.stringify(this.packPlanTotal),
+          desc: ''
+        }
+        this.lock = false
+        packPlan.create(data).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('添加成功')
+          }
+          this.lock = true
+        })
+      } else {
+        this.$message.warning('请勿频繁操作')
+      }
+      // console.log(data)
     },
     getInitPlanInfo (id) {
       packPlan.detail({
@@ -690,6 +778,13 @@ export default {
           }
         }
       })
+    },
+    querySearchPack (queryString, cb) {
+      var restaurants = this.packList.map(item => { return { value: item.name } })
+      console.log(restaurants)
+      var results = queryString ? restaurants.filter(item => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
     }
   },
   created () {
@@ -736,6 +831,60 @@ export default {
       })
       this.getInitPlanInfo()
     })
+  },
+  watch: {
+    activePlanId () {
+      let data = []
+      this.$clone(this.packPlanInfo).forEach(item => {
+        data = data.concat(item)
+      })
+      data.forEach(item => {
+        item.unit = this.packList.find(items => items.name === item.pack_name) ? this.packList.find(items => items.name === item.pack_name).unit : ''
+        item.size_info = this.packPlanTotal.find(items => items.item_id.indexOf(item.pack_code) !== -1)
+        item.pack_info.forEach(itemInner => {
+          itemInner.product_info = this.productList.find(items => items.product_id === itemInner.name)
+          let flag = data.find(items => items.pack_code === itemInner.name)
+          itemInner.packInfo = flag || ''
+        })
+      })
+      // 自动计算包装数量
+      let newData = this.$clone(this.packPlanInfo).reverse()
+      let packNumArr = [] // 数据存放
+      newData.forEach((item, key) => {
+        item.forEach(value => {
+          if (key === 0) { // 当最后一级时直接加箱数
+            packNumArr.push({
+              pack_id: value.pack_code,
+              number: Number(value.total_box || 0)
+            })
+          }
+          value.pack_info.forEach(val => {
+            if (key !== newData.length - 1) {
+              packNumArr.push({
+                pack_id: val.name,
+                number: Number(val.number || 0) * Number(value.total_box || 1)
+              })
+            }
+          })
+        })
+      })
+      // 将计算结果合并进数据
+      packNumArr.forEach(item => {
+        let flag = data.find(value => value.pack_code === item.pack_id)
+        if (flag) {
+          flag.packNum = Number(flag.packNum || 0) + Number(item.number || 0)
+        }
+      })
+      this.planPackInfo = data
+    }
+  },
+  filters: {
+    filterPack (item) {
+      return [item.pack_name ? item.pack_name : '', item.size_info ? item.size_info.size_info + 'cm' : '', item.size_info ? item.size_info.attr : ''].filter(items => items).join(',')
+    },
+    filterName (item) {
+      return item.product_info ? [item.product_info.category_name, item.product_info.type_name, item.product_info.style_name].filter(items => items).join('/') : item.packInfo ? item.packInfo.pack_name : ''
+    }
   }
 }
 </script>
@@ -763,6 +912,5 @@ export default {
       }
     }
   }
-  // }
 }
 </style>
