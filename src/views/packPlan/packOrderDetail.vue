@@ -99,15 +99,18 @@
               <span class="tcolumn flex16">订购单位</span>
               <span class="tcolumn flex6 noPad">
                 <span class="trow">
-                  <span class="tcolumn">包装辅料</span>
-                  <span class="tcolumn">单价</span>
-                  <span class="tcolumn">已订购数量</span>
-                  <span class="tcolumn right">总价</span>
+                  <span class="tcolumn flex5 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">包装辅料</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">已订购数量</span>
+                      <span class="tcolumn">总价</span>
+                    </span>
+                  </span>
                   <span class="tcolumn center">完成日期</span>
-                  <span class="tcolumn center">备注</span>
+                  <span class="tcolumn center">操作</span>
                 </span>
               </span>
-              <span class="tcolumn center">操作</span>
             </span>
           </div>
           <div class="tbody">
@@ -117,28 +120,23 @@
               <span class="tcolumn flex16">{{item.client_name}}</span>
               <span class="tcolumn flex6 noPad">
                 <span class="trow"
-                  v-for="(itemMa,indexMa) in item.material_info"
-                  :key="indexMa">
-                  <span class="tcolumn">{{itemMa.material_name}}</span>
-                  <span class="tcolumn">{{itemMa.price ? itemMa.price + itemMa.unit + '/元' :'/'}}</span>
-                  <span class="tcolumn">{{itemMa.number ? itemMa.number + itemMa.unit : '/'}}</span>
-                  <span class="tcolumn">{{itemMa.total_price ? itemMa.total_price + '元' : '/'}}</span>
-                  <span class="tcolumn center">{{itemMa.compiled_time.split(' ')[0]}}</span>
+                  v-for="(itemTime,indexTime) in item.time_info"
+                  :key="indexTime">
+                  <span class="tcolumn flex5 noPad">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in itemTime.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn">{{itemMa.price ? itemMa.price + itemMa.unit + '/元' :'/'}}</span>
+                      <span class="tcolumn">{{itemMa.number ? itemMa.number + itemMa.unit : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.total_price ? itemMa.total_price + '元' : '/'}}</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn center">{{$getTime(itemTime.compiled_time)}}</span>
                   <span class="tcolumn center">
-                    <el-popover placement="bottom"
-                      v-if="item.desc"
-                      width="200"
-                      trigger="click"
-                      :content="item.desc">
-                      <div class="btn noBorder noMargin"
-                        slot="reference">查看</div>
-                    </el-popover>
-                    <template v-else>暂无备注</template>
+                    <div class="btn noBorder noMargin">打印</div>
                   </span>
                 </span>
-              </span>
-              <span class="tcolumn center">
-                <div class="btn noBorder noMargin">打印</div>
               </span>
             </span>
           </div>
@@ -369,7 +367,7 @@
             <span class="tb_row">订购数量</span>
             <span class="tb_row">总价</span>
             <span class="tb_row middle">完成日期</span>
-            <span class="tb_row middle">备注</span>
+            <span class="tb_row middle">其他信息</span>
             <span class="tb_row">操作人</span>
             <span class="tb_row middle">操作</span>
           </div>
@@ -383,14 +381,17 @@
             <span class="tb_row">{{item.total_price}}元</span>
             <span class="tb_row middle">{{item.order_time.split(' ')[0]}}</span>
             <span class="tb_row middle">
-              <el-popover placement="top"
-                title="标题"
+              <!-- <el-popover placement="top"
                 width="200"
                 trigger="click"
                 :content="item.desc">
                 <span class="tb_handle_btn blue"
                   slot="reference">查看</span>
-              </el-popover>
+              </el-popover> -->
+              <el-tooltip placement="top">
+                <div slot="content">规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />属性：{{item.attribute}}<br />备注：{{item.desc}}</div>
+                <span class="tb_handle_btn blue">查看</span>
+              </el-tooltip>
             </span>
             <span class="tb_row">{{item.user_name}}</span>
             <span class="tb_row middle">
@@ -587,6 +588,7 @@ export default {
         let data = this.packOrderEdit.map(item => {
           return {
             order_id: this.$route.params.id,
+            pack_plan_id: this.activePlanId,
             order_type: 1,
             client_id: item.order_client,
             material_name: item.pack_name,
@@ -646,18 +648,34 @@ export default {
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
-        console.log(res.data.data)
         res.data.data.forEach(item => {
           let flag = this.packList.find(items => items.name === item.material_name)
           item.unit = flag ? flag.unit : '个'
-          let packFlag = this.activePlanInfo.find(items => items.pack_name === item.material_name)
-          if (packFlag) {
-            packFlag.orderNum = Number(packFlag.orderNum || 0) + Number(item.number)
-          }
+          // let packFlag = this.activePlanInfo.find(items => items.pack_name === item.material_name)
+          // if (packFlag) {
+          //   packFlag.orderNum = Number(packFlag.orderNum || 0) + Number(item.number)
+          // }
+          // let planFlag = this.planTb.find(items => items.id === item.pack_plan_id)
+          // if (planFlag) {
+          //   let packFlag = planFlag.planInfo.find(items => items.pack_name === item.material_name)
+          //   if (packFlag) {
+          //     packFlag.orderNum = Number(packFlag.orderNum || 0) + Number(item.number)
+          //   }
+          // }
+        })
+        this.planTb.forEach(itemPlan => {
+          itemPlan.planInfo.forEach(itemPack => {
+            let filterLog = res.data.data.filter(items => items.pack_plan_id === itemPlan.id && items.material_name === itemPack.pack_name).map(items => Number(items.number || 0))
+            if (filterLog.length > 0) {
+              itemPack.orderNum = filterLog.reduce((total, value) => {
+                return total + value
+              })
+            }
+          })
         })
         this.orderLog = this.$newSplice(this.$clone(res.data.data), 5)
         this.totalLog = this.orderLog.length
-        this.packOrderInfo = this.$mergeData(this.$clone(res.data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'order_time/compiled_time' }, { name: 'desc' }] } })
+        this.packOrderInfo = this.$mergeData(this.$clone(res.data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
         this.loading = false
       })
     },
@@ -680,8 +698,7 @@ export default {
     },
     querySearchPack (queryString, cb) {
       var restaurants = this.packList.map(item => { return { value: item.name } })
-      console.log(restaurants)
-      var results = queryString ? restaurants.filter(item => item.value.toLowerCase().indexOf(queryString) !== -1) : restaurants
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
     }
