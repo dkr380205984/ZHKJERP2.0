@@ -4,12 +4,12 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <div class="title">订单信息</div>
+        <span class="title hasBorder">订单信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">订单号：</span>
+            <span class="label">编号：</span>
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
           <div class="colCtn flex3">
@@ -17,8 +17,10 @@
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">下单日期：</span>
-            <span class="text">{{orderInfo.order_time}}</span>
+            <span class="label">批次信息：</span>
+            <span class="text">
+              <zh-batch :data="orderInfo.batch_info"></zh-batch>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -30,19 +32,16 @@
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
           </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">备注信息：</span>
-            <span class="text">{{orderInfo.desc}}</span>
+          <div class="colCtn flex3">
+            <span class="label">下单日期：</span>
+            <span class="text">{{orderInfo.order_time}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">批次信息：</span>
-            <span class="text">
-              <zh-batch :data='orderInfo.order_batch'></zh-batch>
-            </span>
+            <span class="label">备注信息：</span>
+            <span class="text"
+              :class="{'blue':orderInfo.desc}">{{orderInfo.desc?orderInfo.desc:'无'}}</span>
           </div>
         </div>
       </div>
@@ -52,7 +51,8 @@
         <span class="title">原料出入库</span>
       </div>
       <template v-if="materialStockInfo.length > 0">
-        <div class="detailCtn noPadding">
+        <div class="listCtn hasBorderTop"
+          style="padding:20px 0">
           <div class="swichCtn">
             <div class="swichCtnBox"
               :style="'left:' + leftNum + 'px;'"
@@ -67,10 +67,8 @@
             <span class="handleBtn right"
               @click.stop="leftNum -= 300"></span>
           </div>
-        </div>
-        <div class="listCtn">
           <div class="flexTb"
-            style="margin:0">
+            style="margin:20px 32px 0 ">
             <div class="thead">
               <span class="trow">
                 <span class="tcolumn">颜色</span>
@@ -103,6 +101,7 @@
             </div>
           </div>
           <div class="editCtn bgGary_page"
+            style="margin:20px 32px 0 32px;padding: 20px 0;"
             v-for="(itemStock,indexStock) in stockEditInfo"
             :key="indexStock">
             <span class="closeIcon_page el-icon-circle-close"
@@ -110,8 +109,7 @@
             <div class="rowCtn">
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">出入库单位</span>
-                  <!-- <span class="explanation">（必填）</span> -->
+                  <span class="text">选择单位</span>
                 </div>
                 <div class="content">
                   <el-select v-model="itemStock.client_name"
@@ -224,25 +222,24 @@
               </div>
             </div>
           </div>
-          <div class="btnCtn_page marginTop20">
-            <div class="btn btnDashed"
-              v-show="stockEditInfo.length > 0"
-              @click="resetEditInfo('stock')">
-              <div class="btn btnOrange">重置</div>
-            </div>
-            <div class="btn btnDashed bgBlue_page"
+          <div class="addRows"
+            style="margin:16px 32px 0 32px">
+            <span class="once"
               v-if="stockEditInfo.length === 0"
-              @click="addItem(stockEditInfo,'stock')">+添加出入库</div>
-            <div class="btn btnDashed"
-              v-else
-              @click="addItem(stockEditInfo,'stock')">
-              <div class="btn btnBlue">+添加出入库</div>
-            </div>
-            <div class="btn btnDashed"
-              v-show="stockEditInfo.length > 0">
-              <div class="btn btnGreen"
-                @click="saveAll('material')">保存</div>
-            </div>
+              @click="addItem(stockEditInfo,'stock')">普通出入库</span>
+            <span class="once"
+              v-if="stockEditInfo.length === 0">一键入库</span>
+            <span class="once"
+              v-if="stockEditInfo.length === 0">一键出库</span>
+            <span class="once cancle"
+              v-if="stockEditInfo.length"
+              @click="resetEditInfo('stock')">取消</span>
+            <span class="once normal"
+              v-if="stockEditInfo.length > 0"
+              @click="addItem(stockEditInfo,'stock')">添加出入库</span>
+            <span class="once ok"
+              v-if="stockEditInfo.length > 0"
+              @click="saveAll('material')">确认</span>
           </div>
         </div>
       </template>
@@ -255,21 +252,19 @@
         <span class="title">原料织造出库</span>
       </div>
       <template v-if="weaveInfo.concat(processInfo).length !== 0">
-        <div class="detailCtn">
-          <div class="swichCtn">
-            <div class="swichCtnBox"
-              :style="'left:' + leftNum2 + 'px'"
-              ref="scroll_dom2">
-              <span v-for="(itemClient,indexClient) in weaveInfo.concat(processInfo)"
-                :class="{'swich':true,'active':activeClient === itemClient.client_id}"
-                :key="indexClient + 'weave'"
-                @click="catActiveClient(itemClient.material_info,itemClient.client_id)">{{itemClient.client_name}}</span>
-            </div>
-            <span class="handleBtn left"
-              @click.stop="leftNum2 += 300"></span>
-            <span class="handleBtn right"
-              @click.stop="leftNum2 -= 300"></span>
+        <div class="swichCtn">
+          <div class="swichCtnBox"
+            :style="'left:' + leftNum2 + 'px'"
+            ref="scroll_dom2">
+            <span v-for="(itemClient,indexClient) in weaveInfo.concat(processInfo)"
+              :class="{'swich':true,'active':activeClient === itemClient.client_id}"
+              :key="indexClient + 'weave'"
+              @click="catActiveClient(itemClient.material_info,itemClient.client_id)">{{itemClient.client_name}}</span>
           </div>
+          <span class="handleBtn left"
+            @click.stop="leftNum2 += 300"></span>
+          <span class="handleBtn right"
+            @click.stop="leftNum2 -= 300"></span>
         </div>
         <div class="listCtn">
           <div class="flexTb"
@@ -658,7 +653,7 @@ export default {
             order_id: this.$route.params.id,
             client_id: item.client_name,
             material_name: item.material_name,
-            order_type: this.$route.params.type,
+            order_type: this.$route.params.orderType,
             material_color: item.material_attribute,
             total_weight: item.number,
             complete_time: item.time,
@@ -688,7 +683,7 @@ export default {
             order_id: this.$route.params.id,
             client_id: item.client_name,
             material_name: item.material_name,
-            order_type: this.$route.params.type,
+            order_type: this.$route.params.orderType,
             material_color: item.material_attribute,
             total_weight: item.number,
             complete_time: item.time,
@@ -732,26 +727,7 @@ export default {
       })
     },
     deleteItem (item, index, flag) {
-      if (!flag && (item.length < 2)) {
-        this.$message.warning('至少保留一项')
-      } else {
-        this.$confirm('此操作将删除该项, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          item.splice(index, 1)
-          this.$message({
-            type: 'success',
-            message: '已删除'
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消'
-          })
-        })
-      }
+      item.splice(index, 1)
     },
     addItem (item, type) {
       if (type === 'stock') {
@@ -881,20 +857,19 @@ export default {
       Promise.all([
         materialStock.init({
           order_id: this.$route.params.id,
-          order_type: this.$route.params.type
+          order_type: this.$route.params.orderType
         }),
         materialStock.detail({
           order_id: this.$route.params.id,
-          order_type: this.$route.params.type
+          order_type: this.$route.params.orderType
         }),
         weave.detail({
           order_id: this.$route.params.id,
-          order_type: this.$route.params.type
+          order_type: this.$route.params.orderType
         }),
         replenish.list({
           order_id: this.$route.params.id,
-          order_type: this.$route.params.type
-
+          order_type: this.$route.params.orderType
         })
       ]).then(res => {
         // 初始化原料出入库数据

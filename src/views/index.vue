@@ -97,7 +97,7 @@ export default {
           url: '/sample/sampleOrderCreate'
         }, {
           name: '样品订单列表',
-          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&client_id=&&group_id='
+          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state='
         }]
       }, {
         name: '报价管理',
@@ -133,7 +133,7 @@ export default {
           url: '/order/orderCreate'
         }, {
           name: '订单列表',
-          url: '/order/orderList/page=1&&keyword=&&date=&&client_id=&&group_id='
+          url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state='
         }, {
           name: '订单发货列表',
           url: '/order/orderStat'
@@ -142,7 +142,7 @@ export default {
         name: '物料计划生产管理',
         id: 6,
         icon: require('@/assets/image/index/计划生产管理.png'),
-        url: '/materialPlan/materialPlanList'
+        url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=/1'
       }, {
         name: '物料管理',
         id: 7,
@@ -151,11 +151,11 @@ export default {
           name: '物料预订购',
           url: '/materialOrder/materialOrderCreate'
         }, {
-          name: '物料预订购列表',
+          name: '预订购列表',
           url: '/materialOrder/materialOrderList/page=1&&keyword=&&date='
         }, {
           name: '订单物料列表',
-          url: '/material/materialList/page=1&&keyword=&&date='
+          url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
       }, {
         name: '织造加工分配',
@@ -202,15 +202,9 @@ export default {
         }]
       }, {
         name: '物料出入库管理',
-        id: 7,
+        id: 15,
         icon: require('@/assets/image/index/装箱管理.png'),
-        children: [{
-          name: '原料出入库列表',
-          url: '/materialStock/materialStockList/page=1&&keyword=&&date='
-        }, {
-          name: '辅料出入库列表',
-          url: '/materialStock/materialStockList2/page=1&&keyword=&&date='
-        }]
+        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }]
     }
   },

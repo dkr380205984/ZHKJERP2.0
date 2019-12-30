@@ -140,6 +140,55 @@
         <span class="title">简单表格样式</span>
       </div>
       <div class="detailCtn">
+        <zh-transition markId="1"
+          :list="[{
+          name:'啊啊啊啊',
+          id:1
+          },{
+          name:'顶顶顶顶顶顶顶',
+          id:2
+          },{
+          name:'反反复复烦烦烦',
+          id:3
+          },{
+          name:'水水水水水水水事实上',
+          id:4
+          },{
+          name:'她她她她她她',
+          id:5
+          }]"></zh-transition>
+        <zh-transition markId="2"
+          :list="[{
+          name:'啊啊啊啊',
+          id:1
+          },{
+          name:'顶顶顶顶顶顶顶',
+          id:2
+          },{
+          name:'反反复复烦烦烦',
+          id:3
+          },{
+          name:'水水水水水水水事实上',
+          id:4
+          },{
+          name:'她她她她她她',
+          id:5
+          },{
+          name:'啊啊啊啊',
+          id:1
+          },{
+          name:'顶顶顶顶顶顶顶',
+          id:2
+          },{
+          name:'反反复复烦烦烦',
+          id:3
+          },{
+          name:'水水水水水水水事实上',
+          id:4
+          },{
+          name:'她她她她她她',
+          id:5
+          }]"></zh-transition>
         <div class="normalTb">
           <div class="thead">
             <div class="trow">
@@ -261,7 +310,15 @@
 </template>
 <script>
 export default {
+  data () {
+    return {
+      translate: 0,
+      translateFlag: false
+    }
+  },
+  mounted () {
 
+  }
 }
 </script>
 <style lang="less" scoped>

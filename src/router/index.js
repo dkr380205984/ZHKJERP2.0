@@ -156,7 +156,7 @@ const routes = [
       name: '物料计划单详情',
       component: () => import('../views/materialPlan/materialPlanDetail.vue')
     }, {
-      path: '/materialPlan/materialPlanList',
+      path: '/materialPlan/materialPlanList/:params/:type',
       name: '物料计划单列表',
       component: () => import('../views/materialPlan/materialPlanList.vue')
     }, {
@@ -176,29 +176,25 @@ const routes = [
       name: '物料预订购列表',
       component: () => import('../views/materialOrder/materialOrderList.vue')
     }, {
-      path: '/material/materialDetail/:id/:type',
+      path: '/material/materialDetail/:id/:type/:orderType',
       name: '物料订购',
       component: () => import('../views/material/materialDetail.vue')
     }, {
-      path: '/material/materialList/:params',
+      path: '/material/materialList/:params/:type',
       name: '物料订购列表',
       component: () => import('../views/material/materialList.vue')
     }, {
-      path: '/materialStock/materialStockList/:params',
-      name: '原料出入库列表',
+      path: '/materialStock/materialStockList/:params/:type',
+      name: '物料出入库列表',
       component: () => import('../views/materialStock/materialStockList.vue')
     }, {
-      path: '/materialStock/materialStockList2/:params',
-      name: '辅料出入库列表',
-      component: () => import('../views/materialStock/materialStockList2.vue')
-    }, {
-      path: '/materialStock/materialStockDetail/:id/:type',
-      name: '原料出入库详情',
+      path: '/materialStock/materialStockDetail/:id/:type/:orderType',
+      name: '物料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
-      path: '/materialStock/materialStockDetail2/:id/:type',
+      path: '/materialStock/materialStockDetail/:id/:type',
       name: '辅料出入库详情',
-      component: () => import('../views/materialStock/materialStockDetail2.vue')
+      component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
       path: '/weavingProcessing/weavingDetail/:id',
       name: '织造分配详情',
@@ -359,10 +355,8 @@ router.beforeEach((to, from, next) => {
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
     '系统设置': ['织为云', '系统设置'],
-    '原料出入库列表': ['织为云', '原料出入库列表'],
-    '原料出入库详情': ['织为云', '原料出入库列表', '原料出入库详情'],
-    '辅料出入库列表': ['织为云', '辅料出入库列表'],
-    '辅料出入库详情': ['织为云', '辅料出入库列表', '辅料出入库详情'],
+    '物料出入库列表': ['织为云', '物料出入库列表'],
+    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
     '织造分配列表': ['织为云', '织造分配列表'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],

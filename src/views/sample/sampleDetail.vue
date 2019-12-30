@@ -281,7 +281,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">配件名称：</span>
-            <span class="text">{{item.part_title}}</span>
+            <span class="text">{{item.name}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">配件成分：</span>
