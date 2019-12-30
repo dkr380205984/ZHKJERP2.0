@@ -4,7 +4,7 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">订单信息</span>
+        <span class="title hasBorder">{{$route.params.type==='1'?'订':'样'}}单信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -13,8 +13,14 @@
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">订单公司：</span>
+            <span class="label">{{$route.params.type==='1'?'订':'样'}}单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">批次信息：</span>
+            <span class="text">
+              <zh-batch :data="orderInfo.batch_info"></zh-batch>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -34,7 +40,8 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">备注信息：</span>
-            <span class="text">{{orderInfo.desc}}</span>
+            <span class="text"
+              :class="{'blue':orderInfo.desc}">{{orderInfo.desc?orderInfo.desc:'无'}}</span>
           </div>
         </div>
       </div>
@@ -97,6 +104,12 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">所需物料</span>
+        <div class="positionBtn">
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1&proId=' + activeProId)">打印原料单</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2&proId=' + activeProId)">打印辅料单</div>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="swichCtn">
@@ -114,12 +127,6 @@
             @click.stop="leftNum -= 300"></span>
         </div>
         <div class="normalTb">
-          <div class="positionBtn">
-            <div class="btn btnWhiteBlue"
-              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1&proId=' + activeProId)">打印原料单</div>
-            <div class="btn btnWhiteBlue"
-              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2&proId=' + activeProId)">打印辅料单</div>
-          </div>
           <div class="thead">
             <span class="trow">
               <span class="tcolumn">物料名称</span>
@@ -146,15 +153,15 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">物料统计</span>
+        <div class="positionBtn">
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2')">打印辅料单</div>
+        </div>
       </div>
       <div class="detailCtn paddingTop60">
         <div class="flexTb">
-          <div class="positionBtn">
-            <div class="btn btnWhiteBlue"
-              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
-            <div class="btn btnWhiteBlue"
-              @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2')">打印辅料单</div>
-          </div>
           <div class="thead">
             <span class="trow">
               <span class="tcolumn">物料名称</span>

@@ -1160,7 +1160,7 @@ export default {
       this.stock_data.forEach((item) => {
         item.stock.forEach((itemChild) => {
           stockData.push({
-            order_type: 1,
+            order_type: this.$route.params.orderType,
             material_name: itemChild.name,
             color_code: itemChild.color,
             weight: itemChild.weight,
@@ -1173,7 +1173,7 @@ export default {
             desc: item.desc
           })
           orderData.push({
-            order_type: 1,
+            order_type: this.$route.params.orderType,
             desc: item.desc,
             complete_time: this.$getTime(),
             total_price: 0,
@@ -1286,7 +1286,7 @@ export default {
       }
       let formData = this.$flatten(this.order_data).map((item) => {
         return {
-          order_type: 1,
+          order_type: this.$route.params.orderType,
           desc: item.desc,
           complete_time: item.complete_time,
           total_price: 0,
@@ -1459,7 +1459,7 @@ export default {
       this.process_data.forEach((item) => {
         item.processList.forEach((itemChild) => {
           formData.push({
-            order_type: 1,
+            order_type: this.$route.params.orderType,
             process_type: itemChild.process.join('/'),
             type: this.type,
             order_id: this.$route.params.id,
@@ -1544,17 +1544,17 @@ export default {
       id: this.$route.params.id
     }), materialPlan.detail({
       order_id: this.$route.params.id,
-      order_type: 1, // 区分订单和样单
+      order_type: this.$route.params.orderType, // 区分订单和样单
       material_type: this.$route.params.type
     }), client.list(),
     yarnColor.list(), yarn.list(),
     materialManage.detail({
-      order_type: 1,
+      order_type: this.$route.params.orderType,
       order_id: this.$route.params.id
     }), materialManage.init({
       order_id: this.$route.params.id
     }), process.list(), materialProcess.detail({
-      order_type: 1,
+      order_type: this.$route.params.orderType,
       order_id: this.$route.params.id
     }), replenish.list({
       order_id: this.$route.params.id

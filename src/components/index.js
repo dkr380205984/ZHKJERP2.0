@@ -5,6 +5,7 @@ import zhCard from './zhCard/zhCard.vue'
 import zhCardPosition from './zhCardPosition/zhCardPosition.vue'
 import colorPicker from './colorPicker/colorPicker.vue'
 import zhBatch from './zhBatch/zhBatch.vue'
+import zhTransition from './zhTransition/zhTransition.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -14,5 +15,6 @@ export default {
     vue.component('zhCardPosition', zhCardPosition)
     vue.component('colorPicker', colorPicker)
     vue.component('zhBatch', zhBatch)
+    vue.component('zhTransition', zhTransition)
   }
 }

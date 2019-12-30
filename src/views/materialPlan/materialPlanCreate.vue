@@ -4,12 +4,12 @@
     v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">订单信息</span>
+        <span class="title hasBorder">{{$route.params.type==='1'?'订':'样'}}单信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">订单号：</span>
+            <span class="label">{{$route.params.type==='1'?'订':'样'}}单号：</span>
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
           <div class="colCtn flex3">

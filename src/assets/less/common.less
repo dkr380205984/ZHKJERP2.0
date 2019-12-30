@@ -336,33 +336,6 @@
           }
         }
       }
-      .swichCtn{
-        padding: 0 32px;
-        margin-top: 18px;
-        line-height: 64px;
-        margin-bottom: -22px;
-        border-top: 16px solid #F0F2F5;
-        .swich{
-          cursor: pointer;
-          margin: 0 16px;
-          border-bottom: 2px solid transparent;
-          display: inline-block;
-          font-size: @fontBig;
-          color:@font65;
-          letter-spacing: 1px;
-          &:nth-child(1){
-            margin-left: 0;
-          }
-          &.active{
-            color: @blue;
-            border-color: @blue;
-          }
-        }
-        .btn{
-          float: right;
-          margin: 16px 0;
-        }
-      }
     }
     // 列表页公共样式
     .listCtn{
@@ -388,6 +361,10 @@
             width:190px;
             margin-right: 16px;
           }
+        }
+        .rightCtn{
+          display: flex;
+          align-items: center;
         }
       }
       .list{
@@ -494,14 +471,6 @@
                 margin-right: 8px;
               }
             }
-            &.green{
-              .state{
-                background:#01B48C ;
-              }
-              .name{
-                color: #01B48C;
-              }
-            }
             &.blue{
               .state{
                 background:@blue;
@@ -524,6 +493,14 @@
               }
               .name{
                 color: @orange;
+              }
+            }
+            &.green{
+              .state{
+                background:#01B48C ;
+              }
+              .name{
+                color: #01B48C;
               }
             }
             .state{
@@ -570,6 +547,41 @@
         border-top: 1px solid #E9E9E9;
       }
 
+    }
+  }
+  // 切换组件
+  .swichCtn{
+    padding: 0 32px;
+    margin-top: 18px;
+    line-height: 64px;
+    margin-bottom: -22px;
+    border-top: 16px solid #F0F2F5;
+    .swich{
+      cursor: pointer;
+      padding: 0 16px;
+      display: inline-block;
+      font-size: @fontBig;
+      color:@font65;
+      position: relative;
+      &:nth-child(1){
+        margin-left: 0;
+      }
+      &.active{
+        color: @blue;
+        &::after{
+          content:'';
+          position: absolute;
+          left:16px;
+          right: 16px;
+          height: 2px;
+          background: @blue;
+          bottom: 0px;
+        }
+      }
+    }
+    .btn{
+      float: right;
+      margin: 16px 0;
     }
   }
   // 底部操作栏
@@ -980,16 +992,16 @@
             border-radius: 50%;
             margin-right: 8px;
           }
-          &.orange{
-            color: @orange;
-            &::before{
-              background: @orange;
-            }
-          }
           &.green{
             color: @green;
             &::before{
               background: @green;
+            }
+          }
+          &.orange{
+            color: @orange;
+            &::before{
+              background: @orange;
             }
           }
           &.red{
