@@ -13,7 +13,7 @@
           :class="[{'active':activeIndex===index},'translationList' + id]"
           v-for="(item,index) in list"
           :key="index"
-          @click="choosed(item,index)">{{item.name}}</div>
+          @click="choosed(item,index)">{{item[showKey]}}</div>
       </div>
       <div class="clickBtn atRight"
         @click="scrollRight"
@@ -31,6 +31,10 @@ export default {
     list: {
       type: Array,
       required: true
+    },
+    showKey: {
+      type: String,
+      default: 'name'
     },
     defautChoose: {
       type: Number

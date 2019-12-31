@@ -573,7 +573,8 @@
                     <div class="tcolumn">{{item.group}}</div>
                     <div class="tcolumn">{{item.station_name}}</div>
                     <div class="tcolumn flexRow">
-                      <span class="blue">修改</span>
+                      <span class="blue"
+                        @click="changeAuth(item)">修改</span>
                       <span class="border"></span>
                       <span class="red">禁用</span>
                     </div>
@@ -1630,6 +1631,15 @@ export default {
     }
   },
   methods: {
+    // 修改用户账号信息
+    changeAuth (item) {
+      this.showPopup = true
+      let authInfo = this.$clone(item)
+      delete authInfo.company_id
+      delete authInfo.create_time
+      delete authInfo.group
+      this.authInfo = authInfo
+    },
     getProductType () {
       productType.list().then((res) => {
         this.productTypeArr = res.data.data.map((item) => {
