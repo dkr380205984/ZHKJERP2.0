@@ -65,7 +65,6 @@
                       <div class="tcolumn">尺码颜色</div>
                       <div class="tcolumn">织造数量</div>
                       <div class="tcolumn">检验数量</div>
-                      <div class="tcolumn">截止日期</div>
                       <div class="tcolumn">操作</div>
                     </div>
                   </div>
@@ -89,7 +88,6 @@
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn"
                         :class="{'green':itemChild.inspectionNum>=itemChild.number,'orange':itemChild.inspectionNum<itemChild.number}">{{itemChild.inspectionNum}}</div>
-                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
@@ -317,7 +315,7 @@
                   <div class="tcolumn"
                     style="flex:1.5">{{item.client_name}}</div>
                   <div class="tcolumn"
-                    style="flex:1.5">产品名称</div>
+                    style="flex:1.5">{{item.product_name}}</div>
                   <div class="tcolumn"
                     style="flex:1.2">{{item.size + '/' + item.color}}</div>
                   <div class="tcolumn">{{item.number}}</div>
@@ -330,9 +328,9 @@
                       @click="rejectsDetail(item.rejects_info)">有次品(查看)</span>
                   </div>
                   <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">操作人</div>
+                  <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn">
-                    <span class="red"
+                    <span style="cursor:pointer;color:#F5222D"
                       @click="deleteLog(item.id,index)">删除</span>
                   </div>
                 </div>
@@ -532,6 +530,7 @@ export default {
             count: itemChild.count,
             number: itemChild.number,
             rejects_info: JSON.stringify(itemChild.substandard),
+            complete_time: item.date,
             desc: item.desc
           })
         })
@@ -616,7 +615,16 @@ export default {
       order_type: 1
     })]).then((res) => {
       this.orderInfo = res[0].data.data
-      this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      let mergeData = []
+      res[1].data.data.forEach((item) => {
+        let finded = mergeData.find((itemFind) => itemFind.size === item.size && itemFind.color === item.color && itemFind.product_info.code === item.product_info.code && itemFind.client_id === item.client_id)
+        if (finded) {
+          finded.number += item.number
+        } else {
+          mergeData.push(item)
+        }
+      })
+      this.weave_detail = this.$mergeData(mergeData, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       this.inspection_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
@@ -636,6 +644,7 @@ export default {
           item.rejects_info = 0
         }
       })
+      console.log(this.weave_detail)
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inspectionNum = this.inspection_log.filter((itemFilter) => {

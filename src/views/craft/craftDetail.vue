@@ -81,14 +81,10 @@
                 <span>{{item.product_color}}：</span>
                 <div class="colorBox"
                   v-for="(itemColor,indexColor) in item.color_scheme"
-                  :key="indexColor"
-                  :style="{'background':itemColor.value}">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="itemColor.name"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(indexColor)}}</span>
-                  </el-tooltip>
+                  :key="indexColor">
+                  <span class="colorText"
+                    :style="{'background':itemColor.value}">{{filterMethods(indexColor)}}</span>
+                  <span class="name">{{itemColor.name}}</span>
                 </div>
               </div>
             </div>
@@ -102,12 +98,8 @@
               <div class="colorBox"
                 v-for="(item,index) in yarn.yarnWarp.apply"
                 :key="index">
-                <el-tooltip class="item"
-                  effect="dark"
-                  :content="colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'"
-                  placement="top">
-                  <span class="colorText">{{filterMethods(item)}}</span>
-                </el-tooltip>
+                <span class="colorText">{{filterMethods(index)}}</span>
+                <span class="name">{{colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'}}</span>
               </div>
             </div>
           </div>
@@ -425,14 +417,10 @@
                 <span>{{item.product_color}}：</span>
                 <div class="colorBox"
                   v-for="(itemColor,indexColor) in item.color_scheme"
-                  :key="indexColor"
-                  :style="{'background':itemColor.value}">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="itemColor.name"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(indexColor)}}</span>
-                  </el-tooltip>
+                  :key="indexColor">
+                  <span class="colorText"
+                    :style="{'background':itemColor.value}">{{filterMethods(indexColor)}}</span>
+                  <span class="name">{{itemColor.name}}</span>
                 </div>
               </div>
             </div>
@@ -446,12 +434,8 @@
               <div class="colorBox"
                 v-for="(item,index) in yarn.yarnWeft.apply"
                 :key="index">
-                <el-tooltip class="item"
-                  effect="dark"
-                  :content="colorWeight.weft[item]==='NaN'?'0g':colorWeight.weft[item] + 'g'"
-                  placement="top">
-                  <span class="colorText">{{filterMethods(item)}}</span>
-                </el-tooltip>
+                <span class="colorText">{{filterMethods(index)}}</span>
+                <span class="name">{{colorWeight.weft[item]==='NaN'?'0g':colorWeight.weft[item] + 'g'}}</span>
               </div>
             </div>
           </div>

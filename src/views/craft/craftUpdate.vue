@@ -69,24 +69,36 @@
               <span class="text">配色方案</span>
               <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <el-select v-model="item.value"
-                class="element">
-              </el-select>
+            <div class="content"
+              style="height:auto">
+              <div style="height:32px;display:inline-block">
+                <el-select v-model="item.value"
+                  class="element"
+                  style="margin-bottom:16px">
+                  <el-option v-for="item in colourArr"
+                    :key="item.id"
+                    :label="item.color_name"
+                    :value="item.color_name"></el-option>
+                </el-select>
+              </div>
               <div class="editBtn"
+                style="margin-bottom:16px;margin-right:16px"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
-              <color-picker v-for="(itemColor,indexColor) in item.colorWarp"
+              <color-picker style="margin-bottom:16px"
+                v-for="(itemColor,indexColor) in item.colorWarp"
                 :key="'color' + indexColor"
                 v-model="item.colorWarp[indexColor]"
                 :content="filterMethods(indexColor)"
                 :colorArr="colorArr">
               </color-picker>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="addColor('colorWarp')"><i class="el-icon-plus"></i></div>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="deleteColor('colorWarp')"><i class="el-icon-minus"></i></div>
             </div>
           </div>
@@ -758,24 +770,36 @@
               <span class="text">配色方案</span>
               <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <el-select v-model="item.value"
-                class="element">
-              </el-select>
+            <div class="content"
+              style="height:auto">
+              <div style="height:32px;display:inline-block">
+                <el-select v-model="item.value"
+                  class="element"
+                  style="margin-bottom:16px">
+                  <el-option v-for="item in colourArr"
+                    :key="item.id"
+                    :label="item.color_name"
+                    :value="item.color_name"></el-option>
+                </el-select>
+              </div>
               <div class="editBtn"
+                style="margin-bottom:16px;margin-right:16px"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
-              <color-picker v-for="(itemColor,indexColor) in item.colorWeft"
+              <color-picker style="margin-bottom:16px"
+                v-for="(itemColor,indexColor) in item.colorWeft"
                 :key="indexColor + (itemColor.color?itemColor.color:0)"
                 v-model="item.colorWeft[indexColor]"
                 :content="filterMethods(indexColor)"
                 :colorArr="colorArr">
               </color-picker>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="addColor('colorWeft')"><i class="el-icon-plus"></i></div>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="deleteColor('colorWeft')"><i class="el-icon-minus"></i></div>
             </div>
           </div>
@@ -1048,6 +1072,7 @@ export default {
         size: [],
         name: ''
       },
+      colourArr: [],
       methodArr: [],
       method: '',
       sideArr: [],
@@ -2494,6 +2519,7 @@ export default {
       this.commonPMArr = res[4].data.data
       let data = res[5].data.data
       this.productInfo = data.product_info
+      this.colourArr = this.productInfo.color
       this.craftId = data.id
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data

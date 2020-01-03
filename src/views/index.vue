@@ -4,7 +4,7 @@
       <div class="navCtn">
         <div class="leftCtn">
           <div class="companyCtn"
-            @click="$router.push('/index')">
+            @click="$router.push('/homePage/homePage')">
             <div class="logo"></div>
             <div class="name">{{companyName}}</div>
           </div>
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import Pusher from 'pusher-js' // 全局方法
 import { logout } from '@/assets/js/api.js'
 export default {
   data () {
@@ -172,12 +173,12 @@ export default {
         name: '产品收发管理',
         id: 9,
         icon: require('@/assets/image/index/收发管理.png'),
-        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&type='
+        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
       }, {
         name: '产品检验管理',
         id: 10,
         icon: require('@/assets/image/index/检验管理.png'),
-        url: '/inspection/inspectionList/page=1&&keyword=&&type='
+        url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
       }, {
         name: '库存管理',
         id: 12,
@@ -256,6 +257,23 @@ export default {
         }
       }
     }
+  },
+  mounted () {
+    let vue = this
+    let pusher = new Pusher('117b8da677e144ce8212', {
+      cluster: 'ap1',
+      forceTLS: true
+    })
+    let channel = pusher.subscribe('my-channel-' + window.sessionStorage.getItem('user_id'))
+    channel.bind('my-event', function (data) {
+      console.log('消息通知接收', data)
+      vue.$notify({
+        title: data.content.title,
+        dangerouslyUseHTMLString: true,
+        duration: 0,
+        message: data.content.content + '<a style="color:#1a95ff" href=' + data.content.router_url + '>(点击查看)</a>'
+      })
+    })
   }
 }
 </script>

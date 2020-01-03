@@ -36,8 +36,12 @@
                   <div class="trow"
                     v-for="(itemPro,indexPro) in item.product_info"
                     :key="indexPro">
-                    <div class="tcolumn">产品编号</div>
-                    <div class="tcolumn">产品图片</div>
+                    <div class="tcolumn">{{itemPro.product_code}}</div>
+                    <div class="tcolumn">
+                      <div class="col middle">
+                        <zh-img-list :list="itemPro.image"></zh-img-list>
+                      </div>
+                    </div>
                     <div class="tcolumn">{{itemPro.size_name}}/{{itemPro.color_name}}</div>
                     <div class="tcolumn">{{itemPro.numbers}}</div>
                   </div>

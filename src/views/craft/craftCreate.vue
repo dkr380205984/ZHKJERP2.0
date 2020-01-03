@@ -76,6 +76,8 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">原料经向</span>
+        <span class="floatRight"
+          @click="designData.warp.flag=true">设计模式</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn"
@@ -87,28 +89,36 @@
               <span class="text">配色方案</span>
               <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <el-select v-model="item.value"
-                class="element">
-                <el-option v-for="item in colourArr"
-                  :key="item.id"
-                  :label="item.color_name"
-                  :value="item.color_name"></el-option>
-              </el-select>
+            <div class="content"
+              style="height:auto">
+              <div style="height:32px;display:inline-block">
+                <el-select v-model="item.value"
+                  class="element"
+                  style="margin-bottom:16px">
+                  <el-option v-for="item in colourArr"
+                    :key="item.id"
+                    :label="item.color_name"
+                    :value="item.color_name"></el-option>
+                </el-select>
+              </div>
               <div class="editBtn"
+                style="margin-bottom:16px;margin-right:16px"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
-              <color-picker v-for="(itemColor,indexColor) in item.colorWarp"
+              <color-picker style="margin-bottom:16px"
+                v-for="(itemColor,indexColor) in item.colorWarp"
                 :key="'color' + indexColor"
                 v-model="item.colorWarp[indexColor]"
                 :content="filterMethods(indexColor)"
                 :colorArr="colorArr">
               </color-picker>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="addColor('colorWarp')"><i class="el-icon-plus"></i></div>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="deleteColor('colorWarp')"><i class="el-icon-minus"></i></div>
             </div>
           </div>
@@ -496,6 +506,8 @@
                 class="deltaCtn">
                 <div class="leftCtn">
                   <span>{{index2+1}}</span>
+                  <div class="copyBtn"
+                    @click="copyGL(index1,index2)">复制</div>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"
@@ -772,6 +784,8 @@
         <span class="title">原料纬向</span>
         <span class="opr"
           @click="synchro">同步经向配色和原料</span>
+        <span class="floatRight"
+          @click="designData.weft.flag=true">设计模式</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn"
@@ -783,24 +797,36 @@
               <span class="text">配色方案</span>
               <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <el-select v-model="item.value"
-                class="element">
-              </el-select>
+            <div class="content"
+              style="height:auto">
+              <div style="height:32px;display:inline-block">
+                <el-select v-model="item.value"
+                  class="element"
+                  style="margin-bottom:16px">
+                  <el-option v-for="item in colourArr"
+                    :key="item.id"
+                    :label="item.color_name"
+                    :value="item.color_name"></el-option>
+                </el-select>
+              </div>
               <div class="editBtn"
+                style="margin-bottom:16px;margin-right:16px"
                 :class="{'addBtn':index===0,'deleteBtn':index>0}"
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
-              <color-picker v-for="(itemColor,indexColor) in item.colorWeft"
+              <color-picker style="margin-bottom:16px"
+                v-for="(itemColor,indexColor) in item.colorWeft"
                 :key="indexColor + (itemColor.color?itemColor.color:0)"
                 v-model="item.colorWeft[indexColor]"
                 :content="filterMethods(indexColor)"
                 :colorArr="colorArr">
               </color-picker>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="addColor('colorWeft')"><i class="el-icon-plus"></i></div>
               <div class="specialBtn"
+                style="margin-bottom:16px"
                 @click="deleteColor('colorWeft')"><i class="el-icon-minus"></i></div>
             </div>
           </div>
@@ -1035,6 +1061,299 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="submit">提交</div>
+        </div>
+      </div>
+    </div>
+    <!-- 设计模式弹窗 -->
+    <div class="popup"
+      v-show="designData.warp.flag">
+      <div class="main">
+        <div class="title">
+          <div class="text">经向设计</div>
+          <i class="el-icon-close"
+            @click="designData.warp.flag=false"></i>
+        </div>
+        <div class="content">
+          <div class="info"
+            v-show="!designData.warp.ifDouble">
+            提示：1.设计模式的信息会覆盖经向表格的信息 2.设计模式的主夹信息来源于配色方案，如果选不到主夹请先填写完整配色方案信息 3.经密通过填写必要信息计算得到，经密为0时，填写厘米数无法自动计算出根数
+          </div>
+          <div class="info"
+            v-show="!designData.warp.ifDouble">
+            公式：1.经密 = 1厘米 / 筘系数5.08 * 筘号 * 穿筘法 2.根数 = 厘米数 * 缩率 * 经密
+          </div>
+          <div class="line1">
+            <div class="box">
+              <div class="label">缩率</div>
+              <div class="inputs">
+                <zh-input placeholder="输入缩率"
+                  v-model="designData.warp.rate"
+                  type="number">
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">穿筘法</div>
+              <div class="inputs">
+                <zh-input placeholder="输入穿筘法"
+                  v-model="designData.warp.reed_method"
+                  type="number">
+                  <template slot="append">根/筘</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">筘号</div>
+              <div class="inputs">
+                <zh-input placeholder="输入筘号"
+                  v-model="designData.warp.reed"
+                  type="number">
+                  <template slot="append">筘</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">筘系数</div>
+              <div class="inputs">
+                <zh-input placeholder="输入筘系数"
+                  v-model="designData.warp.xishu"
+                  type="number">
+                </zh-input>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">经密</div>
+              <div class="inputs">
+                <el-input placeholder="计算值"
+                  v-model="jingmi"
+                  disabled>
+                  <template slot="append">根/cm</template>
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <div class="line2">
+            <div class="label">经向排列</div>
+            <i class="sliderCtn">
+              <span class="text"
+                @click="designData.warp.ifDouble=false"
+                :class="{'active':!designData.warp.ifDouble}">单</span>
+              <span class="text"
+                @click="designData.warp.ifDouble=true"
+                :class="{'active':designData.warp.ifDouble}">双</span>
+            </i>
+            <zh-input v-model="designData.warp.insertNumber"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="addCol('warpTable')">插入</div>
+            <zh-input v-model="designData.warp.invertedOrder1"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <span style="color:#E9E9E9;margin:0 6px">~</span>
+            <zh-input v-model="designData.warp.invertedOrder2"
+              type="number"
+              class="element"
+              style="margin-left:0"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="invertedCol('warpTable')">倒序一遍</div>
+            <div class="btn btnGray"
+              @click="clearTable('warpTable')">重置</div>
+          </div>
+          <div class="hotTable">
+            <hot-table :settings="designData.warp.table"
+              ref="warpTable"></hot-table>
+          </div>
+          <div class="line2"
+            v-show="designData.warp.ifDouble">
+            <div class="label">经向反面</div>
+            <i class="sliderCtn">
+              <span class="text"
+                @click="designData.warp.ifDouble=false"
+                :class="{'active':!designData.warp.ifDouble}">单</span>
+              <span class="text"
+                @click="designData.warp.ifDouble=true"
+                :class="{'active':designData.warp.ifDouble}">双</span>
+            </i>
+            <zh-input v-model="designData.warp.insertNumberBack"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="addCol('warpTableBack')">插入</div>
+            <zh-input v-model="designData.warp.invertedOrderBack1"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <span style="color:#E9E9E9;margin:0 6px">~</span>
+            <zh-input v-model="designData.warp.invertedOrderBack2"
+              type="number"
+              class="element"
+              style="margin-left:0"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="invertedCol('warpTableBack')">倒序一遍</div>
+            <div class="btn btnGray"
+              @click="clearTable('warpTableBack')">重置</div>
+          </div>
+          <div class="hotTable"
+            v-show="designData.warp.ifDouble">
+            <hot-table :settings="designData.warp.tableBack"
+              ref="warpTableBack"></hot-table>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="designData.warp.flag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="cover('warp')">确认</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-show="designData.weft.flag">
+      <div class="main">
+        <div class="title">
+          <div class="text">纬向设计</div>
+          <i class="el-icon-close"
+            @click="designData.weft.flag=false"></i>
+        </div>
+        <div class="content">
+          <div class="info"
+            v-show="!designData.weft.ifDouble">
+            提示：1.设计模式的信息会覆盖纬向表格的信息 2.设计模式的主夹信息来源于配色方案，如果选不到主夹请先填写完整配色方案信息 3.纬密未填写时，填写厘米数无法自动计算出根数
+          </div>
+          <div class="info"
+            v-show="!designData.weft.ifDouble">
+            公式：1.根数 = 厘米数 * 缩率 *纬密
+          </div>
+          <div class="line1">
+            <div class="box">
+              <div class="label">缩率</div>
+              <div class="inputs">
+                <zh-input placeholder="输入缩率"
+                  v-model="designData.weft.rate"
+                  type="number">
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="box">
+              <div class="label">纬密</div>
+              <div class="inputs">
+                <el-input placeholder="请输入纬密"
+                  v-model="designData.weft.weimi">
+                  <template slot="append">根/cm</template>
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <div class="line2">
+            <div class="label">纬向排列</div>
+            <i class="sliderCtn">
+              <span class="text"
+                @click="designData.weft.ifDouble=false"
+                :class="{'active':!designData.weft.ifDouble}">单</span>
+              <span class="text"
+                @click="designData.weft.ifDouble=true"
+                :class="{'active':designData.weft.ifDouble}">双</span>
+            </i>
+            <zh-input v-model="designData.weft.insertNumber"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="addCol('weftTable')">插入</div>
+            <zh-input v-model="designData.weft.invertedOrder1"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <span style="color:#E9E9E9;margin:0 6px">~</span>
+            <zh-input v-model="designData.weft.invertedOrder2"
+              type="number"
+              class="element"
+              style="margin-left:0"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="invertedCol('weftTable')">倒序一遍</div>
+            <div class="btn btnGray"
+              @click="clearTable('weftTable')">重置</div>
+          </div>
+          <div class="hotTable">
+            <hot-table :settings="designData.weft.table"
+              ref="weftTable"></hot-table>
+          </div>
+          <div class="line2"
+            v-show="designData.weft.ifDouble">
+            <div class="label">经向反面</div>
+            <i class="sliderCtn">
+              <span class="text"
+                @click="designData.weft.ifDouble=false"
+                :class="{'active':!designData.weft.ifDouble}">单</span>
+              <span class="text"
+                @click="designData.weft.ifDouble=true"
+                :class="{'active':designData.weft.ifDouble}">双</span>
+            </i>
+            <zh-input v-model="designData.weft.insertNumberBack"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="addCol('weftTableBack')">插入</div>
+            <zh-input v-model="designData.weft.invertedOrderBack1"
+              type="number"
+              class="element"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <span style="color:#E9E9E9;margin:0 6px">~</span>
+            <zh-input v-model="designData.weft.invertedOrderBack2"
+              type="number"
+              class="element"
+              style="margin-left:0"
+              placeholder="请输入列数">
+              <template slot="append">列</template>
+            </zh-input>
+            <div class="btn btnBlue"
+              @click="invertedCol('weftTableBack')">倒序一遍</div>
+            <div class="btn btnGray"
+              @click="clearTable('weftTableBack')">重置</div>
+          </div>
+          <div class="hotTable"
+            v-show="designData.weft.ifDouble">
+            <hot-table :settings="designData.weft.tableBack"
+              ref="weftTableBack"></hot-table>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="designData.weft.flag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="cover('weft')">确认</div>
         </div>
       </div>
     </div>
@@ -1649,7 +1968,388 @@ export default {
       desc: '',
       // 导入工艺单数据
       gyd: '',
-      gydArr: []
+      gydArr: [],
+      // 设计模式数据
+      designData: {
+        weft: {
+          flag: false,
+          rate: 100,
+          weimi: '',
+          ifDouble: false,
+          insertNumber: '',
+          invertedOrder1: '',
+          invertedOrder2: '',
+          insertNumberBack: '',
+          invertedOrderBack1: '',
+          invertedOrderBack2: '',
+          table: {
+            data: [
+              [1],
+              [null],
+              [null],
+              [null],
+              [null],
+              [null]
+            ],
+            rowHeaders: (index) => {
+              let headerArr = ['序号', '主/夹', '厘米数', '根数', '合并项', '合并项']
+              return `<div style="height:38px;line-height:38px;color:rgba(0,0,0,0.65);display:table-row">${headerArr[index]}</div>`
+            },
+            rowHeaderWidth: 80,
+            minCols: 1,
+            autoColumnSize: true, // 自适应宽度
+            cells: (row, col, prop) => {
+              var cellProperties = {}
+              if (row === 0) {
+                cellProperties.readOnly = true
+              }
+              if (row === 1) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.weftJia.map(item => item.label)
+              }
+              if (row === 6) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.PMArr
+              }
+              cellProperties.renderer = function (instance, td, row, col, prop, value, cellProperties) {
+                // 清空节点并重新渲染
+                Handsontable.dom.empty(td)
+                let node = document.createElement('DIV')
+                let CSS = td.style
+                node.innerText = value
+                td.appendChild(node)
+                // 设置样式
+                CSS.color = 'rgba(0,0,0,0.65)'
+                CSS.width = '38px'
+                CSS.height = '38px'
+                CSS.lineHeight = '38px'
+                CSS.textAlign = 'center'
+                if (row === 0) {
+                  CSS.background = '#E9E9E9'
+                }
+                return td
+              }
+              return cellProperties
+            },
+            contextMenu: [
+              'mergeCells', // 合并单元格菜单
+              'col_right',
+              'col_left',
+              'copy',
+              '粘贴(Ctrl + V)',
+              'undo',
+              'redo',
+              'remove_col'
+            ],
+            className: 'handsontable',
+            number: 1,
+            afterCreateCol: (index, amount) => {
+              this.designData.weft.table.number++
+              for (let i = 0; i < this.designData.weft.table.number; i++) {
+                this.designData.weft.table.data[0][i] = i + 1
+              }
+            },
+            afterRemoveCol: (index, amount) => {
+              this.designData.weft.table.number--
+              for (let i = 0; i < this.designData.weft.table.number; i++) {
+                this.designData.weft.table.data[0][i] = i + 1
+              }
+            },
+            afterChange: (changes, opt) => {
+              // 计算根数
+              if (opt === 'edit') {
+                let change = changes[0]
+                if (change[0] === 2) {
+                  this.$set(this.designData.weft.table.data[3], change[1], Math.round(change[3] * this.designData.weft.rate * this.designData.weft.weimi / 100))
+                  this.$refs.weftTable.hotInstance.setDataAtCell([[3, change[1], Math.round(change[3] * this.designData.weft.rate * this.designData.weft.weimi / 100)]])
+                }
+              }
+            },
+            licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
+            mergeCells: true,
+            width: '100%',
+            height: 250
+          },
+          tableBack: {
+            data: [
+              [1],
+              [null],
+              [null],
+              [null],
+              [null],
+              [null]
+            ],
+            rowHeaders: (index) => {
+              let headerArr = ['序号', '主/夹', '厘米数', '根数', '合并项', '合并项']
+              return `<div style="height:38px;line-height:38px;color:rgba(0,0,0,0.65);display:table-row">${headerArr[index]}</div>`
+            },
+            rowHeaderWidth: 80,
+            minCols: 1,
+            autoColumnSize: true, // 自适应宽度
+            cells: (row, col, prop) => {
+              var cellProperties = {}
+              if (row === 0) {
+                cellProperties.readOnly = true
+              }
+              if (row === 1) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.weftJia.map(item => item.label)
+              }
+              if (row === 6) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.PMArr
+              }
+              cellProperties.renderer = function (instance, td, row, col, prop, value, cellProperties) {
+                // 清空节点并重新渲染
+                Handsontable.dom.empty(td)
+                let node = document.createElement('DIV')
+                let CSS = td.style
+                node.innerText = value
+                td.appendChild(node)
+                // 设置样式
+                CSS.color = 'rgba(0,0,0,0.65)'
+                CSS.width = '38px'
+                CSS.height = '38px'
+                CSS.lineHeight = '38px'
+                CSS.textAlign = 'center'
+                if (row === 0) {
+                  CSS.background = '#E9E9E9'
+                }
+                return td
+              }
+              return cellProperties
+            },
+            contextMenu: [
+              'mergeCells', // 合并单元格菜单
+              'col_right',
+              'col_left',
+              'copy',
+              '粘贴(Ctrl + V)',
+              'undo',
+              'redo',
+              'remove_col'
+            ],
+            className: 'handsontable',
+            number: 1,
+            afterCreateCol: (index, amount) => {
+              this.designData.weft.tableBack.number++
+              for (let i = 0; i < this.designData.weft.tableBack.number; i++) {
+                this.designData.weft.tableBack.data[0][i] = i + 1
+              }
+            },
+            afterRemoveCol: (index, amount) => {
+              this.designData.weft.tableBack.number--
+              for (let i = 0; i < this.designData.weft.tableBack.number; i++) {
+                this.designData.weft.tableBack.data[0][i] = i + 1
+              }
+            },
+            afterChange: (changes, opt) => {
+              // 计算根数
+              if (opt === 'edit') {
+                let change = changes[0]
+                if (change[0] === 2) {
+                  this.$set(this.designData.weft.tableBack.data[3], change[1], Math.round(change[3] * this.designData.weft.rate * this.designData.weft.weimi / 100))
+                  this.$refs.weftTableBack.hotInstance.setDataAtCell([[3, change[1], Math.round(change[3] * this.designData.weft.rate * this.designData.weft.weimi / 100)]])
+                }
+              }
+            },
+            licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
+            mergeCells: true,
+            width: '100%',
+            height: 250
+          }
+        },
+        warp: {
+          flag: false,
+          rate: 100,
+          reed: '',
+          reed_method: '',
+          xishu: 5.08,
+          ifDouble: false,
+          insertNumber: '',
+          invertedOrder1: '',
+          invertedOrder2: '',
+          insertNumberBack: '',
+          invertedOrderBack1: '',
+          invertedOrderBack2: '',
+          table: {
+            data: [
+              [1],
+              [null],
+              [null],
+              [null],
+              [null],
+              [null]
+            ],
+            rowHeaders: (index) => {
+              let headerArr = ['序号', '主/夹', '厘米数', '根数', '合并项', '合并项']
+              return `<div style="height:38px;line-height:38px;color:rgba(0,0,0,0.65);display:table-row">${headerArr[index]}</div>`
+            },
+            rowHeaderWidth: 80,
+            minCols: 1,
+            autoColumnSize: true, // 自适应宽度
+            cells: (row, col, prop) => {
+              var cellProperties = {}
+              if (row === 0) {
+                cellProperties.readOnly = true
+              }
+              if (row === 1) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.warpJia.map(item => item.label)
+              }
+              if (row === 6) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.PMArr
+              }
+              cellProperties.renderer = function (instance, td, row, col, prop, value, cellProperties) {
+                // 清空节点并重新渲染
+                Handsontable.dom.empty(td)
+                let node = document.createElement('DIV')
+                let CSS = td.style
+                node.innerText = value
+                td.appendChild(node)
+                // 设置样式
+                CSS.color = 'rgba(0,0,0,0.65)'
+                CSS.width = '38px'
+                CSS.height = '38px'
+                CSS.lineHeight = '38px'
+                CSS.textAlign = 'center'
+                if (row === 0) {
+                  CSS.background = '#E9E9E9'
+                }
+                return td
+              }
+              return cellProperties
+            },
+            contextMenu: [
+              'mergeCells', // 合并单元格菜单
+              'col_right',
+              'col_left',
+              'copy',
+              '粘贴(Ctrl + V)',
+              'undo',
+              'redo',
+              'remove_col'
+            ],
+            className: 'handsontable',
+            number: 1,
+            afterCreateCol: (index, amount) => {
+              this.designData.warp.table.number++
+              for (let i = 0; i < this.designData.warp.table.number; i++) {
+                this.designData.warp.table.data[0][i] = i + 1
+              }
+            },
+            afterRemoveCol: (index, amount) => {
+              this.designData.warp.table.number--
+              for (let i = 0; i < this.designData.warp.table.number; i++) {
+                this.designData.warp.table.data[0][i] = i + 1
+              }
+            },
+            afterChange: (changes, opt) => {
+              // 计算根数
+              if (opt === 'edit') {
+                let change = changes[0]
+                if (change[0] === 2) {
+                  this.$set(this.designData.warp.table.data[3], change[1], Math.round(change[3] * this.designData.warp.rate * this.jingmi / 100))
+                  this.$refs.warpTable.hotInstance.setDataAtCell([[3, change[1], Math.round(change[3] * this.designData.warp.rate * this.jingmi / 100)]])
+                }
+              }
+            },
+            licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
+            mergeCells: true,
+            width: '100%',
+            height: 250
+          },
+          tableBack: {
+            data: [
+              [1],
+              [null],
+              [null],
+              [null],
+              [null],
+              [null]
+            ],
+            rowHeaders: (index) => {
+              let headerArr = ['序号', '主/夹', '厘米数', '根数', '合并项', '合并项']
+              return `<div style="height:38px;line-height:38px;color:rgba(0,0,0,0.65);display:table-row">${headerArr[index]}</div>`
+            },
+            rowHeaderWidth: 80,
+            minCols: 1,
+            autoColumnSize: true, // 自适应宽度
+            cells: (row, col, prop) => {
+              var cellProperties = {}
+              if (row === 0) {
+                cellProperties.readOnly = true
+              }
+              if (row === 1) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.warpJia.map(item => item.label)
+              }
+              if (row === 6) {
+                cellProperties.type = 'dropdown'
+                cellProperties.source = this.PMArr
+              }
+              cellProperties.renderer = function (instance, td, row, col, prop, value, cellProperties) {
+                // 清空节点并重新渲染
+                Handsontable.dom.empty(td)
+                let node = document.createElement('DIV')
+                let CSS = td.style
+                node.innerText = value
+                td.appendChild(node)
+                // 设置样式
+                CSS.color = 'rgba(0,0,0,0.65)'
+                CSS.width = '38px'
+                CSS.height = '38px'
+                CSS.lineHeight = '38px'
+                CSS.textAlign = 'center'
+                if (row === 0) {
+                  CSS.background = '#E9E9E9'
+                }
+                return td
+              }
+              return cellProperties
+            },
+            contextMenu: [
+              'mergeCells', // 合并单元格菜单
+              'col_right',
+              'col_left',
+              'copy',
+              '粘贴(Ctrl + V)',
+              'undo',
+              'redo',
+              'remove_col'
+            ],
+            className: 'handsontable',
+            number: 1,
+            afterCreateCol: (index, amount) => {
+              this.designData.warp.tableBack.number++
+              for (let i = 0; i < this.designData.warp.tableBack.number; i++) {
+                this.designData.warp.tableBack.data[0][i] = i + 1
+              }
+            },
+            afterRemoveCol: (index, amount) => {
+              this.designData.warp.tableBack.number--
+              for (let i = 0; i < this.designData.warp.tableBack.number; i++) {
+                this.designData.warp.tableBack.data[0][i] = i + 1
+              }
+            },
+            afterChange: (changes, opt) => {
+              // 计算根数
+              if (opt === 'edit') {
+                let change = changes[0]
+                if (change[0] === 2) {
+                  this.$set(this.designData.warp.tableBack.data[3], change[1], Math.round(change[3] * this.designData.warp.rate * this.jingmi / 100))
+                  this.$refs.warpTableBack.hotInstance.setDataAtCell([[3, change[1], Math.round(change[3] * this.designData.warp.rate * this.jingmi / 100)]])
+                }
+              }
+            },
+            licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
+            mergeCells: true,
+            width: '100%',
+            height: 250
+          }
+        }
+      }
     }
   },
   watch: {
@@ -1727,6 +2427,14 @@ export default {
     weimi () {
       if (this.weftInfo.neichang && this.weftInfo.rangwei) {
         return ((this.weftInfo.total / (this.weftInfo.neichang + this.weftInfo.rangwei))).toFixed(2)
+      } else {
+        return 0
+      }
+    },
+    // 经密
+    jingmi () {
+      if (this.designData.warp.reed && this.designData.warp.xishu && this.designData.warp.reed_method) {
+        return (1 / this.designData.warp.xishu * this.designData.warp.reed * this.designData.warp.reed_method).toFixed(2)
       } else {
         return 0
       }
@@ -1928,6 +2636,58 @@ export default {
     },
     // 插入列操作
     addCol (type) {
+      if (type === 'warpTable') {
+        for (let i = 0; i < this.designData.warp.insertNumber; i++) {
+          this.designData.warp.table.data.forEach((item, index) => {
+            if (index === 0) {
+              item.push(item.length + 1)
+            } else {
+              item.push('')
+            }
+          })
+          this.designData.warp.table.number++
+        }
+        return
+      }
+      if (type === 'warpTableBack') {
+        for (let i = 0; i < this.designData.warp.insertNumberBack; i++) {
+          this.designData.warp.tableBack.data.forEach((item, index) => {
+            if (index === 0) {
+              item.push(item.length + 1)
+            } else {
+              item.push('')
+            }
+          })
+          this.designData.warp.tableBack.number++
+        }
+        return
+      }
+      if (type === 'weftTable') {
+        for (let i = 0; i < this.designData.weft.insertNumber; i++) {
+          this.designData.weft.table.data.forEach((item, index) => {
+            if (index === 0) {
+              item.push(item.length + 1)
+            } else {
+              item.push('')
+            }
+          })
+          this.designData.weft.table.number++
+        }
+        return
+      }
+      if (type === 'weftTableBack') {
+        for (let i = 0; i < this.designData.weft.insertNumberBack; i++) {
+          this.designData.weft.tableBack.data.forEach((item, index) => {
+            if (index === 0) {
+              item.push(item.length + 1)
+            } else {
+              item.push('')
+            }
+          })
+          this.designData.weft.tableBack.number++
+        }
+        return
+      }
       if (Number(this.insertNumber[type]) && Number(this.insertNumber[type]) > 0) {
         for (let i = 0; i < Number(this.insertNumber[type]); i++) {
           this.tableData[type].data.forEach((item, index) => {
@@ -1948,6 +2708,82 @@ export default {
     },
     // 倒序操作
     invertedCol (type) {
+      if (type === 'warpTable') {
+        let reverseArr = this.designData.warp.table.data.map((item) => {
+          let copy = JSON.parse(JSON.stringify(item))
+          return copy.slice(Number(this.designData.warp.invertedOrder1) - 1, Number(this.designData.warp.invertedOrder2)).reverse()
+        })
+        reverseArr.forEach((item, index) => {
+          if (index === 0) {
+            for (let i = 0; i < item.length; i++) {
+              this.designData.warp.table.number++
+              this.designData.warp.table.data[index].push(this.designData.warp.table.number)
+            }
+          } else {
+            this.designData.warp.table.data[index] = this.designData.warp.table.data[index].concat(item)
+          }
+        })
+        // 触发一下表格更新，重新获取数据
+        this.$refs.warpTable.hotInstance.loadData(this.designData.warp.table.data)
+        return
+      }
+      if (type === 'warpTableBack') {
+        let reverseArr = this.designData.warp.tableBack.data.map((item) => {
+          let copy = JSON.parse(JSON.stringify(item))
+          return copy.slice(Number(this.designData.warp.invertedOrderBack1) - 1, Number(this.designData.warp.invertedOrderBack2)).reverse()
+        })
+        reverseArr.forEach((item, index) => {
+          if (index === 0) {
+            for (let i = 0; i < item.length; i++) {
+              this.designData.warp.tableBack.number++
+              this.designData.warp.tableBack.data[index].push(this.designData.warp.tableBack.number)
+            }
+          } else {
+            this.designData.warp.tableBack.data[index] = this.designData.warp.tableBack.data[index].concat(item)
+          }
+        })
+        // 触发一下表格更新，重新获取数据
+        this.$refs.warpTableBack.hotInstance.loadData(this.designData.warp.tableBack.data)
+        return
+      }
+      if (type === 'weftTable') {
+        let reverseArr = this.designData.weft.table.data.map((item) => {
+          let copy = JSON.parse(JSON.stringify(item))
+          return copy.slice(Number(this.designData.weft.invertedOrder1) - 1, Number(this.designData.weft.invertedOrder2)).reverse()
+        })
+        reverseArr.forEach((item, index) => {
+          if (index === 0) {
+            for (let i = 0; i < item.length; i++) {
+              this.designData.weft.table.number++
+              this.designData.weft.table.data[index].push(this.designData.weft.table.number)
+            }
+          } else {
+            this.designData.weft.table.data[index] = this.designData.weft.table.data[index].concat(item)
+          }
+        })
+        // 触发一下表格更新，重新获取数据
+        this.$refs.weftTable.hotInstance.loadData(this.designData.weft.table.data)
+        return
+      }
+      if (type === 'weftTableBack') {
+        let reverseArr = this.designData.weft.tableBack.data.map((item) => {
+          let copy = JSON.parse(JSON.stringify(item))
+          return copy.slice(Number(this.designData.weft.invertedOrderBack1) - 1, Number(this.designData.weft.invertedOrderBack2)).reverse()
+        })
+        reverseArr.forEach((item, index) => {
+          if (index === 0) {
+            for (let i = 0; i < item.length; i++) {
+              this.designData.weft.tableBack.number++
+              this.designData.weft.tableBack.data[index].push(this.designData.weft.tableBack.number)
+            }
+          } else {
+            this.designData.weft.tableBack.data[index] = this.designData.weft.tableBack.data[index].concat(item)
+          }
+        })
+        // 触发一下表格更新，重新获取数据
+        this.$refs.weftTableBack.hotInstance.loadData(this.designData.weft.tableBack.data)
+        return
+      }
       if (Number(this.invertedOrder[type][0]) && Number(this.invertedOrder[type][1]) && Number(this.invertedOrder[type][0]) > 0 && Number(this.invertedOrder[type][1]) > 0) {
         let reverseArr = this.tableData[type].data.map((item) => {
           let copy = JSON.parse(JSON.stringify(item))
@@ -1978,8 +2814,22 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.tableData[type].data = [[1], [null], [null], [null], [null], [null]]
-        this.$refs[type].hotInstance.loadData(this.tableData[type].data)
+        if (type === 'warpTable') {
+          this.designData.warp.table.data = [[1], [null], [null], [null], [null], [null]]
+          this.$refs.warpTable.hotInstance.loadData(this.designData.warp.table.data)
+        } else if (type === 'warpTableBack') {
+          this.designData.warp.tableBack.data = [[1], [null], [null], [null], [null], [null]]
+          this.$refs.warpTableBack.hotInstance.loadData(this.designData.warp.tableBack.data)
+        } else if (type === 'weftTable') {
+          this.designData.weft.table.data = [[1], [null], [null], [null], [null], [null]]
+          this.$refs.weftTable.hotInstance.loadData(this.designData.weft.table.data)
+        } else if (type === 'weftTableBack') {
+          this.designData.weft.tableBack.data = [[1], [null], [null], [null], [null], [null]]
+          this.$refs.weftTableBack.hotInstance.loadData(this.designData.weft.tableBack.data)
+        } else {
+          this.tableData[type].data = [[1], [null], [null], [null], [null], [null]]
+          this.$refs[type].hotInstance.loadData(this.tableData[type].data)
+        }
         this.$message({
           type: 'success',
           message: '重置成功!'
@@ -2064,6 +2914,9 @@ export default {
           message: '已取消'
         })
       })
+    },
+    copyGL (index1, index2) {
+      this.GL[index1].splice(index2, 0, JSON.parse(JSON.stringify(this.GL[index1][index2])))
     },
     // 查找工艺单
     remoteMethod (query) {
@@ -2630,6 +3483,70 @@ export default {
           })
         }
       })
+    },
+    // 设计单覆盖工艺单
+    cover (type) {
+      if (type === 'warp') {
+        this.ifDouble.warp = this.designData.warp.ifDouble
+        this.warpInfo.reed = this.designData.warp.reed
+        this.warpInfo.reed_method = this.designData.warp.reed_method
+        let arr = this.designData.warp.table.data
+        this.tableData.warp.number = arr[0].length
+        this.tableData.warp.data = [arr[0], arr[1], arr[3], arr[4], arr[5], new Array(arr[0].length).fill('')]
+        this.tableData.warp.mergeCells = this.$refs.warpTable.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells.map((item) => {
+          return {
+            row: item.row - 1,
+            col: item.col,
+            rowspan: item.rowspan,
+            colspan: item.colspan,
+            removed: item.removed
+          }
+        })
+        this.$refs.warp.hotInstance.loadData(this.tableData.warp.data)
+        let arrBack = this.designData.warp.tableBack.data
+        this.tableData.warpBack.number = arrBack[0].length
+        this.tableData.warpBack.data = [arrBack[0], arrBack[1], arrBack[3], arrBack[4], arrBack[5], new Array(arrBack[0].length).fill('')]
+        this.tableData.warpBack.mergeCells = this.$refs.warpTableBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells.map((item) => {
+          return {
+            row: item.row - 1,
+            col: item.col,
+            rowspan: item.rowspan,
+            colspan: item.colspan,
+            removed: item.removed
+          }
+        })
+        this.$refs.warpBack.hotInstance.loadData(this.tableData.warpBack.data)
+        this.designData.warp.flag = false
+      } else {
+        this.ifDouble.weft = this.designData.weft.ifDouble
+        let arr = this.designData.weft.table.data
+        this.tableData.weft.number = arr[0].length
+        this.tableData.weft.data = [arr[0], arr[1], arr[3], arr[4], arr[5], new Array(arr[0].length).fill('')]
+        this.tableData.weft.mergeCells = this.$refs.weftTable.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells.map((item) => {
+          return {
+            row: item.row - 1,
+            col: item.col,
+            rowspan: item.rowspan,
+            colspan: item.colspan,
+            removed: item.removed
+          }
+        })
+        this.$refs.weft.hotInstance.loadData(this.tableData.weft.data)
+        let arrBack = this.designData.weft.tableBack.data
+        this.tableData.weftBack.number = arrBack[0].length
+        this.tableData.weftBack.data = [arrBack[0], arrBack[1], arrBack[3], arrBack[4], arrBack[5], new Array(arrBack[0].length).fill('')]
+        this.tableData.weftBack.mergeCells = this.$refs.weftTableBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells.map((item) => {
+          return {
+            row: item.row - 1,
+            col: item.col,
+            rowspan: item.rowspan,
+            colspan: item.colspan,
+            removed: item.removed
+          }
+        })
+        this.$refs.weftBack.hotInstance.loadData(this.tableData.weftBack.data)
+        this.designData.weft.flag = false
+      }
     }
   },
   mounted () {

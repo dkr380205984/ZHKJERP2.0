@@ -3,8 +3,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">zh-input组件</span>
+        <zh-message :msgSwitch.sync="msgSwitch"></zh-message>
+        <span style="color:red;font-size:14px">(消息组件必填字段1.msgSwitch:发送消息开关 2.content:消息内容 3.url:路由跳转地址)</span>
       </div>
-      <div class="editCtn">
+      <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
@@ -83,7 +85,7 @@
       <div class="titleCtn">
         <span class="title">其他样式</span>
       </div>
-      <div class="editCtn">
+      <div class="editCtn hasBorderTop">
         <span class="titleNum">模块1</span>
         <span class="deleteIcon el-icon-close"></span>
         <div class="rowCtn">
@@ -187,7 +189,8 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray">返回</div>
-          <div class="btn btnBlue">提交</div>
+          <div class="btn btnBlue"
+            @click="msgSwitch=true">提交</div>
         </div>
       </div>
     </div>
@@ -197,6 +200,7 @@
 export default {
   data () {
     return {
+      msgSwitch: false,
       arr: [],
       str: [],
       postData: { token: '' }

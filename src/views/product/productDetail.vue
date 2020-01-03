@@ -379,7 +379,7 @@ export default {
       quotation_index: 0,
       chinaNum: chinaNum,
       qrCodeUrl: '',
-      printFlag: true,
+      printFlag: false,
       isIndeterminateSize: true,
       checkAllSize: false,
       checkedSize: [],

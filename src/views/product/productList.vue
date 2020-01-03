@@ -160,7 +160,7 @@
               <zh-img-list :list="item.images"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
-            <div class="col">{{item.create_time}}</div>
+            <div class="col">{{item.create_time.slice(0,10)}}</div>
             <div class="col">
               <div class="stateCtn"
                 :class="{'green':item.has_craft===1}">
