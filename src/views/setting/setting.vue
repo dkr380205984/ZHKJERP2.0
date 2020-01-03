@@ -336,8 +336,8 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? '元/kg' : ''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <span class="blue"
-                          @click="getDetailInfo('yarn',item)">详情</span>
+                        <!-- <span class="blue"
+                          @click="getDetailInfo('yarn',item)">详情</span> -->
                         <span class="blue"
                           @click="updataYarn('updata',item)">更新</span>
                         <span class="red"
@@ -419,8 +419,8 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0 && item.unit) ? '元/' + item.unit : ''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <span class="blue"
-                          @click="getDetailInfo('material',item)">详情</span>
+                        <!-- <span class="blue"
+                          @click="getDetailInfo('material',item)">详情</span> -->
                         <span class="blue"
                           @click="updataMaterial('updata',item)">更新</span>
                         <span class="red"
@@ -463,8 +463,8 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? (item.type === 1 ? '元/㎡' : (item.unit ? '元/' + item.unit : '')):''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <span class="blue"
-                          @click="getDetailInfo('pack',item)">详情</span>
+                        <!-- <span class="blue"
+                          @click="getDetailInfo('pack',item)">详情</span> -->
                         <span class="blue"
                           @click="updataPack('updata',item)">更新</span>
                         <span class="red"
@@ -573,7 +573,8 @@
                     <div class="tcolumn">{{item.group}}</div>
                     <div class="tcolumn">{{item.station_name}}</div>
                     <div class="tcolumn flexRow">
-                      <span class="blue">修改</span>
+                      <span class="blue"
+                        @click="changeAuth(item)">修改</span>
                       <span class="border"></span>
                       <span class="red">禁用</span>
                     </div>
@@ -659,6 +660,16 @@
                 </div>
               </div>
               <div class="row">
+                <div class="label">公司简称：</div>
+                <div class="content">
+                  <el-input placeholder="请输入公司简称"
+                    class="input-item"
+                    v-model="companyInfo.alias"
+                    clearable>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
                 <span class="label">公司简介:</span>
                 <div class="content">
                   <el-input class="input-item"
@@ -722,6 +733,43 @@
                 <div class="btn btnGray">取消</div>
                 <div class="btn btnBlue"
                   @click="saveCompany">完成</div>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='打印设置'">
+            <div class="flowerCtn">
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">打印页面</div>
+                    <div class="tcolumn padding40">页面标题</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in $clone(printEditArr).splice((printEditPages-1)*5,5)"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="updatePrint(item)">修改</span>
+                        <!-- <span class="blue"
+                          @click="deletePackName(item.id)">查看</span> -->
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="printEditTotal"
+                  :current-page.sync="printEditPages">
+                </el-pagination>
               </div>
             </div>
           </template>
@@ -1267,6 +1315,40 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='打印设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">打印标题/备注修改-{{printEditInfo.name}}</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">打印单标题：</div>
+              <div class="info">
+                <el-input placeholder="请输入员工姓名"
+                  v-model="printEditInfo.title"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">备注内容：</div>
+              <div class="info">
+                <el-input type="textarea"
+                  :autosize="{ minRows: 8, maxRows: 16}"
+                  placeholder="请输入内容"
+                  v-model="printEditInfo.remark">
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="savePrint">确定</div>
+          </div>
+        </div>
+      </template>
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -1331,7 +1413,7 @@
       </div>
     </div>
     <!-- 纱线/辅料/包装详情 -->
-    <div class="popup"
+    <!-- <div class="popup"
       v-show="showDetailPopup">
       <div class="main">
         <div class="title">
@@ -1383,7 +1465,7 @@
             @click="deleteMeasurement">确定</div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -1401,7 +1483,8 @@ export default {
         '物料设置': ['纱线名称', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理'],
-        '员工管理': ['员工帐号管理']
+        '员工管理': ['员工帐号管理'],
+        '打印设置': ['打印设置']
       },
       pName: '',
       cName: '',
@@ -1538,7 +1621,54 @@ export default {
       },
       permissions: permissions,
       authPage: 1,
-      authTotal: 1
+      authTotal: 1,
+      // 打印设置
+      printEditArr: [
+        {
+          id: 1,
+          name: '织造分配',
+          title: '桐庐凯瑞针纺有限公司织造分配'
+        }, {
+          id: 2,
+          name: '加工分配',
+          title: '桐庐凯瑞针纺有限公司加工分配'
+        }, {
+          id: 3,
+          name: '原料调拨',
+          title: '桐庐凯瑞针纺有限公司原料调拨'
+        }, {
+          id: 4,
+          name: '辅料调拨',
+          title: '桐庐凯瑞针纺有限公司辅料调拨'
+        }, {
+          id: 5,
+          name: '原料订购',
+          title: '桐庐凯瑞针纺有限公司原料订购'
+        }, {
+          id: 6,
+          name: '辅料订购',
+          title: '桐庐凯瑞针纺有限公司辅料订购'
+        }, {
+          id: 7,
+          name: '原料加工',
+          title: '桐庐凯瑞针纺有限公司原料加工'
+        }, {
+          id: 8,
+          name: '辅料加工',
+          title: '桐庐凯瑞针纺有限公司辅料加工'
+        }, {
+          id: 9,
+          name: '包装辅料订购',
+          title: '桐庐凯瑞针纺有限公司包装辅料订购'
+        }, {
+          id: 9,
+          name: '运输分配',
+          title: '桐庐凯瑞针纺有限公司运输分配'
+        }
+      ],
+      printEditPages: 1,
+      printEditTotal: 9,
+      printEditInfo: {}
     }
   },
   watch: {
@@ -1630,6 +1760,23 @@ export default {
     }
   },
   methods: {
+    // 修改打印设置
+    updatePrint (item) {
+      this.printEditInfo = item
+      this.showPopup = true
+    },
+    savePrint () {
+
+    },
+    // 修改用户账号信息
+    changeAuth (item) {
+      this.showPopup = true
+      let authInfo = this.$clone(item)
+      delete authInfo.company_id
+      delete authInfo.create_time
+      delete authInfo.group
+      this.authInfo = authInfo
+    },
     getProductType () {
       productType.list().then((res) => {
         this.productTypeArr = res.data.data.map((item) => {
@@ -2661,6 +2808,7 @@ export default {
         this.companyInfo.client_name = companyInfo.company_name
         this.companyInfo.client_about = companyInfo.introduce
         this.companyInfo.client_tel = companyInfo.phone
+        this.companyInfo.alias = companyInfo.alias
         this.companyInfo.client_email = companyInfo.email
         this.companyInfo.client_address = companyInfo.address
         this.companyInfo.file_logo = [{ url: companyInfo.logo }]
@@ -2726,6 +2874,7 @@ export default {
         address: this.companyInfo.client_address,
         phone: this.companyInfo.client_tel,
         logo: logoUrl.reverse()[0],
+        alias: this.companyInfo.alias,
         contacts: '1',
         introduce: this.companyInfo.client_about,
         email: this.companyInfo.client_email,
@@ -2806,49 +2955,49 @@ export default {
       } else {
         return ''
       }
-    },
-    getDetailInfo (type, item) {
-      console.log(type, item)
-      if (type === 'yarn') {
-        yarn.priceLog({
-          id: item.id
-        }).then(res => {
-          if (res.data.status === false) {
-            this.$message.error('获取历史价格失败，' + res.data.message)
-          } else {
-
-          }
-        })
-      } else if (type === 'material') {
-        material.priceLog({
-          id: item.id
-        }).then(res => {
-          if (res.data.status === false) {
-            this.$message.error('获取历史价格失败，' + res.data.message)
-          } else {
-
-          }
-        })
-      } else if (type === 'pack') {
-        packag.priceLog({
-          id: item.id
-        }).then(res => {
-          if (res.data.status === false) {
-            this.$message.error('获取历史价格失败，' + res.data.message)
-          } else {
-
-          }
-        })
-      } else {
-        this.$message.error('未知错误，请尝试刷新页面')
-        return
-      }
-      this.detailType = type
-      this.detailInfo.name = item.name
-      this.detailInfo.unit = item.unit
-      this.detailInfo.price = item.price
-      this.showDetailPopup = true
     }
+    // getDetailInfo (type, item) {
+    //   console.log(type, item)
+    //   if (type === 'yarn') {
+    //     yarn.priceLog({
+    //       id: item.id
+    //     }).then(res => {
+    //       if (res.data.status === false) {
+    //         this.$message.error('获取历史价格失败，' + res.data.message)
+    //       } else {
+
+    //       }
+    //     })
+    //   } else if (type === 'material') {
+    //     material.priceLog({
+    //       id: item.id
+    //     }).then(res => {
+    //       if (res.data.status === false) {
+    //         this.$message.error('获取历史价格失败，' + res.data.message)
+    //       } else {
+
+    //       }
+    //     })
+    //   } else if (type === 'pack') {
+    //     packag.priceLog({
+    //       id: item.id
+    //     }).then(res => {
+    //       if (res.data.status === false) {
+    //         this.$message.error('获取历史价格失败，' + res.data.message)
+    //       } else {
+
+    //       }
+    //     })
+    //   } else {
+    //     this.$message.error('未知错误，请尝试刷新页面')
+    //     return
+    //   }
+    //   this.detailType = type
+    //   this.detailInfo.name = item.name
+    //   this.detailInfo.unit = item.unit
+    //   this.detailInfo.price = item.price
+    //   this.showDetailPopup = true
+    // }
   },
   created () {
     this.pName = '产品设置'

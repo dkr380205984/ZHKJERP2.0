@@ -206,6 +206,11 @@ export default {
         id: 15,
         icon: require('@/assets/image/index/装箱管理.png'),
         url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
+      }, {
+        name: '客户管理',
+        id: 13,
+        icon: require('@/assets/image/index/客户管理.png'),
+        url: '/client/clientList/page=1&&keyword=&&date==&&clientType='
       }]
     }
   },

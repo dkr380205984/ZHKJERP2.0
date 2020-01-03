@@ -177,6 +177,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnGreen"
+            @click="$openUrl('/materialOrderTable/'+$route.params.id)">打印</div>
           <div class="btn btnOrange"
             @click="$router.push('/materialOrder/materialOrderUpdate/'+$route.params.id)">修改</div>
         </div>

@@ -161,7 +161,8 @@
                   </div>
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
                   <div class="tcolumn">
-                    <span class="blue">打印</span>
+                    <span class="blue"
+                      @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name)">打印</span>
                   </div>
                 </div>
               </div>
@@ -413,7 +414,8 @@
                     </div>
                   </div>
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
-                  <div class="tcolumn"><span class="blue">打印</span></div>
+                  <div class="tcolumn"><span class="blue"
+                      @click="$openUrl('/materialProcessTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name)">打印</span></div>
                 </div>
               </div>
               <div class="createModule"

@@ -304,12 +304,14 @@ const packPlan = {
   create: (params) => http.post(`${baseUrl}/pack/info/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/pack/info/list`, params),
   packOrder: (params) => http.post(`${baseUrl}/pack/order/save`, params, 'application/json'), // 包装订购
-  packOrderLog: (params) => http.get(`${baseUrl}/pack/order/list`, params), // 包装订购日志
+  packOrderLog: (params) => http.get(`${baseUrl}/pack/order/list`, params), // 包装订购日志,
+  deletePackOrder: (params) => http.post(`${baseUrl}/pack/order/delete`, params, 'application/json'), // 包装订购删除
   packOut: (params) => http.post(`${baseUrl}/stock/out/save`, params, 'application/json'), // 装箱出库
   packOutLog: (params) => http.get(`${baseUrl}/stock/out/list`, params), // 装箱出库日志
+  deletePackOut: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json'), // 装箱出库删除
   packActual: (params) => http.post(`${baseUrl}/pack/real/save`, params, 'application/json'), // 实际装箱
-  packActualLog: (params) => http.get(`${baseUrl}/pack/real/list`, params) // 实际装箱日志
-  // delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json')
+  packActualLog: (params) => http.get(`${baseUrl}/pack/real/list`, params), // 实际装箱日志
+  deletePackActual: (params) => http.post(`${baseUrl}/pack/real/delete`, params, 'application/json') // 实际装箱删除
 }
 // 产品检验
 const inspection = {

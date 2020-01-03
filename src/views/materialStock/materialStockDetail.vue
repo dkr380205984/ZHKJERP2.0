@@ -48,7 +48,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">原料出入库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料出入库</span>
       </div>
       <template v-if="materialStockInfo.length > 0">
         <div class="listCtn hasBorderTop"
@@ -69,6 +69,7 @@
           </div> -->
           <zh-transition :list="materialStockInfo"
             markId="1"
+            showKey='material_name'
             @changed="catActiveMaterial"></zh-transition>
           <div class="flexTb"
             style="margin:20px 32px 0 ">
@@ -146,7 +147,7 @@
             <div class="rowCtn">
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">原料名称</span>
+                  <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
@@ -155,7 +156,7 @@
                     default-first-option
                     clearable
                     class="elInput"
-                    placeholder="请选择需要操作的原料"
+                    :placeholder="'请选择需要操作的' + ($route.params.type === '1' ? '原' : '辅') +'料'"
                     @change="changeColorInfo($event,itemStock)">
                     <el-option v-for="item in materialStockInfo"
                       :key="item.id"
@@ -167,7 +168,7 @@
               </div>
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">原料颜色</span>
+                  <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content middle_page col">
@@ -176,7 +177,7 @@
                     default-first-option
                     clearable
                     class="elInput"
-                    placeholder="请选择需要操作的原料颜色"
+                    :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'"
                     @change="changeType($event,itemStock)">
                     <el-option v-for="item in itemStock.color_info"
                       :key="item.name"
@@ -252,9 +253,9 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">原料织造出库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}出库</span>
       </div>
-      <template v-if="weaveInfo.concat(processInfo).length !== 0">
+      <template v-if="weaveInfo.length !== 0">
         <!-- <div class="swichCtn">
           <div class="swichCtnBox"
             :style="'left:' + leftNum2 + 'px'"
@@ -269,15 +270,16 @@
           <span class="handleBtn right"
             @click.stop="leftNum2 -= 300"></span>
         </div> -->
-        <zh-transition :list="weaveInfo.concat(processInfo)"
+        <zh-transition :list="weaveInfo"
           markId="2"
+          showKey="client_name"
           @changed="catActiveClient"></zh-transition>
         <div class="listCtn">
           <div class="flexTb"
             style="margin:1px">
             <div class="thead">
               <span class="trow">
-                <span class="tcolumn">原料名称</span>
+                <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                 <span class="tcolumn noPad flex5">
                   <span class="trow">
                     <span class="tcolumn">颜色</span>
@@ -330,7 +332,7 @@
                     class="elInput"
                     placeholder="请选择出库单位"
                     @change="changeMaterialInfo($event,itemWeave)">
-                    <el-option v-for="item in weaveInfo.concat(processInfo)"
+                    <el-option v-for="item in weaveInfo"
                       :key="item.client_id"
                       :label="item.client_name"
                       :value="item.client_id">
@@ -342,7 +344,7 @@
             <div class="rowCtn">
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">原料名称</span>
+                  <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
@@ -351,7 +353,7 @@
                     default-first-option
                     clearable
                     class="elInput"
-                    placeholder="请选择需要操作的原料"
+                    :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅')+'料'"
                     @change="changeAttrInfo($event,itemWeave)">
                     <el-option v-for="item in itemWeave.materialInfo"
                       :key="item.id"
@@ -363,7 +365,7 @@
               </div>
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">原料颜色</span>
+                  <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
@@ -372,7 +374,7 @@
                     default-first-option
                     clearable
                     class="elInput"
-                    placeholder="请选择需要操作的原料颜色"
+                    :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅')+'料颜色'"
                     @change="changeType($event,itemWeave)">
                     <el-option v-for="item in itemWeave.color_info"
                       :key="item.id"
@@ -456,14 +458,14 @@
         <div class="btnCtn_page"
           id='yarn'>
           <div class="btn noBorder noMargin"
-            @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
+            @click="deleteLog('all',stockLog)">批量删除</div>
           <div class="btn noBorder noMargin">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
             <span class="tb_row">出入库时间</span>
-            <span class="tb_row">原料名称</span>
+            <span class="tb_row">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
             <span class="tb_row flex08">颜色</span>
             <span class="tb_row flex08">数量</span>
             <span class="tb_row flex08">操作类型</span>
@@ -484,7 +486,8 @@
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn blue">打印</span>
-              <span class="tb_handle_btn red">删除</span>
+              <span class="tb_handle_btn red"
+                @click="deleteLog('one',itemLog.id)">删除</span>
             </span>
           </div>
         </div>
@@ -566,7 +569,7 @@
               <span class="tcolumn">计划原料</span>
               <span class="tcolumn noPad flex20">
                 <span class="trow">
-                  <span class="tcolumn">原料颜色</span>
+                  <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
                   <span class="tcolumn">计划数量</span>
                 </span></span>
               <span class="tcolumn">总计</span>
@@ -595,7 +598,7 @@
 </template>
 
 <script>
-import { materialStock, weave, replenish } from '@/assets/js/api.js'
+import { materialStock, weave, processing, replenish } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -609,7 +612,6 @@ export default {
       stockEditInfo: [],
       materialClient: [],
       weaveInfo: [],
-      processInfo: [],
       weaveStockEditInfo: [],
       activeClient: '',
       activeProcessInfo: [],
@@ -625,6 +627,37 @@ export default {
     }
   },
   methods: {
+    deleteLog (type, item) {
+      this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let checkedArr = []
+        if (type === 'all') {
+          let deleteItem = []
+          item.forEach(itemInner => {
+            deleteItem = deleteItem.concat(itemInner)
+          })
+          checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+        } else {
+          checkedArr.push(item)
+        }
+        materialStock.delete({
+          id: checkedArr
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            this.initData(this.$route.params.type)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     saveAll (type) {
       let data = []
       let flag = {
@@ -725,14 +758,14 @@ export default {
       }
       materialStock.create({ data: data }).then(res => {
         if (res.data.status !== false) {
-          this.initData()
+          this.initData(this.$route.params.type)
           this.stockEditInfo = []
           this.weaveStockEditInfo = []
           this.$message.success('保存成功')
         }
       })
     },
-    deleteItem (item, index, flag) {
+    deleteItem (item, index) {
       item.splice(index, 1)
     },
     addItem (item, type) {
@@ -791,13 +824,13 @@ export default {
       this.changeType(item.attr, obj)
       this.weaveStockEditInfo.push(obj)
     },
-    catActiveMaterial (item, name) {
-      this.activeStockMa = name
-      this.activeMaterialInfo = item
+    catActiveMaterial (item) {
+      this.activeStockMa = item.material_name
+      this.activeMaterialInfo = item.color_info
     },
-    catActiveClient (item, name) {
-      this.activeClient = name
-      this.activeProcessInfo = item
+    catActiveClient (item) {
+      this.activeClient = item.client_id
+      this.activeProcessInfo = item.material_info
     },
     changeColorInfo (eve, item) {
       item.color_info = this.materialStockInfo.find(items => items.material_name === eve).color_info.map(value => {
@@ -811,7 +844,7 @@ export default {
       item.material_type = item.color_info.find(items => items.name === eve).type
     },
     changeMaterialInfo (eve, item) {
-      item.materialInfo = this.weaveInfo.concat(this.processInfo).find(items => items.client_id === eve).material_info
+      item.materialInfo = this.weaveInfo.find(items => items.client_id === eve).material_info
     },
     changeAttrInfo (eve, item) {
       item.color_info = item.materialInfo.find(items => items.material_name === eve).color_info.map(value => {
@@ -858,113 +891,217 @@ export default {
         })
       }
     },
-    initData () {
+    initData (type) {
       this.loading = true
-      Promise.all([
-        materialStock.init({
-          order_id: this.$route.params.id,
-          order_type: this.$route.params.orderType
-        }),
-        materialStock.detail({
-          order_id: this.$route.params.id,
-          order_type: this.$route.params.orderType
-        }),
-        weave.detail({
-          order_id: this.$route.params.id,
-          order_type: this.$route.params.orderType
-        }),
-        replenish.list({
-          order_id: this.$route.params.id,
-          order_type: this.$route.params.orderType
-        })
-      ]).then(res => {
-        // 初始化原料出入库数据
-        let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1)
-        this.orderInfo = res[0].data.data.order_info
-        this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-        this.materialStockInfo.forEach((item) => { item.name = item.material_name })
-        this.activeStockMa = this.materialStockInfo[0] ? this.materialStockInfo[0].material_name : ''
-        this.activeMaterialInfo = this.materialStockInfo[0] ? this.materialStockInfo[0].color_info : []
-        this.materialClient = this.$mergeData(res[0].data.data.material_order_client, { mainRule: ['client_name', 'client_id'] })
-        // 初始化织造出入库数据
-        this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { 'name': 'client_id' }] }).map(items => {
-          return {
-            client_name: items.client_name,
-            client_id: items.client_id,
-            material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'material_weight/weight', type: 'add' }, { name: 'material_unit/unit' }, { name: 'material_type/type' }] } })
-          }
-        })
-        this.activeClient = this.weaveInfo[0] ? this.weaveInfo[0].client_id : ''
-        this.activeProcessInfo = this.weaveInfo[0] ? this.weaveInfo[0].material_info : ''
-        // 初始化统计数据
-        this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
-          return {
-            type: item.material_type,
-            material_name: item.material_name,
-            color: item.material_attribute,
-            number: item.reality_weight,
-            unit: item.unit
-          }
-        }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-        this.totalInfo.order = this.$mergeData(this.$clone(materialPlan).map(item => {
-          return {
-            type: item.material_type,
-            material_name: item.material_name,
-            color: item.material_attribute,
-            number: item.material_type === 1 ? item.order_weight * 1000 : item.order_weight,
-            unit: item.unit
-          }
-        }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-        this.totalInfo.process = this.$mergeData(this.$clone(materialPlan).map(item => {
-          return {
-            type: item.material_type,
-            material_name: item.material_name,
-            color: item.material_attribute,
-            number: item.material_type === 1 ? item.process_weight * 1000 : item.process_weight,
-            unit: item.unit
-          }
-        }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-        // 初始化日志信息
-        this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 1).map(item => {
-          return {
-            ...item,
-            checked: false
-          }
-        }), 5)
-        this.stockLogTotal = this.stockLog.length
-        this.stockLog.forEach(item => {
-          item.forEach(itemInner => {
-            let materialFlag = this.materialStockInfo.find(value => value.material_name === itemInner.material_name)
-            if (materialFlag) {
-              let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
-              if (colorFlag) {
-                // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
-                if (itemInner.type === 3) {
-                  colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
-                }
-              }
+      if (type === '1') {
+        Promise.all([
+          materialStock.init({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          }),
+          materialStock.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          }),
+          weave.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          }),
+          replenish.list({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          })
+        ]).then(res => {
+          // 初始化原料出入库数据
+          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1)
+          this.orderInfo = res[0].data.data.order_info
+          this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
+          this.activeStockMa = this.materialStockInfo[0] ? this.materialStockInfo[0].material_name : ''
+          this.activeMaterialInfo = this.materialStockInfo[0] ? this.materialStockInfo[0].color_info : []
+          this.materialClient = this.$mergeData(res[0].data.data.material_order_client, { mainRule: ['client_name', 'client_id'] })
+          // 初始化织造出入库数据
+          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { 'name': 'client_id' }] }).map(items => {
+            return {
+              client_name: items.client_name,
+              client_id: items.client_id,
+              material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'material_weight/weight', type: 'add' }, { name: 'material_unit/unit' }, { name: 'material_type/type' }] } })
             }
-            let clientFlag = this.weaveInfo.find(value => value.client_name === itemInner.client_name)
-            if (clientFlag) {
-              let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
+          })
+          this.activeClient = this.weaveInfo[0] ? this.weaveInfo[0].client_id : ''
+          this.activeProcessInfo = this.weaveInfo[0] ? this.weaveInfo[0].material_info : ''
+          // 初始化统计数据
+          this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.reality_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          this.totalInfo.order = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.material_type === 1 ? item.order_weight * 1000 : item.order_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          this.totalInfo.process = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.material_type === 1 ? item.process_weight * 1000 : item.process_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          // 初始化日志信息
+          this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 1).map(item => {
+            return {
+              ...item,
+              checked: false
+            }
+          }), 5)
+          this.stockLogTotal = this.stockLog.length
+          this.stockLog.forEach(item => {
+            item.forEach(itemInner => {
+              let materialFlag = this.materialStockInfo.find(value => value.material_name === itemInner.material_name)
               if (materialFlag) {
                 let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
                 if (colorFlag) {
                   // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
-                  if (itemInner.type === 1) {
-                    colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
+                  if (itemInner.type === 3) {
+                    colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
                   }
                 }
               }
+              let clientFlag = this.weaveInfo.find(value => value.client_name === itemInner.client_name)
+              if (clientFlag) {
+                let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
+                if (materialFlag) {
+                  let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
+                  if (colorFlag) {
+                    // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
+                    if (itemInner.type === 1) {
+                      colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
+                    }
+                  }
+                }
+              }
+            })
+          })
+          this.loading = false
+        })
+      } else if (type === '2') {
+        Promise.all([
+          materialStock.init({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          }),
+          materialStock.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          }),
+          processing.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType
+          })
+        ]).then(res => {
+          // 初始化辅料出入库数据
+          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
+          this.orderInfo = res[0].data.data.order_info
+          this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
+          this.activeStockMa = this.materialStockInfo[0] ? this.materialStockInfo[0].material_name : ''
+          this.activeMaterialInfo = this.materialStockInfo[0] ? this.materialStockInfo[0].color_info : []
+          this.materialClient = this.$mergeData(res[0].data.data.material_process_client, { mainRule: ['client_name', 'client_id'] })
+          // 初始化加工出入库数据
+          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
+            return {
+              client_name: items.client_name,
+              client_id: items.client_id,
+              material_info: this.$mergeData(items.material_info, { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'number/weight', type: 'add' }] } }).map(value => {
+                value.color_info.forEach(val => {
+                  val.type = 2
+                  val.unit = '个'
+                })
+                return value
+              })
             }
           })
+          this.activeClient = this.weaveInfo[0] ? this.weaveInfo[0].client_id : ''
+          this.activeProcessInfo = this.weaveInfo[0] ? this.weaveInfo[0].material_info : ''
+          // 初始化统计数据
+          this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.reality_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          this.totalInfo.order = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.material_type === 1 ? item.order_weight * 1000 : item.order_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          this.totalInfo.process = this.$mergeData(this.$clone(materialPlan).map(item => {
+            return {
+              type: item.material_type,
+              material_name: item.material_name,
+              color: item.material_attribute,
+              number: item.material_type === 1 ? item.process_weight * 1000 : item.process_weight,
+              unit: item.unit
+            }
+          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
+          // 初始化日志信息
+          this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 2).map(item => {
+            return {
+              ...item,
+              checked: false
+            }
+          }), 5)
+          this.stockLogTotal = this.stockLog.length
+          this.stockLog.forEach(item => {
+            item.forEach(itemInner => {
+              let materialFlag = this.materialStockInfo.find(value => value.material_name === itemInner.material_name)
+              if (materialFlag) {
+                let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
+                if (colorFlag) {
+                  // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
+                  if (itemInner.type === 3) {
+                    colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
+                  }
+                }
+              }
+              let clientFlag = this.weaveInfo.find(value => value.client_name === itemInner.client_name)
+              if (clientFlag) {
+                let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
+                if (materialFlag) {
+                  let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
+                  if (colorFlag) {
+                    // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
+                    if (itemInner.type === 1) {
+                      colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
+                    }
+                  }
+                }
+              }
+            })
+          })
+          this.loading = false
         })
-        this.loading = false
-      })
+      }
     }
   },
   created () {
-    this.initData()
+    this.initData(this.$route.params.type)
   },
   watch: {
     leftNum (newVal) {

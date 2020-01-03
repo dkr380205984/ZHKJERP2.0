@@ -1,6 +1,6 @@
 <template>
-  <div id='printHtml'
-    class="materialPlanTable">
+  <div class='printHtml'
+    id="materialPlanTable">
     <div class="printTable">
       <div class="print_head">
         <div class="left">

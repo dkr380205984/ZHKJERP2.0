@@ -297,7 +297,8 @@
       v-if="activePlanId">
       <div class="titleCtn">
         <span class="title">计划装箱信息</span>
-        <div class="btn noBorder">打印装箱单</div>
+        <div class="btn noBorder"
+          @click="$openUrl('/packPlanTable/' + $route.params.id + '/' + activePlanId)">打印装箱单</div>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="flexTb">
