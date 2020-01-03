@@ -77,6 +77,8 @@
                 @click="$router.push('/materialOrder/materialOrderDetail/'+item.id)">入库</span>
               <span class="opr"
                 @click="$router.push('/materialOrder/materialOrderUpdate/'+item.id)">修改</span>
+              <span class="opr"
+                @click="$openUrl('/materialOrderTable/'+item.id)">打印</span>
             </div>
           </div>
         </div>

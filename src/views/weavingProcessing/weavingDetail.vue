@@ -388,9 +388,9 @@
                   <div class="tcolumn noPad"
                     style="flex:6">
                     <div class="trow">
-                      <div class="tcolumn">产品信息</div>
+                      <!-- <div class="tcolumn">产品信息</div>
                       <div class="tcolumn">尺码颜色</div>
-                      <div class="tcolumn">分配数量</div>
+                      <div class="tcolumn">分配数量</div> -->
                       <div class="tcolumn noPad"
                         style="flex:3">
                         <div class="trow">
@@ -401,7 +401,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tcolumn">操作</div>
+                  <div class="tcolumn center">操作</div>
                 </div>
               </div>
               <div class="tbody">
@@ -414,12 +414,12 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                      <!-- <div class="tcolumn">
+                      <span>{{itemChild.product_info.code}}</span>
+                      <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.number}}</div>
+                      <div class="tcolumn">{{itemChild.number}}</div> -->
                       <div class="tcolumn noPad"
                         style="flex:3">
                         <div class="trow"
@@ -439,10 +439,15 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tcolumn">
-                    <span class="btn noBorder"
-                      style="padding:0;margin:0"
-                      @click="replenishFn(item)">补纱</span>
+                  <div class="tcolumn center">
+                    <span class="trow">
+                      <span class="btn noBorder"
+                        style="margin:0;padding:0"
+                        @click="replenishFn(item)">补纱</span>
+                      <span class="btn noBorder"
+                        style="margin:0 0 0 16px;padding:0"
+                        @click="printReplenish(item.client_name)">打印补纱单</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -624,6 +629,82 @@
         </div>
       </div>
     </div>
+    <!-- 补纱打印 -->
+    <div class="popup"
+      v-show="printPopup">
+      <div class="main"
+        style="width:788px">
+        <div class="title">
+          <div class="text">补纱打印{{printInfo[0] ? '-' + printInfo[0].client_name : ''}}</div>
+          <i class="el-icon-close"
+            @click="printPopup=false"></i>
+        </div>
+        <div class="content">
+          <!-- <div class="tips">
+            提示信息：请按实际情况填写金额承担比例。
+          </div> -->
+          <!-- <div class="row"
+            v-for="(item,index) in printInfo"
+            :key="index">
+            <div class="label"
+              :style="{'visibility':index>0?'hidden':'inhert'}">补纱信息：</div>
+            <div class="info"
+              style="display:flex">
+              <el-select v-model="item.yarn"
+                filterable
+                placeholder="请选择纱线">
+                <el-option v-for="item in replenish_yarn"
+                  :key="item.name"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+              <el-input style="margin-left:5px"
+                v-model="item.weight"
+                placeholder="请输入重量">
+                <template slot="append">kg</template>
+              </el-input>
+            </div>
+            <div class="editBtn blue"
+              v-if="index===0"
+              @click="addReplenish">添加</div>
+            <div class="editBtn red"
+              v-if="index>0"
+              @click="deleteReplenish(index)">删除</div>
+          </div> -->
+          <div class="tableCtnLv2 lineHeight40 minHeight5">
+            <div class="tb_header">
+              <span class="tb_row flex03"></span>
+              <span class="tb_row flex06">补纱日期</span>
+              <span class="tb_row">纱线名称</span>
+              <span class="tb_row flex06">颜色</span>
+              <span class="tb_row">承担比例</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in printInfo"
+              :key='index'>
+              <span class="tb_row flex03">
+                <el-checkbox v-model="item.checked"></el-checkbox>
+              </span>
+              <span class="tb_row flex06">{{item.created_at}}</span>
+              <span class="tb_row">{{item.material_name}}</span>
+              <span class="tb_row flex06">{{item.material_color}}</span>
+              <span class="tb_row">
+                <template v-for="(value,key) in item.percent_info">
+                  {{value}}
+                  <br :key='key' />
+                </template>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="printPopup=false">取消</div>
+          <div class="btn btnBlue"
+            @click="$openUrl('/replenishTable/' + $route.params.id + '/' + $route.params.orderType + '?id=' + printInfo.filter(item=>item.checked).map(item=>item.id).join(','))">去打印</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -671,10 +752,29 @@ export default {
         },
         desc: '补纱'
       },
-      replenish_log: []
+      replenish_log: [],
+      printInfo: [],
+      printPopup: false
     }
   },
   methods: {
+    // 补纱打印
+    printReplenish (client) {
+      this.printPopup = true
+      this.printInfo = this.replenish_log.filter(item => item.replenish_name === client).map(item => {
+        return {
+          checked: false,
+          id: item.id,
+          material_color: item.material_color,
+          client_name: item.replenish_name,
+          material_name: item.material_name,
+          created_at: this.$getTime(item.created_at),
+          percent_info: item.client_info.map(value => {
+            return value.client_name + '(' + value.percent + '%)'
+          })
+        }
+      })
+    },
     normalWeaving (code, size, color, id, number) {
       if (number !== 'undefined' && number <= 0) {
         this.$message.warning('该部件已分配完毕')

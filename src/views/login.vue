@@ -83,6 +83,7 @@ export default {
           })
           window.sessionStorage.setItem('token', res.data.data.token)
           window.sessionStorage.setItem('user_id', res.data.data.user_id)
+          window.sessionStorage.setItem('user_name', res.data.data.user_name)
           window.sessionStorage.setItem('company_id', res.data.data.company_id)
           window.sessionStorage.setItem('company_name', res.data.data.company_name)
           window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))

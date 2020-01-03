@@ -638,7 +638,7 @@
         <div class="btnCtn_page"
           id='yarn'>
           <div class="btn noBorder noMargin"
-            @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
+            @click="deleteLog('all',actualPackingLog,'actualPacking')">批量删除</div>
           <div class="btn noBorder noMargin">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
@@ -657,13 +657,14 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="itemLog.checked"></el-checkbox>
             </span>
-            <span class="tb_row">{{itemLog.created_at}}</span>
+            <span class="tb_row">{{itemLog.create_time}}</span>
             <span class="tb_row">{{itemLog.product_code}}<br />{{itemLog.type.join('/')}}</span>
             <span class="tb_row flex08">{{itemLog.size + '/' + itemLog.color}}</span>
             <span class="tb_row flex08">{{itemLog.pack_number+itemLog.unit}}</span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
-              <span class="tb_handle_btn red">删除</span>
+              <span class="tb_handle_btn red"
+                @click="deleteLog('one',itemLog.id,'actualPacking')">删除</span>
             </span>
           </div>
         </div>
@@ -687,7 +688,7 @@
         <div class="btnCtn_page"
           id='yarn'>
           <div class="btn noBorder noMargin"
-            @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
+            @click="deleteLog('all',outPackingLog,'outPacking')">批量删除</div>
           <div class="btn noBorder noMargin">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
@@ -751,7 +752,8 @@
             </span>
             <span class="tb_row middle">
               <span class="tb_handle_btn blue">打印</span>
-              <span class="tb_handle_btn red">删除</span>
+              <span class="tb_handle_btn red"
+                @click="deleteLog('one',itemLog.id,'outPacking')">删除</span>
             </span>
           </div>
         </div>
@@ -800,7 +802,60 @@ export default {
     }
   },
   methods: {
+    deleteLog (type, item, types) {
+      this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (types === 'actualPacking') {
+          let checkedArr = []
+          if (type === 'all') {
+            let deleteItem = []
+            item.forEach(itemInner => {
+              deleteItem = deleteItem.concat(itemInner)
+            })
+            checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+          } else {
+            checkedArr.push(item)
+          }
+          packPlan.deletePackActual({
+            id: checkedArr
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message.success('删除成功')
+              this.getActualPackingLog()
+            }
+          })
+        } else if (types === 'outPacking') {
+          let checkedArr = []
+          if (type === 'all') {
+            let deleteItem = []
+            item.forEach(itemInner => {
+              deleteItem = deleteItem.concat(itemInner)
+            })
+            checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+          } else {
+            checkedArr.push(item)
+          }
+          packPlan.deletePackOut({
+            id: checkedArr
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message.success('删除成功')
+              this.getOutPackingLog()
+            }
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     getActualPackingLog () {
+      this.loading = true
       packPlan.packActualLog({
         order_id: this.$route.params.id,
         order_type: 1
@@ -820,7 +875,6 @@ export default {
                 }
               })
             })
-            this.actualPackingLogTotal = this.actualPackingLog.length
           }
           this.productInfo.forEach(itemPro => {
             let flag = data.filter(item => item.product_id === itemPro.id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
@@ -836,9 +890,12 @@ export default {
               product_code: flag ? flag.product_code : '',
               type: flag ? flag.type : [],
               unit: flag ? flag.unit : '条',
+              checked: false,
               ...itemPro
             }
           }), 5)
+          this.actualPackingLogTotal = this.actualPackingLog.length
+          this.loading = false
         }
       })
     },

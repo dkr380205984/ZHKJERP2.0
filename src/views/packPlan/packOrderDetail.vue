@@ -134,7 +134,8 @@
                   </span>
                   <span class="tcolumn center">{{$getTime(itemTime.compiled_time)}}</span>
                   <span class="tcolumn center">
-                    <div class="btn noBorder noMargin">打印</div>
+                    <div class="btn noBorder noMargin"
+                      @click="$openUrl('/packOrderTable/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">打印</div>
                   </span>
                 </span>
               </span>
@@ -359,8 +360,14 @@
         <div class="title">包装辅料订购日志</div>
       </div>
       <div class="listCtn hasBorderTop">
+        <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="deleteLog('all',orderLog)">批量删除</div>
+          <div class="btn noBorder noMargin">批量打印</div>
+        </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
+            <span class="tb_row flex04"></span>
             <span class="tb_row">订购单位</span>
             <span class="tb_row">包装辅料</span>
             <span class="tb_row">订购单价</span>
@@ -374,6 +381,9 @@
           <div class="tb_content"
             v-for="(item,index) in orderLog[pageLog-1]"
             :key="index">
+            <span class="tb_row flex04">
+              <el-checkbox v-model="item.checked"></el-checkbox>
+            </span>
             <span class="tb_row">{{item.client_name}}</span>
             <span class="tb_row">{{item.material_name}}</span>
             <span class="tb_row">{{item.price}}元/{{item.unit}}</span>
@@ -381,13 +391,6 @@
             <span class="tb_row">{{item.total_price}}元</span>
             <span class="tb_row middle">{{item.order_time.split(' ')[0]}}</span>
             <span class="tb_row middle">
-              <!-- <el-popover placement="top"
-                width="200"
-                trigger="click"
-                :content="item.desc">
-                <span class="tb_handle_btn blue"
-                  slot="reference">查看</span>
-              </el-popover> -->
               <el-tooltip placement="top">
                 <div slot="content">规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />属性：{{item.attribute}}<br />备注：{{item.desc}}</div>
                 <span class="tb_handle_btn blue">查看</span>
@@ -395,8 +398,8 @@
             </span>
             <span class="tb_row">{{item.user_name}}</span>
             <span class="tb_row middle">
-              <span class="tb_handle_btn orange">修改</span>
-              <span class="tb_handle_btn red">删除</span>
+              <span class="tb_handle_btn red"
+                @click="deleteLog('one',item.id)">删除</span>
             </span>
           </div>
         </div>
@@ -445,6 +448,37 @@ export default {
     }
   },
   methods: {
+    deleteLog (type, item) {
+      this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let checkedArr = []
+        if (type === 'all') {
+          let deleteItem = []
+          item.forEach(itemInner => {
+            deleteItem = deleteItem.concat(itemInner)
+          })
+          checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+        } else {
+          checkedArr.push(item)
+        }
+        packPlan.deletePackOrder({
+          id: checkedArr
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            window.location.reload()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     cutPlanTb (id) {
       this.$confirm('请检测是否存在未保存的订购信息，切换装箱单将清空页面填写数据,请在提交订购后在进行切换计划单，是否继续切换?', '提示', {
         confirmButtonText: '确定',
@@ -673,7 +707,12 @@ export default {
             }
           })
         })
-        this.orderLog = this.$newSplice(this.$clone(res.data.data), 5)
+        this.orderLog = this.$newSplice(this.$clone(res.data.data).map(item => {
+          return {
+            ...item,
+            checked: false
+          }
+        }), 5)
         this.totalLog = this.orderLog.length
         this.packOrderInfo = this.$mergeData(this.$clone(res.data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
         this.loading = false

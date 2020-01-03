@@ -4,7 +4,7 @@
     v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
-        <div class="title">添加客户</div>
+        <div class="title">客户修改</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -135,7 +135,7 @@
               </span>
               <span class="tb_row middle flex05">
                 <span class="tb_handle_btn red"
-                  @click="deleteItem(contacts,index)">删除</span>
+                  @click="deleteItem(contacts,index,item.disabled)">删除</span>
               </span>
             </div>
             <div class="tb_content noPadding">
@@ -195,7 +195,11 @@ export default {
         telephone: ''
       })
     },
-    deleteItem (item, index) {
+    deleteItem (item, index, flag) {
+      if (flag) {
+        this.$message.warning('无法删除原有联系人')
+        return
+      }
       item.splice(index, 1)
     },
     saveAll () {
@@ -214,18 +218,19 @@ export default {
         }
         this.lock = false
         client.create({
+          id: this.$route.params.id,
           name: this.client_name,
-          abbreviation: this.client_abb,
+          abbreviation: this.type ? this.client_abb : '',
           phone: this.phone,
-          address: this.address,
+          address: this.type ? this.address : '',
           status: this.cooperation ? 1 : 2,
-          contacts: this.contacts.filter(item => item.name || item.post || item.telephone).map(item => {
+          contacts: this.type ? this.contacts.filter(item => item.name || item.post || item.telephone).map(item => {
             return {
               name: item.name,
               station: item.post,
               phone: item.telephone
             }
-          }),
+          }) : [],
           type: this.client_type
         }).then(res => {
           if (res.data.status !== false) {
@@ -241,6 +246,27 @@ export default {
     }
   },
   mounted () {
+    client.detail({
+      id: this.$route.params.id
+    }).then(res => {
+      if (res.data.status !== false) {
+        let data = res.data.data
+        this.client_type = data.type
+        this.client_name = data.name
+        this.client_abb = data.abbreviation
+        this.cooperation = data.status === 1
+        this.phone = data.phone
+        this.address = data.address
+        this.contacts = data.contacts.map(item => {
+          return {
+            name: item.name,
+            post: item.station,
+            telephone: item.phone,
+            disabled: true
+          }
+        })
+      }
+    })
     this.loading = false
   }
 }

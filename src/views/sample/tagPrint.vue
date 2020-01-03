@@ -1,5 +1,5 @@
 <template>
-  <div id='printHtml'>
+  <div class='printHtml'>
     <template v-for="(itemSize,indexSize) in size">
       <div class="printTag"
         v-for="(itemColor,indexColor) in color"

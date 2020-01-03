@@ -1,6 +1,6 @@
 <template>
-  <div id='printHtml'
-    class="craftTable">
+  <div class='printHtml'
+    id="craftTable">
     <div class="printTable">
       <div class="print_head">
         <div class="left">

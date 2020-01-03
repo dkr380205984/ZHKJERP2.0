@@ -28,58 +28,48 @@
               style="margin-left:0">重置</div>
           </div>
           <div class="rightCtn">
-            <div class="btn btnWhiteBlue">批量操作</div>
+            <div class="btn btnWhiteBlue"
+              @click="$router.push('/client/clientCreate')">新增客户</div>
           </div>
         </div>
         <div class="list">
           <div class="title">
             <div class="col flex12">
-              <span class="text">订单号</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">外贸公司</span>
-            </div>
-            <div class="col middle">
-              <span class="text">产品图片</span>
-            </div>
-            <div class="col flex08">
-              <span class="text">订单数量(件)</span>
-            </div>
-            <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">流程进度</span>
+              <span class="text">客户名称</span>
             </div>
             <div class="col">
-              <span class="text">下单时间</span>
+              <span class="text">客户简称</span>
+            </div>
+            <div class="col flex12">
+              <span class="text">客户类型</span>
+            </div>
+            <div class="col flex08">
+              <span class="text">人员数量</span>
+            </div>
+            <div class="col flex08">
+              <span class="text">联系电话</span>
+            </div>
+            <div class="col flex12">
+              <span class="text">更新时间</span>
             </div>
             <div class="col middle flex08">
               <span class="text">操作</span>
             </div>
           </div>
           <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col flex12">{{itemOrder.order_code}}</div>
-            <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle">
-              <zh-img-list :list="itemOrder.image"></zh-img-list>
-            </div>
-            <div class="col flex08">
-              {{itemOrder.number}}
-            </div>
-            <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div>
-            <div class="col flex12">
-            </div>
-            <div class="col">
-              {{itemOrder.order_time}}
-            </div>
+            v-for="(itemClient,indexClient) in list"
+            :key="indexClient">
+            <div class="col flex12">{{itemClient.name}}</div>
+            <div class="col">{{itemClient.abbreviation}}</div>
+            <div class="col flex12">{{computedType(itemClient.type)}}</div>
+            <div class="col flex08">{{itemClient.contacts.length}}</div>
+            <div class="col flex08">{{itemClient.phone}}</div>
+            <div class="col flex12">{{itemClient.update_time}}</div>
             <div class="col middle flex08">
               <span class="opr"
-                @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">订购详情</span>
+                @click="$router.push('/client/clientDetail/' + itemClient.id)">详情</span>
+              <span class="opr"
+                @click="$router.push('/client/clientUpdate/' + itemClient.id)">修改</span>
             </div>
           </div>
         </div>
@@ -98,6 +88,8 @@
 </template>
 
 <script>
+import { getHash } from '@/assets/js/common.js'
+import { companyType } from '@/assets/js/dictionary.js'
 import { client } from '@/assets/js/api.js'
 export default {
   data () {
@@ -106,22 +98,61 @@ export default {
       list: [],
       keyword: '',
       date: '',
+      client_type: '',
       pages: 1,
-      total: 0
+      total: 0,
+      companyType: companyType
     }
   },
   methods: {
+    getFilters () {
+      let params = getHash(this.$route.params.params)
+      this.pages = Number(params.page)
+      this.keyword = params.keyword
+      if (params.date !== 'null' && params.date !== '') {
+        this.date = params.date.split(',')
+      } else {
+        this.date = ''
+      }
+      this.client_type = params.clientType
+    },
+    changeRouter (page) {
+      let pages = page || 1
+      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&clientType=' + this.client_type)
+    },
     getClientList () {
       this.loading = true
       client.list({
         limit: 10,
-        page: this.pages
+        page: this.pages,
+        keyword: this.keyword
       }).then(res => {
+        if (res.data.status !== false) {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        }
       })
+    },
+    computedType (type) {
+      return type.map(item => {
+        let flag = this.companyType.find(value => value.value === item)
+        return flag.name || ''
+      }).join(',')
     }
   },
   created () {
+    this.getFilters()
     this.getClientList()
+  },
+  watch: {
+    pages (newVal) {
+      this.changeRouter(newVal)
+    },
+    $route (newVal) {
+      this.getFilters()
+      this.getClientList()
+    }
   }
 }
 </script>

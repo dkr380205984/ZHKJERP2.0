@@ -458,7 +458,7 @@
         <div class="btnCtn_page"
           id='yarn'>
           <div class="btn noBorder noMargin"
-            @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
+            @click="deleteLog('all',stockLog)">批量删除</div>
           <div class="btn noBorder noMargin">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
@@ -486,7 +486,8 @@
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn blue">打印</span>
-              <span class="tb_handle_btn red">删除</span>
+              <span class="tb_handle_btn red"
+                @click="deleteLog('one',itemLog.id)">删除</span>
             </span>
           </div>
         </div>
@@ -626,6 +627,37 @@ export default {
     }
   },
   methods: {
+    deleteLog (type, item) {
+      this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let checkedArr = []
+        if (type === 'all') {
+          let deleteItem = []
+          item.forEach(itemInner => {
+            deleteItem = deleteItem.concat(itemInner)
+          })
+          checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+        } else {
+          checkedArr.push(item)
+        }
+        materialStock.delete({
+          id: checkedArr
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            this.initData(this.$route.params.type)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     saveAll (type) {
       let data = []
       let flag = {

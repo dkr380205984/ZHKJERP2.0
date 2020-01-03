@@ -73,6 +73,11 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col flex12">
+              <div class="stateCtn rowFlex"
+                :class="itemOrder.order_pack_progress < 100 ? 'orange' : 'green'">
+                <div class="state"></div>
+                <span class="name">{{itemOrder.order_pack_progress}}%</span>
+              </div>
             </div>
             <div class="col">
               {{itemOrder.order_time}}
@@ -129,6 +134,7 @@ export default {
               return Number(total) + Number(itemNum)
             }),
             group_name: item.group_name,
+            order_pack_progress: item.order_pack_progress,
             order_time: item.order_time
           }
         })

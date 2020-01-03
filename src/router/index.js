@@ -279,6 +279,14 @@ const routes = [
       path: '/client/clientCreate',
       name: '客户添加',
       component: () => import('../views/client/clientCreate.vue')
+    }, {
+      path: '/client/clientUpdate/:id',
+      name: '客户修改',
+      component: () => import('../views/client/clientUpdate.vue')
+    }, {
+      path: '/client/clientDetail/:id',
+      name: '客户详情',
+      component: () => import('../views/client/clientDetail.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -300,6 +308,34 @@ const routes = [
     path: '/materialPlanTable/:id/:type/:params',
     name: 'materialPlanTable',
     component: () => import('../views/materialPlan/materialPlanTable.vue')
+  }, {
+    path: '/materialOrderTable/:id',
+    name: 'materialOrderTable',
+    component: () => import('../views/materialOrder/materialOrderTable.vue')
+  }, {
+    path: '/materialStockLogTable/:id',
+    name: 'materialStockLogTable',
+    component: () => import('../views/materialOrder/materialStockLogTable.vue')
+  }, {
+    path: '/packOrderTable/:id',
+    name: 'packOrderTable',
+    component: () => import('../views/packPlan/packOrderTable.vue')
+  }, {
+    path: '/replenishTable/:id/:type',
+    name: 'replenishTable',
+    component: () => import('../views/weavingProcessing/replenishTable.vue')
+  }, {
+    path: '/materialTable/:id/:orderType/:type',
+    name: 'materialTable',
+    component: () => import('../views/material/materialTable.vue')
+  }, {
+    path: '/materialProcessTable/:id/:orderType/:type',
+    name: 'materialProcessTable',
+    component: () => import('../views/material/materialProcessTable.vue')
+  }, {
+    path: '/packPlanTable/:id/:planId',
+    name: 'packPlanTable',
+    component: () => import('../views/packPlan/packPlanTable.vue')
   }, {
     path: '/pricePrintTable/:id',
     name: 'pricePrintTable',
@@ -380,7 +416,9 @@ router.beforeEach((to, from, next) => {
     '装箱出库详情': ['织为云', '装箱出库列表', '装箱出库详情'],
     '设备管理': ['织为云', '设备管理'],
     '客户列表': ['织为云', '客户列表'],
-    '客户添加': ['织为云', '客户列表', '客户添加']
+    '客户添加': ['织为云', '客户列表', '客户添加'],
+    '客户修改': ['织为云', '客户列表', '客户修改'],
+    '客户详情': ['织为云', '客户列表', '客户详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
