@@ -5,9 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
-        <zh-message :msgSwitch="msgSwitch"
+        <!-- <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
-          :content="msgContent"></zh-message>
+          :content="msgContent"></zh-message> -->
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -115,8 +115,8 @@
           </div>
           <div class="rightCtn">
             <el-switch v-model="product_type"
-              active-text="产"
-              inactive-text="样"
+              active-text="产品"
+              inactive-text="样品"
               active-color="#1A95FF"
               inactive-color="#E6A23C"
               :disabled="checkedProList.length > 0"
@@ -1154,7 +1154,7 @@ export default {
                   product_code: item.sample_product_code,
                   size: item.size.map(itemSize => {
                     return {
-                      measurement: itemSize.size_name,
+                      size_name: itemSize.size_name,
                       size_info: itemSize.size_info,
                       weight: itemSize.weight
                     }
@@ -1183,7 +1183,7 @@ export default {
                   product_code: item.sample_product_code,
                   size: item.size.map(itemSize => {
                     return {
-                      measurement: itemSize.size_name,
+                      size_name: itemSize.size_name,
                       size_info: itemSize.size_info,
                       weight: itemSize.weight
                     }
@@ -1218,68 +1218,68 @@ export default {
         item.size.forEach(size => {
           item.color.forEach(color => {
             sizeColor.push({
-              sizeColor: size.measurement + '/' + color.color_name,
+              sizeColor: size.size_name + '/' + color.color_name,
               id: size.id + '/' + color.id // 预留size和color的id
             })
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
         planList.detail_code({
-          product_key: item.product_code
+          product_id: item.id
         }).then(res => {
-          if (res.data.status) {
-            res.data.data.material_data.forEach(item => {
-              let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-              let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-              let number = item.colour.reduce((totalColour, currentColour) => {
-                return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-                  return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-                    return totalSize + Number(currentSize.number)
-                  }, 0)
-                }, 0)
-              }, 0)
-              if (!findedYarn && item.type === 0) {
-                if (this.priceInfo.raw_material[0].name) {
-                  let obj = {
-                    name: item.material,
-                    price: '',
-                    weight: number,
-                    prop: '',
-                    total_price: '',
-                    disabled: true
-                  }
-                  this.checkedYarn(obj)
-                  this.priceInfo.raw_material.push(obj)
-                } else {
-                  this.priceInfo.raw_material[0].name = item.material
-                  this.priceInfo.raw_material[0].weight = number
-                  this.priceInfo.raw_material[0].disabled = true
-                  this.checkedYarn(this.priceInfo.raw_material[0])
-                }
-              } else if (findedYarn && item.type === 0) {
-                findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-              }
-              if (!findedOther && item.type === 1) {
-                if (this.priceInfo.other_material[0].name) {
-                  let obj = {
-                    name: item.material,
-                    price: '',
-                    weight: number,
-                    prop: '',
-                    total_price: '',
-                    disabled: true
-                  }
-                  this.priceInfo.other_material.push(obj)
-                } else {
-                  this.priceInfo.other_material[0].name = item.material
-                  this.priceInfo.other_material[0].weight = number
-                  this.priceInfo.other_material[0].disabled = true
-                }
-              } else if (findedOther && item.type === 1) {
-                findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-              }
-            })
-          }
+          // if (res.data.status) {
+          //   res.data.data.material_data.forEach(item => {
+          //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
+          //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
+          //     let number = item.colour.reduce((totalColour, currentColour) => {
+          //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
+          //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
+          //           return totalSize + Number(currentSize.number)
+          //         }, 0)
+          //       }, 0)
+          //     }, 0)
+          //     if (!findedYarn && item.type === 0) {
+          //       if (this.priceInfo.raw_material[0].name) {
+          //         let obj = {
+          //           name: item.material,
+          //           price: '',
+          //           weight: number,
+          //           prop: '',
+          //           total_price: '',
+          //           disabled: true
+          //         }
+          //         this.checkedYarn(obj)
+          //         this.priceInfo.raw_material.push(obj)
+          //       } else {
+          //         this.priceInfo.raw_material[0].name = item.material
+          //         this.priceInfo.raw_material[0].weight = number
+          //         this.priceInfo.raw_material[0].disabled = true
+          //         this.checkedYarn(this.priceInfo.raw_material[0])
+          //       }
+          //     } else if (findedYarn && item.type === 0) {
+          //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
+          //     }
+          //     if (!findedOther && item.type === 1) {
+          //       if (this.priceInfo.other_material[0].name) {
+          //         let obj = {
+          //           name: item.material,
+          //           price: '',
+          //           weight: number,
+          //           prop: '',
+          //           total_price: '',
+          //           disabled: true
+          //         }
+          //         this.priceInfo.other_material.push(obj)
+          //       } else {
+          //         this.priceInfo.other_material[0].name = item.material
+          //         this.priceInfo.other_material[0].weight = number
+          //         this.priceInfo.other_material[0].disabled = true
+          //       }
+          //     } else if (findedOther && item.type === 1) {
+          //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
+          //     }
+          //   })
+          // }
         })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
