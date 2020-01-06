@@ -208,7 +208,7 @@ const plugin = {
               let otherName = itemRule.name.split('/')
               delete cloneItem[otherName[0]]
               if (itemRule.type === 'add') {
-                flag[otherName[1] || otherName[0]] = Number(flag[otherName[1] || otherName[0]]) + Number(item[otherName[0]])
+                flag[otherName[1] || otherName[0]] = (Number(flag[otherName[1] || otherName[0]]) || 0) + (Number(item[otherName[0]]) || 0)
               } else if (itemRule.type === 'concat') {
                 flag[otherName[1] || otherName[0]] = flag[otherName[1] || otherName[0]].concat(item[otherName[0]])
               }

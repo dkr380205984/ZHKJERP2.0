@@ -112,7 +112,7 @@
               </span>
             </span>
             <span class="tb_content"
-              v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
+              v-for="(itemBatch,indexBatch) in orderInfo.order_batch"
               :key="indexBatch">
               <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
               <span class="tb_row tb_col flex6">
@@ -292,8 +292,8 @@
                     <span class="tcolumn">{{itemPro.process_type}}</span>
                     <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
                     <span class="tcolumn">
-                      <span>入库：<span class="green">{{itemPro.receive_number || '-'}}</span></span>
-                      <span>出库：<span class="green">{{itemPro.dispatch_number || '-'}}</span></span>
+                      <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
+                      <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
                     </span>
                   </span>
                 </span>
@@ -332,16 +332,16 @@
               <span class="trow"
                 v-for="(item,index) in orderDetailInfo.inspection"
                 :key="index">
-                <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
+                <span class="tcolumn">{{item.product_code}}<br /></span>
                 <span class="tcolumn noPad flex5">
                   <span class="trow"
-                    v-for="(itemSize,indexSize) in item.sizeColor_info"
+                    v-for="(itemSize,indexSize) in item.color_info"
                     :key="indexSize">
                     <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                    <span class="tcolumn green">{{itemSize.semi_finished_number}}</span>
-                    <span class="tcolumn">{{itemSize.semi_finished_defective_number}}</span>
-                    <span class="tcolumn green">{{itemSize.finished_number}}</span>
-                    <span class="tcolumn">{{itemSize.finished_defective_number}}</span>
+                    <span class="tcolumn green">{{itemSize.semi_number || 0}}</span>
+                    <span class="tcolumn">{{itemSize.semi_rejects_number || 0}}</span>
+                    <span class="tcolumn green">{{itemSize.finished_number || 0}}</span>
+                    <span class="tcolumn">{{itemSize.finished_rejects_number || 0}}</span>
                   </span>
                 </span>
               </span>
@@ -382,12 +382,12 @@
                 <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
                 <span class="tcolumn noPad flex4">
                   <span class="trow"
-                    v-for="(itemSize,indexSize) in item.sizeColor_info"
+                    v-for="(itemSize,indexSize) in item.color_info"
                     :key="indexSize">
                     <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
                     <span class="tcolumn">{{itemSize.order_number}}</span>
-                    <span class="tcolumn green">{{itemSize.out_stock_number}}</span>
-                    <span :class="['tcolumn',(Number(itemSize.out_stock_number) || 0) < (Number(itemSize.order_number) || 0) ? 'red' : 'green']">{{$toFixed((Number(itemSize.out_stock_number) || 0) - (Number(itemSize.order_number) || 0))}}</span>
+                    <span class="tcolumn green">{{itemSize.number}}</span>
+                    <span :class="['tcolumn',(Number(itemSize.number) || 0) < (Number(itemSize.order_number) || 0) ? 'red' : 'green']">{{$toFixed((Number(itemSize.number) || 0) - (Number(itemSize.order_number) || 0))}}</span>
                   </span>
                 </span>
               </span>
@@ -737,7 +737,7 @@
 </template>
 
 <script>
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -746,6 +746,7 @@ export default {
         order_code: '',
         order_batch: []
       },
+      productList: [],
       timeProgressInfo: [],
       productProgInfo: [
         {
@@ -862,46 +863,46 @@ export default {
           // }
         ],
         'inspection': [
-          {
-            product_code: '19ABA0001',
-            type: ['围巾', '针织', '长巾'],
-            sizeColor_info: [
-              {
-                size: '均码',
-                color: '红色',
-                semi_finished_number: 600,
-                semi_finished_defective_number: 2,
-                finished_number: 200,
-                finished_defective_number: 1
-              }, {
-                size: '均码',
-                color: '黑色',
-                semi_finished_number: 600,
-                semi_finished_defective_number: 2,
-                finished_number: 200,
-                finished_defective_number: 1
-              }
-            ]
-          }
+          // {
+          //   product_code: '19ABA0001',
+          //   type: ['围巾', '针织', '长巾'],
+          //   sizeColor_info: [
+          //     {
+          //       size: '均码',
+          //       color: '红色',
+          //       semi_finished_number: 600,
+          //       semi_finished_defective_number: 2,
+          //       finished_number: 200,
+          //       finished_defective_number: 1
+          //     }, {
+          //       size: '均码',
+          //       color: '黑色',
+          //       semi_finished_number: 600,
+          //       semi_finished_defective_number: 2,
+          //       finished_number: 200,
+          //       finished_defective_number: 1
+          //     }
+          //   ]
+          // }
         ],
         'outStock': [
-          {
-            product_code: '19ABA0001',
-            type: ['围巾', '针织', '长巾'],
-            sizeColor_info: [
-              {
-                size: '均码',
-                color: '红色',
-                order_number: 2000,
-                out_stock_number: 1980
-              }, {
-                size: '均码',
-                color: '黑色',
-                order_number: 2000,
-                out_stock_number: 2080
-              }
-            ]
-          }
+          // {
+          //   product_code: '19ABA0001',
+          //   type: ['围巾', '针织', '长巾'],
+          //   sizeColor_info: [
+          //     {
+          //       size: '均码',
+          //       color: '红色',
+          //       order_number: 2000,
+          //       out_stock_number: 1980
+          //     }, {
+          //       size: '均码',
+          //       color: '黑色',
+          //       order_number: 2000,
+          //       out_stock_number: 2080
+          //     }
+          //   ]
+          // }
         ],
         'finance': {
           title: [
@@ -1303,14 +1304,23 @@ export default {
     init () {
       this.loading = true
       Promise.all([
-        order.detail({
+        order.editDetail({
           id: this.$route.params.id
         })
       ]).then(res => {
         this.orderInfo = res[0].data.data
+        let productList = []
+        res[0].data.data.order_batch.forEach(itemBatch => {
+          itemBatch.product_info.forEach(itemPro => {
+            if (!productList.find(item => item.product_id === itemPro.product_info.product_id)) {
+              productList.push(itemPro.product_info)
+            }
+          })
+        })
+        this.productList = productList
         // 处理流程时间线
         let nowDate = this.$getTime()
-        let timeArr = this.orderInfo.batch_info.map(item => {
+        let timeArr = this.orderInfo.order_batch.map(item => {
           return {
             time: new Date(item.delivery_time).getTime(),
             id: item.batch_id
@@ -1346,7 +1356,7 @@ export default {
           time: nowDate,
           prog: prog
         })
-        this.catDetail('production')
+        this.catDetail('outStock')
         this.loading = false
       })
     },
@@ -1408,7 +1418,6 @@ export default {
             })
           }
         })
-        console.log(this.orderDetailInfo.material, materialStock)
       })
     },
     // 生产概述
@@ -1431,7 +1440,6 @@ export default {
           order_type: 1
         })
       ]).then(res => {
-        console.log(res)
         let productionDetail = res[0].data.data.map(item => {
           return {
             ...item.product_info,
@@ -1454,9 +1462,112 @@ export default {
             is_part: item.is_part,
             process_type: item.type
           }
+        }), res[2].data.data.map(item => {
+          return {
+            ...item.product_code,
+            ...item.category_info,
+            client_name: item.client_name,
+            process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
+            size: item.size,
+            color: item.color,
+            is_part: item.is_part,
+            number: 0,
+            go_number: item.number
+          }
+        }), res[3].data.data.map(item => {
+          return {
+            ...item.product_code,
+            ...item.category_info,
+            client_name: item.client_name,
+            process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
+            size: item.size,
+            color: item.color,
+            is_part: item.is_part,
+            number: 0,
+            out_number: item.number
+          }
         }))
-        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'is_part' }] } })
-        console.log(productionDetail)
+        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+      })
+    },
+    // 检验概述
+    getInspectionDetail () {
+      Promise.all([
+        inspection.semiFinishedDetail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        inspection.finishedDetail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        })
+      ]).then(res => {
+        let inspectionDetail = res[0].data.data.map(item => {
+          return {
+            product_id: item.product_id,
+            product_info: {},
+            size: item.size,
+            color: item.color,
+            semi_number: item.number,
+            semi_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
+          }
+        }).concat(res[1].data.data.map(item => {
+          return {
+            product_id: item.product_id,
+            product_info: {},
+            size: item.size,
+            color: item.color,
+            finished_number: item.number,
+            finished_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
+          }
+        }))
+        this.orderDetailInfo.inspection = this.$mergeData(inspectionDetail, { mainRule: 'product_id', otherRule: [{ name: 'product_info' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'semi_number', type: 'add' }, { name: 'semi_rejects_number', type: 'add' }, { name: 'finished_number', type: 'add' }, { name: 'finished_rejects_number', type: 'add' }] } })
+      })
+    },
+    // 出库概述
+    getOutStockDetail () {
+      packPlan.packActualLog({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          let orderProductInfo = []
+          this.orderInfo.order_batch.forEach(itemBatch => {
+            orderProductInfo.push(...itemBatch.product_info.map(itemPro => {
+              return {
+                product_id: itemPro.product_info.product_id,
+                color: itemPro.color_name,
+                size: itemPro.size_name,
+                order_number: itemPro.numbers
+              }
+            }))
+          })
+          let outStockDetail = res.data.data.map(item => {
+            return {
+              product_id: item.product_id,
+              size: item.size,
+              color: item.color,
+              number: item.number
+            }
+          })
+          this.orderDetailInfo.outStock = this.$mergeData(orderProductInfo.concat(outStockDetail), { mainRule: 'product_id', childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'number', type: 'add' }, { name: 'order_number', type: 'add' }] } }).map(item => {
+            let proFlag = this.productList.find(itemPro => Number(itemPro.product_id) === Number(item.product_id))
+            return {
+              product_id: item.product_id,
+              product_code: proFlag ? proFlag.product_code : '',
+              type: proFlag ? [proFlag.category_name, proFlag.type_name, proFlag.style_name] : [],
+              unit: proFlag ? proFlag.unit : '件',
+              color_info: item.color_info.map(itemColor => {
+                return {
+                  size: itemColor.size,
+                  color: itemColor.color,
+                  number: itemColor.number,
+                  order_number: itemColor.order_number
+                }
+              })
+            }
+          })
+        }
       })
     },
     catDetail (type) {
@@ -1478,9 +1589,9 @@ export default {
         } else if (newVal === 'production') {
           this.getProductionDetail()
         } else if (newVal === 'inspection') {
-
+          this.getInspectionDetail()
         } else if (newVal === 'outStock') {
-
+          this.getOutStockDetail()
         } else if (newVal === 'finance') {
 
         } else {
