@@ -110,6 +110,15 @@
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
           </div>
+          <div class="rightCtn">
+            <el-switch v-model="product_type"
+              active-text="产"
+              inactive-text="样"
+              active-color="#1A95FF"
+              inactive-color="#E6A23C"
+              :disabled="checkedProList.length > 0"
+              @change="getList"></el-switch>
+          </div>
         </div>
         <div class="list"
           style="min-height:330px">
@@ -990,7 +999,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price, sample } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1064,6 +1073,7 @@ export default {
         { value: '洗标' }
       ],
       yarnPriceList: [],
+      product_type: true,
       lock: true
     }
   },
@@ -1086,37 +1096,115 @@ export default {
     },
     getList () {
       this.loading = true
-      product.list({
-        limit: 5,
-        page: this.pages,
-        product_code: this.searchCode,
-        category_id: this.category_id,
-        type_id: this.type_id,
-        style_id: this.style_id,
-        flower_id: this.flower_id,
-        has_plan: this.has_plan,
-        has_craft: this.has_craft,
-        has_quotation: this.has_quotation,
-        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-        end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
-      }).then(res => {
-        if (res.data.status === false) {
-          this.$message({
-            type: 'error',
-            message: res.data.message
-          })
-        } else {
-          this.productList = res.data.data.map(item => {
-            if (this.checkedProList.find(vals => vals.id === item.id)) {
-              return { ...item, checked: true }
-            } else {
-              return { ...item, checked: false }
-            }
-          })
-          this.total = res.data.meta.total
-        }
-        this.loading = false
-      })
+      if (this.product_type) {
+        product.list({
+          limit: 5,
+          page: this.pages,
+          product_code: this.searchCode,
+          category_id: this.category_id,
+          type_id: this.type_id,
+          style_id: this.style_id,
+          flower_id: this.flower_id,
+          has_plan: this.has_plan,
+          has_craft: this.has_craft,
+          has_quotation: this.has_quotation,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.productList = res.data.data.map(item => {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
+                return { ...item, checked: true, product_type: 1 }
+              } else {
+                return { ...item, checked: false, product_type: 1 }
+              }
+            })
+            this.total = res.data.meta.total
+          }
+          this.loading = false
+        })
+      } else {
+        sample.list({
+          limit: 5,
+          page: this.pages,
+          sample_product_code: this.searchCode,
+          category_id: this.category_id,
+          type_id: this.type_id,
+          style_id: this.style_id,
+          flower_id: this.flower_id,
+          has_plan: this.has_plan,
+          has_craft: this.has_craft,
+          has_quotation: this.has_quotation,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.productList = res.data.data.map(item => {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
+                return {
+                  checked: true,
+                  product_type: 2,
+                  id: item.id,
+                  product_code: item.sample_product_code,
+                  size: item.size.map(itemSize => {
+                    return {
+                      measurement: itemSize.size_name,
+                      size_info: itemSize.size_info,
+                      weight: itemSize.weight
+                    }
+                  }),
+                  color: item.color,
+                  flower_id: item.flower_name,
+                  images: item.image,
+                  name: item.name,
+                  user_name: item.user_name,
+                  create_time: item.create_time,
+                  has_craft: item.has_craft,
+                  has_plan: item.has_plan,
+                  has_quotation: item.has_quotation,
+                  style_name: item.style_name,
+                  type_name: item.type_name,
+                  category_info: {
+                    product_category: item.category_name,
+                    unit: item.unit
+                  }
+                }
+              } else {
+                return {
+                  checked: false,
+                  product_type: 2,
+                  id: item.id,
+                  product_code: item.sample_product_code,
+                  size: item.size.map(itemSize => {
+                    return {
+                      measurement: itemSize.size_name,
+                      size_info: itemSize.size_info,
+                      weight: itemSize.weight
+                    }
+                  }),
+                  color: item.color,
+                  flower_id: item.flower_name,
+                  images: item.image,
+                  name: item.name,
+                  user_name: item.user_name,
+                  create_time: item.create_time,
+                  has_craft: item.has_craft,
+                  has_plan: item.has_plan,
+                  has_quotation: item.has_quotation,
+                  style_name: item.style_name,
+                  type_name: item.type_name,
+                  category_info: {
+                    product_category: item.category_name,
+                    unit: item.unit
+                  }
+                }
+              }
+            })
+            this.total = res.data.meta.total
+          }
+          this.loading = false
+        })
+      }
     },
     checkedPro (flag, item) {
       if (flag) {
@@ -1374,7 +1462,8 @@ export default {
         product_info: JSON.stringify(this.checkedProList.map(item => {
           return {
             id: item.id,
-            colorSize: item.sizeColor
+            colorSize: item.sizeColor,
+            product_type: item.product_type
           }
         })),
         number: this.setNum,

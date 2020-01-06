@@ -261,6 +261,7 @@
                     <div class="trow">
                       <div class="tcolumn">产品信息</div>
                       <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn">工序</div>
                       <div class="tcolumn">分配数量</div>
                       <div class="tcolumn">出库数量</div>
                       <div class="tcolumn">入库数量</div>
@@ -285,6 +286,7 @@
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.type}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">{{itemChild.outNum}}</div>
                       <div class="tcolumn">{{itemChild.inNum}}</div>
@@ -293,10 +295,10 @@
                         style="flex-direction:row;align-items:center;justify-content:start">
                         <span class="btn noBorder"
                           style="padding:0;margin:0 16px 0 0"
-                          @click="processIn(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.inNum)">入库</span>
+                          @click="processIn(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.inNum,itemChild.type)">入库</span>
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="processOut(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.outNum)">出库</span>
+                          @click="processOut(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.outNum,itemChild.type)">出库</span>
                       </div>
                     </div>
                   </div>
@@ -691,7 +693,7 @@ export default {
         }
       })
     },
-    processIn (client, product, colorSize, number) {
+    processIn (client, product, colorSize, number, type) {
       this.process_type = '入库'
       this.process_flag = true
       this.process_data.push({
@@ -708,13 +710,13 @@ export default {
           number: number || '',
           count: ''
         }],
-        production_type: '', // 工序
+        production_type: type, // 工序
         client_id: client ? client.toString() : '',
         date: this.$getTime(new Date()),
         desc: ''
       })
     },
-    processOut (client, product, colorSize, number) {
+    processOut (client, product, colorSize, number, type) {
       this.process_type = '出库'
       this.process_flag = true
       this.process_data.push({
@@ -731,7 +733,7 @@ export default {
           number: number || '',
           count: ''
         }],
-        production_type: '', // 工序
+        production_type: type, // 工序
         client_id: client ? client.toString() : '',
         date: this.$getTime(new Date()),
         desc: ''

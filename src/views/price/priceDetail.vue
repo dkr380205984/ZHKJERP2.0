@@ -289,7 +289,7 @@ export default {
             // ...item
           }
         })
-        this.file_url = data.file_url ? JSON.parse(data.file_url) : [require('@/assets/image/index/noPic.jpg')]
+        this.file_url = data.file_url || [require('@/assets/image/index/noPic.jpg')]
         this.price_info.push(
           ...JSON.parse(data.material_info).map(item => {
             return {
@@ -350,11 +350,13 @@ export default {
             name: '基本佣金',
             prop: JSON.parse(data.commission).prop,
             totalPrice: JSON.parse(data.commission).price
-          }, {
+          },
+          {
             name: '基本税费',
             prop: JSON.parse(data.tax).prop,
             totalPrice: JSON.parse(data.tax).price
-          }, {
+          },
+          {
             name: '基本利润',
             prop: JSON.parse(data.profit).prop,
             totalPrice: JSON.parse(data.profit).price

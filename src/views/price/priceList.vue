@@ -208,7 +208,7 @@ export default {
           })
         } else {
           this.list = res.data.data.map(item => {
-            let img = item.file_url ? JSON.parse(item.file_url).map(vals => {
+            let img = item.file_url ? item.file_url.map(vals => {
               return {
                 image_url: vals,
                 thumb: vals,

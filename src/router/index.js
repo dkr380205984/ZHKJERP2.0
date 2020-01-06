@@ -341,6 +341,10 @@ const routes = [
     name: 'packPlanTable',
     component: () => import('../views/packPlan/packPlanTable.vue')
   }, {
+    path: '/weaveTable/:id/:planId',
+    name: 'weaveTable',
+    component: () => import('../views/weavingProcessing/weaveTable.vue')
+  }, {
     path: '/pricePrintTable/:id',
     name: 'pricePrintTable',
     component: () => import('../views/price/pricePrintTable.vue')

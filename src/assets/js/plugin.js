@@ -238,7 +238,7 @@ const plugin = {
    *return:Number
    ***********************************/
   toFixedAuto: (number) => {
-    if (!Number(number)) {
+    if (!Number(number) && Number(number) !== 0) {
       throw new TypeError('Expect to get a number')
     }
     if (number % 1 === 0) {
