@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -104,7 +107,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">添加产品</span>
+        <span class="title">添加样品</span>
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-bottom:0">
@@ -387,7 +390,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">提交</div>
+            @click="saveAll">修改</div>
         </div>
       </div>
     </div>
@@ -400,6 +403,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       sample_order_title: '',
       sample_type: '',
       sampleTypeArr: [{
@@ -639,9 +645,13 @@ export default {
         this.lock = true
         if (res.data.status) {
           this.$message.success('修改成功')
-          this.$router.push('/sample/sampleOrderDetail/' + res.data.data.id)
-        } else {
-          this.$message.error(res.data.message)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/sample/sampleOrderDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个样单<span style="color:#1A95FF">' + res.data.data.title + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/sample/sampleOrderDetail/' + res.data.data.id)
+          }
         }
       })
     },

@@ -553,7 +553,7 @@
           <template v-if="cName==='员工帐号管理'">
             <div class="flowerCtn">
               <div class="addBtn"
-                @click="showPopup=true">添加员工</div>
+                @click="resetAuth">添加员工</div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -1294,6 +1294,15 @@
               </div>
             </div>
             <div class="row">
+              <div class="label">管理权限：</div>
+              <div class="info">
+                <el-radio v-model="authInfo.has_check"
+                  :label="1">有审核权限</el-radio>
+                <el-radio v-model="authInfo.has_check"
+                  :label="0">没有审核权限</el-radio>
+              </div>
+            </div>
+            <div class="row">
               <div class="label">管理模块：</div>
               <div class="info">
                 <el-checkbox-group v-model="authInfo.module_id">
@@ -1617,6 +1626,7 @@ export default {
         station_name: '',
         name: '',
         mobile: '',
+        has_check: 0,
         module_id: []// 权限字段
       },
       permissions: permissions,
@@ -2888,6 +2898,20 @@ export default {
         }
       })
     },
+    resetAuth () {
+      this.authInfo = {
+        id: null,
+        status: 1,
+        telephone: '',
+        group_id: '',
+        station_name: '',
+        name: '',
+        mobile: '',
+        has_check: 0,
+        module_id: []
+      }
+      this.showPopup = true
+    },
     getAuth () {
       if (this.groupList.length === 0) {
         this.getGroup()
@@ -2933,6 +2957,7 @@ export default {
               station_name: '',
               name: '',
               mobile: '',
+              has_check: 0,
               module_id: []
             }
           }
@@ -2955,49 +2980,48 @@ export default {
       } else {
         return ''
       }
+    },
+    getDetailInfo (type, item) {
+      // console.log(type, item)
+      // if (type === 'yarn') {
+      //   yarn.priceLog({
+      //     id: item.id
+      //   }).then(res => {
+      //     if (res.data.status === false) {
+      //       this.$message.error('获取历史价格失败，' + res.data.message)
+      //     } else {
+      //     }
+      //   })
+      // } else if (type === 'material') {
+      //   material.priceLog({
+      //     id: item.id
+      //   }).then(res => {
+      //     if (res.data.status === false) {
+      //       this.$message.error('获取历史价格失败，' + res.data.message)
+      //     } else {
+
+      //     }
+      //   })
+      // } else if (type === 'pack') {
+      //   packag.priceLog({
+      //     id: item.id
+      //   }).then(res => {
+      //     if (res.data.status === false) {
+      //       this.$message.error('获取历史价格失败，' + res.data.message)
+      //     } else {
+
+      //     }
+      //   })
+      // } else {
+      //   this.$message.error('未知错误，请尝试刷新页面')
+      //   return
+      // }
+      // this.detailType = type
+      // this.detailInfo.name = item.name
+      // this.detailInfo.unit = item.unit
+      // this.detailInfo.price = item.price
+      // this.showDetailPopup = true
     }
-    // getDetailInfo (type, item) {
-    //   console.log(type, item)
-    //   if (type === 'yarn') {
-    //     yarn.priceLog({
-    //       id: item.id
-    //     }).then(res => {
-    //       if (res.data.status === false) {
-    //         this.$message.error('获取历史价格失败，' + res.data.message)
-    //       } else {
-
-    //       }
-    //     })
-    //   } else if (type === 'material') {
-    //     material.priceLog({
-    //       id: item.id
-    //     }).then(res => {
-    //       if (res.data.status === false) {
-    //         this.$message.error('获取历史价格失败，' + res.data.message)
-    //       } else {
-
-    //       }
-    //     })
-    //   } else if (type === 'pack') {
-    //     packag.priceLog({
-    //       id: item.id
-    //     }).then(res => {
-    //       if (res.data.status === false) {
-    //         this.$message.error('获取历史价格失败，' + res.data.message)
-    //       } else {
-
-    //       }
-    //     })
-    //   } else {
-    //     this.$message.error('未知错误，请尝试刷新页面')
-    //     return
-    //   }
-    //   this.detailType = type
-    //   this.detailInfo.name = item.name
-    //   this.detailInfo.unit = item.unit
-    //   this.detailInfo.price = item.price
-    //   this.showDetailPopup = true
-    // }
   },
   created () {
     this.pName = '产品设置'

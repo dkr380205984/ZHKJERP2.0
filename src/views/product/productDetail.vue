@@ -68,7 +68,7 @@
           <div class="colCtn flex3">
             <span class="label">产品名称：</span>
             <span class="text"
-              :class="{'blue':detail.sample_title}">{{detail.sample_title?detail.sample_title:'无'}}</span>
+              :class="{'blue':detail.name}">{{detail.name?detail.name:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -140,7 +140,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in detail.size"
-                :key="index">{{item.measurement+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -277,7 +277,7 @@
               <div class="line"
                 v-for="(item,index) in item.size"
                 :key="index">
-                <span style="margin-right:8px">{{item.measurement}}</span>
+                <span style="margin-right:8px">{{item.size_name}}</span>
                 <span style="margin-right:8px">{{item.size_info}}cm</span>
                 <span style="margin-right:8px">{{item.weight}}g</span>
                 <span style="color:#1A95FF">{{item.number}}个</span>
@@ -317,10 +317,10 @@
                 v-model="checkAllSize"
                 @change="handleCheckAllSize">全选</el-checkbox>
               <el-checkbox v-for="size in detail.size"
-                :label="size.measurement"
-                :key="size.measurement"
+                :label="size.size_name"
+                :key="size.size_name"
                 v-model="size.checked"
-                @change="handleCheckSize">{{size.measurement}}</el-checkbox>
+                @change="handleCheckSize">{{size.size_name}}</el-checkbox>
             </span>
           </span>
           <span class="row">
@@ -444,7 +444,7 @@ export default {
     },
     openTagPrint () {
       this.printFlag = false
-      let checkSize = this.detail.size.filter(itemSize => itemSize.checked).map(itemSize => itemSize.measurement)
+      let checkSize = this.detail.size.filter(itemSize => itemSize.checked).map(itemSize => itemSize.size_name)
       let checkColor = this.detail.color.filter(itemColor => itemColor.checked).map(itemColor => itemColor.color_name)
       if (checkSize.length === 0) {
         this.$message.error('检测到未选择尺码规格')

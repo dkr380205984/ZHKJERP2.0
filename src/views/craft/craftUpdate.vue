@@ -42,7 +42,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>

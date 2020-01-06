@@ -6,6 +6,9 @@
       <div class="titleCtn">
         <span class="title">基本信息</span>
         <span class="productCode">{{sample_product_code}}</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -363,6 +366,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       sample_product_code: '',
       chinaNum: chinaNum,
       name: '',
@@ -639,7 +645,13 @@ export default {
       sample.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
-          this.$router.push('/sample/sampleDetail/' + this.$route.params.id)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/sample/sampleDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个样品<span style="color:#1A95FF">' + res.data.data.sample_product_code + '</span>(' + res.data.data.category_name + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_name + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/sample/sampleDetail/' + this.$route.params.id)
+          }
         }
       })
     }
@@ -707,7 +719,7 @@ export default {
         item.value = item.name
       })
       let productInfo = res[6].data.data
-      this.sample_product_code = productInfo.sample_product_code
+      this.sample_product_code = productInfo.product_code
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
@@ -727,6 +739,7 @@ export default {
           colour: item.color_name
         }
       })
+      this.name = productInfo.name
       this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
       this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
       this.flower = productInfo.flower_id
@@ -749,7 +762,7 @@ export default {
           }),
           size: item.size.map((itemSize) => {
             return {
-              size: itemSize.measurement,
+              size: itemSize.size_name,
               weight: itemSize.weight,
               desc: itemSize.size_info,
               number: itemSize.number

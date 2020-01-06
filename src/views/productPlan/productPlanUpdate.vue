@@ -42,7 +42,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size_measurement"
-                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{item.size_name + ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -360,7 +360,7 @@ export default {
         let json = {
           colourSizeIndex: 0,
           name: item.part_type === 1 ? '大身信息' : item.product_info.product_title,
-          chooseMaterial: item.material_info[0].type === 1 ? 1 : 0,
+          chooseMaterial: item.material_info.length > 0 ? item.material_info[0].type === 1 ? 1 : 0 : 1,
           colourSizeArr: [],
           product_id: item.product_info.product_id,
           id: item.id
@@ -395,11 +395,11 @@ export default {
         this.productInfo.color.forEach((itemColour) => {
           this.list.forEach((itemList) => {
             let finded = itemList.colourSizeArr.find((itemFind) => {
-              return itemFind.colour_name === itemColour.color_name && itemFind.size_name === itemSize.measurement
+              return itemFind.colour_name === itemColour.color_name && itemFind.size_name === itemSize.size_name
             })
             if (!finded) {
               itemList.colourSizeArr.push({
-                size_name: itemSize.measurement,
+                size_name: itemSize.size_name,
                 size_id: itemSize.id,
                 colour_name: itemColour.color_name,
                 colour_id: itemColour.id,

@@ -6,6 +6,9 @@
       <div class="titleCtn">
         <span class="title">基本信息</span>
         <span class="sampleCode">{{sampleCode}}</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -363,6 +366,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       sample_code: ['Y', '00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
       name: '',
@@ -628,7 +634,13 @@ export default {
       sample.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('保存成功')
-          this.$router.push('/sample/sampleDetail/' + res.data.data.id)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/sample/sampleDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新样品<span style="color:#1A95FF">' + res.data.data.sample_product_code + '</span>(' + res.data.data.category_name + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_name + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/sample/sampleDetail/' + res.data.data.id)
+          }
         }
       })
     }

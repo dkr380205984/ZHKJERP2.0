@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -297,7 +300,7 @@
             <div class="col">{{item.product_code}}</div>
             <div class="col">{{item|filterType}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title}}</div>
+            <div class="col">{{item.name}}</div>
             <div class="col">
               <zh-img-list :list="item.images"></zh-img-list>
             </div>
@@ -601,7 +604,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">提交</div>
+            @click="saveAll">修改</div>
         </div>
       </div>
     </div>
@@ -615,6 +618,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       order_code: [{ code: '' }],
       client_id: '',
       clientArr: [],
@@ -782,8 +788,8 @@ export default {
         }
         item.sizeColor = item.size.map(valSize => {
           return {
-            value: valSize.measurement,
-            label: valSize.measurement,
+            value: valSize.size_name,
+            label: valSize.size_name,
             children: item.color.map(valColor => {
               return {
                 value: valColor.color_name,
@@ -799,7 +805,7 @@ export default {
             itemPro.size.forEach(itemSize => {
               itemPro.color.forEach(itemColor => {
                 arr.push({
-                  size_color: [itemSize.measurement, itemColor.color_name],
+                  size_color: [itemSize.size_name, itemColor.color_name],
                   price: '',
                   number: ''
                 })
@@ -871,7 +877,7 @@ export default {
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
-              size_color: [itemSize.measurement, itemColor.color_name],
+              size_color: [itemSize.size_name, itemColor.color_name],
               price: '',
               number: ''
             })
@@ -1022,9 +1028,13 @@ export default {
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('修改成功')
-          this.$router.push('/order/orderDetail/' + res.data.data.id)
-        } else {
-          this.$message.error(res.data.message)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/order/orderDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/order/orderDetail/' + res.data.data.id)
+          }
         }
       })
     },
@@ -1073,8 +1083,8 @@ export default {
           items.unit = items.product_info.unit
           items.sizeColor = items.product_info.size_measurement.map(valSize => {
             return {
-              value: valSize.measurement,
-              label: valSize.measurement,
+              value: valSize.size_name,
+              label: valSize.size_name,
               children: items.product_info.color.map(valColor => {
                 return {
                   value: valColor.color_name,
@@ -1106,8 +1116,8 @@ export default {
               product_code: itemPro.product_info.product_code,
               sizeColor: itemPro.product_info.size_measurement.map(valSize => {
                 return {
-                  value: valSize.measurement,
-                  label: valSize.measurement,
+                  value: valSize.size_name,
+                  label: valSize.size_name,
                   children: itemPro.product_info.color.map(valColor => {
                     return {
                       value: valColor.color_name,
