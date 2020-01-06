@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -996,6 +999,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       client_id: '',
       clientArr: [],
       contact_id: '',
@@ -1203,9 +1209,6 @@ export default {
         isCheckedItem.checked = false
       }
     },
-    showProductCard (item) {
-
-    },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
       let fileNameLength = file.name.length// 取到文件名长度
@@ -1271,13 +1274,11 @@ export default {
       }))
       total += Number(this.priceInfo.no_production_fee.total_price)
       total += Number(this.priceInfo.transport.total_price)
-      this.priceInfo.product_cost = total
+      this.priceInfo.product_cost = total.toFixed(2)
       this.computedProfits()
     },
     computedProfits () {
-      console.log('change', new Date().getTime())
       if (this.priceInfo.basic_fee.prop && this.priceInfo.basic_tax.prop && this.priceInfo.basic_profits.prop) {
-        console.log('change', new Date().getTime())
         this.priceInfo.product_total_price = this.priceInfo.product_cost / (1 - (Number(this.priceInfo.basic_fee.prop) + Number(this.priceInfo.basic_tax.prop) + Number(this.priceInfo.basic_profits.prop)) / 100)
         this.priceInfo.basic_fee.price = (this.priceInfo.product_total_price * this.priceInfo.basic_fee.prop / 100).toFixed(2)
         this.priceInfo.basic_tax.price = (this.priceInfo.product_total_price * this.priceInfo.basic_tax.prop / 100).toFixed(2)
@@ -1363,7 +1364,6 @@ export default {
         quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return 'https://zhihui.tlkrzf.com/' + vals.response.key })
-      console.log(img)
       price.create({
         id: null,
         client_id: this.client_id,
@@ -1398,14 +1398,11 @@ export default {
       }).then(res => {
         if (res.data.status) {
           this.$message({ type: 'success', message: '提交成功' })
-        } else {
-          this.$message({ type: 'error', message: res.data.message })
         }
       })
     },
     // 切换辅料单位
     resUnit (item, value) {
-      // console.log(item, value, this.material_list)
       let materialPriceInfo = this.material_list.find(key => key.value === value)
       item.unit = materialPriceInfo ? materialPriceInfo.unit : '个'
       if (materialPriceInfo) {

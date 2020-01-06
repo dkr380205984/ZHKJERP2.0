@@ -644,9 +644,13 @@ export default {
       product.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('保存成功')
-          this.msgUrl = '/product/productDetail/' + res.data.data.id
-          this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
-          this.msgSwitch = true
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/product/productDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/product/productDetail/' + res.data.data.id)
+          }
         }
       })
     }

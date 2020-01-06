@@ -6,6 +6,9 @@
       <div class="titleCtn">
         <span class="title">基本信息</span>
         <span class="productCode">{{product_code}}</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -362,6 +365,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       product_code: '',
       chinaNum: chinaNum,
       name: '',
@@ -648,7 +654,13 @@ export default {
       product.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
-          this.$router.push('/product/productDetail/' + this.$route.params.id)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/product/productDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/product/productDetail/' + this.$route.params.id)
+          }
         }
       })
     }

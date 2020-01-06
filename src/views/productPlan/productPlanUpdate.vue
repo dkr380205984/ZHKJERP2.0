@@ -360,7 +360,7 @@ export default {
         let json = {
           colourSizeIndex: 0,
           name: item.part_type === 1 ? '大身信息' : item.product_info.product_title,
-          chooseMaterial: item.material_info[0].type === 1 ? 1 : 0,
+          chooseMaterial: item.material_info.length > 0 ? item.material_info[0].type === 1 ? 1 : 0 : 1,
           colourSizeArr: [],
           product_id: item.product_info.product_id,
           id: item.id

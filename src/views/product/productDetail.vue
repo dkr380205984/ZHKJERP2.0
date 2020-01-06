@@ -68,7 +68,7 @@
           <div class="colCtn flex3">
             <span class="label">产品名称：</span>
             <span class="text"
-              :class="{'blue':detail.sample_title}">{{detail.sample_title?detail.sample_title:'无'}}</span>
+              :class="{'blue':detail.name}">{{detail.name?detail.name:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">

@@ -1,6 +1,7 @@
 <template>
   <div class="zhMessage">
     <div class="bell"
+      :class="{'active':msgFlag}"
       @click="visible=true">
       <i class="el-icon-bell"></i>
     </div>
@@ -19,7 +20,8 @@
               <el-switch v-model="msgFlag"></el-switch>
             </div>
           </div>
-          <div class="line">
+          <div class="line"
+            v-show="showCheck">
             <span class="label">消息类型：</span>
             <div class="content">
               <div class="btnCtn">
@@ -142,7 +144,8 @@ export default {
       type: '普通',
       tag: '工序',
       msgFlag: false,
-      defaultGroup: []
+      defaultGroup: [],
+      checkRouter: ['报价单添加'] // 需要审核的路由表,目前只有报价单
     }
   },
   computed: {
@@ -156,6 +159,9 @@ export default {
       return this.userListSelf.filter((item) => {
         return item.check
       })
+    },
+    showCheck () {
+      return this.checkRouter.find((item) => item === this.$route.params.name)
     }
   },
   watch: {
@@ -169,6 +175,13 @@ export default {
     msgSwitch (val) {
       if (val) {
         this.sendMsg()
+      }
+    },
+    tag (val) {
+      if (val === '审核') {
+        this.userListSelf = this.userListSelf.filter((item) => item.has_check === 1)
+      } else {
+        this.userListSelf = this.userList
       }
     }
   },
@@ -187,15 +200,29 @@ export default {
       }
       if (this.userList.length === 0) {
         auth.list().then((res) => {
-          this.$store.commit('getUserList', res.data.data.map((item) => {
-            return {
-              station: item.station,
-              group: item.group,
-              id: item.id,
-              name: item.name,
-              check: false
-            }
-          }))
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).tag === '审核') {
+            this.$store.commit('getUserList', res.data.data.map((item) => {
+              return {
+                station: item.station,
+                group: item.group,
+                id: item.id,
+                name: item.name,
+                has_check: item.has_check,
+                check: false
+              }
+            }).filter((item) => item.has_check === 1))
+          } else {
+            this.$store.commit('getUserList', res.data.data.map((item) => {
+              return {
+                station: item.station,
+                group: item.group,
+                id: item.id,
+                name: item.name,
+                has_check: item.has_check,
+                check: false
+              }
+            }))
+          }
         })
       }
       if (window.localStorage.getItem(this.$route.name)) {
@@ -272,6 +299,7 @@ export default {
   mounted () {
     this.init()
     this.getDefaultGroup()
+    console.log(this.$route)
   }
 }
 </script>

@@ -4,6 +4,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -610,6 +613,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       order_code: [{ code: '' }],
       client_id: '',
       clientArr: [],
@@ -1011,9 +1017,13 @@ export default {
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('添加成功')
-          this.$router.push('/order/orderDetail/' + res.data.data.id)
-        } else {
-          this.$message.error(res.data.message)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/order/orderDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/order/orderDetail/' + res.data.data.id)
+          }
         }
       })
     },

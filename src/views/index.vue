@@ -121,9 +121,6 @@ export default {
         }, {
           name: '产品列表',
           url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
-        }, {
-          name: '产品库存列表',
-          url: '/product/productStockList'
         }]
       }, {
         name: '订单管理',
@@ -272,11 +269,12 @@ export default {
     let channel = pusher.subscribe('my-channel-' + window.sessionStorage.getItem('user_id'))
     channel.bind('my-event', function (data) {
       console.log('消息通知接收', data)
+      let color = data.content.type === '普通' ? '#1a95ff' : data.content.type === '重要' ? '#E6A23C' : '#F5222D'
       vue.$notify({
         title: data.content.title,
         dangerouslyUseHTMLString: true,
         duration: 0,
-        message: data.content.content + '<a style="color:#1a95ff" href=' + data.content.router_url + '>(点击查看)</a>'
+        message: '<span style="display: inline-block;background:' + color + ';color: #fff;border-radius: 4px;padding: 0px 6px;margin-right: 4px;">' + data.content.type + '</span>xx人' + data.content.content + '<a style="color:#1a95ff" href=' + data.content.router_url + '>(点击查看)</a>'
       })
     })
   }
