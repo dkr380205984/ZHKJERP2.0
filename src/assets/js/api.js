@@ -322,7 +322,15 @@ const inspection = {
   finishedDetail: (params) => http.get(`${baseUrl}/production/inspection/list`, params),
   finishedDelete: (params) => http.post(`${baseUrl}/production/inspection/delete`, params, 'application/json')
 }
+// 消息通知
+const notify = {
+  create: (params) => http.post(`${baseUrl}/notify/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/notify/all`, params),
+  read: (params) => http.post(`${baseUrl}/notify/check/status`, params, 'application/json'),
+  unread: (params) => http.get(`${baseUrl}/notify/no/read`, params) // 未读消息数量
+}
 export {
+  notify,
   packPlan,
   inspection,
   receive,

@@ -25,9 +25,13 @@ const routes = [
   },
   {
     path: '/index',
-    name: '首页',
+    name: 'index',
     component: () => import('../views/index.vue'),
     children: [{
+      path: '/homePage/homePage',
+      name: '首页',
+      component: () => import('../views/homePage/homePage.vue')
+    }, {
       path: '/css/edit',
       name: '编辑页',
       component: () => import('../views/css/edit.vue')
@@ -354,6 +358,7 @@ router.beforeEach((to, from, next) => {
   // 获取标题
   store.commit('getTitle', to.name ? to.name : from.name)
   const routerTable = {
+    '首页': ['织为云', '首页'],
     '编辑页': ['织为云', '编辑页'],
     '详情页': ['织为云', '详情页'],
     '列表页': ['织为云', '列表页'],

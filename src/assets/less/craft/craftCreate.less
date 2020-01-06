@@ -8,6 +8,15 @@
       margin-left: 16px;
       cursor: pointer;
     }
+    .floatRight{
+      float: right;
+      font-size: @fontMiddle;
+      color: @font65;
+      cursor: pointer;
+      &:hover{
+        color: @blue;
+      }
+    }
   }
   .content{
     .element{
@@ -27,8 +36,8 @@
     margin-left: 16px;
     vertical-align: middle;
   }
-  .colorPicker{
-    margin-left: 16px;
+  .colorPickerCtn{
+    margin-right: 16px;
     vertical-align: middle;
   }
   .specialSelect{
@@ -272,6 +281,7 @@
     color: @font65;
     overflow:hidden;
     margin-top: 16px;
+    position: relative;
     .deltaCtn {
       width: 250px;
       height: 125px;
@@ -315,6 +325,17 @@
           text-align: center;
           margin: 50px 0;
         }
+        .copyBtn{
+          position: absolute;
+          line-height: 125px;
+          top: 25px;
+          left: 0;
+          cursor: pointer;
+          font-size: @fontSmall;
+          &:hover{
+            color: @blue;
+          }
+        }
       }
       .rightCtn {
         height: 125px;
@@ -338,6 +359,62 @@
       margin: auto;
       float: left;
       color: @font65;
+    }
+  }
+  .popup{
+    .main{
+      width: 1000px;
+      .info{
+        color: @font65;
+        background: #f4f4f4;
+        padding: 12px;
+        font-size: @fontMiddle;
+        margin: 16px 32px;
+      }
+      .content{
+        padding: 16px 0;
+        max-height: 9999px;
+        .line1{
+          display: flex;
+          padding: 0 16px;
+          .box{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            font-size: @fontMiddle;
+            color: @font85;
+            margin: 0 16px;
+            .label{
+              line-height: 38px;
+            }
+            .inputs{
+              height: 32px;
+            }
+          }
+        }
+        .line2{
+          height: 32px;
+          margin: 16px 32px 16px 32px;
+          line-height: 32px;
+          color: @font85; 
+          font-size: @fontMiddle;
+          .label{
+            display: inline-block;
+          }
+          .element{
+            width: 150px;
+            height: 32px;
+            margin-left: 16px;
+          }
+          .btn{
+            display: inline-block;
+            height: 32px;
+          }
+        }
+        .hotTable{
+          padding:16px 32px;
+        }
+      }
     }
   }
 }
