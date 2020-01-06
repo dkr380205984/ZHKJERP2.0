@@ -600,7 +600,7 @@ export default {
           part_size: item.size.map((itemSize) => {
             return {
               weight: itemSize.weight,
-              measurement: itemSize.size,
+              size_name: itemSize.size,
               size_info: itemSize.desc,
               number: itemSize.number
             }
@@ -635,7 +635,7 @@ export default {
         size: this.size.map(item => {
           return {
             weight: item.weight,
-            measurement: item.size,
+            size_name: item.size,
             size_info: item.desc
           }
         }),

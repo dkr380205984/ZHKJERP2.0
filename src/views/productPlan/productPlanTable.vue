@@ -119,7 +119,7 @@ export default {
         let materialInfo = data.material_info.concat(...data.part_info.map(itemPart => itemPart.material_info))
         this.materialInfo = this.$mergeData(materialInfo, { mainRule: ['product_size/size', 'product_color/color'], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'type'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'unit' }, { name: 'weight', type: 'add' }] } } })
         this.materialInfo.forEach(itemSize => {
-          let flag = this.productInfo.size_measurement.find(item => item.measurement === itemSize.size)
+          let flag = this.productInfo.size_measurement.find(item => item.size_name === itemSize.size)
           if (flag) {
             itemSize.weight = flag.weight
             itemSize.size_info = flag.size_info

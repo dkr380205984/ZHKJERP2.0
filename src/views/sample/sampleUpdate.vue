@@ -719,7 +719,7 @@ export default {
         item.value = item.name
       })
       let productInfo = res[6].data.data
-      this.sample_product_code = productInfo.sample_product_code
+      this.sample_product_code = productInfo.product_code
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
@@ -762,7 +762,7 @@ export default {
           }),
           size: item.size.map((itemSize) => {
             return {
-              size: itemSize.measurement,
+              size: itemSize.size_name,
               weight: itemSize.weight,
               desc: itemSize.size_info,
               number: itemSize.number

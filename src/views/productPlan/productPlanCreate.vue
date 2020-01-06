@@ -42,7 +42,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size"
-                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -315,6 +315,9 @@ export default {
       })
       let error = null
       formData.forEach((item) => {
+        if (item.material_info.length === 0) {
+          error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
+        }
         item.material_info.forEach((item) => {
           if (!item.material_name) {
             error = '检测到有未填写物料名称，请填写'
@@ -360,7 +363,7 @@ export default {
       this.productInfo.size.forEach((itemSize) => {
         this.productInfo.color.forEach((itemColour) => {
           this.list[0].colourSizeArr.push({
-            size_name: itemSize.measurement || itemSize.size_name,
+            size_name: itemSize.size_name,
             size_id: itemSize.id,
             colour_name: itemColour.color_name,
             colour_id: itemColour.id,
@@ -379,7 +382,7 @@ export default {
         }
         let colourSizeArr = JSON.parse(JSON.stringify(this.list[0].colourSizeArr))
         colourSizeArr.forEach((item) => {
-          item.partNum = itemPart.size.find((itemFind) => itemFind.measurement === item.size_name || itemFind.size_name === item.size_name).number
+          item.partNum = itemPart.size.find((itemFind) => itemFind.size_name === item.size_name).number
         })
         json.colourSizeArr = colourSizeArr
         this.list.push(json)

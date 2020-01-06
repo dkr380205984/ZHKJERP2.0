@@ -42,7 +42,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size_measurement"
-                :key="index">{{(item.measurement||item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{item.size_name + ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -395,11 +395,11 @@ export default {
         this.productInfo.color.forEach((itemColour) => {
           this.list.forEach((itemList) => {
             let finded = itemList.colourSizeArr.find((itemFind) => {
-              return itemFind.colour_name === itemColour.color_name && itemFind.size_name === itemSize.measurement
+              return itemFind.colour_name === itemColour.color_name && itemFind.size_name === itemSize.size_name
             })
             if (!finded) {
               itemList.colourSizeArr.push({
-                size_name: itemSize.measurement,
+                size_name: itemSize.size_name,
                 size_id: itemSize.id,
                 colour_name: itemColour.color_name,
                 colour_id: itemColour.id,

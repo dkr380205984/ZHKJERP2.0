@@ -1060,7 +1060,17 @@ export default {
       order_type: this.$route.params.orderType
     })]).then((res) => {
       this.orderInfo = res[0].data.data
-      let productInfo = res[1].data.data.product_info
+      let productInfo = []
+      res[1].data.data.product_info.forEach((item) => {
+        let finded = productInfo.find((itemFind) => {
+          return itemFind.size === item.size && itemFind.color === item.color && itemFind.product_code === item.product_code
+        })
+        if (finded) {
+          finded.numbers += Number(item.numbers)
+        } else {
+          productInfo.push(item)
+        }
+      })
       productInfo.forEach((item) => {
         item.part_data.forEach((itemChild) => {
           itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.numbers

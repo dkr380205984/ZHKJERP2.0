@@ -295,7 +295,7 @@
               <div class="line"
                 v-for="(item,index) in item.size"
                 :key="index">
-                <span style="margin-right:8px">{{item.measurement}}</span>
+                <span style="margin-right:8px">{{item.size_name}}</span>
                 <span style="margin-right:8px">{{item.size_info}}cm</span>
                 <span style="margin-right:8px">{{item.weight}}g</span>
                 <span style="color:#1A95FF">{{item.number}}个</span>

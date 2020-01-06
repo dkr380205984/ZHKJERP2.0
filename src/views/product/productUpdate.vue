@@ -609,7 +609,7 @@ export default {
           part_size: item.size.map((itemSize) => {
             return {
               weight: itemSize.weight,
-              measurement: itemSize.size,
+              size_name: itemSize.size,
               size_info: itemSize.desc,
               number: itemSize.number
             }
@@ -645,7 +645,7 @@ export default {
         size: this.size.map(item => {
           return {
             weight: item.weight,
-            measurement: item.size,
+            size_name: item.size,
             size_info: item.desc
           }
         }),
@@ -737,7 +737,7 @@ export default {
       })
       this.size = productInfo.size.map(item => {
         return {
-          size: item.measurement,
+          size: item.size_name,
           desc: item.size_info,
           weight: item.weight
         }
@@ -770,7 +770,7 @@ export default {
           }),
           size: item.size.map((itemSize) => {
             return {
-              size: itemSize.measurement,
+              size: itemSize.size_name,
               weight: itemSize.weight,
               desc: itemSize.size_info,
               number: itemSize.number
