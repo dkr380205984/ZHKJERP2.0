@@ -299,7 +299,6 @@ export default {
   mounted () {
     this.init()
     this.getDefaultGroup()
-    console.log(this.$route)
   }
 }
 </script>
