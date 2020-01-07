@@ -125,6 +125,7 @@ import { productPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      has_check: window.sessionStorage.getItem('has_check'),
       loading: true,
       productInfo: {
         product_code: '',

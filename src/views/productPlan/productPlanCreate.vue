@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -175,6 +178,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       chinaNum: chinaNum,
       productInfo: {
         product_code: '',
@@ -337,12 +343,16 @@ export default {
         this.$message.error(error)
         return
       }
-      this.loading = true
       productPlan.create({ data: formData }).then((res) => {
         if (res.data.status) {
           this.$message.success('添加成功')
-          this.loading = false
-          this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+          }
         }
       })
     }
@@ -382,7 +392,16 @@ export default {
         }
         let colourSizeArr = JSON.parse(JSON.stringify(this.list[0].colourSizeArr))
         colourSizeArr.forEach((item) => {
-          item.partNum = itemPart.size.find((itemFind) => itemFind.size_name === item.size_name).number
+          let finded = itemPart.size.find((itemFind) => itemFind.size_name === item.size_name)
+          item.partNum = finded.number
+          item.materials = [{
+            name: itemPart.part_title,
+            attr: itemPart.part_component.map((itemChild) => {
+              return itemChild.number + '%' + itemChild.component_name
+            }).join('/'),
+            number: 1,
+            unit: '个'
+          }]
         })
         json.colourSizeArr = colourSizeArr
         this.list.push(json)
@@ -397,6 +416,7 @@ export default {
           value: item.name
         }
       })
+      console.log(this.list)
       // 导入工艺单数据
       let craft = res[4].data.data
       if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft)) {

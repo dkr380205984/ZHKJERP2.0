@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -1055,6 +1058,9 @@ export default {
     return {
       loading: true,
       loadingS: false,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       craftId: '', // 修改工艺单的时候用
       productInfo: {
         product_code: '',
@@ -1735,23 +1741,6 @@ export default {
   methods: {
     afterSave (data) {
       this.msgFlag = data.msgFlag
-    },
-    sendMsg () {
-      // let data = JSON.parse(window.localStorage.getItem(this.localName))
-      // let formData = {
-      //   title: data.title,
-      //   type: data.type,
-      //   tag: '工序',
-      //   content: this.content,
-      //   router_url: this.msgUrl,
-      //   receive_user: data.receive_user
-      // }
-      // notifySave(formData).then((res) => {
-      //   if (res.data.status) {
-      //     this.$message.success('修改成功')
-      //     this.$router.push(this.msgUrl)
-      //   }
-      // })
     },
     // 匹配主/夹名称
     filterMethods (index) {
@@ -2481,18 +2470,13 @@ export default {
       }
       craft.update(formData).then((res) => {
         if (res.data.code === 200) {
-          if (this.msgFlag) {
-            this.msgUrl = '/index/craftDetail/' + res.data.data.id
-            this.content = '<span style="color:#1A95FF">添加</span>了一张新工艺单<span style="color:#1A95FF">' + res.data.data.id + '</span>'
-            this.sendMsg()
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/craft/craftDetail/' + res.data.data.product_info.product_id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一张工艺单<span style="color:#1A95FF">' + res.data.data.product_info.product_code + '</span>(' + res.data.data.product_info.category_info.product_category + '/' + res.data.data.product_info.type_name + '/' + res.data.data.product_info.style_name + '/' + res.data.data.product_info.flower_id + ')'
+            this.msgSwitch = true
           } else {
-            this.$message.success('修改成功')
-            this.$router.push('/craft/craftDetail/' + this.productInfo.product_id + '/2')
+            this.$router.push('/craft/craftDetail/' + res.data.data.product_info.product_id + '/' + this.$route.params.type)
           }
-        } else {
-          this.$message.error({
-            message: res.data.message
-          })
         }
       })
     }

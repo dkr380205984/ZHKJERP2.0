@@ -5,7 +5,9 @@
         <div class="leftCtn">
           <div class="companyCtn"
             @click="$router.push('/homePage/homePage')">
-            <div class="logo"></div>
+            <div class="logo">
+              <img :src="logo" />
+            </div>
             <div class="name">{{companyName}}</div>
           </div>
           <zh-nav :data="navCmp"
@@ -69,6 +71,7 @@ import { logout } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      logo: window.sessionStorage.getItem('logo') || require('@/assets/image/index/noPic.jpg'),
       companyName: window.sessionStorage.getItem('company_name') || '未登录',
       navData: [{
         name: '样式参考',

@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -161,7 +164,7 @@
             <div class="col">{{item.product_code}}</div>
             <div class="col">{{item|filterType}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.sample_title}}</div>
+            <div class="col">{{item.name}}</div>
             <div class="col">
               <zh-img-list :list="item.img"></zh-img-list>
             </div>
@@ -928,6 +931,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       client_id: '',
       clientArr: [],
       contact_id: '',
@@ -1293,9 +1299,14 @@ export default {
         product_need_desc: this.setNumRemake
       }).then(res => {
         if (res.data.status) {
-          this.$message({ type: 'success', message: '提交成功' })
-        } else {
-          this.$message({ type: 'error', message: res.data.message })
+          this.$message({ type: 'success', message: '修改成功' })
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/price/priceDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#1A95FF">修改</span>了一张新报价单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/price/priceDetail/' + res.data.data.id)
+          }
         }
       })
     },

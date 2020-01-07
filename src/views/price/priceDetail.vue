@@ -1,6 +1,7 @@
 <template>
   <div id='priceDetail'
-    class='indexMain'>
+    class='indexMain'
+    v-loading="loading">
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">报价单信息</span>
@@ -8,16 +9,19 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <div class="btn btnGray"
-              @click="$router.push('/price/priceUpdate/' + $route.params.id)">修改</div>
-            <div class="btn btnGray"
-              @click="$openUrl('/pricePrintTable/'+$route.params.id)">打印</div>
-            <div class="btn btnBlue">审核</div>
+            <div class="btn btnBlue"
+              v-if="has_check"
+              @click="checkFlag = true">审核</div>
           </div>
           <div class="otherInfo">
             <div class="block">
               <span class="label">状态</span>
-              <span :class="['text',status === 1 ? 'blue' : (status === 2 ? 'green' : 'red')]">{{status|filterStatus}}</span>
+              <el-tooltip class="item"
+                effect="dark"
+                :content="status === 1 ? '待审核' : (status === 2 ? '审核通过' : reason)"
+                placement="bottom">
+                <span :class="['text',status === 1 ? 'blue' : (status === 2 ? 'green' : 'red')]">{{status|filterStatus}}</span>
+              </el-tooltip>
             </div>
             <div class="block">
               <span class="label">订单金额</span>
@@ -60,10 +64,6 @@
           <div class="colCtn flex3">
             <span class="label">更新时间：</span>
             <span class="text">{{update_time}}</span>
-          </div>
-          <div class="colCtn">
-            <span class="label">驳回理由：</span>
-            <span class="text">{{reason}}</span>
           </div>
         </div>
       </div>
@@ -186,7 +186,10 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <div class="btn btnBlue">审核</div>
+          <div class="btn btnOrange"
+            @click="$router.push('/price/priceUpdate/' + $route.params.id)">修改</div>
+          <div class="btn btnBlue"
+            @click="$openUrl('/pricePrintTable/'+$route.params.id)">打印</div>
         </div>
         <div class="priceCtn">
           <span class="title">总价：</span>
@@ -202,16 +205,101 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="checkFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">审核报价单</div>
+          <i class="el-icon-close"
+            @click="checkFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="label">审核意见：</div>
+            <div class="info"
+              style="line-height:32px">
+              <el-radio v-model="ifPass"
+                :label="true">通过</el-radio>
+              <el-radio v-model="ifPass"
+                :label="false">驳回</el-radio>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">开启通知：</div>
+            <div class="info"
+              style="line-height:32px">
+              <el-radio v-model="ifMsg"
+                :label="1">总是通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="2">只在驳回时通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="3">关闭通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="4">只在通过时通知</el-radio>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">驳回理由：</div>
+            <div class="info">
+              <el-input type="textarea"
+                placeholder="请输入备注信息（不超过30个字）"
+                v-model="checkReason"
+                :disabled="ifPass"
+                maxlength="30"
+                show-word-limit>
+              </el-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">常见选项：</div>
+            <div class="info">
+              <el-checkbox-group v-model="checkList">
+                <el-checkbox :disabled="ifPass"
+                  label="物料价格偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="织造费用偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="加工费用偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="包装费用偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="人工费用偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="运输费用偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="基本利润偏低"></el-checkbox>
+                <el-checkbox :disabled="ifPass"
+                  label="整体报价偏低"></el-checkbox>
+              </el-checkbox-group>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="checkFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="checkPrice">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { price } from '@/assets/js/api.js'
+import { price, notify } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
+      has_check: window.sessionStorage.getItem('has_check'),
+      ifMsg: 1,
+      checkFlag: false,
+      ifPass: true,
+      checkList: [],
+      checkReason: '',
       code: '',
       create_user: '',
+      create_user_id: '',
       client_name: '',
       contact_man: '',
       unit: '',
@@ -230,7 +318,59 @@ export default {
     }
   },
   methods: {
-
+    checkPrice () {
+      if (this.ifPass) {
+        price.check({
+          id: this.$route.params.id
+        }).then((res) => {
+          if (res.data.status) {
+            let title = '您有一条消息通知'
+            if (this.ifMsg === 1 || (this.ifMsg === 2 && !this.ifPass) || (this.ifMsg === 4 && this.ifPass)) {
+              notify.create({
+                title: title,
+                type: '普通',
+                tag: '工序',
+                content: '有一张报价单' + this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>',
+                router_url: '/price/priceDetail/' + this.$route.params.id,
+                receive_user: [this.create_user_id]
+              }).then((res) => {
+                if (res.data.status) {
+                  this.checkFlag = false
+                  this.$message.success('审核成功')
+                  this.$router.push('/price/priceDetail/' + this.$route.params.id)
+                }
+              })
+            }
+          }
+        })
+      } else {
+        price.check({
+          id: this.$route.params.id,
+          reason: JSON.stringify(this.checkList),
+          reason_text: this.checkReason
+        }).then((res) => {
+          if (res.data.status) {
+            let title = '您有一条消息通知'
+            if (this.ifMsg === 1 || (this.ifMsg === 2 && !this.ifPass) || (this.ifMsg === 4 && this.ifPass)) {
+              notify.create({
+                title: title,
+                type: '普通',
+                tag: '工序',
+                content: '有一张报价单' + this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>',
+                router_url: '/price/priceDetail/' + this.$route.params.id,
+                receive_user: [this.create_user_id]
+              }).then((res) => {
+                if (res.data.status) {
+                  this.checkFlag = false
+                  this.$message.success('审核成功')
+                  this.$router.push('/price/priceDetail/' + this.$route.params.id)
+                }
+              })
+            }
+          }
+        })
+      }
+    }
   },
   filters: {
     filterTotal (item) {
@@ -262,13 +402,14 @@ export default {
       if (res.data.status) {
         let data = res.data.data
         this.code = data.quotation_code
+        this.create_user_id = data.user_id
         this.create_user = data.user_name
         this.client_name = data.client_name
         this.contact_man = data.contact_name
         this.unit = data.account_unit
         this.exchange_rate = data.exchange_rate
         this.update_time = data.updated_at
-        this.reason = (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '')
+        this.reason = data.reason_text ? data.reason_text + ',' + (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '') : (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '')
         this.status = data.status
         this.total_price = data.total_price
         this.set_num = data.number
@@ -362,8 +503,7 @@ export default {
             totalPrice: JSON.parse(data.profit).price
           }
         )
-      } else {
-        this.$message.error('出问题了，请刷新页面')
+        this.loading = false
       }
     })
   }

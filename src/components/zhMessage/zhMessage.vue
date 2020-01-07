@@ -161,7 +161,7 @@ export default {
       })
     },
     showCheck () {
-      return this.checkRouter.find((item) => item === this.$route.params.name)
+      return this.checkRouter.find((item) => item === this.$route.name)
     }
   },
   watch: {

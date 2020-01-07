@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -175,6 +178,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       chinaNum: chinaNum,
       productInfo: {
         product_code: '',
@@ -337,7 +343,13 @@ export default {
         if (res.data.status) {
           this.$message.success('修改成功')
           this.loading = false
-          this.$router.push('/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_name + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_name + ')'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type)
+          }
         }
       })
     }
