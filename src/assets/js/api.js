@@ -329,7 +329,12 @@ const notify = {
   read: (params) => http.post(`${baseUrl}/notify/check/status`, params, 'application/json'),
   unread: (params) => http.get(`${baseUrl}/notify/no/read`, params) // 未读消息数量
 }
+// 订单财务总览
+const finance = {
+  detail: (params) => http.get(`${baseUrl}/financial/order/count/total`, params)
+}
 export {
+  finance,
   notify,
   packPlan,
   inspection,
