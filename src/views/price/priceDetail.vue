@@ -434,7 +434,7 @@ export default {
         this.price_info.push(
           ...JSON.parse(data.material_info).map(item => {
             return {
-              name: item.key ? item.key : '原料',
+              name: item.name ? item.name : '原料',
               number: item.weight,
               price: item.price,
               sunhao: item.sunhao,
@@ -444,7 +444,7 @@ export default {
           }),
           ...JSON.parse(data.assist_info).map(item => {
             return {
-              name: item.key ? item.key : '辅料',
+              name: item.name ? item.name : '辅料',
               number: item.weight,
               price: item.price,
               sunhao: item.sunhao,
@@ -454,32 +454,32 @@ export default {
           }),
           ...JSON.parse(data.weave_info).map(item => {
             return {
-              name: item.key ? item.key : '织造',
+              name: item.name ? item.name : '织造',
               other: item.number,
               totalPrice: item.total_price || item.price
             }
           }),
           ...JSON.parse(data.semi_product_info).map(item => {
             return {
-              name: item.key && item.key.length !== 0 ? item.key.join('/') : '半成品加工',
+              name: item.name && item.name.length !== 0 ? item.name.join('/') : '半成品加工',
               totalPrice: item.total_price || item.price
             }
           }),
           ...JSON.parse(data.production_info).map(item => {
             return {
-              name: item.key && item.key.length !== 0 ? item.key.join('/') : '成品加工',
+              name: item.name && item.name.length !== 0 ? item.name.join('/') : '成品加工',
               totalPrice: item.total_price || item.price
             }
           }),
           ...JSON.parse(data.pack_material_info).map(item => {
             return {
-              name: item.key ? item.key : '包装',
+              name: item.name && item.name.length !== 0 ? item.name.join('/') : '包装',
               totalPrice: item.total_price || item.price
             }
           }),
           ...JSON.parse(data.desc_info).map(item => {
             return {
-              name: item.key ? item.key : '其他',
+              name: item.name ? item.name : '其他',
               totalPrice: item.total_price || item.price
             }
           }),

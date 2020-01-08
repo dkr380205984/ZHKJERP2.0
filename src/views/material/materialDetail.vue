@@ -146,7 +146,7 @@
                 <div class="trow"
                   v-for="(item,index) in order_stock_info"
                   :key="index">
-                  <div class="tcolumn"><span :class="{'blue':item.childrenMergeInfo[0].type_source===1,'green':item.childrenMergeInfo[0].type_source===2}">{{item.childrenMergeInfo[0].type_source===2?'订购':'调取'}}{{item.childrenMergeInfo[0].replenish_id?'/补纱':''}}</span>{{item.client_name}}</div>
+                  <div class="tcolumn"><span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>{{item.client_name}}</div>
                   <div class="tcolumn noPad"
                     style="flex:5">
                     <div class="trow"
@@ -162,7 +162,7 @@
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
                   <div class="tcolumn">
                     <span class="blue"
-                      @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name)">打印</span>
+                      @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name + '&&type=' + item.type_source)">打印</span>
                   </div>
                 </div>
               </div>
@@ -1614,7 +1614,7 @@ export default {
         }
         return item
       }).filter(item => item.type === Number(this.type))
-      this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name' })
+      this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
       this.order_stock_info.forEach((item) => {
         item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
           return total + current.price * current.weight

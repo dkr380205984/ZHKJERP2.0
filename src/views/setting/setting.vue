@@ -1335,7 +1335,7 @@
             <div class="row">
               <div class="label">打印单标题：</div>
               <div class="info">
-                <el-input placeholder="请输入员工姓名"
+                <el-input placeholder="请输入打印页面标题"
                   v-model="printEditInfo.title"></el-input>
               </div>
             </div>
@@ -1344,7 +1344,7 @@
               <div class="info">
                 <el-input type="textarea"
                   :autosize="{ minRows: 8, maxRows: 16}"
-                  placeholder="请输入内容"
+                  placeholder="请编辑备注内容"
                   v-model="printEditInfo.remark">
                 </el-input>
               </div>
@@ -1480,7 +1480,7 @@
 
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag, print } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1635,45 +1635,55 @@ export default {
       // 打印设置
       printEditArr: [
         {
-          id: 1,
+          type: 1,
           name: '织造分配',
-          title: '桐庐凯瑞针纺有限公司织造分配'
+          title: window.sessionStorage.getItem('company_name') + '织造分配',
+          remark: ''
         }, {
-          id: 2,
+          type: 2,
           name: '加工分配',
-          title: '桐庐凯瑞针纺有限公司加工分配'
+          title: window.sessionStorage.getItem('company_name') + '加工分配',
+          remark: ''
         }, {
-          id: 3,
+          type: 3,
           name: '原料调拨',
-          title: '桐庐凯瑞针纺有限公司原料调拨'
+          title: window.sessionStorage.getItem('company_name') + '原料调拨',
+          remark: ''
         }, {
-          id: 4,
+          type: 4,
           name: '辅料调拨',
-          title: '桐庐凯瑞针纺有限公司辅料调拨'
+          title: window.sessionStorage.getItem('company_name') + '辅料调拨',
+          remark: ''
         }, {
-          id: 5,
+          type: 5,
           name: '原料订购',
-          title: '桐庐凯瑞针纺有限公司原料订购'
+          title: window.sessionStorage.getItem('company_name') + '原料订购',
+          remark: ''
         }, {
-          id: 6,
+          type: 6,
           name: '辅料订购',
-          title: '桐庐凯瑞针纺有限公司辅料订购'
+          title: window.sessionStorage.getItem('company_name') + '辅料订购',
+          remark: ''
         }, {
-          id: 7,
+          type: 7,
           name: '原料加工',
-          title: '桐庐凯瑞针纺有限公司原料加工'
+          title: window.sessionStorage.getItem('company_name') + '原料加工',
+          remark: ''
         }, {
-          id: 8,
+          type: 8,
           name: '辅料加工',
-          title: '桐庐凯瑞针纺有限公司辅料加工'
+          title: window.sessionStorage.getItem('company_name') + '辅料加工',
+          remark: ''
         }, {
-          id: 9,
+          type: 9,
           name: '包装辅料订购',
-          title: '桐庐凯瑞针纺有限公司包装辅料订购'
+          title: window.sessionStorage.getItem('company_name') + '包装辅料订购',
+          remark: ''
         }, {
-          id: 9,
+          type: 9,
           name: '运输分配',
-          title: '桐庐凯瑞针纺有限公司运输分配'
+          title: window.sessionStorage.getItem('company_name') + '运输分配',
+          remark: ''
         }
       ],
       printEditPages: 1,
@@ -1719,6 +1729,8 @@ export default {
         this.getCompany()
       } else if (val === '员工帐号管理') {
         this.getAuth()
+      } else if (val === '打印设置') {
+        this.getPrintList()
       }
     }
   },
@@ -1772,11 +1784,37 @@ export default {
   methods: {
     // 修改打印设置
     updatePrint (item) {
-      this.printEditInfo = item
+      this.printEditInfo = this.$clone(item)
       this.showPopup = true
     },
     savePrint () {
-
+      print.create({
+        id: this.printEditInfo.id,
+        type: this.printEditInfo.type,
+        title: this.printEditInfo.title,
+        desc: this.printEditInfo.remark.replace(/\n/g, '<br/>')
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('设置成功')
+          this.getPrintList()
+          this.showPopup = false
+        }
+      })
+    },
+    getPrintList () {
+      print.list().then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          data.forEach(item => {
+            let flag = this.printEditArr.find(val => Number(val.type) === Number(item.type))
+            if (flag) {
+              flag.title = item.title
+              flag.remark = item.desc.replace(/<br\/>/g, '\n')
+              flag.id = item.id
+            }
+          })
+        }
+      })
     },
     // 修改用户账号信息
     changeAuth (item) {

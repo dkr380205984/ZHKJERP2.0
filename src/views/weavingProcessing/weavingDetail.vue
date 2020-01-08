@@ -298,13 +298,17 @@
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
+                      <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
                   <div class="tcolumn">
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
+<<<<<<< HEAD
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span>
+=======
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&&clientId=' + item.client_id)">打印</span>
+>>>>>>> yhw
                   </div>
                 </div>
               </div>
