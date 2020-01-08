@@ -436,7 +436,7 @@ export default {
             id: id
           }).then((res) => {
             if (res.data.status) {
-              this.fittingInfo.splice(index)
+              this.fittingInfo.splice(index, 1)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -444,7 +444,7 @@ export default {
             }
           })
         } else {
-          this.fittingInfo.splice(index)
+          this.fittingInfo.splice(index, 1)
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -600,6 +600,7 @@ export default {
         this.$message.error('请输入配件名称')
         return
       }
+
       let partData = this.fittingInfo.map((item) => {
         return {
           part_id: item.part_id ? item.part_id : '',

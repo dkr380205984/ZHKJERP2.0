@@ -31,8 +31,6 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="sendMsg">发布通知</el-dropdown-item>
-                <el-dropdown-item command="personManage"
-                  divided>人员管理</el-dropdown-item>
                 <el-dropdown-item command="logout"
                   divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>

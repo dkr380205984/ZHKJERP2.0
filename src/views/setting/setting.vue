@@ -1786,6 +1786,9 @@ export default {
       delete authInfo.create_time
       delete authInfo.group
       this.authInfo = authInfo
+      if (typeof (this.authInfo.module_id) !== 'object' || this.authInfo.module_id === null) {
+        this.authInfo.module_id = []
+      }
     },
     getProductType () {
       productType.list().then((res) => {

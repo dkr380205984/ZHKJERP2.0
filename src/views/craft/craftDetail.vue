@@ -3,8 +3,11 @@
     class="indexMain"
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn"
+        style="display: flex;justify-content: space-between;align-items: center;">
         <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+        <div class="btn btnBlue"
+          @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">

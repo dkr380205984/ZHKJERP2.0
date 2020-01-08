@@ -395,7 +395,7 @@ export default {
           let finded = itemPart.size.find((itemFind) => itemFind.size_name === item.size_name)
           item.partNum = finded.number
           item.materials = [{
-            name: itemPart.part_title,
+            name: itemPart.part_title || itemPart.name,
             attr: itemPart.part_component.map((itemChild) => {
               return itemChild.number + '%' + itemChild.component_name
             }).join('/'),

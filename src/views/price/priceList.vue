@@ -125,7 +125,7 @@
             </div>
             <div class="col middle">
               <span class="opr"
-                @click="$router.push('/price/priceDetail/' + item.id)">{{has_check?'审核':'详情'}}</span>
+                @click="$router.push('/price/priceDetail/' + item.id)">{{has_check==='1'?'审核':'详情'}}</span>
               <span class="opr">
                 <el-dropdown @command="handleCommand($event,item.id)">
                   <span class="el-dropdown-link">

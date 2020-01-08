@@ -710,7 +710,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, weave, replenish } from '@/assets/js/api.js'
+import { order, materialPlan, client, weave, replenish, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1048,7 +1048,8 @@ export default {
     }
   },
   mounted () {
-    Promise.all([order.detail({
+    let api = this.$route.params.orderType === '1' ? order : sampleOrder
+    Promise.all([api.detail({
       id: this.$route.params.id
     }), materialPlan.init({
       order_id: this.$route.params.id,

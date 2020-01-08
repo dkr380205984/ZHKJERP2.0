@@ -193,7 +193,7 @@
                     <el-dropdown-item @click.native="deletePro(item.id)">
                       <span class="delete">删除产品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="!item.has_craft"
+                    <el-dropdown-item v-if="!item.has_craft&&item.size.length===1"
                       @click.native="$router.push('/craft/craftCreate/'+ item.id + '/' + 1)">
                       <span class="create">添加工艺单</span>
                     </el-dropdown-item>

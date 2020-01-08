@@ -10,7 +10,7 @@
         <div class="floatRight">
           <div class="btnCtn">
             <div class="btn btnBlue"
-              v-if="has_check"
+              v-if="has_check==='1'"
               @click="checkFlag = true">审核</div>
           </div>
           <div class="otherInfo">

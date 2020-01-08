@@ -232,7 +232,7 @@
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_order_progress.y_percent>0||itemOrder.material_order_progress.f_percent>0,'green':itemOrder.material_order_progress.y_percent>=100&&itemOrder.material_order_progress.f_percent>=100}">
+                :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
