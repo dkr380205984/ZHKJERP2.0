@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{companyName}}原料订购单</span>
+          <span class="title">{{title}}</span>
           <span class="item"><span class="label">联系人：</span>{{user_name}}</span>
           <span class="item"><span class="label">联系电话：</span>{{user_tel}}</span>
           <span class="item"><span class="label">创建时间：</span>{{$getTime()}}</span>
@@ -20,7 +20,8 @@
       <div class="print_body hasPosBottom">
         <div class="print_row posBottom">
           <span class="row_item center w180">备注</span>
-          <span class="row_item left"></span>
+          <span class="row_item left"
+            v-html='remark'></span>
         </div>
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单号</span>
@@ -37,7 +38,7 @@
         <template v-for="(item,index) in materialInfo">
           <div class="print_row bgGray"
             :key="index + 'title'">
-            <span class="row_item w180 center">原料名称{{index + 1}}</span>
+            <span class="row_item w180 center">{{$route.params.type === '1' ? '原' : '辅'}}料名称{{index + 1}}</span>
             <span class="row_item left">{{item.material_name}}</span>
             <span class="row_item w180 center">总价</span>
             <span class="row_item left flex08">{{item.total_price || 0}}元</span>
@@ -59,7 +60,7 @@
 </template>
 
 <script>
-import { order, materialManage } from '@/assets/js/api.js'
+import { order, materialManage, print } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -69,7 +70,9 @@ export default {
       qrCodeUrl: '',
       orderInfo: {},
       materialInfo: [],
-      total_price: ''
+      total_price: '',
+      title: '',
+      remark: ''
     }
   },
   methods: {
@@ -83,15 +86,20 @@ export default {
       materialManage.detail({
         order_type: this.$route.params.orderType,
         order_id: this.$route.params.id
+      }),
+      print.detail({
+        type: this.$route.query.type === '1' ? (this.$route.params.type === '1' ? 3 : 4) : (this.$route.params.type === '1' ? 5 : 6)
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data
-      let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
+      let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName || item.stock_name === this.$route.query.clientName)
       this.materialInfo = this.$mergeData(materialInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['color_code/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }] } }).map(item => {
         item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
         return item
       })
       this.total_price = this.materialInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
+      this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + (this.$route.query.type === '1' ? '调取' : '订购') + '单')
+      this.remark = res[2].data.data ? res[2].data.data.desc : ''
     })
   },
   mounted () {

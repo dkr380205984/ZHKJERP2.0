@@ -333,7 +333,14 @@ const notify = {
 const finance = {
   detail: (params) => http.get(`${baseUrl}/financial/order/count/total`, params)
 }
+// 打印设置
+const print = {
+  create: (params) => http.post(`${baseUrl}/print/edit/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/print/edit/one`, params),
+  list: (params) => http.get(`${baseUrl}/print/edit/list`, params)
+}
 export {
+  print,
   finance,
   notify,
   packPlan,

@@ -9,8 +9,7 @@
           @click.stop="lastFlag ? false : index++"></span>
       </div>
       <div class="index_info">
-        <span>{{(index+1) + ' / ' + selfList.length}}</span>
-        <span>{{type === 'show' ? '点击查看' : '查看详情'}}</span>
+        {{(index+1) + ' / ' + selfList.length}}<br />{{type === 'show' ? '点击查看' : '查看详情'}}
       </div>
     </div>
     <img :src="selfList[index].thumb || defaultImage"

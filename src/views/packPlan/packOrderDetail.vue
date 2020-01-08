@@ -768,8 +768,10 @@ export default {
           planInfo: planInfo
         }
       })
-      this.activePlanId = this.planTb[0].id
-      this.activePlanInfo = this.planTb[0].planInfo
+      if (this.planTb.length > 0) {
+        this.activePlanId = this.planTb[0].id
+        this.activePlanInfo = this.planTb[0].planInfo
+      }
       this.getLog()
       this.loading = false
     })

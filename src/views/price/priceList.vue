@@ -65,7 +65,7 @@
               <span class="text">产品报价</span>
             </div>
             <div class="col right flex08">
-              <span class="text">起订数量(件)</span>
+              <span class="text">创建人</span>
             </div>
             <div class="col flex05"></div>
             <div class="col">
@@ -114,7 +114,7 @@
                 type='open'></zh-img-list>
             </div>
             <div class="col right flex08"><span class="price">{{item.price}}</span>元</div>
-            <div class="col right flex08">{{item.setNum ? item.setNum : 0}}</div>
+            <div class="col right flex08">{{item.user_name}}</div>
             <div class="col flex05"></div>
             <div class="col">{{item.create_time}}</div>
             <div class="col">
@@ -239,7 +239,8 @@ export default {
               client_name: item.client_name,
               img: img,
               price: item.total_price,
-              setNum: item.number,
+              // setNum: item.number,
+              user_name: item.user_name,
               create_time: item.created_at ? item.created_at.split(' ')[0] : '',
               status: item.status,
               id: item.id

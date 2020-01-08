@@ -112,7 +112,7 @@
               </span>
             </span>
             <span class="tb_content"
-              v-for="(itemBatch,indexBatch) in orderInfo.order_batch"
+              v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
               :key="indexBatch">
               <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
               <span class="tb_row tb_col flex6">
@@ -158,12 +158,7 @@
             <div class="prog_title">
               <span class="title_item_box">
                 下单数：
-                <span class="blue">{{6000}}</span>
-                条
-              </span>
-              <span class="title_item_box">
-                下单数：
-                <span class="green">{{6000}}</span>
+                <span class="blue">{{product_order_total_number}}</span>
                 条
               </span>
             </div>
@@ -215,7 +210,7 @@
               <div class="routerBtn"
                 @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/1')">辅料出入库</div>
             </div>
-            <div class="right btn btnBlue">确认完成</div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
           <div class="flexTb">
             <div class="thead">
@@ -263,7 +258,7 @@
               <div class="routerBtn"
                 @click="$router.push('/receiveDispatch/receiveDispatchDetail/'+ $route.params.id)">产品收发</div>
             </div>
-            <div class="right btn btnBlue">确认完成</div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
           <div class="flexTb">
             <div class="thead">
@@ -311,9 +306,8 @@
                 @click="$router.push('/inspection/semiFinishedDetail/'+ $route.params.id )">半成品检验</div>
               <div class="routerBtn"
                 @click="$router.push('/inspection/finishedDetail/'+ $route.params.id )">成品检验</div>
-
             </div>
-            <div class="right btn btnBlue">确认完成</div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
           <div class="flexTb">
             <div class="thead">
@@ -361,7 +355,7 @@
               <div class="routerBtn"
                 @click="$router.push('/packPlan/packStock/'+ $route.params.id + '/1')">装箱出库</div>
             </div>
-            <div class="right btn btnBlue">确认完成</div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
           <div class="flexTb">
             <div class="thead">
@@ -760,71 +754,7 @@ export default {
       },
       productList: [],
       timeProgressInfo: [],
-      productProgInfo: [
-        {
-          name: '物料进度',
-          isCompiled: true,
-          info: [
-            {
-              name: '出入库',
-              prog: 10,
-              class: 'greenProg'
-            }, {
-              name: '订购',
-              prog: 60,
-              class: 'blueProg'
-            }
-          ]
-        }, {
-          name: '织造进度',
-          isCompiled: true,
-          info: [
-            {
-              name: '织造',
-              prog: 100,
-              class: 'greenProg'
-            }, {
-              name: '分配',
-              prog: 100,
-              class: 'blueProg'
-            }
-          ]
-        }, {
-          name: '收发进度',
-          isCompiled: false,
-          info: [
-            {
-              name: '收发',
-              prog: 10,
-              class: 'blueProg'
-            }
-          ]
-        }, {
-          name: '检验进度',
-          isCompiled: true,
-          info: [
-            {
-              name: '成品',
-              prog: 10,
-              class: 'greenProg'
-            }, {
-              name: '半成品',
-              prog: 60,
-              class: 'blueProg'
-            }
-          ]
-        }, {
-          name: '装箱进度',
-          isCompiled: true,
-          info: [
-            {
-              name: '装箱',
-              prog: 10,
-              class: 'blueProg'
-            }
-          ]
-        }
-      ],
+      productProgInfo: [],
       orderDetailInfo: {
         'material': [],
         'production': [],
@@ -873,20 +803,25 @@ export default {
         }
       },
       activeDetailTitle: '',
-      activeFinanceTitle: ''
+      activeFinanceTitle: '',
+      product_order_total_number: ''
     }
   },
   methods: {
     init () {
       this.loading = true
       Promise.all([
-        order.editDetail({
+        order.detail({
           id: this.$route.params.id
         })
       ]).then(res => {
         this.orderInfo = res[0].data.data
         let productList = []
-        res[0].data.data.order_batch.forEach(itemBatch => {
+        let numArr = this.$flatten(res[0].data.data.batch_info.map(item => {
+          return item.product_info.map(itemNum => Number(itemNum.numbers))
+        }))
+        this.product_order_total_number = numArr.length > 0 ? numArr.reduce((a, b) => a + b) : 0
+        res[0].data.data.batch_info.forEach(itemBatch => {
           itemBatch.product_info.forEach(itemPro => {
             if (!productList.find(item => item.product_id === itemPro.product_info.product_id)) {
               productList.push(itemPro.product_info)
@@ -896,7 +831,7 @@ export default {
         this.productList = productList
         // 处理流程时间线
         let nowDate = this.$getTime()
-        let timeArr = this.orderInfo.order_batch.map(item => {
+        let timeArr = this.orderInfo.batch_info.map(item => {
           return {
             time: new Date(item.delivery_time).getTime(),
             id: item.batch_id
@@ -932,6 +867,72 @@ export default {
           time: nowDate,
           prog: prog
         })
+        // 处理流程进度
+        let orderData = res[0].data.data
+        this.productProgInfo.push(
+          {
+            name: '物料进度',
+            isCompiled: orderData.material_push_progress.r_push > 100 && orderData.material_order_progress.y_percent > 100,
+            info: [
+              {
+                name: '入库',
+                prog: orderData.material_push_progress.r_push > 100 ? 100 : orderData.material_push_progress.r_push,
+                class: 'greenProg'
+              }, {
+                name: '订购',
+                prog: orderData.material_order_progress.y_percent > 100 ? 100 : orderData.material_order_progress.y_percent,
+                class: 'blueProg'
+              }
+            ]
+          },
+          {
+            name: '织造进度',
+            isCompiled: orderData.product_weave_progress.product > 100,
+            info: [
+              {
+                name: '分配',
+                prog: orderData.product_weave_progress.product > 100 ? 100 : orderData.product_weave_progress.product,
+                class: 'blueProg'
+              }
+            ]
+          },
+          {
+            name: '收发进度',
+            isCompiled: orderData.product_push_progress > 100,
+            info: [
+              {
+                name: '收发',
+                prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
+                class: 'blueProg'
+              }
+            ]
+          },
+          {
+            name: '检验进度',
+            isCompiled: orderData.product_inspection_progress.r_product > 100 && orderData.product_inspection_progress.r_semi_product > 100,
+            info: [
+              {
+                name: '成品',
+                prog: orderData.product_inspection_progress.r_product > 100 ? 100 : orderData.product_inspection_progress.r_product,
+                class: 'greenProg'
+              }, {
+                name: '半成品',
+                prog: orderData.product_inspection_progress.r_semi_product > 100 ? 100 : orderData.product_inspection_progress.r_semi_product,
+                class: 'blueProg'
+              }
+            ]
+          },
+          {
+            name: '装箱进度',
+            isCompiled: orderData.order_pack_progress > 100,
+            info: [
+              {
+                name: '装箱',
+                prog: orderData.order_pack_progress > 100 ? 100 : orderData.order_pack_progress,
+                class: 'blueProg'
+              }
+            ]
+          })
         this.catDetail('material')
         this.loading = false
       })
@@ -1131,7 +1132,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let orderProductInfo = []
-          this.orderInfo.order_batch.forEach(itemBatch => {
+          this.orderInfo.batch_info.forEach(itemBatch => {
             orderProductInfo.push(...itemBatch.product_info.map(itemPro => {
               return {
                 product_id: itemPro.product_info.product_id,

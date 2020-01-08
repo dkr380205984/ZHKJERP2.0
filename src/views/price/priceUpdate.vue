@@ -3,11 +3,30 @@
     class="indexMain"
     v-loading='loading'>
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between;">
+        <span>
+          <span class="title">基本信息</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <span style="height:32px">
+          <el-select v-model="priceCode"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入报价单编号"
+            :remote-method="getPriceList"
+            :loading="loading"
+            @change="getPriceInfo($event)">
+            <el-option v-for="item in priceList"
+              :key="item.id"
+              :label="item.quotation_code"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -20,7 +39,8 @@
               <el-select v-model="client_id"
                 filterable
                 default-first-option
-                placeholder="请选择外贸公司">
+                placeholder="请选择外贸公司"
+                @change="getContact">
                 <el-option v-for="item in clientArr"
                   :key="item.id"
                   :label="item.name"
@@ -96,14 +116,30 @@
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
               placeholder="请输入编号查询"
-              v-model="searchCode"></el-input>
-            <el-date-picker class="inputs"
-              v-model="date"
-              type="date"
-              placeholder="选择日期">
+              v-model="searchCode"
+              @change="searchCodeChange"></el-input>
+            <el-date-picker v-model="date"
+              style="width:290px"
+              class="inputs"
+              type="daterange"
+              align="right"
+              unlink-panels
+              value-format="yyyy-MM-dd"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
             </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
+          </div>
+          <div class="rightCtn">
+            <el-switch v-model="product_type"
+              active-text="产品"
+              inactive-text="样品"
+              active-color="#1A95FF"
+              inactive-color="#E6A23C"
+              :disabled="checkedProList.length > 0"
+              @change="getList"></el-switch>
           </div>
         </div>
         <div class="list"
@@ -124,15 +160,33 @@
                 <div v-show="searchTypeFlag"
                   class="filterBox">
                   <el-cascader class="filter"
+                    v-model="type"
                     placeholder="筛选品类"
-                    :options="treeData"
+                    :options="typeArr"
                     clearable
-                    filterable></el-cascader>
+                    filterable>
+                  </el-cascader>
                 </div>
               </transition>
             </div>
             <div class="col">
               <span class="text">花型</span>
+              <i class="el-icon-search iconBtn"
+                @click="searchFlowerFlag=true"></i>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchFlowerFlag"
+                  class="filterBox">
+                  <el-select v-model="flower_id"
+                    clearable
+                    placeholder="筛选花型">
+                    <el-option v-for="(item,index) in flowerArr"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </transition>
             </div>
             <div class="col">
               <span class="text">名称</span>
@@ -146,13 +200,59 @@
             <div class="col">
               <span class="text">创建时间
                 <span class="iconCtn">
-                  <i class="el-icon-caret-top active"></i>
+                  <i class="el-icon-caret-top"></i>
                   <i class="el-icon-caret-bottom"></i>
                 </span>
               </span>
             </div>
             <div class="col">
-              <span class="text">状态</span>
+              <span class="text">
+                <span class="text"
+                  v-show="!searchStateFlag">状态
+                  <i class="el-icon-search iconBtn"
+                    @click="searchStateFlag=true"></i>
+                </span>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchStateFlag"
+                    class="filterBox">
+                    <el-dropdown :hide-on-click="false"
+                      trigger="click"
+                      style="cursor:pointer">
+                      <span class="el-dropdown-link">
+                        状态筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>
+                          工艺单：
+                          <el-radio-group v-model="has_craft">
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          配料单：
+                          <el-radio-group v-model="has_plan"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                        <el-dropdown-item>
+                          报价单：
+                          <el-radio-group v-model="has_quotation"
+                            divided>
+                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="1">有</el-radio>
+                            <el-radio label="0">无</el-radio>
+                          </el-radio-group>
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
+                </transition>
+              </span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -166,7 +266,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col">
-              <zh-img-list :list="item.img"></zh-img-list>
+              <zh-img-list :list="item.images"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -182,10 +282,6 @@
               <div :class="{'stateCtn':true, 'green':item.quotation_id === 1}">
                 <div class="state"></div>
                 <span class="name">报</span>
-              </div>
-              <div :class="{'stateCtn':true, 'green':false}">
-                <div class="state"></div>
-                <span class="name">样</span>
               </div>
             </div>
             <div class="col">
@@ -219,7 +315,7 @@
         <div class="rowCtn"
           v-for="item in checkedProList"
           :key="item.id">
-          <div class="colCtn flex3">
+          <div class="colCtn flex3 more_btn">
             <span class="content">
               <el-select v-model="item.id"
                 disabled
@@ -230,13 +326,13 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <div class="editBtn deleteBtn"
-                @click="cancleChecked(item)">删除
-                <!-- <zh-card :data="setCardData(item)"> -->
-                <!-- <span @click="showProductCard(item)"
-                  class="blue">预览</span> -->
-                <!-- </zh-card> -->
-                <!-- <span class="red"></span> -->
+              <div class="editBtn">
+                <zh-card-position :data="setCardData(item)">
+                  <span @click="showProductCard(item)"
+                    class="blue">预览</span>
+                </zh-card-position>
+                <span class="red"
+                  @click="cancleChecked(item)">删除</span>
               </div>
             </span>
           </div>
@@ -279,7 +375,7 @@
             </span>
           </div>
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">起订数量</span>
@@ -294,7 +390,7 @@
               </zh-input>
             </span>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">
@@ -335,7 +431,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">产品原料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -436,7 +531,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">产品辅料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -535,7 +629,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">织造明细</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -591,14 +684,13 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">半成品加工</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
                 clearable
                 filterable
-                allow-create
                 multiple
+                allow-create
                 default-first-option
                 placeholder="请选择半成品加工工序">
                 <el-option v-for="item in semi_list"
@@ -639,14 +731,13 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">成品加工</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
                 clearable
                 filterable
-                allow-create
                 multiple
+                allow-create
                 default-first-option
                 placeholder="请选择成品加工工序">
                 <el-option v-for="item in finished_list"
@@ -687,12 +778,12 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">包装辅料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
                 clearable
                 filterable
+                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择包装辅料">
@@ -903,7 +994,7 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
+            @click="this.$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="verifyData">提交</div>
         </div>
@@ -925,7 +1016,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price, sample } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -958,10 +1049,18 @@ export default {
         basic_profits: { price: '', prop: '' }
       },
       productList: [],
-      searchTypeFlag: false,
       searchCode: '',
       date: '',
-      treeData: [],
+      searchTypeFlag: false,
+      type: [],
+      typeArr: [],
+      searchFlowerFlag: false,
+      flower_id: '',
+      flowerArr: [],
+      searchStateFlag: false,
+      has_plan: '',
+      has_craft: '',
+      has_quotation: '',
       total: 0,
       pages: 1,
       checkedProList: [],
@@ -994,11 +1093,137 @@ export default {
         { value: '洗标' }
       ],
       yarnPriceList: [],
+      product_type: true,
+      priceCode: '',
+      priceList: [],
       lock: true,
       fileArr: []
     }
   },
   methods: {
+    getPriceList () {
+      price.list({
+        code: this.priceCode,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.priceList = res.data.data
+        }
+      })
+    },
+    // 导入报价单
+    getPriceInfo (id) {
+      this.loading = true
+      price.detail({
+        id: id
+      }).then(res => {
+        let data = res.data.data
+        this.client_id = data.client_id.toString()
+        this.getContact()
+        this.contact_id = data.client_contact
+        this.unit = data.account_unit
+        this.exchangeRate = data.exchange_rate
+        this.priceInfo = {
+          raw_material: JSON.parse(data.material_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              weight: vals.weight,
+              price: vals.price,
+              prop: vals.sunhao || vals.prop,
+              total_price: vals.total_price
+            }
+          }),
+          other_material: JSON.parse(data.assist_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              weight: vals.weight,
+              price: vals.price,
+              prop: vals.sunhao || vals.prop,
+              total_price: vals.total_price
+            }
+          }),
+          weave: JSON.parse(data.weave_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              number: vals.number,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          semi_process: JSON.parse(data.semi_product_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          finished_process: JSON.parse(data.production_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          packag: JSON.parse(data.pack_material_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          other_fee: JSON.parse(data.desc_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          no_production_fee: { total_price: data.no_product_cost },
+          transport: { total_price: data.transport_cost },
+          product_cost: '',
+          product_total_price: '',
+          basic_fee: JSON.parse(data.commission),
+          basic_tax: JSON.parse(data.tax),
+          basic_profits: JSON.parse(data.profit)
+        }
+        this.computedCost()
+        this.checkedProList = data.product_info.map(vals => {
+          let sizeColorArr = []
+          vals.product_info.size_measurement.forEach(valSize => {
+            vals.product_info.color.forEach(valColor => {
+              sizeColorArr.push({
+                sizeColor: valSize.size_name + '/' + valColor.color_name,
+                id: valSize.id + '/' + valColor.id // 预留size和color的id
+              })
+            })
+          })
+          // 将列表是勾选上
+          let checked = this.productList.find(proId => proId.id === vals.product_info.product_id)
+          if (checked) {
+            checked.checked = true
+          }
+          return {
+            id: vals.product_info.product_id,
+            product_code: vals.product_info.product_code,
+            sizeColor: vals.color_size,
+            sizeColorList: sizeColorArr,
+            images: vals.product_info.images,
+            category_info: {
+              product_category: vals.product_info.category_name
+            },
+            type_name: vals.product_info.type_name,
+            style_name: vals.product_info.style_name,
+            color: vals.product_info.color,
+            size: vals.size_measurement,
+            checked: true
+          }
+        })
+        this.setNum = data.number
+        this.setNumRemake = data.product_need_desc
+        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
+        this.productDemand = data.product_need
+        this.loading = false
+      })
+    },
+    getContact () {
+      let contact = this.clientArr.find(item => item.id === this.client_id)
+      this.contactsArr = contact.contacts || []
+    },
     addInfo (item, type) {
       if (type === 'material') {
         item.push({ name: '', weight: '', price: '', prop: '', total_price: '' })
@@ -1013,27 +1238,115 @@ export default {
     },
     getList () {
       this.loading = true
-      product.list({
-        limit: 5,
-        page: this.pages
-      }).then(res => {
-        if (res.data.status === false) {
-          this.$message({
-            type: 'error',
-            message: res.data.message
-          })
-        } else {
-          this.productList = res.data.data.map(item => {
-            if (this.checkedProList.find(vals => vals.id === item.id)) {
-              return { ...item, checked: true }
-            } else {
-              return { ...item, checked: false }
-            }
-          })
-          this.total = res.data.meta.total
-        }
-        this.loading = false
-      })
+      if (this.product_type) {
+        product.list({
+          limit: 5,
+          page: this.pages,
+          product_code: this.searchCode,
+          category_id: this.category_id,
+          type_id: this.type_id,
+          style_id: this.style_id,
+          flower_id: this.flower_id,
+          has_plan: this.has_plan,
+          has_craft: this.has_craft,
+          has_quotation: this.has_quotation,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.productList = res.data.data.map(item => {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
+                return { ...item, checked: true, product_type: 1 }
+              } else {
+                return { ...item, checked: false, product_type: 1 }
+              }
+            })
+            this.total = res.data.meta.total
+          }
+          this.loading = false
+        })
+      } else {
+        sample.list({
+          limit: 5,
+          page: this.pages,
+          sample_product_code: this.searchCode,
+          category_id: this.category_id,
+          type_id: this.type_id,
+          style_id: this.style_id,
+          flower_id: this.flower_id,
+          has_plan: this.has_plan,
+          has_craft: this.has_craft,
+          has_quotation: this.has_quotation,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.productList = res.data.data.map(item => {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
+                return {
+                  checked: true,
+                  product_type: 2,
+                  id: item.id,
+                  product_code: item.sample_product_code,
+                  size: item.size.map(itemSize => {
+                    return {
+                      size_name: itemSize.size_name,
+                      size_info: itemSize.size_info,
+                      weight: itemSize.weight
+                    }
+                  }),
+                  color: item.color,
+                  flower_id: item.flower_name,
+                  images: item.image,
+                  name: item.name,
+                  user_name: item.user_name,
+                  create_time: item.create_time,
+                  has_craft: item.has_craft,
+                  has_plan: item.has_plan,
+                  has_quotation: item.has_quotation,
+                  style_name: item.style_name,
+                  type_name: item.type_name,
+                  category_info: {
+                    product_category: item.category_name,
+                    unit: item.unit
+                  }
+                }
+              } else {
+                return {
+                  checked: false,
+                  product_type: 2,
+                  id: item.id,
+                  product_code: item.sample_product_code,
+                  size: item.size.map(itemSize => {
+                    return {
+                      size_name: itemSize.size_name,
+                      size_info: itemSize.size_info,
+                      weight: itemSize.weight
+                    }
+                  }),
+                  color: item.color,
+                  flower_id: item.flower_name,
+                  images: item.image,
+                  name: item.name,
+                  user_name: item.user_name,
+                  create_time: item.create_time,
+                  has_craft: item.has_craft,
+                  has_plan: item.has_plan,
+                  has_quotation: item.has_quotation,
+                  style_name: item.style_name,
+                  type_name: item.type_name,
+                  category_info: {
+                    product_category: item.category_name,
+                    unit: item.unit
+                  }
+                }
+              }
+            })
+            this.total = res.data.meta.total
+          }
+          this.loading = false
+        })
+      }
     },
     checkedPro (flag, item) {
       if (flag) {
@@ -1041,68 +1354,68 @@ export default {
         item.size.forEach(size => {
           item.color.forEach(color => {
             sizeColor.push({
-              sizeColor: size.measurement + '/' + color.color_name,
+              sizeColor: size.size_name + '/' + color.color_name,
               id: size.id + '/' + color.id // 预留size和color的id
             })
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
         planList.detail_code({
-          product_key: item.product_code
+          product_id: item.id
         }).then(res => {
-          if (res.data.status) {
-            res.data.data.material_data.forEach(item => {
-              let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-              let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-              let number = item.colour.reduce((totalColour, currentColour) => {
-                return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-                  return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-                    return totalSize + Number(currentSize.number)
-                  }, 0)
-                }, 0)
-              }, 0)
-              if (!findedYarn && item.type === 0) {
-                if (this.priceInfo.raw_material[0].name) {
-                  let obj = {
-                    name: item.material,
-                    price: '',
-                    weight: number,
-                    prop: '',
-                    total_price: '',
-                    disabled: true
-                  }
-                  this.checkedYarn(obj)
-                  this.priceInfo.raw_material.push(obj)
-                } else {
-                  this.priceInfo.raw_material[0].name = item.material
-                  this.priceInfo.raw_material[0].weight = number
-                  this.priceInfo.raw_material[0].disabled = true
-                  this.checkedYarn(this.priceInfo.raw_material[0])
-                }
-              } else if (findedYarn && item.type === 0) {
-                findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-              }
-              if (!findedOther && item.type === 1) {
-                if (this.priceInfo.other_material[0].name) {
-                  let obj = {
-                    name: item.material,
-                    price: '',
-                    weight: number,
-                    prop: '',
-                    total_price: '',
-                    disabled: true
-                  }
-                  this.priceInfo.other_material.push(obj)
-                } else {
-                  this.priceInfo.other_material[0].name = item.material
-                  this.priceInfo.other_material[0].weight = number
-                  this.priceInfo.other_material[0].disabled = true
-                }
-              } else if (findedOther && item.type === 1) {
-                findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-              }
-            })
-          }
+          // if (res.data.status) {
+          //   res.data.data.material_data.forEach(item => {
+          //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
+          //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
+          //     let number = item.colour.reduce((totalColour, currentColour) => {
+          //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
+          //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
+          //           return totalSize + Number(currentSize.number)
+          //         }, 0)
+          //       }, 0)
+          //     }, 0)
+          //     if (!findedYarn && item.type === 0) {
+          //       if (this.priceInfo.raw_material[0].name) {
+          //         let obj = {
+          //           name: item.material,
+          //           price: '',
+          //           weight: number,
+          //           prop: '',
+          //           total_price: '',
+          //           disabled: true
+          //         }
+          //         this.checkedYarn(obj)
+          //         this.priceInfo.raw_material.push(obj)
+          //       } else {
+          //         this.priceInfo.raw_material[0].name = item.material
+          //         this.priceInfo.raw_material[0].weight = number
+          //         this.priceInfo.raw_material[0].disabled = true
+          //         this.checkedYarn(this.priceInfo.raw_material[0])
+          //       }
+          //     } else if (findedYarn && item.type === 0) {
+          //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
+          //     }
+          //     if (!findedOther && item.type === 1) {
+          //       if (this.priceInfo.other_material[0].name) {
+          //         let obj = {
+          //           name: item.material,
+          //           price: '',
+          //           weight: number,
+          //           prop: '',
+          //           total_price: '',
+          //           disabled: true
+          //         }
+          //         this.priceInfo.other_material.push(obj)
+          //       } else {
+          //         this.priceInfo.other_material[0].name = item.material
+          //         this.priceInfo.other_material[0].weight = number
+          //         this.priceInfo.other_material[0].disabled = true
+          //       }
+          //     } else if (findedOther && item.type === 1) {
+          //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
+          //     }
+          //   })
+          // }
         })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
@@ -1120,11 +1433,22 @@ export default {
         isCheckedItem.checked = false
       }
     },
-    showProductCard (item) {
-
-    },
-    beforeAvatarUpload () {
-
+    beforeAvatarUpload (file) {
+      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      let fileNameLength = file.name.length// 取到文件名长度
+      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 10
+      if (!isJPG && !isPNG) {
+        this.$message.error('图片只能是 JPG/PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 10MB!')
+        return false
+      }
     },
     checkedYarn (newVal) {
       let yarnPriceInfo = this.yarn_list.find(items => items.value === newVal.name)
@@ -1174,13 +1498,11 @@ export default {
       }))
       total += Number(this.priceInfo.no_production_fee.total_price)
       total += Number(this.priceInfo.transport.total_price)
-      this.priceInfo.product_cost = total
+      this.priceInfo.product_cost = total.toFixed(2)
       this.computedProfits()
     },
     computedProfits () {
-      console.log('change', new Date().getTime())
       if (this.priceInfo.basic_fee.prop && this.priceInfo.basic_tax.prop && this.priceInfo.basic_profits.prop) {
-        console.log('change', new Date().getTime())
         this.priceInfo.product_total_price = this.priceInfo.product_cost / (1 - (Number(this.priceInfo.basic_fee.prop) + Number(this.priceInfo.basic_tax.prop) + Number(this.priceInfo.basic_profits.prop)) / 100)
         this.priceInfo.basic_fee.price = (this.priceInfo.product_total_price * this.priceInfo.basic_fee.prop / 100).toFixed(2)
         this.priceInfo.basic_tax.price = (this.priceInfo.product_total_price * this.priceInfo.basic_tax.prop / 100).toFixed(2)
@@ -1189,9 +1511,10 @@ export default {
       }
     },
     setCardData (item) {
+      console.log(item)
       return {
         product_code: item.product_code,
-        img: item.img.map(val => val.image_url),
+        img: item.images.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
         type_name: item.type_name,
         style_name: item.style_name,
@@ -1267,7 +1590,7 @@ export default {
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
       price.create({
-        id: this.$route.params.id,
+        id: null,
         client_id: this.client_id,
         quotation_code: quotationCode,
         client_contact: this.contact_id,
@@ -1276,7 +1599,8 @@ export default {
         product_info: JSON.stringify(this.checkedProList.map(item => {
           return {
             id: item.id,
-            colorSize: item.sizeColor
+            colorSize: item.sizeColor,
+            product_type: item.product_type
           }
         })),
         number: this.setNum,
@@ -1299,115 +1623,15 @@ export default {
         product_need_desc: this.setNumRemake
       }).then(res => {
         if (res.data.status) {
-          this.$message({ type: 'success', message: '修改成功' })
+          this.$message({ type: 'success', message: '提交成功' })
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/price/priceDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#1A95FF">修改</span>了一张新报价单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一张新报价单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
             this.msgSwitch = true
           } else {
             this.$router.push('/price/priceDetail/' + res.data.data.id)
           }
         }
-      })
-    },
-    // 导入报价单
-    getPriceInfo (id) {
-      this.loading = true
-      price.detail({
-        id: this.$route.params.id
-      }).then(res => {
-        console.log(res.data.data)
-        let data = res.data.data
-        this.client_id = data.client_id.toString()
-        this.contact_id = data.client_contact
-        this.unit = data.account_unit
-        this.exchangeRate = data.exchange_rate
-        this.priceInfo = {
-          raw_material: JSON.parse(data.material_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              weight: vals.weight,
-              price: vals.price,
-              prop: vals.sunhao || vals.prop,
-              total_price: vals.total_price
-            }
-          }),
-          other_material: JSON.parse(data.assist_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              weight: vals.weight,
-              price: vals.price,
-              prop: vals.sunhao || vals.prop,
-              total_price: vals.total_price
-            }
-          }),
-          weave: JSON.parse(data.weave_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              number: vals.number,
-              total_price: vals.price || vals.total_price
-            }
-          }),
-          semi_process: JSON.parse(data.semi_product_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              total_price: vals.price || vals.total_price
-            }
-          }),
-          finished_process: JSON.parse(data.production_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              total_price: vals.price || vals.total_price
-            }
-          }),
-          packag: JSON.parse(data.pack_material_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              total_price: vals.price || vals.total_price
-            }
-          }),
-          other_fee: JSON.parse(data.desc_info).map(vals => {
-            return {
-              name: vals.key || vals.name,
-              total_price: vals.price || vals.total_price
-            }
-          }),
-          no_production_fee: { total_price: data.no_product_cost },
-          transport: { total_price: data.transport_cost },
-          product_cost: '',
-          product_total_price: '',
-          basic_fee: JSON.parse(data.commission),
-          basic_tax: JSON.parse(data.tax),
-          basic_profits: JSON.parse(data.profit)
-        }
-        this.computedCost()
-        this.checkedProList = data.product_info.map(vals => {
-          let sizeColorArr = []
-          vals.product_info.size.forEach(valSize => {
-            vals.product_info.color.forEach(valColor => {
-              sizeColorArr.push({
-                sizeColor: valSize.measurement + '/' + valColor.color_name,
-                id: valSize.id + '/' + valColor.id // 预留size和color的id
-              })
-            })
-          })
-          // 将列表是勾选上
-          let checked = this.productList.find(proId => proId.id === vals.product_info.product_id)
-          if (checked) {
-            checked.checked = true
-          }
-          return {
-            id: vals.product_info.product_id,
-            product_code: vals.product_info.product_code,
-            sizeColor: vals.color_size,
-            sizeColorList: sizeColorArr,
-            checked: true
-          }
-        })
-        this.setNum = data.number
-        this.setNumRemake = data.product_need_desc
-        this.fileArr = data.file_url ? JSON.parse(data.file_url).map(val => { return { url: val } }) : []
-        this.productDemand = data.product_need
       })
     },
     // 切换辅料单位
@@ -1428,6 +1652,11 @@ export default {
         }
         this.computedPrice(item)
       }
+    },
+    // 筛选产品编号，用watch不太好
+    searchCodeChange (newVal) {
+      this.pages = 1
+      this.getList()
     }
   },
   created () {
@@ -1460,11 +1689,11 @@ export default {
       getToken({})
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
-      this.treeData = res[1].data.data.map((item) => {
+      this.typeArr = res[1].data.data.map((item) => {
         return {
           value: item.id,
           label: item.name,
-          child_footage: item.child_footage,
+          sizeArr: item.sizeArr,
           child_size: item.child_size,
           children: item.child.length === 0 ? null : item.child.map((item) => {
             return {
@@ -1482,24 +1711,61 @@ export default {
       })
       this.flowerArr = res[2].data.data
       this.groupArr = res[3].data.data
+      // this.yarnPriceList = res[4].data.data
       this.yarn_list = res[4].data.data.map(item => { return { value: item.name, priceArr: item.price } })
       this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
-      if (this.$route.fullPath.split('?')[1]) {
-        let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
-        if (hasProFlag) {
-          hasProFlag.checked = true
-          this.getProduct(true, this.$route.fullPath.split('?')[1])
-        } else {
-          this.getProductFId(this.$route.fullPath.split('?')[1])
-        }
-      }
-      this.postData.token = res[7].data.data
       this.loading = false
+      // if (this.$route.fullPath.split('?')[1]) {
+      //   let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
+      //   if (hasProFlag) {
+      //     hasProFlag.checked = true
+      //     this.getProduct(true, this.$route.fullPath.split('?')[1])
+      //   } else {
+      //     this.getProductFId(this.$route.fullPath.split('?')[1])
+      //   }
+      // }
+      this.postData.token = res[7].data.data
     })
   },
   mounted () {
     this.getPriceInfo(this.$route.params.id)
+  },
+  watch: {
+    type: {
+      deep: true,
+      handler (newVal) {
+        this.pages = 1
+        this.category_id = newVal[0] ? newVal[0] : ''
+        this.type_id = newVal[1] ? newVal[1] : ''
+        this.style_id = newVal[2] ? newVal[2] : ''
+        this.getList()
+      }
+    },
+    date: {
+      deep: true,
+      handler (newVal) {
+        this.pages = 1
+        this.getList()
+      }
+    },
+    flower_id (newVal) {
+      console.log(newVal)
+      this.pages = 1
+      this.getList()
+    },
+    has_plan (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_craft (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_quotation (newVal) {
+      this.pages = 1
+      this.getList()
+    }
   },
   filters: {
     filterType (item) {
@@ -1513,13 +1779,6 @@ export default {
       } else {
         return ((this.priceInfo.product_total_price ? this.priceInfo.product_total_price : 0) / (this.exchangeRate ? this.exchangeRate / 100 : 0)).toFixed(2)
       }
-    }
-  },
-  watch: {
-    client_id (newVal) {
-      console.log(newVal)
-      let contact = this.clientArr.find(item => item.id === newVal)
-      this.contactsArr = contact.contacts || []
     }
   }
 }

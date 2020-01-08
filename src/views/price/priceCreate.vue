@@ -3,11 +3,30 @@
     class="indexMain"
     v-loading='loading'>
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between;">
+        <span>
+          <span class="title">基本信息</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <span style="height:32px">
+          <el-select v-model="priceCode"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入报价单编号"
+            :remote-method="getPriceList"
+            :loading="loading"
+            @change="getPriceInfo($event)">
+            <el-option v-for="item in priceList"
+              :key="item.id"
+              :label="item.quotation_code"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -343,6 +362,7 @@
                 accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                :file-list="fileArr"
                 ref="imgUpload"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -355,7 +375,7 @@
             </span>
           </div>
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">起订数量</span>
@@ -370,7 +390,7 @@
               </zh-input>
             </span>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">
@@ -411,7 +431,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">产品原料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -512,7 +531,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">产品辅料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -611,7 +629,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">织造明细</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -667,7 +684,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">半成品加工</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -715,7 +731,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">成品加工</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -763,7 +778,6 @@
             <span class="label"
               v-if="index === 0">
               <span class="text">包装辅料</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -1080,10 +1094,132 @@ export default {
       ],
       yarnPriceList: [],
       product_type: true,
-      lock: true
+      priceCode: '',
+      priceList: [],
+      lock: true,
+      fileArr: []
     }
   },
   methods: {
+    getPriceList () {
+      price.list({
+        code: this.priceCode,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.priceList = res.data.data
+        }
+      })
+    },
+    // 导入报价单
+    getPriceInfo (id) {
+      this.loading = true
+      price.detail({
+        id: id
+      }).then(res => {
+        let data = res.data.data
+        this.client_id = data.client_id.toString()
+        this.contact_id = data.client_contact
+        this.unit = data.account_unit
+        this.exchangeRate = data.exchange_rate
+        this.priceInfo = {
+          raw_material: JSON.parse(data.material_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              weight: vals.weight,
+              price: vals.price,
+              prop: vals.sunhao || vals.prop,
+              total_price: vals.total_price
+            }
+          }),
+          other_material: JSON.parse(data.assist_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              weight: vals.weight,
+              price: vals.price,
+              prop: vals.sunhao || vals.prop,
+              total_price: vals.total_price
+            }
+          }),
+          weave: JSON.parse(data.weave_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              number: vals.number,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          semi_process: JSON.parse(data.semi_product_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          finished_process: JSON.parse(data.production_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          packag: JSON.parse(data.pack_material_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          other_fee: JSON.parse(data.desc_info).map(vals => {
+            return {
+              name: vals.key || vals.name,
+              total_price: vals.price || vals.total_price
+            }
+          }),
+          no_production_fee: { total_price: data.no_product_cost },
+          transport: { total_price: data.transport_cost },
+          product_cost: '',
+          product_total_price: '',
+          basic_fee: JSON.parse(data.commission),
+          basic_tax: JSON.parse(data.tax),
+          basic_profits: JSON.parse(data.profit)
+        }
+        this.computedCost()
+        this.getContact()
+        this.checkedProList = data.product_info.map(vals => {
+          let sizeColorArr = []
+          vals.product_info.size_measurement.forEach(valSize => {
+            vals.product_info.color.forEach(valColor => {
+              sizeColorArr.push({
+                sizeColor: valSize.size_name + '/' + valColor.color_name,
+                id: valSize.id + '/' + valColor.id // 预留size和color的id
+              })
+            })
+          })
+          // 将列表是勾选上
+          let checked = this.productList.find(proId => proId.id === vals.product_info.product_id)
+          if (checked) {
+            checked.checked = true
+          }
+          return {
+            id: vals.product_info.product_id,
+            product_code: vals.product_info.product_code,
+            sizeColor: vals.color_size,
+            sizeColorList: sizeColorArr,
+            images: vals.product_info.images,
+            category_info: {
+              product_category: vals.product_info.category_name
+            },
+            type_name: vals.product_info.type_name,
+            style_name: vals.product_info.style_name,
+            color: vals.product_info.color,
+            size: vals.size_measurement,
+            checked: true
+          }
+        })
+        this.setNum = data.number
+        this.setNumRemake = data.product_need_desc
+        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
+        this.productDemand = data.product_need
+        this.loading = false
+      })
+    },
     getContact () {
       let contact = this.clientArr.find(item => item.id === this.client_id)
       this.contactsArr = contact.contacts || []
@@ -1375,6 +1511,7 @@ export default {
       }
     },
     setCardData (item) {
+      console.log(item)
       return {
         product_code: item.product_code,
         img: item.images.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
@@ -1451,7 +1588,7 @@ export default {
       this.checkedProList.forEach((item) => {
         quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
       })
-      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return 'https://zhihui.tlkrzf.com/' + vals.response.key })
+      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
       price.create({
         id: null,
         client_id: this.client_id,
@@ -1579,15 +1716,15 @@ export default {
       this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
       this.loading = false
-      if (this.$route.fullPath.split('?')[1]) {
-        let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
-        if (hasProFlag) {
-          hasProFlag.checked = true
-          this.getProduct(true, this.$route.fullPath.split('?')[1])
-        } else {
-          this.getProductFId(this.$route.fullPath.split('?')[1])
-        }
-      }
+      // if (this.$route.fullPath.split('?')[1]) {
+      //   let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
+      //   if (hasProFlag) {
+      //     hasProFlag.checked = true
+      //     this.getProduct(true, this.$route.fullPath.split('?')[1])
+      //   } else {
+      //     this.getProductFId(this.$route.fullPath.split('?')[1])
+      //   }
+      // }
       this.postData.token = res[7].data.data
     })
   },
