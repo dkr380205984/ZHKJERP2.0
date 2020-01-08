@@ -304,7 +304,7 @@
                   <div class="tcolumn">
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
-                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType)">打印</span>
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span>
                   </div>
                 </div>
               </div>

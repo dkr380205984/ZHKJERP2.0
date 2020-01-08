@@ -4,9 +4,10 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{companyName}}包装辅料订购单</span>
+          <span class="title">{{title}}</span>
           <span class="item">
             <span class="label">创建人：</span>
+            {{user_name}}
           </span>
           <span class="item">
             <span class="label">联系电话：</span>
@@ -33,7 +34,7 @@
         </div>
         <div class="print_row">
           <span class="row_item center w180">订购单位</span>
-          <span class="row_item left">{{printInfo.clientId}}</span>
+          <span class="row_item left">{{printInfo.clientName}}</span>
           <span class="row_item center w180">交货日期</span>
           <span class="row_item left">{{printInfo.time}}</span>
         </div>
@@ -41,11 +42,12 @@
           <span class="row_item center w180">总价</span>
           <span class="row_item left">{{$toFixed(total_price)}}元</span>
           <span class="row_item center w180">创建人</span>
-          <span class="row_item left">{{}}</span>
+          <span class="row_item left">{{user_name}}</span>
         </div>
         <div class="print_row posBottom">
           <span class="row_item center w180">备注</span>
-          <span class="row_item left"></span>
+          <span class="row_item left"
+            v-html="remark"></span>
         </div>
         <div class="print_row bgGray">
           <span class="row_item left">包装辅料</span>
@@ -71,15 +73,18 @@
 </template>
 
 <script>
-import { order, packPlan } from '@/assets/js/api.js'
+import { order, packPlan, print } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: '桐庐凯瑞针纺',
       qrCodeUrl: '',
       orderInfo: {},
       packOrderInfo: [],
-      total_price: ''
+      total_price: '',
+      printInfo: {},
+      user_name: window.sessionStorage.getItem('user_name'),
+      title: '',
+      remark: ''
     }
   },
   methods: {
@@ -94,11 +99,17 @@ export default {
       packPlan.packOrderLog({
         order_id: this.$route.params.id,
         order_type: 1
+      }),
+      print.detail({
+        type: 9
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data
       this.packOrderInfo = res[1].data.data.filter(item => item.client_id.toString() === this.printInfo.clientId && this.$getTime(item.order_time) === this.$getTime(this.printInfo.time))
+      this.printInfo.clientName = this.packOrderInfo[0].client_name
       this.total_price = (this.packOrderInfo.map(item => Number(item.total_price)).length > 0) ? (this.packOrderInfo.map(item => Number(item.total_price)).reduce((a, b) => a + b)) : 0
+      this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + '包装辅料订购单')
+      this.remark = res[2].data.data ? res[2].data.data.desc : ''
     })
   },
   mounted () {

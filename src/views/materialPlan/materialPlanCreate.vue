@@ -495,7 +495,7 @@ export default {
       material.list()
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
-      let materialPlanInfo = res[0].data.data.product_info
+      let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size', 'color'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
       this.materialPlanInfo = materialPlanInfo.map(itemPro => {
         return {
           product_code: itemPro.product_code,

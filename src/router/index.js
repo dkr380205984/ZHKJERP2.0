@@ -341,7 +341,7 @@ const routes = [
     name: 'packPlanTable',
     component: () => import('../views/packPlan/packPlanTable.vue')
   }, {
-    path: '/weaveTable/:id/:planId',
+    path: '/weaveTable/:id/:orderType',
     name: 'weaveTable',
     component: () => import('../views/weavingProcessing/weaveTable.vue')
   }, {

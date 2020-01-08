@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{companyName}}原料加工单</span>
+          <span class="title">{{title}}</span>
           <span class="item"><span class="label">联系人：</span>{{user_name}}</span>
           <span class="item"><span class="label">联系电话：</span>{{user_tel}}</span>
           <span class="item"><span class="label">创建时间：</span>{{$getTime()}}</span>
@@ -20,7 +20,8 @@
       <div class="print_body hasPosBottom">
         <div class="print_row posBottom">
           <span class="row_item center w180">备注</span>
-          <span class="row_item left"></span>
+          <span class="row_item left"
+            v-html="remark"></span>
         </div>
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单号</span>
@@ -37,7 +38,7 @@
         <template v-for="(item,index) in processInfo">
           <div class="print_row bgGray"
             :key="index + 'title'">
-            <span class="row_item w180 center">原料名称{{index + 1}}</span>
+            <span class="row_item w180 center">{{$route.params.type === '1' ? '原' : '辅'}}料名称{{index + 1}}</span>
             <span class="row_item left">{{item.material_name}}</span>
             <span class="row_item w180 center">总价</span>
             <span class="row_item left flex08">{{item.total_price || 0}}元</span>
@@ -60,7 +61,7 @@
 </template>
 
 <script>
-import { order, materialProcess } from '@/assets/js/api.js'
+import { order, materialProcess, print } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -70,7 +71,9 @@ export default {
       qrCodeUrl: '',
       orderInfo: {},
       processInfo: [],
-      total_price: ''
+      total_price: '',
+      title: '',
+      remark: ''
     }
   },
   methods: {
@@ -84,6 +87,9 @@ export default {
       materialProcess.detail({
         order_type: this.$route.params.orderType,
         order_id: this.$route.params.id
+      }),
+      print.detail({
+        type: this.$route.params.type === '1' ? 7 : 8
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data
@@ -94,6 +100,8 @@ export default {
         return item
       })
       this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
+      this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
+      this.remark = res[2].data.data ? res[2].data.data.desc : ''
     })
   },
   mounted () {
