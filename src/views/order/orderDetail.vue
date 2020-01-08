@@ -103,7 +103,7 @@
               <span class="tb_row tb_col flex6">
                 <span class="tb_col_item">
                   <span class="tb_row">产品信息</span>
-                  <span class="tb_row">产品图片</span>
+                  <span class="tb_row middle">产品图片</span>
                   <span class="tb_row">尺码/颜色</span>
                   <span class="tb_row">发货数量</span>
                   <span class="tb_row">单价</span>
@@ -119,12 +119,14 @@
                 <span class="tb_col_item"
                   v-for="(itemPro,indexPro) in itemBatch.product_info"
                   :key="indexPro">
-                  <span class="tb_row">{{itemPro.product_code}}</span>
-                  <span class="tb_row">产品图片</span>
+                  <span class="tb_row">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                  <span class="tb_row middle">
+                    <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
+                  </span>
                   <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
-                  <span class="tb_row">{{itemPro.numbers}}</span>
-                  <span class="tb_row">{{itemPro.unit_price}}</span>
-                  <span class="tb_row">{{(Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)}}</span>
+                  <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
+                  <span class="tb_row">{{itemPro.unit_price + '元'}}</span>
+                  <span class="tb_row">{{(Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)}}元</span>
                 </span>
               </span>
             </span>
@@ -332,16 +334,16 @@
               <span class="trow"
                 v-for="(item,index) in orderDetailInfo.inspection"
                 :key="index">
-                <span class="tcolumn">{{item.product_code}}<br /></span>
+                <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
                 <span class="tcolumn noPad flex5">
                   <span class="trow"
                     v-for="(itemSize,indexSize) in item.color_info"
                     :key="indexSize">
                     <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                    <span class="tcolumn green">{{itemSize.semi_number || 0}}</span>
-                    <span class="tcolumn">{{itemSize.semi_rejects_number || 0}}</span>
-                    <span class="tcolumn green">{{itemSize.finished_number || 0}}</span>
-                    <span class="tcolumn">{{itemSize.finished_rejects_number || 0}}</span>
+                    <span class="tcolumn green">{{itemSize.semi_number || 0}}{{item.unit || '件'}}</span>
+                    <span class="tcolumn">{{itemSize.semi_rejects_number || 0}}{{item.unit || '件'}}</span>
+                    <span class="tcolumn green">{{itemSize.finished_number || 0}}{{item.unit || '件'}}</span>
+                    <span class="tcolumn">{{itemSize.finished_rejects_number || 0}}{{item.unit || '件'}}</span>
                   </span>
                 </span>
               </span>
@@ -385,9 +387,9 @@
                     v-for="(itemSize,indexSize) in item.color_info"
                     :key="indexSize">
                     <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                    <span class="tcolumn">{{itemSize.order_number}}</span>
-                    <span class="tcolumn green">{{itemSize.number}}</span>
-                    <span :class="['tcolumn',(Number(itemSize.number) || 0) < (Number(itemSize.order_number) || 0) ? 'red' : 'green']">{{$toFixed((Number(itemSize.number) || 0) - (Number(itemSize.order_number) || 0))}}</span>
+                    <span class="tcolumn">{{itemSize.order_number || 0}}{{item.unit || '件'}}</span>
+                    <span class="tcolumn green">{{itemSize.number || 0}}{{item.unit || '件'}}</span>
+                    <span :class="['tcolumn',(Number(itemSize.number) || 0) < (Number(itemSize.order_number) || 0) ? 'red' : 'green']">{{$toFixed((Number(itemSize.number) || 0) - (Number(itemSize.order_number) || 0))}}{{item.unit || '件'}}</span>
                   </span>
                 </span>
               </span>
@@ -425,9 +427,9 @@
                       v-for="(itemPrice,indexPrice) in item.price_info"
                       :key="indexPrice">
                       <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
-                      <span class="tcolumn">{{itemPrice.number}}</span>
-                      <span class="tcolumn green">{{itemPrice.total_price}}</span>
-                      <span class="tcolumn">{{itemPrice.number ? $toFixed((Number(itemPrice.total_price) || 0)/(Number(itemPrice.number) || 0)) : 0}}</span>
+                      <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
+                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + '元' : '/'}}</span>
+                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + '元/' + item.unit: '/'}}</span>
                     </span>
                   </span>
                 </span>
@@ -455,19 +457,19 @@
                 <span class="trow"
                   v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
                   :key="index">
-                  <span class="tcolumn"><span class="green">{{item.type}}</span>{{item.client_name}}</span>
+                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name || item.stock_name}}</span>
                   <span class="tcolumn noPad flex5">
                     <span class="trow"
                       v-for="(itemMa,indexMa) in item.material_info"
                       :key="indexMa">
                       <span class="tcolumn">{{itemMa.material_name}}</span>
                       <span class="tcolumn">{{itemMa.color}}</span>
-                      <span class="tcolumn green">{{itemMa.price}}</span>
-                      <span class="tcolumn green">{{itemMa.number}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
                       <span class="tcolumn">{{itemMa.compiled_time}}</span>
                     </span>
                   </span>
-                  <span class="tcolumn green">{{item.total_price}}</span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                 </span>
               </div>
             </div>
@@ -502,12 +504,12 @@
                       <span class="tcolumn">{{itemMa.material_name}}</span>
                       <span class="tcolumn">{{itemMa.color}}</span>
                       <span class="tcolumn">{{itemMa.process_type}}</span>
-                      <span class="tcolumn green">{{itemMa.price}}</span>
-                      <span class="tcolumn green">{{itemMa.number}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
                       <span class="tcolumn">{{itemMa.compiled_time}}</span>
                     </span>
                   </span>
-                  <span class="tcolumn green">{{item.total_price}}</span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                 </span>
               </div>
             </div>
@@ -533,19 +535,19 @@
                 <span class="trow"
                   v-for="(item,index) in orderDetailInfo.finance.materialOrder"
                   :key="index">
-                  <span class="tcolumn"><span class="green">{{item.type}}</span>{{item.client_name}}</span>
+                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name|| item.stock_name}}</span>
                   <span class="tcolumn noPad flex5">
                     <span class="trow"
                       v-for="(itemMa,indexMa) in item.material_info"
                       :key="indexMa">
                       <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.attr}}</span>
-                      <span class="tcolumn green">{{itemMa.price}}</span>
-                      <span class="tcolumn green">{{itemMa.number}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
                       <span class="tcolumn">{{itemMa.compiled_time}}</span>
                     </span>
                   </span>
-                  <span class="tcolumn green">{{item.total_price}}</span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                 </span>
               </div>
             </div>
@@ -578,14 +580,14 @@
                       v-for="(itemMa,indexMa) in item.material_info"
                       :key="indexMa">
                       <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.attr}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
                       <span class="tcolumn">{{itemMa.process_type}}</span>
-                      <span class="tcolumn green">{{itemMa.price}}</span>
-                      <span class="tcolumn green">{{itemMa.number}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
                       <span class="tcolumn">{{itemMa.compiled_time}}</span>
                     </span>
                   </span>
-                  <span class="tcolumn green">{{item.total_price}}</span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                 </span>
               </div>
             </div>
@@ -616,11 +618,11 @@
                     <span class="trow"
                       v-for="(itemPro,indexPro) in item.product_info"
                       :key="indexPro">
-                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro.type.join('/')}}</span>
+                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
                       <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                      <span class="tcolumn green">{{itemPro.price}}</span>
-                      <span class="tcolumn green">{{itemPro.number}}</span>
-                      <span class="tcolumn green">{{$toFixed((Number(itemPro.price) || 0 ) * (Number(itemPro.number) || 0))}}</span>
+                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
                       <span class="tcolumn">{{itemPro.compiled_time}}</span>
                     </span>
                   </span>
@@ -655,12 +657,12 @@
                     <span class="trow"
                       v-for="(itemPro,indexPro) in item.product_info"
                       :key="indexPro">
-                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro.type.join('/')}}</span>
+                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
                       <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
                       <span class="tcolumn">{{itemPro.process_type}}</span>
-                      <span class="tcolumn green">{{itemPro.price}}</span>
-                      <span class="tcolumn green">{{itemPro.number}}</span>
-                      <span class="tcolumn green">{{$toFixed((Number(itemPro.price) || 0 ) * (Number(itemPro.number) || 0))}}</span>
+                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
                       <span class="tcolumn">{{itemPro.compiled_time}}</span>
                     </span>
                   </span>
@@ -694,10 +696,10 @@
                       v-for="(itemPack,indexPack) in item.pack_info"
                       :key="indexPack">
                       <span class="tcolumn">{{itemPack.pack_name}}</span>
-                      <span class="tcolumn green">{{itemPack.price}}</span>
-                      <span class="tcolumn green">{{itemPack.order_number}}</span>
-                      <span class="tcolumn green">{{$toFixed((Number(itemPack.price) || 0 ) * (Number(itemPack.order_number) || 0))}}</span>
-                      <span class="tcolumn">{{itemPack.compiled_time}}</span>
+                      <span class="tcolumn green">{{itemPack.price ? itemPack.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemPack.order_number ? itemPack.order_number + (itemPack.unit || '个') : '/'}}</span>
+                      <span class="tcolumn green">{{itemPack.total_price ? $toFixed(Number(itemPack.total_price) || 0 ) + '元' : '/'}}</span>
+                      <span class="tcolumn">{{$getTime(itemPack.compiled_time)}}</span>
                     </span>
                   </span>
                 </span>
@@ -709,11 +711,15 @@
               <div class="thead">
                 <span class="trow">
                   <span class="tcolumn">运输单位</span>
-                  <span class="tcolumn">运输箱数(箱)</span>
-                  <span class="tcolumn">出库立方数(m³)</span>
-                  <span class="tcolumn">单价(元/m³)</span>
-                  <span class="tcolumn">总价(元)</span>
-                  <span class="tcolumn">完成时间</span>
+                  <span class="tcolumn noPad flex5">
+                    <span class="trow">
+                      <span class="tcolumn">运输箱数(箱)</span>
+                      <span class="tcolumn">出库立方数(m³)</span>
+                      <span class="tcolumn">单价(元/m³)</span>
+                      <span class="tcolumn">总价(元)</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
                 </span>
               </div>
               <div class="tbody">
@@ -721,11 +727,17 @@
                   v-for="(item,index) in orderDetailInfo.finance.outStock"
                   :key="index">
                   <span class="tcolumn">{{item.client_name}}</span>
-                  <span class="tcolumn">{{item.number}}</span>
-                  <span class="tcolumn green">{{item.prot}}</span>
-                  <span class="tcolumn green">{{item.price}}</span>
-                  <span class="tcolumn green">{{item.total_price}}</span>
-                  <span class="tcolumn">{{item.compiled_time}}</span>
+                  <span class="tcolumn noPad flex5">
+                    <span class="trow"
+                      v-for="(itemOut,indexOut) in item.out_info"
+                      :key='indexOut'>
+                      <span class="tcolumn">{{itemOut.number}}</span>
+                      <span class="tcolumn green">{{itemOut.cube_number}}</span>
+                      <span class="tcolumn green">{{itemOut.price}}</span>
+                      <span class="tcolumn green">{{itemOut.total_price}}</span>
+                      <span class="tcolumn">{{itemOut.compiled_time}}</span>
+                    </span>
+                  </span>
                 </span>
               </div>
             </div>
@@ -737,7 +749,7 @@
 </template>
 
 <script>
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -814,96 +826,10 @@ export default {
         }
       ],
       orderDetailInfo: {
-        'material': [
-          // {
-          //   material_name: '26支单股晴纶',
-          //   attr_info: [
-          //     {
-          //       attr: '白色',
-          //       plan_number: '6000',
-          //       order_number: '6020',
-          //       go_stock_number: '5900',
-          //       out_stock_number: '5000'
-          //     },
-          //     {
-          //       attr: '黑色',
-          //       plan_number: '6000',
-          //       order_number: '6020',
-          //       go_stock_number: '5900',
-          //       out_stock_number: '5000'
-          //     }
-          //   ]
-          // }
-        ],
-        'production': [
-          // {
-          //   client_name: '针织单位',
-          //   product_info: [
-          //     {
-          //       product_code: '19ABA0001',
-          //       type: ['围巾', '针织', '长巾'],
-          //       size: '均码',
-          //       color: '红色',
-          //       production_process: '织造',
-          //       allocation_number: 600,
-          //       receive_number: 606,
-          //       dispatch_number: 600
-          //     },
-          //     {
-          //       product_code: '19ABA0002',
-          //       type: ['帽子', '针织', '长巾'],
-          //       size: 'S码',
-          //       color: '白色',
-          //       production_process: '织造',
-          //       allocation_number: 1000,
-          //       receive_number: 980,
-          //       dispatch_number: 980
-          //     }
-          //   ]
-          // }
-        ],
-        'inspection': [
-          // {
-          //   product_code: '19ABA0001',
-          //   type: ['围巾', '针织', '长巾'],
-          //   sizeColor_info: [
-          //     {
-          //       size: '均码',
-          //       color: '红色',
-          //       semi_finished_number: 600,
-          //       semi_finished_defective_number: 2,
-          //       finished_number: 200,
-          //       finished_defective_number: 1
-          //     }, {
-          //       size: '均码',
-          //       color: '黑色',
-          //       semi_finished_number: 600,
-          //       semi_finished_defective_number: 2,
-          //       finished_number: 200,
-          //       finished_defective_number: 1
-          //     }
-          //   ]
-          // }
-        ],
-        'outStock': [
-          // {
-          //   product_code: '19ABA0001',
-          //   type: ['围巾', '针织', '长巾'],
-          //   sizeColor_info: [
-          //     {
-          //       size: '均码',
-          //       color: '红色',
-          //       order_number: 2000,
-          //       out_stock_number: 1980
-          //     }, {
-          //       size: '均码',
-          //       color: '黑色',
-          //       order_number: 2000,
-          //       out_stock_number: 2080
-          //     }
-          //   ]
-          // }
-        ],
+        'material': [],
+        'production': [],
+        'inspection': [],
+        'outStock': [],
         'finance': {
           title: [
             {
@@ -935,369 +861,19 @@ export default {
               key: 'outStock'
             }
           ],
-          finance: [
-            {
-              name: '订单产值',
-              price_info: [
-                {
-                  number: 5924,
-                  total_price: 200000
-                }
-              ]
-            },
-            {
-              name: '原料采购',
-              price_info: [
-                {
-                  name: '调取',
-                  number: 595959,
-                  total_price: 200000
-                },
-                {
-                  name: '订购',
-                  number: 777,
-                  total_price: 200000
-                }
-              ]
-            },
-            {
-              name: '原料加工',
-              price_info: [
-                {
-                  number: 8888,
-                  total_price: 200000
-                }
-              ]
-            },
-            {
-              name: '辅料采购',
-              price_info: [
-                {
-                  name: '调取',
-                  number: 20666,
-                  total_price: 200000
-                },
-                {
-                  name: '订购',
-                  number: 10880,
-                  total_price: 200000
-                }
-              ]
-            },
-            {
-              name: '辅料加工',
-              price_info: [
-                {
-                  number: 12020,
-                  total_price: 200000
-                }
-              ]
-            },
-            {
-              name: '生产织造',
-              price_info: [
-                {
-                  number: 10000,
-                  total_price: 208880
-                }
-              ]
-            },
-            {
-              name: '半成品加工',
-              price_info: [
-                {
-                  number: 10000,
-                  total_price: 1000
-                }
-              ]
-            },
-            {
-              name: '包装辅料订购',
-              price_info: [
-                {
-                  number: 10000,
-                  total_price: 19899
-                }
-              ]
-            },
-            {
-              name: '出库运输',
-              price_info: [
-                {
-                  number: 10000,
-                  total_price: 208000
-                }
-              ]
-            }
-          ],
-          yarnOrder: [
-            {
-              client_name: '桐庐凯瑞针纺',
-              type: '订购',
-              material_info: [
-                {
-                  material_name: '26支单股晴纶',
-                  color: '绿色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2020-01-01'
-                },
-                {
-                  material_name: '26支双股晴纶',
-                  color: '黄色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2019-12-01'
-                }
-              ],
-              total_price: 20000
-            },
-            {
-              client_name: '桐庐凯瑞针纺',
-              type: '订购/补纱',
-              material_info: [
-                {
-                  material_name: '26支单股晴纶',
-                  color: '绿色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2020-01-01'
-                },
-                {
-                  material_name: '26支双股晴纶',
-                  color: '黄色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2019-12-01'
-                }
-              ],
-              total_price: 20000
-            }
-          ],
-          yarnProcess: [
-            {
-              client_name: '桐庐汇鸿染色',
-              material_info: [
-                {
-                  material_name: '20支晴纶羊绒',
-                  color: '红色',
-                  process_type: '染色',
-                  price: 26,
-                  number: 2000,
-                  compiled_time: '2019-12-28'
-                },
-                {
-                  material_name: '20支晴纶羊绒',
-                  color: '红色',
-                  process_type: '拼线',
-                  price: 26,
-                  number: 2000,
-                  compiled_time: '2019-12-28'
-                }
-              ],
-              total_price: 52000
-            }
-          ],
-          materialOrder: [
-            {
-              client_name: '桐庐凯瑞针纺',
-              type: '订购',
-              material_info: [
-                {
-                  material_name: '牛角扣',
-                  attr: '绿色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2020-01-01'
-                },
-                {
-                  material_name: '腰带',
-                  attr: '黄色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2019-12-01'
-                }
-              ],
-              total_price: 20000
-            },
-            {
-              client_name: '桐庐凯瑞针纺',
-              type: '订购/补纱',
-              material_info: [
-                {
-                  material_name: '衣架',
-                  attr: '绿色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2020-01-01'
-                },
-                {
-                  material_name: '衣架',
-                  attr: '黄色',
-                  price: 20,
-                  number: 2000,
-                  compiled_time: '2019-12-01'
-                }
-              ],
-              total_price: 20000
-            }
-          ],
-          materialProcess: [
-            {
-              client_name: '桐庐汇鸿染色',
-              material_info: [
-                {
-                  material_name: '牛角扣',
-                  attr: '红色',
-                  process_type: '拼接',
-                  price: 26,
-                  number: 2000,
-                  compiled_time: '2019-12-28'
-                },
-                {
-                  material_name: '腰带',
-                  attr: '红色',
-                  process_type: '吊线',
-                  price: 26,
-                  number: 2000,
-                  compiled_time: '2019-12-28'
-                }
-              ],
-              total_price: 52000
-            }
-          ],
-          weave: [
-            {
-              client_name: '针织-老王',
-              product_info: [
-                {
-                  product_code: '19AAA0001',
-                  type: ['围巾', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                },
-                {
-                  product_code: '19AAA0002',
-                  type: ['帽子', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                }
-              ]
-            },
-            {
-              client_name: '针织-老六',
-              product_info: [
-                {
-                  product_code: '19AAA0001',
-                  type: ['围巾', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                },
-                {
-                  product_code: '19AAA0002',
-                  type: ['帽子', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                }
-              ]
-            }
-          ],
-          process: [
-            {
-              client_name: '平车-老王',
-              product_info: [
-                {
-                  product_code: '19AAA0001',
-                  type: ['围巾', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  process_type: '吊带',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                },
-                {
-                  product_code: '19AAA0002',
-                  type: ['帽子', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  process_type: '吊带',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                }
-              ]
-            },
-            {
-              client_name: '针织-老六',
-              product_info: [
-                {
-                  product_code: '19AAA0001',
-                  type: ['围巾', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  process_type: '拉毛',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                },
-                {
-                  product_code: '19AAA0002',
-                  type: ['帽子', '针织', '长巾'],
-                  color: '红色',
-                  size: 'S码',
-                  process_type: '拉毛',
-                  price: 6,
-                  number: 7000,
-                  compiled_time: '2019-12-08'
-                }
-              ]
-            }
-          ],
-          packOrder: [
-            {
-              client_name: '鸿盟纸箱',
-              pack_info: [
-                {
-                  pack_name: '三瓦箱子（大）',
-                  price: 4.2,
-                  order_number: 2000,
-                  compiled_time: '2019-12-30'
-                }, {
-                  pack_name: '三瓦箱子（小）',
-                  price: 2.2,
-                  order_number: 2000,
-                  compiled_time: '2019-12-30'
-                }
-              ]
-            }
-          ],
-          outStock: [
-            {
-              client_name: '毛国平运输',
-              number: 10,
-              prot: 200,
-              price: 16.8,
-              total_price: 20000,
-              compiled_time: '2019-12-31'
-            }
-          ]
+          finance: [],
+          yarnOrder: [],
+          yarnProcess: [],
+          materialOrder: [],
+          materialProcess: [],
+          weave: [],
+          process: [],
+          packOrder: [],
+          outStock: []
         }
       },
       activeDetailTitle: '',
-      activeFinanceTitle: 'finance'
+      activeFinanceTitle: ''
     }
   },
   methods: {
@@ -1356,12 +932,13 @@ export default {
           time: nowDate,
           prog: prog
         })
-        this.catDetail('outStock')
+        this.catDetail('material')
         this.loading = false
       })
     },
     // 物料概述
     getMaterialDetail () {
+      this.loading = true
       Promise.all([
         materialPlan.detail({
           order_id: this.$route.params.id,
@@ -1418,10 +995,12 @@ export default {
             })
           }
         })
+        this.loading = false
       })
     },
     // 生产概述
     getProductionDetail () {
+      this.loading = true
       Promise.all([
         weave.detail({
           order_id: this.$route.params.id,
@@ -1488,10 +1067,12 @@ export default {
           }
         }))
         this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+        this.loading = false
       })
     },
     // 检验概述
     getInspectionDetail () {
+      this.loading = true
       Promise.all([
         inspection.semiFinishedDetail({
           order_id: this.$route.params.id,
@@ -1505,7 +1086,6 @@ export default {
         let inspectionDetail = res[0].data.data.map(item => {
           return {
             product_id: item.product_id,
-            product_info: {},
             size: item.size,
             color: item.color,
             semi_number: item.number,
@@ -1514,18 +1094,37 @@ export default {
         }).concat(res[1].data.data.map(item => {
           return {
             product_id: item.product_id,
-            product_info: {},
             size: item.size,
             color: item.color,
             finished_number: item.number,
             finished_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
           }
         }))
-        this.orderDetailInfo.inspection = this.$mergeData(inspectionDetail, { mainRule: 'product_id', otherRule: [{ name: 'product_info' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'semi_number', type: 'add' }, { name: 'semi_rejects_number', type: 'add' }, { name: 'finished_number', type: 'add' }, { name: 'finished_rejects_number', type: 'add' }] } })
+        this.orderDetailInfo.inspection = this.$mergeData(inspectionDetail, { mainRule: 'product_id', childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'semi_number', type: 'add' }, { name: 'semi_rejects_number', type: 'add' }, { name: 'finished_number', type: 'add' }, { name: 'finished_rejects_number', type: 'add' }] } }).map(item => {
+          let proFlag = this.productList.find(itemPro => Number(itemPro.product_id) === Number(item.product_id))
+          return {
+            product_id: item.product_id,
+            product_code: proFlag ? proFlag.product_code : '',
+            type: proFlag ? [proFlag.category_name, proFlag.type_name, proFlag.style_name] : [],
+            unit: proFlag ? proFlag.unit : '件',
+            color_info: item.color_info.map(itemColor => {
+              return {
+                size: itemColor.size,
+                color: itemColor.color,
+                semi_number: itemColor.semi_number,
+                semi_rejects_number: itemColor.semi_rejects_number,
+                finished_number: itemColor.finished_number,
+                finished_rejects_number: itemColor.finished_rejects_number
+              }
+            })
+          }
+        })
+        this.loading = false
       })
     },
     // 出库概述
     getOutStockDetail () {
+      this.loading = true
       packPlan.packActualLog({
         order_id: this.$route.params.id,
         order_type: 1
@@ -1568,6 +1167,244 @@ export default {
             }
           })
         }
+        this.loading = false
+      })
+    },
+    // 财务概述-财务总览
+    getFinanceDetail () {
+      this.loading = true
+      finance.detail({
+        order_id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          this.orderDetailInfo.finance.finance = [
+            {
+              name: '订单产值',
+              unit: '件',
+              price_info: [{
+                number: data.order.order_total_value,
+                total_price: data.order.total_number,
+                pre_price: data.order.order_pre_value
+              }]
+            },
+            {
+              name: '原料采购',
+              unit: 'kg',
+              price_info: [
+                {
+                  name: '调取',
+                  number: data.material_order.stock_number,
+                  total_price: 0,
+                  pre_price: 0
+                },
+                {
+                  name: '订购',
+                  number: data.material_order.order_number.number,
+                  total_price: data.material_order.order_number.total_value,
+                  pre_price: data.material_order.order_number.pre_value
+                }
+              ]
+            },
+            {
+              name: '原料加工',
+              unit: 'kg',
+              price_info: [{
+                number: data.material_process.number,
+                total_price: data.material_process.total_value,
+                pre_price: data.material_process.pre_value
+              }]
+            },
+            {
+              name: '辅料采购',
+              unit: '件',
+              price_info: [{
+                number: data.assist_material_order.number,
+                total_price: data.assist_material_order.total_value,
+                pre_price: data.assist_material_order.pre_value
+              }]
+            },
+            {
+              name: '辅料加工',
+              unit: '件',
+              price_info: [{
+                number: data.assist_material_process.number,
+                total_price: data.assist_material_process.total_value,
+                pre_price: data.assist_material_process.pre_value
+              }]
+            },
+            {
+              name: '生产织造',
+              unit: '件',
+              price_info: [{
+                number: data.product_weave.number,
+                total_price: data.product_weave.total_value,
+                pre_price: data.product_weave.pre_value
+              }]
+            },
+            {
+              name: '半成品加工',
+              unit: '件',
+              price_info: [{
+                number: data.semi_product.number,
+                total_price: data.semi_product.total_value,
+                pre_price: data.semi_product.pre_value
+              }]
+            },
+            {
+              name: '包装辅料订购',
+              unit: '个',
+              price_info: [{
+                number: data.pack_order.number,
+                total_price: data.pack_order.total_value,
+                pre_price: data.pack_order.pre_value
+              }]
+            },
+            {
+              name: '出库运输',
+              unit: '次',
+              price_info: [{
+                number: data.stock_out.number,
+                total_price: data.stock_out.total_value,
+                pre_price: data.stock_out.pre_value
+              }]
+            }
+          ]
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-原料采购-辅料采购
+    getMaterialOrderDetail () {
+      this.loading = true
+      materialManage.detail({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: ['client_name', 'type_source/type', 'stock_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+          this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: ['client_name', 'type_source/type', 'sotck_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-原料加工-辅料加工
+    getMaterialProcessDetail () {
+      this.loading = true
+      materialProcess.detail({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.yarnProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+          this.orderDetailInfo.finance.materialProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-生产织造
+    getWeaveDetail () {
+      this.loading = true
+      weave.detail({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data.map(item => {
+            return {
+              ...item.product_info,
+              ...item.category_info,
+              client_name: item.client_name,
+              number: item.number,
+              size: item.size,
+              color: item.color,
+              is_part: item.is_part,
+              price: item.price,
+              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
+              compiled_time: this.$getTime(item.complete_time)
+            }
+          })
+          this.orderDetailInfo.finance.weave = this.$mergeData(data, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-半成品加工
+    getProcessDetail () {
+      this.loading = true
+      processing.detail({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          let processInfo = res.data.data.map(item => {
+            return {
+              ...item.product_info,
+              ...item.category_info,
+              client_name: item.client_name,
+              price: item.price,
+              number: item.number,
+              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
+              size: item.size,
+              color: item.color,
+              is_part: item.is_part,
+              process_type: item.type,
+              compiled_time: this.$getTime(item.complete_time)
+            }
+          })
+          this.orderDetailInfo.finance.process = this.$mergeData(processInfo, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'process_type', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-包装辅料订购
+    getPackOrderDetail () {
+      this.loading = true
+      packPlan.packOrderLog({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.packOrder = this.$mergeData(res.data.data, { mainRule: ['client_name', 'client_id'], childrenName: 'pack_info', childrenRule: { mainRule: ['material_name/pack_name', 'price'], otherRule: [{ name: 'number/order_number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'order_time/compiled_time' }, { name: 'unit' }] } })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-出库运输
+    getOutStockFinanceDetail () {
+      this.loading = true
+      packPlan.packOutLog({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          this.orderDetailInfo.finance.outStock = this.$mergeData(res.data.data, { mainRule: 'client_name', childrenName: 'out_info', childrenRule: { mainRule: ['price', 'complete_time/compiled_time'], otherRule: [{ name: 'number', type: 'add' }, { name: 'cubic_number/cube_number', type: 'add' }, { name: 'total_price', type: 'add' }] } })
+        }
+        this.loading = false
       })
     },
     catDetail (type) {
@@ -1592,8 +1429,33 @@ export default {
           this.getInspectionDetail()
         } else if (newVal === 'outStock') {
           this.getOutStockDetail()
-        } else if (newVal === 'finance') {
-
+        } else {
+          this.$message.error('未知操作')
+        }
+      } else if (newVal === 'finance') {
+        this.changeFinance({ key: 'finance' })
+      }
+    },
+    activeFinanceTitle (newVal) {
+      if (this.orderDetailInfo.finance[newVal].length === 0) {
+        if (newVal === 'finance') {
+          this.getFinanceDetail()
+        } else if (newVal === 'yarnOrder') {
+          this.getMaterialOrderDetail()
+        } else if (newVal === 'yarnProcess') {
+          this.getMaterialProcessDetail()
+        } else if (newVal === 'materialOrder') {
+          this.getMaterialOrderDetail()
+        } else if (newVal === 'materialProcess') {
+          this.getMaterialProcessDetail()
+        } else if (newVal === 'weave') {
+          this.getWeaveDetail()
+        } else if (newVal === 'process') {
+          this.getProcessDetail()
+        } else if (newVal === 'packOrder') {
+          this.getPackOrderDetail()
+        } else if (newVal === 'outStock') {
+          this.getOutStockFinanceDetail()
         } else {
           this.$message.error('未知操作')
         }
