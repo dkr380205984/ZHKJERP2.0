@@ -2,13 +2,11 @@
   <div id='packPlanCreate'
     class='indexMain'>
     <div class="module">
-      <div class="titleCtn"
-        style="justify-content:start">
+      <div class="titleCtn">
         <div class="title">订单信息</div>
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
-          :content="msgContent"
-          :afterSend="$winReload"></zh-message>
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="floatRight">
@@ -356,8 +354,7 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
+          <div class="btn btnGray">返回</div>
           <div class="btn btnBlue"
             @click="saveAll">提交</div>
         </div>
@@ -373,9 +370,6 @@ export default {
   data () {
     return {
       loading: true,
-      msgSwitch: false,
-      msgUrl: '',
-      msgContent: '',
       chinaNum: chinaNum,
       letterArr: letterArr,
       orderInfo: {},
@@ -746,14 +740,7 @@ export default {
         this.lock = false
         packPlan.create(data).then(res => {
           if (res.data.status !== false) {
-            this.$message.success(this.activePlanId ? '修改' : '添加' + '成功')
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/packPlan/packPlanCreate/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">' + (this.activePlanId ? '修改' : '添加') + '</span>了一张新装箱计划单,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/packPlan/packPlanCreate/' + this.$route.params.id)
-            }
+            this.$message.success('添加成功')
           }
           this.lock = true
         })

@@ -143,7 +143,7 @@ export default {
         icon: require('@/assets/image/index/计划生产管理.png'),
         url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=/1'
       }, {
-        name: '物料管理',
+        name: '物料订购管理',
         id: 7,
         icon: require('@/assets/image/index/物料管理.png'),
         children: [{
@@ -156,6 +156,11 @@ export default {
           name: '订单物料列表',
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
+      }, {
+        name: '物料出入库管理',
+        id: 15,
+        icon: require('@/assets/image/index/装箱管理.png'),
+        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         name: '织造加工管理',
         id: 8,
@@ -191,19 +196,14 @@ export default {
         icon: require('@/assets/image/index/装箱管理.png'),
         children: [{
           name: '装箱计划单列表',
-          url: '/packPlan/packPlanList/page=1&&keyword=&&date='
+          url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }, {
           name: '包装订购列表',
-          url: '/packPlan/packOrderList/page=1&&keyword=&&date='
+          url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }, {
           name: '装箱出库列表',
-          url: '/packPlan/packStockList/page=1&&keyword=&&date='
+          url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }]
-      }, {
-        name: '物料出入库管理',
-        id: 15,
-        icon: require('@/assets/image/index/装箱管理.png'),
-        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         name: '客户管理',
         id: 13,

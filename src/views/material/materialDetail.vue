@@ -5,6 +5,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -276,6 +280,7 @@
                     </div>
                     <div class="content">
                       <el-date-picker v-model="item.complete_time"
+                        value-format="yyyy-MM-dd"
                         style="width:100%"
                         type="date"
                         placeholder="选择截止日期">
@@ -521,6 +526,7 @@
                     </div>
                     <div class="content">
                       <el-date-picker v-model="item.complete_time"
+                        value-format="yyyy-MM-dd"
                         style="width:100%"
                         type="date"
                         placeholder="选择截止日期">
@@ -813,6 +819,7 @@
             <div class="label">截止日期：</div>
             <div class="info">
               <el-date-picker v-model="commonDate"
+                value-format="yyyy-MM-dd"
                 style="width:100%"
                 type="date"
                 placeholder="选择截止日期">
@@ -907,6 +914,9 @@ export default {
   data () {
     return {
       bushaFlag: false,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       bushaInfo: {
         type: 1,
         id: null,
@@ -1074,7 +1084,7 @@ export default {
         })
         // 如果色纱和白胚都不够用,那就提示用户继续订购
         if (needNum > 0) {
-          this.$message.warning('检测到库存纱线不足,建议订购或手动调取其他色纱')
+          this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他色纱')
         }
         if (this.stock_data[0].stock.length > 0) {
           this.easyStockFlag = true
@@ -1124,9 +1134,9 @@ export default {
           })
         })
         if (needNum > 0) {
-          this.$message.warning('检测到库存纱线不足,建议订购或手动调取其他色纱')
+          this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他色纱')
         }
-        if (this.stock_data[0].stock.length > 0) {
+        if (this.stock_data[0] && this.stock_data[0].stock.length > 0) {
           this.easyStockFlag = true
         }
       }
@@ -1316,6 +1326,13 @@ export default {
         if (res.data.status) {
           this.cancleOrder()
           this.$message.success('订购成功，请刷新页面后查看采购数量')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料订购信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/product/productDetail/' + +this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+          }
           this.replenishFlag = false
         }
       })
@@ -1480,6 +1497,13 @@ export default {
         if (res.data.status) {
           this.cancleProcess()
           this.$message.success('加工成功，请刷新页面后查看加工日志')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料加工信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+          }
         }
       })
     },

@@ -5,6 +5,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -208,9 +212,9 @@
                 </div>
                 <div class="content">
                   <el-date-picker v-model="itemStock.time"
+                    value-format="yyyy-MM-dd"
                     class="elInput"
                     type="date"
-                    value-format="yyyy-MM-dd"
                     placeholder="选择日期">
                   </el-date-picker>
                 </div>
@@ -603,6 +607,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       leftNum: 32,
       leftNum2: 32,
       orderInfo: {},
@@ -762,6 +769,13 @@ export default {
           this.stockEditInfo = []
           this.weaveStockEditInfo = []
           this.$message.success('保存成功')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id)
+          }
         }
       })
     },

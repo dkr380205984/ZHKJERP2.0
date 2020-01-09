@@ -10,8 +10,11 @@
           v-model="state"
           active-color="#1A95FF"
           inactive-color="#dcdfe6"
-          :active-text="state?'开启合计模式':'关闭合计模式'">
+          :active-text="state?'合计模式开启':'合计模式关闭'">
         </el-switch>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="normalTb"
@@ -114,6 +117,7 @@
             </div>
             <div class="content">
               <el-date-picker v-model="order_time"
+                value-format="yyyy-MM-dd"
                 style="width:100%"
                 type="date"
                 placeholder="选择日期">
@@ -170,6 +174,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       state: false,
       material_info: [{
         material_name: '',
@@ -269,6 +276,13 @@ export default {
       materialOrder.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/materialOrder/materialOrderDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个物料预订购'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/materialOrder/materialOrderDetail/' + this.$route.params.id)
+          }
         }
       })
     }

@@ -240,7 +240,7 @@ const routes = [
       name: '装箱出库列表',
       component: () => import('../views/packPlan/packStockList.vue')
     }, {
-      path: '/packPlan/packStock/:id/:type',
+      path: '/packPlan/packStock/:id',
       name: '装箱出库详情',
       component: () => import('../views/packPlan/packStock.vue')
     }, {
@@ -417,6 +417,7 @@ router.beforeEach((to, from, next) => {
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
     '装箱计划单列表': ['织为云', '装箱计划单列表'],
     '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情'],
+    '包装订购列表': ['织为云', '包装订购列表'],
     '产品收发列表': ['织为云', '产品收发列表'],
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
     '产品检验列表': ['织为云', '产品检验列表'],

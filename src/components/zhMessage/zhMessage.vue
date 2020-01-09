@@ -133,6 +133,10 @@ export default {
     afterSave: {
       type: Function,
       required: false
+    },
+    afterSend: {
+      type: Function,
+      required: false
     }
   },
   data () {
@@ -289,7 +293,14 @@ export default {
         }
         notify.create(formData).then((res) => {
           if (res.data.status) {
-            this.$router.push(this.url)
+            // 一般情况下，页面发出通知后有两种情况
+            // 1.刷新页面，执行afterSend
+            // 2.跳转链接
+            if (typeof (this.afterSend) === 'function') {
+              this.afterSend()
+            } else {
+              this.$router.push(this.url)
+            }
           }
         })
       }
