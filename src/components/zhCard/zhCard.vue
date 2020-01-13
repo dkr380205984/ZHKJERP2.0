@@ -4,7 +4,7 @@
       <div class="zh_card_left">
         <el-image class="imgItem"
           :src="data.img[0] ? data.img[0].thumb : require('@/assets/image/index/noPic.jpg')"
-          :preview-src-list="data.img.map(vals=>vals.image_url)">
+          :preview-src-list="data.img.map(vals=>vals.file_url)">
         </el-image>
         <span class="blue">{{data.product_code}}</span>
         <span>{{data|filterType}}</span>

@@ -2881,7 +2881,7 @@ export default {
       })
     },
     handleAvatarSuccess (res, file) {
-      this.logoUrl = URL.createObjectURL(file.raw)
+      this.companyInfo.logoUrl = URL.createObjectURL(file.raw)
     },
     beforeUpload: function (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度

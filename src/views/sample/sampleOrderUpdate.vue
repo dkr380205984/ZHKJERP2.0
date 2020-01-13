@@ -683,7 +683,7 @@ export default {
       this.client_id = sampleOrderInfo.client_id.toString()
       this.getContact(this.client_id)
       this.contact_id = sampleOrderInfo.contacts_id
-      this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+      this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_name/size', 'color_name/color'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
       this.checkedProList = this.checkedProList.map(itemPro => {
         itemPro.sample_product_code = itemPro.product_info.product_code
         itemPro.sizeColor = itemPro.product_info.size_measurement.map(itemSize => {

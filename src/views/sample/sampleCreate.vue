@@ -837,30 +837,37 @@ export default {
       })
     },
     createSampleOrder () {
-      if (!this.orderInfo.client_id) {
+      let orderInfo = this.$clone(this.orderInfo)
+      if (!orderInfo.client_id) {
         this.$message.error('请选择订单公司')
         return
       }
-      if (!this.orderInfo.contacts_id) {
+      if (!orderInfo.contacts_id) {
         this.$message.error('请选择联系人')
         return
       }
-      if (!this.orderInfo.type && this.orderInfo.type !== 0) {
+      if (!orderInfo.type && orderInfo.type !== 0) {
         this.$message.error('请选择打样类型')
         return
       }
-      let flag = this.$flatten(this.orderInfo.product_info.map(item => {
+      let flag = this.$flatten(orderInfo.product_info.map(item => {
         return item.size_info.map(itemSize => itemSize.numbers)
       }))
       if (flag.filter(item => item).length === 0) {
         this.$message.error('检测到未填写打样数量，如无需打样某款尺码颜色，可不填，但至少填写一个打样数量')
         return
       }
-      if (!this.orderInfo.deliver_time) {
+      if (!orderInfo.deliver_time) {
         this.$message.error('请选择样单完成日期')
         return
       }
-      sampleOrder.create(this.orderInfo).then(res => {
+      orderInfo.product_info = orderInfo.product_info.map(item => {
+        return {
+          product_id: item.product_id,
+          size_info: item.size_info.filter(itemSize => itemSize.numbers)
+        }
+      })
+      sampleOrder.create(orderInfo).then(res => {
         if (res.data.status !== false) {
           this.$message.success('添加样单成功')
           this.$router.push('/sample/sampleDetail/' + this.activeId)

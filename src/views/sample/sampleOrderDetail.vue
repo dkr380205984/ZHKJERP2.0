@@ -35,15 +35,17 @@
                     class="elMenuItem"
                     v-if="sampleOrderInfo.status === 3002">待客户确认</el-menu-item>
                   <el-submenu index="1-2"
-                    class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3002">
+                    class="elMenuItem">
                     <template slot="title">已确认</template>
                     <el-menu-item index="continue"
-                      class="elMenuItem">继续打样</el-menu-item>
+                      class="elMenuItem"
+                      v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">继续打样</el-menu-item>
                     <el-menu-item index="ok"
-                      class="elMenuItem">不继续打样</el-menu-item>
+                      class="elMenuItem"
+                      v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
                     <el-menu-item index="addOrder"
-                      class="elMenuItem">大货生产</el-menu-item>
+                      class="elMenuItem"
+                      v-if="sampleOrderInfo.status === 3002">大货生产</el-menu-item>
                   </el-submenu>
                   <el-menu-item index="change"
                     class="elMenuItem"
@@ -1455,15 +1457,6 @@ export default {
           let data = res.data.data
           this.orderDetailInfo.finance.finance = [
             {
-              name: '订单产值',
-              unit: '件',
-              price_info: [{
-                number: data.order.order_total_value,
-                total_price: data.order.total_number,
-                pre_price: data.order.order_pre_value
-              }]
-            },
-            {
               name: '原料采购',
               unit: 'kg',
               price_info: [
@@ -1524,24 +1517,6 @@ export default {
                 number: data.semi_product.number,
                 total_price: data.semi_product.total_value,
                 pre_price: data.semi_product.pre_value
-              }]
-            },
-            {
-              name: '包装辅料订购',
-              unit: '个',
-              price_info: [{
-                number: data.pack_order.number,
-                total_price: data.pack_order.total_value,
-                pre_price: data.pack_order.pre_value
-              }]
-            },
-            {
-              name: '出库运输',
-              unit: '次',
-              price_info: [{
-                number: data.stock_out.number,
-                total_price: data.stock_out.total_value,
-                pre_price: data.stock_out.pre_value
               }]
             }
           ]
@@ -2259,7 +2234,7 @@ export default {
 //操作按钮重写
 .elMenuItem {
   color: #999 !important;
-  min-width: auto !important;
+  min-width: 120px !important;
   &.is-active {
     color: #999 !important;
     .el-submenu__title {
@@ -2280,7 +2255,7 @@ export default {
 }
 .handleMenuSample {
   .el-menu--popup {
-    min-width: auto !important;
+    min-width: 120px !important;
   }
 }
 </style>

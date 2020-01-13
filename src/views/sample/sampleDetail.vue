@@ -87,7 +87,7 @@
             <div class="imgCtn">
               <img v-for="(item,index) in detail.image"
                 :key="index"
-                :src="item.image_url" />
+                :src="item.file_url" />
             </div>
           </div>
         </div>

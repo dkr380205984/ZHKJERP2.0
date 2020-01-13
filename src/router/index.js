@@ -310,7 +310,7 @@ const routes = [
     name: '样品标签',
     component: () => import('../views/sample/tagPrint.vue')
   }, {
-    path: '/craftTable/:id/:type',
+    path: '/craftTable/:id/:type/:craftId',
     name: '工艺单打印',
     component: () => import('../views/craft/craftTable.vue')
   }, {

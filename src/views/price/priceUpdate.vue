@@ -1590,7 +1590,7 @@ export default {
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
       price.create({
-        id: null,
+        id: this.$route.params.id,
         client_id: this.client_id,
         quotation_code: quotationCode,
         client_contact: this.contact_id,

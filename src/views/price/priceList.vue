@@ -110,8 +110,7 @@
             <div class="col">{{item.code}}</div>
             <div class="col flex15">{{item.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="item.img"
-                type='open'></zh-img-list>
+              <zh-img-list :list="item.img"></zh-img-list>
             </div>
             <div class="col right flex08"><span class="price">{{item.price}}</span>元</div>
             <div class="col right flex08">{{item.user_name}}</div>

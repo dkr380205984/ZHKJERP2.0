@@ -928,7 +928,11 @@ export default {
       product_type: this.$route.params.type
     }).then(res => {
       if (res.data.stauts !== false) {
-        let data = res.data.data
+        let data = res.data.data.find(item => item.id === this.$route.params.craftId)
+        if (!data) {
+          this.$message('未找到工艺单ID为' + this.$route.params.craftId + '的工艺单')
+          return
+        }
         data.warp_data.merge_data = JSON.parse(data.warp_data.merge_data)
         data.warp_data.merge_data_back = JSON.parse(data.warp_data.merge_data_back)
         data.warp_data.warp_rank = JSON.parse(data.warp_data.warp_rank)
