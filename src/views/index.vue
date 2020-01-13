@@ -247,7 +247,7 @@ export default {
       return this.$store.state.breadUrl
     },
     haveSet () {
-      return this.moduleArr && this.moduleArr.indexOf(14) !== -1
+      return !this.moduleArr || this.moduleArr.indexOf(14) !== -1
     },
     navCmp () {
       let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : null
