@@ -212,6 +212,10 @@ export default {
           this.$message.error('检测到未填写联系电话，请填写')
           return
         }
+        if (this.type && this.contacts.filter(item => item.name || item.post || item.telephone).length === 0) {
+          this.$message.error('检测到未填写联系人信息，请填写')
+          return
+        }
         this.lock = false
         client.create({
           name: this.client_name,

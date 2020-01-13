@@ -194,19 +194,19 @@
             <div class="col">{{itemOrder.number}}</div>
             <div class="col">{{itemOrder.group_name}}</div>
             <div class="col">
-              <div :class="{'stateCtn':true, 'green':true}">
+              <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
                 <div class="state"></div>
                 <span class="name">计</span>
               </div>
-              <div :class="{'stateCtn':true, 'green':true}">
+              <div :class="{'stateCtn':true,'orange':itemOrder.material_order_progress.y_percent>0 ,'green':itemOrder.material_order_progress.y_percent>=100}">
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
-              <div :class="{'stateCtn':true, 'green':true}">
+              <div :class="{'stateCtn':true,'orange':itemOrder.material_push_progress.r_push>0 ,'green':itemOrder.material_push_progress.r_push>=100}">
                 <div class="state"></div>
                 <span class="name">库</span>
               </div>
-              <div :class="{'stateCtn':true, 'green':true}">
+              <div :class="{'stateCtn':true,'orange':itemOrder.product_weave_progress.product>0 ,'green':itemOrder.product_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
@@ -223,7 +223,7 @@
             <div class="col middle">
               <span class="opr"
                 @click="$router.push('/sample/sampleOrderDetail/' + (itemOrder.pid || itemOrder.id))">详情</span>
-              <span class="opr">
+              <!-- <span class="opr">
                 <el-dropdown @command="handleCommand($event,itemOrder.id)">
                   <span class="el-dropdown-link">
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
@@ -237,7 +237,7 @@
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
-              </span>
+              </span> -->
             </div>
           </div>
         </div>
@@ -405,7 +405,11 @@ export default {
             }),
             status: item.status,
             group_name: item.group_name,
-            deliver_time: item.deliver_time
+            deliver_time: item.deliver_time,
+            has_plan: item.has_plan,
+            material_order_progress: item.material_order_progress,
+            product_weave_progress: item.product_weave_progress,
+            material_push_progress: item.material_push_progress
           }
         })
         this.total = res.data.meta.total

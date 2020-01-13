@@ -398,7 +398,7 @@
 </template>
 
 <script>
-import { sample, client, group, sampleOrder } from '@/assets/js/api.js'
+import { sample, client, group, sampleOrder, productType, flower } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -666,10 +666,31 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list()
+      group.list(),
+      productType.list(),
+      flower.list()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
+      this.typeArr = res[2].data.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id,
+          children: item.child.map(itemChild => {
+            return {
+              label: itemChild.name,
+              value: itemChild.id,
+              children: itemChild.child.map(itemChilds => {
+                return {
+                  label: itemChilds.name,
+                  value: itemChilds.id
+                }
+              })
+            }
+          })
+        }
+      })
+      this.flowerArr = res[3].data.data
       this.loading = false
     })
   },

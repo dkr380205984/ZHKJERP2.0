@@ -51,7 +51,7 @@
                       v-model="type"
                       placeholder="筛选品类"
                       :options="typeArr"
-                      @change="getType()"
+                      @change="getType($event)"
                       clearable
                       filterable>
                     </el-cascader>
@@ -347,6 +347,7 @@ export default {
       this.changeRouter()
     },
     getType (type) {
+      console.log(type)
       if (type.length === 3) {
         this.category_id = type[0]
         this.type_id = type[1]

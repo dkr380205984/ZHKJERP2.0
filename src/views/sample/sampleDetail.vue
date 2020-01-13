@@ -356,7 +356,8 @@
           </span>
         </div>
         <div class="opr">
-          <div class="btn btnGray">取消</div>
+          <div class="btn btnGray"
+            @click="printFlag = false">取消</div>
           <div class="btn btnBlue"
             @click="openTagPrint">去打印</div>
         </div>

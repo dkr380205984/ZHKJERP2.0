@@ -962,7 +962,7 @@
               <span class="tb_row">{{itemLog.product_code}}</span>
               <span class="tb_row">{{itemLog.size + '/' + itemLog.color}}</span>
               <span class="tb_row">{{itemLog.order_code}}</span>
-              <span class="tb_row flex08 two_line">{{actionTypeArr[itemLog.type]}}<br />{{itemLog.stock_number}}</span>
+              <span :class="{'tb_row':true, 'flex08':true, 'two_line':true,'green':itemLog.type === 1,'orange':itemLog.type === 2}">{{actionTypeArr[itemLog.type]}}<br />{{itemLog.stock_number}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
               <span class="tb_row middle flex08">
                 <template v-if="itemLog.remark">

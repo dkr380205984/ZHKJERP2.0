@@ -608,7 +608,7 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken } from '@/assets/js/api.js'
+import { product, client, group, order, getToken, productType, flower } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1040,11 +1040,32 @@ export default {
     Promise.all([
       client.list(),
       group.list(),
-      getToken()
+      getToken(),
+      productType.list(),
+      flower.list()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
+      this.typeArr = res[3].data.data.map(item => {
+        return {
+          label: item.name,
+          value: item.id,
+          children: item.child.map(itemChild => {
+            return {
+              label: itemChild.name,
+              value: itemChild.id,
+              children: itemChild.child.map(itemChilds => {
+                return {
+                  label: itemChilds.name,
+                  value: itemChilds.id
+                }
+              })
+            }
+          })
+        }
+      })
+      this.flowerArr = res[4].data.data
     })
   },
   filters: {
