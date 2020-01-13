@@ -72,7 +72,13 @@
             <div class="col flex08">
               {{itemOrder.group_name}}
             </div>
-            <div class="col flex12">装箱进度</div>
+            <div class="col flex12">
+              <div class="stateCtn rowFlex"
+                :class="itemOrder.product_push_progress < 100 ? 'orange' : 'green'">
+                <div class="state"></div>
+                <span class="name">{{itemOrder.product_push_progress}}%</span>
+              </div>
+            </div>
             <div class="col">
               {{itemOrder.order_time}}
             </div>
@@ -128,7 +134,8 @@ export default {
               return Number(total) + Number(itemNum)
             }),
             group_name: item.group_name,
-            order_time: item.order_time
+            order_time: item.order_time,
+            product_push_progress: item.product_push_progress
           }
         })
         this.total = res.data.meta.total
