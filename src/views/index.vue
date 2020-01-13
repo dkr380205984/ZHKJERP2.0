@@ -39,7 +39,7 @@
                         @click="readMsg(item)"
                         :class="{'must':item.type==='紧急','normal':item.type==='普通','important':item.type==='重要'}">{{item.title}}</span>
                       <span class="mark"
-                        :class="{'blue':item.tag==='审核','blue':item.tag==='工序','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
+                        :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
                     </div>
                     <div class="oneMsgLine2">
                       <div class="oneMsgInfo"
@@ -247,7 +247,7 @@ export default {
       return this.$store.state.breadUrl
     },
     haveSet () {
-      return this.moduleArr.indexOf(14) !== -1
+      return this.moduleArr && this.moduleArr.indexOf(14) !== -1
     },
     navCmp () {
       let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : null

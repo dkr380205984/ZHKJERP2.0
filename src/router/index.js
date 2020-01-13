@@ -12,18 +12,19 @@ const routes = [
   {
     path: '/',
     redirect: '/login'
-  },
-  {
+  }, {
     path: '/login',
     name: 'login',
     component: () => import('../views/login.vue')
-  },
-  {
+  }, {
+    path: '/loginNew',
+    name: 'loginNew',
+    component: () => import('../views/loginNew.vue')
+  }, {
     path: '/error',
     name: 'error',
     component: () => import('../views/error.vue')
-  },
-  {
+  }, {
     path: '/index',
     name: 'index',
     component: () => import('../views/index.vue'),

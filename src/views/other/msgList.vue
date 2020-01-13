@@ -59,7 +59,7 @@
                   @click="readMsg(item)"
                   :class="{'must':item.type==='紧急','normal':item.type==='普通','important':item.type==='重要'}">{{item.title}}</span>
                 <span class="mark"
-                  :class="{'blue':item.tag==='审核','blue':item.tag==='工序','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
+                  :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
               </div>
               <div class="oneMsgLine2">
                 <div class="oneMsgInfo"

@@ -350,7 +350,7 @@ export default {
       }, {
         id: 3,
         opr: '产品列表',
-        url: '/product/productList'
+        url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
       }, {
         id: 2,
         opr: '添加报价单',
@@ -483,9 +483,13 @@ export default {
     // 用户可选的操作
     userChooseOpr () {
       let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-      return this.easyOpr.filter((item) => {
-        return moduleArr.find((itemFind) => itemFind === item.id)
-      })
+      if (moduleArr) {
+        return this.easyOpr.filter((item) => {
+          return moduleArr.find((itemFind) => itemFind === item.id)
+        })
+      } else {
+        return this.easyOpr
+      }
     },
     // 用户已选的操作
     userChoosedOpr () {
