@@ -193,7 +193,7 @@
               </div>
               <div class="colCtn flex3">
                 <div class="label">
-                  <span class="text">入库重量</span>
+                  <span class="text">出入库重量</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
@@ -236,9 +236,11 @@
               v-if="stockEditInfo.length === 0"
               @click="addItem(stockEditInfo,'stock')">普通出入库</span>
             <span class="once"
-              v-if="stockEditInfo.length === 0">一键入库</span>
-            <span class="once"
-              v-if="stockEditInfo.length === 0">一键出库</span>
+              v-if="stockEditInfo.length === 0"
+              @click="stockAll(stockEditInfo,'end_go')">一键入库</span>
+            <!-- <span class="once"
+              v-if="stockEditInfo.length === 0"
+              @click="stockAll(stockEditInfo,'out')">一键出库</span> -->
             <span class="once cancle"
               v-if="stockEditInfo.length"
               @click="resetEditInfo('stock')">取消</span>
@@ -428,7 +430,7 @@
               </div>
             </div>
           </div>
-          <div class="btnCtn_page marginTop20">
+          <!-- <div class="btnCtn_page marginTop20">
             <div class="btn btnDashed"
               v-show="weaveStockEditInfo.length > 0"
               @click="resetEditInfo('weave')">
@@ -447,6 +449,24 @@
               <div class="btn btnGreen"
                 @click="saveAll('weave')">保存</div>
             </div>
+          </div> -->
+          <div class="addRows"
+            style="margin:16px 32px 0 32px">
+            <span class="once"
+              v-if="weaveStockEditInfo.length === 0"
+              @click="addItem(weaveStockEditInfo,'process')">普通出库</span>
+            <span class="once"
+              v-if="weaveStockEditInfo.length === 0"
+              @click="stockAll(weaveStockEditInfo,'process')">一键出库</span>
+            <span class="once cancle"
+              v-if="weaveStockEditInfo.length"
+              @click="resetEditInfo('weave')">重置</span>
+            <span class="once normal"
+              v-if="weaveStockEditInfo.length > 0"
+              @click="addItem(weaveStockEditInfo,'stock')">添加出库</span>
+            <span class="once ok"
+              v-if="weaveStockEditInfo.length > 0"
+              @click="saveAll('weave')">确认</span>
           </div>
         </div>
       </template>
@@ -634,6 +654,38 @@ export default {
     }
   },
   methods: {
+    stockAll (item, type) {
+      if (type === 'process') {
+        let outInfo = this.activeProcessInfo.map(item => {
+          return {
+            client_name: this.activeClient,
+            editType: 'out',
+            material_name: item.material_name,
+            time: this.$getTime(),
+            remark: '',
+            color_info: item.color_info.map(itemColor => {
+              return {
+                material_attribute: itemColor.attr,
+                number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0))
+              }
+            })
+          }
+        })
+        this.weaveStockEditInfo.push(...this.$flatten(outInfo))
+      } else {
+        item.push(...this.activeMaterialInfo.map(item => {
+          return {
+            client_name: '',
+            editType: type,
+            material_name: this.activeStockMa,
+            material_attribute: item.attr,
+            number: this.$toFixed((item.order_weight || 0) - (item.goStockNumEnd || 0)),
+            time: this.$getTime(),
+            remark: ''
+          }
+        }))
+      }
+    },
     deleteLog (type, item) {
       this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -815,7 +867,7 @@ export default {
         editType: type,
         material_name: this.activeStockMa,
         material_attribute: item.attr,
-        number: '',
+        number: this.$toFixed((item.order_weight || 0) - (item.goStockNumEnd || 0)),
         time: this.$getTime(),
         remark: ''
       }
@@ -824,12 +876,13 @@ export default {
       this.stockEditInfo.push(obj)
     },
     handleClickProcess (item, value) {
+      console.log(item, value)
       let obj = {
         client_name: this.activeClient,
         editType: 'out',
         material_name: value.material_name,
         material_attribute: item.attr,
-        number: '',
+        number: this.$toFixed((item.type === 1 ? item.weight / 1000 : item.weight) - (item.outStockNum || 0)),
         time: this.$getTime(),
         remark: ''
       }
