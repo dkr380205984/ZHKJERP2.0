@@ -17,12 +17,48 @@
         <div class="rightCtn">
           <i class="el-icon-cpu elIcon"
             @click="$router.push('/equipment')"></i>
-          <el-badge is-dot>
-            <i class="el-icon-bell elIcon"></i>
-          </el-badge>
+          <div class="msgCtn">
+            <el-badge :is-dot="total>0">
+              <i class="el-icon-bell elIcon"></i>
+            </el-badge>
+            <div class="msgTop"></div>
+            <div class="msgBox">
+              <div class="msgOpr">
+                <span>消息通知</span>
+                <span @click="readAll">全部标记已读</span>
+              </div>
+              <div class="msgContent">
+                <div class="noMsg"
+                  v-show="msgList.length===0">暂无新通知</div>
+                <div class="oneMsg"
+                  v-for="item in msgList"
+                  :key="item.id">
+                  <div class="oneMsgLeft">
+                    <div class="oneMsgLine1">
+                      <span class="oneMsgTitle"
+                        @click="readMsg(item)"
+                        :class="{'must':item.type==='紧急','normal':item.type==='普通','important':item.type==='重要'}">{{item.title}}</span>
+                      <span class="mark"
+                        :class="{'blue':item.tag==='审核','blue':item.tag==='工序','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
+                    </div>
+                    <div class="oneMsgLine2">
+                      <div class="oneMsgInfo"
+                        v-html="item.content"></div>
+                    </div>
+                  </div>
+                  <div class="oneMsgRight">
+                    <div class="oneMsgLine1">{{item.create_time.slice(0,10)}}</div>
+                    <div class="oneMsgLine2">{{item.user_name}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="msgBottom"><span @click="$router.push('/other/msgList')">查看全部通知</span></div>
+            </div>
+          </div>
           <i class="el-icon-setting elIcon"
+            v-show="haveSet"
             @click="$router.push('/setting/setting')"></i>
-          <div class="headImg"></div>
+          <div class="headImg">{{userName.charAt(userName.length-1)}}</div>
           <div class="selectCtn">
             <el-dropdown @command="commondHandler"
               trigger="click">
@@ -65,26 +101,17 @@
 
 <script>
 import Pusher from 'pusher-js' // 全局方法
-import { logout } from '@/assets/js/api.js'
+import { logout, notify } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      moduleArr: window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : [],
+      userName: window.sessionStorage.getItem('user_name'),
       logo: window.sessionStorage.getItem('logo') || require('@/assets/image/index/noPic.jpg'),
       companyName: window.sessionStorage.getItem('company_name') || '未登录',
+      msgList: [],
+      total: 0,
       navData: [{
-        name: '样式参考',
-        icon: require('@/assets/image/index/样品管理.png'),
-        children: [{
-          name: '编辑页面',
-          url: '/css/edit'
-        }, {
-          name: '详情页',
-          url: '/css/detail'
-        }, {
-          name: '列表页',
-          url: '/css/list'
-        }]
-      }, {
         name: '样品管理',
         icon: require('@/assets/image/index/样品管理.png'),
         id: 1,
@@ -143,7 +170,7 @@ export default {
         icon: require('@/assets/image/index/计划生产管理.png'),
         url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=/1'
       }, {
-        name: '物料管理',
+        name: '物料订购管理',
         id: 7,
         icon: require('@/assets/image/index/物料管理.png'),
         children: [{
@@ -156,6 +183,11 @@ export default {
           name: '订单物料列表',
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
+      }, {
+        name: '物料出入库管理',
+        id: 15,
+        icon: require('@/assets/image/index/装箱管理.png'),
+        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         name: '织造加工管理',
         id: 8,
@@ -187,23 +219,18 @@ export default {
         // }]
       }, {
         name: '装箱管理',
-        id: 7,
+        id: 11,
         icon: require('@/assets/image/index/装箱管理.png'),
         children: [{
           name: '装箱计划单列表',
-          url: '/packPlan/packPlanList/page=1&&keyword=&&date='
+          url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }, {
           name: '包装订购列表',
-          url: '/packPlan/packOrderList/page=1&&keyword=&&date='
+          url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }, {
           name: '装箱出库列表',
-          url: '/packPlan/packStockList/page=1&&keyword=&&date='
+          url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }]
-      }, {
-        name: '物料出入库管理',
-        id: 15,
-        icon: require('@/assets/image/index/装箱管理.png'),
-        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         name: '客户管理',
         id: 13,
@@ -219,6 +246,9 @@ export default {
     breadUrl () {
       return this.$store.state.breadUrl
     },
+    haveSet () {
+      return this.moduleArr.indexOf(14) !== -1
+    },
     navCmp () {
       let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : null
       if (moduleArr) {
@@ -232,8 +262,8 @@ export default {
   },
   methods: {
     commondHandler (cmd) {
-      if (cmd === 'personManage') {
-
+      if (cmd === 'sendMsg') {
+        this.$router.push('/other/sendMsg')
       } else if (cmd === 'logout') {
         logout().then((res) => {
           if (res.data.status) {
@@ -259,6 +289,60 @@ export default {
           this.$router.go(index - (this.breadUrl.length - 1))
         }
       }
+    },
+    getNotify () {
+      notify.list({
+        limit: 5,
+        page: 1,
+        status: 1,
+        type: null
+      }).then((res) => {
+        this.msgList = res.data.data
+        this.total = res.data.meta.total
+      })
+    },
+    readMsg (item) {
+      if (item.tag === '公司') {
+        this.$alert('通知详情：' + item.content, item.title, {
+          confirmButtonText: '确定',
+          dangerouslyUseHTMLString: true
+        })
+      } else {
+        window.open(item.router_url)
+      }
+      notify.read({
+        id: item.id
+      }).then((res) => {
+        if (res.data.status) {
+          this.getNotify()
+        } else {
+          this.$message.error({
+            message: res.data.message
+          })
+        }
+      })
+    },
+    readAll () {
+      this.$confirm('是否已读所有通知', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        notify.read({
+          id: null
+        }).then((res) => {
+          this.$message({
+            type: 'success',
+            message: '操作成功'
+          })
+          this.msgList = []
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
     }
   },
   mounted () {
@@ -269,15 +353,16 @@ export default {
     })
     let channel = pusher.subscribe('my-channel-' + window.sessionStorage.getItem('user_id'))
     channel.bind('my-event', function (data) {
-      console.log('消息通知接收', data)
       let color = data.content.type === '普通' ? '#1a95ff' : data.content.type === '重要' ? '#E6A23C' : '#F5222D'
       vue.$notify({
         title: data.content.title,
         dangerouslyUseHTMLString: true,
         duration: 0,
-        message: '<span style="display: inline-block;background:' + color + ';color: #fff;border-radius: 4px;padding: 0px 6px;margin-right: 4px;">' + data.content.type + '</span>xx人' + data.content.content + '<a style="color:#1a95ff" href=' + data.content.router_url + '>(点击查看)</a>'
+        message: '<span style="display: inline-block;background:' + color + ';color: #fff;border-radius: 4px;padding: 0px 6px;margin-right: 4px;">' + data.content.type + '</span>' + data.content.content + '<a style="color:#1a95ff" href=' + data.content.router_url + '>(点击查看)</a>'
       })
     })
+    this.getNotify()
+    this.$message.duration = 500
   }
 }
 </script>

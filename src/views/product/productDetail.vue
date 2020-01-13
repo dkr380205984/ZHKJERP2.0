@@ -169,14 +169,17 @@
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                   <span v-if="detail.craft_info"
-                    class="opration">预览</span>
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">预览</span>
                   <span v-if="detail.craft_info"
-                    class="opration">打印</span>
+                    class="opration"
+                    @click="openWin('/craftTable/'+ detail.craft_info.id + '/1')">打印</span>
                   <span v-if="detail.craft_info"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">详情</span>
                   <span v-if="detail.craft_info"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="noOpr">...</span>
                 </div>
               </div>
               <div class="rect">
@@ -200,24 +203,27 @@
                     class="opration"
                     @click="$router.push('/productPlan/productPlanCreate/'+ $route.params.id + '/1')">添加</span>
                   <span v-if="detail.product_plan_info"
-                    class="opration">预览</span>
+                    class="opration"
+                    @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/1')">预览</span>
                   <span v-if="detail.product_plan_info"
-                    class="opration">打印</span>
+                    class="opration"
+                    @click="openWin('/productPlanTable/' + $route.params.id + '/1/' + detail.product_plan_info.id)">打印</span>
                   <span v-if="detail.product_plan_info"
                     class="opration"
                     @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/1')">详情</span>
                   <span v-if="detail.product_plan_info"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="noOpr">...</span>
                 </div>
               </div>
               <div class="rect">
                 <div class="tab"
                   v-if="detail.quotation_info.length>1">
                   <div class="circle"
-                    :class="{'active':quotation_index===index}"
+                    :class="{'active':quotation_index===index-1}"
                     v-for="index in detail.quotation_info.length"
                     :key="index"
-                    @click="quotation_index=index"></div>
+                    @click="quotation_index=index-1"></div>
                 </div>
                 <div class="main">
                   <div class="icon"
@@ -237,15 +243,20 @@
                 </div>
                 <div class="menu">
                   <span v-if="detail.quotation_info.length===0"
-                    class="opration">添加</span>
+                    class="opration"
+                    @click="noOpr">添加</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">预览</span>
+                    class="opration"
+                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">预览</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">打印</span>
+                    class="opration"
+                    @click="openWin('/pricePrintTable/' + detail.quotation_info[quotation_index].id )">打印</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">详情</span>
+                    class="opration"
+                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">详情</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="noOpr">...</span>
                 </div>
               </div>
             </div>
@@ -403,6 +414,12 @@ export default {
     }
   },
   methods: {
+    noOpr () {
+      this.$message.warning('暂未开放该功能')
+    },
+    openWin (url) {
+      window.open(url)
+    },
     handleCheckAllSize ($event) {
       this.isIndeterminateSize = false
       this.detail.size.forEach(itemSize => {

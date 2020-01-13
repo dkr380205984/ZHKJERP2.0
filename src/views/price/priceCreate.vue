@@ -1626,7 +1626,7 @@ export default {
           this.$message({ type: 'success', message: '提交成功' })
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/price/priceDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#E6A23C">添加</span>了一张新报价单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
+            this.msgContent = '<span style="color:#1a95ff">添加</span>了一张新报价单<span style="color:#1A95FF">'
             this.msgSwitch = true
           } else {
             this.$router.push('/price/priceDetail/' + res.data.data.id)

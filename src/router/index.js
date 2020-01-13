@@ -240,7 +240,7 @@ const routes = [
       name: '装箱出库列表',
       component: () => import('../views/packPlan/packStockList.vue')
     }, {
-      path: '/packPlan/packStock/:id/:type',
+      path: '/packPlan/packStock/:id',
       name: '装箱出库详情',
       component: () => import('../views/packPlan/packStock.vue')
     }, {
@@ -291,22 +291,30 @@ const routes = [
       path: '/client/clientDetail/:id',
       name: '客户详情',
       component: () => import('../views/client/clientDetail.vue')
+    }, {
+      path: '/other/msgList',
+      name: '消息列表',
+      component: () => import('../views/other/msgList.vue')
+    }, {
+      path: '/other/sendMsg',
+      name: '发通知',
+      component: () => import('../views/other/sendMsg.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
-    name: 'tagProductPrint',
+    name: '产品标签',
     component: () => import('../views/product/tagPrint.vue')
   }, {
     path: '/tagSamplePrint/:id/:info',
-    name: 'tagSamplePrint',
+    name: '样品标签',
     component: () => import('../views/sample/tagPrint.vue')
   }, {
     path: '/craftTable/:id/:type',
-    name: 'craftTable',
+    name: '工艺单打印',
     component: () => import('../views/craft/craftTable.vue')
   }, {
     path: '/productPlanTable/:id/:type/:index',
-    name: 'productPlanTable',
+    name: '配料单打印',
     component: () => import('../views/productPlan/productPlanTable.vue')
   }, {
     path: '/materialPlanTable/:id/:type/:params',
@@ -417,6 +425,7 @@ router.beforeEach((to, from, next) => {
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
     '装箱计划单列表': ['织为云', '装箱计划单列表'],
     '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情'],
+    '包装订购列表': ['织为云', '包装订购列表'],
     '产品收发列表': ['织为云', '产品收发列表'],
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
     '产品检验列表': ['织为云', '产品检验列表'],
@@ -428,7 +437,9 @@ router.beforeEach((to, from, next) => {
     '客户列表': ['织为云', '客户列表'],
     '客户添加': ['织为云', '客户列表', '客户添加'],
     '客户修改': ['织为云', '客户列表', '客户修改'],
-    '客户详情': ['织为云', '客户列表', '客户详情']
+    '客户详情': ['织为云', '客户列表', '客户详情'],
+    '消息列表': ['织为云', '消息列表'],
+    '发通知': ['织为云', '发通知']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

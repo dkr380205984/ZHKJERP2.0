@@ -5,6 +5,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -83,12 +87,12 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.processNum}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.numbers - itemChild.processNum)">半成品加工分配</span>
+                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.production_number - itemChild.processNum)">半成品加工分配</span>
                       </div>
                     </div>
                   </div>
@@ -243,6 +247,7 @@
                     </div>
                     <div class="content">
                       <el-date-picker v-model="item.complete_time"
+                        value-format="yyyy-MM-dd"
                         style="width:100%"
                         type="date"
                         placeholder="选择截止日期">
@@ -543,6 +548,7 @@
             <div class="label">截止日期：</div>
             <div class="info">
               <el-date-picker v-model="commonDate"
+                value-format="yyyy-MM-dd"
                 style="width:100%"
                 type="date"
                 placeholder="选择截止日期">
@@ -567,6 +573,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       orderInfo: {
         order_code: '',
         client_name: '',
@@ -630,7 +639,7 @@ export default {
             return {
               colorSize: itemChild.size + '/' + itemChild.color,
               price: '',
-              number: itemChild.numbers - itemChild.processNum
+              number: itemChild.production_number - itemChild.processNum
             }
           }),
           part_id: [],
@@ -726,6 +735,13 @@ export default {
           this.$message.success('分配成功，请刷新页面查看分配数量')
           this.process_data = []
           this.process_flag = false
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工分配信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
+          }
         }
       })
     },

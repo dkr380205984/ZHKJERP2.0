@@ -3,8 +3,13 @@
     class='indexMain'
     v-loading='loading'>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn"
+        style="justify-content:start;display:flex">
         <div class="title">订单信息</div>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -777,6 +782,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       chinaNum: chinaNum,
       countries: countries,
       orderInfo: {},
@@ -1149,6 +1157,13 @@ export default {
             this.$message.success('保存成功')
             this.getOutPackingLog()
             this.outPackingEditInfo = []
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/packPlan/packStock/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了新的装箱出库,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/packPlan/packStock/' + this.$route.params.id)
+            }
           }
           this.lock = true
         })

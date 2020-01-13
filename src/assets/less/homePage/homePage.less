@@ -22,7 +22,11 @@
           width: 72px;
           height: 72px;
           border-radius: 50%;
-          background: rosybrown;
+          background: @blue;
+          line-height: 72px;
+          text-align: center;
+          font-size: 32px;
+          color: #fff;
         }
         .content{
           margin-left: 24px;
@@ -103,7 +107,6 @@
       border-top:77px solid transparent;
     }
     &.flexCtn2{
-      height: 451px;
       margin-top: 24px;
     }
     .leftCtn{
@@ -130,6 +133,7 @@
     }
     .content{
       padding: 24px;
+      position: relative;
       .searchCtn{
         height: 40px;
         display: flex;
@@ -172,10 +176,58 @@
           padding: 0;
         }
       }
+      .searchBox{
+        position: absolute;
+        left: 24px;
+        right: 119px;
+        background: #fff;
+        border:1px solid rgba(217,217,217,1);
+        box-shadow:0px 6px 12px rgba(0,0,0,0.16);
+        border-radius: 4px;
+        top: 70px;
+        z-index: 999;
+        .icons{
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          font-size: 20px;
+          color: @font85;
+          cursor: pointer;
+          &:hover{
+            color: @blue;
+          }
+        }
+        .block{
+          padding: 20px;
+          border-bottom: 1px solid rgba(217,217,217,1);
+        }
+        .titled{
+          font-size: @fontMiddle;
+          color: @font85;
+          font-weight: bold;
+        }
+        .info{
+          font-size: @fontMiddle;
+          color: @font65;
+          margin: 12px 0;
+          .text{
+            margin-right: 16px;
+            &:nth-of-type(1){
+              cursor: pointer;
+            }
+          }
+        }
+        .noMsg{
+          color: @font25;
+          font-size: @fontMiddle;
+        }
+      }
       .opr{
         font-size: @fontMiddle;
         color: @font65;
         margin-right: 12px;
+        margin-bottom: 6px;
+        display: inline-block;
         cursor: pointer;
         &:hover{
           color: @blue;
@@ -230,10 +282,24 @@
       padding-bottom: 24px;
       border-bottom: 1px solid #E8E8E8;
       .iconCtn{
-        min-width: 32px;
+        width: 32px;
         height: 32px;
-        background: @blue;
+        overflow: hidden;
         border-radius: 50%;
+        &.blue{
+          background: @blue;
+        }
+        &.red{
+          background: @red;
+        }
+        &.orange{
+          background: @orange;
+        }
+        .img{
+          width: 22px;
+          height: 22px;
+          margin: 5px;
+        }
       } 
       .userInfo{
         display: flex;
@@ -253,8 +319,31 @@
         margin-left: 12px;
         color: @font65;
         font-size: @fontMiddle;
+        cursor: pointer;
         .blue{
           color: @blue;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .popup{
+    .content{
+      padding: 16px;
+      .box{
+        margin: 20px 0;
+        .text{
+          color: @font85;
+          font-size: @fontBig;
+        }
+        .tagCtn{
+          margin: 20px 0;
+          .el-tag{
+            margin: 0 12px 12px 0;
+          }
+          .el-checkbox{
+            margin:0 12px 12px 0;
+          }
         }
       }
     }

@@ -133,6 +133,10 @@ export default {
     afterSave: {
       type: Function,
       required: false
+    },
+    afterSend: {
+      type: Function,
+      required: false
     }
   },
   data () {
@@ -181,7 +185,18 @@ export default {
       if (val === '审核') {
         this.userListSelf = this.userListSelf.filter((item) => item.has_check === 1)
       } else {
-        this.userListSelf = this.userList
+        auth.list().then((res) => {
+          this.userListSelf = this.$store.commit('getUserList', res.data.data.map((item) => {
+            return {
+              station: item.station,
+              group: item.group,
+              id: item.id,
+              name: item.name,
+              has_check: item.has_check,
+              check: false
+            }
+          }))
+        })
       }
     }
   },
@@ -289,7 +304,14 @@ export default {
         }
         notify.create(formData).then((res) => {
           if (res.data.status) {
-            this.$router.push(this.url)
+            // 一般情况下，页面发出通知后有两种情况
+            // 1.刷新页面，执行afterSend
+            // 2.跳转链接
+            if (typeof (this.afterSend) === 'function') {
+              this.afterSend()
+            } else {
+              this.$router.push(this.url)
+            }
           }
         })
       }

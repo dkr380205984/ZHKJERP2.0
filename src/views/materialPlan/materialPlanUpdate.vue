@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">{{$route.params.type === '1' ? '订' : '样'}}单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -215,7 +218,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">提交</div>
+            @click="saveAll">修改</div>
         </div>
       </div>
     </div>
@@ -228,6 +231,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       lock: true,
       yarnList: [],
       materialList: [],
@@ -330,13 +336,6 @@ export default {
           flag.id = itemMa.id
         }
       })
-      console.log({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type,
-        detail_data: detailData,
-        total_data: totalData,
-        production_data: productionData
-      })
       this.lock = false
       materialPlan.create({
         is_update: true,
@@ -349,8 +348,13 @@ export default {
         if (res.data.status) {
           this.$message.success('修改成功')
           this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
-        } else {
-          this.$message.error(res.data.message)
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#E6A23C">修改</span>了一张物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+          }
         }
         this.lock = true
       })

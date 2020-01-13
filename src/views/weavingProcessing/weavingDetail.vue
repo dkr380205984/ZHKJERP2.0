@@ -5,6 +5,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -214,6 +218,7 @@
                     </div>
                     <div class="content">
                       <el-date-picker v-model="item.complete_time"
+                        value-format="yyyy-MM-dd"
                         style="width:100%"
                         type="date"
                         placeholder="选择截止日期">
@@ -538,6 +543,7 @@
             <div class="label">截止日期：</div>
             <div class="info">
               <el-date-picker v-model="commonDate"
+                value-format="yyyy-MM-dd"
                 style="width:100%"
                 type="date"
                 placeholder="选择截止日期">
@@ -715,6 +721,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       orderInfo: {
         order_code: '',
         client_name: '',
@@ -895,6 +904,13 @@ export default {
           this.$message.success('分配成功，请刷新页面后查看织造分配数量')
           this.weaving_data = []
           this.weaving_flag = false
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造分配信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
+          }
         }
       })
     },
@@ -1068,20 +1084,20 @@ export default {
           return itemFind.size === item.size && itemFind.color === item.color && itemFind.product_code === item.product_code
         })
         if (finded) {
-          finded.numbers += Number(item.numbers)
+          finded.production_number += Number(item.production_number)
         } else {
           productInfo.push(item)
         }
       })
       productInfo.forEach((item) => {
         item.part_data.forEach((itemChild) => {
-          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.numbers
+          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.production_number
           itemChild.color = item.color
           itemChild.size = item.size
         })
         item.part_data.unshift({
           name: '大身',
-          number: item.numbers,
+          number: item.production_number,
           id: item.product_id,
           color: item.color,
           size: item.size

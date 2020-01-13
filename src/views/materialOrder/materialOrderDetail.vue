@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">物料预订购信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"></zh-message>
       </div>
       <div class="detailCtn hasBorderTop">
         <div class="rowCtn">
@@ -193,6 +196,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       value: '',
       detail: {
         client_name: '',
@@ -240,6 +246,13 @@ export default {
             this.detail.stock_total_price = Number(this.detail.stock_total_price || 0) + Number(item.in_weight) * item.price
             item.stock_total_weight = Number(item.stock_total_weight) + Number(item.in_weight)
             item.editing = false
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/materialOrder/materialOrderDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">预订购入库</span>' + item.material_name + '(' + item.color_code + ')' + item.in_weight + 'kg'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/materialOrder/materialOrderDetail/' + this.$route.params.id)
+            }
           }
         })
       }).catch(() => {

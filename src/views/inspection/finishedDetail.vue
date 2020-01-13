@@ -5,6 +5,10 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
+        <zh-message :msgSwitch="msgSwitch"
+          :url="msgUrl"
+          :content="msgContent"
+          :afterSend="$winReload"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -85,13 +89,13 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.inspectionNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum>0?(itemChild.rejectNum/itemChild.inspectionNum*100).toFixed(2):0}}%</div>
                       <div class="tcolumn">
                         <span class="blue"
-                          @click="normalInspection(item.product_id,itemChild.size + '/' + itemChild.color,itemChild.numbers)">检验</span>
+                          @click="normalInspection(item.product_id,itemChild.size + '/' + itemChild.color,itemChild.production_number - itemChild.inspectionNum)">检验</span>
                       </div>
                     </div>
                   </div>
@@ -237,6 +241,7 @@
                     <div class="content">
                       <div class="content">
                         <el-date-picker v-model="item.date"
+                          value-format="yyyy-MM-dd"
                           style="width:100%"
                           type="date"
                           placeholder='选择检验日期'>
@@ -379,6 +384,9 @@ export default {
   data () {
     return {
       loading: true,
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       defectiveType: ['跳线', '污迹', '经纬断线', '严重破损', '边型问题', '流苏问题', '颜色问题', '花型问题', '款型问题', '克重问题', '长度问题', '工序问题', '质量问题', '加工问题', '其他问题'],
       orderInfo: {
         order_code: '',
@@ -431,7 +439,7 @@ export default {
     easyInspection () {
       this.inspection_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
-          if ((itemChild.numbers) > 0) {
+          if ((itemChild.production_number) > 0) {
             this.inspection_data.push({
               product_id: item.product_id,
               colorSizeArr: this.inspection_detail.find((itemFind) => {
@@ -443,7 +451,7 @@ export default {
               }),
               product_info: [{
                 colorSize: itemChild.size + '/' + itemChild.color,
-                number: itemChild.numbers,
+                number: itemChild.production_number - itemChild.inspectionNum > 0 ? itemChild.production_number - itemChild.inspectionNum : 0,
                 count: '',
                 substandard: [{
                   number: 0,
@@ -523,6 +531,7 @@ export default {
             color: itemChild.colorSize.split('/')[1],
             count: itemChild.count,
             number: itemChild.number,
+            complete_time: item.date,
             rejects_info: JSON.stringify(itemChild.substandard),
             desc: item.desc
           })
@@ -533,6 +542,13 @@ export default {
           this.$message.success('成品检验完成，请刷新页面后查看检验数量更新')
           this.inspection_data = []
           this.inspection_flag = false
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/inspection/finishedDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个成品检验信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/inspection/finishedDetail/' + this.$route.params.id)
+          }
         }
       })
     },
@@ -552,7 +568,7 @@ export default {
       this.inspection_data[index].product_info.splice(indexChild, 1)
     },
     selectProduct (id, index) {
-      this.inspection_data[index].colorSizeArr = this.inspection_product.find((item) => {
+      this.inspection_data[index].colorSizeArr = this.inspection_detail.find((item) => {
         return item.product_id === id
       }).childrenMergeInfo.map((item) => {
         return {

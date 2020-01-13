@@ -2432,7 +2432,7 @@ export default {
     },
     weimi () {
       if (this.weftInfo.neichang && this.weftInfo.rangwei) {
-        return ((this.weftInfo.total / (this.weftInfo.neichang + this.weftInfo.rangwei))).toFixed(2)
+        return ((this.weftInfo.total / (this.weftInfo.neichang))).toFixed(2)
       } else {
         return 0
       }

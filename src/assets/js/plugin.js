@@ -287,11 +287,16 @@ const plugin = {
     } else {
       return false
     }
+  },
+  winReload () {
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000)
   }
-
 }
 export default {
   install (Vue) {
+    Vue.prototype.$winReload = plugin.winReload
     Vue.prototype.$openUrl = plugin.openUrl
     Vue.prototype.$getTime = plugin.getTime
     Vue.prototype.$clone = plugin.cloneData
