@@ -1293,8 +1293,8 @@ export default {
       this.productInfo = this.$mergeData(productDetail, { mainRule: ['product_code', 'size_name/size', 'color_name/color'], otherRule: [{ name: 'product_info' }, { name: 'numbers/order_number', type: 'add' }] }).map(item => {
         let sizeColor = item.product_info.size_measurement.map(itemSize => {
           return {
-            value: itemSize.measurement,
-            label: itemSize.measurement,
+            value: itemSize.size_name,
+            label: itemSize.size_name,
             children: item.product_info.color.map(itemColor => {
               return {
                 value: itemColor.color_name,

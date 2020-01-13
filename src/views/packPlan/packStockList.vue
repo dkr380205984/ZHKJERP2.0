@@ -119,6 +119,12 @@
                 :class="{'green':itemOrder.has_plan>0,'orange':itemOrder.has_plan===0}">
                 <div class="state"></div>
                 <span class="name">{{itemOrder.has_plan>0?'已创建':'待添加'}}</span>
+                <!-- <div class="col flex12">
+                  <div class="stateCtn rowFlex"
+                    :class="itemOrder.product_push_progress < 100 ? 'orange' : 'green'">
+                    <div class="state"></div>
+                    <span class="name">{{itemOrder.product_push_progress}}%</span>
+                  </div> -->
               </div>
             </div>
             <div class="col">
@@ -256,6 +262,22 @@ export default {
             return Number(total) + Number(itemNum)
           })
         })
+        // this.list = res.data.data.map(item => {
+        //   return {
+        //     id: item.id,
+        //     order_code: item.order_code,
+        //     client_name: item.client_name,
+        //     image: this.$mergeData(item.product_info, { mainRule: 'product_code', otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => item.image).reduce((total, item) => {
+        //       return total.concat(item)
+        //     }),
+        //     number: item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+        //       return Number(total) + Number(itemNum)
+        //     }),
+        //     group_name: item.group_name,
+        //     order_time: item.order_time,
+        //     product_push_progress: item.product_push_progress
+        //   }
+        // })
         this.total = res.data.meta.total
         this.loading = false
       })
