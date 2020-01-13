@@ -330,7 +330,7 @@ export default {
                 title: title,
                 type: '普通',
                 tag: '工序',
-                content: '有一张报价单' + this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>',
+                content: '有一张报价单' + (this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>'),
                 router_url: '/price/priceDetail/' + this.$route.params.id,
                 receive_user: [this.create_user_id]
               }).then((res) => {

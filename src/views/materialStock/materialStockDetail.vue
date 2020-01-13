@@ -770,11 +770,11 @@ export default {
           this.weaveStockEditInfo = []
           this.$message.success('保存成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id
+            this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
             this.msgSwitch = true
           } else {
-            this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id)
+            this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
           }
         }
       })

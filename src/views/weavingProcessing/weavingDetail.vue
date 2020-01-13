@@ -1084,20 +1084,20 @@ export default {
           return itemFind.size === item.size && itemFind.color === item.color && itemFind.product_code === item.product_code
         })
         if (finded) {
-          finded.numbers += Number(item.numbers)
+          finded.production_number += Number(item.production_number)
         } else {
           productInfo.push(item)
         }
       })
       productInfo.forEach((item) => {
         item.part_data.forEach((itemChild) => {
-          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.numbers
+          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.production_number
           itemChild.color = item.color
           itemChild.size = item.size
         })
         item.part_data.unshift({
           name: '大身',
-          number: item.numbers,
+          number: item.production_number,
           id: item.product_id,
           color: item.color,
           size: item.size

@@ -185,7 +185,18 @@ export default {
       if (val === '审核') {
         this.userListSelf = this.userListSelf.filter((item) => item.has_check === 1)
       } else {
-        this.userListSelf = this.userList
+        auth.list().then((res) => {
+          this.userListSelf = this.$store.commit('getUserList', res.data.data.map((item) => {
+            return {
+              station: item.station,
+              group: item.group,
+              id: item.id,
+              name: item.name,
+              has_check: item.has_check,
+              check: false
+            }
+          }))
+        })
       }
     }
   },

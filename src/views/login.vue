@@ -79,7 +79,8 @@ export default {
       }).then((res) => {
         if (res.data.code === 200) {
           this.$message.success({
-            message: '登录成功'
+            message: '登录成功',
+            duration: 1000
           })
           window.sessionStorage.setItem('token', res.data.data.token)
           window.sessionStorage.setItem('user_id', res.data.data.user_id)
@@ -89,6 +90,7 @@ export default {
           window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))
           window.sessionStorage.setItem('logo', res.data.data.company_logo)
           window.sessionStorage.setItem('has_check', res.data.data.has_check)
+          window.sessionStorage.setItem('group_name', res.data.data.group_name)
           window.localStorage.setItem('zhUsername', _this.telephone)
           if (_this.remPsd) {
             window.localStorage.setItem('zhPassword', _this.password)

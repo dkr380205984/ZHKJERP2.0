@@ -4,7 +4,7 @@
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">订单信息</span>
+        <span class="title hasBorder">{{$route.params.orderType==='1'?'订':'样'}}单信息</span>
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"
@@ -17,7 +17,7 @@
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">订单公司：</span>
+            <span class="label">{{$route.params.orderType==='1'?'订':'样'}}单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
           <div class="colCtn flex3">
@@ -1331,7 +1331,7 @@ export default {
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料订购信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
             this.msgSwitch = true
           } else {
-            this.$router.push('/product/productDetail/' + +this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+            this.$router.push('/material/materialDetail/' + +this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
           }
           this.replenishFlag = false
         }

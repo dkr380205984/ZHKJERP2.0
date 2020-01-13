@@ -89,13 +89,13 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.inspectionNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum>0?(itemChild.rejectNum/itemChild.inspectionNum*100).toFixed(2):0}}%</div>
                       <div class="tcolumn">
                         <span class="blue"
-                          @click="normalInspection(item.product_id,itemChild.size + '/' + itemChild.color,itemChild.numbers - itemChild.inspectionNum)">检验</span>
+                          @click="normalInspection(item.product_id,itemChild.size + '/' + itemChild.color,itemChild.production_number - itemChild.inspectionNum)">检验</span>
                       </div>
                     </div>
                   </div>
@@ -439,7 +439,7 @@ export default {
     easyInspection () {
       this.inspection_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
-          if ((itemChild.numbers) > 0) {
+          if ((itemChild.production_number) > 0) {
             this.inspection_data.push({
               product_id: item.product_id,
               colorSizeArr: this.inspection_detail.find((itemFind) => {
@@ -451,7 +451,7 @@ export default {
               }),
               product_info: [{
                 colorSize: itemChild.size + '/' + itemChild.color,
-                number: itemChild.numbers - itemChild.inspectionNum > 0 ? itemChild.numbers - itemChild.inspectionNum : 0,
+                number: itemChild.production_number - itemChild.inspectionNum > 0 ? itemChild.production_number - itemChild.inspectionNum : 0,
                 count: '',
                 substandard: [{
                   number: 0,
@@ -568,7 +568,7 @@ export default {
       this.inspection_data[index].product_info.splice(indexChild, 1)
     },
     selectProduct (id, index) {
-      this.inspection_data[index].colorSizeArr = this.inspection_product.find((item) => {
+      this.inspection_data[index].colorSizeArr = this.inspection_detail.find((item) => {
         return item.product_id === id
       }).childrenMergeInfo.map((item) => {
         return {

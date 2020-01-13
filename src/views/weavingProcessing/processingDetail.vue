@@ -87,12 +87,12 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.processNum}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.numbers - itemChild.processNum)">半成品加工分配</span>
+                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.production_number - itemChild.processNum)">半成品加工分配</span>
                       </div>
                     </div>
                   </div>
@@ -638,7 +638,7 @@ export default {
             return {
               colorSize: itemChild.size + '/' + itemChild.color,
               price: '',
-              number: itemChild.numbers - itemChild.processNum
+              number: itemChild.production_number - itemChild.processNum
             }
           }),
           part_id: [],

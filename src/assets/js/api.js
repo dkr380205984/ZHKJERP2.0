@@ -339,7 +339,17 @@ const print = {
   detail: (params) => http.get(`${baseUrl}/print/edit/one`, params),
   list: (params) => http.get(`${baseUrl}/print/edit/list`, params)
 }
+// 全局搜索
+const globleSearch = {
+  search: (params) => http.post(`${baseUrl}/index/search`, params, 'application/json')
+}
+// 发货数量统计
+const indexCount = {
+  dispatchCount: (params) => http.get(`${baseUrl}/index/dispatch/count`, params)
+}
 export {
+  indexCount,
+  globleSearch,
   print,
   finance,
   notify,

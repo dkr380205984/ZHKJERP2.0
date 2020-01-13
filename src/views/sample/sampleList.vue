@@ -51,7 +51,7 @@
                       v-model="type"
                       placeholder="筛选品类"
                       :options="typeArr"
-                      @change="getType()"
+                      @change="getType"
                       clearable
                       filterable>
                     </el-cascader>

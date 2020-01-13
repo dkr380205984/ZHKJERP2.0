@@ -178,9 +178,11 @@
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/2')">添加</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
-                    class="opration">预览</span>
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">预览</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
-                    class="opration">打印</span>
+                    class="opration"
+                    @click="openWin('/craftTable/' + detail.craft_info[craft_index].id)">打印</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">详情</span>
@@ -200,7 +202,7 @@
                 </div>
                 <div class="main">
                   <div class="icon"
-                    :class="{'blue':detail.plan_info&&detail.plan_info.length>1,'gray':!detail.plan_info||detail.plan_info.length===0}">
+                    :class="{'blue':detail.plan_info&&detail.plan_info.length>0,'gray':!detail.plan_info||detail.plan_info.length===0}">
                     <img src="../../assets/image/sample/plan_icon.png" />
                   </div>
                   <div class="content">
@@ -208,23 +210,25 @@
                     <div class="text"
                       v-if="!detail.plan_info||detail.plan_info.length===0">待添加</div>
                     <div class="text"
-                      v-if="detail.plan_info&&detail.plan_info.length>1">{{detail.plan_info[plan_index].user_name}}</div>
+                      v-if="detail.plan_info&&detail.plan_info.length>0">{{detail.plan_info[plan_index].user_name}}</div>
                     <div class="text"
-                      v-if="detail.plan_info&&detail.plan_info.length>1">{{detail.plan_info[plan_index].update_time.slice(0,10)}}</div>
+                      v-if="detail.plan_info&&detail.plan_info.length>0">{{detail.plan_info[plan_index].update_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
                   <span v-if="!detail.plan_info||detail.plan_info.length===0"
                     class="opration"
                     @click="$router.push('/productPlan/productPlanCreate/'+ $route.params.id + '/2')">添加</span>
-                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
-                    class="opration">预览</span>
-                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
-                    class="opration">打印</span>
-                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>0"
+                    class="opration"
+                    @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/2')">预览</span>
+                  <span v-if="detail.plan_info&&detail.plan_info.length>0"
+                    class="opration"
+                    @click="openWin('/productPlanTable/' + $route.params.id + '/2/' + detail.plan_info[plan_index].id)">打印</span>
+                  <span v-if="detail.plan_info&&detail.plan_info.length>0"
                     class="opration"
                     @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/2')">详情</span>
-                  <span v-if="detail.plan_info&&detail.plan_info.length>1"
+                  <span v-if="detail.plan_info&&detail.plan_info.length>0"
                     class="opration">...</span>
                 </div>
               </div>
@@ -255,15 +259,20 @@
                 </div>
                 <div class="menu">
                   <span v-if="detail.quotation_info.length===0"
-                    class="opration">添加</span>
+                    class="opration"
+                    @click="noOpr">添加</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">预览</span>
+                    class="opration"
+                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">预览</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">打印</span>
+                    class="opration"
+                    @click="openWin('/pricePrintTable/' + detail.quotation_info[quotation_index].id )">打印</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">详情</span>
+                    class="opration"
+                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">详情</span>
                   <span v-if="detail.quotation_info.length > 0"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="noOpr">...</span>
                 </div>
               </div>
             </div>
@@ -422,6 +431,12 @@ export default {
     }
   },
   methods: {
+    noOpr () {
+      this.$message.warning('暂未开放该功能')
+    },
+    openWin (url) {
+      window.open(url)
+    },
     handleCheckAllSize ($event) {
       this.isIndeterminateSize = false
       this.detail.size.forEach(itemSize => {
