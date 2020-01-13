@@ -213,6 +213,9 @@ export default {
           print.detail({
             type: 1
           }),
+          print.detail({
+            type: 3
+          }),
           order.detail({
             id: this.$route.params.id
           }),
