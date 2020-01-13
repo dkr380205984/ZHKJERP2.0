@@ -12,7 +12,8 @@
       </div>
       <div class="btnList">
         <div class="btn active">登陆</div>
-        <div class="btn">注册</div>
+        <div class="btn"
+          @click="noOpr">注册</div>
       </div>
       <div class="userName">
         <zh-input type="telephone"
@@ -24,9 +25,23 @@
           </template>
         </zh-input>
       </div>
-      <div class="password"></div>
-      <div class="opration"></div>
-      <div class="subBtn"></div>
+      <div class="password">
+        <zh-input type="password"
+          placeholder="请输入密码"
+          v-model="password"
+          @keydown.enter="goLogin">
+          <template slot="prepend">
+            <i class="icons el-icon-lock"></i>
+          </template>
+        </zh-input>
+      </div>
+      <div class="psdOp">
+        <el-checkbox v-model="remPsd">记住密码</el-checkbox>
+        <div class="fogotPsd"
+          @click="$router.push('/changePsd')">忘记密码？</div>
+      </div>
+      <div class="subBtn"
+        @click="goLogin">登录</div>
     </div>
   </div>
 </template>
@@ -43,6 +58,9 @@ export default {
     }
   },
   methods: {
+    noOpr () {
+      this.$message.warning('暂无注册功能，请联系管理员添加账号')
+    },
     // 登录
     goLogin () {
       let _this = this
@@ -102,6 +120,17 @@ export default {
 #login {
   .zhInputBox {
     height: 40px !important;
+  }
+  .zhInput {
+    padding-left: 36px;
+    border-radius: 4px !important;
+    color: rgba(0, 0, 0, 0.65);
+  }
+  .zhInputPrepend {
+    position: absolute;
+    background: transparent;
+    border: 0;
+    line-height: 40px;
   }
 }
 </style>
