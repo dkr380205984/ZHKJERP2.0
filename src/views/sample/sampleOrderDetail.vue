@@ -1,33 +1,51 @@
 <template>
-  <div id='sampleOrderDetail'
+  <div id='orderDetail'
     class='indexMain'
-    v-loading="loading">
+    v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">基本信息</span>
+        <span class="title hasBorder">样品订单信息</span>
       </div>
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
+            <!-- <el-dropdown trigger="click"
+              @command="changeOrderStatus">
+              <div class="btn btnBlue">操作<i class="el-icon-arrow-down el-icon--right"></i></div>
+              <el-dropdown-menu>
+                <el-dropdown-item command='ok'>
+                  <span class="create">确认完成</span>
+                </el-dropdown-item>
+                <el-dropdown-item command='change'>
+                  <span class="updated">修改</span>
+                </el-dropdown-item>
+                <el-dropdown-item command='showCanclePopup'>
+                  <span class="delete">取消订单</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown> -->
             <el-menu mode="horizontal">
               <el-menu class="editMenu"
                 mode="horizontal"
-                @select="handleSelect">
-                <el-submenu index="1">
+                @select="changeOrderStatus">
+                <el-submenu index="1"
+                  popper-class='handleMenuSample'>
                   <template slot="title">操作</template>
                   <el-menu-item index="waitConfirm"
                     class="elMenuItem">待客户确认</el-menu-item>
                   <el-submenu index="1-2"
                     class="elMenuItem">
                     <template slot="title">已确认</template>
-                    <el-menu-item index="change"
+                    <el-menu-item index="continue"
                       class="elMenuItem">继续打样</el-menu-item>
                     <el-menu-item index="ok"
                       class="elMenuItem">不继续打样</el-menu-item>
                     <el-menu-item index="addOrder"
                       class="elMenuItem">大货生产</el-menu-item>
                   </el-submenu>
-                  <el-menu-item index="cancle"
+                  <el-menu-item index="change"
+                    class="elMenuItem">修改样单</el-menu-item>
+                  <el-menu-item index="showCanclePopup"
                     class="elMenuItem">取消样单</el-menu-item>
                 </el-submenu>
               </el-menu>
@@ -36,28 +54,24 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">状态</span>
-              <span class="text blue">进行中</span>
+              <span :class="{'text':true,'orange':sampleOrderInfo.status === 3001, 'blue':sampleOrderInfo.status === 3002,'red':sampleOrderInfo.status === 3003,'green':sampleOrderInfo.status === 3004}">{{sampleOrderInfo.status|filterStatus}}</span>
             </div>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">标题：</span>
+            <span class="label">样单号：</span>
             <span class="text">{{sampleOrderInfo.title}}</span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">系统编号：</span>
-            <span class="text">666</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">样单公司：</span>
+            <span class="label">订单公司：</span>
             <span class="text">{{sampleOrderInfo.client_name}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">联系人：</span>
-            <span class="text">{{sampleOrderInfo.contacts}}</span>
+            <span class="text">{{sampleOrderInfo.user_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -65,19 +79,14 @@
             <span class="label">负责小组：</span>
             <span class="text">{{sampleOrderInfo.group_name}}</span>
           </div>
-          <div class="colCtn flex3">
-            <span class="label">创建时间：</span>
+          <!-- <div class="colCtn flex3">
+            <span class="label">下单日期：</span>
             <span class="text">{{sampleOrderInfo.order_time}}</span>
-          </div>
+          </div> -->
         </div>
-        <div class="swichCtn">
-          <div :class="{'swich':true,'active':activeId === cloneData.id}"
-            @click="cutSampleOrder(cloneData.id)">一次打样</div>
-          <div :class="{'swich':true,'active':activeId === item.id}"
-            v-for="(item,index) in cloneData.child_data"
-            :key="item.id"
-            @click="cutSampleOrder(item.id)">{{chinaNum[index+1]}}次打样</div>
-        </div>
+        <zh-transition :list='sampleOrderArr'
+          showKey='showComponentsName'
+          @changed='cutSampleOrderInfo'></zh-transition>
       </div>
     </div>
     <div class="module">
@@ -88,11 +97,11 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">客户确认：</span>
-            <span class="text">待确认</span>
+            <span class="text">{{sampleOrderInfo.client_confirm|filterSampleStatus}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">样单类型：</span>
-            <span class="text">{{sampleOrderInfo.type}}</span>
+            <span class="text">{{sampleOrderInfo.type|filterOrderType}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
@@ -117,9 +126,13 @@
             <span class="trow">
               <span class="tcolumn">样品编号</span>
               <span class="tcolumn">产品图片</span>
-              <span class="tcolumn">尺码/颜色</span>
-              <span class="tcolumn">打样数量</span>
-              <span class="tcolumn flex12">相关信息</span>
+              <span class="tcolumn noPad flex2">
+                <span class="trow">
+                  <span class="tcolumn">尺码/颜色</span>
+                  <span class="tcolumn">打样数量</span>
+                </span>
+              </span>
+              <span class="tcolumn center">相关信息</span>
             </span>
           </div>
           <div class="tbody">
@@ -129,7 +142,7 @@
               <span class="tcolumn">
                 <div class="twoLineText">
                   <span>{{itemPro.product_info.product_code}}</span>
-                  <span>{{itemPro.product_info|filterType}}</span>
+                  <span>({{itemPro.product_info|filterType}})</span>
                 </div>
               </span>
               <span class="tcolumn middle">
@@ -137,18 +150,18 @@
                   <zh-img-list :list="itemPro.product_info.images"></zh-img-list>
                 </span>
               </span>
-              <span class="tcolumn flex32">
+              <span class="tcolumn flex2 noPad">
                 <span class="trow"
                   v-for="(itemSize,indexSize) in itemPro.size_info"
                   :key="indexSize">
                   <span class="tcolumn">{{itemSize.size + ' / ' + itemSize.color}}</span>
                   <span class="tcolumn">{{itemSize.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tcolumn flex12">
-                    <span class="trow">
-                      <span class="btn noBorder lineH54">工艺单</span>
-                      <span class="btn noBorder lineH54">配料单</span>
-                    </span>
-                  </span>
+                </span>
+              </span>
+              <span class="tcolumn center">
+                <span class="trow middle_page">
+                  <span class="btn noBorder lineH54">工艺单</span>
+                  <span class="btn noBorder lineH54">配料单</span>
                 </span>
               </span>
             </span>
@@ -156,6 +169,49 @@
         </div>
       </div>
     </div>
+    <!-- <div class="module">
+      <div class="titleCtn">
+        <span class="title hasBorder">发货信息</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="tableCtnLv2">
+            <span class="tb_header">
+              <span class="tb_row">发货日期</span>
+              <span class="tb_row tb_col flex6">
+                <span class="tb_col_item">
+                  <span class="tb_row">产品信息</span>
+                  <span class="tb_row middle">产品图片</span>
+                  <span class="tb_row">尺码/颜色</span>
+                  <span class="tb_row">发货数量</span>
+                  <span class="tb_row">单价</span>
+                  <span class="tb_row">总价</span>
+                </span>
+              </span>
+            </span>
+            <span class="tb_content"
+              v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
+              :key="indexBatch">
+              <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
+              <span class="tb_row tb_col flex6">
+                <span class="tb_col_item"
+                  v-for="(itemPro,indexPro) in itemBatch.product_info"
+                  :key="indexPro">
+                  <span class="tb_row">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                  <span class="tb_row middle">
+                    <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
+                  </span>
+                  <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
+                  <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
+                  <span class="tb_row">{{itemPro.unit_price + '元'}}</span>
+                  <span class="tb_row">{{(Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)}}元</span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">流程进度</span>
@@ -175,288 +231,854 @@
             </div>
           </div>
         </div>
-        <div class="swichCtn">
-          <div class="swich active">制版工艺</div>
-          <div class="swich">物料概述</div>
-          <div class="swich">生产概述</div>
-          <div class="swich">财务概述</div>
-        </div>
-      </div>
-      <div class="detailCtn"
-        style="padding-top:40px">
         <div class="rowCtn">
-          <div class="tableCtnLv2 hasBorderBottom">
-            <div class="tb_btn top_right">
-              <div class="btn btnBlue"
-                @click="popup_craft_flag = true">工艺确认</div>
-            </div>
-            <div class="tb_header">
-              <span class="tb_row">样品编号</span>
-              <span class="tb_row">工艺/制版类型</span>
-              <span class="tb_row">操作人</span>
-              <span class="tb_row">工艺/制版状态</span>
-              <span class="tb_row">确认时间</span>
-              <span class="tb_row middle">样品状态</span>
-            </div>
-            <div class="tb_content"
-              v-for="(itemPro,indexPro) in sampleOrderInfo.product_info"
-              :key="indexPro">
-              <span class="tb_row">
-                <div class="twoLineText">
-                  <span>{{itemPro.product_info.product_code}}</span>
-                  <span>{{itemPro.product_info|filterType}}</span>
-                </div>
+          <div class="product_prog_box">
+            <div class="prog_title">
+              <span class="title_item_box">
+                下单数：
+                <span class="blue">{{product_order_total_number}}</span>
+                条
               </span>
-              <span class="tb_row flex40">
-                <span class="tb_col">
-                  <span class="tb_col_item">
-                    <span class="tb_row">工艺</span>
-                    <span class="tb_row">暂无</span>
-                    <span class="tb_row">
-                      <span class="status_item orange">未完成</span>
-                    </span>
-                    <span class="tb_row">暂无</span>
-                  </span>
-                  <span class="tb_col_item">
-                    <span class="tb_row">制版</span>
-                    <span class="tb_row">test_yhw</span>
-                    <span class="tb_row">
-                      <span class="status_item green">已确认</span>
-                    </span>
-                    <span class="tb_row ">2019-08-23</span>
+            </div>
+            <div class="prog_item"
+              v-for="(item,index) in productProgInfo"
+              :key='index'>
+              <span class="prog_label">{{item.name}}：</span>
+              <span class="prog_context">
+                <span v-for="(itemInner,indexInner) in item.info"
+                  :key="indexInner"
+                  :class="['prog_context_item',itemInner.class ]"
+                  :style="{'width':itemInner.prog + '%'}">
+                  <span class="endLine">
+                    <span class="endInfo">{{itemInner.name}}({{(Number(itemInner.prog) || 0) + '%'}})</span>
                   </span>
                 </span>
               </span>
-              <span class="tb_row middle">
-                <span class="status_item orange">未完成</span>
-              </span>
+              <span class="prog_status"
+                v-if="item.isCompiled">完成</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <!-- 工艺制版弹窗 -->
-    <div class="popup"
-      v-show="popup_craft_flag">
-      <div class="main">
-        <div class="title">
-          <span class="text">工艺制版确认</span>
-          <span class="el-icon-close"
-            @click="closeWindow('craft')"></span>
-        </div>
-        <div class="content">
-          <div class="row">
-            <span class="label">777：</span>
-            <span class="info flexColCenter">
-              <el-checkbox label="工艺"></el-checkbox>
-              <el-checkbox label="制版"></el-checkbox>
-            </span>
-          </div>
-          <div class="opr">
-            <div class="btn btnGray"
-              @click="closeWindow('craft')">取消</div>
-            <div class="btn btnBlue">确认</div>
-          </div>
+        <div class="swichCtn">
+          <div :class="['swich',activeDetailTitle === 'material' ? 'active' : '']"
+            @click="catDetail('material')">物料概述</div>
+          <div :class="['swich',activeDetailTitle === 'production' ? 'active' : '']"
+            @click="catDetail('production')">生产概述</div>
+          <div :class="['swich',activeDetailTitle === 'finance' ? 'active' : '']"
+            @click="catDetail('finance')">财务概述</div>
         </div>
       </div>
+      <div class="detailCtn">
+        <!-- 物料概述 -->
+        <template v-if="activeDetailTitle === 'material'">
+          <div class="btn_box">
+            <div class="left">
+              <div class="routerBtn"
+                @click="$router.push('/materialPlan/materialPlanDetail/'+ $route.params.id +'/2')">物料计划</div>
+              <div class="routerBtn"
+                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/2')">原料订购加工</div>
+              <div class="routerBtn"
+                @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/1/2')">原料出入库</div>
+              <div class="routerBtn"
+                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/2')">辅料订购加工</div>
+              <div class="routerBtn"
+                @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/2')">辅料出入库</div>
+            </div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
+          </div>
+          <div class="flexTb">
+            <div class="thead">
+              <span class="trow">
+                <span class="tcolumn">物料名称</span>
+                <span class="tcolumn flex5 noPad">
+                  <span class="trow">
+                    <span class="tcolumn">颜色属性</span>
+                    <span class="tcolumn">计划数量</span>
+                    <span class="tcolumn">采购数量</span>
+                    <span class="tcolumn">最终入库</span>
+                    <span class="tcolumn">最终出库</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="tbody">
+              <span class="trow"
+                v-for="(item,index) in orderDetailInfo.material"
+                :key="index">
+                <span class="tcolumn">{{item.material_name}}</span>
+                <span class="tcolumn noPad flex5">
+                  <span class="trow"
+                    v-for="(itemAttr,indexAttr) in item.attr_info"
+                    :key="indexAttr">
+                    <span class="tcolumn">{{itemAttr.attr}}</span>
+                    <span class="tcolumn green">{{itemAttr.plan_number}}{{item.unit}}</span>
+                    <span class="tcolumn green">{{itemAttr.order_number}}{{item.unit}}</span>
+                    <span class="tcolumn green">{{itemAttr.go_stock_number || 0}}{{item.unit}}</span>
+                    <span class="tcolumn green">{{itemAttr.out_stock_number || 0}}{{item.unit}}</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </template>
+        <!-- 生产概述 -->
+        <template v-else-if="activeDetailTitle === 'production'">
+          <div class="btn_box">
+            <div class="left">
+              <div class="routerBtn"
+                @click="$router.push('/weavingProcessing/weavingDetail/'+ $route.params.id +'/2')">生产织造</div>
+              <div class="routerBtn"
+                @click="$router.push('/weavingProcessing/processingDetail/'+ $route.params.id +'/2')">半成品加工</div>
+            </div>
+            <!-- <div class="right btn btnBlue">确认完成</div> -->
+          </div>
+          <div class="flexTb">
+            <div class="thead">
+              <span class="trow">
+                <span class="tcolumn">生产单位</span>
+                <span class="tcolumn flex5 noPad">
+                  <span class="trow">
+                    <span class="tcolumn">产品信息</span>
+                    <span class="tcolumn">尺码颜色</span>
+                    <span class="tcolumn">生产工序</span>
+                    <span class="tcolumn">分配数量</span>
+                    <span class="tcolumn">收发数量</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+            <div class="tbody">
+              <span class="trow"
+                v-for="(item,index) in orderDetailInfo.production"
+                :key="index">
+                <span class="tcolumn">{{item.client_name}}</span>
+                <span class="tcolumn noPad flex5">
+                  <span class="trow"
+                    v-for="(itemPro,indexPro) in item.product_info"
+                    :key="indexPro">
+                    <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                    <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                    <span class="tcolumn">{{itemPro.process_type}}</span>
+                    <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
+                    <span class="tcolumn">
+                      <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
+                      <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </template>
+        <!-- 财务概述 -->
+        <template v-else-if="activeDetailTitle === 'finance'">
+          <zh-transition :list='orderDetailInfo.finance.title'
+            markId='1'
+            showKey='name'
+            @changed='changeFinance'></zh-transition>
+          <template v-if="activeFinanceTitle === 'finance'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">工序项目</span>
+                  <span class="tcolumn flex30 noPad">
+                    <span class="trow">
+                      <span class="tcolumn right noBorder flex03"></span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">总价</span>
+                      <span class="tcolumn">平均价格</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.finance"
+                  :key="index">
+                  <span class="tcolumn">{{item.name}}</span>
+                  <span class="tcolumn noPad flex30">
+                    <span class="trow"
+                      v-for="(itemPrice,indexPrice) in item.price_info"
+                      :key="indexPrice">
+                      <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
+                      <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
+                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + '元' : '/'}}</span>
+                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + '元/' + item.unit: '/'}}</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'yarnOrder'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">订购公司</span>
+                  <span class="tcolumn flex5 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">原料名称</span>
+                      <span class="tcolumn">颜色</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn">总价</span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
+                  :key="index">
+                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name || item.stock_name}}</span>
+                  <span class="tcolumn noPad flex5">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in item.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'yarnProcess'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">加工单位</span>
+                  <span class="tcolumn flex6 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">原料名称</span>
+                      <span class="tcolumn">颜色</span>
+                      <span class="tcolumn">工序</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn">总价</span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.yarnProcess"
+                  :key="index">
+                  <span class="tcolumn">{{item.client_name}}</span>
+                  <span class="tcolumn noPad flex6">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in item.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
+                      <span class="tcolumn">{{itemMa.process_type}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'materialOrder'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">订购公司</span>
+                  <span class="tcolumn flex5 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">原料名称</span>
+                      <span class="tcolumn">颜色</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn">总价</span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.materialOrder"
+                  :key="index">
+                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name|| item.stock_name}}</span>
+                  <span class="tcolumn noPad flex5">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in item.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'materialProcess'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">加工单位</span>
+                  <span class="tcolumn flex6 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">原料名称</span>
+                      <span class="tcolumn">颜色</span>
+                      <span class="tcolumn">工序</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn">总价</span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.materialProcess"
+                  :key="index">
+                  <span class="tcolumn">{{item.client_name}}</span>
+                  <span class="tcolumn noPad flex6">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in item.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn">{{itemMa.color}}</span>
+                      <span class="tcolumn">{{itemMa.process_type}}</span>
+                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                    </span>
+                  </span>
+                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'weave'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">织造单位</span>
+                  <span class="tcolumn flex6 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">产品信息</span>
+                      <span class="tcolumn">尺码颜色</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">总价</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.weave"
+                  :key="index">
+                  <span class="tcolumn">{{item.client_name}}</span>
+                  <span class="tcolumn noPad flex6">
+                    <span class="trow"
+                      v-for="(itemPro,indexPro) in item.product_info"
+                      :key="indexPro">
+                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                      <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
+                      <span class="tcolumn">{{itemPro.compiled_time}}</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="activeFinanceTitle === 'process'">
+            <div class="flexTb">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn">加工单位</span>
+                  <span class="tcolumn flex7 noPad">
+                    <span class="trow">
+                      <span class="tcolumn">产品信息</span>
+                      <span class="tcolumn">尺码颜色</span>
+                      <span class="tcolumn">工序</span>
+                      <span class="tcolumn">单价</span>
+                      <span class="tcolumn">数量</span>
+                      <span class="tcolumn">总价</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow"
+                  v-for="(item,index) in orderDetailInfo.finance.process"
+                  :key="index">
+                  <span class="tcolumn">{{item.client_name}}</span>
+                  <span class="tcolumn noPad flex7">
+                    <span class="trow"
+                      v-for="(itemPro,indexPro) in item.product_info"
+                      :key="indexPro">
+                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                      <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                      <span class="tcolumn">{{itemPro.process_type}}</span>
+                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
+                      <span class="tcolumn">{{itemPro.compiled_time}}</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </template>
+        </template>
+      </div>
     </div>
-    <!-- 修改样品弹窗 -->
+    <!-- 修改样品信息 -->
     <div class="popup"
-      v-show="popup_sample_change_flag">
+      v-show="changeSamplePopup">
       <div class="main">
         <div class="title">
           <span class="text">请选择需要修改的样品</span>
           <span class="el-icon-close"
-            @click="closeWindow('sample_change')"></span>
+            @click="closePopup"></span>
         </div>
         <div class="content">
           <div class="row">
             <el-radio-group v-model="changeSampleId"
-              class="flexColumn">
-              <el-radio v-for="(itemPro,indexPro) in sampleOrderInfo.product_info"
-                :key="indexPro"
-                class="flexColumn_item"
-                :label="itemPro.product_info.product_id">{{itemPro.product_info.product_code}}({{itemPro.product_info|filterType}})</el-radio>
+              class="col">
+              <el-radio v-for="(itemPro,indexPro) in productList"
+                class="elRadio"
+                :key='indexPro'
+                :label="itemPro.product_id">{{itemPro.product_code}}({{itemPro|filterType}})</el-radio>
             </el-radio-group>
           </div>
-          <div class="opr">
-            <div class="btn btnGray"
-              @click="closeWindow('sample_change')">取消</div>
-            <div class="btn btnBlue"
-              @click="goChangeSample(changeSampleId)">去修改</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- 继续打样时弹窗 -->
-    <div class="popup"
-      v-show="popup_sample_order_change_flag">
-      <div class="main"
-        style="width:600px">
-        <div class="title">
-          <span class="text">继续打样</span>
-          <span class="el-icon-close"
-            @click="closeWindow('sample_order_change')"></span>
-        </div>
-        <div class="content">
-          <template v-if="popup_pages === 0">
-            <div class="row">
-              <span class="label">样单类型：</span>
-              <span class="info">
-                <el-select v-model="changeSampleOrderInfo.type"
-                  class="popup_input"
-                  placeholder="请选择样单类型">
-                  <el-option v-for="item in sampleTypeArr"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
-              </span>
-            </div>
-            <template v-for="(itemPro,indexPro) in changeSampleOrderInfo.product_info">
-              <div class="row"
-                :key="indexPro + 'product'">
-                <span class="label">打样样品：</span>
-                <span class="info">
-                  <el-select v-model="itemPro.product_id"
-                    class="popup_input"
-                    disabled
-                    placeholder="请选择打样样品">
-                    <el-option v-for="item in sampleOrderInfo.product_info"
-                      :key="item.product_info.product_id"
-                      :label="item.product_info.product_code + '(' + item.product_info.category_name + '/' + item.product_info.style_name + '/' + item.product_info.type_name + ')'"
-                      :value="item.product_info.product_id">
-                    </el-option>
-                  </el-select>
-                </span>
-                <span class="editBtn red"
-                  @click="deleteItem(changeSampleOrderInfo.product_info,indexPro)">删除</span>
-              </div>
-              <div class="row"
-                v-for="(itemSize,indexSize) in itemPro.sizeInfo"
-                :key="indexSize + '' + itemPro.product_id">
-                <span class="label"></span>
-                <span class="info flexColCenter">
-                  <el-cascader v-model="itemSize.size_color"
-                    class="popup_input_small"
-                    :options="itemPro.sizeColorArr"
-                    @change="changeFlag(itemPro.sizeInfo,$event,itemSize)"></el-cascader>
-                  <zh-input v-model="itemSize.number"
-                    class="popup_input_small"
-                    type='number'>
-                    <span slot="append">{{itemPro.unit}}</span>
-                  </zh-input>
-                </span>
-                <span class="editBtn blue"
-                  v-if="indexSize === 0"
-                  @click="addItem(itemPro.sizeInfo,'sampleOrderInfoChange')">添加</span>
-                <span class="editBtn red"
-                  v-else
-                  @click="deleteItem(itemPro.sizeInfo,indexSize,true)">删除</span>
-              </div>
-            </template>
-            <div class="row">
-              <span class="label">完成时间：</span>
-              <span class="info">
-                <el-date-picker v-model="changeSampleOrderInfo.compiled_time"
-                  class="popup_input"
-                  value-format="yyyy-MM-dd"
-                  type="date"
-                  placeholder="请选择完成日期">
-                </el-date-picker>
-              </span>
-            </div>
-          </template>
-          <template v-if="popup_pages === 1">
-            <div class="row">
-              <span class="label">客户付费：</span>
-              <span class="info flexColCenter">
-                <el-switch v-model="changeSampleOrderInfo.is_customer_pay"
-                  active-text="是"
-                  inactive-text="否"></el-switch>
-              </span>
-            </div>
-            <template v-if="changeSampleOrderInfo.is_customer_pay">
-              <template v-for="(itemProSizeColor,indexProSizeColor) in customer_pay_info">
-                <div class="row"
-                  :key="indexProSizeColor">
-                  <span class="label"></span>
-                  <span class="info">
-                    <el-select v-model="itemProSizeColor.id_size_color"
-                      disabled
-                      class="popup_input"
-                      placeholder="请选择打样样品">
-                      <el-option v-for="(itemInner,indexInner) in customer_pay_info"
-                        :key="indexInner"
-                        :label="itemInner.code_type_size_color"
-                        :value="itemInner.id_size_color">
-                      </el-option>
-                    </el-select>
-                  </span>
-                </div>
-                <div class="row"
-                  :key="indexProSizeColor + 'size'">
-                  <span class="label"></span>
-                  <span class="info flexColCenter">
-                    <zh-input v-model="itemProSizeColor.price"
-                      placeholder="单价"
-                      class="popup_input_small"
-                      type='number'
-                      @input="computedPrice(itemProSizeColor)">
-                      <span slot="append">{{'元/' + itemProSizeColor.unit}}</span>
-                    </zh-input>
-                    <zh-input v-model="itemProSizeColor.price_number"
-                      placeholder="数量"
-                      class="popup_input_small"
-                      type='number'
-                      @input="computedPrice(itemProSizeColor)">
-                      <span slot="append">{{itemProSizeColor.unit}}</span>
-                    </zh-input>
-                  </span>
-                </div>
-                <div class="row"
-                  :key="indexProSizeColor + 'price'">
-                  <span class="label"></span>
-                  <span class="info">
-                    <zh-input v-model="itemProSizeColor.total_price"
-                      placeholder="请输入总价"
-                      class="popup_input"
-                      type='number'>
-                      <span slot="append">元</span>
-                    </zh-input>
-                  </span>
-                </div>
-              </template>
-            </template>
-          </template>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            v-show="popup_pages === 0"
-            @click="closeWindow('sample_order_change')">取消</div>
-          <div class="btn btnGray"
-            v-show="popup_pages === 1"
-            @click="popup_pages = 0">上一步</div>
+            @click="changeSamplePopup = false">取消</div>
           <div class="btn btnBlue"
-            v-show="popup_pages === 0"
-            @click="popup_pages = 1">下一步</div>
-          <div class="btn btnBlue"
-            v-show="popup_pages === 1"
-            @click="changeSampleOrder">确定</div>
+            @click="$openUrl('/sample/sampleUpdate/' + changeSampleId)">去修改</div>
         </div>
       </div>
     </div>
-    <div class="bottomFixBar">
+    <!-- 转产品窗口 -->
+    <div class="popup"
+      v-show="changeSampleForProductPopup">
       <div class="main">
-        <div class="btnCtn">
+        <div class="title">
+          <span class="text">样品转产品</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content"
+          v-if=" changeSampleForProductPopup === 1">
+          <div class="row">
+            <el-checkbox-group v-model="sampleForProductId"
+              class="col">
+              <el-checkbox v-for="(itemPro,indexPro) in productList"
+                class="elRadio"
+                :key='indexPro'
+                :label="itemPro.product_id">{{itemPro.product_code}}({{itemPro|filterType}})</el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </div>
+        <div class="content center_popup"
+          v-if="changeSampleForProductPopup === 2 || changeSampleForProductPopup === 3">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为“客户已确定”，并且将已选中的样品转为产品（其默认配料单以及工艺单会转为该产品配料单以及工艺单），是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr">
           <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
-
+            v-show="changeSampleForProductPopup === 1"
+            @click="closePopup">取消</div>
           <div class="btn btnGray"
-            @click="$router.push('/sample/sampleOrderList/page=&&keyword=&&date=&&client_id=&&group_id=')">返回列表</div>
-          <!-- <div class="btn btnBlue"
-            @click="submit"></div> -->
+            v-show="changeSampleForProductPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+            @click="changeSampleForProductPopup--">上一步</div>
+          <div class="btn btnBlue"
+            v-show="changeSampleForProductPopup < 2"
+            @click="changeSampleForProductPopup++">下一步</div>
+          <div class="btn btnBlue"
+            v-show="changeSampleForProductPopup === 2 && isCommit === 'before'"
+            @click="changeOrderStatus('sampleForProduct')">确定</div>
+          <div class="btn btnBlue"
+            v-show="changeSampleForProductPopup === 2 && isCommit === 'error'"
+            @click="changeOrderStatus('sampleForProduct')">重试<em class="el-icon-refresh-left"></em></div>
+          <div class="btn btnBlue"
+            v-if="changeSampleForProductPopup === 2  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+          <div class="btn btnBlue"
+            v-if="changeSampleForProductPopup === 3 && isCommit === 'compiled' && !this.isOkStatus"
+            @click="$router.push('/order/orderCreate?sampleOrderId=' + $route.params.id)">添加订单</div>
+          <div class="btn btnBlue"
+            v-if="changeSampleForProductPopup === 3 && isCommit === 'compiled'"
+            @click="closePopup">完成</div>
+        </div>
+      </div>
+    </div>
+    <!-- 继续打样 -->
+    <div class="popup"
+      v-show="showChangeSampleOrderPopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">继续打样</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showChangeSampleOrderPopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="打样信息"></el-step>
+            <el-step title="客户付费"></el-step>
+            <el-step title="完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showChangeSampleOrderPopup === 1">
+          <div class="row">
+            <span class="label">样单类型：</span>
+            <span class="info">
+              <el-select v-model="continueSampleInfo.type"
+                placeholder="请选择打样类型">
+                <el-option v-for="item in sampleTypeArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemPro,indexPro) in continueSampleInfo.product_info">
+            <div class="row"
+              :key="indexPro+'code'">
+              <span class="label">样品信息{{indexPro + 1}}：</span>
+              <span class="info">
+                <el-select v-model="itemPro.product_id"
+                  filterable
+                  placeholder="请选择打样类型"
+                  @change="changeProductSizeColorArr(itemPro,$event)">
+                  <el-option v-for="item in productList"
+                    :key="item.product_id"
+                    :label="item.product_code"
+                    :value="item.product_id">
+                  </el-option>
+                </el-select>
+              </span>
+              <span v-if="indexPro === 0"
+                class="editBtn blue"
+                @click="addItem(continueSampleInfo.product_info,'continueSample')">添加</span>
+              <span v-else
+                class="editBtn red"
+                @click="deleteItem(continueSampleInfo.product_info,indexPro)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexPro + 'info'">
+              <span class="label">尺码信息：</span>
+              <span class="info popup_info_page">
+                <el-cascader class="elInput"
+                  v-model="itemPro.size_color"
+                  placeholder='尺码/颜色'
+                  :options="itemPro.sizeColorArr"></el-cascader>
+                <zh-input v-model="itemPro.number"
+                  class="elInput"
+                  type='number'
+                  placeholder='数量'>
+                  <template slot="append">{{itemPro.unit}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+          <div class="row">
+            <span class="label">完成时间：</span>
+            <span class="info">
+              <el-date-picker v-model="continueSampleInfo.time"
+                type="date"
+                style="width:100%"
+                value-format="yyyy-MM-dd"
+                placeholder="选择完成日期">
+              </el-date-picker>
+            </span>
+          </div>
+        </div>
+        <div class="content"
+          v-if="showChangeSampleOrderPopup === 2">
+          <div class="row">
+            <span class="label">客户付费：</span>
+            <span class="info info_col_middle">
+              <el-switch v-model="continueSampleInfo.isCustomerPay"
+                active-text="是"
+                inactive-text="否">
+              </el-switch>
+            </span>
+          </div>
+          <template v-if="continueSampleInfo.isCustomerPay">
+            <template v-for="(itemPro,indexPro) in continueSampleInfo.product_info">
+              <div class="row"
+                :key="indexPro+'code'">
+                <span class="label"></span>
+                <span class="info">
+                  <el-select v-model="itemPro.product_id"
+                    filterable
+                    disabled
+                    placeholder="请选择打样类型"
+                    @change="changeProductSizeColorArr(itemPro,$event)">
+                    <el-option v-for="item in productList"
+                      :key="item.product_id"
+                      :label="item.product_code"
+                      :value="item.product_id">
+                    </el-option>
+                  </el-select>
+                </span>
+              </div>
+              <div class="row"
+                :key="indexPro + 'info'">
+                <span class="label"></span>
+                <span class="info popup_info_page">
+                  <el-cascader class="elInput"
+                    v-model="itemPro.size_color"
+                    placeholder='尺码/颜色'
+                    disabled
+                    :options="itemPro.sizeColorArr"></el-cascader>
+                  <zh-input v-model="itemPro.numbers"
+                    class="elInput"
+                    type='number'
+                    placeholder='付费数量'
+                    @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
+                    <template slot="append">{{itemPro.unit}}</template>
+                  </zh-input>
+                </span>
+              </div>
+              <div class="row"
+                :key="indexPro + 'price'">
+                <span class="label"></span>
+                <span class="info popup_info_page">
+                  <zh-input v-model="itemPro.price"
+                    class="elInput"
+                    type='number'
+                    placeholder='单价'
+                    @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
+                    <template slot="append">元</template>
+                  </zh-input>
+                  <zh-input v-model="itemPro.total_price"
+                    class="elInput"
+                    type='number'
+                    placeholder='总价'>
+                    <template slot="append">元</template>
+                  </zh-input>
+                </span>
+              </div>
+            </template>
+          </template>
+        </div>
+        <div class="content center_popup"
+          v-if="showChangeSampleOrderPopup === 3 || showChangeSampleOrderPopup === 4">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为"客户已确定"，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            v-show="showChangeSampleOrderPopup === 1"
+            @click="closePopup">取消</div>
+          <div class="btn btnGray"
+            v-show="showChangeSampleOrderPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+            @click="showChangeSampleOrderPopup--">上一步</div>
+          <div class="btn btnBlue"
+            v-show="showChangeSampleOrderPopup < 3"
+            @click="showChangeSampleOrderPopup++">下一步</div>
+          <div class="btn btnBlue"
+            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'before'"
+            @click="changeOrderStatus('continueSample')">确定</div>
+          <div class="btn btnBlue"
+            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'error'"
+            @click="changeOrderStatus('continueSample')">重试<em class="el-icon-refresh-left"></em></div>
+          <div class="btn btnBlue"
+            v-if="showChangeSampleOrderPopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+          <div class="btn btnBlue"
+            v-if="showChangeSampleOrderPopup === 4 && isCommit === 'compiled'"
+            @click="closePopup">完成</div>
+        </div>
+      </div>
+    </div>
+    <!-- 取消样单 -->
+    <div class="popup"
+      v-show="showCanclePopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">取消订单{{showCanclePopup|filterTitle}}</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showCanclePopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="原料结余入库"></el-step>
+            <el-step title="辅料结余入库"></el-step>
+            <el-step title="完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 1">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="yarnStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(1) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleYarn">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">原料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <zh-input v-model="itemMa.material_name"
+                  placeholder="请填写原料"
+                  class="elInput" /> -->
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchYarn"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleYarn,'yarn')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleYarn,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">kg</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 2">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="materialStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(2) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleMaterial">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">辅料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchMaterial"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleMaterial,'material')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleMaterial,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">{{(itemMa.unit || '件')}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content center_popup"
+          v-if="showCanclePopup === 3 || showCanclePopup === 4">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为取消，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            v-if="showCanclePopup === 1 && isCommit"
+            @click="closePopup">取消</div>
+          <div class="btn btnGray"
+            v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+            @click="showCanclePopup--">上一步</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup < 3"
+            @click="showCanclePopup++">下一步</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 3 && isCommit === 'before'"
+            @click="changeOrderStatus('cancle')">确定</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 3 && isCommit === 'error'"
+            @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 4 && isCommit === 'compiled'"
+            @click="closePopup">完成</div>
         </div>
       </div>
     </div>
@@ -465,17 +1087,67 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { sampleOrder } from '@/assets/js/api.js'
+import { sampleOrder, materialPlan, materialStock, weave, processing, finance, materialManage, materialProcess, yarn, material, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
-      lock: true,
       chinaNum: chinaNum,
-      activeId: '', // 当前打样的id
-      cloneData: [], // 保留的原始数据
+      sampleOrderArr: [],
+      activeSampleOrderId: '',
       sampleOrderInfo: {},
-      sampleOrderInfoSave: {},
+      productList: [],
+      timeProgressInfo: [],
+      productProgInfo: [],
+      orderDetailInfo: {
+        'material': [],
+        'production': [],
+        'finance': {
+          title: [
+            {
+              name: '财务总览',
+              key: 'finance'
+            }, {
+              name: '原料采购',
+              key: 'yarnOrder'
+            }, {
+              name: '原料加工',
+              key: 'yarnProcess'
+            }, {
+              name: '辅料订购',
+              key: 'materialOrder'
+            }, {
+              name: '辅料加工',
+              key: 'materialProcess'
+            }, {
+              name: '生产织造',
+              key: 'weave'
+            }, {
+              name: '半成品加工',
+              key: 'process'
+            }
+          ],
+          finance: [],
+          yarnOrder: [],
+          yarnProcess: [],
+          materialOrder: [],
+          materialProcess: [],
+          weave: [],
+          process: []
+        }
+      },
+      activeDetailTitle: '',
+      activeFinanceTitle: '',
+      product_order_total_number: '',
+      changeSamplePopup: false, // 修改样品信息弹窗flag
+      changeSampleId: '', // 选中要修改的样品id
+      showChangeSampleOrderPopup: false, // 继续打样窗口flag
+      continueSampleInfo: {
+        type: '',
+        product_info: [],
+        time: '',
+        isCustomerPay: false
+      }, // 继续打样信息
       sampleTypeArr: [
         {
           id: 0,
@@ -497,182 +1169,67 @@ export default {
           name: '大货样'
         }
       ],
-      customer_pay_info: [], // 客户付费数据
-      popup_craft_flag: false,
-      popup_sample_change_flag: false,
-      changeSampleId: '',
-      popup_sample_order_change_flag: false,
-      popup_pages: 0,
-      changeSampleOrderInfo: {
-        type: '',
-        product_info: [],
-        is_customer_pay: false,
-        compiled_time: ''
-      },
-      timeProgressInfo: []
+      showCanclePopup: false, // 取消样单弹窗flag
+      cancleYarn: [],
+      cancleMaterial: [],
+      yarnList: [],
+      materialList: [],
+      isCommit: 'before',
+      stockList: [],
+      yarnStockId: '',
+      materialStockId: '',
+      changeSampleForProductPopup: false, // 样品转为产品窗口
+      sampleForProductId: [],
+      isOkStatus: false
     }
   },
   methods: {
-    handleSelect (event) {
-      console.log(event)
-      if (event === 'change') { // 继续打样
-        this.$confirm('是否需要修改样品信息?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.popup_sample_change_flag = true
-        }).catch(() => {
-          this.changeSampleOrderInfo.product_info = this.sampleOrderInfo.product_info.map(itemPro => {
-            return {
-              product_id: itemPro.product_info.product_id,
-              sizeInfo: itemPro.size_info.map(itemSize => {
-                return {
-                  size_color: [itemSize.size, itemSize.color],
-                  number: ''
-                }
-              }),
-              product_info: itemPro.product_info,
-              sizeColorArr: itemPro.product_info.size_measurement.map(itemSize => {
-                return {
-                  value: itemSize.size_name,
-                  label: itemSize.size_name,
-                  children: itemPro.product_info.color.map(itemColor => {
-                    return {
-                      value: itemColor.color_name,
-                      label: itemColor.color_name
-                    }
-                  })
-                }
-              }),
-              unit: itemPro.product_info.unit
-            }
-          })
-          this.popup_sample_order_change_flag = true
-        })
-      }
-    },
-    goChangeSample (id) {
-      if (!id) {
-        this.$message.warning('请选择需要修改的样品')
-      } else {
-        this.$router.push('/sample/sampleUpdate/' + id)
-      }
-    },
-    changeSampleOrder () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
-      if (!this.changeSampleOrderInfo.type && this.changeSampleOrderInfo.type !== 0) {
-        this.$message.error('请选择样单类型')
-        return
-      }
-      let flag = true
-      let sizeFlag = true
-      this.changeSampleOrderInfo.product_info.forEach(itemPro => {
-        itemPro.sizeInfo.forEach(itemSize => {
-          if (!itemSize.number && itemSize.number.toString() !== '0') {
-            flag = false
-          }
-          if (itemSize.size_color.length !== 2) {
-            sizeFlag = false
-          }
-        })
-      })
-      if (!sizeFlag) {
-        this.$message.error('检测到有未填写的尺码颜色')
-        return
-      }
-      if (!flag) {
-        this.$message.error('检测到打样数量未填写')
-        return
-      }
-      if (!this.changeSampleOrderInfo.compiled_time) {
-        this.$message.error('请选择完成时间')
-        return
-      }
-      if (this.changeSampleOrderInfo.is_customer_pay) { // 客户付费判断
-
-      } else {
-        this.lock = false
-        sampleOrder.create({
-          type: this.changeSampleOrderInfo.type,
-          title: this.sampleOrderInfoSave.title,
-          pid: this.$route.params.id,
-          order_time: this.$getTime(),
-          group_id: this.sampleOrderInfoSave.group_id,
-          client_id: this.sampleOrderInfoSave.client_id,
-          contacts_id: this.sampleOrderInfoSave.contacts_id,
-          deliver_time: this.changeSampleOrderInfo.compiled_time,
-          desc: null,
-          product_info: this.changeSampleOrderInfo.product_info.map(itemPro => {
-            return {
-              product_id: itemPro.product_id,
-              size_info: itemPro.sizeInfo.map(itemSize => {
-                return {
-                  size: itemSize.size_color[0],
-                  color: itemSize.size_color[1],
-                  numbers: itemSize.number
-                }
-              })
-            }
-          })
-        }).then(res => {
-          if (res.data.status) {
-            this.$message.success('打样成功')
-            window.location.reload()
-          } else {
-            this.$message.error(res.data.message)
-          }
-          this.lock = true
-        })
-      }
-    },
-    computedPrice (item) {
-      if (item.price && item.price_number) {
-        item.total_price = (item.price * item.price_number).toFixed(1)
-      }
-    },
-    closeWindow (type) {
-      if (type === 'craft') {
-        this.popup_craft_flag = false
-      } else if (type === 'sample_change') {
-        this.popup_sample_change_flag = false
-      } else if (type === 'sample_order_change') {
-        this.popup_sample_order_change_flag = false
-        this.popup_pages = 0
-        this.changeSampleOrderInfo.is_customer_pay = false
-        this.customer_pay_info.forEach(item => {
-          item.price = ''
-          item.price_number = ''
-          item.total_price = ''
-        })
-      }
-    },
-    cutSampleOrder (event) {
+    init () {
       this.loading = true
-      this.activeId = event
-      if (this.cloneData.id === event) {
-        this.getSampleOrderInfo(this.cloneData)
-      } else {
-        let flag = this.cloneData.child_data.find(itemOrder => itemOrder.id === event)
-        if (flag) {
-          this.getSampleOrderInfo(flag)
-        } else {
-          this.$message.error('未找到该次打样信息，请联系管理员')
-        }
-      }
-    },
-    getSampleOrderInfo (item) {
-      this.timeProgressInfo = []
-      sampleOrder.editDetail({
-        id: item.id
+      sampleOrder.detail({
+        id: this.$route.params.id
       }).then(res => {
-        this.sampleOrderInfoSave = this.$clone(res.data.data)
+        let sampleOrderInfo = res.data.data
+        this.sampleOrderArr = [sampleOrderInfo].concat(this.$clone(sampleOrderInfo.child_data)).map((item, index) => {
+          return {
+            showComponentsName: this.chinaNum[index] + '次打样',
+            ...item
+          }
+        })
+        this.cutSampleOrderInfo(sampleOrderInfo)
+        this.loading = false
       })
-      this.sampleOrderInfo = this.$clone(item)
-      this.sampleOrderInfo.type = this.sampleTypeArr.find(itemType => itemType.id === this.sampleOrderInfo.type).name
+    },
+    // 切换样单更新数据
+    cutSampleOrderInfo (item) {
+      // 清空切换前概述数据
+      this.orderDetailInfo.material = []
+      this.orderDetailInfo.production = []
+      this.orderDetailInfo.finance.finance = []
+      this.orderDetailInfo.finance.yarnOrder = []
+      this.orderDetailInfo.finance.yarnProcess = []
+      this.orderDetailInfo.finance.materialOrder = []
+      this.orderDetailInfo.finance.materialProcess = []
+      this.orderDetailInfo.finance.weave = []
+      this.orderDetailInfo.finance.process = []
+      // 处理数据
+      this.sampleOrderInfo = item
+      this.activeSampleOrderId = item.id
+      let productList = []
+      let numArr = this.$flatten(item.product_info.map(item => {
+        return item.size_info.map(itemNum => Number(itemNum.numbers))
+      }))
+      this.product_order_total_number = numArr.length > 0 ? numArr.reduce((a, b) => a + b) : 0
+      item.product_info.forEach(itemPro => {
+        if (!productList.find(item => item.product_id === itemPro.product_info.product_id)) {
+          productList.push(itemPro.product_info)
+        }
+      })
+      this.productList = productList
+      // 处理流程时间线
+      this.timeProgressInfo = []
+      let nowDate = this.$getTime()
+      let totalTime = new Date(this.sampleOrderInfo.deliver_time).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()
       this.timeProgressInfo.push({
         name: '下单日期',
         time: this.sampleOrderInfo.order_time,
@@ -683,86 +1240,923 @@ export default {
         time: this.sampleOrderInfo.deliver_time,
         prog: 100
       })
-      let nowDate = this.$getTime()
-      let totalTime = new Date(this.sampleOrderInfo.deliver_time).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()
       let prog = (new Date(nowDate).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()) / totalTime * 100 > 100 ? 100 : (new Date(nowDate).getTime() - new Date(this.sampleOrderInfo.order_time).getTime()) / totalTime * 100
       this.timeProgressInfo.push({
         name: '今天',
         time: nowDate,
         prog: prog
       })
-      // 初始化客户付费信息数据
-      let customerPayInfo = []
-      this.sampleOrderInfo.product_info.forEach(itemPro => {
-        itemPro.size_info.forEach(itemSize => {
-          customerPayInfo.push({
-            id_size_color: itemPro.product_info.product_id + '&&' + itemSize.size + itemSize.color,
-            code_type_size_color: itemPro.product_info.product_code + '(' + itemPro.product_info.category_name + '/' + itemPro.product_info.style_name + '/' + itemPro.product_info.type_name + ')' + '(' + itemSize.size + '/' + itemSize.color + ')',
-            unit: itemPro.product_info.unit,
-            price: '',
-            total_price: '',
-            price_number: ''
-          })
-        })
+      // 处理流程进度
+      this.productProgInfo = []
+      let sampleOrderData = item
+      this.productProgInfo.push({
+        name: '物料进度',
+        isCompiled: sampleOrderData.material_push_progress.r_push > 100 && sampleOrderData.material_order_progress.y_percent > 100,
+        info: [
+          {
+            name: '入库',
+            prog: sampleOrderData.material_push_progress.r_push > 100 ? 100 : sampleOrderData.material_push_progress.r_push,
+            class: 'greenProg'
+          }, {
+            name: '订购',
+            prog: sampleOrderData.material_order_progress.y_percent > 100 ? 100 : sampleOrderData.material_order_progress.y_percent,
+            class: 'blueProg'
+          }
+        ]
+      }, {
+        name: '织造进度',
+        isCompiled: sampleOrderData.product_weave_progress.product > 100,
+        info: [
+          {
+            name: '分配',
+            prog: sampleOrderData.product_weave_progress.product > 100 ? 100 : sampleOrderData.product_weave_progress.product,
+            class: 'blueProg'
+          }
+        ]
       })
-      this.customer_pay_info = customerPayInfo
-      this.loading = false
-    },
-    deleteItem (item, index) {
-      if (item.length < 2) {
-        this.$message.warning('至少保留一项')
+      if (this.activeDetailTitle === 'material') {
+        this.getMaterialDetail()
       } else {
-        this.$confirm('此操作将删除该项, 是否继续?', '提示', {
+        this.catDetail('material')
+      }
+    },
+    // 物料概述
+    getMaterialDetail () {
+      this.loading = true
+      Promise.all([
+        materialPlan.detail({
+          order_id: this.activeSampleOrderId,
+          order_type: 2
+        }),
+        materialStock.detail({
+          order_id: this.activeSampleOrderId,
+          order_type: 2
+        })
+      ]).then(res => {
+        let materialDetail = res[0].data.data.total_data
+        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
+        this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
+          return {
+            material_name: item.material_name,
+            material_type: item.material_type,
+            unit: Number(item.material_type) === 1 ? 'kg' : (item.unit || '个'),
+            attr_info: item.attr_info.map(itemAttr => {
+              return {
+                attr: itemAttr.attr,
+                plan_number: this.$toFixed((Number(item.material_type) === 1 ? (itemAttr.plan_number / 1000) : itemAttr.plan_number) || 0),
+                order_number: this.$toFixed(itemAttr.order_number || 0),
+                process_number: this.$toFixed(itemAttr.process_number || 0)
+              }
+            })
+          }
+        })
+        materialStock.forEach(itemMa => {
+          let flag = this.orderDetailInfo.material.find(item => item.material_name === itemMa.material_name && Number(item.material_type) === Number(itemMa.material_type))
+          if (flag) {
+            let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
+            if (attrFlag) {
+              if (Number(itemMa.type) === 1) {
+                attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
+              } else if (Number(itemMa.type) === 3) {
+                attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
+              }
+            }
+          } else {
+            this.orderDetailInfo.push({
+              material_name: itemMa.material_name,
+              material_type: itemMa.material_type,
+              unit: Number(itemMa.material_type) === 1 ? 'kg' : (itemMa.unit || '个'),
+              attr_info: [
+                {
+                  attr: itemMa.material_color,
+                  plan_number: 0,
+                  order_number: 0,
+                  process_number: 0,
+                  go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
+                  out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
+                }
+              ]
+            })
+          }
+        })
+        this.loading = false
+      })
+    },
+    // 生产概述
+    getProductionDetail () {
+      this.loading = true
+      Promise.all([
+        weave.detail({
+          order_id: this.activeSampleOrderId,
+          order_type: 2
+        }),
+        processing.detail({
+          order_id: this.activeSampleOrderId,
+          order_type: 2
+        })
+      ]).then(res => {
+        let productionDetail = res[0].data.data.map(item => {
+          return {
+            ...item.product_info,
+            ...item.category_info,
+            client_name: item.client_name,
+            number: item.number,
+            size: item.size,
+            color: item.color,
+            is_part: item.is_part,
+            process_type: '织造'
+          }
+        }).concat(res[1].data.data.map(item => {
+          return {
+            ...item.product_info,
+            ...item.category_info,
+            client_name: item.client_name,
+            number: item.number,
+            size: item.size,
+            color: item.color,
+            is_part: item.is_part,
+            process_type: item.type
+          }
+        }))
+        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+        this.loading = false
+      })
+    },
+    // 财务概述-财务总览
+    getFinanceDetail () {
+      this.loading = true
+      finance.detail({
+        order_id: this.activeSampleOrderId
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          this.orderDetailInfo.finance.finance = [
+            {
+              name: '订单产值',
+              unit: '件',
+              price_info: [{
+                number: data.order.order_total_value,
+                total_price: data.order.total_number,
+                pre_price: data.order.order_pre_value
+              }]
+            },
+            {
+              name: '原料采购',
+              unit: 'kg',
+              price_info: [
+                {
+                  name: '调取',
+                  number: data.material_order.stock_number,
+                  total_price: 0,
+                  pre_price: 0
+                },
+                {
+                  name: '订购',
+                  number: data.material_order.order_number.number,
+                  total_price: data.material_order.order_number.total_value,
+                  pre_price: data.material_order.order_number.pre_value
+                }
+              ]
+            },
+            {
+              name: '原料加工',
+              unit: 'kg',
+              price_info: [{
+                number: data.material_process.number,
+                total_price: data.material_process.total_value,
+                pre_price: data.material_process.pre_value
+              }]
+            },
+            {
+              name: '辅料采购',
+              unit: '件',
+              price_info: [{
+                number: data.assist_material_order.number,
+                total_price: data.assist_material_order.total_value,
+                pre_price: data.assist_material_order.pre_value
+              }]
+            },
+            {
+              name: '辅料加工',
+              unit: '件',
+              price_info: [{
+                number: data.assist_material_process.number,
+                total_price: data.assist_material_process.total_value,
+                pre_price: data.assist_material_process.pre_value
+              }]
+            },
+            {
+              name: '生产织造',
+              unit: '件',
+              price_info: [{
+                number: data.product_weave.number,
+                total_price: data.product_weave.total_value,
+                pre_price: data.product_weave.pre_value
+              }]
+            },
+            {
+              name: '半成品加工',
+              unit: '件',
+              price_info: [{
+                number: data.semi_product.number,
+                total_price: data.semi_product.total_value,
+                pre_price: data.semi_product.pre_value
+              }]
+            },
+            {
+              name: '包装辅料订购',
+              unit: '个',
+              price_info: [{
+                number: data.pack_order.number,
+                total_price: data.pack_order.total_value,
+                pre_price: data.pack_order.pre_value
+              }]
+            },
+            {
+              name: '出库运输',
+              unit: '次',
+              price_info: [{
+                number: data.stock_out.number,
+                total_price: data.stock_out.total_value,
+                pre_price: data.stock_out.pre_value
+              }]
+            }
+          ]
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-原料采购-辅料采购
+    getMaterialOrderDetail () {
+      this.loading = true
+      materialManage.detail({
+        order_id: this.activeSampleOrderId,
+        order_type: 2
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: ['client_name', 'type_source/type', 'stock_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+          this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: ['client_name', 'type_source/type', 'sotck_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-原料加工-辅料加工
+    getMaterialProcessDetail () {
+      this.loading = true
+      materialProcess.detail({
+        order_id: this.activeSampleOrderId,
+        order_type: 2
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.yarnProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+          this.orderDetailInfo.finance.materialProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+            return {
+              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
+              ...item
+            }
+          })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-生产织造
+    getWeaveDetail () {
+      this.loading = true
+      weave.detail({
+        order_id: this.activeSampleOrderId,
+        order_type: 2
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data.map(item => {
+            return {
+              ...item.product_info,
+              ...item.category_info,
+              client_name: item.client_name,
+              number: item.number,
+              size: item.size,
+              color: item.color,
+              is_part: item.is_part,
+              price: item.price,
+              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
+              compiled_time: this.$getTime(item.complete_time)
+            }
+          })
+          this.orderDetailInfo.finance.weave = this.$mergeData(data, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-半成品加工
+    getProcessDetail () {
+      this.loading = true
+      processing.detail({
+        order_id: this.activeSampleOrderId,
+        order_type: 2
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          let processInfo = res.data.data.map(item => {
+            return {
+              ...item.product_info,
+              ...item.category_info,
+              client_name: item.client_name,
+              price: item.price,
+              number: item.number,
+              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
+              size: item.size,
+              color: item.color,
+              is_part: item.is_part,
+              process_type: item.type,
+              compiled_time: this.$getTime(item.complete_time)
+            }
+          })
+          this.orderDetailInfo.finance.process = this.$mergeData(processInfo, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'process_type', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+        }
+        this.loading = false
+      })
+    },
+    catDetail (type) {
+      this.activeDetailTitle = type
+    },
+    changeFinance (item) {
+      this.activeFinanceTitle = item.key
+    },
+    // 修改订单状态
+    changeOrderStatus (type) {
+      console.log(type)
+      if (type === 'waitConfirm') {
+        this.$confirm('此操作将改变该样单完成状态，是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          item.splice(index, 1)
-          this.$message({
-            type: 'success',
-            message: '删除成功'
+          sampleOrder.changeStatus({
+            order_id: this.activeSampleOrderId,
+            type: 1
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.init()
+              this.$message.success('修改样单状态为“等待客户确认”成功')
+            }
           })
         }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
+          this.$message.info('已取消')
+        })
+      } else if (type === 'continue') {
+        this.$confirm('是否修改样品信息?', '提示', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          // 转产品执行
+          this.changeSamplePopup = true
+        }).catch(() => {
+          this.showChangeSampleOrderPopup = 1
+          this.continueSampleInfo.product_info = this.$flatten(this.sampleOrderInfo.product_info.map(itemPro => {
+            return {
+              product_id: itemPro.product_info.product_id,
+              sizeColorArr: JSON.stringify(itemPro.product_info.size_measurement.map(itemSize => {
+                return {
+                  label: itemSize.size_name,
+                  value: itemSize.size_name,
+                  children: itemPro.product_info.color.map(itemColor => {
+                    return {
+                      label: itemColor.color_name,
+                      value: itemColor.color_name
+                    }
+                  })
+                }
+              })),
+              unit: itemPro.product_info.unit,
+              size_info: itemPro.size_info
+            }
+          })).map(itemPro => {
+            return {
+              product_id: itemPro.product_id,
+              number: itemPro.numbers,
+              size_color: [itemPro.size, itemPro.color],
+              sizeColorArr: JSON.parse(itemPro.sizeColorArr),
+              unit: itemPro.unit
+            }
           })
         })
-      }
-    },
-    addItem (item, type) {
-      if (type === 'sampleOrderInfoChange') {
-        item.push({
-          number: '',
-          size_color: ''
+      } else if (type === 'continueSample') {
+        if (this.continueSampleInfo.type !== 0 && !this.continueSampleInfo.type) {
+          this.$message.error('请选择打样类型')
+          return
+        }
+        if (!this.continueSampleInfo.time) {
+          this.$message.error('请选择打样完成时间')
+          return
+        }
+        let flag = {
+          id: true,
+          sizeColor: true,
+          number: true,
+          numbers: true,
+          price: true,
+          total_price: true
+        }
+        let productInfo = this.$mergeData(this.continueSampleInfo.product_info, { mainRule: 'product_id', childrenName: 'size_info', childrenRule: { mainRule: 'size_color', otherRule: [{ name: 'number', type: 'add' }] } }).map(item => {
+          if (!item.product_id) {
+            flag.id = false
+          }
+          return {
+            product_id: item.product_id,
+            size_info: item.size_info.map(itemSize => {
+              if (!itemSize.size_color[0] || !itemSize.size_color[1]) {
+                flag.sizeColor = false
+              }
+              if (!itemSize.number) {
+                flag.number = false
+              }
+              return {
+                size: itemSize.size_color[0],
+                color: itemSize.size_color[1],
+                numbers: itemSize.number
+              }
+            })
+          }
+        })
+        if (!flag.id) {
+          this.$message.error('请选择需要打样的样品')
+          return
+        }
+        if (!flag.sizeColor) {
+          this.$message.error('请选择需要打样样品的尺码颜色')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写需要打样样品的数量')
+          return
+        }
+        let clientPay = []
+        if (this.continueSampleInfo.isCustomerPay) {
+          clientPay = this.continueSampleInfo.product_info.map(item => {
+            if (!item.product_id) {
+              flag.id = false
+            }
+            if (!item.size_color[0] || !item.size_color[1]) {
+              flag.sizeColor = false
+            }
+            if (!item.price) {
+              flag.price = false
+            }
+            if (!item.numbers) {
+              flag.numbers = false
+            }
+            if (!item.total_price) {
+              flag.total_price = false
+            }
+            return {
+              product_id: item.product_id,
+              color: item.size_color[1],
+              size: item.size_color[0],
+              price: item.price,
+              number: item.numbers,
+              total_price: item.total_price
+            }
+          })
+        }
+        if (!flag.id) {
+          this.$message.error('请选择需要付费的样品')
+          return
+        }
+        if (!flag.sizeColor) {
+          this.$message.error('请选择需要付费样品的尺码颜色')
+          return
+        }
+        if (!flag.numbers) {
+          this.$message.error('请填写需要付费样品的数量')
+          return
+        }
+        if (!flag.price) {
+          this.$message.error('请填写需要付费样品的单价')
+          return
+        }
+        if (!flag.total_price) {
+          this.$message.error('请填写需要付费总价')
+          return
+        }
+        this.isCommit = 'commit'
+        let title = this.sampleOrderArr[0].title
+        title += '-第' + (this.chinaNum[this.sampleOrderArr.length] || this.sampleOrderArr.length) + '次'
+        sampleOrder.create({
+          type: this.continueSampleInfo.type,
+          title: title,
+          pid: this.$route.params.id,
+          order_time: this.$getTime(),
+          group_id: this.sampleOrderInfo.group_id,
+          client_id: this.sampleOrderInfo.client_id,
+          contacts_id: this.sampleOrderInfo.contacts_id,
+          deliver_time: this.continueSampleInfo.time,
+          desc: '',
+          product_info: productInfo,
+          client_pay: clientPay
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.showChangeSampleOrderPopup++
+            this.isCommit = 'compiled'
+            this.init()
+          } else {
+            this.isCommit = 'error'
+          }
+        })
+      } else if (type === 'ok') {
+        this.changeSampleForProductPopup = 1
+        this.isOkStatus = true
+        // this.$confirm('是否将样品转为产品?', '提示', {
+        //   confirmButtonText: '是',
+        //   cancelButtonText: '否',
+        //   type: 'warning'
+        // }).then(() => {
+        //   // 转产品执行
+        //   this.changeSampleForProductPopup = true
+        // }).catch(() => {
+        //   this.$confirm('此操作将改变该样单完成状态,并且会将所选中的样品转为产品（其默认配料单以及工艺单会转为该产品配料单以及工艺单），是否继续?', '提示', {
+        //     confirmButtonText: '是',
+        //     cancelButtonText: '否',
+        //     type: 'warning'
+        //   }).then(() => {
+        //     sampleOrder.changeStatus({
+        //       order_id: this.activeSampleOrderId,
+        //       type: 2
+        //     }).then(res => {
+        //       if (res.data.status !== false) {
+        //         this.init()
+        //         this.$message.success('修改样单状态为"客户已确认"成功')
+        //       }
+        //     })
+        //   }).catch(() => {
+        //     this.$message.info('已取消')
+        //   })
+        // })
+      } else if (type === 'addOrder') {
+        this.changeSampleForProductPopup = 1
+        this.isOkStatus = false
+      } else if (type === 'change') {
+        this.$router.push('/sample/sampleOrderUpdate/' + this.activeSampleOrderId)
+      } else if (type === 'showCanclePopup') {
+        this.getMaterialOrderAndProduct()
+      } else if (type === 'cancle') {
+        let flag = {
+          name: true,
+          color: true,
+          size: true,
+          number: true,
+          stock: true
+        }
+        let yarnData = this.cancleYarn.filter(item => item.material_name || item.color || item.weight).map(item => {
+          if (!item.material_name) {
+            flag.name = false
+          }
+          if (!item.color) {
+            flag.color = false
+          }
+          if (!this.yarnStockId) {
+            flag.stock = false
+          }
+          if (!item.number) {
+            flag.weight = false
+          }
+          return {
+            material_name: item.material_name,
+            color_code: item.color,
+            stock_id: this.yarnStockId,
+            type: 1,
+            vat_code: '',
+            attribute: '',
+            weight: item.weight,
+            company_id: window.sessionStorage.getItem('company_id'),
+            desc: '订单结余入库'
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的原料仓库')
+          return
+        }
+        if (!flag.name) {
+          this.$message.error('请填写您需要入库的原料')
+          return
+        }
+        if (!flag.color) {
+          this.$message.error('请填写您需要入库的原料属性')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写您需要入库的原料数量')
+          return
+        }
+        let materialData = this.cancleMaterial.filter(item => item.material_name || item.color || item.weight).map(item => {
+          if (!item.material_name) {
+            flag.name = false
+          }
+          if (!item.color) {
+            flag.color = false
+          }
+          if (!this.materialStockId) {
+            flag.stock = false
+          }
+          if (!item.number) {
+            flag.weight = false
+          }
+          return {
+            material_name: item.material_name,
+            color_code: item.color,
+            stock_id: this.materialStockId,
+            type: 2,
+            vat_code: '',
+            attribute: '',
+            weight: item.weight,
+            company_id: window.sessionStorage.getItem('company_id'),
+            desc: '订单结余入库'
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的辅料仓库')
+          return
+        }
+        if (!flag.name) {
+          this.$message.error('请填写您需要入库的辅料')
+          return
+        }
+        if (!flag.color) {
+          this.$message.error('请填写您需要入库的辅料属性')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写您需要入库的辅料数量')
+          return
+        }
+        this.isCommit = 'commit'
+        sampleOrder.changeStatus({
+          order_id: this.activeSampleOrderId,
+          type: 3,
+          material_data: yarnData.concat(materialData)
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.isCommit = 'compiled'
+            this.showCanclePopup++
+            this.init()
+          } else {
+            this.isCommit = 'error'
+          }
+        })
+      } else if (type === 'sampleForProduct') {
+        this.isCommit = 'commit'
+        sampleOrder.changeStatus({
+          order_id: this.activeSampleOrderId,
+          type: (this.isOkStatus ? 2 : 5),
+          sample_product_id: this.sampleForProductId
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.changeSampleForProductPopup++
+            this.isCommit = 'compiled'
+            this.init()
+            this.$message.success('修改样单状态为"客户已确认"成功')
+          } else {
+            this.isCommit = 'error'
+          }
         })
       } else {
-        this.$message.error('未知操作')
+        this.$message.warning('未知操作')
       }
     },
-    changeFlag (item, $event, value) {
-      if (item.filter(itemSize => itemSize.size_color[0] === $event[0] && itemSize.size_color[1] === $event[1]).length >= 2) {
-        this.$message.warning('检测到该打样产品中已有该尺码颜色')
-        value.size_color = ''
+    // 取消时初始化原料、辅料、包装和产品信息
+    getMaterialOrderAndProduct () {
+      this.loading = true
+      Promise.all([
+        materialManage.detail({
+          order_id: this.activeSampleOrderId,
+          order_type: 2
+        }),
+        yarn.list(),
+        material.list(),
+        stock.list()
+      ]).then(res => {
+        // 获取订购原料/辅料信息
+        let materialInfo = this.$mergeData(res[0].data.data, { mainRule: ['material_name', 'type', 'color_code/color'], otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }] }).map(item => {
+          return {
+            material_name: item.material_name,
+            type: item.type,
+            color: item.color,
+            weight: item.weight,
+            unit: item.unit
+          }
+        })
+        this.cancleYarn = materialInfo.filter(item => item.type === 1)
+        this.cancleMaterial = materialInfo.filter(item => item.type === 2)
+        if (this.cancleYarn.length === 0) {
+          this.cancleYarn.push({
+            material_name: '',
+            type: 1,
+            color: '',
+            weight: '',
+            unit: ''
+          })
+        }
+        if (this.cancleMaterial.length === 0) {
+          this.cancleMaterial.push({
+            material_name: '',
+            type: 2,
+            color: '',
+            weight: '',
+            unit: ''
+          })
+        }
+        if (this.yarnList.length === 0) {
+          this.yarnList = res[1].data.data.map(item => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        if (this.materialList.length === 0) {
+          this.materialList = res[2].data.data.map(item => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        if (this.stockList.length === 0) {
+          this.stockList = res[3].data.data.data
+        }
+        this.loading = false
+      })
+      this.showCanclePopup = 1
+    },
+    addItem (item, type) {
+      if (type === 'yarn') {
+        item.push({
+          material_name: '',
+          color: '',
+          type: 1,
+          unit: null,
+          weight: ''
+        })
+      } else if (type === 'material') {
+        item.push({
+          material_name: '',
+          color: '',
+          type: 2,
+          unit: '件',
+          weight: ''
+        })
+      } else if (type === 'continueSample') {
+        item.push({
+          product_id: '',
+          size_color: '',
+          number: '',
+          sizeColorArr: []
+        })
+      }
+      this.$forceUpdate()
+    },
+    deleteItem (item, index) {
+      item.splice(index, 1)
+      this.$forceUpdate()
+    },
+    querySearchYarn (queryString, cb) {
+      var restaurants = this.yarnList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchMaterial (queryString, cb) {
+      var restaurants = this.materialList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchPack (queryString, cb) {
+      var restaurants = this.packList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    closePopup () {
+      this.showCanclePopup = false
+      this.changeSampleForProductPopup = false
+      this.showChangeSampleOrderPopup = false
+      this.sampleForProductId = []
+      this.isCommit = 'before'
+      this.yarnStockId = ''
+      this.materialStockId = ''
+      this.cancleYarn = []
+      this.cancleMaterial = []
+    },
+    changeProductSizeColorArr (item, $event) { // 继续打样填写产品是选择产品更新尺码颜色选项
+      this.$forceUpdate()
+      console.log($event)
+      let flag = this.productList.find(itemPro => itemPro.product_id === $event)
+      if (flag) {
+        item.sizeColorArr = flag.size_measurement.map(itemSize => {
+          return {
+            label: itemSize.size_name,
+            value: itemSize.size_name,
+            children: flag.color.map(itemColor => {
+              return {
+                label: itemColor.color_name,
+                value: itemColor.color_name
+              }
+            })
+          }
+        })
+        item.unit = flag.unit
       }
     }
   },
   created () {
-    sampleOrder.detail({
-      id: this.$route.params.id
-    }).then(res => {
-      if (res.data.status) {
-        this.cloneData = this.$clone(res.data.data)
-        this.activeId = this.cloneData.id
-        this.getSampleOrderInfo(res.data.data)
-      } else {
-        this.$message.error(res.data.message)
+    this.init()
+  },
+  watch: {
+    activeDetailTitle (newVal) {
+      if (this.orderDetailInfo[newVal].length === 0) {
+        if (newVal === 'material') {
+          this.getMaterialDetail()
+        } else if (newVal === 'production') {
+          this.getProductionDetail()
+        } else {
+          this.$message.error('未知操作')
+        }
+      } else if (newVal === 'finance') {
+        this.changeFinance({ key: 'finance' })
       }
-    })
+    },
+    activeFinanceTitle (newVal) {
+      if (this.orderDetailInfo.finance[newVal].length === 0) {
+        if (newVal === 'finance') {
+          this.getFinanceDetail()
+        } else if (newVal === 'yarnOrder') {
+          this.getMaterialOrderDetail()
+        } else if (newVal === 'yarnProcess') {
+          this.getMaterialProcessDetail()
+        } else if (newVal === 'materialOrder') {
+          this.getMaterialOrderDetail()
+        } else if (newVal === 'materialProcess') {
+          this.getMaterialProcessDetail()
+        } else if (newVal === 'weave') {
+          this.getWeaveDetail()
+        } else if (newVal === 'process') {
+          this.getProcessDetail()
+        } else {
+          this.$message.error('未知操作')
+        }
+      }
+    }
   },
   filters: {
     filterType (item) {
-      return [item.category_name, item.style_name, item.type_name].join(' / ')
+      return item.is_part ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
+    },
+    filterStatus (status) {
+      if (status === 3001) {
+        return '已创建'
+      } else if (status === 3002) {
+        return '进行中'
+      } else if (status === 3003) {
+        return '已取消'
+      } else if (status === 3004) {
+        return '已完成'
+      }
+    },
+    filterTitle (value) {
+      if (value === 1) {
+        return '-原料结余入库'
+      } else if (value === 2) {
+        return '-辅料结余入库'
+      }
+    },
+    filterSampleStatus (value) {
+      if (value === 1) {
+        return '待确认'
+      } else if (value === 2) {
+        return '已确认'
+      } else if (value === 5) {
+        return '大货生产'
+      }
+    },
+    filterOrderType (value) {
+      let sampleOrderType = ['开发样', '修改样', '销售样', '确认样', '产前样', '大货样']
+      return sampleOrderType[value]
     }
   }
 }
@@ -772,7 +2166,7 @@ export default {
 @import "~@/assets/less/sample/sampleOrderDetail.less";
 </style>
 <style lang="less">
-#sampleOrderDetail {
+#orderDetail {
   .el-menu,
   .el-submenu,
   .el-submenu__title {
@@ -783,10 +2177,18 @@ export default {
       color: #fff;
     }
   }
+  .steps {
+    padding: 8px;
+    border-bottom: none;
+    .el-step__title {
+      font-size: 14px !important;
+    }
+  }
 }
 //操作按钮重写
 .elMenuItem {
   color: #999 !important;
+  min-width: auto !important;
   &.is-active {
     color: #999 !important;
     .el-submenu__title {
@@ -803,6 +2205,11 @@ export default {
         color: #fff;
       }
     }
+  }
+}
+.handleMenuSample {
+  .el-menu--popup {
+    min-width: auto !important;
   }
 }
 </style>

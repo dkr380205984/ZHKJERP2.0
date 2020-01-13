@@ -9,18 +9,22 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <el-dropdown trigger="click">
+            <el-dropdown trigger="click"
+              @command="changeOrderStatus">
               <!-- <span class="el-dropdown-link"> -->
               <div class="btn btnBlue">操作<i class="el-icon-arrow-down el-icon--right"></i></div>
               <!-- </span> -->
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>
+              <el-dropdown-menu>
+                <el-dropdown-item command='ok'
+                  v-if="orderInfo.status !== 2002 || orderInfo.status !== 2004">
                   <span class="create">确认完成</span>
                 </el-dropdown-item>
-                <el-dropdown-item>
+                <el-dropdown-item command='change'
+                  v-if="orderInfo.status === 2001">
                   <span class="updated">修改</span>
                 </el-dropdown-item>
-                <el-dropdown-item>
+                <el-dropdown-item command='showCanclePopup'
+                  v-if='orderInfo.status !== 2004'>
                   <span class="delete">取消订单</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -29,11 +33,11 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">金额</span>
-              <span class="text">￥6000</span>
+              <span class="text">￥{{orderInfo.total_price}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
-              <span class="text blue">进行中</span>
+              <span :class="{'text':true,'orange':orderInfo.status === 2001, 'blue':orderInfo.status === 2002,'red':orderInfo.status === 2003,'green':orderInfo.status === 2004}">{{orderInfo.status|filterStatus}}</span>
             </div>
           </div>
         </div>
@@ -739,11 +743,270 @@
         </template>
       </div>
     </div>
+    <div class="popup"
+      v-show="showCanclePopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">取消订单{{showCanclePopup|filterTitle}}</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showCanclePopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="原料结余入库"></el-step>
+            <el-step title="辅料结余入库"></el-step>
+            <el-step title="包装结余入库"></el-step>
+            <el-step title="产品结余入库"></el-step>
+            <el-step title="完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 1">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="yarnStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(1) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleYarn">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">原料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <zh-input v-model="itemMa.material_name"
+                  placeholder="请填写原料"
+                  class="elInput" /> -->
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchYarn"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleYarn,'yarn')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleYarn,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">kg</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 2">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="materialStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(2) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleMaterial">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">辅料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchMaterial"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleMaterial,'material')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleMaterial,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">{{(itemMa.unit || '件')}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 3">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="packStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(3) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in canclePack">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">包装信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchPack"
+                  class="elInput"
+                  placeholder="请填写包装"></el-autocomplete>
+                <zh-input v-model="itemMa.size"
+                  placeholder="规格"
+                  class="elInput" />
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(canclePack,'pack')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(canclePack,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.attribute"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.number"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">件</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 4">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="productStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(4) !== -1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in canCleProduct">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">产品信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchPack"
+                  class="elInput"
+                  placeholder="请填写包装"></el-autocomplete> -->
+                <zh-input v-model="itemMa.product_code"
+                  placeholder="产品"
+                  class="elInput"
+                  disabled />
+                <zh-input v-model="itemMa.size"
+                  placeholder="尺码"
+                  disabled
+                  class="elInput" />
+              </span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">颜色/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="颜色"
+                  disabled
+                  class="elInput" />
+                <zh-input v-model="itemMa.number"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">件</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content center"
+          v-if="showCanclePopup === 5 || showCanclePopup === 6">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为取消，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            v-if="showCanclePopup === 1 && isCommit"
+            @click="closePopup">取消</div>
+          <div class="btn btnGray"
+            v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+            @click="showCanclePopup--">上一步</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup < 5"
+            @click="showCanclePopup++">下一步</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 5 && isCommit === 'before'"
+            @click="changeOrderStatus('cancle')">确定</div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 5 && isCommit === 'error'"
+            @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 5  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+          <div class="btn btnBlue"
+            v-if="showCanclePopup === 6 && isCommit === 'compiled'"
+            @click="closePopup">完成</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -804,7 +1067,21 @@ export default {
       },
       activeDetailTitle: '',
       activeFinanceTitle: '',
-      product_order_total_number: ''
+      product_order_total_number: '',
+      showCanclePopup: false,
+      cancleYarn: [],
+      cancleMaterial: [],
+      canclePack: [],
+      canCleProduct: [],
+      yarnList: [],
+      materialList: [],
+      packList: [],
+      isCommit: 'before',
+      stockList: [],
+      yarnStockId: '',
+      materialStockId: '',
+      packStockId: '',
+      productStockId: ''
     }
   },
   methods: {
@@ -1413,6 +1690,380 @@ export default {
     },
     changeFinance (item) {
       this.activeFinanceTitle = item.key
+    },
+    // 修改订单状态
+    changeOrderStatus (type) {
+      console.log(type)
+      if (type === 'ok') {
+        this.$confirm('此操作将永久修改订单状态, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          order.changeStatus({
+            order_id: this.$route.params.id,
+            type: 3
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message.success('确认完成')
+              this.init()
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      } else if (type === 'change') {
+        this.$router.push('/order/orderUpdate/' + this.$route.params.id)
+      } else if (type === 'showCanclePopup') {
+        this.getMaterialOrderAndProduct()
+      } else if (type === 'cancle') {
+        let flag = {
+          name: true,
+          color: true,
+          size: true,
+          number: true,
+          stock: true
+        }
+        let yarnData = this.cancleYarn.filter(item => item.material_name || item.color || item.weight).map(item => {
+          if (!item.material_name) {
+            flag.name = false
+          }
+          if (!item.color) {
+            flag.color = false
+          }
+          if (!this.yarnStockId) {
+            flag.stock = false
+          }
+          if (!item.number) {
+            flag.weight = false
+          }
+          return {
+            material_name: item.material_name,
+            color_code: item.color,
+            stock_id: this.yarnStockId,
+            type: 1,
+            vat_code: '',
+            attribute: '',
+            weight: item.weight,
+            company_id: window.sessionStorage.getItem('company_id'),
+            desc: '订单结余入库'
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的原料仓库')
+          return
+        }
+        if (!flag.name) {
+          this.$message.error('请填写您需要入库的原料')
+          return
+        }
+        if (!flag.color) {
+          this.$message.error('请填写您需要入库的原料属性')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写您需要入库的原料数量')
+          return
+        }
+        let materialData = this.cancleMaterial.filter(item => item.material_name || item.color || item.weight).map(item => {
+          if (!item.material_name) {
+            flag.name = false
+          }
+          if (!item.color) {
+            flag.color = false
+          }
+          if (!this.materialStockId) {
+            flag.stock = false
+          }
+          if (!item.number) {
+            flag.weight = false
+          }
+          return {
+            material_name: item.material_name,
+            color_code: item.color,
+            stock_id: this.materialStockId,
+            type: 2,
+            vat_code: '',
+            attribute: '',
+            weight: item.weight,
+            company_id: window.sessionStorage.getItem('company_id'),
+            desc: '订单结余入库'
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的辅料仓库')
+          return
+        }
+        if (!flag.name) {
+          this.$message.error('请填写您需要入库的辅料')
+          return
+        }
+        if (!flag.color) {
+          this.$message.error('请填写您需要入库的辅料属性')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写您需要入库的辅料数量')
+          return
+        }
+        let packData = this.canclePack.filter(item => item.material_name || item.size || item.number || item.attribute).map(item => {
+          if (!item.material_name) {
+            flag.name = false
+          }
+          if (!item.size) {
+            flag.size = false
+          }
+          if (!this.packStockId) {
+            flag.stock = false
+          }
+          if (!item.number) {
+            flag.number = false
+          }
+          return {
+            material_name: item.material_name,
+            size: item.size,
+            attribute: '',
+            stock_id: this.packStockId,
+            desc: '订单结余入库',
+            number: item.number,
+            action_type: 1
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的包装辅料仓库')
+          return
+        }
+        if (!flag.name) {
+          this.$message.error('请填写您需要入库的包装辅料')
+          return
+        }
+        if (!flag.size) {
+          this.$message.error('请填写您需要入库的包装辅料规格')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请填写您需要入库的包装辅料数量')
+          return
+        }
+        let productData = this.canCleProduct.filter(item => Number(item.number)).map(item => {
+          if (!this.productStockId) {
+            flag.stock = false
+          }
+          return {
+            product_id: item.product_id,
+            color: item.color,
+            size: item.size,
+            order_code: this.orderInfo.order_code,
+            stock_number: item.number,
+            stock_id: this.productStockId,
+            reamrk: '订单结余入库'
+          }
+        })
+        if (!flag.stock) {
+          this.$message.error('请选择您需要入库的产品仓库')
+          return
+        }
+        this.isCommit = 'commit'
+        order.changeStatus({
+          order_id: this.$route.params.id,
+          type: 2,
+          product_data: productData,
+          material_data: yarnData.concat(materialData),
+          pack_material_data: packData
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.isCommit = 'compiled'
+            this.showCanclePopup++
+            this.init()
+          } else {
+            this.isCommit = 'error'
+          }
+        })
+      } else {
+        this.$message.warning('未知操作')
+      }
+    },
+    // 取消时初始化原料、辅料、包装和产品信息
+    getMaterialOrderAndProduct () {
+      this.loading = true
+      Promise.all([
+        materialManage.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        packPlan.packOrderLog({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        yarn.list(),
+        material.list(),
+        packag.list(),
+        stock.list()
+      ]).then(res => {
+        // 获取订购原料/辅料信息
+        let materialInfo = this.$mergeData(res[0].data.data, { mainRule: ['material_name', 'type', 'color_code/color'], otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }] }).map(item => {
+          return {
+            material_name: item.material_name,
+            type: item.type,
+            color: item.color,
+            weight: item.weight,
+            unit: item.unit
+          }
+        })
+        this.cancleYarn = materialInfo.filter(item => item.type === 1)
+        this.cancleMaterial = materialInfo.filter(item => item.type === 2)
+        // 获取包装订购信息
+        let packInfo = this.$mergeData(res[1].data.data.map(item => {
+          return {
+            material_name: item.material_name,
+            size: item.pack_size || JSON.parse(item.size).join('*'),
+            attribute: item.attribute,
+            number: item.number
+          }
+        }), { mainRule: ['material_name', 'size', 'attribute'], otherRule: [{ name: 'number', type: 'add' }] }).map(item => {
+          return {
+            material_name: item.material_name,
+            size: item.size,
+            attribute: item.attribute,
+            number: item.number
+          }
+        })
+        this.canclePack = packInfo
+        if (this.cancleYarn.length === 0) {
+          this.cancleYarn.push({
+            material_name: '',
+            type: 1,
+            color: '',
+            weight: '',
+            unit: ''
+          })
+        }
+        if (this.cancleMaterial.length === 0) {
+          this.cancleMaterial.push({
+            material_name: '',
+            type: 2,
+            color: '',
+            weight: '',
+            unit: ''
+          })
+        }
+        if (this.canclePack.length === 0) {
+          this.canclePack.push({
+            material_name: '',
+            size: '',
+            attribute: '',
+            number: ''
+          })
+        }
+        if (this.yarnList.length === 0) {
+          this.yarnList = res[2].data.data.map(item => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        if (this.materialList.length === 0) {
+          this.materialList = res[3].data.data.map(item => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        if (this.packList.length === 0) {
+          this.packList = res[4].data.data.map(item => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        if (this.stockList.length === 0) {
+          this.stockList = res[5].data.data.data
+        }
+        this.loading = false
+      })
+      let productInfo = this.$mergeData(this.$flatten(this.orderInfo.batch_info.map(itemBatch => {
+        return itemBatch.product_info.map(itemPro => {
+          return {
+            color: itemPro.color_name,
+            size: itemPro.size_name,
+            number: itemPro.numbers,
+            product_id: itemPro.product_info.product_id,
+            product_code: itemPro.product_code
+          }
+        })
+      })), { mainRule: ['product_id', 'product_code', 'size', 'color'], otherRule: [{ name: 'number', type: 'add' }] })
+      this.canCleProduct = productInfo.map(item => {
+        return {
+          product_code: item.product_code,
+          product_id: item.product_id,
+          size: item.size,
+          color: item.color,
+          number: item.number
+        }
+      })
+      this.showCanclePopup = 1
+    },
+    addItem (item, type) {
+      if (type === 'yarn') {
+        item.push({
+          material_name: '',
+          color: '',
+          type: 1,
+          unit: null,
+          weight: ''
+        })
+      } else if (type === 'material') {
+        item.push({
+          material_name: '',
+          color: '',
+          type: 2,
+          unit: '件',
+          weight: ''
+        })
+      } else if (type === 'pack') {
+        item.push({
+          material_name: '',
+          size: '',
+          number: '',
+          attribute: ''
+        })
+      }
+    },
+    deleteItem (item, index) {
+      item.splice(index, 1)
+    },
+    querySearchYarn (queryString, cb) {
+      var restaurants = this.yarnList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchMaterial (queryString, cb) {
+      var restaurants = this.materialList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    querySearchPack (queryString, cb) {
+      var restaurants = this.packList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    closePopup () {
+      this.showCanclePopup = false
+      this.isCommit = 'before'
+      this.yarnStockId = ''
+      this.materialStockId = ''
+      this.packStockId = ''
+      this.productStockId = ''
+      this.cancleYarn = []
+      this.cancleMaterial = []
+      this.canclePack = []
+      this.canCleProduct = []
     }
   },
   created () {
@@ -1420,7 +2071,6 @@ export default {
   },
   watch: {
     activeDetailTitle (newVal) {
-      console.log(newVal)
       if (this.orderDetailInfo[newVal].length === 0) {
         if (newVal === 'material') {
           this.getMaterialDetail()
@@ -1466,6 +2116,28 @@ export default {
   filters: {
     filterType (item) {
       return item.is_part ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
+    },
+    filterStatus (status) {
+      if (status === 2001) {
+        return '已创建'
+      } else if (status === 2002) {
+        return '进行中'
+      } else if (status === 2003) {
+        return '已取消'
+      } else if (status === 2004) {
+        return '已完成'
+      }
+    },
+    filterTitle (value) {
+      if (value === 1) {
+        return '-原料结余入库'
+      } else if (value === 2) {
+        return '-辅料结余入库'
+      } else if (value === 3) {
+        return '-包装结余入库'
+      } else if (value === 4) {
+        return '-产品结余入库'
+      }
     }
   }
 }
@@ -1473,4 +2145,15 @@ export default {
 
 <style scoped lang='less'>
 @import "~@/assets/less/order/orderDetail.less";
+</style>
+<style lang="less">
+#orderDetail {
+  .steps {
+    padding: 8px;
+    border-bottom: none;
+    .el-step__title {
+      font-size: 14px !important;
+    }
+  }
+}
 </style>

@@ -204,7 +204,8 @@
                     <el-dropdown-item @click.native="$router.push('/productPlan/productPlanCreate/'+ item.id + '/' + 2)">
                       <span class="create">添加配料单</span>
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/productPlan/productPlanDetail/'+ item.id + '/' + 2)">
+                    <el-dropdown-item v-if="item.has_plan"
+                      @click.native="$router.push('/productPlan/productPlanDetail/'+ item.id + '/' + 2)">
                       <span class="detail">配料单详情</span>
                     </el-dropdown-item>
                   </el-dropdown-menu>

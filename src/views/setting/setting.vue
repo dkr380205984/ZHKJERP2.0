@@ -2426,6 +2426,16 @@ export default {
     },
     updataYarn (type, item) {
       this.yarn_handle_type = type
+      if (type === 'add') {
+        this.changeYarnInfo = {
+          id: '',
+          yarnName: '',
+          yarnPriceArr: [{
+            price: '',
+            company: ''
+          }]
+        }
+      }
       this.showPopup = true
       if (item) {
         this.changeYarnInfo.yarnName = item.name

@@ -150,10 +150,10 @@
             <div class="col middle flex08">
               <span class="opr"
                 v-if="itemOrder.has_plan>0"
-                @click="$router.push('/materialPlan/materialPlanDetail/' + itemOrder.id + '/' + (orderType?'1':'2'))">详情</span>
+                @click="$router.push('/materialPlan/materialPlanDetail/' + itemOrder.id + '/' + (orderType ? 1 : 2))">详情</span>
               <span class="opr"
                 v-if="itemOrder.has_plan===0"
-                @click="$router.push('/materialPlan/materialPlanCreate/' + itemOrder.id + '/' + (orderType?'1':'2'))">添加</span>
+                @click="$router.push('/materialPlan/materialPlanCreate/' + itemOrder.id + '/' + (orderType ? 1 : 2))">添加</span>
             </div>
           </div>
         </div>
@@ -172,6 +172,7 @@
 </template>
 
 <script>
+import { chinaNum } from '@/assets/js/dictionary.js'
 import { order, group, client, sampleOrder } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
@@ -201,7 +202,8 @@ export default {
       has_materialPlan: '',
       searchCompanyFlag: false,
       searchGroupFlag: false,
-      searchStateFlag: false
+      searchStateFlag: false,
+      chinaNum: chinaNum
     }
   },
   watch: {

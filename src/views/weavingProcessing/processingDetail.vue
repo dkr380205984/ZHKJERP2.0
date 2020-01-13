@@ -341,7 +341,8 @@
                   </div>
                   <div class="tcolumn">
                     <span class="btn noBorder"
-                      style="padding:0;margin:0">打印</span>
+                      style="padding:0;margin:0"
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=2&clientId=' + item.client_id)">打印</span>
                   </div>
                 </div>
               </div>
@@ -807,7 +808,7 @@ export default {
       })
       this.processArr = res[3].data.data
       this.process_log = res[4].data.data
-      this.process_detail = this.$mergeData(this.process_log, { mainRule: 'client_name' })
+      this.process_detail = this.$mergeData(this.process_log, { mainRule: ['client_name', 'client_id'] })
       // 根据分配日志统计一下分配数量
       this.process_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {

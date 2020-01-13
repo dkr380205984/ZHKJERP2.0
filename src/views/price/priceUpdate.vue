@@ -1726,10 +1726,8 @@ export default {
       //   }
       // }
       this.postData.token = res[7].data.data
+      this.getPriceInfo(this.$route.params.id)
     })
-  },
-  mounted () {
-    this.getPriceInfo(this.$route.params.id)
   },
   watch: {
     type: {

@@ -241,11 +241,11 @@
           </div>
           <div class="btn btnDashed bgBlue_page"
             v-if="actualPackingEditInfo.length === 0"
-            @click="addItem(actualPackingEditInfo,'actualPacking')">+添加运输单位</div>
+            @click="addItem(actualPackingEditInfo,'actualPacking')">+添加实际装箱</div>
           <div class="btn btnDashed"
             v-else
             @click="addItem(actualPackingEditInfo,'actualPacking')">
-            <div class="btn btnBlue">+添加运输单位</div>
+            <div class="btn btnBlue">+添加实际装箱</div>
           </div>
           <div class="btn btnDashed"
             v-show="actualPackingEditInfo.length > 0">
@@ -374,7 +374,7 @@
           </div>
           <div class="btn btnDashed bgBlue_page"
             v-if="actualPackingEditInfo.length === 0"
-            @click="addItem(actualPackingEditInfo,'actualPacking')">+添加运输单位</div>
+            @click="addItem(actualPackingEditInfo,'actualPacking')">+添加实际装箱</div>
           <div class="btn btnDashed"
             v-show="actualPackingEditInfo.length > 0">
             <div class="btn btnGreen"

@@ -1797,8 +1797,8 @@ export default {
           remark: '',
           sizeColor: item.category_info.size_measurement.map(itemSize => {
             return {
-              value: itemSize.measurement,
-              label: itemSize.measurement,
+              value: itemSize.size_name,
+              label: itemSize.size_name,
               children: item.category_info.color.map(itemColor => {
                 return {
                   value: itemColor.color_name,

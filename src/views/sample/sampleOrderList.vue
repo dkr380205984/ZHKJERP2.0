@@ -177,7 +177,7 @@
             <div class="col">
               <span class="text">交货时间</span>
             </div>
-            <div class="col">
+            <div class="col middle">
               <span class="text">操作</span>
             </div>
           </div>
@@ -212,17 +212,17 @@
               </div>
             </div>
             <div class="col">
-              <div :class="{'stateCtn':true, 'rowFlex':true, 'red':itemOrder.status === 3,'green':itemOrder.status === 2,'blue':itemOrder.status === 1}">
+              <div :class="{'stateCtn':true, 'rowFlex':true, 'red':itemOrder.status === 3003,'green':itemOrder.status === 3004,'blue':itemOrder.status === 3002,'orange':itemOrder.status === 3001}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.status=== 1 ? '进行中': itemOrder.status === 2 ? '已完成' : '已取消'}}</span>
+                <span class="name">{{itemOrder.status === 3001 ? '已创建' :itemOrder.status=== 3002 ? '进行中': itemOrder.status === 3004 ? '已完成' : '已取消'}}</span>
               </div>
             </div>
             <div class="col">
               {{itemOrder.deliver_time}}
             </div>
-            <div class="col">
+            <div class="col middle">
               <span class="opr"
-                @click="$router.push('/sample/sampleOrderDetail/' + itemOrder.id)">详情</span>
+                @click="$router.push('/sample/sampleOrderDetail/' + (itemOrder.pid || itemOrder.id))">详情</span>
               <span class="opr">
                 <el-dropdown @command="handleCommand($event,itemOrder.id)">
                   <span class="el-dropdown-link">
@@ -232,12 +232,6 @@
                     <el-dropdown-item command='change'>
                       <span class="updated">修改</span>
                     </el-dropdown-item>
-                    <!-- <el-dropdown-item command='materialCreate'>
-                      <span class="updated">添加物料计划单</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='materialDetail'>
-                      <span class="updated">物料计划单详情</span>
-                    </el-dropdown-item> -->
                     <el-dropdown-item command='delete'>
                       <span class="delete">删除</span>
                     </el-dropdown-item>
@@ -402,6 +396,7 @@ export default {
           })
           return {
             id: item.id,
+            pid: item.pid,
             order_code: item.title,
             client_name: item.client_name,
             image: img,
@@ -429,12 +424,8 @@ export default {
           sampleOrder.delete({
             id: id
           }).then(res => {
-            if (res.data.status) {
-              this.$message.success('删除成功')
-              setTimeout(() => {
-                window.location.reload()
-              }, 300)
-            }
+            this.$message.success('删除成功')
+            this.getOrderList()
           })
         }).catch(() => {
           this.$message({

@@ -238,6 +238,9 @@ const plugin = {
    *return:Number
    ***********************************/
   toFixedAuto: (number) => {
+    if (isNaN(Number(number))) {
+      return NaN
+    }
     if (!Number(number) && Number(number) !== 0) {
       throw new TypeError('Expect to get a number')
     }

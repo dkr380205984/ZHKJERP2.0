@@ -225,10 +225,27 @@
   .red{
     color: @red;
   }
+  .orange{
+    color: @orange;
+  }
   .right{
     text-align: right;
+  }
+  .center{
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .noBorder{
     border: none;
   }
+  .popup_info_page{
+    display: flex;
+    justify-content: space-between;
+    &>.elInput:nth-child(n+2){
+      margin-left: 24px;
+    }
+  }
+  
 }

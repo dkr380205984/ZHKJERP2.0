@@ -72,6 +72,10 @@ const routes = [
       name: '样品订单列表',
       component: () => import('../views/sample/sampleOrderList.vue')
     }, {
+      path: '/sample/sampleOrderDetailOld/:id',
+      name: '样品订单详情',
+      component: () => import('../views/sample/sampleOrderDetailOld.vue')
+    }, {
       path: '/sample/sampleOrderDetail/:id',
       name: '样品订单详情',
       component: () => import('../views/sample/sampleOrderDetail.vue')

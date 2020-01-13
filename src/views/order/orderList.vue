@@ -263,9 +263,9 @@
             </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'red':itemOrder.status === 3,'green':itemOrder.status === 2,'blue':itemOrder.status === 1}">
+                :class="{'red':itemOrder.status === 2003,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.status=== 1 ? '进行中': itemOrder.status === 2 ? '已完成' : '已取消'}}</span>
+                <span class="name">{{itemOrder.status === 2001 ? '已创建' : itemOrder.status=== 2002 ? '进行中': itemOrder.status === 2004 ? '已完成' : '已取消'}}</span>
               </div>
             </div>
             <div class="col">

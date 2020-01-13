@@ -346,6 +346,115 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showSampleOrderCreatePopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">快速添加样单</span>
+          <span class="el-icon-close"
+            @click="showSampleOrderCreatePopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">订单公司：</span>
+            <span class="info">
+              <el-select v-model="orderInfo.client_id"
+                placeholder="请选择订单公司"
+                @change="changeContacts">
+                <el-option v-for="item in clientList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">联系人：</span>
+            <span class="info">
+              <el-select v-model="orderInfo.contacts_id"
+                placeholder="请选择联系人">
+                <el-option v-for="item in contacts"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">打样类型：</span>
+            <span class="info">
+              <el-select v-model="orderInfo.type"
+                placeholder="请选择打样类型">
+                <el-option v-for="item in sampleTypeArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(item,index) in orderInfo.product_info">
+            <template v-for='(itemSize,indexSize) in item.size_info'>
+              <div class="row"
+                :key="index + 'size_color' + indexSize">
+                <span class="label">尺码颜色{{indexSize + 1}}：</span>
+                <span class="info info_page">
+                  <el-select v-model="itemSize.size"
+                    placeholder="请选择尺码"
+                    class="elInput"
+                    disabled>
+                    <el-option v-for="item in sizeInfo"
+                      :key="item.id"
+                      :label="item.size_name"
+                      :value="item.size_name">
+                    </el-option>
+                  </el-select>
+                  <el-select v-model="itemSize.color"
+                    class="elInput"
+                    placeholder="请选择颜色"
+                    disabled>
+                    <el-option v-for="item in colorInfo"
+                      :key="item.id"
+                      :label="item.color_name"
+                      :value="item.color_name">
+                    </el-option>
+                  </el-select>
+                </span>
+              </div>
+              <div class="row"
+                :key="index + 'number' + indexSize">
+                <span class="label">打样数量{{indexSize + 1}}：</span>
+                <span class="info">
+                  <zh-input v-model="itemSize.numbers"
+                    type='number'
+                    placeholder="请输入打样数量"></zh-input>
+                </span>
+              </div>
+
+            </template>
+          </template>
+          <div class="row">
+            <span class="label">完成日期：</span>
+            <span class="info">
+              <el-date-picker v-model="orderInfo.deliver_time"
+                style="width:100%"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="选择完成日期">
+              </el-date-picker>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showSampleOrderCreatePopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="createSampleOrder">确定</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -361,7 +470,7 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -405,7 +514,46 @@ export default {
         size: [{ size: '', weight: '', desc: '', number: '' }]
       }],
       // 配件类型从辅料里面选
-      materialArr: []
+      materialArr: [],
+      // 快速添加样单窗口数据
+      showSampleOrderCreatePopup: false,
+      orderInfo: {
+        client_id: '',
+        type: 0,
+        title: '',
+        order_time: this.$getTime(),
+        group_id: '',
+        contacts_id: '',
+        deliver_time: '',
+        desc: '',
+        product_info: []
+      },
+      activeId: '',
+      contacts: [],
+      clientList: [],
+      colorInfo: [],
+      sizeInfo: [],
+      sampleTypeArr: [// 继续打样信息
+        {
+          id: 0,
+          name: '开发样'
+        }, {
+          id: 1,
+          name: '修改样'
+        }, {
+          id: 2,
+          name: '销售样'
+        }, {
+          id: 3,
+          name: '确认样'
+        }, {
+          id: 4,
+          name: '产前样'
+        }, {
+          id: 5,
+          name: '大货样'
+        }
+      ]
     }
   },
   methods: {
@@ -634,15 +782,97 @@ export default {
       sample.create(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('保存成功')
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/sample/sampleDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新样品<span style="color:#1A95FF">' + res.data.data.sample_product_code + '</span>(' + res.data.data.category_name + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_name + ')'
-            this.msgSwitch = true
-          } else {
-            this.$router.push('/sample/sampleDetail/' + res.data.data.id)
-          }
+          this.$confirm('是否快速添加样单?', '提示', {
+            confirmButtonText: '是',
+            cancelButtonText: '否',
+            type: 'warning'
+          }).then(() => {
+            this.initCreateOrder(res.data.data)
+          }).catch(() => {
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/sample/sampleDetail/' + res.data.data.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新样品<span style="color:#1A95FF">' + res.data.data.sample_product_code + '</span>(' + res.data.data.category_name + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_name + ')'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/sample/sampleDetail/' + res.data.data.id)
+            }
+          })
         }
       })
+    },
+    initCreateOrder (info) {
+      this.showSampleOrderCreatePopup = true
+      console.log(info)
+      this.loading = true
+      let sizeInfo = []
+      info.size.forEach(itemSize => {
+        info.color.forEach(itemColor => {
+          sizeInfo.push({
+            size: itemSize.size_name,
+            color: itemColor.color_name,
+            numbers: ''
+          })
+        })
+      })
+      this.orderInfo.product_info = [
+        {
+          product_id: info.id,
+          size_info: sizeInfo
+        }
+      ]
+      this.orderInfo.title = info.name
+      this.sizeInfo = info.size
+      this.colorInfo = info.color
+      this.activeId = info.id
+      Promise.all([
+        client.list(),
+        auth.list()
+      ]).then(res => {
+        this.clientList = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
+        let flag = res[1].data.data.find(item => item.id === window.sessionStorage.getItem('user_id'))
+        if (flag) {
+          this.orderInfo.group_id = flag.group_id
+        }
+        this.loading = false
+      })
+    },
+    createSampleOrder () {
+      if (!this.orderInfo.client_id) {
+        this.$message.error('请选择订单公司')
+        return
+      }
+      if (!this.orderInfo.contacts_id) {
+        this.$message.error('请选择联系人')
+        return
+      }
+      if (!this.orderInfo.type && this.orderInfo.type !== 0) {
+        this.$message.error('请选择打样类型')
+        return
+      }
+      let flag = this.$flatten(this.orderInfo.product_info.map(item => {
+        return item.size_info.map(itemSize => itemSize.numbers)
+      }))
+      if (flag.filter(item => item).length === 0) {
+        this.$message.error('检测到未填写打样数量，如无需打样某款尺码颜色，可不填，但至少填写一个打样数量')
+        return
+      }
+      if (!this.orderInfo.deliver_time) {
+        this.$message.error('请选择样单完成日期')
+        return
+      }
+      sampleOrder.create(this.orderInfo).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加样单成功')
+          this.$router.push('/sample/sampleDetail/' + this.activeId)
+        }
+      })
+      console.log('验证完成')
+    },
+    changeContacts ($event) {
+      let flag = this.clientList.find(item => item.id === $event)
+      if (flag) {
+        this.contacts = flag.contacts
+      }
     }
   },
   watch: {
@@ -715,7 +945,8 @@ export default {
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list()]).then((res) => {
+      material.list()
+    ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
           value: item.id,

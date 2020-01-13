@@ -181,10 +181,10 @@ export default {
         name: '库存管理',
         id: 12,
         icon: require('@/assets/image/index/库存管理.png'),
-        children: [{
-          name: '仓库列表',
-          url: '/stock/stockList/page=1&&keyword=&&type='
-        }]
+        url: '/stock/stockList/page=1&&keyword=&&type='
+        // children: [{
+        //   name: '仓库列表',
+        // }]
       }, {
         name: '装箱管理',
         id: 7,

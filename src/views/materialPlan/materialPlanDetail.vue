@@ -133,7 +133,7 @@
               <span class="tcolumn">{{itemMa.color}}</span>
               <span class="tcolumn"
                 v-for="(itemSize,indexSize) in showSizeArr"
-                :key="indexSize">{{itemMa.type === 1 ? $toFixed(itemMa[itemSize]/1000) + 'kg' : $toFixed(itemMa[itemSize]) + itemMa.unit}}</span>
+                :key="indexSize">{{itemMa.type === 1 ? $toFixed(itemMa[itemSize]/1000 || 0) + 'kg' : $toFixed(itemMa[itemSize] || 0) + itemMa.unit}}</span>
             </span>
           </div>
         </div>
@@ -221,12 +221,15 @@ export default {
         // 初始化订单信息
         this.orderInfo = data.order_info
         // 处理计划数据
-        let planInfo = this.$clone(res.data.data.detail_data).map(itemPro => {
+        let planInfo = this.$clone(res.data.data.detail_data).sort((a, b) => {
+          return a.pid - b.pid
+        }).map(itemPro => {
           if (itemPro.pid === 0) {
             itemPro.pid = itemPro.product_id
           }
           return itemPro
         })
+        console.log(planInfo)
         this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], otherRule: [{ name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
         data.production_data.forEach(itemPro => {
           let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color === itemPro.color_name && valPro.size === itemPro.size_name)
