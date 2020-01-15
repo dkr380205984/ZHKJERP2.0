@@ -340,6 +340,10 @@ export default {
                   this.$router.push('/price/priceDetail/' + this.$route.params.id)
                 }
               })
+            } else {
+              this.checkFlag = false
+              this.$message.success('审核成功')
+              this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
           }
         })
@@ -366,6 +370,10 @@ export default {
                   this.$router.push('/price/priceDetail/' + this.$route.params.id)
                 }
               })
+            } else {
+              this.checkFlag = false
+              this.$message.success('审核成功')
+              this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
           }
         })
