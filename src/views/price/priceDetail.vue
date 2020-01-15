@@ -139,7 +139,7 @@
             v-for="(item,index) in price_info"
             :key="index">
             <span class="item_col flex_18">{{item.name}}</span>
-            <span class="item_col">{{item.number ? item.number + item.unit : '/'}}</span>
+            <span class="item_col">{{item.number ? item.number + (item.unit || '') : '/'}}</span>
             <span class="item_col">{{item.price ? item.price + '元' : '/'}}</span>
             <span class="item_col">{{item.sunhao ? item.sunhao + '%' : '/'}}</span>
             <span class="item_col flex_7">{{item.other ? item.other : '/'}}</span>
@@ -473,7 +473,7 @@ export default {
           }),
           ...JSON.parse(data.pack_material_info).map(item => {
             return {
-              name: item.name && item.name.length !== 0 ? item.name.join('/') : '包装',
+              name: item.name ? item.name : '包装',
               totalPrice: item.total_price || item.price
             }
           }),

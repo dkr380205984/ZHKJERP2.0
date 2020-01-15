@@ -98,7 +98,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{title}}</span>
+          <span class="title">{{titles}}</span>
           <span class="item">
             <span class="label">联系人：</span>
             {{user_name}}
@@ -123,7 +123,7 @@
         <div class="print_row posBottom">
           <div class="row_item center w180">备注</div>
           <div class="row_item left"
-            v-html="remark"></div>
+            v-html="remarks"></div>
         </div>
         <div class="print_row">
           <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '样'}}单号</div>
@@ -199,6 +199,8 @@ export default {
     return {
       title: '',
       remark: '',
+      titles: '',
+      remarks: '',
       user_name: window.sessionStorage.getItem('user_name'),
       qrCodeUrl: '',
       orderInfo: {},
@@ -226,10 +228,12 @@ export default {
         ]).then(res => {
           this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
           this.remark = res[0].data.data ? res[0].data.data.desc : ''
+          this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+          this.remarks = res[1].data.data ? res[1].data.data.desc : ''
           // 处理订单信息
-          this.orderInfo = res[1].data.data
+          this.orderInfo = res[2].data.data
           let productList = []
-          res[1].data.data.batch_info.forEach(itemBatch => {
+          res[2].data.data.batch_info.forEach(itemBatch => {
             itemBatch.product_info.forEach(itemPro => {
               let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
               if (!flag) {
@@ -238,7 +242,7 @@ export default {
             })
           })
           // 处理织造分配数据
-          let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+          let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
             let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
             let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
             return {
@@ -267,6 +271,9 @@ export default {
           print.detail({
             type: 2
           }),
+          print.detail({
+            type: 4
+          }),
           order.detail({
             id: this.$route.params.id
           }),
@@ -277,10 +284,12 @@ export default {
         ]).then(res => {
           this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
           this.remark = res[0].data.data ? res[0].data.data.desc : ''
+          this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+          this.remarks = res[1].data.data ? res[1].data.data.desc : ''
           // 处理订单信息
-          this.orderInfo = res[1].data.data
+          this.orderInfo = res[2].data.data
           let productList = []
-          res[1].data.data.batch_info.forEach(itemBatch => {
+          res[2].data.data.batch_info.forEach(itemBatch => {
             itemBatch.product_info.forEach(itemPro => {
               let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
               if (!flag) {
@@ -289,7 +298,7 @@ export default {
             })
           })
           // 处理织造分配数据
-          let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+          let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
             let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
             let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
             return {

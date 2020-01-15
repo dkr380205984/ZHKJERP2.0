@@ -12,20 +12,9 @@
               @change="changeRouter(1)"
               placeholder="输入编号按回车键查询">
             </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
             <div class="btn btnGray"
-              style="margin-left:0">重置</div>
+              style="margin-left:0"
+              @click="reset">重置</div>
           </div>
           <div class="rightCtn">
             <div class="btn btnWhiteBlue"
@@ -41,7 +30,29 @@
               <span class="text">客户简称</span>
             </div>
             <div class="col flex12">
-              <span class="text">客户类型</span>
+              <transition v-show="!searchTypeFlag"
+                name="el-zoom-in-bottom">
+                <span class="text">客户类型
+                  <i class="el-icon-search iconBtn"
+                    @click="searchTypeFlag=true"></i>
+                </span>
+              </transition>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchTypeFlag"
+                  class="filterBox">
+                  <el-select v-model="client_type"
+                    @change="changeRouter(1)"
+                    filterable
+                    clearable
+                    placeholder="筛选公司类型">
+                    <el-option v-for="(item,index) in companyType"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </div>
+              </transition>
             </div>
             <div class="col flex08">
               <span class="text">人员数量</span>
@@ -97,8 +108,8 @@ export default {
       loading: true,
       list: [],
       keyword: '',
-      date: '',
       client_type: '',
+      searchTypeFlag: false,
       pages: 1,
       total: 0,
       companyType: companyType
@@ -109,23 +120,19 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
-      if (params.date !== 'null' && params.date !== '') {
-        this.date = params.date.split(',')
-      } else {
-        this.date = ''
-      }
-      this.client_type = params.clientType
+      this.client_type = Number(params.clientType) || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&clientType=' + this.client_type)
+      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type)
     },
     getClientList () {
       this.loading = true
       client.list({
         limit: 10,
         page: this.pages,
-        keyword: this.keyword
+        keyword: this.keyword,
+        type: this.client_type
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data
@@ -139,6 +146,9 @@ export default {
         let flag = this.companyType.find(value => value.value === item)
         return flag.name || ''
       }).join(',')
+    },
+    reset () {
+      this.$router.push('/client/clientList/page=1&&keyword=&&clientType=')
     }
   },
   created () {

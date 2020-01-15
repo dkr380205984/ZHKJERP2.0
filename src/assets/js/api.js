@@ -159,13 +159,13 @@ const price = {
 //   list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
 // }
 // 配料单管理
-const planList = {
-  create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
-  delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
-  check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
-  detail_code: (params) => http.get(`${baseUrl}/material/match/card/product`, params),
-  list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
-}
+// const planList = {
+//   create: (params) => http.post(`${baseUrl}/product/quotation/save`, params, 'application/json'),
+//   delete: (params) => http.post(`${baseUrl}/product/quotation/delete`, params, 'application/json'),
+//   check: (params) => http.post(`${baseUrl}/product/quotation/check`, params, 'application/json'),
+//   detail_code: (params) => http.get(`${baseUrl}/material/match/card/product`, params),
+//   list: (params) => http.get(`${baseUrl}/yarn/price/list`, params)
+// }
 // 配料单管理
 const productPlan = {
   create: (params) => http.post(`${baseUrl}/material/match/card/save`, params, 'application/json'),
@@ -380,7 +380,7 @@ export {
   materialOrder,
   order,
   company,
-  planList,
+  // planList,
   productPlan,
   craftConfig,
   craft,

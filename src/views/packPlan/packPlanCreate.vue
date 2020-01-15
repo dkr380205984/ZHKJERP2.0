@@ -746,7 +746,8 @@ export default {
         this.lock = false
         packPlan.create(data).then(res => {
           if (res.data.status !== false) {
-            this.$message.success(this.activePlanId ? '修改' : '添加' + '成功')
+            this.$message.success((this.activePlanId ? '修改' : '添加') + '成功')
+            this.getInitPlanInfo()
             if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
               this.msgUrl = '/packPlan/packPlanCreate/' + this.$route.params.id
               this.msgContent = '<span style="color:#1A95FF">' + (this.activePlanId ? '修改' : '添加') + '</span>了一张新装箱计划单,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
@@ -809,11 +810,11 @@ export default {
       packag.list(),
       order.editDetail({
         id: this.$route.params.id
-      }),
-      packPlan.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
       })
+      // packPlan.detail({
+      //   order_id: this.$route.params.id,
+      //   order_type: 1
+      // })
     ]).then(res => {
       this.packList = res[0].data.data
       this.orderInfo = res[1].data.data

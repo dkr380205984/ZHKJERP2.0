@@ -244,7 +244,7 @@
                 <div class="menu">
                   <span v-if="detail.quotation_info.length===0"
                     class="opration"
-                    @click="noOpr">添加</span>
+                    @click="$router.push('/price/priceCreate?productId=' + $route.params.id + '&productType=1' )">添加</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
                     @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">预览</span>

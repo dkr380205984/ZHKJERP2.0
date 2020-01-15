@@ -315,7 +315,7 @@
               </div>
             </div>
           </template>
-          <template v-if="cName==='纱线名称'">
+          <template v-if="cName==='纱线原料'">
             <div class="flowerCtn">
               <div class="addBtn"
                 @click="updataYarn('add')"
@@ -970,10 +970,10 @@
           </div>
         </div>
       </template>
-      <template v-if="cName==='纱线名称'">
+      <template v-if="cName==='纱线原料'">
         <div class="main">
           <div class="title">
-            <div class="text">{{yarn_handle_type === 'add' ? '添加纱线名称' : '更新纱线信息'}}</div>
+            <div class="text">{{yarn_handle_type === 'add' ? '添加纱线原料' : '更新纱线信息'}}</div>
             <i class="el-icon-close"
               @click="showPopup=false"></i>
           </div>
@@ -1325,7 +1325,8 @@
         </div>
       </template>
       <template v-if="cName==='打印设置'">
-        <div class="main">
+        <div class="main"
+          style="width:800px">
           <div class="title">
             <div class="text">打印标题/备注修改-{{printEditInfo.name}}</div>
             <i class="el-icon-close"
@@ -1342,11 +1343,12 @@
             <div class="row">
               <div class="label">备注内容：</div>
               <div class="info">
-                <el-input type="textarea"
+                <div ref="editorPrint"></div>
+                <!-- <el-input type="textarea"
                   :autosize="{ minRows: 8, maxRows: 16}"
                   placeholder="请编辑备注内容"
                   v-model="printEditInfo.remark">
-                </el-input>
+                </el-input> -->
               </div>
             </div>
           </div>
@@ -1480,6 +1482,7 @@
 
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
+import E from 'wangeditor'
 import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag, print } from '@/assets/js/api.js'
 export default {
   data () {
@@ -1489,7 +1492,7 @@ export default {
       nav: {
         '产品设置': ['产品分类', '产品花型', '产品成分', '产品配色', '产品尺码'],
         '工艺单设置': ['边型', '机型', '组织法'],
-        '物料设置': ['纱线名称', '纱线颜色', '装饰辅料', '包装辅料'],
+        '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理'],
         '员工管理': ['员工帐号管理'],
@@ -1688,7 +1691,8 @@ export default {
       ],
       printEditPages: 1,
       printEditTotal: 9,
-      printEditInfo: {}
+      printEditInfo: {},
+      printEditor: ''
     }
   },
   watch: {
@@ -1711,7 +1715,7 @@ export default {
         this.getMachine()
       } else if (val === '组织法') {
         this.getMethods()
-      } else if (val === '纱线名称') {
+      } else if (val === '纱线原料') {
         this.getYarnName()
       } else if (val === '纱线颜色') {
         this.getYarnColor()
@@ -1731,6 +1735,29 @@ export default {
         this.getAuth()
       } else if (val === '打印设置') {
         this.getPrintList()
+      }
+    },
+    showPopup (val) {
+      if (val && this.cName === '打印设置') {
+        this.printEditor = new E(this.$refs.editorPrint)
+        console.log(this.printEditor.customConfig)
+        this.printEditor.customConfig.menus = [
+          'head', // 标题
+          'bold', // 粗体
+          'fontSize', // 字号
+          'fontName', // 字体
+          'italic', // 斜体
+          'underline', // 下划线
+          'foreColor', // 文字颜色
+          'backColor', // 背景颜色
+          'list', // 列表
+          'justify', // 对齐方式
+          'fullscreen' // 全屏
+        ]
+        this.printEditor.customConfig.onchange = (html) => {
+          this.content = html // 绑定当前逐渐地值
+        }
+        this.printEditor.create()
       }
     }
   },

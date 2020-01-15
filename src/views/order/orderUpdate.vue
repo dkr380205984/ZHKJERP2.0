@@ -506,7 +506,7 @@
                   <span>上传文件</span>
                 </div>
                 <div slot="tip"
-                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+                  class="el-upload__tip">上传的文件不可超过10M</div>
               </el-upload>
             </span>
           </div>
@@ -530,7 +530,7 @@
                   <span>上传文件</span>
                 </div>
                 <div slot="tip"
-                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+                  class="el-upload__tip">上传的文件不可超过10M</div>
               </el-upload>
             </span>
           </div>
@@ -554,7 +554,7 @@
                   <span>上传文件</span>
                 </div>
                 <div slot="tip"
-                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+                  class="el-upload__tip">上传的文件不可超过10M</div>
               </el-upload>
             </span>
           </div>
@@ -578,7 +578,7 @@
                   <span>上传文件</span>
                 </div>
                 <div slot="tip"
-                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+                  class="el-upload__tip">上传的文件不可超过10M</div>
               </el-upload>
             </span>
           </div>
@@ -729,15 +729,9 @@ export default {
       let fileNameLength = file.name.length// 取到文件名长度
       let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
       this.postData.key = Date.parse(new Date()) + '.' + fileFormat
-      const isJPG = file.type === 'image/jpeg'
-      const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 10
-      if (!isJPG && !isPNG) {
-        this.$message.error('图片只能是 JPG/PNG 格式!')
-        return false
-      }
       if (!isLt2M) {
-        this.$message.error('图片大小不能超过 10MB!')
+        this.$message.error('文件大小不能超过 10MB!')
         return false
       }
     },

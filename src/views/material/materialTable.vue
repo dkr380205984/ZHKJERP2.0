@@ -88,7 +88,7 @@ export default {
         order_id: this.$route.params.id
       }),
       print.detail({
-        type: this.$route.query.type === '1' ? (this.$route.params.type === '1' ? 3 : 4) : (this.$route.params.type === '1' ? 5 : 6)
+        type: this.$route.params.type === '1' ? 5 : 6
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data

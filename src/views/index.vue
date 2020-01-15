@@ -235,7 +235,7 @@ export default {
         name: '客户管理',
         id: 13,
         icon: require('@/assets/image/index/客户管理.png'),
-        url: '/client/clientList/page=1&&keyword=&&date==&&clientType='
+        url: '/client/clientList/page=1&&keyword=&&clientType='
       }]
     }
   },
