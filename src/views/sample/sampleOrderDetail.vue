@@ -35,11 +35,11 @@
                     class="elMenuItem"
                     v-if="sampleOrderInfo.status === 3002">待客户确认</el-menu-item>
                   <el-submenu index="1-2"
-                    class="elMenuItem">
+                    class="elMenuItem"
+                    v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">
                     <template slot="title">已确认</template>
                     <el-menu-item index="continue"
-                      class="elMenuItem"
-                      v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">继续打样</el-menu-item>
+                      class="elMenuItem">继续打样</el-menu-item>
                     <el-menu-item index="ok"
                       class="elMenuItem"
                       v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>

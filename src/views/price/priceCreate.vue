@@ -12,7 +12,12 @@
             :content="msgContent"></zh-message>
         </span>
         <span style="height:32px">
-          <el-select v-model="priceCode"
+          <el-autocomplete v-model="priceCode"
+            :fetch-suggestions="getPriceList"
+            placeholder="请输入报价单编号"
+            :trigger-on-focus="false"
+            @select="getPriceInfo($event.id)"></el-autocomplete>
+          <!-- <el-select v-model="priceCode"
             filterable
             remote
             reserve-keyword
@@ -25,7 +30,7 @@
               :label="item.quotation_code"
               :value="item.id">
             </el-option>
-          </el-select>
+          </el-select> -->
         </span>
       </div>
       <div class="editCtn hasBorderTop">
@@ -340,7 +345,8 @@
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
-                placeholder="请选择尺码颜色">
+                placeholder="请选择尺码颜色"
+                @change="getProductPlan(item.id,this.product_type ? 1 : 2,$event)">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -783,7 +789,6 @@
               <el-select v-model="item.name"
                 clearable
                 filterable
-                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择包装辅料">
@@ -871,6 +876,8 @@
               </zh-input>
             </span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">运输费用</span>
@@ -886,6 +893,8 @@
               </zh-input>
             </span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">产品成本价</span>
@@ -994,7 +1003,7 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
-            @click="this.$router.go(-1)">返回</div>
+            @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="verifyData">提交</div>
         </div>
@@ -1016,7 +1025,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price, sample } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1101,13 +1110,32 @@ export default {
     }
   },
   methods: {
-    getPriceList () {
+    // 获取配料单信息
+    getProductPlan (id, type, sizeInfo) {
+      productPlan.getByProduct({
+        product_type: type,
+        product_id: id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let flag = res.data.data.find(item => item.is_default)
+          let data = res.data.data.length === 1 ? res.data.data[0] : (flag || [])
+          console.log(data)
+        }
+      })
+    },
+    getPriceList (queryString, cb) {
       price.list({
-        code: this.priceCode,
+        code: queryString,
         limit: 9999
       }).then(res => {
         if (res.data.status !== false) {
-          this.priceList = res.data.data
+          this.priceList = res.data.data.map(item => {
+            return {
+              value: item.quotation_code,
+              id: item.id
+            }
+          })
+          cb(this.priceList)
         }
       })
     },
@@ -1255,7 +1283,7 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.productList = res.data.data.map(item => {
-              if (this.checkedProList.find(vals => vals.id === item.id)) {
+              if (this.checkedProList.find(vals => Number(vals.id) === Number(item.id))) {
                 return { ...item, checked: true, product_type: 1 }
               } else {
                 return { ...item, checked: false, product_type: 1 }
@@ -1269,7 +1297,7 @@ export default {
         sample.list({
           limit: 5,
           page: this.pages,
-          sample_product_code: this.searchCode,
+          product_code: this.searchCode,
           category_id: this.category_id,
           type_id: this.type_id,
           style_id: this.style_id,
@@ -1282,7 +1310,7 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.productList = res.data.data.map(item => {
-              if (this.checkedProList.find(vals => vals.id === item.id)) {
+              if (this.checkedProList.find(vals => Number(vals.id) === Number(item.id))) {
                 return {
                   checked: true,
                   product_type: 2,
@@ -1360,63 +1388,63 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
-        planList.detail_code({
-          product_id: item.id
-        }).then(res => {
-          // if (res.data.status) {
-          //   res.data.data.material_data.forEach(item => {
-          //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-          //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-          //     let number = item.colour.reduce((totalColour, currentColour) => {
-          //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-          //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-          //           return totalSize + Number(currentSize.number)
-          //         }, 0)
-          //       }, 0)
-          //     }, 0)
-          //     if (!findedYarn && item.type === 0) {
-          //       if (this.priceInfo.raw_material[0].name) {
-          //         let obj = {
-          //           name: item.material,
-          //           price: '',
-          //           weight: number,
-          //           prop: '',
-          //           total_price: '',
-          //           disabled: true
-          //         }
-          //         this.checkedYarn(obj)
-          //         this.priceInfo.raw_material.push(obj)
-          //       } else {
-          //         this.priceInfo.raw_material[0].name = item.material
-          //         this.priceInfo.raw_material[0].weight = number
-          //         this.priceInfo.raw_material[0].disabled = true
-          //         this.checkedYarn(this.priceInfo.raw_material[0])
-          //       }
-          //     } else if (findedYarn && item.type === 0) {
-          //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-          //     }
-          //     if (!findedOther && item.type === 1) {
-          //       if (this.priceInfo.other_material[0].name) {
-          //         let obj = {
-          //           name: item.material,
-          //           price: '',
-          //           weight: number,
-          //           prop: '',
-          //           total_price: '',
-          //           disabled: true
-          //         }
-          //         this.priceInfo.other_material.push(obj)
-          //       } else {
-          //         this.priceInfo.other_material[0].name = item.material
-          //         this.priceInfo.other_material[0].weight = number
-          //         this.priceInfo.other_material[0].disabled = true
-          //       }
-          //     } else if (findedOther && item.type === 1) {
-          //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-          //     }
-          //   })
-          // }
-        })
+        // planList.detail_code({
+        //   product_id: item.id
+        // }).then(res => {
+        //   // if (res.data.status) {
+        //   //   res.data.data.material_data.forEach(item => {
+        //   //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
+        //   //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
+        //   //     let number = item.colour.reduce((totalColour, currentColour) => {
+        //   //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
+        //   //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
+        //   //           return totalSize + Number(currentSize.number)
+        //   //         }, 0)
+        //   //       }, 0)
+        //   //     }, 0)
+        //   //     if (!findedYarn && item.type === 0) {
+        //   //       if (this.priceInfo.raw_material[0].name) {
+        //   //         let obj = {
+        //   //           name: item.material,
+        //   //           price: '',
+        //   //           weight: number,
+        //   //           prop: '',
+        //   //           total_price: '',
+        //   //           disabled: true
+        //   //         }
+        //   //         this.checkedYarn(obj)
+        //   //         this.priceInfo.raw_material.push(obj)
+        //   //       } else {
+        //   //         this.priceInfo.raw_material[0].name = item.material
+        //   //         this.priceInfo.raw_material[0].weight = number
+        //   //         this.priceInfo.raw_material[0].disabled = true
+        //   //         this.checkedYarn(this.priceInfo.raw_material[0])
+        //   //       }
+        //   //     } else if (findedYarn && item.type === 0) {
+        //   //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
+        //   //     }
+        //   //     if (!findedOther && item.type === 1) {
+        //   //       if (this.priceInfo.other_material[0].name) {
+        //   //         let obj = {
+        //   //           name: item.material,
+        //   //           price: '',
+        //   //           weight: number,
+        //   //           prop: '',
+        //   //           total_price: '',
+        //   //           disabled: true
+        //   //         }
+        //   //         this.priceInfo.other_material.push(obj)
+        //   //       } else {
+        //   //         this.priceInfo.other_material[0].name = item.material
+        //   //         this.priceInfo.other_material[0].weight = number
+        //   //         this.priceInfo.other_material[0].disabled = true
+        //   //       }
+        //   //     } else if (findedOther && item.type === 1) {
+        //   //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
+        //   //     }
+        //   //   })
+        //   // }
+        // })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -1511,7 +1539,6 @@ export default {
       }
     },
     setCardData (item) {
-      console.log(item)
       return {
         product_code: item.product_code,
         img: item.images.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
@@ -1660,7 +1687,6 @@ export default {
     }
   },
   created () {
-    this.getList()
     Promise.all([
       client.list({
         company_id: this.companyId,
@@ -1727,10 +1753,83 @@ export default {
       // }
       this.postData.token = res[7].data.data
     })
+    this.product_type = this.$route.query.productType === '1' || !this.$route.query.productType
+    this.getList()
   },
   mounted () {
-    // let firstInput = document.getElementsByTagName('input')[0]
-    // firstInput.focus()
+    if (this.$route.query.productId && this.$route.query.productType) {
+      if (this.product_type) {
+        product.detail({
+          id: this.$route.query.productId
+        }).then(res => {
+          if (res.data.status !== false) {
+            let data = res.data.data
+            let sizeColorList = []
+            data.size.forEach(itemSize => {
+              data.color.forEach(itemColor => {
+                sizeColorList.push({
+                  id: itemSize.id + '/' + itemColor.id,
+                  sizeColor: itemSize.size_name + '/' + itemColor.color_name
+                })
+              })
+            })
+            let obj = {
+              checked: true,
+              category_info: data.category_info,
+              color: data.color,
+              flower_id: data.flower_id,
+              id: data.id,
+              images: data.image,
+              product_code: data.product_code,
+              product_type: 1,
+              showFlag: false,
+              size: data.size,
+              sizeColor: '',
+              sizeColorList: sizeColorList,
+              style_name: data.style_name,
+              type_name: data.type_name
+            }
+            this.checkedProList.push(obj)
+          }
+        })
+      } else {
+        sample.detail({
+          id: this.$route.query.productId
+        }).then(res => {
+          if (res.data.status !== false) {
+            let data = res.data.data
+            let sizeColorList = []
+            data.size.forEach(itemSize => {
+              data.color.forEach(itemColor => {
+                sizeColorList.push({
+                  id: itemSize.id + '/' + itemColor.id,
+                  sizeColor: itemSize.size_name + '/' + itemColor.color_name
+                })
+              })
+            })
+            let obj = {
+              checked: true,
+              category_info: {
+                product_category: data.category_name
+              },
+              color: data.color,
+              flower_id: data.flower_name,
+              id: data.id,
+              images: data.image,
+              product_code: data.sample_product_code,
+              product_type: 2,
+              showFlag: false,
+              size: data.size,
+              sizeColor: '',
+              sizeColorList: sizeColorList,
+              style_name: data.style_name,
+              type_name: data.type_name
+            }
+            this.checkedProList.push(obj)
+          }
+        })
+      }
+    }
   },
   watch: {
     type: {

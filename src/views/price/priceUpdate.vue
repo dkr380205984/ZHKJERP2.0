@@ -783,7 +783,6 @@
               <el-select v-model="item.name"
                 clearable
                 filterable
-                multiple
                 allow-create
                 default-first-option
                 placeholder="请选择包装辅料">
@@ -871,6 +870,8 @@
               </zh-input>
             </span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">运输费用</span>
@@ -886,6 +887,8 @@
               </zh-input>
             </span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">产品成本价</span>
@@ -994,7 +997,7 @@
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
-            @click="this.$router.go(-1)">返回</div>
+            @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="verifyData">提交</div>
         </div>
@@ -1016,7 +1019,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, planList, price, sample } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1269,7 +1272,7 @@ export default {
         sample.list({
           limit: 5,
           page: this.pages,
-          sample_product_code: this.searchCode,
+          product_code: this.searchCode,
           category_id: this.category_id,
           type_id: this.type_id,
           style_id: this.style_id,
@@ -1360,63 +1363,6 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
-        planList.detail_code({
-          product_id: item.id
-        }).then(res => {
-          // if (res.data.status) {
-          //   res.data.data.material_data.forEach(item => {
-          //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-          //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-          //     let number = item.colour.reduce((totalColour, currentColour) => {
-          //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-          //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-          //           return totalSize + Number(currentSize.number)
-          //         }, 0)
-          //       }, 0)
-          //     }, 0)
-          //     if (!findedYarn && item.type === 0) {
-          //       if (this.priceInfo.raw_material[0].name) {
-          //         let obj = {
-          //           name: item.material,
-          //           price: '',
-          //           weight: number,
-          //           prop: '',
-          //           total_price: '',
-          //           disabled: true
-          //         }
-          //         this.checkedYarn(obj)
-          //         this.priceInfo.raw_material.push(obj)
-          //       } else {
-          //         this.priceInfo.raw_material[0].name = item.material
-          //         this.priceInfo.raw_material[0].weight = number
-          //         this.priceInfo.raw_material[0].disabled = true
-          //         this.checkedYarn(this.priceInfo.raw_material[0])
-          //       }
-          //     } else if (findedYarn && item.type === 0) {
-          //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-          //     }
-          //     if (!findedOther && item.type === 1) {
-          //       if (this.priceInfo.other_material[0].name) {
-          //         let obj = {
-          //           name: item.material,
-          //           price: '',
-          //           weight: number,
-          //           prop: '',
-          //           total_price: '',
-          //           disabled: true
-          //         }
-          //         this.priceInfo.other_material.push(obj)
-          //       } else {
-          //         this.priceInfo.other_material[0].name = item.material
-          //         this.priceInfo.other_material[0].weight = number
-          //         this.priceInfo.other_material[0].disabled = true
-          //       }
-          //     } else if (findedOther && item.type === 1) {
-          //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-          //     }
-          //   })
-          // }
-        })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -1588,6 +1534,7 @@ export default {
       this.checkedProList.forEach((item) => {
         quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
       })
+      quotationCode += this.$route.params.id
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
       price.create({
         id: this.$route.params.id,
@@ -1711,22 +1658,12 @@ export default {
       })
       this.flowerArr = res[2].data.data
       this.groupArr = res[3].data.data
-      // this.yarnPriceList = res[4].data.data
       this.yarn_list = res[4].data.data.map(item => { return { value: item.name, priceArr: item.price } })
       this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
-      this.loading = false
-      // if (this.$route.fullPath.split('?')[1]) {
-      //   let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
-      //   if (hasProFlag) {
-      //     hasProFlag.checked = true
-      //     this.getProduct(true, this.$route.fullPath.split('?')[1])
-      //   } else {
-      //     this.getProductFId(this.$route.fullPath.split('?')[1])
-      //   }
-      // }
       this.postData.token = res[7].data.data
       this.getPriceInfo(this.$route.params.id)
+      this.loading = false
     })
   },
   watch: {

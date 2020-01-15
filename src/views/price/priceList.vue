@@ -293,7 +293,7 @@ export default {
     // 更新筛选条件
     getFilters () {
       let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.pages = Number(params.page)
       this.keyword = params.keyword
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
@@ -313,7 +313,7 @@ export default {
     this.getList()
     client.list({}).then(res => {
       if (res.data.status) {
-        this.clientArr = res.data.data.map(item => {
+        this.clientArr = res.data.data.filter(item => item.type.indexOf(1) !== -1).map(item => {
           return {
             name: item.name,
             id: item.id
@@ -339,7 +339,7 @@ export default {
     }
   },
   watch: {
-    page (newVal) {
+    pages (newVal) {
       this.changeRouter(newVal)
     },
     $route (newVal) {
