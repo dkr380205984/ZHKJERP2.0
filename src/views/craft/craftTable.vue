@@ -120,8 +120,10 @@
                   <span class="print_row h31">
                     <span v-for="(item,index) in mergeSpan(warp_data,5,'warp_rank','merge_data')"
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
-                      :key="index">{{item.value}}</span>
-                    <span class="row_item_span"
+                      :key="index"
+                      :style="{'min-width':item.colspan * (100 / 16) + '%'}">{{item.value}}</span>
+                    <span class="
+                      row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
                       :key="item + 'false'"></span>
                   </span>
@@ -315,7 +317,8 @@
                   <span class="print_row h31">
                     <span v-for="(item,index) in mergeSpan(weft_data,5,'weft_rank','merge_data')"
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
-                      :key="index">{{item.vlue}}</span>
+                      :key="index"
+                      :style="{'min-width':item.colspan * (100 / 16) + '%'}">{{item.value}}</span>
                     <span class="row_item_span"
                       v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
                       :key="item + 'false'"></span>

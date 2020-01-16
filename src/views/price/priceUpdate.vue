@@ -1215,6 +1215,7 @@ export default {
             style_name: vals.product_info.style_name,
             color: vals.product_info.color,
             size: vals.size_measurement,
+            product_type: vals.product_info.product_type,
             checked: true
           }
         })

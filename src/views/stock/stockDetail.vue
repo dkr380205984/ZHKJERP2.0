@@ -37,7 +37,7 @@
       </div>
     </div>
     <!-- 原料仓库信息 -->
-    <template v-if="stockInfo.type.indexOf(1) !== -1">
+    <template v-if="stockInfo.type === 1">
       <div class="module">
         <div class="titleCtn">
           <div class="title">原料库存信息</div>
@@ -273,7 +273,7 @@
       </div>
     </template>
     <!-- 辅料仓库信息 -->
-    <template v-else-if="stockInfo.type.indexOf(2) !== -1">
+    <template v-else-if="stockInfo.type === 2">
       <div class="module">
         <div class="titleCtn">
           <div class="title">辅料库存信息</div>
@@ -508,7 +508,7 @@
       </div>
     </template>
     <!-- 包装仓库信息 -->
-    <template v-else-if="stockInfo.type.indexOf(3) !== -1">
+    <template v-else-if="stockInfo.type === 3">
       <div class="module">
         <div class="titleCtn">
           <div class="title">辅料库存信息</div>
@@ -750,7 +750,7 @@
       </div>
     </template>
     <!-- 产品仓库信息 -->
-    <template v-else-if="stockInfo.type.indexOf(4) !== -1">
+    <template v-else-if="stockInfo.type === 4">
       <div class="module">
         <div class="titleCtn">
           <div class="title">产品库存信息</div>
@@ -1100,7 +1100,7 @@ export default {
   },
   methods: {
     getListAndLog (type) {
-      if (type.indexOf(1) !== -1) {
+      if (type === 1) {
         this.getYarnList(1)
         this.getYarnLog(1)
         if (this.yarnColorList.length === 0) {
@@ -1123,7 +1123,7 @@ export default {
             }
           })
         }
-      } else if (type.indexOf(2) !== -1) {
+      } else if (type === 2) {
         this.getMaterialList(1)
         this.getMaterialLog(1)
         if (this.materialNameList.length === 0) {
@@ -1135,7 +1135,7 @@ export default {
             }
           })
         }
-      } else if (type.indexOf(3) !== -1) {
+      } else if (type === 3) {
         this.getPackList(1)
         this.getPackLog(1)
         if (this.packNameList.length === 0) {
@@ -1147,7 +1147,7 @@ export default {
             }
           })
         }
-      } else if (type.indexOf(4) !== -1) {
+      } else if (type === 4) {
         this.getProductList(1)
         this.getProductLog(1)
         if (this.productNameList.length === 0) {

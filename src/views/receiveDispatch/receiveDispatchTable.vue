@@ -3,7 +3,7 @@
     <div class="printTag center">
       <div class="tag_item">
         <!-- <span class="tag_label longWidht">订单号</span>： -->
-        <span class="tag_info">{{printInfo.order_code}}</span>
+        <span class="tag_info">{{order_code}}</span>
       </div>
       <div class="tag_item">
         <!-- <span class="tag_label longWidht">加工单位</span>： -->
@@ -40,11 +40,13 @@
 </template>
 
 <script>
-import { receive, dispatch } from '@/assets/js/api.js'
+import { receive, dispatch, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      printInfo: {}
+      qrCodeUrl: '',
+      printInfo: {},
+      order_code: ''
     }
   },
   methods: {
@@ -52,12 +54,16 @@ export default {
   },
   created () {
     if (this.$route.query.type === '1') {
-      receive.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        let receiveData = res.data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
-        console.log(receiveData)
+      Promise.all([
+        receive.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        order.detail({
+          id: this.$route.params.id
+        })
+      ]).then(res => {
+        let receiveData = res[0].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
         if (receiveData) {
           this.printInfo = {
             client_name: receiveData.client_name,
@@ -70,14 +76,32 @@ export default {
             unit: receiveData.category_info.unit
           }
         }
+        this.order_code = res[1].data.data.order_code
       })
     } else if (this.$route.query.type === '2') {
-      dispatch.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        let dispatchData = res.data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
-        console.log(dispatchData)
+      Promise.all([
+        dispatch.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        order.detail({
+          id: this.$route.params.id
+        })
+      ]).then(res => {
+        let dispatchData = res[0].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
+        if (dispatchData) {
+          this.printInfo = {
+            client_name: dispatchData.client_name,
+            product_code: dispatchData.product_code.code,
+            type: [dispatchData.category_info.category_name, dispatchData.category_info.type_name, dispatchData.category_info.style_name],
+            size: dispatchData.size,
+            color: dispatchData.color,
+            count: dispatchData.count,
+            number: dispatchData.number,
+            unit: dispatchData.category_info.unit
+          }
+        }
+        this.order_code = res[1].data.data.order_code
       })
     }
   },
