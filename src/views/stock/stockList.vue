@@ -41,19 +41,19 @@
             <div class="col flex12">{{item.name}}</div>
             <div class="col flex12">
               <div class='typeCtn active'
-                v-show="item.type.indexOf(1) !== -1">原</div>
+                v-show="item.type === 1">原</div>
               <div class='typeCtn active'
-                v-show="item.type.indexOf(2) !== -1">辅</div>
+                v-show="item.type === 2">辅</div>
               <div class='typeCtn active'
-                v-show="item.type.indexOf(3) !== -1">包</div>
+                v-show="item.type === 3">包</div>
               <div class='typeCtn active'
-                v-show="item.type.indexOf(4) !== -1">产</div>
+                v-show="item.type === 4">产</div>
               <!-- <div :class="{'typeCtn':true,'active':item.type.indexOf(1) !== -1}">原</div>
               <div :class="{'typeCtn':true,'active':item.type.indexOf(2) !== -1}">辅</div>
               <div :class="{'typeCtn':true,'active':item.type.indexOf(3) !== -1}">包</div>
               <div :class="{'typeCtn':true,'active':item.type.indexOf(4) !== -1}">产</div> -->
             </div>
-            <div class="col">{{'仓库管理员'}}</div>
+            <div class="col">{{item.attendant.map(item=>item.user_name).join(',')}}</div>
             <div class="col middle flex08">
               <template v-if="item.desc">
                 <el-popover placement="top"
@@ -90,7 +90,7 @@
         <div class="title">
           <span class="text">新增仓库</span>
           <span class="el-icon-close"
-            @click="showPopup = false"></span>
+            @click="closePopup"></span>
         </div>
         <div class="content">
           <div class="row">
@@ -141,8 +141,9 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showPopup = false">取消</div>
-          <div class="btn btnBlue">确定</div>
+            @click="closePopup">取消</div>
+          <div class="btn btnBlue"
+            @click="addStock">确定</div>
         </div>
       </div>
     </div>
@@ -178,6 +179,7 @@ export default {
       ],
       stockList: [],
       popupInfo: {
+        id: '',
         stockName: '',
         stockType: '',
         admin: [],
@@ -189,30 +191,70 @@ export default {
     }
   },
   methods: {
+    addStock () {
+      if (!this.popupInfo.stockName) {
+        this.$message.error('请输入仓库名称')
+        return
+      }
+      if (!this.popupInfo.stockType) {
+        this.$message.error('请输入仓库类型')
+        return
+      }
+      if (this.popupInfo.admin.length === 0) {
+        this.$message.error('请选择仓库管理员')
+        return
+      }
+      stock.create({
+        id: this.popupInfo.id,
+        name: this.popupInfo.stockName,
+        type: this.popupInfo.stockType,
+        attendant: this.popupInfo.admin,
+        desc: this.popupInfo.remark
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success((this.popupInfo.id ? '修改' : '添加') + '成功')
+          this.pages = 1
+          this.keyword = ''
+          this.showPopup = false
+          this.getStockList()
+        }
+      })
+    },
     getStockList () {
       stock.list().then(res => {
-        if (res.data.status) {
-          this.stockList = res.data.data.data
-          this.stockList.forEach(item => {
-            item.type = JSON.parse(item.type)
-          })
-        } else {
-          this.$message.error(res.data.message)
+        if (res.data.status !== false) {
+          this.stockList = res.data.data
+          this.total = res.data.meta.total
         }
         this.loading = false
       })
     },
     updatedStock (item) {
-      console.log(item)
+      this.popupInfo = {
+        id: item.id,
+        stockName: item.name,
+        stockType: item.type,
+        admin: item.attendant.map(items => items.user_id),
+        remark: item.desc
+      }
+      this.showPopup = true
+    },
+    closePopup () {
+      this.showPopup = false
+      this.popupInfo = {
+        id: '',
+        stockName: '',
+        stockType: '',
+        admin: [],
+        remark: ''
+      }
     }
   },
   created () {
     this.getStockList()
     auth.list().then(res => {
-      if (res.data.status) {
+      if (res.data.status !== false) {
         this.userList = res.data.data
-      } else {
-        this.$message.error(res.data.message)
       }
     })
   }

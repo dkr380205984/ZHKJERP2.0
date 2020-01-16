@@ -21,7 +21,7 @@
       <div class="close"
         @click.stop="isClickFlag = !isClickFlag">点此退出预览</div>
       <div class="zh_img_box">
-        <img :src="selfList[index].image_url || defaultImage"
+        <img :src="selfList[index].image_url || selfList[index].file_url || defaultImage"
           :onerror="defaultImg"
           class="screen_img">
         <div class="left handle_btn_item el-icon-arrow-left"

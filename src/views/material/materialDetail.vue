@@ -1713,7 +1713,7 @@ export default {
         }, 0))
       })
       this.stock_list = this.$mergeData(res[6].data.data.stock_info.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
-      this.processList = res[7].data.data
+      this.processList = res[7].data.data.filter(item => Number(item.type) === 1)
       this.process_log = res[8].data.data.filter(item => item.type === Number(this.type))
       this.process_info = this.$mergeData(this.process_log, { mainRule: 'client_name/client_name' })
       this.process_info.forEach((item) => {

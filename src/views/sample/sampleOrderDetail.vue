@@ -134,7 +134,7 @@
           <div class="thead">
             <span class="trow">
               <span class="tcolumn">样品编号</span>
-              <span class="tcolumn">产品图片</span>
+              <span class="tcolumn center">产品图片</span>
               <span class="tcolumn noPad flex2">
                 <span class="trow">
                   <span class="tcolumn">尺码/颜色</span>
@@ -154,8 +154,8 @@
                   <span>({{itemPro.product_info|filterType}})</span>
                 </div>
               </span>
-              <span class="tcolumn middle">
-                <span class="trow">
+              <span class="tcolumn ">
+                <span class="trow middle_page">
                   <zh-img-list :list="itemPro.product_info.images"></zh-img-list>
                 </span>
               </span>
@@ -178,49 +178,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module">
-      <div class="titleCtn">
-        <span class="title hasBorder">发货信息</span>
-      </div>
-      <div class="detailCtn">
-        <div class="rowCtn">
-          <div class="tableCtnLv2">
-            <span class="tb_header">
-              <span class="tb_row">发货日期</span>
-              <span class="tb_row tb_col flex6">
-                <span class="tb_col_item">
-                  <span class="tb_row">产品信息</span>
-                  <span class="tb_row middle">产品图片</span>
-                  <span class="tb_row">尺码/颜色</span>
-                  <span class="tb_row">发货数量</span>
-                  <span class="tb_row">单价</span>
-                  <span class="tb_row">总价</span>
-                </span>
-              </span>
-            </span>
-            <span class="tb_content"
-              v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
-              :key="indexBatch">
-              <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
-              <span class="tb_row tb_col flex6">
-                <span class="tb_col_item"
-                  v-for="(itemPro,indexPro) in itemBatch.product_info"
-                  :key="indexPro">
-                  <span class="tb_row">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
-                  <span class="tb_row middle">
-                    <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
-                  </span>
-                  <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
-                  <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tb_row">{{itemPro.unit_price + '元'}}</span>
-                  <span class="tb_row">{{(Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)}}元</span>
-                </span>
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">流程进度</span>
@@ -656,34 +613,6 @@
         </template>
       </div>
     </div>
-    <!-- 修改样品信息 -->
-    <!-- <div class="popup"
-      v-show="changeSamplePopup">
-      <div class="main">
-        <div class="title">
-          <span class="text">请选择需要修改的样品</span>
-          <span class="el-icon-close"
-            @click="closePopup"></span>
-        </div>
-        <div class="content">
-          <div class="row">
-            <el-radio-group v-model="changeSampleId"
-              class="col">
-              <el-radio v-for="(itemPro,indexPro) in productList"
-                class="elRadio"
-                :key='indexPro'
-                :label="itemPro.product_id">{{itemPro.product_code}}({{itemPro|filterType}})</el-radio>
-            </el-radio-group>
-          </div>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="changeSamplePopup = false">取消</div>
-          <div class="btn btnBlue"
-            @click="$openUrl('/sample/sampleUpdate/' + changeSampleId)">去修改</div>
-        </div>
-      </div>
-    </div> -->
     <!-- 转产品窗口 -->
     <div class="popup"
       v-show="changeSampleForProductPopup">
@@ -1092,27 +1021,35 @@
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
           <!-- </div> -->
         </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            v-if="showCanclePopup === 1 && isCommit"
-            @click="closePopup">取消</div>
-          <div class="btn btnGray"
-            v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
-            @click="showCanclePopup--">上一步</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup < 3"
-            @click="showCanclePopup++">下一步</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 3 && isCommit === 'before'"
-            @click="changeOrderStatus('cancle')">确定</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 3 && isCommit === 'error'"
-            @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 4 && isCommit === 'compiled'"
-            @click="closePopup">完成</div>
+        <div class="opr"
+          style="justify-content: space-between;">
+          <div>
+            <div class="btn btnGray"
+              @click="clearData(showCanclePopup)"
+              v-if='(showCanclePopup === 1 || showCanclePopup === 2)'>清空该页数据</div>
+          </div>
+          <div style="display:flex;">
+            <div class="btn btnGray"
+              v-if="showCanclePopup === 1"
+              @click="closePopup">取消</div>
+            <div class="btn btnGray"
+              v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+              @click="showCanclePopup--">上一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup < 3"
+              @click="showCanclePopup++">下一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 3 && isCommit === 'before'"
+              @click="changeOrderStatus('cancle')">确定</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 3 && isCommit === 'error'"
+              @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 4 && isCommit === 'compiled'"
+              @click="closePopup">完成</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1658,14 +1595,6 @@ export default {
           this.$message.info('已取消')
         })
       } else if (type === 'continue') {
-        // this.$confirm('是否修改样品信息?', '提示', {
-        //   confirmButtonText: '是',
-        //   cancelButtonText: '否',
-        //   type: 'warning'
-        // }).then(() => {
-        //   // 转产品执行
-        //   this.changeSamplePopup = true
-        // }).catch(() => {
         this.showChangeSampleOrderPopup = 1
         this.continueSampleInfo.product_info = this.$flatten(this.sampleOrderInfo.product_info.map(itemPro => {
           return {
@@ -1694,7 +1623,6 @@ export default {
             unit: itemPro.unit
           }
         })
-        // })
       } else if (type === 'continueSample') {
         if (this.continueSampleInfo.type !== 0 && !this.continueSampleInfo.type) {
           this.$message.error('请选择打样类型')
@@ -1820,32 +1748,6 @@ export default {
       } else if (type === 'ok') {
         this.changeSampleForProductPopup = 1
         this.isOkStatus = true
-        // this.$confirm('是否将样品转为产品?', '提示', {
-        //   confirmButtonText: '是',
-        //   cancelButtonText: '否',
-        //   type: 'warning'
-        // }).then(() => {
-        //   // 转产品执行
-        //   this.changeSampleForProductPopup = true
-        // }).catch(() => {
-        //   this.$confirm('此操作将改变该样单完成状态,并且会将所选中的样品转为产品（其默认配料单以及工艺单会转为该产品配料单以及工艺单），是否继续?', '提示', {
-        //     confirmButtonText: '是',
-        //     cancelButtonText: '否',
-        //     type: 'warning'
-        //   }).then(() => {
-        //     sampleOrder.changeStatus({
-        //       order_id: this.activeSampleOrderId,
-        //       type: 2
-        //     }).then(res => {
-        //       if (res.data.status !== false) {
-        //         this.init()
-        //         this.$message.success('修改样单状态为"客户已确认"成功')
-        //       }
-        //     })
-        //   }).catch(() => {
-        //     this.$message.info('已取消')
-        //   })
-        // })
       } else if (type === 'addOrder') {
         this.changeSampleForProductPopup = 1
         this.isOkStatus = false
@@ -2128,6 +2030,28 @@ export default {
       } else {
         this.showChangeSampleOrderPopup++
       }
+    },
+    // 取消样单时清空预加载数据
+    clearData (page) {
+      if (page === 1) {
+        this.yarnStockId = ''
+        this.cancleYarn = [{
+          material_name: '',
+          type: 1,
+          color: '',
+          weight: '',
+          unit: ''
+        }]
+      } else if (page === 2) {
+        this.materialStockId = ''
+        this.cancleMaterial = [{
+          material_name: '',
+          type: 2,
+          color: '',
+          weight: '',
+          unit: ''
+        }]
+      }
     }
   },
   created () {
@@ -2198,6 +2122,8 @@ export default {
         return '已确认'
       } else if (value === 5) {
         return '大货生产'
+      } else {
+        return '待确认'
       }
     },
     filterOrderType (value) {

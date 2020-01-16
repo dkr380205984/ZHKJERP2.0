@@ -1031,23 +1031,44 @@ export default {
       })
       if (this.$route.query.logId && this.$route.query.type === '1') {
         let flag = res[4].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
+        this.process_type = '出库'
+        this.process_flag = true
         if (flag) {
           this.process_data.push({
             client_id: '',
             colorSizeArr: [],
-            data: this.$getTime(flag.complete_time),
+            date: this.$getTime(flag.complete_time),
             desc: flag.desc,
             product_id: flag.product_id,
             product_info: [{
-              colorSize: [flag.size, flag.color],
+              colorSize: [flag.size, flag.color].join('/'),
               count: flag.count,
               number: flag.number
             }],
             production_type: flag.production_type
           })
+          this.selectProduct(flag.product_id, 0, 'process_data')
         }
       } else if (this.$route.query.logId && this.$route.query.type === '2') {
-
+        let flag = res[5].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
+        this.process_type = '入库'
+        this.process_flag = true
+        if (flag) {
+          this.process_data.push({
+            client_id: '',
+            colorSizeArr: [],
+            date: this.$getTime(flag.complete_time),
+            desc: flag.desc,
+            product_id: flag.product_id,
+            product_info: [{
+              colorSize: [flag.size, flag.color].join('/'),
+              count: flag.count,
+              number: flag.number
+            }],
+            production_type: flag.production_type
+          })
+          this.selectProduct(flag.product_id, 0, 'process_data')
+        }
       }
       this.loading = false
     })
