@@ -624,7 +624,9 @@ export default {
     })]).then((res) => {
       this.orderInfo = res[0].data.data
       this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
-      this.companyArr = res[2].data.data
+      this.companyArr = res[2].data.data.filter((item) => {
+        return item.type.indexOf(5) !== -1
+      })
       this.inspection_log = res[3].data.data
       this.inspection_log.forEach((item) => {
         let flag = false

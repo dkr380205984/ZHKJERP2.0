@@ -47,6 +47,7 @@
                     <el-select v-model="company_id"
                       @change="changeRouter(1)"
                       clearable
+                      filterable
                       placeholder="筛选公司">
                       <el-option v-for="(item,index) in companyArr"
                         :key="index"

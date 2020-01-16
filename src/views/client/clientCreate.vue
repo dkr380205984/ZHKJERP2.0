@@ -26,8 +26,9 @@
               <span class="text">客户名称</span>
             </span>
             <span class="content content_middle">
-              <zh-input v-model="client_name"
-                placeholder="请输入客户名称"></zh-input>
+              <el-autocomplete v-model="client_name"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入内容"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3"
@@ -242,6 +243,20 @@ export default {
       } else {
         this.$message.warning('请勿频繁操作')
       }
+    },
+    querySearchAsync (queryString, cb) {
+      client.list({
+        limit: 20,
+        page: 1,
+        keyword: queryString,
+        type: null
+      }).then(res => {
+        cb(res.data.data.map((item) => {
+          return {
+            value: item.name
+          }
+        }))
+      })
     }
   },
   mounted () {
