@@ -684,7 +684,8 @@ export default {
       material.list(),
       sample.editDetail({
         id: this.$route.params.id
-      })]).then((res) => {
+      })
+    ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
           value: item.id,
@@ -724,7 +725,7 @@ export default {
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
-          url: item.image_url
+          url: item.file_url
         }
       })
       this.size = productInfo.size.map(item => {

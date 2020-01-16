@@ -357,8 +357,11 @@
                     </div>
                     <div class="content">
                       <div class="content">
-                        <el-input :placeholder="'请输入'+process_type+'工序'"
-                          v-model="item.production_type"></el-input>
+                        <!-- <el-input :placeholder="'请输入'+process_type+'工序'"
+                          v-model="item.production_type"></el-input> -->
+                        <el-autocomplete v-model="item.production_type"
+                          :fetch-suggestions="querySearchProcess"
+                          :placeholder="'请输入'+process_type+'工序'"></el-autocomplete>
                       </div>
                     </div>
                   </div>
@@ -472,7 +475,7 @@
         <span class="title">产品出入库日志</span>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
             <div class="normalTb">
@@ -521,6 +524,65 @@
               </div>
             </div>
           </div>
+        </div> -->
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin:10px 32px">
+            <div class="tableCtnLv2">
+              <span class="tb_btn top_right">
+                <div class="btn noBorder"
+                  @click="printTag">打印收发标签</div>
+              </span>
+              <span class="tb_header">
+                <span class="tb_row"
+                  style="flex:0.4"></span>
+                <span class="tb_row"
+                  style="flex:1.2">操作日期</span>
+                <span class="tb_row">加工单位</span>
+                <span class="tb_row">收发类型</span>
+                <span class="tb_row"
+                  style="flex:1.8">产品信息</span>
+                <span class="tb_row">尺码颜色</span>
+                <span class="tb_row">件数</span>
+                <span class="tb_row">数量</span>
+                <span class="tb_row">备注</span>
+                <span class="tb_row">操作人</span>
+                <span class="tb_row middle">操作</span>
+              </span>
+              <span class="tb_content"
+                v-for="(item,index) in log"
+                :key="index">
+                <span class="tb_row"
+                  style="flex:0.4">
+                  <el-checkbox v-model="item.checked"
+                    @change="handleClickLog(item)"></el-checkbox>
+                </span>
+                <span class="tb_row"
+                  style="flex:1.2">{{$getTime(item.complete_time)}}</span>
+                <span class="tb_row">{{item.client_name}}</span>
+                <span class="tb_row">{{item.flag}}</span>
+                <span class="tb_row"
+                  style="flex:1.8">
+                  {{item.product_code.code}}
+                  <br />
+                  {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
+                </span>
+                <span class="tb_row">
+                  {{item.size}}
+                  <br />
+                  {{item.color}}
+                </span>
+                <span class="tb_row">{{item.count}}</span>
+                <span class="tb_row">{{item.number}}</span>
+                <span class="tb_row">{{item.desc}}</span>
+                <span class="tb_row">{{item.user_name}}</span>
+                <span class="tb_row middle">
+                  <span class="tb_handle_btn red"
+                    @click="deleteLog(item.id,item.flag,index)">删除</span>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -528,7 +590,7 @@
 </template>
 
 <script>
-import { order, weave, processing, client, receive, dispatch } from '@/assets/js/api.js'
+import { order, weave, processing, client, receive, dispatch, process } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -561,6 +623,26 @@ export default {
     }
   },
   methods: {
+    printTag () {
+      let flag = this.log.find(items => items.checked)
+      if (flag) {
+        this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + flag.id + '&type=' + (flag.flag === '入库' ? 1 : 2))
+      } else {
+        this.$message.warning('请勾选您需要打印成标签的日志')
+      }
+    },
+    handleClickLog (item) {
+      if (this.log.filter(items => items.checked).length > 1) {
+        item.checked = false
+        this.$message.warning('请勿勾选多个')
+      }
+    },
+    querySearchProcess (queryString, cb) {
+      var restaurants = this.processTypeList
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
     normalWeave (client, product, colorSize, number) {
       this.weave_flag = true
       this.weave_data.push({
@@ -893,7 +975,7 @@ export default {
     }), dispatch.detail({
       order_id: this.$route.params.id,
       order_type: 1
-    })]).then((res) => {
+    }), process.list()]).then((res) => {
       this.orderInfo = res[0].data.data
       this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       this.process_detail = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
@@ -907,10 +989,12 @@ export default {
       })
       res[4].data.data.forEach((item) => {
         item.flag = '入库'
+        item.checked = false
         this.log.push(item)
       })
       res[5].data.data.forEach((item) => {
         item.flag = '出库'
+        item.checked = false
         this.log.push(item)
       })
       this.weave_detail.forEach((item) => {
@@ -940,6 +1024,31 @@ export default {
           }, 0)
         })
       })
+      this.processTypeList = res[6].data.data.filter(item => item.type === 2).map(item => {
+        return {
+          value: item.name
+        }
+      })
+      if (this.$route.query.logId && this.$route.query.type === '1') {
+        let flag = res[4].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
+        if (flag) {
+          this.process_data.push({
+            client_id: '',
+            colorSizeArr: [],
+            data: this.$getTime(flag.complete_time),
+            desc: flag.desc,
+            product_id: flag.product_id,
+            product_info: [{
+              colorSize: [flag.size, flag.color],
+              count: flag.count,
+              number: flag.number
+            }],
+            production_type: flag.production_type
+          })
+        }
+      } else if (this.$route.query.logId && this.$route.query.type === '2') {
+
+      }
       this.loading = false
     })
   }

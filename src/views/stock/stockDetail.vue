@@ -104,6 +104,7 @@
                     filterable
                     default-first-option
                     clearable
+                    allow-create
                     placeholder="请选择需要操作的原料">
                     <el-option v-for="item in yarnNameList"
                       :key="item.id"

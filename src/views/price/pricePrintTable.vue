@@ -160,14 +160,15 @@
         <div class="print_row">
           <span class="row_item w180 center">产品信息</span>
           <span class="row_item col">
-            <div class="print_row flex3 noBorder">
+            <div class="print_row flex3 noBorder"
+              v-if="flie_url.length > 0">
               <span class="row_item center">
                 <zh-img-list :list='flie_url'></zh-img-list>
               </span>
             </div>
             <div v-for="(item,key) in product_info"
               :key="key"
-              class="print_row flex3">
+              :class="['print_row', 'flex3',(flie_url.length === 0 && key === 0) ? 'noBorder' : '']">
               <span class="row_item noBorder left">{{item.product_info.product_code}}</span>
               <span class="row_item noBorder left">{{item.product_info|filterType}}</span>
               <span class="row_item noBorder left">

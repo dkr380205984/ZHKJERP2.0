@@ -90,7 +90,7 @@
             </div>
             <div class="col flex16">
               <span class="text">
-                <span class="text">装箱计划</span>
+                <span class="text">包装订购进度</span>
               </span>
             </div>
             <div class="col">
@@ -116,9 +116,9 @@
             </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="itemOrder.order_pack_progress < 100 ? 'orange' : 'green'">
+                :class="itemOrder.pack_order_progress < 100 ? 'orange' : 'green'">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.order_pack_progress}}%</span>
+                <span class="name">{{itemOrder.pack_order_progress}}%</span>
               </div>
             </div>
             <div class="col">
@@ -126,10 +126,10 @@
             </div>
             <div class="col">
               <span class="opr"
-                v-if="itemOrder.order_pack_progress < 100"
+                v-if="itemOrder.pack_order_progress < 100"
                 @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">订购</span>
               <span class="opr"
-                v-if="itemOrder.order_pack_progress >= 100"
+                v-if="itemOrder.pack_order_progress >= 100"
                 @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">详情</span>
             </div>
           </div>

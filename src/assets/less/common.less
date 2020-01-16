@@ -1094,13 +1094,13 @@
   }
 }
 .printHtml{
+  color: #000;
   .printTable{
     page-break-after: always;
     padding: 30px 50px;
     height: auto;
     min-height: 1490px;
     width: 982px;
-    color: @font65;
     font-size: 18px;
     display: flex;
     flex-direction: column;
@@ -1188,6 +1188,16 @@
           &.posBottom{
             position: absolute;
             bottom: 0;
+            .remark_span{
+              display: inline-block;
+              height: 100%;
+              width: 100%;
+              line-height: 1.2em;
+              &.left{
+                padding-left: 24px;
+                box-sizing: border-box;
+              }
+            }
           }
         }
       }
@@ -1304,27 +1314,39 @@
     padding: 24px 36px;
     box-sizing: border-box;
     font-size: @fontMiddle;
-    color: @font65;
     overflow: hidden;
     line-height: 1em;
+    &.center>.tag_item{
+      justify-content: center;
+      &>.tag_info{
+        text-align: center;
+      }
+    }
     .tag_item{
       height: auto;
       margin-bottom: 8px;
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       &.col{
         flex-direction: column;
       }
       .tag_label{
-        width: 3em;
+        min-width: 3em;
         text-align: left;
+        &.longWidht{
+          min-width: 4em;
+          text-align: justify;
+          text-align-last: justify;
+        }
       }
       .tag_info{
-        flex: 1;
-        display: flex;
-        flex-wrap: wrap;
-        word-wrap: break-word;
+        // flex: 1;
+        // display: flex;
+        // flex-wrap: wrap;
+        width: 100%;
+        word-break: break-all;
+        
       }      
       .tag_qrCode{
         width: 90px;

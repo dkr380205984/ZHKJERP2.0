@@ -300,6 +300,10 @@ const routes = [
       path: '/other/sendMsg',
       name: '发通知',
       component: () => import('../views/other/sendMsg.vue')
+    }, {
+      path: '/tutorialSystem/tutorialSystem',
+      name: '系统教程',
+      component: () => import('../views/tutorialSystem/tutorialSystem.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -319,43 +323,47 @@ const routes = [
     component: () => import('../views/productPlan/productPlanTable.vue')
   }, {
     path: '/materialPlanTable/:id/:type/:params',
-    name: 'materialPlanTable',
+    name: '物料计划单',
     component: () => import('../views/materialPlan/materialPlanTable.vue')
   }, {
     path: '/materialOrderTable/:id',
-    name: 'materialOrderTable',
+    name: '物料预定购单',
     component: () => import('../views/materialOrder/materialOrderTable.vue')
   }, {
     path: '/materialStockLogTable/:id',
-    name: 'materialStockLogTable',
+    name: '物料出入库日志单',
     component: () => import('../views/materialOrder/materialStockLogTable.vue')
   }, {
     path: '/packOrderTable/:id',
-    name: 'packOrderTable',
+    name: '包装订购单',
     component: () => import('../views/packPlan/packOrderTable.vue')
   }, {
     path: '/replenishTable/:id/:type',
-    name: 'replenishTable',
+    name: '补纱单',
     component: () => import('../views/weavingProcessing/replenishTable.vue')
   }, {
     path: '/materialTable/:id/:orderType/:type',
-    name: 'materialTable',
+    name: '物料订购调取单',
     component: () => import('../views/material/materialTable.vue')
   }, {
     path: '/materialProcessTable/:id/:orderType/:type',
-    name: 'materialProcessTable',
+    name: '物料加工单',
     component: () => import('../views/material/materialProcessTable.vue')
   }, {
     path: '/packPlanTable/:id/:planId',
-    name: 'packPlanTable',
+    name: '包装计划单',
     component: () => import('../views/packPlan/packPlanTable.vue')
   }, {
     path: '/weaveTable/:id/:orderType',
-    name: 'weaveTable',
+    name: '生产加工单',
     component: () => import('../views/weavingProcessing/weaveTable.vue')
   }, {
+    path: '/receiveDispatchTable/:id',
+    name: '产品收发标签',
+    component: () => import('../views/receiveDispatch/receiveDispatchTable.vue')
+  }, {
     path: '/pricePrintTable/:id',
-    name: 'pricePrintTable',
+    name: '报价单',
     component: () => import('../views/price/pricePrintTable.vue')
   }
 ]

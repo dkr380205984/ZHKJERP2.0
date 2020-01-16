@@ -1613,7 +1613,7 @@ export default {
       // 生成产品报价单编号
       let quotationCode = ''
       this.checkedProList.forEach((item) => {
-        quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
+        quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
       price.create({

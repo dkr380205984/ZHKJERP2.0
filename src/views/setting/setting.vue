@@ -1326,13 +1326,14 @@
       </template>
       <template v-if="cName==='打印设置'">
         <div class="main"
-          style="width:800px">
+          style="width:600px;">
           <div class="title">
             <div class="text">打印标题/备注修改-{{printEditInfo.name}}</div>
             <i class="el-icon-close"
               @click="showPopup=false"></i>
           </div>
-          <div class="content">
+          <div class="content"
+            style="min-height:430px">
             <div class="row">
               <div class="label">打印单标题：</div>
               <div class="info">
@@ -1736,29 +1737,6 @@ export default {
       } else if (val === '打印设置') {
         this.getPrintList()
       }
-    },
-    showPopup (val) {
-      if (val && this.cName === '打印设置') {
-        this.printEditor = new E(this.$refs.editorPrint)
-        console.log(this.printEditor.customConfig)
-        this.printEditor.customConfig.menus = [
-          'head', // 标题
-          'bold', // 粗体
-          'fontSize', // 字号
-          'fontName', // 字体
-          'italic', // 斜体
-          'underline', // 下划线
-          'foreColor', // 文字颜色
-          'backColor', // 背景颜色
-          'list', // 列表
-          'justify', // 对齐方式
-          'fullscreen' // 全屏
-        ]
-        this.printEditor.customConfig.onchange = (html) => {
-          this.content = html // 绑定当前逐渐地值
-        }
-        this.printEditor.create()
-      }
     }
   },
   computed: {
@@ -1811,15 +1789,38 @@ export default {
   methods: {
     // 修改打印设置
     updatePrint (item) {
+      if (this.cName === '打印设置' && !this.printEditor) {
+        this.printEditor = new E(this.$refs.editorPrint)
+        this.printEditor.customConfig.menus = [
+          'head', // 标题
+          'bold', // 粗体
+          'fontSize', // 字号
+          'fontName', // 字体
+          'italic', // 斜体
+          'underline', // 下划线
+          'foreColor', // 文字颜色
+          'backColor', // 背景颜色
+          'list', // 列表
+          'justify', // 对齐方式
+          'fullscreen' // 全屏
+        ]
+        this.printEditor.customConfig.onchange = (html) => {
+          this.content = html // 绑定当前逐渐地值
+        }
+        this.printEditor.create()
+      }
       this.printEditInfo = this.$clone(item)
+      this.printEditor.txt.html(this.printEditInfo.remark)
       this.showPopup = true
     },
     savePrint () {
+      // console.log(this.printEditor.txt.html())
+      let remark = this.printEditor.txt.html()
       print.create({
         id: this.printEditInfo.id,
         type: this.printEditInfo.type,
         title: this.printEditInfo.title,
-        desc: this.printEditInfo.remark.replace(/\n/g, '<br/>')
+        desc: remark
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('设置成功')

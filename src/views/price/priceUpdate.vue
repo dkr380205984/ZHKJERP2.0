@@ -999,7 +999,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="verifyData">提交</div>
+            @click="canClick ? verifyData() : ()=>{return false}">提交</div>
         </div>
         <div class="priceCtn">
           <span class="title">总价：</span>
@@ -1026,6 +1026,7 @@ export default {
     return {
       loading: true,
       msgSwitch: false,
+      canClick: false,
       msgUrl: '',
       msgContent: '',
       client_id: '',
@@ -1121,6 +1122,7 @@ export default {
         id: id
       }).then(res => {
         let data = res.data.data
+        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
         this.client_id = data.client_id.toString()
         this.getContact()
         this.contact_id = data.client_contact
@@ -1218,9 +1220,11 @@ export default {
         })
         this.setNum = data.number
         this.setNumRemake = data.product_need_desc
-        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
         this.productDemand = data.product_need
         this.loading = false
+        setTimeout(() => {
+          this.canClick = true
+        }, 1000)
       })
     },
     getContact () {
@@ -1532,7 +1536,7 @@ export default {
       // 生成产品报价单编号
       let quotationCode = ''
       this.checkedProList.forEach((item) => {
-        quotationCode = quotationCode + item.product_code.slice(2, 5) + '-'
+        quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       quotationCode += this.$route.params.id
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
