@@ -20,7 +20,7 @@
       <div class="print_body hasPosBottom">
         <div class="print_row posBottom">
           <span class="row_item center w180">备注</span>
-          <span class="row_item left"
+          <span class="row_item left remark_span"
             v-html="remark"></span>
         </div>
         <div class="print_row has_marginBottom">

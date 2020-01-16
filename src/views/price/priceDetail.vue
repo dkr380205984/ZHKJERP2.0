@@ -425,7 +425,7 @@ export default {
             type_name: item.product_info.type_name,
             style_name: item.product_info.style_name,
             color: item.product_info.color.map(vals => vals.color_name),
-            size: item.product_info.size,
+            size: item.product_info.size_measurement,
             description: item.product_info.description
             // ...item
           }

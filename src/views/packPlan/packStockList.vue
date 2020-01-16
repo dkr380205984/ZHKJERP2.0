@@ -90,7 +90,7 @@
             </div>
             <div class="col flex16">
               <span class="text">
-                <span class="text">装箱计划</span>
+                <span class="text">实际装箱进度</span>
               </span>
             </div>
             <div class="col">
@@ -116,9 +116,9 @@
             </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.has_plan>0,'orange':itemOrder.has_plan===0}">
+                :class="{'orange':itemOrder.pack_real_progress>=0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.has_plan>0?'已创建':'待添加'}}</span>
+                <span class="name">{{(itemOrder.pack_real_progress || 0)}}%</span>
                 <!-- <div class="col flex12">
                   <div class="stateCtn rowFlex"
                     :class="itemOrder.product_push_progress < 100 ? 'orange' : 'green'">
@@ -132,11 +132,10 @@
             </div>
             <div class="col">
               <span class="opr"
-                v-if="itemOrder.has_plan>0"
                 @click="$router.push('/packPlan/packStock/' + itemOrder.id)">详情</span>
-              <span class="opr"
+              <!-- <span class="opr"
                 v-if="itemOrder.has_plan===0"
-                @click="$router.push('/packPlan/packStock/' + itemOrder.id)">添加</span>
+                @click="$router.push('/packPlan/packStock/' + itemOrder.id)">添加</span> -->
             </div>
           </div>
         </div>

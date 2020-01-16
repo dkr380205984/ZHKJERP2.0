@@ -182,7 +182,7 @@
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">预览</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="openWin('/craftTable/' + detail.craft_info[craft_index].id)">打印</span>
+                    @click="openWin('/craftTable/'+ $route.params.id + '/2/' + detail.craft_info[craft_index].id)">打印</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">详情</span>

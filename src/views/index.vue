@@ -193,10 +193,10 @@ export default {
         id: 8,
         icon: require('@/assets/image/index/织造加工管理.png'),
         children: [{
-          name: '织造分配列表',
+          name: '生产织造列表',
           url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }, {
-          name: '半成品加工分配列表',
+          name: '半成品加工列表',
           url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
         }]
       }, {
@@ -209,14 +209,6 @@ export default {
         id: 10,
         icon: require('@/assets/image/index/检验管理.png'),
         url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
-      }, {
-        name: '库存管理',
-        id: 12,
-        icon: require('@/assets/image/index/库存管理.png'),
-        url: '/stock/stockList/page=1&&keyword=&&type='
-        // children: [{
-        //   name: '仓库列表',
-        // }]
       }, {
         name: '装箱管理',
         id: 11,
@@ -231,6 +223,14 @@ export default {
           name: '装箱出库列表',
           url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }]
+      }, {
+        name: '库存管理',
+        id: 12,
+        icon: require('@/assets/image/index/库存管理.png'),
+        url: '/stock/stockList/page=1&&keyword=&&type='
+        // children: [{
+        //   name: '仓库列表',
+        // }]
       }, {
         name: '客户管理',
         id: 13,

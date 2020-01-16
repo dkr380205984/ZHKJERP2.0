@@ -209,7 +209,8 @@
           <span class="btn noBorder"
             style="padding-right:0">查看全部</span>
         </div>
-        <div class="line">
+        <div class="line"
+          @click="$openUrl('/tutorialSystem/tutorialSystem?queryString=怎样添加样品?')">
           <div class="number">1</div>
           <div class="text">怎样添加样品?</div>
         </div>
@@ -590,7 +591,9 @@ export default {
         page: 1,
         status: null,
         tag: null
-      }), indexCount.dispatchCount()]).then((res) => {
+      }),
+      indexCount.dispatchCount()
+    ]).then((res) => {
       this.msgList = res[0].data.data
       this.dispatchCount = res[1].data.data
     })

@@ -822,7 +822,7 @@ export default {
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(5) !== -1
       })
-      this.processArr = res[3].data.data
+      this.processArr = res[3].data.data.filter(item => item.type === 2)
       this.process_log = res[4].data.data
       this.process_detail = this.$mergeData(this.process_log, { mainRule: ['client_name', 'client_id'] })
       // 根据分配日志统计一下分配数量

@@ -28,7 +28,7 @@
       <div class="print_body hasPosBottom">
         <div class="print_row posBottom">
           <div class="row_item center w180">备注</div>
-          <div class="row_item left"
+          <div class="row_item left remark_span"
             v-html="remark"></div>
         </div>
         <div class="print_row">
@@ -122,7 +122,7 @@
       <div class="print_body hasPosBottom">
         <div class="print_row posBottom">
           <div class="row_item center w180">备注</div>
-          <div class="row_item left"
+          <div class="row_item left remark_span"
             v-html="remarks"></div>
         </div>
         <div class="print_row">

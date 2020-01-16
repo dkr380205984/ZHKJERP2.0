@@ -28,7 +28,7 @@
             <div class="sizeCtn"
               v-for="(value,index) in data.size"
               :key="index">
-              <span>{{value.measurement}}</span>
+              <span>{{value.size_name}}</span>
               (
               <span>{{value.size_info}}</span>
               <span>克重：{{value.weight}}g</span>

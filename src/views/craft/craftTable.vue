@@ -120,7 +120,7 @@
                   <span class="print_row h31">
                     <span v-for="(item,index) in mergeSpan(warp_data,5,'warp_rank','merge_data')"
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
-                      :key="index">{{item.vlue}}</span>
+                      :key="index">{{item.value}}</span>
                     <span class="row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
                       :key="item + 'false'"></span>
@@ -437,9 +437,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,3,'warp_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -453,9 +453,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,4,'warp_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -465,12 +465,13 @@
           <span class="print_row h31">
             <span v-for="(item,index) in mergeSpan(warp_data,5,'warp_rank','merge_data',splitData,indexs)"
               :class="{'row_item_span':true,'bgGray':item.isSplit}"
-              :key="index">
+              :key="index"
+              :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,5,'warp_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -508,9 +509,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,3,'warp_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -524,9 +525,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,4,'warp_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -536,12 +537,13 @@
           <span class="print_row h31">
             <span v-for="(item,index) in mergeSpan(warp_data,5,'warp_rank_back','merge_data_back',splitData,indexs)"
               :class="{'row_item_span':true,'bgGray':item.isSplit}"
-              :key="index">
+              :key="index"
+              :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(warp_data,5,'warp_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -578,9 +580,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,3,'weft_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -594,9 +596,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,4,'weft_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -606,12 +608,13 @@
           <span class="print_row h31">
             <span v-for="(item,index) in mergeSpan(weft_data,5,'weft_rank','merge_data',splitData,indexs)"
               :class="{'row_item_span':true,'bgGray':item.isSplit}"
-              :key="index">
+              :key="index"
+              :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,5,'weft_rank','merge_data',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -649,9 +652,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,3,'weft_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -665,9 +668,9 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,4,'weft_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -677,12 +680,13 @@
           <span class="print_row h31">
             <span v-for="(item,index) in mergeSpan(weft_data,5,'weft_rank_back','merge_data_back',splitData,indexs)"
               :class="{'row_item_span':true,'bgGray':item.isSplit}"
-              :key="index">
+              :key="index"
+              :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               {{item.value}}
               <!-- 箭头标识 -->
-              <span :class="['jiantou','left',(index === 0 && item.isSplit) ?'hiddle':'']"
+              <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(index === (mergeSpan(weft_data,5,'weft_rank_back','merge_data_back',splitData,indexs).length-1) && item.isSplit )?'hiddle':'']"
+              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
                 v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span>
             </span>
             <span class="row_item_span"
@@ -870,11 +874,19 @@ export default {
               row: val.row,
               rowspan: val.rowspan,
               split: true,
+              noLeftJianTou: true,
               value: val.value
             })
             val.colspan = i * 16 - val.col
             val.split = true
+            if (!val.noLeftJianTou) {
+              val.noRightJianTou = true
+            } else {
+              val.noLeftJianTou = false
+              val.noJianTou = true
+            }
           }
+          // console.log(JSON.stringify(val))
         })
       }
     },
@@ -888,14 +900,15 @@ export default {
         let val = isMergeData[ind]
         let mergeItem = mergeMethod.find(mergeItem => ind >= (mergeItem.col - (keys || 0) * 16) && ((mergeItem.col - (keys || 0) * 16) + mergeItem.colspan - 1) >= ind)
         if (mergeItem) {
-          mergeData.push({ value: mergeItem.value, colspan: mergeItem.colspan, isSplit: mergeItem.split })
+          // console.log(JSON.stringify(mergeItem))
+          mergeData.push({ value: mergeItem.value, colspan: mergeItem.colspan, isSplit: mergeItem.split, noLeftJianTou: mergeItem.noLeftJianTou, noRightJianTou: mergeItem.noRightJianTou, noJianTou: mergeItem.noJianTou })
           ind += (mergeItem.colspan - 1)
         } else {
           mergeData.push({ value: val, colspan: 1 })
         }
       }
-      if (index === 3) {
-        console.log(mergeData, isMergeData)
+      if (index === 5) {
+        console.log(mergeData)
       }
       return mergeData
     },
