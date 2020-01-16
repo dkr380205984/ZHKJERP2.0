@@ -234,7 +234,8 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn"
+            style="display:block">
             <div class="label">纹版图：</div>
             <div class="GLCtn"
               v-for="(item1,index1) in GL"

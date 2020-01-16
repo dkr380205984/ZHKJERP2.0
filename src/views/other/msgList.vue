@@ -28,6 +28,14 @@
               :max="99" />
           </span>
         </el-tab-pane>
+        <el-tab-pane name="审核">
+          <span slot="label">审核通知
+            <el-badge class="mark"
+              v-show="unread.check>0"
+              :value="unread.check"
+              :max="99" />
+          </span>
+        </el-tab-pane>
         <el-tab-pane name="公司">
           <span slot="label">公司通知
             <el-badge class="mark"
@@ -55,11 +63,11 @@
             :key="item.id">
             <div class="oneMsgLeft">
               <div class="oneMsgLine1">
+                <span class="mark"
+                  :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
                 <span class="oneMsgTitle"
                   @click="readMsg(item)"
                   :class="{'must':item.type==='紧急','normal':item.type==='普通','important':item.type==='重要'}">{{item.title}}</span>
-                <span class="mark"
-                  :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
               </div>
               <div class="oneMsgLine2">
                 <div class="oneMsgInfo"
@@ -102,7 +110,8 @@ export default {
         all: 0,
         tag: 0,
         company: 0,
-        system: 0
+        system: 0,
+        check: 0
       }
     }
   },
@@ -148,6 +157,8 @@ export default {
               this.unread.company--
             } else if (item.tag === '系统') {
               this.unread.system--
+            } else if (item.tag === '审核') {
+              this.unread.check--
             }
             this.unread.all--
           } else {
@@ -174,7 +185,8 @@ export default {
           this.msgList.forEach((item) => {
             item.status = 2
           })
-          this.unread = { all: 0,
+          this.unread = {
+            all: 0,
             tag: 0,
             company: 0,
             system: 0
@@ -204,9 +216,10 @@ export default {
       this.unread = {
         tag: data['工序'] || 0,
         system: data['系统'] || 0,
-        company: data['公司'] || 0
+        company: data['公司'] || 0,
+        check: data['审核'] || 0
       }
-      this.unread.all = this.unread['tag'] + this.unread['system'] + this.unread['company']
+      this.unread.all = this.unread['tag'] + this.unread['system'] + this.unread['company'] + this.unread['check']
     })
     this.getNotify()
   }

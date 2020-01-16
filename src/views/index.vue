@@ -19,7 +19,8 @@
             @click="$router.push('/equipment')"></i>
           <div class="msgCtn">
             <el-badge :is-dot="total>0">
-              <i class="el-icon-bell elIcon"></i>
+              <i class="el-icon-bell elIcon"
+                @click="$router.push('/other/msgList')"></i>
             </el-badge>
             <div class="msgTop"></div>
             <div class="msgBox">

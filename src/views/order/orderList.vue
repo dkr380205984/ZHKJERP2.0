@@ -334,11 +334,17 @@ export default {
         name: '全部',
         id: '0'
       }, {
-        name: '已取消',
+        name: '已创建',
         id: '1'
       }, {
-        name: '其他',
+        name: '进行中',
         id: '2'
+      }, {
+        name: '已完成',
+        id: '3'
+      }, {
+        name: '已取消',
+        id: '4'
       }],
       searchCompanyFlag: false,
       searchGroupFlag: false,

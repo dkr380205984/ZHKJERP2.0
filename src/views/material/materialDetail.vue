@@ -679,8 +679,7 @@
         </div>
       </div>
     </div>
-    <div class="module"
-      v-if="stock_list.length>0">
+    <div class="module">
       <div class="detailCtn"
         style="padding-top:0">
         <div class="swichCtn"
@@ -688,11 +687,15 @@
           <div class="swich"
             v-for="(item,index) in stock_list"
             :key="index"
-            @click="stockDefault=index"
+            @click="getNormalYarn(index)"
             :class="{'active':stockDefault===index}">{{item.material_name}}</div>
+          <div class="swich"
+            @click="getOtherYarn"
+            :class="{'active':otherYarnFlag}">所有库存物料</div>
         </div>
-        <div style="height:1px;background:#E9E9E9;margin-top:25px"></div>
-        <div class="rowCtn">
+        <div style="height:1px;background:#E9E9E9;margin-top:19px"></div>
+        <div class="rowCtn"
+          v-if="!otherYarnFlag">
           <div class="normalTb"
             style="width:100%">
             <div class="thead">
@@ -703,7 +706,8 @@
                 <div class="tcolumn">操作</div>
               </div>
             </div>
-            <div class="tbody">
+            <div class="tbody"
+              v-if="stock_list.length>0">
               <div class="trow"
                 v-for="(item,index) in stock_list[stockDefault].childrenMergeInfo"
                 :key="index">
@@ -716,6 +720,47 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="rowCtn"
+          style="display:block;overflow:hidden"
+          v-if="otherYarnFlag">
+          <div class="normalTb"
+            style="width:100%">
+            <div class="thead">
+              <div class="trow">
+                <div class="tcolumn">仓库名称</div>
+                <div class="tcolumn">物料名称</div>
+                <div class="tcolumn">{{type==='1'?'原料颜色':'辅料属性'}}</div>
+                <div class="tcolumn">库存数量</div>
+                <div class="tcolumn">操作</div>
+              </div>
+            </div>
+            <div class="tbody"
+              v-if="stock_list.length>0">
+              <div class="trow"
+                v-for="(item,index) in otherYarnStock"
+                :key="index">
+                <div class="tcolumn">{{item.stock_name}}</div>
+                <div class="tcolumn">{{item.material_name}}</div>
+                <div class="tcolumn">{{item.material_color}}</div>
+                <div class="tcolumn">{{item.total_weight}}</div>
+                <div class="tcolumn">
+                  <span class="blue"
+                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id,item.material_name)">调取</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pageCtn"
+            style="margin:20px;float:right">
+            <el-pagination background
+              :page-size="5"
+              layout="prev, pager, next"
+              :total="total"
+              :current-page.sync="pages"
+              @current-change="getOtherYarnList">
+            </el-pagination>
           </div>
         </div>
       </div>
@@ -913,6 +958,8 @@ import { order, materialPlan, client, materialManage, yarnColor, yarn, process, 
 export default {
   data () {
     return {
+      total: 0,
+      pages: 1,
       bushaFlag: false,
       msgSwitch: false,
       msgUrl: '',
@@ -971,7 +1018,9 @@ export default {
       replenishList: [],
       replenishFlag: false,
       replenishId: '', // 补纱flag为true时传replenishId
-      easyOrderFlag: false
+      easyOrderFlag: false,
+      otherYarnStock: [],
+      otherYarnFlag: false
     }
   },
   methods: {
@@ -1141,7 +1190,7 @@ export default {
         }
       }
     },
-    normalStock (stock, color, number, stockId) {
+    normalStock (stock, color, number, stockId, materialName) {
       this.stock_data = [{
         material_id: '',
         desc: '',
@@ -1153,7 +1202,7 @@ export default {
         stock_name: stock,
         weight: '',
         color: color,
-        name: this.stock_list[this.stockDefault].material_name
+        name: materialName || this.stock_list[this.stockDefault].material_name
       })
     },
     saveStock () {
@@ -1563,6 +1612,25 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    getNormalYarn (index) {
+      this.stockDefault = index
+      this.otherYarnFlag = false
+    },
+    // 选择其他库存物料
+    getOtherYarn () {
+      this.stockDefault = -1
+      this.otherYarnFlag = true
+    },
+    getOtherYarnList () {
+      yarnStock.list({
+        type: this.$route.params.type,
+        page: this.pages,
+        limit: 5
+      }).then((res) => {
+        this.otherYarnStock = res.data.data
+        this.total = res.data.meta.total
+      })
     }
   },
   created () {
@@ -1654,6 +1722,8 @@ export default {
         }, 0))
       })
       this.replenishList = res[9].data.data.filter(item => item.type === Number(this.type))
+      this.otherYarnStock = res[10].data.data
+      this.total = res[10].data.meta.total
       this.loading = false
     })
   }

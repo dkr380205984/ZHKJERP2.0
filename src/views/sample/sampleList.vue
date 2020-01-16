@@ -190,7 +190,7 @@
                     <el-dropdown-item @click.native="$router.push('/sample/sampleUpdate/'+ item.id)">
                       <span class="updated">修改样品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item>
+                    <el-dropdown-item @click.native="deleteSample(item.id)">
                       <span class="delete">删除样品</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.size.length===1"
@@ -365,6 +365,16 @@ export default {
     },
     reset () {
       this.$router.push('/sample/sampleList/page=&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation=')
+    },
+    deleteSample (id) {
+      sample.delete({
+        id: id
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('删除成功')
+          this.getList()
+        }
+      })
     }
   },
   created () {
