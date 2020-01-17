@@ -793,6 +793,7 @@
         <div class="print_body noBorder">
           <span class="print_row maxHeight noBorder canWarp">
             <span class="row_item noBorder"
+              style="flex:auto"
               v-for="(item,index) in craftDetail.draft_method.GL[indexs]"
               :key="index">
               <span class="index">{{index+1}}</span>
@@ -944,7 +945,12 @@ export default {
       product_type: this.$route.params.type
     }).then(res => {
       if (res.data.stauts !== false) {
-        let data = res.data.data.find(item => item.id === this.$route.params.craftId)
+        let data = null
+        if (this.$route.params.type === '1') {
+          data = res.data.data
+        } else {
+          data = res.data.data.find(item => item.id === this.$route.params.craftId)
+        }
         if (!data) {
           this.$message('未找到工艺单ID为' + this.$route.params.craftId + '的工艺单')
           return

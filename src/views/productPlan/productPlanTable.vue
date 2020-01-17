@@ -29,7 +29,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
+      <div class="print_body">
         <div class="print_row">
           <span class="row_item center w180">产品编号</span>
           <span class="row_item left">{{productInfo.product_code}}</span>
@@ -49,10 +49,6 @@
         <div class="print_row h120">
           <span class="row_item center w180">产品描述</span>
           <span class="row_item left">{{productInfo.description}}</span>
-        </div>
-        <div class="print_row posBottom">
-          <span class="row_item w180 center">备注</span>
-          <span class="row_item left"></span>
         </div>
         <template v-for="(item,index) in materialInfo">
           <div class="print_row bgGray"
@@ -79,6 +75,12 @@
             </span>
           </div>
         </template>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <span class="row_item w180 center">备注</span>
+          <span class="row_item left"></span>
+        </div>
       </div>
     </div>
   </div>

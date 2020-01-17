@@ -25,12 +25,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
-        <div class="print_row posBottom">
-          <div class="row_item center w180">备注</div>
-          <div class="row_item left remark_span"
-            v-html="remark"></div>
-        </div>
+      <div class="print_body">
         <div class="print_row">
           <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}单号</div>
           <div class="row_item left">{{orderInfo.order_code}}</div>
@@ -93,6 +88,17 @@
             </span>
           </div>
         </div>
+        <div class="print_row"
+          v-if="materialInfo.length === 0">
+          <span class="row_item center">暂无{{$route.query.type === '1' ? '原' : '辅'}}料</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <div class="row_item center w180">备注</div>
+          <div class="row_item left remark_span"
+            v-html="remark"></div>
+        </div>
       </div>
     </div>
     <div class="printTable">
@@ -119,12 +125,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
-        <div class="print_row posBottom">
-          <div class="row_item center w180">备注</div>
-          <div class="row_item left remark_span"
-            v-html="remarks"></div>
-        </div>
+      <div class="print_body">
         <div class="print_row">
           <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '样'}}单号</div>
           <div class="row_item left">{{orderInfo.order_code}}</div>
@@ -186,6 +187,17 @@
               <span class="row_item center">{{itemMa.material_type === 1 ? ($toFixed(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
             </span>
           </div>
+        </div>
+        <div class="print_row"
+          v-if="materialInfo.length === 0">
+          <span class="row_item center">暂无{{$route.query.type === '1' ? '原' : '辅'}}料</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <div class="row_item center w180">备注</div>
+          <div class="row_item left remark_span"
+            v-html="remarks"></div>
         </div>
       </div>
     </div>

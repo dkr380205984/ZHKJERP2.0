@@ -240,15 +240,15 @@
           <div class="btn_box">
             <div class="left">
               <div class="routerBtn"
-                @click="$router.push('/materialPlan/materialPlanDetail/'+ $route.params.id +'/2')">物料计划</div>
+                @click="$router.push('/materialPlan/materialPlanDetail/'+ activeSampleOrderId +'/2')">物料计划</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/2')">原料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/1/2')">原料订购加工</div>
               <div class="routerBtn"
-                @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/1/2')">原料出入库</div>
+                @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/1/2')">原料出入库</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/2')">辅料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/2/2')">辅料订购加工</div>
               <div class="routerBtn"
-                @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/2')">辅料出入库</div>
+                @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/2/2')">辅料出入库</div>
             </div>
             <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
@@ -292,9 +292,9 @@
           <div class="btn_box">
             <div class="left">
               <div class="routerBtn"
-                @click="$router.push('/weavingProcessing/weavingDetail/'+ $route.params.id +'/2')">生产织造</div>
+                @click="$router.push('/weavingProcessing/weavingDetail/'+ activeSampleOrderId +'/2')">生产织造</div>
               <div class="routerBtn"
-                @click="$router.push('/weavingProcessing/processingDetail/'+ $route.params.id +'/2')">半成品加工</div>
+                @click="$router.push('/weavingProcessing/processingDetail/'+ activeSampleOrderId +'/2')">半成品加工</div>
             </div>
             <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>
@@ -1167,7 +1167,8 @@ export default {
             ...item
           }
         })
-        this.cutSampleOrderInfo(sampleOrderInfo)
+        this.sampleOrderArr = this.sampleOrderArr.reverse()
+        this.cutSampleOrderInfo(this.sampleOrderArr[0])
         if (type === 'reset') {
           this.showChangeSampleOrderPopup++
           this.continueSampleInfo.product_info = this.$flatten(this.sampleOrderInfo.product_info.map(itemPro => {

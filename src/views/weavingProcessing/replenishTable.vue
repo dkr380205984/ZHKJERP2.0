@@ -19,7 +19,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
+      <div class="print_body">
         <div class="print_row">
           <span class="row_item center w180">订单号</span>
           <span class="row_item left">{{orderInfo.order_code}}</span>
@@ -31,10 +31,6 @@
           <span class="row_item left">{{orderInfo.client_name}}</span>
           <span class="row_item center w180">负责小组</span>
           <span class="row_item left">{{orderInfo.group_name}}</span>
-        </div>
-        <div class="print_row posBottom">
-          <span class="row_item center w180">备注</span>
-          <span class="row_item left"></span>
         </div>
         <template v-for="(item,index) in replenishInfo">
           <div class="print_row"
@@ -64,6 +60,12 @@
             </div>
           </template>
         </template>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <span class="row_item center w180">备注</span>
+          <span class="row_item left"></span>
+        </div>
       </div>
     </div>
   </div>

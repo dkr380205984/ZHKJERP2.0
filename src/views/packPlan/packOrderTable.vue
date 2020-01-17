@@ -25,7 +25,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
+      <div class="print_body">
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单号</span>
           <span class="row_item left">{{orderInfo.order_code}}</span>
@@ -44,11 +44,6 @@
           <span class="row_item center w180">创建人</span>
           <span class="row_item left">{{user_name}}</span>
         </div>
-        <div class="print_row posBottom">
-          <span class="row_item center w180">备注</span>
-          <span class="row_item left remark_span"
-            v-html="remark"></span>
-        </div>
         <div class="print_row bgGray">
           <span class="row_item left">包装辅料</span>
           <span class="row_item left">规格</span>
@@ -66,6 +61,13 @@
           <span class="row_item left">{{item.number}}{{item.unit || '个'}}</span>
           <span class="row_item left">{{item.price}}{{'元/' + (item.unit || '个') }}</span>
           <span class="row_item left">{{item.total_price}}元</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <span class="row_item center w180">备注</span>
+          <span class="row_item left remark_span"
+            v-html="remark"></span>
         </div>
       </div>
     </div>

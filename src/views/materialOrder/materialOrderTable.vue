@@ -24,7 +24,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
+      <div class="print_body">
         <div class="print_row">
           <span class="row_item center w180">订购公司</span>
           <span class="row_item left">{{orderDetail.client_name}}</span>
@@ -37,10 +37,6 @@
           <span class="row_item center w180">订单总价</span>
           <span class="row_item left">{{orderDetail.total_price}}元</span>
         </div>
-        <div class="print_row posBottom">
-          <span class="row_item center w180">备注</span>
-          <span class="row_item left">{{orderDetail.desc}}</span>
-        </div>
         <div class="print_row"
           v-for="(item,index) in orderDetail.material_info"
           :key="index">
@@ -49,6 +45,12 @@
           <span class="row_item noBorder flex04">{{item.color_code}}</span>
           <span class="row_item noBorder flex04">{{item.price}}元/kg</span>
           <span class="row_item noBorder flex04">{{item.weight}}kg</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <span class="row_item center w180">备注</span>
+          <span class="row_item left">{{orderDetail.desc}}</span>
         </div>
       </div>
     </div>

@@ -1,114 +1,4 @@
 <template>
-  <!-- <div id="productDesignWeavingTable"
-    @click.right="goTop"
-    v-loading='loading'>
-    <div class="head">
-      <div class="left">
-        <p class="company">{{company_name + '产品报价单'}}</p>
-        <span>报价单编号：{{price_code}}</span>
-        <span><span class="label">创建日期:</span>{{create_time}}</span>
-      </div>
-      <div class="right">
-        <img :src="qrCodeUrl"
-          alt=""
-          ref="qrcodeCanvas"
-          class="qrcode">
-        <div class="messages">
-          <span>扫一扫</span>
-          <span>查看电子文稿</span>
-        </div>
-      </div>
-    </div>
-    <div class="tableBox">
-      <div>
-        <span>
-          <span>创建人</span>
-          <span>{{create_user}}</span>
-          <span>共计报价</span>
-          <span>{{total_price}}</span>
-        </span>
-        <span>
-          <span>外贸公司</span>
-          <span>{{client_name}}</span>
-          <span>联系人</span>
-          <span>{{linkMan}}</span>
-        </span>
-      </div>
-      <div>
-        <span>
-          <span>结算单位</span>
-          <span>{{unit}}</span>
-          <span>汇率</span>
-          <span>{{exchange_rate}}</span>
-        </span>
-      </div>
-      <div>
-        <span>
-          <span>产品信息</span>
-          <span class="col">
-            <span v-for="(item,key) in product_info"
-              :key="key">
-              <span class="blue">{{item.product_info.product_code}}</span>
-              <span>{{item.product_info|filterType}}</span>
-            </span>
-          </span>
-          <span>产品需求</span>
-          <span>{{product_need}}</span>
-        </span>
-      </div>
-      <div>
-        <ul class="tables"
-          style="width:inherit">
-          <li class="title">
-            <span>名称</span>
-            <span>克重/数量</span>
-            <span>单价</span>
-            <span>损耗</span>
-            <span>其他</span>
-            <span>总价</span>
-          </li>
-          <li v-for="(item,key) in info"
-            :key="key"
-            class="content">
-            <span class="tableRow">{{item.name}}</span>
-            <span class="tableRow">{{item.number ? item.number : '-'}}{{(item.unit && item.number ? item.unit : '')}}</span>
-            <span class="tableRow">{{item.price ? item.price : '-'}}{{(item.unit&&item.price) ? '元/' + item.unit : ''}}</span>
-            <span class="tableRow">{{item.sunhao ? item.sunhao + '%' : '-'}}</span>
-            <span class="tableRow">{{item.other ? item.other + (item.name === '针织织造' ? '针' : '梭') : '-'}}</span>
-            <span class="tableRow">{{item.totalPrice ? item.totalPrice : 0}}元</span>
-          </li>
-        </ul>
-      </div>
-      <div style="margin-top:60px">
-        <ul class="tables">
-          <li class="content">
-            <span class="tableRow">基本佣金</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">{{yongjin.prop ? yongjin.prop : 0}}%</span>
-            <span class="tableRow">{{yongjin.price ? yongjin.price : 0}}元</span>
-          </li>
-          <li class="content">
-            <span class="tableRow">基本税费</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">{{shuifei.prop ? shuifei.prop : 0}}%</span>
-            <span class="tableRow">{{shuifei.price ? shuifei.price : 0}}元</span>
-          </li>
-          <li class="content">
-            <span class="tableRow">基本利润</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">-</span>
-            <span class="tableRow">{{lirun.prop ? lirun.prop : 0}}%</span>
-            <span class="tableRow">{{lirun.price ? lirun.price : 0}}元</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div> -->
   <div id="pricePrintTable"
     class="printHtml">
     <div class="printTable">
@@ -136,15 +26,7 @@
           </span>
         </div>
       </div>
-      <div class="print_body hasPosBottom">
-        <div class="print_row posBottom">
-          <div class="row_item center w180">总价</div>
-          <div class="row_item center noBorder"></div>
-          <div class="row_item center noBorder"></div>
-          <div class="row_item center noBorder"></div>
-          <div class="row_item center noBorder">{{(unit && unit !== '元') ? $toFixed(Number(total_price / exchange_rate * 100)) + unit : ''}}</div>
-          <div class="row_item center noBorder">{{total_price || 0}}元</div>
-        </div>
+      <div class="print_body">
         <div class="print_row has_marginBottom">
           <span class="row_item w180 center">外贸公司</span>
           <span class="row_item left">{{client_name}}</span>
@@ -222,6 +104,16 @@
           <span class="row_item center">-</span>
           <span class="row_item center">{{lirun.prop ? lirun.prop : 0}}%</span>
           <span class="row_item center">{{lirun.price ? lirun.price : 0}}元</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <div class="row_item center w180">总价</div>
+          <div class="row_item center noBorder"></div>
+          <div class="row_item center noBorder"></div>
+          <div class="row_item center noBorder"></div>
+          <div class="row_item center noBorder">{{(unit && unit !== '元') ? $toFixed(Number(total_price / exchange_rate * 100)) + unit : ''}}</div>
+          <div class="row_item center noBorder">{{total_price || 0}}元</div>
         </div>
       </div>
     </div>
