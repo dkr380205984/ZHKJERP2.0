@@ -769,7 +769,7 @@
             <span class="info">
               <el-select v-model="yarnStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(1) !== -1)"
+                <el-option v-for="item in stockList.filter(item=>item.type === 1)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -820,7 +820,7 @@
             <span class="info">
               <el-select v-model="materialStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(2) !== -1)"
+                <el-option v-for="item in stockList.filter(item=>item.type === 2)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -868,7 +868,7 @@
             <span class="info">
               <el-select v-model="packStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(3) !== -1)"
+                <el-option v-for="item in stockList.filter(item=>item.type === 3)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -920,7 +920,7 @@
             <span class="info">
               <el-select v-model="productStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(4) !== -1)"
+                <el-option v-for="item in stockList.filter(item=>item.type === 4)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -978,27 +978,34 @@
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
           <!-- </div> -->
         </div>
-        <div class="opr">
+        <div class="opr"
+          style="justify-content: space-between;">
           <div class="btn btnGray"
-            v-if="showCanclePopup === 1 && isCommit"
-            @click="closePopup">取消</div>
-          <div class="btn btnGray"
-            v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
-            @click="showCanclePopup--">上一步</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup < 5"
-            @click="showCanclePopup++">下一步</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 5 && isCommit === 'before'"
-            @click="changeOrderStatus('cancle')">确定</div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 5 && isCommit === 'error'"
-            @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 5  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
-          <div class="btn btnBlue"
-            v-if="showCanclePopup === 6 && isCommit === 'compiled'"
-            @click="closePopup">完成</div>
+            @click="clearData(showCanclePopup)"
+            v-if='(showCanclePopup === 1 || showCanclePopup === 2 || showCanclePopup === 3 || showCanclePopup === 4)'>清空该页数据</div>
+          <div style="display:flex">
+            <div class="btn btnGray"
+              v-if="showCanclePopup === 1 && isCommit"
+              @click="closePopup">取消</div>
+            <div class="btn btnGray"
+              v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+              @click="showCanclePopup--">上一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup < 5"
+              @click="showCanclePopup++">下一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5 && isCommit === 'before'"
+              @click="changeOrderStatus('cancle')">确定</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5 && isCommit === 'error'"
+              @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 6 && isCommit === 'compiled'"
+              @click="closePopup">完成</div>
+
+          </div>
         </div>
       </div>
     </div>
@@ -1693,7 +1700,6 @@ export default {
     },
     // 修改订单状态
     changeOrderStatus (type) {
-      console.log(type)
       if (type === 'ok') {
         this.$confirm('此操作将永久修改订单状态, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -1980,7 +1986,7 @@ export default {
           })
         }
         if (this.stockList.length === 0) {
-          this.stockList = res[5].data.data.data
+          this.stockList = res[5].data.data
         }
         this.loading = false
       })
@@ -2005,6 +2011,39 @@ export default {
         }
       })
       this.showCanclePopup = 1
+    },
+    // 取消样单时清空预加载数据
+    clearData (page) {
+      if (page === 1) {
+        this.yarnStockId = ''
+        this.cancleYarn = [{
+          material_name: '',
+          type: 1,
+          color: '',
+          weight: '',
+          unit: ''
+        }]
+      } else if (page === 2) {
+        this.materialStockId = ''
+        this.cancleMaterial = [{
+          material_name: '',
+          type: 2,
+          color: '',
+          weight: '',
+          unit: ''
+        }]
+      } else if (page === 3) {
+        this.packStockId = ''
+        this.canclePack = [{
+          material_name: '',
+          size: '',
+          attribute: '',
+          number: ''
+        }]
+      } else if (page === 4) {
+        this.productStockId = ''
+        this.canCleProduct = []
+      }
     },
     addItem (item, type) {
       if (type === 'yarn') {

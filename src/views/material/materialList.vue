@@ -250,7 +250,7 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id,
-          gourp_id: this.group_id,
+          group_id: this.group_id,
           status: this.state
         }).then(res => {
           this.list = res.data.data
@@ -273,7 +273,7 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id,
-          gourp_id: this.group_id
+          group_id: this.group_id
         }).then(res => {
           this.list = res.data.data
           this.list.forEach((item) => {

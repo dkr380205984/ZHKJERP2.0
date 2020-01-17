@@ -112,7 +112,7 @@
                             @change="changeRouter(1)">
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -122,7 +122,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -142,7 +142,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                       </el-dropdown-menu>
@@ -309,20 +309,17 @@ export default {
         }]
       },
       stateArr: [{
-        name: '全部',
-        id: '0'
-      }, {
         name: '已创建',
-        id: '1'
+        id: '3001'
       }, {
         name: '进行中',
-        id: '2'
+        id: '3002'
       }, {
         name: '已完成',
-        id: '3'
+        id: '3004'
       }, {
         name: '已取消',
-        id: '4'
+        id: '3003'
       }]
     }
   },
@@ -380,7 +377,12 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        gourp_id: this.group_id
+        group_id: this.group_id,
+        status: this.state,
+        status_material_plan: this.has_materialPlan,
+        status_material_order: this.has_material,
+        status_weave: this.has_weave,
+        status_material_push: this.has_materialStock
       }).then(res => {
         this.list = res.data.data.map(item => {
           let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })

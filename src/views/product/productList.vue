@@ -85,7 +85,31 @@
             </div>
             <div class="col"><span class="text">名称</span></div>
             <div class="col"><span class="text middle">图片</span></div>
-            <div class="col"><span class="text">创建人</span></div>
+            <div class="col">
+              <transition v-show="!searchUserName"
+                name="el-zoom-in-bottom">
+                <span class="text">创建人
+                  <i class="el-icon-search iconBtn"
+                    @click="searchUserName=true"></i>
+                </span>
+              </transition>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchUserName"
+                  class="filterBox">
+                  <el-select v-model="user_id"
+                    @change="changeRouter(1)"
+                    filterable
+                    clearable
+                    placeholder="筛选创建人">
+                    <el-option v-for="(item,index) in userArr"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </transition>
+            </div>
             <div class="col">
               <span class="text">创建时间
                 <span class="iconCtn">
@@ -229,7 +253,7 @@
 </template>
 
 <script>
-import { product, productType, flower } from '@/assets/js/api.js'
+import { product, productType, flower, auth } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -237,6 +261,9 @@ export default {
       searchTypeFlag: false,
       searchFlowerFlag: false,
       searchStateFlag: false,
+      searchUserName: false,
+      user_id: '',
+      userArr: [],
       typeArr: [],
       type: [],
       category_id: '',
@@ -306,6 +333,7 @@ export default {
         has_plan: this.has_plan,
         has_craft: this.has_craft,
         has_quotation: this.has_quotation,
+        user_name: this.user_id,
         type: 1,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
@@ -342,6 +370,10 @@ export default {
       if (this.has_craft === '0' || this.has_craft === '1' || this.has_plan === '0' || this.has_plan === '1' || this.has_quotation === '0' || this.has_quotation === '1') {
         this.searchStateFlag = true
       }
+      this.user_id = params.user_id ? params.user_id : ''
+      if (this.user_id) {
+        this.searchUserName = true
+      }
     },
     getType (type) {
       if (type.length === 3) {
@@ -357,10 +389,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/product/productList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&flower_id=' + this.flower + '&&has_plan=' + this.has_plan + '&&has_craft=' + this.has_craft + '&&has_quotation=' + this.has_quotation)
+      this.$router.push('/product/productList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&flower_id=' + this.flower + '&&user_id=' + this.user_id + '&&has_plan=' + this.has_plan + '&&has_craft=' + this.has_craft + '&&has_quotation=' + this.has_quotation)
     },
     reset () {
-      this.$router.push('/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation=')
+      this.$router.push('/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation=')
     },
     // 删除产品
     deletePro (id) {
@@ -379,7 +411,8 @@ export default {
     this.getList()
     Promise.all([
       productType.list(),
-      flower.list()
+      flower.list(),
+      auth.list()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -402,6 +435,7 @@ export default {
         }
       })
       this.flowerArr = res[1].data.data
+      this.userArr = res[2].data.data
     })
   }
 }

@@ -64,11 +64,33 @@
             <div class="col right flex08">
               <span class="text">产品报价</span>
             </div>
-            <div class="col right flex08">
-              <span class="text">创建人</span>
-            </div>
-            <div class="col flex05"></div>
+            <div class="col flex01"></div>
             <div class="col">
+              <transition v-show="!searchUserName"
+                name="el-zoom-in-bottom">
+                <span class="text">创建人
+                  <i class="el-icon-search iconBtn"
+                    @click="searchUserName=true"></i>
+                </span>
+              </transition>
+              <transition name="el-zoom-in-top">
+                <div v-show="searchUserName"
+                  class="filterBox">
+                  <el-select v-model="user_id"
+                    @change="changeRouter(1)"
+                    filterable
+                    clearable
+                    placeholder="筛选创建人">
+                    <el-option v-for="(item,index) in userArr"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </transition>
+            </div>
+            <div class="col flex08">
               <span class="text">创建时间
                 <span class="iconCtn">
                   <i class="el-icon-caret-top active"></i>
@@ -113,9 +135,9 @@
               <zh-img-list :list="item.img"></zh-img-list>
             </div>
             <div class="col right flex08"><span class="price">{{item.price}}</span>元</div>
-            <div class="col right flex08">{{item.user_name}}</div>
-            <div class="col flex05"></div>
-            <div class="col">{{item.create_time}}</div>
+            <div class="col flex01"></div>
+            <div class="col">{{item.user_name}}</div>
+            <div class="col flex08">{{item.create_time}}</div>
             <div class="col">
               <div :class="['stateCtn', 'rowFlex', item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue']">
                 <div class="state"></div>
@@ -157,7 +179,7 @@
   </div>
 </template>
 <script>
-import { price, client } from '@/assets/js/api'
+import { price, client, auth } from '@/assets/js/api'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -165,10 +187,13 @@ export default {
       has_check: window.sessionStorage.getItem('has_check'),
       loading: true,
       searchTypeFlag: false,
+      searchUserName: false,
       keyword: '',
       date: '',
       client_id: '',
       clientArr: [],
+      user_id: '',
+      userArr: [],
       searchStatusFlag: false,
       status: '',
       statusArr: [
@@ -199,7 +224,8 @@ export default {
         status: this.status,
         client_id: this.client_id,
         code: this.keyword,
-        product_code: ''
+        product_code: '',
+        user_name: this.user_id
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -301,30 +327,37 @@ export default {
         this.date = ''
       }
       this.status = params.status ? Number(params.status) : ''
+      if (this.status) {
+        this.searchStatusFlag = true
+      }
       this.client_id = params.client_id ? params.client_id : ''
+      if (this.client_id) {
+        this.searchTypeFlag = true
+      }
+      this.user_id = params.user_id ? params.user_id : ''
+      if (this.user_id) {
+        this.searchUserName = true
+      }
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id)
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
     }
   },
   created () {
     this.getFilters()
     this.getList()
-    client.list({}).then(res => {
-      if (res.data.status) {
-        this.clientArr = res.data.data.filter(item => item.type.indexOf(1) !== -1).map(item => {
-          return {
-            name: item.name,
-            id: item.id
-          }
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: res.data.message
-        })
-      }
+    Promise.all([
+      client.list(),
+      auth.list()
+    ]).then(res => {
+      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1).map(item => {
+        return {
+          name: item.name,
+          id: item.id
+        }
+      })
+      this.userArr = res[1].data.data
     })
   },
   filters: {

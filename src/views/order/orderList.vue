@@ -110,9 +110,9 @@
                           物料计划：
                           <el-radio-group v-model="has_materialPlan"
                             @change="changeRouter(1)">
-                            <el-radio label=''>全部</el-radio>
+                            <el-radio label="">全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -122,7 +122,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -132,7 +132,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -142,7 +142,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -162,7 +162,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                         <el-dropdown-item>
@@ -172,7 +172,7 @@
                             divided>
                             <el-radio label=''>全部</el-radio>
                             <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
+                            <el-radio label="2">无</el-radio>
                           </el-radio-group>
                         </el-dropdown-item>
                       </el-dropdown-menu>
@@ -243,7 +243,7 @@
                 <span class="name">库</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress>0,'green':itemOrder.product_weave_progress>=100}">
+                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
@@ -331,22 +331,20 @@ export default {
       has_productInOut: '', // 产品收发
       has_inspection: '', // 成品检验
       has_boxing: '', // 装箱出库
-      stateArr: [{
-        name: '全部',
-        id: '0'
-      }, {
-        name: '已创建',
-        id: '1'
-      }, {
-        name: '进行中',
-        id: '2'
-      }, {
-        name: '已完成',
-        id: '3'
-      }, {
-        name: '已取消',
-        id: '4'
-      }],
+      stateArr: [
+        {
+          name: '已创建',
+          id: '2001'
+        }, {
+          name: '进行中',
+          id: '2002'
+        }, {
+          name: '已完成',
+          id: '2004'
+        }, {
+          name: '已取消',
+          id: '2003'
+        }],
       searchCompanyFlag: false,
       searchGroupFlag: false,
       searchStateFlag: false,
@@ -409,8 +407,15 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        gourp_id: this.group_id,
-        status: this.state
+        group_id: this.group_id,
+        status: this.state,
+        status_material_plan: this.has_materialPlan,
+        status_material_order: this.has_materialOrder,
+        status_material_push: this.has_materialStock,
+        status_weave: this.has_weave,
+        status_product_push: this.has_productInOut,
+        status_product_inspection: this.has_inspection,
+        status_stock_out: this.has_boxing
       }).then(res => {
         this.list = res.data.data
         this.list.forEach(item => {

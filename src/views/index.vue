@@ -121,7 +121,7 @@ export default {
           url: '/sample/sampleCreate'
         }, {
           name: '样品列表',
-          url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
+          url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
         }, {
           name: '样品订单添加',
           url: '/sample/sampleOrderCreate'
@@ -138,7 +138,7 @@ export default {
           url: '/price/priceCreate'
         }, {
           name: '报价单列表',
-          url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id='
+          url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
         }]
       }, {
         name: '产品管理',
@@ -149,7 +149,7 @@ export default {
           url: '/product/productCreate'
         }, {
           name: '产品列表',
-          url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
+          url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
         }]
       }, {
         name: '订单管理',
