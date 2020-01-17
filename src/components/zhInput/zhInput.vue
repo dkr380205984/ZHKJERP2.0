@@ -15,6 +15,7 @@
         @focus="handleFocus"
         @blur="handleBlur"
         @change="handleChange"
+        @mousewheel="handleMouseWheel"
         v-bind="$attrs"
         ref="input" />
       <div class="zhInputClose"
@@ -107,6 +108,12 @@ export default {
     }
   },
   methods: {
+    // 禁止滚轮滚动时数值变化
+    handleMouseWheel (event) {
+      event = event || window.event
+      event.preventDefault()
+      return false
+    },
     getInputDom () {
       return this.$refs.input
     },
