@@ -335,6 +335,11 @@ const notify = {
 const finance = {
   detail: (params) => http.get(`${baseUrl}/financial/order/count/total`, params)
 }
+// 统计模块（财务统计模块）
+const statistics = {
+  orderList: (params) => http.get(`${baseUrl}/financial/order/overall/count/list`, params),
+  orderStatistics: (params) => http.get(`${baseUrl}/financial/order/overall/count/total`, params)
+}
 // 打印设置
 const print = {
   create: (params) => http.post(`${baseUrl}/print/edit/save`, params, 'application/json'),
@@ -350,6 +355,7 @@ const indexCount = {
   dispatchCount: (params) => http.get(`${baseUrl}/index/dispatch/count`, params)
 }
 export {
+  statistics,
   indexCount,
   globleSearch,
   print,

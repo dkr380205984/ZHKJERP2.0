@@ -229,14 +229,28 @@ export default {
         id: 12,
         icon: require('@/assets/image/index/库存管理.png'),
         url: '/stock/stockList/page=1&&keyword=&&type='
-        // children: [{
-        //   name: '仓库列表',
-        // }]
       }, {
         name: '客户管理',
         id: 13,
         icon: require('@/assets/image/index/客户管理.png'),
         url: '/client/clientList/page=1&&keyword=&&clientType='
+      }, {
+        name: '财务统计',
+        id: 14,
+        icon: require('@/assets/image/index/财务管理.png'),
+        children: [{
+          name: '订单财务统计',
+          url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+        }, {
+          name: '产品产量统计',
+          url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id='
+        }, {
+          name: '物料使用统计',
+          url: '/financialStatistics/materialStatistics/page=1&&keyword='
+        }, {
+          name: '合作公司财务统计',
+          url: '/financialStatistics/clientStatistics/page=1&&company_type=&&company_id='
+        }]
       }]
     }
   },
