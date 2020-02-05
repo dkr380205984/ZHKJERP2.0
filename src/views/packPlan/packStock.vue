@@ -442,7 +442,7 @@
                   <el-popover placement="top"
                     width="200"
                     trigger="click"
-                    :content="item.reamrk">
+                    :content="item.remark">
                     <span class="btn noBorder"
                       style="margin:0"
                       slot="reference">查看</span>

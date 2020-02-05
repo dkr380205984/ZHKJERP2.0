@@ -68,6 +68,8 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="sendMsg">发布通知</el-dropdown-item>
+                <el-dropdown-item command="changePas"
+                  divided>修改密码</el-dropdown-item>
                 <el-dropdown-item command="logout"
                   divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -97,12 +99,51 @@
         <router-view />
       </div>
     </div>
+    <div class="popup"
+      v-if="changePasPopupFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">修改密码</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">原密码：</span>
+            <span class="info">
+              <zh-input placeholder="请输入原密码"
+                v-model="oldPasd" />
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">新密码：</span>
+            <span class="info">
+              <zh-input placeholder="请输入新密码"
+                v-model="firstPasd" />
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">确认密码：</span>
+            <span class="info">
+              <zh-input placeholder="请再次输入新密码"
+                v-model="lastPasd" />
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="closePopup">取消</div>
+          <div class="btn btnBlue"
+            @click="changePasd">修改</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Pusher from 'pusher-js' // 全局方法
-import { logout, notify } from '@/assets/js/api.js'
+import { logout, notify, changeUserPasd } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -112,6 +153,10 @@ export default {
       companyName: window.sessionStorage.getItem('company_name') || '未登录',
       msgList: [],
       total: 0,
+      changePasPopupFlag: false,
+      oldPasd: '',
+      firstPasd: '',
+      lastPasd: '',
       navData: [{
         name: '样品管理',
         icon: require('@/assets/image/index/样品管理.png'),
@@ -280,6 +325,8 @@ export default {
         })
       } else if (cmd === 'sendMsg') {
 
+      } else if (cmd === 'changePas') {
+        this.changePasPopupFlag = true
       }
     },
     goBack (index) {
@@ -344,6 +391,33 @@ export default {
           message: '已取消操作'
         })
       })
+    },
+    closePopup () {
+      this.changePasPopupFlag = false
+    },
+    changePasd () {
+      if (!this.oldPasd) {
+        this.$message.error('请输入原密码')
+        return
+      }
+      if (!this.firstPasd || !this.lastPasd) {
+        this.$message.error('请输入新密码')
+        return
+      }
+      if (this.firstPasd !== this.lastPasd) {
+        this.$message.warning('请确认输入的密码一致')
+      } else {
+        changeUserPasd({
+          old_pass: this.oldPasd,
+          new_pass: this.firstPasd
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('修改密码成功，请重新登录')
+            // this.commondHandler('logout')
+            this.$router.push('/login')
+          }
+        })
+      }
     }
   },
   mounted () {

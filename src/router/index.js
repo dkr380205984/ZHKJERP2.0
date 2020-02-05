@@ -304,6 +304,10 @@ const routes = [
       path: '/tutorialSystem/tutorialSystem',
       name: '系统教程',
       component: () => import('../views/tutorialSystem/tutorialSystem.vue')
+    }, {
+      path: '/tutorialSystem/tutorialSystemCreate',
+      name: '添加系统教程',
+      component: () => import('../views/tutorialSystem/tutorialSystemCreate.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',

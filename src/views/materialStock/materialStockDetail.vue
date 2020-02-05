@@ -666,7 +666,8 @@ export default {
             color_info: item.color_info.map(itemColor => {
               return {
                 material_attribute: itemColor.attr,
-                number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0))
+                number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0)),
+                material_type: itemColor.type
               }
             })
           }
@@ -679,11 +680,13 @@ export default {
             editType: type,
             material_name: this.activeStockMa,
             material_attribute: item.attr,
+            material_type: item.type,
             number: this.$toFixed((item.order_weight || 0) - (item.goStockNumEnd || 0)),
             time: this.$getTime(),
             remark: ''
           }
-        }))
+        }).filter(value => value.number)
+        )
       }
     },
     deleteLog (type, item) {

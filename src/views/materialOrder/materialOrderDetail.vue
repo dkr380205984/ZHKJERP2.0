@@ -330,7 +330,7 @@ export default {
           weight: item.weight
         }
       })
-      this.stockArr = res[1].data.data.data
+      this.stockArr = res[1].data.data
       this.logArr = res[2].data.data
       this.total = res[2].data.meta.total
       console.log(this.total)
