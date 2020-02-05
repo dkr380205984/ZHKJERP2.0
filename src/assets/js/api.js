@@ -354,8 +354,11 @@ const globleSearch = {
 const indexCount = {
   dispatchCount: (params) => http.get(`${baseUrl}/index/dispatch/count`, params)
 }
+// 修改账户密码
+const changeUserPasd = (params) => http.post(`${baseUrl}/user/edit/pass`, params, 'application/json')
 export {
   statistics,
+  changeUserPasd,
   indexCount,
   globleSearch,
   print,

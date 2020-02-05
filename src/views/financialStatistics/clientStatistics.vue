@@ -7,21 +7,21 @@
         <div class="box">
           <div class="boxTop">已结算</div>
           <div class="boxBottom">
-            <span class="num">{{clientStatistics.YJS}}</span>
+            <span class="num">{{$toFixed(clientStatistics.YJS)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">待结算</div>
           <div class="boxBottom">
-            <span class="num">{{clientStatistics.DJS}}</span>
+            <span class="num">{{$toFixed(clientStatistics.DJS)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">已扣款</div>
           <div class="boxBottom">
-            <span class="num">{{clientStatistics.YKK}}</span>
+            <span class="num">{{$toFixed(clientStatistics.YKK)}}</span>
             <span class="em">万元</span>
           </div>
         </div>

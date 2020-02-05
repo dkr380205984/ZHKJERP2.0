@@ -640,6 +640,7 @@ export default {
         deliver_time: this.compiled_time,
         desc: this.remark
       }
+      this.lock = false
       sampleOrder.create(data).then(res => {
         this.lock = true
         if (res.data.status) {

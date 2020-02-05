@@ -336,6 +336,10 @@ const routes = [
       path: '/financialStatistics/clientDetail',
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
+    }, {
+      path: '/tutorialSystem/tutorialSystemCreate',
+      name: '添加系统教程',
+      component: () => import('../views/tutorialSystem/tutorialSystemCreate.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',

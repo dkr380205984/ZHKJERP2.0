@@ -345,6 +345,7 @@ export default {
               this.$message.success('审核成功')
               this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
+            this.getPriceDetail()
           }
         })
       } else {
@@ -375,9 +376,123 @@ export default {
               this.$message.success('审核成功')
               this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
+            this.getPriceDetail()
           }
         })
       }
+    },
+    getPriceDetail () {
+      this.loading = true
+      price.detail({
+        id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status) {
+          let data = res.data.data
+          this.code = data.quotation_code
+          this.create_user_id = data.user_id
+          this.create_user = data.user_name
+          this.client_name = data.client_name
+          this.contact_man = data.contact_name
+          this.unit = data.account_unit
+          this.exchange_rate = data.exchange_rate
+          this.update_time = data.updated_at
+          this.reason = data.reason_text ? data.reason_text + ',' + (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '') : (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '')
+          this.status = data.status
+          this.total_price = data.total_price
+          this.set_num = data.number
+          this.set_desc = data.product_need_desc
+          this.product_need = data.product_need
+          this.product_info = data.product_info.map(item => {
+            return {
+              show: false,
+              colorSize: item.color_size,
+              product_code: item.product_info.product_code,
+              img: item.product_info.images,
+              category_name: item.product_info.category_name,
+              type_name: item.product_info.type_name,
+              style_name: item.product_info.style_name,
+              color: item.product_info.color.map(vals => vals.color_name),
+              size: item.product_info.size_measurement,
+              description: item.product_info.description
+              // ...item
+            }
+          })
+          this.file_url = data.file_url || [require('@/assets/image/index/noPic.jpg')]
+          let priceInfo = [
+            ...JSON.parse(data.material_info).map(item => {
+              return {
+                name: item.name ? item.name : '原料',
+                number: item.weight,
+                price: item.price,
+                sunhao: item.sunhao,
+                totalPrice: item.total_price,
+                unit: 'g'
+              }
+            }),
+            ...JSON.parse(data.assist_info).map(item => {
+              return {
+                name: item.name ? item.name : '辅料',
+                number: item.weight,
+                price: item.price,
+                sunhao: item.sunhao,
+                totalPrice: item.total_price,
+                unit: item.unit
+              }
+            }),
+            ...JSON.parse(data.weave_info).map(item => {
+              return {
+                name: item.name ? item.name : '织造',
+                other: item.number,
+                totalPrice: item.total_price || item.price
+              }
+            }),
+            ...JSON.parse(data.semi_product_info).map(item => {
+              return {
+                name: item.name && item.name.length !== 0 ? item.name.join('/') : '半成品加工',
+                totalPrice: item.total_price || item.price
+              }
+            }),
+            ...JSON.parse(data.production_info).map(item => {
+              return {
+                name: item.name && item.name.length !== 0 ? item.name.join('/') : '成品加工',
+                totalPrice: item.total_price || item.price
+              }
+            }),
+            ...JSON.parse(data.pack_material_info).map(item => {
+              return {
+                name: item.name ? item.name : '包装',
+                totalPrice: item.total_price || item.price
+              }
+            }),
+            ...JSON.parse(data.desc_info).map(item => {
+              return {
+                name: item.name ? item.name : '其他',
+                totalPrice: item.total_price || item.price
+              }
+            }),
+            { name: '非生产费用', totalPrice: data.no_product_cost },
+            { name: '运输', totalPrice: data.transport_cost }
+          ]
+          let basicInfo = [{
+            name: '基本佣金',
+            prop: JSON.parse(data.commission).prop,
+            totalPrice: JSON.parse(data.commission).price
+          },
+          {
+            name: '基本税费',
+            prop: JSON.parse(data.tax).prop,
+            totalPrice: JSON.parse(data.tax).price
+          },
+          {
+            name: '基本利润',
+            prop: JSON.parse(data.profit).prop,
+            totalPrice: JSON.parse(data.profit).price
+          }]
+          this.price_info = priceInfo
+          this.basic_info = basicInfo
+        }
+        this.loading = false
+      })
     }
   },
   filters: {
@@ -398,122 +513,10 @@ export default {
       } else if (statu === 3) {
         return '驳回'
       }
-    },
-    filterType (item) {
-      return '1'
     }
   },
   created () {
-    price.detail({
-      id: this.$route.params.id
-    }).then(res => {
-      if (res.data.status) {
-        let data = res.data.data
-        this.code = data.quotation_code
-        this.create_user_id = data.user_id
-        this.create_user = data.user_name
-        this.client_name = data.client_name
-        this.contact_man = data.contact_name
-        this.unit = data.account_unit
-        this.exchange_rate = data.exchange_rate
-        this.update_time = data.updated_at
-        this.reason = data.reason_text ? data.reason_text + ',' + (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '') : (data.reason ? JSON.parse(data.reason).join(',') + (data.reason_text ? '(' + data.reason_text + ')' : '') : '')
-        this.status = data.status
-        this.total_price = data.total_price
-        this.set_num = data.number
-        this.set_desc = data.product_need_desc
-        this.product_need = data.product_need
-        this.product_info = data.product_info.map(item => {
-          return {
-            show: false,
-            colorSize: item.color_size,
-            product_code: item.product_info.product_code,
-            img: item.product_info.images,
-            category_name: item.product_info.category_name,
-            type_name: item.product_info.type_name,
-            style_name: item.product_info.style_name,
-            color: item.product_info.color.map(vals => vals.color_name),
-            size: item.product_info.size_measurement,
-            description: item.product_info.description
-            // ...item
-          }
-        })
-        this.file_url = data.file_url || [require('@/assets/image/index/noPic.jpg')]
-        this.price_info.push(
-          ...JSON.parse(data.material_info).map(item => {
-            return {
-              name: item.name ? item.name : '原料',
-              number: item.weight,
-              price: item.price,
-              sunhao: item.sunhao,
-              totalPrice: item.total_price,
-              unit: 'g'
-            }
-          }),
-          ...JSON.parse(data.assist_info).map(item => {
-            return {
-              name: item.name ? item.name : '辅料',
-              number: item.weight,
-              price: item.price,
-              sunhao: item.sunhao,
-              totalPrice: item.total_price,
-              unit: item.unit
-            }
-          }),
-          ...JSON.parse(data.weave_info).map(item => {
-            return {
-              name: item.name ? item.name : '织造',
-              other: item.number,
-              totalPrice: item.total_price || item.price
-            }
-          }),
-          ...JSON.parse(data.semi_product_info).map(item => {
-            return {
-              name: item.name && item.name.length !== 0 ? item.name.join('/') : '半成品加工',
-              totalPrice: item.total_price || item.price
-            }
-          }),
-          ...JSON.parse(data.production_info).map(item => {
-            return {
-              name: item.name && item.name.length !== 0 ? item.name.join('/') : '成品加工',
-              totalPrice: item.total_price || item.price
-            }
-          }),
-          ...JSON.parse(data.pack_material_info).map(item => {
-            return {
-              name: item.name ? item.name : '包装',
-              totalPrice: item.total_price || item.price
-            }
-          }),
-          ...JSON.parse(data.desc_info).map(item => {
-            return {
-              name: item.name ? item.name : '其他',
-              totalPrice: item.total_price || item.price
-            }
-          }),
-          { name: '非生产费用', totalPrice: data.no_product_cost },
-          { name: '运输', totalPrice: data.transport_cost }
-        )
-        this.basic_info.push(
-          {
-            name: '基本佣金',
-            prop: JSON.parse(data.commission).prop,
-            totalPrice: JSON.parse(data.commission).price
-          },
-          {
-            name: '基本税费',
-            prop: JSON.parse(data.tax).prop,
-            totalPrice: JSON.parse(data.tax).price
-          },
-          {
-            name: '基本利润',
-            prop: JSON.parse(data.profit).prop,
-            totalPrice: JSON.parse(data.profit).price
-          }
-        )
-        this.loading = false
-      }
-    })
+    this.getPriceDetail()
   }
 }
 </script>

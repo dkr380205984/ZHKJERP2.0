@@ -7,35 +7,35 @@
         <div class="box">
           <div class="boxTop">订单总额</div>
           <div class="boxBottom">
-            <span class="num">{{orderStatistics.DDZE}}</span>
+            <span class="num">{{$toFixed(orderStatistics.DDZE)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">下单数量</div>
           <div class="boxBottom">
-            <span class="num">{{orderStatistics.XDSL}}</span>
+            <span class="num">{{$toFixed(orderStatistics.XDSL)}}</span>
             <span class="em">万</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">出库数量</div>
           <div class="boxBottom">
-            <span class="num">{{orderStatistics.CKSL}}</span>
+            <span class="num">{{$toFixed(orderStatistics.CKSL)}}</span>
             <span class="em">万</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">实际总值</div>
           <div class="boxBottom">
-            <span class="num">{{orderStatistics.SJZZ}}</span>
+            <span class="num">{{$toFixed(orderStatistics.SJZZ)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">工厂成本</div>
           <div class="boxBottom">
-            <span class="num">{{orderStatistics.GCCB}}</span>
+            <span class="num">{{$toFixed(orderStatistics.GCCB)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
