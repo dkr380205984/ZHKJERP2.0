@@ -7,22 +7,33 @@
         <div class="filterCtn">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
+            <div class="tabCtn">
+              <span class="tab"
+                :class="{'active':type===1}"
+                @click="type=1">原料</span>
+              <span class="tab"
+                :class="{'active':type===2}"
+                @click="type=2">辅料</span>
+            </div>
             <el-input class="inputs"
               v-model="keyword"
               @change="changeRouter(1)"
               placeholder="输入物料按回车键查询"></el-input>
+            <div class="btn btnGray"
+              @click="reset"
+              style="margin-left:0">重置</div>
           </div>
         </div>
         <div class="list">
           <div class="title">
             <div class="col">
-              <span class="text">公司类型</span>
+              <span class="text">物料名称</span>
             </div>
             <div class="col">
-              <span class="text">订单公司</span>
+              <span class="text">合计使用</span>
             </div>
             <div class="col">
-              <span class="text">已结算</span>
+              <span class="text">订购数量</span>
             </div>
             <div class="col">
               <span class="text">平均价格</span>
@@ -38,9 +49,17 @@
             </div>
           </div>
           <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col"></div>
+            v-for="(item,index) in list"
+            :key="index">
+            <div class="col">{{item.name}}</div>
+            <div class="col">{{item.use_total}}</div>
+            <div class="col">{{item.order_total}}</div>
+            <div class="col">{{item.pre_price}}</div>
+            <div class="col">{{item.total_price}}</div>
+            <div class="col">{{item.stock_number}}</div>
+            <div class="col">
+              <span class="opr">详情</span>
+            </div>
           </div>
         </div>
         <div class="pageCtn">
@@ -58,6 +77,7 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
+import { statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -66,10 +86,14 @@ export default {
       keyword: '',
       pages: 1,
       total: 0,
-      list: []
+      list: [],
+      type: 1
     }
   },
   watch: {
+    type (newVal) {
+      this.changeRouter()
+    },
     page (newVal) {
       this.changeRouter(newVal)
     },
@@ -82,21 +106,29 @@ export default {
   methods: {
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.keyword)
+      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&type=' + this.type)
     },
     reset () {
-      this.$router.push('/financialStatistics/materialStatistics/page=1&&keyword=')
+      this.$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1')
     },
     getList () {
       this.loading = true
-      setTimeout(() => {
+      statistics.materialList({
+        limit: 10,
+        page: this.pages,
+        keyword: this.keyword,
+        type: this.type
+      }).then((res) => {
+        this.list = res.data.data
+        this.total = res.data.meta.total
         this.loading = false
-      }, 500)
+      })
     },
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.page = Number(params.page)
       this.keyword = params.keyword
+      this.type = Number(params.type)
     }
   },
   mounted () {

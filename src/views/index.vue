@@ -281,7 +281,7 @@ export default {
         url: '/client/clientList/page=1&&keyword=&&clientType='
       }, {
         name: '财务统计',
-        id: 14,
+        id: 16,
         icon: require('@/assets/image/index/财务管理.png'),
         children: [{
           name: '订单财务统计',
@@ -291,7 +291,7 @@ export default {
           url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id='
         }, {
           name: '物料使用统计',
-          url: '/financialStatistics/materialStatistics/page=1&&keyword='
+          url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1'
         }, {
           name: '合作公司财务统计',
           url: '/financialStatistics/clientStatistics/page=1&&company_type=&&company_id='

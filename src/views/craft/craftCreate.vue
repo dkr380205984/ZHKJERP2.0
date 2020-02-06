@@ -19,10 +19,10 @@
             placeholder="输入工艺单编号导入工艺单">
             <el-option v-for="item in gydArr"
               :key="item.id"
-              :label="item.craft_code"
+              :label="item.product_code"
               :value="item.id">
-              <span>{{ item.craft_code }}</span>
-              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.product_info?item.product_info.category_info.product_category +'/'+item.product_info.type_name+'/'+item.product_info.style_name+'/'+item.product_info.flower_id:'设计单' }})</span>
+              <span>{{ item.product_code }}</span>
+              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_info.product_category}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
             </el-option>
           </el-select>
         </div>
@@ -2947,19 +2947,27 @@ export default {
     },
     // 查找工艺单
     remoteMethod (query) {
+      console.log(query)
       if (query !== '') {
         this.loadingS = true
-        craft.list({
-          company_id: this.companyId,
-          type_id: null,
-          style_id: null,
-          category_id: null,
+        product.list({
+          product_code: query,
           limit: 20,
           page: 1,
-          craft_code: query,
-          is_draft: null
+          category_id: null,
+          type_id: null,
+          style_id: null,
+          flower_id: null,
+          has_plan: null,
+          has_craft: 1,
+          has_quotation: null,
+          user_name: null,
+          type: 1,
+          start_time: null,
+          end_time: null
         }).then((res) => {
           this.gydArr = res.data.data
+          console.log(this.gydArr)
           this.loadingS = false
         })
       } else {
@@ -2969,15 +2977,17 @@ export default {
     // 导入单张工艺单
     getCraft (code) {
       this.loading = true
-      craft.detail({
-        id: code
+      craft.getByProduct({
+        product_id: code,
+        product_type: 1
       }).then((res) => {
         let data = res.data.data
+        console.log(data)
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
         this.colour = this.warpInfo.color_data.map((item, index) => {
           return {
-            value: '', // 配色清空，不同产品配色不同
+            value: item.product_color,
             colorWarp: item.color_scheme.map((item) => {
               return {
                 name: item.name,
@@ -2994,8 +3004,34 @@ export default {
         })
         this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1).material_name
         this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1).material_name
-        this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2)
-        this.yarn.yarnOtherWeft = this.weftInfo.material_data.filter((item) => item.type_material === 2)
+        this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2).map((item) => {
+          return {
+            type: item.type,
+            array: item.apply,
+            value: item.material_name,
+            type_material: item.type_material
+          }
+        })
+        if (this.yarn.yarnOtherWarp.length === 0) {
+          this.yarn.yarnOtherWarp = [{
+            value: '',
+            array: []
+          }]
+        }
+        this.yarn.yarnOtherWeft = this.weftInfo.material_data.filter((item) => item.type_material === 2).map((item) => {
+          return {
+            type: item.type,
+            array: item.apply,
+            value: item.material_name,
+            type_material: item.type_material
+          }
+        })
+        if (this.yarn.yarnOtherWeft.length === 0) {
+          this.yarn.yarnOtherWeft = [{
+            value: '',
+            array: []
+          }]
+        }
         this.material.materialWarp = this.warpInfo.assist_material.map((item) => {
           return {
             value: item.material_name,
@@ -3003,6 +3039,13 @@ export default {
             array: item.apply
           }
         })
+        if (this.material.materialWarp.length === 0) {
+          this.material.materialWarp = [{
+            value: '',
+            array: [],
+            number: ''
+          }]
+        }
         this.material.materialWeft = this.weftInfo.assist_material.map((item) => {
           return {
             value: item.material_name,
@@ -3010,64 +3053,51 @@ export default {
             array: item.apply
           }
         })
-        this.warpInfo.warp_rank = JSON.parse(this.warpInfo.warp_rank)
-        this.warpInfo.warp_rank_back = JSON.parse(this.warpInfo.warp_rank_back)
-        this.weftInfo.weft_rank = JSON.parse(this.weftInfo.weft_rank)
-        this.weftInfo.weft_rank_back = JSON.parse(this.weftInfo.weft_rank_back)
+        if (this.material.materialWeft.length === 0) {
+          this.material.materialWeft = [{
+            value: '',
+            array: [],
+            number: ''
+          }]
+        }
         this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
         this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
-        this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
-        this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
-        this.tableData.warp.number = this.warpInfo.warp_rank[0].length
-        this.tableData.warpBack.number = this.warpInfo.warp_rank_back[0].length
-        this.tableData.weft.number = this.weftInfo.weft_rank[0].length
-        this.tableData.weftBack.number = this.weftInfo.weft_rank_back[0].length
-        if (data.is_draft === 2) {
-          this.warpInfo.warp_rank.splice(2, 1)
-          this.warpInfo.warp_rank_back.splice(2, 1)
-          this.weftInfo.weft_rank.splice(2, 1)
-          this.weftInfo.weft_rank_back.splice(2, 1)
-          this.tableData.warp.mergeCells.forEach((item) => {
-            item.row--
-          })
-          this.tableData.weft.mergeCells.forEach((item) => {
-            item.row--
-          })
-          this.tableData.warpBack.mergeCells.forEach((item) => {
-            item.row--
-          })
-          this.tableData.weftBack.mergeCells.forEach((item) => {
-            item.row--
-          })
-        }
-        this.$refs.warp.hotInstance.loadData(this.warpInfo.warp_rank.map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        }))
-        this.$refs.weft.hotInstance.loadData(this.weftInfo.weft_rank.map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        }))
-        this.tableData.warp.data = this.warpInfo.warp_rank.map((item, index) => {
+        this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
           return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
         })
-        this.tableData.weft.data = this.weftInfo.weft_rank.map((item, index) => {
+        this.tableHot.warp.loadData(JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
+          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        }))
+        this.tableData.weft.data = JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
           return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
         })
+        this.tableHot.weft.loadData(JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
+          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        }))
         if (data.warp_data.back_status === 1) {
-          this.$refs.warpBack.hotInstance.loadData(this.warpInfo.warp_rank_back.map((item, index) => {
+          this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
+          this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
+            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+          })
+          this.tableHot.warpBack.loadData(JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
             return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
           }))
-          this.tableData.warpBack.data = this.warpInfo.warp_rank_back.map((item, index) => {
-            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-          })
         }
         if (data.weft_data.back_status === 1) {
-          this.$refs.weftBack.hotInstance.loadData(this.weftInfo.weft_rank_back.map((item, index) => {
-            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-          }))
-          this.tableData.weftBack.data = this.weftInfo.weft_rank_back.map((item, index) => {
+          this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
+          this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
             return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
           })
+          this.tableHot.weftBack.loadData(JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
+            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+          }))
         }
+
+        this.tableData.warp.number = JSON.parse(this.warpInfo.warp_rank)[0].length
+        this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
+        this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
+        this.tableData.weftBack.number = JSON.parse(this.weftInfo.weft_rank_back)[0].length
+
         this.ifDouble.warp = data.warp_data.back_status
         this.ifDouble.weft = data.weft_data.back_status
 
@@ -3075,9 +3105,17 @@ export default {
         this.GLFlag = data.draft_method.GLFlag
         this.repeatPM = data.draft_method.PM
         this.PMFlag = data.draft_method.PMFlag
+        this.remarkPM = data.draft_method.desc
         this.desc = data.desc
         this.weight = data.weight
         this.coefficient = data.yarn_coefficient.map((item) => item.value)
+
+        // 懒得改，直接重置，如果遇到设计模式有问题，可照此方法，直接覆盖掉之前的表格，解决一切烦恼
+        this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
+        this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
+        this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
+        this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
+
         this.loading = false
       })
     },
