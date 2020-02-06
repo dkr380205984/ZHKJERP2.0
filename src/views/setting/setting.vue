@@ -2387,11 +2387,11 @@ export default {
       })
     },
     getYarnName () {
-      if (this.clientList.length === 0) {
-        client.list().then((res) => {
-          this.clientList = res.data.data
-        })
-      }
+      // if (this.clientList.length === 0) {
+      client.list().then((res) => {
+        this.clientList = res.data.data.filter(item => item.type.indexOf(2) !== -1)
+      })
+      // }
       yarn.list().then((res) => {
         this.yarnNameList = res.data.data
         this.yarnNameTotal = this.yarnNameList.length
@@ -2539,11 +2539,11 @@ export default {
       })
     },
     getMaterialName () {
-      if (this.clientList.length === 0) {
-        client.list().then((res) => {
-          this.clientList = res.data.data
-        })
-      }
+      // if (this.clientList.length === 0) {
+      client.list().then((res) => {
+        this.clientList = res.data.data.filter(item => item.type.indexOf(10) !== -1)
+      })
+      // }
       material.list().then(res => {
         if (res.data.status === false) {
           this.$message.error('获取装饰辅料列表失败，' + res.data.message)
@@ -2623,11 +2623,11 @@ export default {
       })
     },
     getPackName () {
-      if (this.clientList.length === 0) {
-        client.list().then((res) => {
-          this.clientList = res.data.data
-        })
-      }
+      // if (this.clientList.length === 0) {
+      client.list().then((res) => {
+        this.clientList = res.data.data.filter(item => item.type.indexOf(7) !== -1)
+      })
+      // }
       packag.list().then(res => {
         if (res.data.status === false) {
           this.$message.error('获取包装辅料列表失败，' + res.data.message)

@@ -210,7 +210,7 @@
             style="padding-right:0">查看全部</span>
         </div>
         <div class="line"
-          @click="$openUrl('/tutorialSystem/tutorialSystem?queryString=怎样添加样品?')">
+          @click="$openUrl('/tutorialSystem/tutorialSystemDetail?keyword=怎样添加样品?')">
           <div class="number">1</div>
           <div class="text">怎样添加样品?</div>
         </div>

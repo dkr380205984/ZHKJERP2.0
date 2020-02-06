@@ -301,10 +301,6 @@ const routes = [
       name: '发通知',
       component: () => import('../views/other/sendMsg.vue')
     }, {
-      path: '/tutorialSystem/tutorialSystem',
-      name: '系统教程',
-      component: () => import('../views/tutorialSystem/tutorialSystem.vue')
-    }, {
       path: '/financialStatistics/orderStatistics/:params',
       name: '订单财务统计',
       component: () => import('../views/financialStatistics/orderStatistics.vue')
@@ -336,6 +332,14 @@ const routes = [
       path: '/financialStatistics/clientDetail',
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
+    }, {
+      path: '/tutorialSystem/tutorialSystemDetail',
+      name: '系统教程详情',
+      component: () => import('../views/tutorialSystem/tutorialSystemDetail.vue')
+    }, {
+      path: '/tutorialSystem/tutorialSystemList',
+      name: '系统教程',
+      component: () => import('../views/tutorialSystem/tutorialSystemList.vue')
     }, {
       path: '/tutorialSystem/tutorialSystemCreate',
       name: '添加系统教程',

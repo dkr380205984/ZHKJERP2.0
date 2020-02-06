@@ -367,7 +367,8 @@
         <div class="btnCtn_page">
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',orderLog)">批量删除</div>
-          <div class="btn noBorder noMargin">批量打印</div>
+          <div class="btn noBorder noMargin"
+            @click="downloadWord">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -429,6 +430,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
 import { packPlan, packag, order, client } from '@/assets/js/api.js'
 export default {
@@ -455,6 +457,10 @@ export default {
     }
   },
   methods: {
+    downloadWord () {
+      console.log(this.orderLog)
+      downloadExcel(this.orderLog[this.pageLog - 1], [{ title: '名称', key: 'material_name' }, { title: '数量', key: 'number' }, { title: '时间', key: 'order_time' }])
+    },
     deleteLog (type, item) {
       this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {
         confirmButtonText: '确定',

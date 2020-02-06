@@ -228,6 +228,7 @@
               <span class="tb_row">操作时间</span>
               <span class="tb_row">原料名称</span>
               <span class="tb_row flex08">原料属性</span>
+              <span class="tb_row">关联订单号</span>
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量（kg）</span>
               <span class="tb_row flex08">操作人</span>
@@ -242,6 +243,7 @@
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
               <span class="tb_row flex08">{{itemLog.color_code}}</span>
+              <span class="tb_row">{{itemLog.order_code || '无'}}</span>
               <span class="tb_row">{{itemLog.action|filterAction}}</span>
               <span class="tb_row flex08">{{itemLog.weight}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
@@ -1022,46 +1024,68 @@ export default {
       yarnAction: '',
       yarnEditInfo: [],
       actionTypeArr: ['', '入库', '出库'],
+      // actionArr: [
+      //   {
+      //     name: '预定购入库',
+      //     action: 1
+      //   },
+      //   {
+      //     name: '加工出库',
+      //     action: 2
+      //   },
+      //   {
+      //     name: '加工入库',
+      //     action: 3
+      //   },
+      //   {
+      //     name: '生产出库',
+      //     action: 4
+      //   },
+      //   {
+      //     name: '订购入库',
+      //     action: 5
+      //   },
+      //   {
+      //     name: '结余入库',
+      //     action: 6
+      //   },
+      //   {
+      //     name: '结余出库',
+      //     action: 7
+      //   },
+      //   {
+      //     name: '订单取消入库',
+      //     action: 8
+      //   },
+      //   {
+      //     name: '仓库入库',
+      //     action: 10
+      //   },
+      //   {
+      //     name: '仓库出库',
+      //     action: 13
+      //   }
+      // ],
       actionArr: [
         {
           name: '预定购入库',
           action: 1
         },
         {
-          name: '加工出库',
+          name: '调取出库',
           action: 2
         },
         {
-          name: '加工入库',
+          name: '结余入库',
           action: 3
         },
         {
-          name: '生产出库',
+          name: '仓库入库',
           action: 4
         },
         {
-          name: '订购入库',
-          action: 5
-        },
-        {
-          name: '结余入库',
-          action: 6
-        },
-        {
-          name: '结余出库',
-          action: 7
-        },
-        {
-          name: '订单取消入库',
-          action: 8
-        },
-        {
-          name: '仓库入库',
-          action: 10
-        },
-        {
           name: '仓库出库',
-          action: 13
+          action: 5
         }
       ],
       materialList: [],
