@@ -123,7 +123,9 @@
                 <span class="tb_col_item"
                   v-for="(itemPro,indexPro) in itemBatch.product_info"
                   :key="indexPro">
-                  <span class="tb_row">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                  <span class="tb_row"
+                    style="cursor: pointer;color:#1A95FF"
+                    @click="$router.push('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
                   <span class="tb_row middle">
                     <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
                   </span>

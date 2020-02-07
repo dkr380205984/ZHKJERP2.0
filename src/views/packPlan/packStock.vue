@@ -644,7 +644,8 @@
           id='yarn'>
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',actualPackingLog,'actualPacking')">批量删除</div>
-          <div class="btn noBorder noMargin">批量打印</div>
+          <div class="btn noBorder noMargin"
+            @click="download">批量打印</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -1272,6 +1273,14 @@ export default {
           }
         })
       }
+    },
+    // 批量导出excel
+    download () {
+      let data = []
+      this.actualPackingLog.forEach(item => {
+        data.push(...item.filter(value => value.checked))
+      })
+      console.log(data)
     }
   },
   created () {
