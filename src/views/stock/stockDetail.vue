@@ -702,7 +702,7 @@
             <div class="btn noBorder noMargin"
               @click="deleteLog(packLog,'packLog')">批量删除</div>
             <div class="btn noBorder noMargin"
-              @click="downloadPack">批量打印</div>
+              @click="downloadPack">批量导出excel</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -948,7 +948,7 @@
             <div class="btn noBorder noMargin"
               @click="deleteLog(productLog,'productLog')">批量删除</div>
             <div class="btn noBorder noMargin"
-              @change="downloadProduct">批量打印</div>
+              @change="downloadProduct">批量导出excel</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
