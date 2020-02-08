@@ -368,7 +368,7 @@
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',orderLog)">批量删除</div>
           <div class="btn noBorder noMargin"
-            @click="downloadWord">批量打印</div>
+            @click="download">批量导出excel</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -394,7 +394,7 @@
             <span class="tb_row">{{item.price}}元/{{item.unit}}</span>
             <span class="tb_row">{{item.number}}{{item.unit}}</span>
             <span class="tb_row">{{item.total_price}}元</span>
-            <span class="tb_row middle">{{item.order_time.split(' ')[0]}}</span>
+            <span class="tb_row middle">{{$getTime(item.order_time)}}</span>
             <span class="tb_row middle">
               <el-tooltip placement="top">
                 <div slot="content">规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />属性：{{item.attribute}}<br />备注：{{item.desc}}</div>
@@ -457,9 +457,33 @@ export default {
     }
   },
   methods: {
-    downloadWord () {
-      console.log(this.orderLog)
-      downloadExcel(this.orderLog[this.pageLog - 1], [{ title: '名称', key: 'material_name' }, { title: '数量', key: 'number' }, { title: '时间', key: 'order_time' }])
+    // 批量导出excel
+    download () {
+      let data = []
+      this.orderLog.forEach(item => {
+        data.push(...item.filter(value => value.checked))
+      })
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.pack_size = item.price_square ? JSON.parse(item.size).join('*') : item.pack_size
+        return item
+      })
+      console.log(data)
+      downloadExcel(data, [
+        { title: '订购单位', key: 'client_name' },
+        { title: '包装辅料', key: 'material_name' },
+        { title: '单价', key: 'price' },
+        { title: '数量', key: 'number' },
+        { title: '总价', key: 'total_price' },
+        { title: '完成日期', key: 'order_time' },
+        { title: '规格', key: 'pack_size' },
+        { title: '属性', key: 'attribute' },
+        { title: '备注', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
     },
     deleteLog (type, item) {
       this.$confirm('此操作将永久删除日志, 是否继续?', '提示', {

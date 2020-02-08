@@ -645,7 +645,7 @@
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',actualPackingLog,'actualPacking')">批量删除</div>
           <div class="btn noBorder noMargin"
-            @click="download">批量打印</div>
+            @click="download">批量导出excel</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -777,6 +777,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { chinaNum, countries } from '@/assets/js/dictionary.js'
 import { order, client, packPlan } from '@/assets/js/api.js'
 export default {
@@ -886,7 +887,7 @@ export default {
             })
           }
           this.productInfo.forEach(itemPro => {
-            let flag = data.filter(item => item.product_id === itemPro.id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
+            let flag = data.filter(item => +item.product_id === +itemPro.id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
             if (flag.length > 0) {
               itemPro.actual_number = flag.map(item => Number(item.number || 0)).reduce((total, item) => {
                 return total + item
@@ -894,7 +895,7 @@ export default {
             }
           })
           this.actualPackingLog = this.$newSplice(this.$clone(data).map(itemPro => {
-            let flag = this.productInfo.find(item => item.id === itemPro.product_id)
+            let flag = this.productInfo.find(item => +item.id === +itemPro.product_id)
             return {
               product_code: flag ? flag.product_code : '',
               type: flag ? flag.type : [],
@@ -1280,7 +1281,24 @@ export default {
       this.actualPackingLog.forEach(item => {
         data.push(...item.filter(value => value.checked))
       })
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.product_type = item.type.join('/')
+        return item
+      })
       console.log(data)
+      downloadExcel(data, [
+        { title: '操作时间', key: 'create_time' },
+        { title: '产品编号', key: 'product_code' },
+        { title: '产品品类', key: 'product_type' },
+        { title: '尺码', key: 'size' },
+        { title: '颜色', key: 'color' },
+        { title: '实际装箱数', key: 'number' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
     }
   },
   created () {

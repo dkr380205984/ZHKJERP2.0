@@ -220,7 +220,8 @@
             id='yarn'>
             <div class="btn noBorder noMargin"
               @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
-            <div class="btn noBorder noMargin">批量打印</div>
+            <div class="btn noBorder noMargin"
+              @click="downloadYarn">批量导出excel</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -238,7 +239,8 @@
               v-for="(itemLog,indexLog) in yarnLog"
               :key="indexLog">
               <span class="tb_row flex04">
-                <el-checkbox v-model="itemLog.checked"></el-checkbox>
+                <el-checkbox v-model="itemLog.checked"
+                  @change="checkYarnLogEvent($event,itemLog)"></el-checkbox>
               </span>
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
@@ -457,7 +459,8 @@
             id='material'>
             <div class="btn noBorder noMargin"
               @click="deleteLog(materialLog,'materialLog')">批量删除</div>
-            <div class="btn noBorder noMargin">批量打印</div>
+            <div class="btn noBorder noMargin"
+              @click="downloadMaterial">批量导出excel</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -474,7 +477,8 @@
               v-for="(itemLog,indexLog) in materialLog"
               :key="indexLog">
               <span class="tb_row flex04">
-                <el-checkbox v-model="itemLog.checked"></el-checkbox>
+                <el-checkbox v-model="itemLog.checked"
+                  @change="checkMaterialLogEvent"></el-checkbox>
               </span>
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
@@ -697,7 +701,8 @@
             id='pack'>
             <div class="btn noBorder noMargin"
               @click="deleteLog(packLog,'packLog')">批量删除</div>
-            <div class="btn noBorder noMargin">批量打印</div>
+            <div class="btn noBorder noMargin"
+              @click="downloadPack">批量打印</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -715,7 +720,8 @@
               v-for="(itemLog,indexLog) in packLog"
               :key="indexLog">
               <span class="tb_row flex04">
-                <el-checkbox v-model="itemLog.checked"></el-checkbox>
+                <el-checkbox v-model="itemLog.checked"
+                  @change="checkPackLogEvent"></el-checkbox>
               </span>
               <span class="tb_row">{{itemLog.created_at}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
@@ -941,7 +947,8 @@
             id='product'>
             <div class="btn noBorder noMargin"
               @click="deleteLog(productLog,'productLog')">批量删除</div>
-            <div class="btn noBorder noMargin">批量打印</div>
+            <div class="btn noBorder noMargin"
+              @change="downloadProduct">批量打印</div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -959,7 +966,8 @@
               v-for="(itemLog,indexLog) in productLog"
               :key="indexLog">
               <span class="tb_row flex04">
-                <el-checkbox v-model="itemLog.checked"></el-checkbox>
+                <el-checkbox v-model="itemLog.checked"
+                  @change="checkProductLogEvent"></el-checkbox>
               </span>
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.product_code}}</span>
@@ -1002,6 +1010,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { stock, yarnStock, yarn, yarnColor, material, packStock, packag, productStock, product } from '@/assets/js/api.js'
 export default {
   data () {
@@ -1015,6 +1024,7 @@ export default {
       yarnTotal: 1,
       yarnPages: 1,
       yarnLog: [],
+      checkYarnLogArr: [],
       yarnLogTotal: 1,
       yarnLogPages: 1,
       yarnColorList: [],
@@ -1092,6 +1102,7 @@ export default {
       materialTotal: 1,
       materialPages: 1,
       materialLog: [],
+      checkMaterialLogArr: [],
       materialLogTotal: 1,
       materialLogPages: 1,
       materialEditInfo: [],
@@ -1103,6 +1114,7 @@ export default {
       packTotal: 1,
       packPages: 1,
       packLog: [],
+      checkPackLogArr: [],
       packLogTotal: 1,
       packLogPages: 1,
       packEditInfo: [],
@@ -1114,6 +1126,7 @@ export default {
       productTotal: 1,
       productPages: 1,
       productLog: [],
+      checkProductLogArr: [],
       productLogTotal: 1,
       productLogPages: 1,
       searchProduct: '',
@@ -1226,6 +1239,40 @@ export default {
         this.loading = false
       })
     },
+    // 批量导出excel
+    downloadYarn () {
+      let data = this.checkYarnLogArr.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        let flag = this.actionArr.find(value => value.action === item.action)
+        item.action_name = flag ? flag.name : ''
+        return item
+      })
+      downloadExcel(data, [
+        { title: '操作时间', key: 'create_time' },
+        { title: '物料名称', key: 'material_name' },
+        { title: '物料属性', key: 'color_code' },
+        { title: '关联订单号', key: 'order_code' },
+        { title: '操作类型', key: 'action_name' },
+        { title: '数量', key: 'weight' },
+        { title: '备注信息', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ])
+    },
+    checkYarnLogEvent (event, item) {
+      if (event) {
+        this.checkYarnLogArr.push(this.$clone(item))
+      } else {
+        let flag = this.checkYarnLogArr.find(value => value.id === item.id)
+        if (flag) {
+          flag.checked = false
+          this.checkYarnLogArr = this.checkYarnLogArr.filter(value => value.checked)
+        }
+      }
+    },
     getMaterialList (page) {
       this.loading = true
       yarnStock.list({
@@ -1267,6 +1314,39 @@ export default {
         this.loading = false
       })
     },
+    // 批量导出excel
+    downloadMaterial () {
+      let data = this.checkMaterialLogArr.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        let flag = this.actionArr.find(value => value.action === item.action)
+        item.action_name = flag ? flag.name : ''
+        return item
+      })
+      downloadExcel(data, [
+        { title: '操作时间', key: 'create_time' },
+        { title: '物料名称', key: 'material_name' },
+        { title: '物料属性', key: 'color_code' },
+        { title: '操作类型', key: 'action_name' },
+        { title: '数量', key: 'weight' },
+        { title: '备注信息', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ])
+    },
+    checkMaterialLogEvent (event, item) {
+      if (event) {
+        this.checkMaterialLogArr.push(this.$clone(item))
+      } else {
+        let flag = this.checkMaterialLogArr.find(value => value.id === item.id)
+        if (flag) {
+          flag.checked = false
+          this.checkMaterialLogArr = this.checkMaterialLogArr.filter(value => value.checked)
+        }
+      }
+    },
     getPackList (page) {
       this.loading = true
       packStock.list({
@@ -1303,6 +1383,39 @@ export default {
         }
         this.loading = false
       })
+    },
+    // 批量导出excel
+    downloadPack () {
+      let data = this.checkPackLogArr.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.action_name = this.actionTypeArr[item.action_type]
+        return item
+      })
+      downloadExcel(data, [
+        { title: '操作时间', key: 'create_time' },
+        { title: '包装名称', key: 'material_name' },
+        { title: '包装尺寸（cm）', key: 'size' },
+        { title: '包装属性', key: 'attribute' },
+        { title: '操作类型', key: 'action_name' },
+        { title: '数量', key: 'number' },
+        { title: '备注信息', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ])
+    },
+    checkPackLogEvent (event, item) {
+      if (event) {
+        this.checkPackLogArr.push(this.$clone(item))
+      } else {
+        let flag = this.checkPackLogArr.find(value => value.id === item.id)
+        if (flag) {
+          flag.checked = false
+          this.checkPackLogArr = this.checkPackLogArr.filter(value => value.checked)
+        }
+      }
     },
     getProductList (page) {
       this.loading = true
@@ -1341,6 +1454,40 @@ export default {
         }
         this.loading = false
       })
+    },
+    // 批量导出excel
+    downloadProduct () {
+      let data = this.checkProductLogArr.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.action_name = this.actionTypeArr[item.type]
+        return item
+      })
+      downloadExcel(data, [
+        { title: '操作时间', key: 'create_time' },
+        { title: '产品编号', key: 'product_code' },
+        { title: '尺码', key: 'size' },
+        { title: '颜色', key: 'color' },
+        { title: '关联订单号', key: 'order_code' },
+        { title: '操作类型', key: 'action_name' },
+        { title: '数量', key: 'stock_number' },
+        { title: '备注信息', key: 'remark' },
+        { title: '操作人', key: 'user_name' }
+      ])
+    },
+    checkProductLogEvent (event, item) {
+      if (event) {
+        this.checkProductLogArr.push(this.$clone(item))
+      } else {
+        let flag = this.checkProductLogArr.find(value => value.id === item.id)
+        if (flag) {
+          flag.checked = false
+          this.checkProductLogArr = this.checkProductLogArr.filter(value => value.checked)
+        }
+      }
     },
     getProductSizeColorInfo (event, itemPro) {
       itemPro.size_color = ''
@@ -1994,40 +2141,20 @@ export default {
           action: 1
         },
         {
-          name: '加工出库',
+          name: '调取出库',
           action: 2
         },
         {
-          name: '加工入库',
+          name: '结余入库',
           action: 3
         },
         {
-          name: '生产出库',
+          name: '仓库入库',
           action: 4
         },
         {
-          name: '订购入库',
-          action: 5
-        },
-        {
-          name: '结余入库',
-          action: 6
-        },
-        {
-          name: '结余出库',
-          action: 7
-        },
-        {
-          name: '订单取消入库',
-          action: 8
-        },
-        {
-          name: '仓库入库',
-          action: 10
-        },
-        {
           name: '仓库出库',
-          action: 13
+          action: 5
         }
       ]
       let flag = actionArr.find(item => item.action === action)

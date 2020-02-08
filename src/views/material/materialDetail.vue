@@ -566,7 +566,7 @@
         </div>
       </div>
     </div>
-    <div class="module log">
+    <!-- <div class="module log">
       <div class="titleCtn">
         <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
       </div>
@@ -621,8 +621,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="module log">
+    </div> -->
+    <!-- <div class="module log">
       <div class="titleCtn">
         <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
       </div>
@@ -675,6 +675,106 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="downloadOrder">批量导出excel</div>
+        </div>
+        <div class="tableCtnLv2 minHeight5">
+          <div class="tb_header">
+            <span class="tb_row flex04"></span>
+            <span class="tb_row flex12">完成日期</span>
+            <span class="tb_row">来源</span>
+            <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
+            <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+            <span class="tb_row flex08">单价(元)</span>
+            <span class="tb_row flex08">数量</span>
+            <span class="tb_row flex08">总价(元)</span>
+            <span class="tb_row">备注</span>
+            <span class="tb_row">操作人</span>
+            <span class="tb_row middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in order_stock_log"
+            :key="index">
+            <span class="tb_row flex04">
+              <el-checkbox v-model="item.checked"></el-checkbox>
+            </span>
+            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+            <span class="tb_row">
+              <span>
+                <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
+                <br />
+                {{item.client_name}}
+              </span>
+            </span>
+            <span class="tb_row flex2">{{item.material_name}}</span>
+            <span class="tb_row">{{item.color_code}}</span>
+            <span class="tb_row flex08">{{item.price}}</span>
+            <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+            <span class="tb_row">{{item.desc}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn red"
+                @click="deleteOrderLog(item.id,index)">删除</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="downloadProcess">批量导出excel</div>
+        </div>
+        <div class="tableCtnLv2 minHeight5">
+          <div class="tb_header">
+            <span class="tb_row flex04"></span>
+            <span class="tb_row flex12">完成日期</span>
+            <span class="tb_row flex2">加工单位</span>
+            <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
+            <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+            <span class="tb_row flex08">工序</span>
+            <span class="tb_row flex08">单价(元)</span>
+            <span class="tb_row flex08">数量</span>
+            <span class="tb_row flex08">总价(元)</span>
+            <span class="tb_row">备注</span>
+            <span class="tb_row">操作人</span>
+            <span class="tb_row middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in process_log"
+            :key="index">
+            <span class="tb_row flex04">
+              <el-checkbox v-model="item.checked"></el-checkbox>
+            </span>
+            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+            <span class="tb_row flex2">{{item.client_name}}</span>
+            <span class="tb_row flex2">{{item.material_name}}</span>
+            <span class="tb_row">{{item.material_color}}</span>
+            <span class="tb_row flex08">{{item.process_type}}</span>
+            <span class="tb_row flex08">{{item.price}}</span>
+            <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+            <span class="tb_row">{{item.desc}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn red"
+                @click="deleteProcessLog(item.id,index)">删除</span>
+            </span>
           </div>
         </div>
       </div>
@@ -954,6 +1054,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
@@ -1024,6 +1125,55 @@ export default {
     }
   },
   methods: {
+    // 批量导出excel订购
+    downloadOrder () {
+      let data = this.order_stock_log.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
+        item.total_price = this.$toFixed(item.price * item.weight)
+        return item
+      })
+      downloadExcel(data, [
+        { title: '完成日期', key: 'complete_time' },
+        { title: '来源类型', key: 'type_source_name' },
+        { title: '来源', key: 'client_name' },
+        { title: '物料名称', key: 'material_name' },
+        { title: '属性', key: 'color_code' },
+        { title: '单价(元)', key: 'price' },
+        { title: '数量', key: 'weight' },
+        { title: '总价(元)', key: 'total_price' },
+        { title: '备注', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
+    // 批量导出excel加工
+    downloadProcess () {
+      let data = this.process_log.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.total_price = this.$toFixed(item.price * item.weight)
+        return item
+      })
+      downloadExcel(data, [
+        { title: '完成日期', key: 'complete_time' },
+        { title: '加工单位', key: 'client_name' },
+        { title: '物料名称', key: 'material_name' },
+        { title: '属性', key: 'material_color' },
+        { title: '工序', key: 'process_type' },
+        { title: '单价(元)', key: 'price' },
+        { title: '数量', key: 'weight' },
+        { title: '总价(元)', key: 'total_price' },
+        { title: '备注', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
     searchColor (queryString, cb) {
       let result = queryString ? this.colorList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.colorList
       cb(result)

@@ -474,115 +474,61 @@
       <div class="titleCtn">
         <span class="title">产品出入库日志</span>
       </div>
-      <div class="editCtn hasBorderTop">
-        <!-- <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.2">操作日期</div>
-                  <div class="tcolumn">加工单位</div>
-                  <div class="tcolumn">收发类型</div>
-                  <div class="tcolumn"
-                    style="flex:2">产品信息</div>
-                  <div class="tcolumn">尺码颜色</div>
-                  <div class="tcolumn">件数</div>
-                  <div class="tcolumn">数量</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
-                  <div class="tcolumn">{{item.client_name}}</div>
-                  <div class="tcolumn">{{item.flag}}</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <span>{{item.product_code.code}}</span>
-                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
-                  </div>
-                  <div class="tcolumn">
-                    <span>{{item.size}}</span>
-                    <span>{{item.color}}</span>
-                  </div>
-                  <div class="tcolumn">{{item.count}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
-                  <div class="tcolumn">
-                    <span style="color:#F5222D;cursor:pointer"
-                      @click="deleteLog(item.id,item.flag,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin:10px 32px">
-            <div class="tableCtnLv2">
-              <span class="tb_btn top_right">
-                <div class="btn noBorder"
-                  @click="printTag">打印收发标签</div>
-              </span>
-              <span class="tb_header">
-                <span class="tb_row"
-                  style="flex:0.4"></span>
-                <span class="tb_row"
-                  style="flex:1.2">操作日期</span>
-                <span class="tb_row">加工单位</span>
-                <span class="tb_row">收发类型</span>
-                <span class="tb_row"
-                  style="flex:1.8">产品信息</span>
-                <span class="tb_row">尺码颜色</span>
-                <span class="tb_row">件数</span>
-                <span class="tb_row">数量</span>
-                <span class="tb_row">备注</span>
-                <span class="tb_row">操作人</span>
-                <span class="tb_row middle">操作</span>
-              </span>
-              <span class="tb_content"
-                v-for="(item,index) in log"
-                :key="index">
-                <span class="tb_row"
-                  style="flex:0.4">
-                  <el-checkbox v-model="item.checked"
-                    @change="handleClickLog(item)"></el-checkbox>
-                </span>
-                <span class="tb_row"
-                  style="flex:1.2">{{$getTime(item.complete_time)}}</span>
-                <span class="tb_row">{{item.client_name}}</span>
-                <span class="tb_row">{{item.flag}}</span>
-                <span class="tb_row"
-                  style="flex:1.8">
-                  {{item.product_code.code}}
-                  <br />
-                  {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
-                </span>
-                <span class="tb_row">
-                  {{item.size}}
-                  <br />
-                  {{item.color}}
-                </span>
-                <span class="tb_row">{{item.count}}</span>
-                <span class="tb_row">{{item.number}}</span>
-                <span class="tb_row">{{item.desc}}</span>
-                <span class="tb_row">{{item.user_name}}</span>
-                <span class="tb_row middle">
-                  <span class="tb_handle_btn red"
-                    @click="deleteLog(item.id,item.flag,index)">删除</span>
-                </span>
-              </span>
-            </div>
-          </div>
+      <div class="listCtn hasBorderTop">
+        <div class="btnCtn_page">
+          <div :class="['btn', 'noBorder', 'noMargin', log.filter(item=>item.checked).length > 1 ? 'grayBtn':'']"
+            @click="printTag">打印收发标签</div>
+          <div class="btn noBorder noMargin"
+            @click="download">批量导出excel</div>
+        </div>
+        <div class="tableCtnLv2">
+          <!-- <span class="tb_btn top_right">
+            <div class="btn noBorder"
+              @click="printTag">打印收发标签</div>
+            <div class="btn noBorder"
+              @click="printTag">批量导出Execl</div>
+          </span> -->
+          <span class="tb_header">
+            <span class="tb_row flex04"></span>
+            <span class="tb_row flex12">操作日期</span>
+            <span class="tb_row">加工单位</span>
+            <span class="tb_row">收发类型</span>
+            <span class="tb_row flex18">产品信息</span>
+            <span class="tb_row">尺码颜色</span>
+            <span class="tb_row">件数</span>
+            <span class="tb_row">数量</span>
+            <span class="tb_row">备注</span>
+            <span class="tb_row">操作人</span>
+            <span class="tb_row middle">操作</span>
+          </span>
+          <span class="tb_content"
+            v-for="(item,index) in log"
+            :key="index">
+            <span class="tb_row flex04">
+              <el-checkbox v-model="item.checked"></el-checkbox>
+            </span>
+            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+            <span class="tb_row">{{item.client_name}}</span>
+            <span class="tb_row">{{item.flag}}</span>
+            <span class="tb_row flex18">
+              {{item.product_code.code}}
+              <br />
+              {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
+            </span>
+            <span class="tb_row">
+              {{item.size}}
+              <br />
+              {{item.color}}
+            </span>
+            <span class="tb_row">{{item.count}}</span>
+            <span class="tb_row">{{item.number}}</span>
+            <span class="tb_row">{{item.desc}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn red"
+                @click="deleteLog(item.id,item.flag,index)">删除</span>
+            </span>
+          </span>
         </div>
       </div>
     </div>
@@ -590,6 +536,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { order, weave, processing, client, receive, dispatch, process } from '@/assets/js/api.js'
 export default {
   data () {
@@ -623,18 +570,42 @@ export default {
     }
   },
   methods: {
+    // 批量导出excel
+    download () {
+      let data = this.log.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.product_types = [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/')
+        item.product_code = item.product_code.code
+        return item
+      })
+      downloadExcel(data, [
+        { title: '操作日期', key: 'complete_time' },
+        { title: '加工单位', key: 'client_name' },
+        { title: '收发类型', key: 'flag' },
+        { title: '产品编号', key: 'product_code' },
+        { title: '产品品类', key: 'product_types' },
+        { title: '尺码', key: 'size' },
+        { title: '颜色', key: 'color' },
+        { title: '件数', key: 'count' },
+        { title: '数量', key: 'number' },
+        { title: '备注', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
     printTag () {
+      if (this.log.filter(item => item.checked).length > 1) {
+        this.$message.warning('该功能仅限单个日志打印')
+        return
+      }
       let flag = this.log.find(items => items.checked)
       if (flag) {
         this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + flag.id + '&type=' + (flag.flag === '入库' ? 1 : 2))
       } else {
         this.$message.warning('请勾选您需要打印成标签的日志')
-      }
-    },
-    handleClickLog (item) {
-      if (this.log.filter(items => items.checked).length > 1) {
-        item.checked = false
-        this.$message.warning('请勿勾选多个')
       }
     },
     querySearchProcess (queryString, cb) {

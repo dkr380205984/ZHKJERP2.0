@@ -283,15 +283,12 @@
         </div>
       </div>
     </div>
-    <div class="module log">
+    <div class="module">
       <div class="titleCtn">
         <span class="title">成品检验日志</span>
       </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
+      <div class="listCtn hasBorderTop">
+        <!-- <div class="normalTb">
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn"
@@ -335,7 +332,48 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
+        <div class="btnCtn_page">
+          <!-- <div class="btn noBorder noMargin"
+            @click="deleteLog('all',orderLog)">批量删除</div> -->
+          <div class="btn noBorder noMargin"
+            @click="download">批量导出excel</div>
+        </div>
+        <div class="tableCtnLv2 minHeight5">
+          <div class="tb_header">
+            <span class="tb_row flex04"></span>
+            <span class="tb_row">检验日期</span>
+            <span class="tb_row flex12">产品名称</span>
+            <span class="tb_row">尺码颜色</span>
+            <span class="tb_row flex08">检验数量</span>
+            <span class="tb_row flex12">次品信息</span>
+            <span class="tb_row flex08">备注</span>
+            <span class="tb_row flex08 middle">操作人</span>
+            <span class="tb_row flex08 middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in inspection_log"
+            :key="index">
+            <span class="tb_row flex04">
+              <el-checkbox v-model="item.checked"></el-checkbox>
+            </span>
+            <span class="tb_row">{{item.complete_time}}</span>
+            <span class="tb_row flex12">{{item.product_code}}<br />{{item.product_types}}</span>
+            <span class="tb_row">{{item.size}}/{{item.color}}</span>
+            <span class="tb_row flex08">{{item.number}}</span>
+            <span class="tb_row flex12">
+              <span class="green"
+                v-if="item.rejects_info===0">无次品</span>
+              <span class="blue"
+                v-if="item.rejects_info!==0"
+                @click="rejectsDetail(item.rejects_info)">有次品(查看)</span>
+            </span>
+            <span class="tb_row flex08">{{item.desc}}</span>
+            <span class="tb_row flex08 middle">{{item.user_name}}</span>
+            <span class="tb_row flex08 middle">
+              <span class="tb_handle_btn red"
+                @click="deleteLog(item.id,index)">删除</span>
+            </span>
           </div>
         </div>
       </div>
@@ -369,7 +407,7 @@
           <div class="row">
             <div class="label">承担单位：</div>
             <div class="info text">
-              {{item.client_name}}
+              {{item.client_id}}
             </div>
           </div>
         </div>
@@ -379,6 +417,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { order, materialPlan, client, inspection } from '@/assets/js/api.js'
 export default {
   data () {
@@ -408,6 +447,45 @@ export default {
     }
   },
   methods: {
+    // 批量导出excel
+    download () {
+      let data = this.inspection_log.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        if (item.rejects_info !== 0) {
+          item.rejects_number = item.rejects_info.reduce((total, current) => {
+            return total + Number(current.number)
+          }, 0)
+          item.rejects_infos = ''
+          item.rejects_client = ''
+          item.rejects_info.forEach((val, key) => {
+            item.rejects_infos += val.reason.join(',')
+            item.rejects_client += val.client_id + '<br />'
+          })
+        } else {
+          item.rejects_number = 0
+          item.rejects_infos = ''
+          item.rejects_client = ''
+        }
+        return item
+      })
+      downloadExcel(data, [
+        { title: '检验日期', key: 'complete_time' },
+        { title: '产品编号', key: 'product_code' },
+        { title: '产品品类', key: 'product_types' },
+        { title: '尺码', key: 'size' },
+        { title: '颜色', key: 'color' },
+        { title: '检验数量', key: 'number' },
+        { title: '次品数量', key: 'rejects_number' },
+        { title: '次品原因', key: 'rejects_infos' },
+        { title: '承担单位', key: 'rejects_client' },
+        { title: '备注', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
     normalInspection (product, colorSize, number) {
       if (number && number <= 0) {
         this.$message.warning('该产品已检验完成')
@@ -627,8 +705,7 @@ export default {
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(5) !== -1
       })
-      this.inspection_log = res[3].data.data
-      this.inspection_log.forEach((item) => {
+      this.inspection_log = res[3].data.data.map(item => {
         let flag = false
         // 检查是否有次品
         JSON.parse(item.rejects_info).forEach((itemChild) => {
@@ -641,6 +718,13 @@ export default {
         } else {
           item.rejects_info = 0
         }
+        let productInfo = this.inspection_detail.find(value => value.product_id === item.product_id)
+        return {
+          ...item,
+          product_code: productInfo ? productInfo.product_code : '',
+          product_types: productInfo ? [productInfo.category_name, productInfo.type_name, productInfo.style_name].join('/') : '',
+          checked: false
+        }
       })
       this.inspection_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
@@ -650,10 +734,11 @@ export default {
           itemChild.inspectionNum = findArr.reduce((total, current) => {
             return total + current.number
           }, 0)
+          console.log(findArr)
           itemChild.rejectNum = findArr.reduce((total, current) => {
-            return total + current.rejects_info === 0 ? 0 : current.rejects_info.reduce((total2, current2) => {
+            return total + (current.rejects_info === 0 ? 0 : current.rejects_info.reduce((total2, current2) => {
               return total2 + Number(current2.number)
-            }, 0)
+            }, 0))
           }, 0)
         })
       })

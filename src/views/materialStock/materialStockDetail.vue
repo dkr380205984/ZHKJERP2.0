@@ -483,7 +483,8 @@
           id='yarn'>
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',stockLog)">批量删除</div>
-          <div class="btn noBorder noMargin">批量打印</div>
+          <div class="btn noBorder noMargin"
+            @click="download">批量导出excel</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -509,7 +510,7 @@
             <span class="tb_row flex08">{{itemLog.type|filterType}}</span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
-              <span class="tb_handle_btn blue">打印</span>
+              <!-- <span class="tb_handle_btn blue">打印</span> -->
               <span class="tb_handle_btn red"
                 @click="deleteLog('one',itemLog.id)">删除</span>
             </span>
@@ -622,6 +623,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { materialStock, weave, processing, replenish } from '@/assets/js/api.js'
 export default {
   data () {
@@ -654,6 +656,29 @@ export default {
     }
   },
   methods: {
+    // 批量导出excel
+    download () {
+      let data = []
+      this.stockLog.forEach(item => {
+        data.push(...item.filter(value => value.checked))
+      })
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        item.type_name = item.type === 1 ? '出库' : item.type === 2 ? '入库' : '最终入库'
+        return item
+      })
+      downloadExcel(data, [
+        { title: '出入库时间', key: 'complete_time' },
+        { title: this.$route.params.type === '1' ? '原料名称' : '辅料名称', key: 'material_name' },
+        { title: '颜色', key: 'material_color' },
+        { title: '数量', key: 'total_weight' },
+        { title: '操作类型', key: 'type_name' },
+        { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
     stockAll (item, type) {
       if (type === 'process') {
         let outInfo = this.activeProcessInfo.map(item => {

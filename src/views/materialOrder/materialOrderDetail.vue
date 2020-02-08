@@ -127,7 +127,7 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <!-- <div class="module">
       <div class="titleCtn">
         <div class="title">入库日志</div>
       </div>
@@ -174,6 +174,60 @@
           </el-pagination>
         </div>
       </div>
+    </div> -->
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">入库日志</span>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="download">批量导出excel</div>
+        </div>
+        <div class="tableCtnLv2 minHeight5">
+          <div class="tb_header">
+            <span class="tb_row"
+              style="flex:0.4"></span>
+            <span class="tb_row">入库时间</span>
+            <span class="tb_row">物料名称</span>
+            <span class="tb_row">物料颜色</span>
+            <span class="tb_row">入库仓库</span>
+            <span class="tb_row">入库重量</span>
+            <span class="tb_row">备注信息</span>
+            <span class="tb_row">操作人</span>
+            <span class="tb_row middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in logArr"
+            :key="index">
+            <span class="tb_row"
+              style="flex:0.4">
+              <el-checkbox v-model="item.checked"
+                @change="checkLogEvent($event,item)"></el-checkbox>
+            </span>
+            <span class="tb_row">{{$getTime(item.create_time)}}</span>
+            <span class="tb_row">{{item.material_name}}</span>
+            <span class="tb_row">{{item.color_code}}</span>
+            <span class="tb_row">{{item.stock_name}}</span>
+            <span class="tb_row">{{item.weight}}</span>
+            <span class="tb_row">{{item.desc?item.desc:'无'}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn red"
+                @click="deleteLog(item.id)">删除</span>
+            </span>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="total"
+            :current-page.sync="page"
+            @current-change="getLogList">
+          </el-pagination>
+        </div>
+      </div>
     </div>
     <div class="bottomFixBar">
       <div class="main">
@@ -191,6 +245,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { materialOrder, stock } from '@/assets/js/api.js'
 export default {
   data () {
@@ -213,11 +268,40 @@ export default {
       material_info: [],
       stockArr: [],
       logArr: [],
+      checkLogArr: [],
       page: 1,
       total: 1
     }
   },
   methods: {
+    // 批量导出excel
+    download () {
+      let data = this.checkLogArr.filter(item => item.checked)
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      downloadExcel(data, [
+        { title: '入库时间', key: 'create_time' },
+        { title: '物料名称', key: 'material_name' },
+        { title: '物料颜色', key: 'color_code' },
+        { title: '入库仓库', key: 'stock_name' },
+        { title: '入库重量', key: 'weight' },
+        { title: '备注信息', key: 'desc' },
+        { title: '操作人', key: 'user_name' }
+      ])
+    },
+    checkLogEvent (event, item) {
+      if (event) {
+        this.checkLogArr.push(this.$clone(item))
+      } else {
+        let flag = this.checkLogArr.find(value => value.id === item.id)
+        if (flag) {
+          flag.checked = false
+          this.checkLogArr = this.checkLogArr.filter(value => value.checked)
+        }
+      }
+    },
     submit (item) {
       if (!item.stock_id || !item.in_weight) {
         this.$message.error('请输入正确信息')
@@ -277,7 +361,12 @@ export default {
         limit: 5,
         page: this.page
       }).then((res) => {
-        this.logArr = res.data.data
+        this.logArr = res.data.data.map(item => {
+          return {
+            ...item,
+            checked: false
+          }
+        })
         this.loading = false
       })
     },
@@ -333,7 +422,6 @@ export default {
       this.stockArr = res[1].data.data
       this.logArr = res[2].data.data
       this.total = res[2].data.meta.total
-      console.log(this.total)
       this.loading = false
     })
   }
