@@ -666,7 +666,7 @@
             <span class="tb_row">{{itemLog.create_time}}</span>
             <span class="tb_row">{{itemLog.product_code}}<br />{{itemLog.type.join('/')}}</span>
             <span class="tb_row flex08">{{itemLog.size + '/' + itemLog.color}}</span>
-            <span class="tb_row flex08">{{itemLog.number+itemLog.unit}}</span>
+            <span class="tb_row flex08">{{itemLog.pack_number+itemLog.unit}}</span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn red"
@@ -889,7 +889,7 @@ export default {
           this.productInfo.forEach(itemPro => {
             let flag = data.filter(item => +item.product_id === +itemPro.id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
             if (flag.length > 0) {
-              itemPro.actual_number = flag.map(item => Number(item.number || 0)).reduce((total, item) => {
+              itemPro.actual_number = flag.map(item => Number(item.pack_number || 0)).reduce((total, item) => {
                 return total + item
               })
             }
