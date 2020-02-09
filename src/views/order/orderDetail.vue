@@ -359,7 +359,7 @@
               <div class="routerBtn"
                 @click="$router.push('/packPlan/packOrderDetail/'+ $route.params.id)">包装辅料订购</div>
               <div class="routerBtn"
-                @click="$router.push('/packPlan/packStock/'+ $route.params.id + '/1')">装箱出库</div>
+                @click="$router.push('/packPlan/packStock/'+ $route.params.id)">装箱出库</div>
             </div>
             <!-- <div class="right btn btnBlue">确认完成</div> -->
           </div>

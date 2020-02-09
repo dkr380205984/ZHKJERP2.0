@@ -39,7 +39,7 @@
         <div class="print_row"
           v-for="(item,index) in planInfo"
           :key="index">
-          <span class="row_item left">{{item.pack_code}}<br />{{item.pack_name}}</span>
+          <span class="row_item left">{{item.pack_code}}<br />{{item.pack_name}}{{item.size_info ? (item.size_info.size_info ? ',' + item.size_info.size_info + 'cm' : '') + (item.size_info.attr ? ',' + item.size_info.attr : '') : ''}}</span>
           <span class="row_item flex28 col">
             <span v-for="(itemInner,indexInner) in item.pack_info"
               :class="['print_row',indexInner === 0 ? 'noBorder' : '']"
