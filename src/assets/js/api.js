@@ -339,7 +339,9 @@ const finance = {
 const statistics = {
   orderList: (params) => http.get(`${baseUrl}/financial/order/overall/count/list`, params),
   orderStatistics: (params) => http.get(`${baseUrl}/financial/order/overall/count/total`, params),
-  materialList: (params) => http.get(`${baseUrl}/financial/material/use/count/list`, params)
+  materialList: (params) => http.get(`${baseUrl}/financial/material/use/count/list`, params),
+  materialDetail: (params) => http.get(`${baseUrl}/financial/material/use/count/detail`, params),
+  productList: (params) => http.get(`${baseUrl}/financial/product/output/count/list`, params)
 }
 // 打印设置
 const print = {

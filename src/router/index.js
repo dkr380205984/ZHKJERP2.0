@@ -305,23 +305,15 @@ const routes = [
       name: '订单财务统计',
       component: () => import('../views/financialStatistics/orderStatistics.vue')
     }, {
-      path: '/financialStatistics/orderDetail',
-      name: '订单财务详情',
-      component: () => import('../views/financialStatistics/orderDetail.vue')
-    }, {
       path: '/financialStatistics/productStatistics/:params',
       name: '产品产量统计',
       component: () => import('../views/financialStatistics/productStatistics.vue')
-    }, {
-      path: '/financialStatistics/productDetail',
-      name: '产品产量详情',
-      component: () => import('../views/financialStatistics/productDetail.vue')
     }, {
       path: '/financialStatistics/materialStatistics/:params',
       name: '物料使用统计',
       component: () => import('../views/financialStatistics/materialStatistics.vue')
     }, {
-      path: '/financialStatistics/materialDetail',
+      path: '/financialStatistics/materialDetail/:name',
       name: '物料使用详情',
       component: () => import('../views/financialStatistics/materialDetail.vue')
     }, {
@@ -331,6 +323,10 @@ const routes = [
     }, {
       path: '/financialStatistics/clientDetail',
       name: '合作公司财务详情',
+      component: () => import('../views/financialStatistics/clientDetail.vue')
+    }, {
+      path: '/financialStatistics/clientDetail',
+      name: '样单财务统计',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
       path: '/tutorialSystem/tutorialSystemDetail',
@@ -490,9 +486,8 @@ router.beforeEach((to, from, next) => {
     '消息列表': ['织为云', '消息列表'],
     '发通知': ['织为云', '发通知'],
     '订单财务统计': ['织为云', '订单财务统计'],
-    '订单财务详情': ['织为云', '订单财务统计', '订单财务详情'],
+    '样单财务统计': ['织为云', '样单财务统计'],
     '产品产量统计': ['织为云', '产品产量统计'],
-    '产品产量详情': ['织为云', '产品产量统计', '产品产量详情'],
     '物料使用统计': ['织为云', '物料使用统计'],
     '物料使用详情': ['织为云', '物料使用统计', '物料使用详情'],
     '合作公司财务统计': ['织为云', '合作公司财务统计'],

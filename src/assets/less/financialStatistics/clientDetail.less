@@ -1,0 +1,141 @@
+@import '../common.less';
+#clientDetail{
+  .module{
+    .listHead{
+      display: flex;
+      height: 152px;
+      .box{
+        flex:1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        .boxTop{
+          line-height: 40px;
+          font-size: @fontMiddle;
+          color: @font45;
+          text-align: center;
+        }
+        .boxBottom{
+          line-height: 40px;
+          text-align: center;
+          color: @font85;
+          .num{
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 2px;
+          }
+          .em{
+            font-size: @fontMiddle;
+          }
+        }
+        &::after{
+          content:'';
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          margin: auto;
+          width:1px;
+          height:58px;
+          background: #E8E8E8;
+        }
+        &:nth-last-of-type(1){
+          &::after{
+            content:'';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            width:1px;
+            height:58px;
+            background: transparent;
+          }
+        }
+      }
+    }
+    .titleCtn{
+      border-bottom: 1px solid #F0F0F0;
+      .clientType{
+        font-size: @fontMiddle;
+        color: @font45;
+        margin-left: 5px;
+      }
+    }
+    .flex20{
+      flex: 2.0;
+    }
+    .positionBtn{
+      float: right;
+      display: flex;
+      align-items: center;
+      line-height:55px;
+      height: 100%;
+      font-size: @fontMiddle;
+    }
+    .paddingTop60{
+      padding-top: 60px;
+    }
+    .swichCtn{
+      border-top: 0;
+      margin-top: 0;
+      margin-bottom: 16px;
+      position: relative;
+      height: 46px;
+      overflow: hidden;
+      .swich:hover{
+        background-color: rgba(26, 149, 255, 0.25);
+      }
+      .handleBtn{
+        position: absolute;
+        top: 50%;
+        width: 32px;
+        height: 44px;
+        line-height: 44px;
+        text-align: center;
+        background-color: #FFF;
+        transform: translateY(-50%);
+        cursor: pointer;
+        &::after{
+          content: '';
+          display: block;
+          border: 9px solid transparent;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+        }
+        &.right{
+          right: 0;
+          &:after{
+            border-left-color: @blue;
+          }
+        }
+        &.left{
+          left: 0;
+          &:after{
+            border-right-color: @blue;
+          }
+        }
+      }
+      .swichCtnBox{      
+        display: flex;
+        flex-wrap: nowrap;
+        transition: all 0.3s linear;
+        position: absolute;
+      }
+    }
+    .tb_collapse{
+      width: 100%;
+      border: none;
+      .two_line{
+        line-height: calc(1em + 8px)
+      }
+    }  
+    .bigPadding{
+      padding: 0 0 0 40px;
+      box-sizing: border-box;
+    }
+  }
+}

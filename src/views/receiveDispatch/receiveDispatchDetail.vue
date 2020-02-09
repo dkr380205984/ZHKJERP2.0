@@ -181,13 +181,13 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">件数</span>
+                      <span class="text">捆数</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库件数"
+                        placeholder="请输入入库捆数"
                         v-model="itemChild.count">
-                        <template slot="append">件</template>
+                        <template slot="append">捆</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -402,11 +402,11 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">件数</span>
+                      <span class="text">捆数</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库件数"
+                        placeholder="请输入入库捆数"
                         v-model="itemChild.count">
                         <template slot="append">件</template>
                       </zh-input>
@@ -474,61 +474,115 @@
       <div class="titleCtn">
         <span class="title">产品出入库日志</span>
       </div>
-      <div class="listCtn hasBorderTop">
-        <div class="btnCtn_page">
-          <div :class="['btn', 'noBorder', 'noMargin', log.filter(item=>item.checked).length > 1 ? 'grayBtn':'']"
-            @click="printTag">打印收发标签</div>
-          <div class="btn noBorder noMargin"
-            @click="download">批量导出excel</div>
-        </div>
-        <div class="tableCtnLv2">
-          <!-- <span class="tb_btn top_right">
-            <div class="btn noBorder"
-              @click="printTag">打印收发标签</div>
-            <div class="btn noBorder"
-              @click="printTag">批量导出Execl</div>
-          </span> -->
-          <span class="tb_header">
-            <span class="tb_row flex04"></span>
-            <span class="tb_row flex12">操作日期</span>
-            <span class="tb_row">加工单位</span>
-            <span class="tb_row">收发类型</span>
-            <span class="tb_row flex18">产品信息</span>
-            <span class="tb_row">尺码颜色</span>
-            <span class="tb_row">件数</span>
-            <span class="tb_row">数量</span>
-            <span class="tb_row">备注</span>
-            <span class="tb_row">操作人</span>
-            <span class="tb_row middle">操作</span>
-          </span>
-          <span class="tb_content"
-            v-for="(item,index) in log"
-            :key="index">
-            <span class="tb_row flex04">
-              <el-checkbox v-model="item.checked"></el-checkbox>
-            </span>
-            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
-            <span class="tb_row">{{item.client_name}}</span>
-            <span class="tb_row">{{item.flag}}</span>
-            <span class="tb_row flex18">
-              {{item.product_code.code}}
-              <br />
-              {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
-            </span>
-            <span class="tb_row">
-              {{item.size}}
-              <br />
-              {{item.color}}
-            </span>
-            <span class="tb_row">{{item.count}}</span>
-            <span class="tb_row">{{item.number}}</span>
-            <span class="tb_row">{{item.desc}}</span>
-            <span class="tb_row">{{item.user_name}}</span>
-            <span class="tb_row middle">
-              <span class="tb_handle_btn red"
-                @click="deleteLog(item.id,item.flag,index)">删除</span>
-            </span>
-          </span>
+      <div class="editCtn hasBorderTop">
+        <!-- <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="normalTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:1.2">操作日期</div>
+                  <div class="tcolumn">加工单位</div>
+                  <div class="tcolumn">收发类型</div>
+                  <div class="tcolumn"
+                    style="flex:2">产品信息</div>
+                  <div class="tcolumn">尺码颜色</div>
+                  <div class="tcolumn">捆数</div>
+                  <div class="tcolumn">数量</div>
+                  <div class="tcolumn">备注</div>
+                  <div class="tcolumn">操作人</div>
+                  <div class="tcolumn">操作</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in log"
+                  :key="index">
+                  <div class="tcolumn"
+                    style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
+                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn">{{item.flag}}</div>
+                  <div class="tcolumn"
+                    style="flex:2">
+                    <span>{{item.product_code.code}}</span>
+                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                  </div>
+                  <div class="tcolumn">
+                    <span>{{item.size}}</span>
+                    <span>{{item.color}}</span>
+                  </div>
+                  <div class="tcolumn">{{item.count}}</div>
+                  <div class="tcolumn">{{item.number}}</div>
+                  <div class="tcolumn">{{item.desc}}</div>
+                  <div class="tcolumn">{{item.user_name}}</div>
+                  <div class="tcolumn">
+                    <span style="color:#F5222D;cursor:pointer"
+                      @click="deleteLog(item.id,item.flag,index)">删除</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin:10px 32px">
+            <div class="tableCtnLv2">
+              <span class="tb_btn top_right">
+                <div class="btn noBorder"
+                  @click="printTag">打印收发标签</div>
+              </span>
+              <span class="tb_header">
+                <span class="tb_row"
+                  style="flex:0.4"></span>
+                <span class="tb_row"
+                  style="flex:1.2">操作日期</span>
+                <span class="tb_row">加工单位</span>
+                <span class="tb_row">收发类型</span>
+                <span class="tb_row"
+                  style="flex:1.8">产品信息</span>
+                <span class="tb_row">尺码颜色</span>
+                <span class="tb_row">捆数</span>
+                <span class="tb_row">数量</span>
+                <span class="tb_row">备注</span>
+                <span class="tb_row">操作人</span>
+                <span class="tb_row middle">操作</span>
+              </span>
+              <span class="tb_content"
+                v-for="(item,index) in log"
+                :key="index">
+                <span class="tb_row"
+                  style="flex:0.4">
+                  <el-checkbox v-model="item.checked"
+                    @change="handleClickLog(item)"></el-checkbox>
+                </span>
+                <span class="tb_row"
+                  style="flex:1.2">{{$getTime(item.complete_time)}}</span>
+                <span class="tb_row">{{item.client_name}}</span>
+                <span class="tb_row">{{item.flag}}</span>
+                <span class="tb_row"
+                  style="flex:1.8">
+                  {{item.product_code.code}}
+                  <br />
+                  {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
+                </span>
+                <span class="tb_row">
+                  {{item.size}}
+                  <br />
+                  {{item.color}}
+                </span>
+                <span class="tb_row">{{item.count}}</span>
+                <span class="tb_row">{{item.number}}</span>
+                <span class="tb_row">{{item.desc}}</span>
+                <span class="tb_row">{{item.user_name}}</span>
+                <span class="tb_row middle">
+                  <span class="tb_handle_btn red"
+                    @click="deleteLog(item.id,item.flag,index)">删除</span>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

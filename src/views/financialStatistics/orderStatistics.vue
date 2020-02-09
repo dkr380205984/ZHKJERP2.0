@@ -148,7 +148,8 @@
             <div class="col">{{item.reality_number}}</div>
             <div class="col">{{item.company_cost}}</div>
             <div class="col">
-              <span class="opr">详情</span>
+              <span class="opr"
+                @click="$router.push('/order/orderDetail/' + item.id)">详情</span>
             </div>
           </div>
         </div>

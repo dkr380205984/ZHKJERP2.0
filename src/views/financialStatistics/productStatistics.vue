@@ -10,7 +10,7 @@
             <el-input class="inputs"
               v-model="keyword"
               @change="changeRouter(1)"
-              placeholder="输入订单号按回车键查询"></el-input>
+              placeholder="输入产品编号按回车键查询"></el-input>
             <el-date-picker v-model="date"
               style="width:290px"
               class="inputs"
@@ -75,9 +75,34 @@
             </div>
           </div>
           <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col flex12"></div>
+            v-for="(item,index) in list"
+            :key="index">
+            <div class="col">
+              <span class="text">{{item.product_code}}</span>
+            </div>
+            <div class="col"
+              style="flex:1.5">
+              <span class="text">{{item.category_info.category_name}}/{{item.category_info.type_name}}/{{item.category_info.style_name}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.order_number}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.pre_price}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.total_price}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.shoddy_goods}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.stock_number}}</span>
+            </div>
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/product/productDetail/' + item.id)">详情</span>
+            </div>
           </div>
         </div>
         <div class="pageCtn">
@@ -86,7 +111,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getList"></el-pagination>
+            @current-change="changeRouter"></el-pagination>
         </div>
       </div>
     </div>
@@ -95,7 +120,7 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
-import { productType } from '@/assets/js/api.js'
+import { productType, statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -145,9 +170,20 @@ export default {
     },
     getList () {
       this.loading = true
-      setTimeout(() => {
+      statistics.productList({
+        limit: 10,
+        page: this.pages,
+        keyword: this.keyword,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+        category_id: this.category_id,
+        type_id: this.type_id,
+        style_id: this.style_id
+      }).then((res) => {
+        this.list = res.data.data
+        this.total = res.data.meta.total
         this.loading = false
-      }, 500)
+      })
     },
     getFilters () {
       let params = getHash(this.$route.params.params)
