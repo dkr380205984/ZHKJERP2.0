@@ -608,7 +608,7 @@
                   <div class="tcolumn">{{item.color_code}}</div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.weight}}{{type==='1'?'kg':item.unit}}</div>
-                  <div class="tcolumn">{{item.price*item.weight}}</div>
+                  <div class="tcolumn">{{parseInt(item.price*item.weight)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn">
@@ -665,7 +665,7 @@
                   <div class="tcolumn">{{item.process_type}}</div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.weight}}{{type==='1'?'kg':item.unit}}</div>
-                  <div class="tcolumn">{{item.price*item.weight}}</div>
+                  <div class="tcolumn">{{parseInt(item.price*item.weight)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn">
@@ -737,7 +737,7 @@
               </div>
             </div>
             <div class="tbody"
-              v-if="stock_list.length>0">
+              v-if="otherYarnStock.length>0">
               <div class="trow"
                 v-for="(item,index) in otherYarnStock"
                 :key="index">

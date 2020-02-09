@@ -1,6 +1,6 @@
 <template>
   <div class="indexMain"
-    id="orderStatistics">
+    id="sampleStatistics">
     <div class="module"
       v-loading="loadingTop">
       <div class="listHead">
@@ -148,8 +148,7 @@
             <div class="col">{{item.reality_number}}</div>
             <div class="col">{{item.company_cost}}</div>
             <div class="col">
-              <span class="opr"
-                @click="$router.push('/order/orderDetail/' + item.id)">详情</span>
+              <span class="opr">详情</span>
             </div>
           </div>
         </div>
@@ -270,5 +269,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/financialStatistics/orderStatistics.less";
+@import "~@/assets/less/financialStatistics/sampleStatistics.less";
 </style>

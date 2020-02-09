@@ -181,13 +181,13 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">件数</span>
+                      <span class="text">捆数</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库件数"
+                        placeholder="请输入入库捆数"
                         v-model="itemChild.count">
-                        <template slot="append">件</template>
+                        <template slot="append">捆</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -402,11 +402,11 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">件数</span>
+                      <span class="text">捆数</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库件数"
+                        placeholder="请输入入库捆数"
                         v-model="itemChild.count">
                         <template slot="append">件</template>
                       </zh-input>
@@ -488,7 +488,7 @@
                   <div class="tcolumn"
                     style="flex:2">产品信息</div>
                   <div class="tcolumn">尺码颜色</div>
-                  <div class="tcolumn">件数</div>
+                  <div class="tcolumn">捆数</div>
                   <div class="tcolumn">数量</div>
                   <div class="tcolumn">备注</div>
                   <div class="tcolumn">操作人</div>
@@ -543,7 +543,7 @@
                 <span class="tb_row"
                   style="flex:1.8">产品信息</span>
                 <span class="tb_row">尺码颜色</span>
-                <span class="tb_row">件数</span>
+                <span class="tb_row">捆数</span>
                 <span class="tb_row">数量</span>
                 <span class="tb_row">备注</span>
                 <span class="tb_row">操作人</span>

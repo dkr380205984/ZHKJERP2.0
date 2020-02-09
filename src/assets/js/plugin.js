@@ -292,6 +292,12 @@ const plugin = {
     setTimeout(() => {
       window.location.reload()
     }, 2000)
+  },
+  // 123456转123，456
+  formatNum (num) {
+    var str = num.toString()
+    var reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
+    return str.replace(reg, '$1,')
   }
 }
 export default {
@@ -305,5 +311,6 @@ export default {
     Vue.prototype.$toFixed = plugin.toFixedAuto
     Vue.prototype.$newSplice = plugin.newSplice
     Vue.prototype.$goElView = plugin.goElView
+    Vue.prototype.$formatNum = plugin.formatNum
   }
 }

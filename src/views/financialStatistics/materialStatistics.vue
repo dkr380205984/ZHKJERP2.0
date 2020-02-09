@@ -58,7 +58,8 @@
             <div class="col">{{item.total_price}}</div>
             <div class="col">{{item.stock_number}}</div>
             <div class="col">
-              <span class="opr">详情</span>
+              <span class="opr"
+                @click="$router.push('/financialStatistics/materialDetail/' + item.name)">详情</span>
             </div>
           </div>
         </div>
@@ -68,7 +69,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getList"></el-pagination>
+            @current-change="changeRouter"></el-pagination>
         </div>
       </div>
     </div>
@@ -126,12 +127,12 @@ export default {
     },
     getFilters () {
       let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.pages = Number(params.page)
       this.keyword = params.keyword
       this.type = Number(params.type)
     }
   },
-  mounted () {
+  created () {
     this.getFilters()
     this.getList()
   }
