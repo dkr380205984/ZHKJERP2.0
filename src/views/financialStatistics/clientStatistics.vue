@@ -33,7 +33,7 @@
         <div class="list">
           <div class="title">
             <div class="col">
-              <span class="text">物料名称</span>
+              <span class="text">公司类型</span>
             </div>
             <div class="col">
               <span class="text">订单公司</span>
@@ -52,9 +52,27 @@
             </div>
           </div>
           <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col"></div>
+            v-for="(item,index) in list"
+            :key="index">
+            <div class="col">
+              <span class="text">{{item.type}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.name}}</span>
+            </div>
+            <div class="col">
+              <span class="text">-</span>
+            </div>
+            <div class="col">
+              <span class="text">-</span>
+            </div>
+            <div class="col">
+              <span class="text">-</span>
+            </div>
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/financialStatistics/clientDetail/'+item.id+'/'+item.type[0])">详情</span>
+            </div>
           </div>
         </div>
         <div class="pageCtn">
@@ -72,6 +90,7 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
+import { client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -80,6 +99,7 @@ export default {
       pages: 1,
       total: 0,
       list: [],
+      type: 1,
       clientStatistics: {
         YJS: 0, // 已结算
         DJS: 0, // 待结算
@@ -107,9 +127,14 @@ export default {
     },
     getList () {
       this.loading = true
-      setTimeout(() => {
+      client.list({
+        limit: 10,
+        page: this.pages,
+        keyword: this.keyword
+      }).then((res) => {
+        this.list = res.data.data
         this.loading = false
-      }, 500)
+      })
     },
     getFilters () {
       let params = getHash(this.$route.params.params)

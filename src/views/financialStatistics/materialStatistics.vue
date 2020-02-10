@@ -59,7 +59,7 @@
             <div class="col">{{item.stock_number}}</div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/financialStatistics/materialDetail/' + item.name)">详情</span>
+                @click="$router.push('/financialStatistics/materialDetail/' + item.name + '/' + type)">详情</span>
             </div>
           </div>
         </div>

@@ -341,9 +341,9 @@ export default {
     },
     getWLYDGList () {
       this.loading = true
-      materialOrder.detail({
+      materialOrder.list({
         material_name: this.$route.params.name,
-        client_id: this.WLDGCMP
+        client_id: this.WLYDGCMP
       }).then((res) => {
         console.log(res)
         this.WLYDGList = res.data
@@ -354,7 +354,8 @@ export default {
   },
   mounted () {
     Promise.all([statistics.materialDetail({
-      material_name: this.$route.params.name
+      material_name: this.$route.params.name,
+      type: this.$route.params.type
     }), materialOrder.list({
       material_name: this.$route.params.name
     }), yarnStock.list({
@@ -364,8 +365,8 @@ export default {
     }), client.list()]).then((res) => {
       this.WLDGList = res[3].data.data
       this.WLDGTotal = res[3].data.data.length
-      this.WLYDGList = res[1].data.data
-      this.WLYDGTotal = res[1].data.data.length
+      this.WLYDGList = res[1].data
+      this.WLYDGTotal = res[1].data.length
       this.CKList = res[2].data.data
       this.CKTotal = res[2].data.data.length
       this.total = res[0].data.data

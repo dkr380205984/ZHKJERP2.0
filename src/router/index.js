@@ -313,7 +313,7 @@ const routes = [
       name: '物料使用统计',
       component: () => import('../views/financialStatistics/materialStatistics.vue')
     }, {
-      path: '/financialStatistics/materialDetail/:name',
+      path: '/financialStatistics/materialDetail/:name/:type',
       name: '物料使用详情',
       component: () => import('../views/financialStatistics/materialDetail.vue')
     }, {
@@ -321,7 +321,7 @@ const routes = [
       name: '合作公司财务统计',
       component: () => import('../views/financialStatistics/clientStatistics.vue')
     }, {
-      path: '/financialStatistics/clientDetail',
+      path: '/financialStatistics/clientDetail/:id/:type',
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {

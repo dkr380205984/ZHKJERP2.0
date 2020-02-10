@@ -138,7 +138,7 @@
                           filterable>
                           <el-option v-for="item in weave_company"
                             :key="item.id"
-                            :value="item.id"
+                            :value="Number(item.id)"
                             :label="item.name"></el-option>
                         </el-select>
                       </div>
