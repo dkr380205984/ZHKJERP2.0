@@ -71,7 +71,7 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/financialStatistics/clientDetail/'+item.id+'/'+item.type[0])">详情</span>
+                @click="$router.push('/financialStatistics/clientDetail/'+item.id+'/'+ JSON.stringify(item.type))">详情</span>
             </div>
           </div>
         </div>
@@ -125,6 +125,9 @@ export default {
     reset () {
       this.$router.push('/financialStatistics/clientStatistics/page=1&&keyword=')
     },
+    getStatistics () {
+
+    },
     getList () {
       this.loading = true
       client.list({
@@ -144,6 +147,8 @@ export default {
   mounted () {
     this.getFilters()
     this.getList()
+    this.getStatistics()
+
     this.loadingTop = false
   }
 }

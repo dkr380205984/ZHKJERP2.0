@@ -570,7 +570,6 @@ export default {
         this.$message.error('请勿频繁点击')
         return
       }
-      this.lock = false
       if (!this.sample_order_title) {
         this.$message.error('请输入样单标题')
         return
