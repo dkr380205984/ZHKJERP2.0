@@ -1131,7 +1131,6 @@ export default {
       this.orderInfo = res[0].data.data
       this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       this.process_detail = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
-      console.log(this.weave_detail, this.process_detail)
       this.weave_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.process_product = this.$mergeData(res[2].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.weave_company = res[3].data.data.filter((item) => {
@@ -1153,7 +1152,7 @@ export default {
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type === '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1162,7 +1161,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1171,7 +1170,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.outNum = res[5].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
