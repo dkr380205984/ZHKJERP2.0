@@ -60,10 +60,12 @@
               style="margin-left:0">重置</div>
           </div>
           <div class="rightCtn">
-            <span class="opr blue">操作记录</span>
+            <span class="opr blue"
+              @click="oprFlag=true">操作记录</span>
             <span class="opr green"
-              @click="chargebacksFlag=true">结算</span>
-            <span class="opr red">扣款</span>
+              @click="goSettle">结算</span>
+            <span class="opr red"
+              @click="goChargebacks">扣款</span>
           </div>
         </div>
         <!-- 订单公司 -->
@@ -95,9 +97,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -113,7 +122,8 @@
                     v-for="(itemChild,indexChild) in item.child_data"
                     :key="indexChild">
                     <span class="tb_row">{{itemChild.product_code}}</span>
-                    <span class="tb_row">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
+                    <span class="tb_row"
+                      v-if="itemChild.category_info">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
                     <span class="tb_row">{{itemChild.product_name}}</span>
                     <span class="tb_row">{{itemChild.size}}/{{itemChild.color}}</span>
                     <span class="tb_row">{{itemChild.price}}</span>
@@ -154,9 +164,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -207,9 +224,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -262,9 +286,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -279,7 +310,8 @@
                     v-for="(itemChild,indexChild) in item.child_data"
                     :key="indexChild">
                     <span class="tb_row">{{itemChild.product_code}}</span>
-                    <span class="tb_row">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
+                    <span class="tb_row"
+                      v-if="itemChild.category_info">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
                     <span class="tb_row">{{itemChild.size}}/{{itemChild.color}}</span>
                     <span class="tb_row">{{itemChild.price}}</span>
                     <span class="tb_row">{{itemChild.number}}</span>
@@ -319,9 +351,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -337,7 +376,8 @@
                     v-for="(itemChild,indexChild) in item.child_data"
                     :key="indexChild">
                     <span class="tb_row">{{itemChild.product_code}}</span>
-                    <span class="tb_row">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
+                    <span class="tb_row"
+                      v-if="itemChild.category_info">{{itemChild.category_info.category_name}}/{{itemChild.category_info.type_name}}/{{itemChild.category_info.style_name}}</span>
                     <span class="tb_row">{{itemChild.size}}/{{itemChild.color}}</span>
                     <span class="tb_row">{{itemChild.price}}</span>
                     <span class="tb_row">{{itemChild.number}}</span>
@@ -378,9 +418,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -433,9 +480,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -488,9 +542,16 @@
                   <span class="tb_row">{{item.order_time}}</span>
                   <span class="tb_row">{{item.group_name}}</span>
                   <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row">{{item.deduct_log}}</span>
-                  <span class="tb_row">{{item.settle_log}}</span>
-                  <span class="tb_row">详情</span>
+                  <span class="tb_row"
+                    :class="{'red':item.deduct_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
+                  <span class="tb_row"
+                    :class="{'blue':item.settle_log>0}"
+                    style="line-height:30px"
+                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
+                  <span class="tb_row blue"
+                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -514,26 +575,22 @@
         </template>
       </div>
     </div>
+    <!-- 结算 -->
     <div class="popup"
-      v-show="chargebacksFlag">
+      v-show="settleFlag">
       <div class="main">
         <div class="title">
           <div class="text">订单结算</div>
           <i class="el-icon-close"
-            @click="chargebacksFlag=false"></i>
+            @click="settleFlag=false"></i>
         </div>
         <div class="content">
           <div class="row">
             <div class="label">订单编号：</div>
             <div class="info">
-              <el-tag closable>
-                19ABA
-              </el-tag>
-              <el-tag closable>
-                19ABA12
-              </el-tag>
-              <el-tag closable>
-                19ABA123C
+              <el-tag v-for="(item,index) in checkOrder"
+                :key="index">
+                {{item.order_code}}
               </el-tag>
             </div>
           </div>
@@ -541,7 +598,8 @@
             <div class="label">结算日期：</div>
             <div class="info">
               <el-date-picker style="width:100%"
-                v-model="chargebacks.date"
+                v-model="settle.date"
+                value-format="yyyy-MM-dd"
                 type="date"
                 placeholder="选择日期">
               </el-date-picker>
@@ -552,7 +610,7 @@
             <div class="info">
               <zh-input placeholder="请输入结算金额"
                 type="number"
-                v-model="chargebacks.price">
+                v-model="settle.price">
                 <template slot="append">元</template>
               </zh-input>
             </div>
@@ -560,14 +618,14 @@
           <div class="row">
             <div class="label">是否开票：</div>
             <div class="info">
-              <el-radio v-model="chargebacks.ifInvoice"
-                :label="true">已开票</el-radio>
-              <el-radio v-model="chargebacks.ifInvoice"
-                :label="false">未开票</el-radio>
+              <el-radio v-model="settle.ifInvoice"
+                :label="1">已开票</el-radio>
+              <el-radio v-model="settle.ifInvoice"
+                :label="2">未开票</el-radio>
             </div>
           </div>
-          <div v-show="chargebacks.ifInvoice"
-            v-for="(item,index) in chargebacks.invoiceDetail"
+          <div v-show="settle.ifInvoice === 1"
+            v-for="(item,index) in settle.invoiceDetail"
             :key="index">
             <div class="row">
               <div class="label">开票号码：</div>
@@ -594,14 +652,205 @@
             <div class="label">备注信息：</div>
             <div class="info">
               <el-input type="textarea"
-                placeholder="请输入"
+                placeholder="请输入备注信息"
+                v-model="settle.desc"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="settleFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="settleFn">确定</div>
+        </div>
+      </div>
+    </div>
+    <!-- 扣款 -->
+    <div class="popup"
+      v-show="chargebacksFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">订单结算</div>
+          <i class="el-icon-close"
+            @click="chargebacksFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="label">订单编号：</div>
+            <div class="info">
+              <el-tag v-for="(item,index) in checkOrder"
+                :key="index">
+                {{item.order_code}}
+              </el-tag>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">扣款日期：</div>
+            <div class="info">
+              <el-date-picker style="width:100%"
+                v-model="chargebacks.date"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">扣款金额：</div>
+            <div class="info">
+              <zh-input placeholder="请输入结算金额"
+                type="number"
+                v-model="chargebacks.price">
+                <template slot="append">元</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">扣款原因：</div>
+            <div class="info">
+              <el-input type="textarea"
+                placeholder="请输入扣款原因"
                 v-model="chargebacks.desc"></el-input>
             </div>
           </div>
         </div>
         <div class="opr">
-          <div class="btn btnGray">取消</div>
-          <div class="btn btnBlue">确定</div>
+          <div class="btn btnGray"
+            @click="chargebacksFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="chargebacksFn">确定</div>
+        </div>
+      </div>
+    </div>
+    <!-- 操作记录 -->
+    <div class="popup"
+      v-show="oprFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">操作记录</div>
+          <i class="el-icon-close"
+            @click="oprFlag=false"></i>
+        </div>
+        <div class="content">
+          <el-timeline>
+            <el-timeline-item v-for="(item, index) in oprList"
+              :key="index">
+              <el-collapse>
+                <el-collapse-item>
+                  <template slot="title">
+                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
+                    <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
+                      style="margin-left:20px">{{item.methods}}</span>
+                    <span style="margin-left:20px">金额：
+                      <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}</span>
+                    </span>
+                  </template>
+                  <template v-if="item.methods==='结算'">
+                    <div class="collapseBox">
+                      <span class="label">是否开票：</span>
+                      <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
+                    </div>
+                    <div class="collapseBox"
+                      v-for="(itemChild,indexChild) in item.invoice_info"
+                      :key="indexChild"
+                      v-show="item.is_invoice===1">
+                      <span class="label">发票信息：</span>
+                      <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
+                    </div>
+                    <div class="collapseBox">
+                      <span class="label">包含订单：</span>
+                      <span class="info">
+                        <el-tag v-for="order in item.order_code"
+                          :key="order.order_code">{{order.order_code}}</el-tag>
+                      </span>
+                    </div>
+                    <div class="collapseBox">
+                      <span class="label">备注信息：</span>
+                      <span class="info">{{item.desc}}</span>
+                    </div>
+                  </template>
+                  <template v-if="item.methods==='扣款'">
+                    <div class="collapseBox">
+                      <span class="label">包含订单：</span>
+                      <span class="info">
+                        <el-tag v-for="order in item.order_code"
+                          :key="order.order_code">{{order.order_code}}</el-tag>
+                      </span>
+                    </div>
+                    <div class="collapseBox">
+                      <span class="label">扣款原因：</span>
+                      <span class="info">{{item.desc}}</span>
+                    </div>
+                  </template>
+                </el-collapse-item>
+              </el-collapse>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="oprFlag=false">关闭</div>
+          <div class="btn btnBlue"
+            @click="oprFlag=false">确定</div>
+        </div>
+      </div>
+    </div>
+    <!-- 订单结算/扣款记录 -->
+    <div class="popup"
+      v-show="orderOprFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">操作记录</div>
+          <i class="el-icon-close"
+            @click="orderOprFlag=false"></i>
+        </div>
+        <div class="content">
+          <el-timeline>
+            <el-timeline-item v-for="(item, index) in orderOprList"
+              :key="index">
+              <el-collapse>
+                <el-collapse-item>
+                  <template slot="title">
+                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
+                    <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
+                      style="margin-left:20px">{{item.methods}}</span>
+                    <span style="margin-left:20px">金额：
+                      <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}</span>
+                    </span>
+                  </template>
+                  <template v-if="item.methods==='结算'">
+                    <div class="collapseBox">
+                      <span class="label">是否开票：</span>
+                      <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
+                    </div>
+                    <div class="collapseBox"
+                      v-for="(itemChild,indexChild) in item.invoice_info"
+                      :key="indexChild"
+                      v-show="item.is_invoice===1">
+                      <span class="label">发票信息：</span>
+                      <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
+                    </div>
+                    <div class="collapseBox">
+                      <span class="label">备注信息：</span>
+                      <span class="info">{{item.desc}}</span>
+                    </div>
+                  </template>
+                  <template v-if="item.methods==='扣款'">
+                    <div class="collapseBox">
+                      <span class="label">扣款原因：</span>
+                      <span class="info">{{item.desc}}</span>
+                    </div>
+                  </template>
+                </el-collapse-item>
+              </el-collapse>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="orderOprFlag=false">关闭</div>
+          <div class="btn btnBlue"
+            @click="orderOprFlag=false">确定</div>
         </div>
       </div>
     </div>
@@ -609,7 +858,7 @@
 </template>
 
 <script>
-import { statistics } from '@/assets/js/api.js'
+import { statistics, settle, chargebacks } from '@/assets/js/api.js'
 import { companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -628,27 +877,52 @@ export default {
         wait_settle_price: 0,
         client_name: ''
       },
-      chargebacksFlag: false,
-      chargebacks: {
+      settleFlag: false,
+      settle: {
         date: '',
         price: '',
-        ifInvoice: false,
+        ifInvoice: 2,
         invoiceDetail: [{
           invoiceNum: '',
           invoicePrice: ''
         }],
         desc: ''
-      }
+      },
+      chargebacksFlag: false,
+      chargebacks: {
+        date: '',
+        price: '',
+        desc: ''
+      },
+      oprFlag: false,
+      oprList: [],
+      orderOprFlag: false,
+      orderOprList: []
     }
   },
   watch: {
     type (val) {
       this.init()
+    },
+    checkAll (val) {
+      if (val) {
+        this.list.forEach((item) => {
+          item.check = true
+        })
+      } else {
+        this.list.forEach((item) => {
+          item.check = false
+        })
+      }
     }
   },
   computed: {
     clientType () {
       return companyType.find((item) => item.value === Number(this.type)).name
+    },
+    // 勾选订单
+    checkOrder () {
+      return this.list.filter((item) => item.check)
     }
   },
   filters: {
@@ -662,13 +936,62 @@ export default {
 
     },
     addInvoice () {
-      this.chargebacks.invoiceDetail.push({
+      this.settle.invoiceDetail.push({
         invoiceNum: '',
         invoicePrice: ''
       })
     },
     deleteInvoice (index) {
-      this.chargebacks.invoiceDetail.splice(index, 1)
+      this.settle.invoiceDetail.splice(index, 1)
+    },
+    goSettle () {
+      if (this.checkOrder.length === 0) {
+        this.$message.error('请先勾选订单再进行扣款')
+      } else {
+        this.settleFlag = true
+      }
+    },
+    settleFn () {
+      this.loading = true
+      settle.create({
+        client_id: this.$route.params.id,
+        order_id: JSON.stringify(this.checkOrder.map((item) => item.order_id)),
+        complete_time: this.settle.date,
+        settle_price: this.settle.price,
+        is_invoice: this.settle.ifInvoice,
+        invoice_info: JSON.stringify(this.settle.invoiceDetail),
+        desc: this.settle.desc,
+        type: this.type
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('结算成功')
+          this.settleFlag = false
+          this.init()
+        }
+      })
+    },
+    goChargebacks () {
+      if (this.checkOrder.length === 0) {
+        this.$message.error('请先勾选订单再进行结算')
+      } else {
+        this.chargebacksFlag = true
+      }
+    },
+    chargebacksFn () {
+      chargebacks.create({
+        client_id: this.$route.params.id,
+        order_id: JSON.stringify(this.checkOrder.map((item) => item.order_id)),
+        complete_time: this.chargebacks.date,
+        deduct_price: this.chargebacks.price,
+        desc: this.chargebacks.desc,
+        type: this.type
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('扣款成功')
+          this.chargebacksFlag = false
+          this.init()
+        }
+      })
     },
     init () {
       this.loading = true
@@ -678,6 +1001,12 @@ export default {
       }), statistics.clientDetailStatistics({
         client_id: this.$route.params.id,
         client_type: this.type
+      }), chargebacks.log({
+        client_id: this.$route.params.id,
+        client_type: this.type
+      }), settle.log({
+        client_id: this.$route.params.id,
+        client_type: this.type
       })]).then((res) => {
         this.loading = false
         this.statistics = res[1].data
@@ -685,7 +1014,54 @@ export default {
           item.check = false
           return item
         })
+        this.oprList = res[2].data.data.map((item) => {
+          item.methods = '扣款'
+          return item
+        }).concat(res[3].data.data.map((item) => {
+          item.methods = '结算'
+          return item
+        })).sort((a, b) => {
+          return new Date(a.ccomplete_time) - new Date(b.complete_time)
+        })
       })
+    },
+    getLog (num, type, orderId) {
+      if (Number(num) > 0) {
+        this.loading = true
+        if (type === '扣款') {
+          chargebacks.log({
+            client_id: this.$route.params.id,
+            client_type: this.type,
+            order_id: orderId
+          }).then((res) => {
+            if (res.data.status) {
+              this.orderOprFlag = true
+              this.orderOprList = res.data.data.map((item) => {
+                item.methods = type
+                return item
+              })
+              this.loading = false
+            }
+          })
+        } else {
+          settle.log({
+            client_id: this.$route.params.id,
+            client_type: this.type,
+            order_id: orderId
+          }).then((res) => {
+            if (res.data.status) {
+              this.orderOprFlag = true
+              this.orderOprList = res.data.data.map((item) => {
+                item.methods = type
+                return item
+              })
+              this.loading = false
+            }
+          })
+        }
+      } else {
+        this.$message.warning('该订单没有' + type + '记录')
+      }
     }
   },
   mounted () {
@@ -718,6 +1094,25 @@ export default {
   }
   .el-collapse-item__wrap {
     background-color: #f2f4f7;
+  }
+  .popup {
+    .el-timeline-item {
+      padding-bottom: 0px;
+      margin-bottom: -9px;
+    }
+    .el-collapse-item__header {
+      min-height: 46px;
+      height: 46px;
+    }
+    .el-timeline-item__tail {
+      margin-top: 14px;
+    }
+    .el-timeline-item__node--normal {
+      margin-top: 14px;
+    }
+    .collapseBox {
+      margin: 12px;
+    }
   }
 }
 </style>

@@ -342,8 +342,20 @@ const statistics = {
   materialList: (params) => http.get(`${baseUrl}/financial/material/use/count/list`, params),
   materialDetail: (params) => http.get(`${baseUrl}/financial/material/use/count/detail`, params),
   productList: (params) => http.get(`${baseUrl}/financial/product/output/count/list`, params),
+  clientList: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/list`, params),
+  clientStatistics: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/total`, params),
   clientDetailList: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/list`, params),
   clientDetailStatistics: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/total`, params)
+}
+// 订单结算
+const settle = {
+  create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
+  log: (params) => http.get(`${baseUrl}/financial/settle/list`, params)
+}
+// 订单扣款
+const chargebacks = {
+  create: (params) => http.post(`${baseUrl}/financial/deduct/save`, params, 'application/json'),
+  log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params)
 }
 // 打印设置
 const print = {
@@ -362,6 +374,8 @@ const indexCount = {
 // 修改账户密码
 const changeUserPasd = (params) => http.post(`${baseUrl}/user/edit/pass`, params, 'application/json')
 export {
+  settle,
+  chargebacks,
   statistics,
   changeUserPasd,
   indexCount,
