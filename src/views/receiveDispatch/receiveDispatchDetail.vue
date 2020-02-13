@@ -408,7 +408,7 @@
                       <zh-input type="number"
                         placeholder="请输入入库捆数"
                         v-model="itemChild.count">
-                        <template slot="append">件</template>
+                        <template slot="append">捆</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -684,7 +684,7 @@ export default {
           number: number || '',
           count: ''
         }],
-        client_id: client ? client.toString() : '',
+        client_id: client,
         date: this.$getTime(new Date()),
         desc: ''
       })
@@ -759,43 +759,98 @@ export default {
           }
         })
       })
+      let errorFlag2 = false
+      if (this.weave_detail.length > 0) {
+        this.weave_data.forEach((item) => {
+          let finded = this.weave_detail.find((itemFind) => itemFind.client_id === item.client_id)
+          if (!finded) {
+            errorFlag2 = true
+          }
+        })
+      }
       if (errorFlag) {
         this.$message.error(errorMsg)
-        return
       }
-      let formData = []
-      this.weave_data.forEach((item) => {
-        item.product_info.forEach((itemChild) => {
-          formData.push({
-            order_id: this.$route.params.id,
-            order_type: 1,
-            product_id: item.product_id,
-            type: 1, // 类型，1 织造 2 加工
-            client_id: item.client_id,
-            size: itemChild.colorSize.split('/')[0],
-            color: itemChild.colorSize.split('/')[1],
-            count: itemChild.count,
-            number: itemChild.number,
-            complete_time: item.date,
-            production_type: '织造',
-            desc: item.desc
+      if (errorFlag2) {
+        this.$confirm('检测到入库公司没有分配织造,请确认是否要继续入库?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let formData = []
+          this.weave_data.forEach((item) => {
+            item.product_info.forEach((itemChild) => {
+              formData.push({
+                order_id: this.$route.params.id,
+                order_type: 1,
+                product_id: item.product_id,
+                type: 1, // 类型，1 织造 2 加工
+                client_id: item.client_id,
+                size: itemChild.colorSize.split('/')[0],
+                color: itemChild.colorSize.split('/')[1],
+                count: itemChild.count,
+                number: itemChild.number,
+                complete_time: item.date,
+                production_type: '织造',
+                desc: item.desc
+              })
+            })
+          })
+          receive.create({ data: formData }).then((res) => {
+            if (res.data.status) {
+              this.$message.success('入库成功，刷新页面后更新入库数量')
+              this.weave_data = []
+              this.weave_flag = false
+              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+                this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                this.msgSwitch = true
+              } else {
+                this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              }
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消入库'
           })
         })
-      })
-      receive.create({ data: formData }).then((res) => {
-        if (res.data.status) {
-          this.$message.success('入库成功，刷新页面后更新入库数量')
-          this.weave_data = []
-          this.weave_flag = false
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-            this.msgSwitch = true
-          } else {
-            this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+      } else {
+        let formData = []
+        this.weave_data.forEach((item) => {
+          item.product_info.forEach((itemChild) => {
+            formData.push({
+              order_id: this.$route.params.id,
+              order_type: 1,
+              product_id: item.product_id,
+              type: 1, // 类型，1 织造 2 加工
+              client_id: item.client_id,
+              size: itemChild.colorSize.split('/')[0],
+              color: itemChild.colorSize.split('/')[1],
+              count: itemChild.count,
+              number: itemChild.number,
+              complete_time: item.date,
+              production_type: '织造',
+              desc: item.desc
+            })
+          })
+        })
+        receive.create({ data: formData }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('入库成功，刷新页面后更新入库数量')
+            this.weave_data = []
+            this.weave_flag = false
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+            }
           }
-        }
-      })
+        })
+      }
     },
     addColorSize (data, index) {
       this[data][index].product_info.push({
@@ -911,6 +966,78 @@ export default {
         this.$message.error(errorMsg)
         return
       }
+      let errorFlag2 = false
+      if (this.process_detail.length > 0) {
+        this.process_data.forEach((item) => {
+          let finded = this.process_detail.find((itemFind) => Number(itemFind.client_id) === Number(item.client_id))
+          if (!finded) {
+            errorFlag2 = true
+          }
+        })
+      }
+      if (errorFlag2) {
+        this.$confirm('检测到所选单位和分配时不匹配，是否确认?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let formData = []
+          this.process_data.forEach((item) => {
+            item.product_info.forEach((itemChild) => {
+              formData.push({
+                order_id: this.$route.params.id,
+                order_type: 1,
+                product_id: item.product_id,
+                type: 2, // 类型，1 织造 2 加工
+                client_id: item.client_id,
+                size: itemChild.colorSize.split('/')[0],
+                color: itemChild.colorSize.split('/')[1],
+                count: itemChild.count,
+                number: itemChild.number,
+                complete_time: item.date,
+                production_type: item.production_type,
+                desc: item.desc
+              })
+            })
+          })
+          if (this.process_type === '入库') {
+            receive.create({ data: formData }).then((res) => {
+              if (res.data.status) {
+                this.$message.success('入库成功，刷新页面后更新入库数量')
+                this.process_data = []
+                this.process_flag = false
+                if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                  this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+                  this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                  this.msgSwitch = true
+                } else {
+                  this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                }
+              }
+            })
+          } else {
+            dispatch.create({ data: formData }).then((res) => {
+              if (res.data.status) {
+                this.$message.success('出库成功，刷新页面后更新出库数量')
+                this.process_data = []
+                this.process_flag = false
+                if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                  this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+                  this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工出库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                  this.msgSwitch = true
+                } else {
+                  this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                }
+              }
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
+      }
       let formData = []
       this.process_data.forEach((item) => {
         item.product_info.forEach((itemChild) => {
@@ -1004,6 +1131,7 @@ export default {
       this.orderInfo = res[0].data.data
       this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       this.process_detail = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      console.log(this.weave_detail, this.process_detail)
       this.weave_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.process_product = this.$mergeData(res[2].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.weave_company = res[3].data.data.filter((item) => {

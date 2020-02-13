@@ -1856,12 +1856,14 @@ export default {
         }
         return item
       }).filter(item => item.type === Number(this.type))
+      console.log(this.order_stock_log)
       this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
       this.order_stock_info.forEach((item) => {
         item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
           return total + current.price * current.weight
         }, 0))
       })
+      console.log(this.order_stock_info)
       this.stock_list = this.$mergeData(res[6].data.data.stock_info.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
       this.processList = res[7].data.data.filter(item => Number(item.type) === 1)
       this.process_log = res[8].data.data.filter(item => item.type === Number(this.type))

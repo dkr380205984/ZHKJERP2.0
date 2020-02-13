@@ -639,7 +639,7 @@ export default {
             return {
               colorSize: itemChild.size + '/' + itemChild.color,
               price: '',
-              number: itemChild.production_number - itemChild.processNum
+              number: itemChild.production_number
             }
           }),
           part_id: [],

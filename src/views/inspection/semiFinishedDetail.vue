@@ -178,13 +178,13 @@
                   </div>
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">件数</span>
+                      <span class="text">捆数</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入检验件数"
+                        placeholder="请输入检验捆数"
                         v-model="itemChild.count">
-                        <template slot="append">件</template>
+                        <template slot="append">捆</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
