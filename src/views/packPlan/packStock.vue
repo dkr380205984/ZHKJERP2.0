@@ -748,7 +748,7 @@
                 <el-popover placement="top"
                   width="200"
                   trigger="click"
-                  :content="itemLog.reamrk">
+                  :content="itemLog.remark">
                   <span class="btn noBorder"
                     style="margin:0"
                     slot="reference">查看</span>
@@ -876,8 +876,7 @@ export default {
             let filterLog = data.filter(item => item.pack_plan_id === this.activePlanId)
             this.activePlanInfo.forEach(itemPack => {
               itemPack.product_info.forEach(itemPro => {
-                let flag = filterLog.filter(item => item.product_id === itemPro.product_id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
-                // console.log(flag)
+                let flag = filterLog.filter(item => item.pack_code === itemPack.pack_code && item.product_id === itemPro.product_id && item.size === itemPro.size_color[0] && item.color === itemPro.size_color[1])
                 if (flag.length > 0) {
                   itemPro.actual_number = flag.map(item => Number(item.number || 0)).reduce((total, item) => {
                     return total + item

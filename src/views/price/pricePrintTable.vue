@@ -98,7 +98,7 @@
           <span class="row_item center">{{shuifei.price ? shuifei.price : 0}}元</span>
         </div>
         <div class="print_row">
-          <span class="row_item w180 center">基本佣金</span>
+          <span class="row_item w180 center">基本利润</span>
           <span class="row_item center">-</span>
           <span class="row_item center">-</span>
           <span class="row_item center">-</span>

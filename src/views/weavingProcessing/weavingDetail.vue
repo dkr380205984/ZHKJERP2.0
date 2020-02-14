@@ -477,6 +477,7 @@
                   <div class="tcolumn">补纱日期</div>
                   <div class="tcolumn">纱线名称</div>
                   <div class="tcolumn">纱线颜色</div>
+                  <div class="tcolumn">补纱数量</div>
                   <div class="tcolumn">承担比例</div>
                   <div class="tcolumn">备注信息</div>
                   <div class="tcolumn">操作</div>
@@ -489,6 +490,7 @@
                   <div class="tcolumn">{{item.created_at.slice(0,10)}}</div>
                   <div class="tcolumn">{{item.material_name}}</div>
                   <div class="tcolumn">{{item.material_color}}</div>
+                  <div class="tcolumn">{{item.need_weight}}</div>
                   <div class="tcolumn">
                     <span v-for="(itemChild,indexChild) in item.client_info"
                       :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}%)</span>
@@ -647,43 +649,13 @@
             @click="printPopup=false"></i>
         </div>
         <div class="content">
-          <!-- <div class="tips">
-            提示信息：请按实际情况填写金额承担比例。
-          </div> -->
-          <!-- <div class="row"
-            v-for="(item,index) in printInfo"
-            :key="index">
-            <div class="label"
-              :style="{'visibility':index>0?'hidden':'inhert'}">补纱信息：</div>
-            <div class="info"
-              style="display:flex">
-              <el-select v-model="item.yarn"
-                filterable
-                placeholder="请选择纱线">
-                <el-option v-for="item in replenish_yarn"
-                  :key="item.name"
-                  :value="item.name"
-                  :label="item.name"></el-option>
-              </el-select>
-              <el-input style="margin-left:5px"
-                v-model="item.weight"
-                placeholder="请输入重量">
-                <template slot="append">kg</template>
-              </el-input>
-            </div>
-            <div class="editBtn blue"
-              v-if="index===0"
-              @click="addReplenish">添加</div>
-            <div class="editBtn red"
-              v-if="index>0"
-              @click="deleteReplenish(index)">删除</div>
-          </div> -->
           <div class="tableCtnLv2 lineHeight40 minHeight5">
             <div class="tb_header">
               <span class="tb_row flex03"></span>
               <span class="tb_row flex06">补纱日期</span>
               <span class="tb_row">纱线名称</span>
               <span class="tb_row flex06">颜色</span>
+              <span class="tb_row flex06">重量</span>
               <span class="tb_row">承担比例</span>
             </div>
             <div class="tb_content"
@@ -695,6 +667,7 @@
               <span class="tb_row flex06">{{item.created_at}}</span>
               <span class="tb_row">{{item.material_name}}</span>
               <span class="tb_row flex06">{{item.material_color}}</span>
+              <span class="tb_row flex06">{{item.need_weight}}</span>
               <span class="tb_row">
                 <template v-for="(value,key) in item.percent_info">
                   {{value}}
@@ -770,6 +743,7 @@ export default {
   methods: {
     // 补纱打印
     printReplenish (client) {
+      console.log(client)
       this.printPopup = true
       this.printInfo = this.replenish_log.filter(item => item.replenish_name === client).map(item => {
         return {
@@ -779,6 +753,7 @@ export default {
           client_name: item.replenish_name,
           material_name: item.material_name,
           created_at: this.$getTime(item.created_at),
+          need_weight: item.need_weight,
           percent_info: item.client_info.map(value => {
             return value.client_name + '(' + value.percent + '%)'
           })
