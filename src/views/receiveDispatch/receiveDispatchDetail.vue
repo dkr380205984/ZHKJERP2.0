@@ -453,7 +453,13 @@
                   @click="processIn()">入库</span>
                 <span class="once"
                   v-if="!process_flag"
+                  @click="processInAll()">一键入库</span>
+                <span class="once"
+                  v-if="!process_flag"
                   @click="processOut()">出库</span>
+                <span class="once"
+                  v-if="!process_flag"
+                  @click="processOutAll()">一键出库</span>
                 <span class="once cancle"
                   v-if="process_flag"
                   @click="cancleProcess">取消{{process_type}}</span>
@@ -916,6 +922,72 @@ export default {
         date: this.$getTime(new Date()),
         desc: ''
       })
+    },
+    processInAll () {
+      this.process_detail.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          if (itemChild.number - itemChild.inNum > 0) {
+            this.process_data.push({
+              product_id: itemChild.product_id,
+              colorSizeArr: this.process_product.find((itemFind) => {
+                return itemFind.product_id === itemChild.product_id
+              }).childrenMergeInfo.map((item) => {
+                return {
+                  name: item.size + '/' + item.color
+                }
+              }),
+              product_info: [{
+                colorSize: itemChild.size + '/' + itemChild.color || '',
+                number: itemChild.number - itemChild.inNum,
+                count: ''
+              }],
+              production_type: itemChild.type, // 工序
+              client_id: item.client_id.toString(),
+              date: this.$getTime(new Date()),
+              desc: ''
+            })
+          }
+        })
+      })
+      if (this.process_data.length > 0) {
+        this.process_type = '入库'
+        this.process_flag = true
+      } else {
+        this.$message.warning('产品已全部入库，如有需要可以手动入库')
+      }
+    },
+    processOutAll () {
+      this.process_detail.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          if (itemChild.number - itemChild.outNum > 0) {
+            this.process_data.push({
+              product_id: itemChild.product_id,
+              colorSizeArr: this.process_product.find((itemFind) => {
+                return itemFind.product_id === itemChild.product_id
+              }).childrenMergeInfo.map((item) => {
+                return {
+                  name: item.size + '/' + item.color
+                }
+              }),
+              product_info: [{
+                colorSize: itemChild.size + '/' + itemChild.color || '',
+                number: itemChild.number - itemChild.outNum,
+                count: ''
+              }],
+              production_type: itemChild.type, // 工序
+              client_id: item.client_id.toString(),
+              date: this.$getTime(new Date()),
+              desc: ''
+            })
+          }
+        })
+      })
+      if (this.process_data.length > 0) {
+        this.process_type = '出库'
+        this.process_flag = true
+      } else {
+        this.$message.warning('产品已全部出库，如有需要可以手动出库')
+      }
     },
     cancleProcess () {
       this.process_data = []
