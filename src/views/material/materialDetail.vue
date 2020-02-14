@@ -1208,7 +1208,6 @@ export default {
       })
     },
     easyOrder (type) {
-      this.order_flag = true
       this.order_data = []
       this.statistic_data.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
@@ -1229,7 +1228,12 @@ export default {
           }
         })
       })
-      this.easyOrderFlag = true
+      if (this.order_data.length > 0) {
+        this.order_flag = true
+        this.easyOrderFlag = true
+      } else {
+        this.$message.warning('物料已采购完毕，如有特殊需求请手动添加订购信息')
+      }
     },
     // 智能调取
     easyStock (name, color, number, id, replenishFlag) {
@@ -1293,8 +1297,10 @@ export default {
     // 批量调取
     easyStockBatch (name, children) {
       this.stock_data = []
+      // 修复bug，为了保证一建调取点一下，关闭一建调取窗口，再点一下一键调取的神仙操作，你必须保持stock_list里面的值不能变化才能保证仓库里的值是对的,所以stocklist作为历史数据不能变
+      let stockListCopy = this.$clone(this.stock_list)
       // 第一步，判断库存里有没有这种原料
-      let finded = this.stock_list.find((item) => item.material_name === name)
+      let finded = stockListCopy.find((item) => item.material_name === name)
       let needNum = children.reduce((total, current) => {
         return total + (current.reality_weight - current.order_weight)
       }, 0)

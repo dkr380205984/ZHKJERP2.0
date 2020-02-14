@@ -52,7 +52,7 @@
             <span class="boxTop">平均价格</span>
             <span class="boxBottom">
               <span class="num">{{WLDGStat.prePrice}}</span>
-              <span class="em">万元</span>
+              <span class="em">元</span>
             </span>
           </div>
           <div class="box">
@@ -109,7 +109,7 @@
               <div class="tcolumn">{{item.price}}</div>
               <div class="tcolumn">{{item.price*item.weight}}</div>
               <div class="tcolumn">{{item.user_name}}</div>
-              <div class="tcolumn">订单号</div>
+              <div class="tcolumn">{{item.order_code}}</div>
             </div>
           </div>
         </div>
@@ -192,11 +192,11 @@
               :key="index">
               <div class="tcolumn">{{item.client_name}}</div>
               <div class="tcolumn">{{item.order_time}}</div>
-              <div class="tcolumn">{{item.total_weight}}</div>
-              <div class="tcolumn">{{item.total_price/item.total_weight}}</div>
-              <div class="tcolumn">{{item.total_price}}</div>
+              <div class="tcolumn">{{item.stock_number}}</div>
+              <div class="tcolumn">{{item.price}}</div>
+              <div class="tcolumn">{{item.price*item.stock_number}}</div>
               <div class="tcolumn">{{item.user_name}}</div>
-              <div class="tcolumn">订单号</div>
+              <div class="tcolumn">{{item.order_code}}</div>
             </div>
           </div>
         </div>
@@ -230,7 +230,8 @@
               <div class="tcolumn">{{item.stock_name}}</div>
               <div class="tcolumn">{{item.total_weight}}</div>
               <div class="tcolumn">
-                <span class="blue">查看仓库</span>
+                <span class="blue"
+                  @click="$router.push('/stock/stockDetail/' + item.stock_id + '/undefined')">查看仓库</span>
               </div>
             </div>
           </div>
@@ -312,8 +313,8 @@ export default {
       } else {
         let numPrice = this.WLYDGList.reduce((total, current) => {
           return {
-            totalNum: Number(total.totalNum) + Number(current.total_weight),
-            totalPrice: Number(total.totalPrice) + current.total_price
+            totalNum: Number(total.totalNum) + Number(current.stock_number),
+            totalPrice: Number(total.totalPrice) + current.price * current.stock_number
           }
         }, {
           totalNum: 0,
@@ -346,8 +347,8 @@ export default {
         client_id: this.WLYDGCMP
       }).then((res) => {
         console.log(res)
-        this.WLYDGList = res.data
-        this.WLYDGTotal = res.data.length
+        this.WLYDGList = res.data.data
+        this.WLYDGTotal = res.data.data.length
         this.loading = false
       })
     }
@@ -365,8 +366,9 @@ export default {
     }), client.list()]).then((res) => {
       this.WLDGList = res[3].data.data
       this.WLDGTotal = res[3].data.data.length
-      this.WLYDGList = res[1].data
-      this.WLYDGTotal = res[1].data.length
+      this.WLYDGList = res[1].data.data
+      this.WLYDGTotal = res[1].data.data.length
+      console.log(this.WLYDGList)
       this.CKList = res[2].data.data
       this.CKTotal = res[2].data.data.length
       this.total = res[0].data.data
