@@ -1495,8 +1495,8 @@ export default {
       if (flag) {
         itemPro.sizeColor = flag.size.map(itemSize => {
           return {
-            value: itemSize.measurement,
-            label: itemSize.measurement,
+            value: itemSize.size_name,
+            label: itemSize.size_name,
             children: flag.color.map(itemColor => {
               return {
                 value: itemColor.color_name,

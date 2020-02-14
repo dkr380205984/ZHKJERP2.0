@@ -1106,6 +1106,7 @@ export default {
         ]).then(res => {
           // 初始化辅料出入库数据
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
+          console.log(materialPlan)
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.activeStockMa = this.materialStockInfo[0] ? this.materialStockInfo[0].material_name : ''
