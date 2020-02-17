@@ -325,6 +325,10 @@ const routes = [
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
+      path: '/financialStatistics/oprDetail/:clentId/:type/:orderId',
+      name: '合作公司财务操作记录',
+      component: () => import('../views/financialStatistics/oprDetail.vue')
+    }, {
       path: '/financialStatistics/clientDetail',
       name: '样单财务统计',
       component: () => import('../views/financialStatistics/clientDetail.vue')
@@ -491,7 +495,8 @@ router.beforeEach((to, from, next) => {
     '物料使用统计': ['织为云', '物料使用统计'],
     '物料使用详情': ['织为云', '物料使用统计', '物料使用详情'],
     '合作公司财务统计': ['织为云', '合作公司财务统计'],
-    '合作公司财务详情': ['织为云', '合作公司财务统计', '合作公司财务详情']
+    '合作公司财务详情': ['织为云', '合作公司财务统计', '合作公司财务详情'],
+    '合作公司财务操作记录': ['织为云', '合作公司财务统计', '合作公司财务详情', '合作公司财务操作记录']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

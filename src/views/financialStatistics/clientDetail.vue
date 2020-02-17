@@ -805,46 +805,29 @@
             @click="orderOprFlag=false"></i>
         </div>
         <div class="content">
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in orderOprList"
+          <div class="list">
+            <div class="line lineHead">
+              <div class="once"
+                style="flex:1.5">结算单编号</div>
+              <div class="once">金额</div>
+              <div class="once"
+                style="flex:1.5">日期</div>
+              <div class="once">审核状态</div>
+              <div class="once">操作</div>
+            </div>
+            <div class="line"
+              v-for="(item,index) in orderOprList"
               :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
-                      style="margin-left:20px">{{item.methods}}</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}</span>
-                    </span>
-                  </template>
-                  <template v-if="item.methods==='结算'">
-                    <div class="collapseBox">
-                      <span class="label">是否开票：</span>
-                      <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
-                    </div>
-                    <div class="collapseBox"
-                      v-for="(itemChild,indexChild) in item.invoice_info"
-                      :key="indexChild"
-                      v-show="item.is_invoice===1">
-                      <span class="label">发票信息：</span>
-                      <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
-                    </div>
-                    <div class="collapseBox">
-                      <span class="label">备注信息：</span>
-                      <span class="info">{{item.desc}}</span>
-                    </div>
-                  </template>
-                  <template v-if="item.methods==='扣款'">
-                    <div class="collapseBox">
-                      <span class="label">扣款原因：</span>
-                      <span class="info">{{item.desc}}</span>
-                    </div>
-                  </template>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
+              <div class="once"
+                style="flex:1.5">暂无</div>
+              <div class="once">{{item.settle_price}}元</div>
+              <div class="once"
+                style="flex:1.5">{{item.complete_time}}</div>
+              <div class="once">暂无</div>
+              <div class="once blue"
+                @click="$router.push('/financialStatistics/oprDetail/' +  $route.params.id+ '/' + type+'/' + oprOrderId)">查看</div>
+            </div>
+          </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -897,7 +880,8 @@ export default {
       oprFlag: false,
       oprList: [],
       orderOprFlag: false,
-      orderOprList: []
+      orderOprList: [],
+      oprOrderId: ''
     }
   },
   watch: {
@@ -1027,6 +1011,7 @@ export default {
       })
     },
     getLog (num, type, orderId) {
+      this.oprOrderId = orderId
       if (Number(num) > 0) {
         this.loading = true
         if (type === '扣款') {
