@@ -2398,6 +2398,10 @@ export default {
       })
     },
     saveYarnName () {
+      if (this.changeYarnInfo.yarnName.indexOf('/') !== -1) {
+        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+        return
+      }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
           id: this.changeYarnInfo.id,

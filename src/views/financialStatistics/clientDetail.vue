@@ -995,6 +995,7 @@ export default {
     },
     init () {
       this.loading = true
+      this.list = []
       Promise.all([statistics.clientDetailList({
         client_id: this.$route.params.id,
         client_type: this.type

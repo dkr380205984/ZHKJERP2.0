@@ -92,7 +92,7 @@
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,itemChild.production_number - itemChild.processNum)">半成品加工分配</span>
+                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,((itemChild.production_number - itemChild.processNum)>0?(itemChild.production_number - itemChild.processNum):itemChild.production_number))">半成品加工分配</span>
                       </div>
                     </div>
                   </div>
@@ -601,10 +601,10 @@ export default {
   },
   methods: {
     normalProcess (id, size, color, number) {
-      if (number !== 'undefined' && number <= 0) {
-        this.$message.warning('该产品已分配完毕')
-        return
-      }
+      // if (number !== 'undefined' && number <= 0) {
+      //   this.$message.warning('该产品已分配完毕')
+      //   return
+      // }
       this.process_flag = true
       this.process_data.push({
         product_id: id || '',
