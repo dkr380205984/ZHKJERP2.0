@@ -323,12 +323,19 @@
         <span class="title">织造分配日志</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="btnCtn_page"
+          style="margin-left:64px;display:inline-block">
+          <div class="btn noBorder noMargin"
+            @click="deleteLog('all')">批量删除</div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
             <div class="normalTb">
               <div class="thead">
                 <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2"></div>
                   <div class="tcolumn"
                     style="flex:1.2">完成日期</div>
                   <div class="tcolumn"
@@ -349,6 +356,10 @@
                 <div class="trow"
                   v-for="(item,index) in weaving_log"
                   :key="index">
+                  <span class="tcolumn"
+                    style="flex:0.2">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </span>
                   <div class="tcolumn"
                     style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
                   <div class="tcolumn"
@@ -468,12 +479,19 @@
         <span class="title">补纱日志</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="btnCtn_page"
+          style="margin-left:64px;display:inline-block">
+          <div class="btn noBorder noMargin"
+            @click="deleteReplenishLog('all')">批量删除</div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
             <div class="normalTb">
               <div class="thead">
                 <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2"></div>
                   <div class="tcolumn">补纱日期</div>
                   <div class="tcolumn">纱线名称</div>
                   <div class="tcolumn">纱线颜色</div>
@@ -487,6 +505,10 @@
                 <div class="trow"
                   v-for="(item,index) in replenish_log"
                   :key="index">
+                  <span class="tcolumn"
+                    style="flex:0.2">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </span>
                   <div class="tcolumn">{{item.created_at.slice(0,10)}}</div>
                   <div class="tcolumn">{{item.material_name}}</div>
                   <div class="tcolumn">{{item.material_color}}</div>
@@ -743,7 +765,6 @@ export default {
   methods: {
     // 补纱打印
     printReplenish (client) {
-      console.log(client)
       this.printPopup = true
       this.printInfo = this.replenish_log.filter(item => item.replenish_name === client).map(item => {
         return {
@@ -907,17 +928,31 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        weave.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!请刷新页面后查看分配信息变化'
-            })
-            this.weaving_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          weave.delete({
+            id: this.weaving_log.filter((item) => item.check).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$winReload()
+            }
+          })
+        } else {
+          weave.delete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看分配信息变化'
+              })
+              this.weaving_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -1019,17 +1054,31 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        replenish.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!请刷新页面后查看补纱信息变化'
-            })
-            this.replenish_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          replenish.delete({
+            id: this.replenish_log.filter((item) => item.check).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$winReload()
+            }
+          })
+        } else {
+          replenish.delete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看补纱信息变化'
+              })
+              this.replenish_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -1093,7 +1142,10 @@ export default {
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
       })
-      this.weaving_log = res[3].data.data
+      this.weaving_log = res[3].data.data.map((item) => {
+        item.check = false
+        return item
+      })
       this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
@@ -1107,7 +1159,10 @@ export default {
           })
         })
       })
-      this.replenish_log = res[4].data.data
+      this.replenish_log = res[4].data.data.map((item) => {
+        item.check = false
+        return item
+      })
       this.loading = false
     })
   }

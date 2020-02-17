@@ -361,6 +361,11 @@
         <span class="title">半成品加工分配日志</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="btnCtn_page"
+          style="margin-left:64px;display:inline-block">
+          <div class="btn noBorder noMargin"
+            @click="deleteLog('all')">批量删除</div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
@@ -368,13 +373,14 @@
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn"
-                    style="flex:1.3">完成日期</div>
+                    style="flex:0.1"></div>
                   <div class="tcolumn"
-                    style="flex:1.5">织造单位</div>
+                    style="flex:1.4">完成日期</div>
+                  <div class="tcolumn"
+                    style="flex:1.6">织造单位</div>
                   <div class="tcolumn"
                     style="flex:1.5">产品名称</div>
-                  <div class="tcolumn"
-                    style="flex:1.2">尺码颜色</div>
+                  <div class="tcolumn">尺码颜色</div>
                   <div class="tcolumn">所需辅料</div>
                   <div class="tcolumn">单价(元)</div>
                   <div class="tcolumn">数量</div>
@@ -389,9 +395,13 @@
                   v-for="(item,index) in process_log"
                   :key="index">
                   <div class="tcolumn"
-                    style="flex:1.3">{{item.complete_time.slice(0,10)}}</div>
+                    style="flex:0.1">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </div>
                   <div class="tcolumn"
-                    style="flex:1.5">
+                    style="flex:1.4">{{item.complete_time.slice(0,10)}}</div>
+                  <div class="tcolumn"
+                    style="flex:1.6">
                     <span style="color:#01B48C">
                       {{item.type}}
                     </span>
@@ -401,8 +411,7 @@
                     <span>{{item.product_info.code}}</span>
                     <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
                   </div>
-                  <div class="tcolumn"
-                    style="flex:1.2">
+                  <div class="tcolumn">
                     <span>{{item.size}}</span>
                     <span>{{item.color}}</span>
                   </div>
@@ -785,17 +794,31 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        processing.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!请刷新页面后查看分配信息变化'
-            })
-            this.weaving_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          processing.delete({
+            id: this.process_log.filter((item) => item.check).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看分配信息变化'
+              })
+              this.weaving_log.splice(index, 1)
+            }
+          })
+        } else {
+          processing.delete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看分配信息变化'
+              })
+              this.weaving_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -823,7 +846,10 @@ export default {
         return item.type.indexOf(5) !== -1
       })
       this.processArr = res[3].data.data.filter(item => item.type === 2)
-      this.process_log = res[4].data.data
+      this.process_log = res[4].data.data.map((item) => {
+        item.check = false
+        return item
+      })
       this.process_detail = this.$mergeData(this.process_log, { mainRule: ['client_name', 'client_id'] })
       // 根据分配日志统计一下分配数量
       this.process_info.forEach((item) => {

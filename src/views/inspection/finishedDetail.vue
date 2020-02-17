@@ -334,8 +334,8 @@
               </div>
             </div> -->
         <div class="btnCtn_page">
-          <!-- <div class="btn noBorder noMargin"
-            @click="deleteLog('all',orderLog)">批量删除</div> -->
+          <div class="btn noBorder noMargin"
+            @click="deleteLog('all')">批量删除</div>
           <div class="btn noBorder noMargin"
             @click="download">批量导出excel</div>
         </div>
@@ -674,14 +674,25 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        inspection.finishedDelete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message.success('删除成功，请刷新页面后查看检验数量变化')
-            this.inspection_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          inspection.finishedDelete({
+            id: this.inspection_log.filter(item => item.checked).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message.success('删除成功')
+              this.$winReload()
+            }
+          })
+        } else {
+          inspection.finishedDelete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message.success('删除成功，请刷新页面后查看检验数量变化')
+              this.inspection_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',

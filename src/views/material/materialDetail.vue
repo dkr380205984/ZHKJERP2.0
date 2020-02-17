@@ -566,125 +566,15 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module log">
-      <div class="titleCtn">
-        <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.2">完成日期</div>
-                  <div class="tcolumn"
-                    style="flex:2">来源</div>
-                  <div class="tcolumn"
-                    style="flex:2">{{type==='1'?'原':'辅'}}料名称</div>
-                  <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
-                  <div class="tcolumn">单价(元)</div>
-                  <div class="tcolumn">数量</div>
-                  <div class="tcolumn">总价(元)</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in order_stock_log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
-                    <span>{{item.client_name}}</span>
-                  </div>
-                  <div class="tcolumn"
-                    style="flex:2">{{item.material_name}}</div>
-                  <div class="tcolumn">{{item.color_code}}</div>
-                  <div class="tcolumn">{{item.price}}</div>
-                  <div class="tcolumn">{{item.weight}}{{type==='1'?'kg':item.unit}}</div>
-                  <div class="tcolumn">{{parseInt(item.price*item.weight)}}</div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
-                  <div class="tcolumn">
-                    <span style="color:#F5222D;cursor:pointer"
-                      @click="deleteOrderLog(item.id,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-    <!-- <div class="module log">
-      <div class="titleCtn">
-        <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.5">完成日期</div>
-                  <div class="tcolumn"
-                    style="flex:2">加工单位</div>
-                  <div class="tcolumn"
-                    style="flex:2">{{type==='1'?'原':'辅'}}料名称</div>
-                  <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
-                  <div class="tcolumn">工序</div>
-                  <div class="tcolumn">单价(元)</div>
-                  <div class="tcolumn">数量</div>
-                  <div class="tcolumn">总价(元)</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in process_log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.5">{{item.complete_time.slice(0,10)}}</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <span>{{item.client_name}}</span>
-                  </div>
-                  <div class="tcolumn"
-                    style="flex:2">{{item.material_name}}</div>
-                  <div class="tcolumn">{{item.material_color}}</div>
-                  <div class="tcolumn">{{item.process_type}}</div>
-                  <div class="tcolumn">{{item.price}}</div>
-                  <div class="tcolumn">{{item.weight}}{{type==='1'?'kg':item.unit}}</div>
-                  <div class="tcolumn">{{parseInt(item.price*item.weight)}}</div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
-                  <div class="tcolumn">
-                    <span style="color:#F5222D;cursor:pointer"
-                      @click="deleteProcessLog(item.id,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
       </div>
-      <div class="listCtn hasBorderTop">
+      <div class="listCtn hasBorderTop"
+        style="padding-left:64px;padding-right:64px">
         <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="deleteOrderLog('all')">批量删除</div>
           <div class="btn noBorder noMargin"
             @click="downloadOrder">批量导出excel</div>
         </div>
@@ -735,8 +625,11 @@
       <div class="titleCtn">
         <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
       </div>
-      <div class="listCtn hasBorderTop">
+      <div class="listCtn hasBorderTop"
+        style="padding-left:64px;padding-right:64px">
         <div class="btnCtn_page">
+          <div class="btn noBorder noMargin"
+            @click="deleteProcessLog('all')">批量删除</div>
           <div class="btn noBorder noMargin"
             @click="downloadProcess">批量导出excel</div>
         </div>
@@ -1548,17 +1441,31 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        materialManage.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!请刷新页面后查看采购和库存变化'
-            })
-            this.order_stock_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          materialManage.delete({
+            id: this.order_stock_log.filter(item => item.checked).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$winReload()
+            }
+          })
+        } else {
+          materialManage.delete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看采购和库存变化'
+              })
+              this.order_stock_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -1751,17 +1658,31 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        materialProcess.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!请刷新页面后查看加工信息变化'
-            })
-            this.process_log.splice(index, 1)
-          }
-        })
+        if (id === 'all') {
+          materialProcess.delete({
+            id: this.process_log.filter(item => item.checked).map((item) => item.id)
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$winReload()
+            }
+          })
+        } else {
+          materialProcess.delete({
+            id: [id]
+          }).then((res) => {
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!请刷新页面后查看加工信息变化'
+              })
+              this.process_log.splice(index, 1)
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',

@@ -481,64 +481,19 @@
         <span class="title">产品出入库日志</span>
       </div>
       <div class="editCtn hasBorderTop">
-        <!-- <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.2">操作日期</div>
-                  <div class="tcolumn">加工单位</div>
-                  <div class="tcolumn">收发类型</div>
-                  <div class="tcolumn"
-                    style="flex:2">产品信息</div>
-                  <div class="tcolumn">尺码颜色</div>
-                  <div class="tcolumn">捆数</div>
-                  <div class="tcolumn">数量</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
-                  <div class="tcolumn">{{item.client_name}}</div>
-                  <div class="tcolumn">{{item.flag}}</div>
-                  <div class="tcolumn"
-                    style="flex:2">
-                    <span>{{item.product_code.code}}</span>
-                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
-                  </div>
-                  <div class="tcolumn">
-                    <span>{{item.size}}</span>
-                    <span>{{item.color}}</span>
-                  </div>
-                  <div class="tcolumn">{{item.count}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
-                  <div class="tcolumn">
-                    <span style="color:#F5222D;cursor:pointer"
-                      @click="deleteLog(item.id,item.flag,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
+        <div class="btnCtn_page"
+          style="margin-left:64px;display:inline-block">
+          <div class="btn noBorder noMargin"
+            style="display:inline-block"
+            @click="deleteLog('all')">批量删除</div>
+          <div class="btn noBorder noMargin"
+            style="display:inline-block"
+            @click="printTag">批量打印</div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
             style="margin:10px 32px">
             <div class="tableCtnLv2">
-              <span class="tb_btn top_right">
-                <div class="btn noBorder"
-                  @click="printTag">打印收发标签</div>
-              </span>
               <span class="tb_header">
                 <span class="tb_row"
                   style="flex:0.4"></span>
@@ -560,8 +515,7 @@
                 :key="index">
                 <span class="tb_row"
                   style="flex:0.4">
-                  <el-checkbox v-model="item.checked"
-                    @change="handleClickLog(item)"></el-checkbox>
+                  <el-checkbox v-model="item.checked"></el-checkbox>
                 </span>
                 <span class="tb_row"
                   style="flex:1.2">{{$getTime(item.complete_time)}}</span>
@@ -1162,25 +1116,50 @@ export default {
       }
     },
     deleteLog (id, flag, index) {
-      if (flag === '入库') {
-        receive.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message.success('删除成功，请刷新页面后查看入库变化')
-            this.log.splice(index, 1)
+      this.$confirm('是否要删除该日志信息', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (id === 'all') {
+          let data = this.log.filter(item => item.checked)
+          let receiveData = data.filter(item => item.flag === '入库').map((item) => item.id)
+          let dispatchData = data.filter(item => item.flag === '出库').map((item) => item.id)
+          Promise.all([receive.delete({
+            id: receiveData
+          }), dispatch.delete({
+            id: dispatchData
+          })]).then((res) => {
+            this.$message.success('删除成功')
+            this.$winReload()
+          })
+        } else {
+          if (flag === '入库') {
+            receive.delete({
+              id: [id]
+            }).then((res) => {
+              if (res.data.status) {
+                this.$message.success('删除成功，请刷新页面后查看入库变化')
+                this.log.splice(index, 1)
+              }
+            })
+          } else {
+            dispatch.delete({
+              id: [id]
+            }).then((res) => {
+              if (res.data.status) {
+                this.$message.success('删除成功，请刷新页面后查看入库变化')
+                this.log.splice(index, 1)
+              }
+            })
           }
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
         })
-      } else {
-        dispatch.delete({
-          id: id
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message.success('删除成功，请刷新页面后查看入库变化')
-            this.log.splice(index, 1)
-          }
-        })
-      }
+      })
     }
   },
   mounted () {
