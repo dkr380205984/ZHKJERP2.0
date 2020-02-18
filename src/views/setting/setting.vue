@@ -2104,7 +2104,7 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
-      });
+      })
     },
     // 修改打印设置
     updatePrint (item) {
