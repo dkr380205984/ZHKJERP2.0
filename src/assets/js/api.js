@@ -377,7 +377,8 @@ const changeUserPasd = (params) => http.post(`${baseUrl}/user/edit/pass`, params
 const priceLoading = {
   create: (params) => http.post(`${baseUrl}/product/quotation/demo/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/quotation/demo/detail`, params),
-  list: (params) => http.get(`${baseUrl}/product/quotation/demo/list`, params)
+  list: (params) => http.get(`${baseUrl}/product/quotation/demo/list`, params),
+  delete: (params) => http.post(`${baseUrl}/product/quotation/demo/delete`, params, 'application/json')
 }
 export {
   priceLoading,

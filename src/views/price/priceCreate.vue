@@ -430,6 +430,11 @@
         <span class="title">产品报价</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <zh-transition :list='priceLoadingList'
+            showKey='title'
+            @changed='setPriceLoading'></zh-transition>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in priceInfo.raw_material"
           :key="index + 'raw_material'">
@@ -1025,7 +1030,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample, priceLoading } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1106,7 +1111,8 @@ export default {
       priceCode: '',
       priceList: [],
       lock: true,
-      fileArr: []
+      fileArr: [],
+      priceLoadingList: []
     }
   },
   methods: {
@@ -1684,6 +1690,66 @@ export default {
     searchCodeChange (newVal) {
       this.pages = 1
       this.getList()
+    },
+    // 报价单预加载
+    getPriceLoading () {
+      priceLoading.list({
+        page: 1,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res.data.data)
+        }
+      })
+    },
+    setPriceLoading (item) {
+      this.priceInfo.weave = JSON.parse(item.weave_info || '[]').map(val => {
+        return {
+          name: val.name,
+          number: '',
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.weave || this.priceInfo.weave.length === 0) {
+        this.priceInfo.weave = [{ name: '', number: '', total_price: '' }]
+      }
+      this.priceInfo.semi_process = JSON.parse(item.semi_product_info || '[]').map(val => {
+        return {
+          name: val.name,
+          number: '',
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.semi_process || this.priceInfo.semi_process.length === 0) {
+        this.priceInfo.semi_process = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.finished_process = JSON.parse(item.product_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.finished_process || this.priceInfo.finished_process.length === 0) {
+        this.priceInfo.finished_process = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.packag = JSON.parse(item.pack_material_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.packag || this.priceInfo.packag.length === 0) {
+        this.priceInfo.packag = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.other_fee = JSON.parse(item.others_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.other_fee || this.priceInfo.other_fee.length === 0) {
+        this.priceInfo.other_fee = [{ name: '', total_price: '' }]
+      }
     }
   },
   created () {
@@ -1712,7 +1778,11 @@ export default {
         company_id: this.companyId,
         type: 2
       }),
-      getToken({})
+      getToken({}),
+      priceLoading.list({
+        page: 1,
+        limit: 9999
+      })
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
       this.typeArr = res[1].data.data.map((item) => {
@@ -1752,6 +1822,7 @@ export default {
       //   }
       // }
       this.postData.token = res[7].data.data
+      this.priceLoadingList = res[8].data.data.data
     })
     this.product_type = this.$route.query.productType === '1' || !this.$route.query.productType
     this.getList()

@@ -791,10 +791,11 @@
                     <div class="tcolumn padding40">{{item.title}}</div>
                     <div class="tcolumn padding40"
                       style="flex-direction: row;align-items:center;">
-                      <span class="blue">查看</span>
+                      <span class="blue"
+                        @click="changePriceInfo(item)">修改</span>
                       <span class="red"
                         style="margin-left:16px"
-                        @click="changePriceInfo(item)">修改</span>
+                        @click="deletePriceInfo(item.id)">删除</span>
                     </div>
                   </div>
                 </div>
@@ -2051,7 +2052,6 @@ export default {
         keyword: ''
       }).then(res => {
         if (res.data.status !== false) {
-          console.log(res.data.data)
           this.priceInfo = res.data.data.data
           this.priceTotal = res.data.data.total
         }
@@ -2081,6 +2081,30 @@ export default {
         this.priceEditInfo.other = [{ name: '' }]
       }
       this.showPopup = true
+    },
+    deletePriceInfo (id) {
+      this.$confirm('此操作将永久删除该报价设置项, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        priceLoading.delete({
+          id: id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.getPriceLoading()
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      });
     },
     // 修改打印设置
     updatePrint (item) {
