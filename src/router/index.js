@@ -325,7 +325,7 @@ const routes = [
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
-      path: '/financialStatistics/oprDetail/:clentId/:type/:orderId',
+      path: '/financialStatistics/oprDetail/:clentId/:type/:orderId/:oprId/:oprType',
       name: '合作公司财务操作记录',
       component: () => import('../views/financialStatistics/oprDetail.vue')
     }, {
