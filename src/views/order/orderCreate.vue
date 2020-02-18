@@ -43,6 +43,7 @@
             <span class="content">
               <el-select v-model="client_id"
                 placeholder="请选择订单公司"
+                filterable
                 @change="getContact($event)">
                 <el-option v-for="item in clientArr"
                   :key="item.id"
@@ -494,9 +495,9 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                multiple
                 ref="orderUpload"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -517,9 +518,9 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                multiple
                 ref="packagUpload"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -540,9 +541,9 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                multiple
                 ref="boxUpload"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -563,9 +564,9 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                multiple
                 ref="otherUpload"
                 list-type="picture">
                 <div class="uploadBtn">

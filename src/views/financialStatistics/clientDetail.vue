@@ -494,8 +494,8 @@
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
                     <span class="tb_row">运输地址</span>
-                    <span class="tb_row">运输箱数</span>
                     <span class="tb_row">运输立方数</span>
+                    <span class="tb_row">运输箱数</span>
                     <span class="tb_row">单价</span>
                     <span class="tb_row">运输总价</span>
                   </div>
@@ -819,14 +819,14 @@
               v-for="(item,index) in orderOprList"
               :key="index">
               <div class="once"
-                style="flex:1.5">暂无</div>
+                style="flex:1.5">{{item.settle_code}}</div>
               <div class="once">{{item.settle_price}}元</div>
               <div class="once"
                 style="flex:1.5">{{item.complete_time}}</div>
-              <div class="once">暂无</div>
+              <div class="once">{{item.status|filterStatus}}</div>
               <div class="once blue"
                 style="cursor:pointer"
-                @click="$router.push('/financialStatistics/oprDetail/' +  $route.params.id+ '/' + type+'/' + oprOrderId)">查看</div>
+                @click="$router.push('/financialStatistics/oprDetail/' +  $route.params.id+ '/' + type +'/' + oprOrderId + '/' + item.id + '/' + orderOprType)">查看</div>
             </div>
           </div>
         </div>
@@ -881,6 +881,7 @@ export default {
       oprFlag: false,
       oprList: [],
       orderOprFlag: false,
+      orderOprType: '',
       orderOprList: [],
       oprOrderId: ''
     }
@@ -914,6 +915,10 @@ export default {
     filterType (val) {
       let str = companyType.find((item) => item.value === Number(val)).name
       return str.slice(0, str.length - 2)
+    },
+    filterStatus (status) {
+      let arr = ['', '待审核', '审核通过', '驳回']
+      return arr[status]
     }
   },
   methods: {
@@ -1013,6 +1018,7 @@ export default {
     },
     getLog (num, type, orderId) {
       this.oprOrderId = orderId
+      this.orderOprType = type
       if (Number(num) > 0) {
         this.loading = true
         if (type === '扣款') {

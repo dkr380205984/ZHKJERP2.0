@@ -101,7 +101,7 @@
               <div class="colorBox"
                 v-for="(item,index) in yarn.yarnWarp.apply"
                 :key="index">
-                <span class="colorText">{{filterMethods(index)}}</span>
+                <span class="colorText">{{filterMethods(item)}}</span>
                 <span class="name">{{colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'}}</span>
               </div>
             </div>
@@ -119,12 +119,8 @@
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(item)}}</span>
-                  </el-tooltip>
+                  <span class="colorText">{{filterMethods(item)}}</span>
+                  <span class="name">{{colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'}}</span>
                 </div>
               </div>
             </div>
@@ -438,7 +434,7 @@
               <div class="colorBox"
                 v-for="(item,index) in yarn.yarnWeft.apply"
                 :key="index">
-                <span class="colorText">{{filterMethods(index)}}</span>
+                <span class="colorText">{{filterMethods(item)}}</span>
                 <span class="name">{{colorWeight.weft[item]==='NaN'?'0g':colorWeight.weft[item] + 'g'}}</span>
               </div>
             </div>
@@ -456,12 +452,8 @@
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="colorWeight.weft[item]==='NaN'?'0g':colorWeight.weft[item] + 'g'"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(item)}}</span>
-                  </el-tooltip>
+                  <span class="colorText">{{filterMethods(item)}}</span>
+                  <span class="name">{{colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'}}</span>
                 </div>
               </div>
             </div>
@@ -1277,6 +1269,7 @@ export default {
         this.colorNumber.warp[arrWeftBack[0][i]] = this.colorNumber.warp[arrWeftBack[0][i]] ? this.colorNumber.warp[arrWeftBack[0][i]] : 0
         this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
       }
+      console.log(this.colorWeight)
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)

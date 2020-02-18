@@ -702,6 +702,9 @@ export default {
         } else if (!item.complete_time) {
           errorFlag = true
           errMsg = '请选择截至日期'
+        } else if (item.process_type.length === 0) {
+          errorFlag = true
+          errMsg = '请选择加工工序'
         }
         item.product_info.forEach((itemChild) => {
           if (!itemChild.number) {

@@ -9,55 +9,62 @@
         <div class="floatRight">
           <div class="otherInfo">
             <div class="block">
-              <span class="label">订单金额</span>
-              <span class="text">￥568.903</span>
-            </div>
-            <div class="block">
-              <span class="label">状态</span>
-              <span class="text blue">进行中</span>
+              <span class="label">结算金额</span>
+              <span class="text">￥{{$formatNum(info.settle_price)}}</span>
             </div>
           </div>
         </div>
-        <div :class="['statuIcon',status === 1 ? 'reasoning' : false,status === 3 ? 'pass' : false,status === 2 ? 'tongguo' : false]"></div>
+        <div :class="['statuIcon',info.status === 1 ? 'reasoning' : false,info.status === 3 ? 'pass' : false,info.status === 2 ? 'tongguo' : false]"></div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">样单编号：</span>
-            <span class="text">19YABB041</span>
+            <span class="label">{{$route.params.oprType}}编号：</span>
+            <span class="text">{{info.settle_code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">样品名称：</span>
-            <span class="text">2019新款披肩</span>
+            <span class="label">创建人：</span>
+            <span class="text">{{info.user_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">样单编号：</span>
-            <span class="text">19YABB041</span>
+            <span class="label">是否开票：</span>
+            <span class="text">{{info.is_invoice===1?'已开票':'未开票'}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">样品名称：</span>
-            <span class="text">2019新款披肩</span>
+            <span class="label">创建时间：</span>
+            <span class="text">{{info.complete_time}}</span>
           </div>
         </div>
-        <div class="rowCtn">
+        <div class="rowCtn"
+          v-if="info.is_invoice===1">
           <div class="colCtn">
-            <span class="label">多行情况：</span>
+            <span class="label">开票信息：</span>
             <div class="lineCtn">
-              <div class="line">1. 均码 10*20*30</div>
-              <div class="line">1. 均码 10*20*30</div>
+              <div class="line"
+                v-for="(item,index) in info.invoice_info"
+                :key="index">
+                <span>发票号码：</span>
+                <span>{{item.invoiceNum}}</span>
+                <span style="margin-left:20px">发票金额：</span>
+                <span>{{item.invoicePrice}}元</span>
+              </div>
             </div>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">样单编号：</span>
-            <span class="text">19YABB041</span>
+            <span class="label">包含订单：</span>
+            <span class="text">
+              <el-tag style="margin-right:12px"
+                v-for="(item,index) in info.order_code"
+                :key="index">{{item.order_code}}</el-tag>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">样品描述：</span>
-            <span class="text">此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择此处为样品描述字数超过长度时选择换行</span>
+            <span class="label">备注信息：</span>
+            <span class="text">{{info.desc}}</span>
           </div>
         </div>
       </div>
@@ -96,7 +103,7 @@
         </div>
       </div>
     </div>
-    <div class="popup"
+    <!-- <div class="popup"
       v-show="false">
       <div class="main">
         <div class="title">
@@ -172,7 +179,7 @@
             @click="checkPrice">确定</div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -187,11 +194,45 @@
 </template>
 
 <script>
+import { settle, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       checkList: [],
-      status: 1
+      info: {
+        complete_time: '',
+        desc: '',
+        id: null,
+        invoice_info: [{ invoiceNum: '', invoicePrice: '' }],
+        is_invoice: 1,
+        order_code: [],
+        settle_code: null,
+        settle_price: 0,
+        status: 1
+      }
+    }
+  },
+  mounted () {
+    if (this.$route.params.oprType === '扣款') {
+      chargebacks.log({
+        client_id: this.$route.params.clentId,
+        client_type: this.$route.params.type,
+        order_id: this.$route.params.orderId
+      }).then((res) => {
+        if (res.data.status) {
+          this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+        }
+      })
+    } else {
+      settle.log({
+        client_id: this.$route.params.clentId,
+        client_type: this.$route.params.type,
+        order_id: this.$route.params.orderId
+      }).then((res) => {
+        if (res.data.status) {
+          this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+        }
+      })
     }
   }
 }

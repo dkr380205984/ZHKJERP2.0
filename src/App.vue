@@ -55,4 +55,7 @@ input,
 textarea {
   -webkit-appearance: none;
 }
+.el-input.is-disabled .el-input__inner {
+  color: #000 !important;
+}
 </style>
