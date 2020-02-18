@@ -773,6 +773,42 @@
               </div>
             </div>
           </template>
+          <template v-if="cName==='报价预加载'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup = true">添加预加载</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">预加载名称</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in priceInfo"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40"
+                      style="flex-direction: row;align-items:center;">
+                      <span class="blue">查看</span>
+                      <span class="red"
+                        style="margin-left:16px"
+                        @click="changePriceInfo(item)">修改</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="priceTotal"
+                  :current-page.sync="pricePages">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -1361,6 +1397,148 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='报价预加载'">
+        <div class="main"
+          style="width:600px;">
+          <div class="title">
+            <div class="text">添加报价单预加载</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">预加载标题：</div>
+              <div class="info">
+                <el-input placeholder="请输入预加载标题"
+                  v-model="priceEditInfo.title"></el-input>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in priceEditInfo.weave"
+              :key="index + 'weave'">
+              <div class="label">{{index === 0 ? '织造明细：' : ''}}</div>
+              <div class="info">
+                <el-select v-model="item.name"
+                  clearable
+                  filterable
+                  allow-create
+                  default-first-option
+                  placeholder="请选择织造明细">
+                  <el-option v-for="item in weave_list"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="editBtn blue"
+                v-if="index === 0"
+                @click="addItem(priceEditInfo.weave,'weave')">添加</div>
+              <div class="editBtn red"
+                @click="deleteItem(priceEditInfo.weave,index)"
+                v-else>删除</div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in priceEditInfo.semi"
+              :key="index + 'semi'">
+              <div class="label">{{index === 0 ? '半成品工序：' : ''}}</div>
+              <div class="info">
+                <el-select v-model="item.name"
+                  clearable
+                  filterable
+                  multiple
+                  allow-create
+                  default-first-option
+                  placeholder="请选择半成品加工工序">
+                  <el-option v-for="item in semi_list"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="editBtn blue"
+                v-if="index === 0"
+                @click="addItem(priceEditInfo.semi,'semi')">添加</div>
+              <div class="editBtn red"
+                @click="deleteItem(priceEditInfo.semi,index)"
+                v-else>删除</div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in priceEditInfo.finished"
+              :key="index + 'finished'">
+              <div class="label">{{index === 0 ? '成品工序：' : ''}}</div>
+              <div class="info">
+                <el-select v-model="item.name"
+                  clearable
+                  filterable
+                  multiple
+                  allow-create
+                  default-first-option
+                  placeholder="请选择织造明细">
+                  <el-option v-for="item in finished_list"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="editBtn blue"
+                v-if="index === 0"
+                @click="addItem(priceEditInfo.finished,'finished')">添加</div>
+              <div class="editBtn red"
+                @click="deleteItem(priceEditInfo.finished,index)"
+                v-else>删除</div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in priceEditInfo.pack"
+              :key="index + 'pack'">
+              <div class="label">{{index === 0 ? '包装辅料：' : ''}}</div>
+              <div class="info">
+                <el-select v-model="item.name"
+                  clearable
+                  filterable
+                  allow-create
+                  default-first-option
+                  placeholder="请选择织造明细">
+                  <el-option v-for="item in packag_list"
+                    :key="item.value"
+                    :label="item.value"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="editBtn blue"
+                v-if="index === 0"
+                @click="addItem(priceEditInfo.pack,'pack')">添加</div>
+              <div class="editBtn red"
+                @click="deleteItem(priceEditInfo.pack,index)"
+                v-else>删除</div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in priceEditInfo.other"
+              :key="index + 'other'">
+              <div class="label">{{index === 0 ? '其他费用：' : ''}}</div>
+              <div class="info">
+                <el-input v-model="item.name"
+                  placeholder="请输入其他费用"></el-input>
+              </div>
+              <div class="editBtn blue"
+                v-if="index === 0"
+                @click="addItem(priceEditInfo.other,'other')">添加</div>
+              <div class="editBtn red"
+                @click="deleteItem(priceEditInfo.other,index)"
+                v-else>删除</div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="savePriceLoading">确定</div>
+          </div>
+        </div>
+      </template>
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -1484,7 +1662,7 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag, print } from '@/assets/js/api.js'
+import { priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1497,7 +1675,8 @@ export default {
         '加工工序设置': ['原料工序', '半成品加工'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理'],
         '员工管理': ['员工帐号管理'],
-        '打印设置': ['打印设置']
+        '打印设置': ['打印设置'],
+        '报价单设置': ['报价预加载']
       },
       pName: '',
       cName: '',
@@ -1693,7 +1872,61 @@ export default {
       printEditPages: 1,
       printEditTotal: 9,
       printEditInfo: {},
-      printEditor: ''
+      printEditor: '',
+      // 报价单设置
+      priceInfo: [],
+      priceTotal: 1,
+      pricePages: 1,
+      priceEditInfo: {
+        title: '',
+        weave: [
+          {
+            name: ''
+          }
+        ],
+        semi: [
+          {
+            name: ''
+          }
+        ],
+        finished: [
+          {
+            name: ''
+          }
+        ],
+        pack: [
+          {
+            name: ''
+          }
+        ],
+        other: [
+          {
+            name: ''
+          }
+        ]
+      },
+      weave_list: [
+        { value: '针织织造' },
+        { value: '梭织织造' },
+        { value: '制版费' }
+      ],
+      semi_list: [],
+      finished_list: [
+        { value: '车标' },
+        { value: '包装' },
+        { value: '人工' },
+        { value: '检验' },
+        { value: '水洗' }
+      ],
+      packag_list: [
+        { value: '纸箱' },
+        { value: '包装袋' },
+        { value: '礼盒' },
+        { value: '干燥剂' },
+        { value: '衣架' },
+        { value: '警报器' },
+        { value: '洗标' }
+      ]
     }
   },
   watch: {
@@ -1736,6 +1969,8 @@ export default {
         this.getAuth()
       } else if (val === '打印设置') {
         this.getPrintList()
+      } else if (val === '报价预加载') {
+        this.getPriceLoading()
       }
     }
   },
@@ -1787,6 +2022,66 @@ export default {
     }
   },
   methods: {
+    // 报价单预加载
+    savePriceLoading () {
+      if (!this.priceEditInfo.title) {
+        this.$message.error('请输入预加载标题')
+        return
+      }
+      priceLoading.create({
+        id: this.priceEditInfo.id || null,
+        title: this.priceEditInfo.title,
+        weave_info: JSON.stringify(this.priceEditInfo.weave.filter(item => item.name)),
+        semi_product_info: JSON.stringify(this.priceEditInfo.semi.filter(item => item.name)),
+        product_info: JSON.stringify(this.priceEditInfo.finished.filter(item => item.name)),
+        pack_material_info: JSON.stringify(this.priceEditInfo.pack.filter(item => item.name)),
+        others_info: JSON.stringify(this.priceEditInfo.other.filter(item => item.name))
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.showPopup = false
+        }
+      })
+    },
+    getPriceLoading () {
+      if (this.semi_list.length === 0) {
+        this.getSemiList()
+      }
+      priceLoading.list({
+        keyword: ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res.data.data)
+          this.priceInfo = res.data.data.data
+          this.priceTotal = res.data.data.total
+        }
+      })
+    },
+    changePriceInfo (item) {
+      this.priceEditInfo.id = item.id
+      this.priceEditInfo.title = item.title
+      this.priceEditInfo.weave = JSON.parse(item.weave_info)
+      if (!this.priceEditInfo.weave || this.priceEditInfo.weave.length === 0) {
+        this.priceEditInfo.weave = [{ name: '' }]
+      }
+      this.priceEditInfo.semi = JSON.parse(item.semi_product_info)
+      if (!this.priceEditInfo.semi || this.priceEditInfo.semi.length === 0) {
+        this.priceEditInfo.semi = [{ name: '' }]
+      }
+      this.priceEditInfo.finished = JSON.parse(item.product_info)
+      if (!this.priceEditInfo.finished || this.priceEditInfo.finished.length === 0) {
+        this.priceEditInfo.finished = [{ name: '' }]
+      }
+      this.priceEditInfo.pack = JSON.parse(item.pack_material_info)
+      if (!this.priceEditInfo.pack || this.priceEditInfo.pack.length === 0) {
+        this.priceEditInfo.pack = [{ name: '' }]
+      }
+      this.priceEditInfo.other = JSON.parse(item.others_info)
+      if (!this.priceEditInfo.other || this.priceEditInfo.other.length === 0) {
+        this.priceEditInfo.other = [{ name: '' }]
+      }
+      this.showPopup = true
+    },
     // 修改打印设置
     updatePrint (item) {
       if (this.cName === '打印设置' && !this.printEditor) {
@@ -3104,6 +3399,24 @@ export default {
       // this.detailInfo.unit = item.unit
       // this.detailInfo.price = item.price
       // this.showDetailPopup = true
+    },
+    getSemiList () {
+      course.list({
+        company_id: this.companyId,
+        type: 2
+      }).then(res => {
+        this.semi_list = res.data.data.map(item => { return { value: item.name } })
+      })
+    },
+    addItem (data, type) {
+      if (type === 'weave' || type === 'semi' || type === 'finished' || type === 'pack') {
+        data.push({
+          name: ''
+        })
+      }
+    },
+    deleteItem (data, index) {
+      data.splice(index, 1)
     }
   },
   created () {

@@ -373,7 +373,14 @@ const indexCount = {
 }
 // 修改账户密码
 const changeUserPasd = (params) => http.post(`${baseUrl}/user/edit/pass`, params, 'application/json')
+// 报价单预加载
+const priceLoading = {
+  create: (params) => http.post(`${baseUrl}/product/quotation/demo/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/quotation/demo/detail`, params),
+  list: (params) => http.get(`${baseUrl}/product/quotation/demo/list`, params)
+}
 export {
+  priceLoading,
   settle,
   chargebacks,
   statistics,

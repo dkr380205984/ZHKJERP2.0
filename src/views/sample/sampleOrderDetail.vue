@@ -45,7 +45,7 @@
                       v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
                     <el-menu-item index="addOrder"
                       class="elMenuItem"
-                      v-if="sampleOrderInfo.status === 3002">大货生产</el-menu-item>
+                      v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">大货生产</el-menu-item>
                   </el-submenu>
                   <el-menu-item index="change"
                     class="elMenuItem"
@@ -916,7 +916,7 @@
             <span class="info">
               <el-select v-model="yarnStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(1) !== -1)"
+                <el-option v-for="item in stockList.filter(item=> +item.type === 1)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -967,7 +967,7 @@
             <span class="info">
               <el-select v-model="materialStockId"
                 placeholder="请选择入库仓库">
-                <el-option v-for="item in stockList.filter(item=>item.type.indexOf(2) !== -1)"
+                <el-option v-for="item in stockList.filter(item=> +item.type === 2)"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -1939,7 +1939,7 @@ export default {
           })
         }
         if (this.stockList.length === 0) {
-          this.stockList = res[3].data.data.data
+          this.stockList = res[3].data.data
         }
         this.loading = false
       })

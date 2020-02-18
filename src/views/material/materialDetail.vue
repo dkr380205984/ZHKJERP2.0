@@ -73,6 +73,7 @@
                   </div>
                   <div class="tcolumn"
                     v-if="type==='1'">批量操作</div>
+                  <div class="tcolumn">结余入库</div>
                 </div>
               </div>
               <div class="tbody">
@@ -111,6 +112,11 @@
                     v-if="type==='1'">
                     <a class="orange"
                       @click="easyStockBatch(item.material_name,item.childrenMergeInfo)">批量调取白胚</a>
+                  </div>
+                  <div class="tcolumn">
+                    <span class="blue"
+                      style="margin-left:8px"
+                      @click="handleGoStock">结余入库</span>
                   </div>
                 </div>
               </div>
@@ -164,7 +170,8 @@
                     </div>
                   </div>
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
-                  <div class="tcolumn">
+                  <div class="tcolumn"
+                    style="flex-direction: row; justify-content: start; align-items: center;">
                     <span class="blue"
                       @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name + '&&type=' + item.type_source)">打印</span>
                   </div>
@@ -865,6 +872,42 @@
         </div>
       </div>
     </div>
+    <!-- <div class="module">
+      <div class="titleCtn">
+        <span class="title">结余入库日志</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="normalTb"
+            style="width:100%">
+            <div class="thead">
+              <div class="trow">
+                <div class="tcolumn">入库时间</div>
+                <div class="tcolumn">原料名称</div>
+                <div class="tcolumn">原料颜色</div>
+                <div class="tcolumn">入库数量</div>
+                <div class="tcolumn">入库仓库</div>
+                <div class="tcolumn">操作人</div>
+              </div>
+            </div>
+            <div class="tbody"
+              v-if="stock_list.length>0">
+              <div class="trow"
+                v-for="(item,index) in stock_list[stockDefault].childrenMergeInfo"
+                :key="index">
+                <div class="tcolumn">{{item.stock_name}}</div>
+                <div class="tcolumn">{{item.material_color}}</div>
+                <div class="tcolumn">{{item.total_weight}}</div>
+                <div class="tcolumn">
+                  <span class="blue"
+                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id)">调取</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="popup"
       v-show="easyOrderFlag">
       <div class="main">
@@ -1050,12 +1093,68 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showGoStockPopup">
+      <div class="main">
+        <div class="title">
+          <span class="tex">结余入库</span>
+          <i class="el-icon-close"
+            @click="showGoStockPopup=false"></i>
+        </div>
+        <div class="content">
+          <template v-for="(itemMa,indexMa) in goStockInfo">
+            <div class="row"
+              :key="indexMa+'name'">
+              <span class="label">结余原料：</span>
+              <span class="info elInputInfo">{{itemMa.material_name}}</span>
+            </div>
+            <div class="row"
+              :key="indexMa+'color'">
+              <span class="label">原料颜色：</span>
+              <span class="info elInputInfo">{{itemMa.material_color}}</span>
+            </div>
+            <div class="row"
+              v-for="(itemSt,indexSt) in itemMa.stock_info"
+              :key="indexMa+'info' + indexSt">
+              <span class="label">{{indexSt === 0 ? '入库信息：' : ''}}</span>
+              <span class="info elInputInfo">
+                <zh-input placeholder="请输入入库数量"
+                  type='number'
+                  class="elInput"
+                  v-model="itemSt.goStock_number"></zh-input>
+                <el-select placeholder="请选择入库仓库"
+                  class="elInput"
+                  v-model="itemSt.stock_name">
+                  <el-option v-for="item in stockNameArr"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexSt === 0"
+                @click="addItem(itemMa.stock_info,'goStock')">添加</span>
+              <span class="editBtn red"
+                v-else
+                @click="deleteItem(itemMa.stock_info,indexSt)">删除</span>
+            </div>
+          </template>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showGoStockPopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveGoStock">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1121,10 +1220,97 @@ export default {
       replenishId: '', // 补纱flag为true时传replenishId
       easyOrderFlag: false,
       otherYarnStock: [],
-      otherYarnFlag: false
+      otherYarnFlag: false,
+      showGoStockPopup: false,
+      goStockInfo: [],
+      stockNameArr: [],
+      lock: true
     }
   },
   methods: {
+    // 结余入库事件
+    handleGoStock () {
+      this.goStockInfo = this.$flatten(this.$clone(this.statistic_data).map(itemMa => {
+        return itemMa.childrenMergeInfo.map(itemColor => {
+          return {
+            material_name: itemMa.material_name,
+            material_color: itemColor.material_attribute
+          }
+        })
+      })).map(item => {
+        return {
+          ...item,
+          stock_info: [
+            {
+              stock_name: '',
+              goStock_number: ''
+            }
+          ]
+        }
+      })
+      if (this.stockNameArr.length === 0) {
+        stock.list({}).then(res => {
+          this.stockNameArr = res.data.data.filter(item => +item.type === +this.$route.params.type)
+        })
+      }
+      this.showGoStockPopup = true
+    },
+    // 保存结余
+    saveGoStock () {
+      if (this.lock) {
+        let data = []
+        let flag = true
+        this.goStockInfo.forEach(itemMa => {
+          itemMa.stock_info.forEach(itemSt => {
+            if (itemSt.goStock_number && !itemSt.stock_name) {
+              flag = false
+            }
+            if (itemSt.goStock_number && itemSt.stock_name) {
+              data.push({
+                material_name: itemMa.material_name,
+                type: this.$route.params.type,
+                color_code: itemMa.material_color,
+                order_id: this.$route.params.id,
+                action_type: 3,
+                attribute: '',
+                stock_id: itemSt.stock_name,
+                weight: itemSt.goStock_number,
+                desc: '',
+                company_id: window.sessionStorage.getItem('company_id'),
+                user_id: window.sessionStorage.getItem('user_id')
+              })
+            }
+          })
+        })
+        if (data.length === 0) {
+          this.$message.error('检查到没有可提交的数据')
+          return
+        }
+        if (!flag) {
+          this.$message.error('检查到存在填写入库数量但未选择入库仓库')
+          return
+        }
+        this.lock = false
+        stock.yarnStock({ data: data }).then(res => { // 原料辅料接口都一样
+          this.lock = true
+          if (res.data.status !== false) {
+            this.$message.success('保存成功')
+            this.showGoStockPopup = false
+            this.goStockInfo = []
+          }
+        })
+      } else {
+        this.$message.warning('请勿频繁点击')
+      }
+    },
+    addItem (data, type) {
+      if (type === 'goStock') {
+        data.push({ goStock_number: '', stock_name: '' })
+      }
+    },
+    deleteItem (data, index) {
+      data.splice(index, 1)
+    },
     // 批量导出excel订购
     downloadOrder () {
       let data = this.order_stock_log.filter(item => item.checked)
