@@ -825,6 +825,7 @@
                 style="flex:1.5">{{item.complete_time}}</div>
               <div class="once">暂无</div>
               <div class="once blue"
+                style="cursor:pointer"
                 @click="$router.push('/financialStatistics/oprDetail/' +  $route.params.id+ '/' + type+'/' + oprOrderId)">查看</div>
             </div>
           </div>
