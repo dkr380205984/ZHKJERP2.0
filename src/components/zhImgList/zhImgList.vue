@@ -12,7 +12,7 @@
         {{(index+1) + ' / ' + selfList.length}}<br />{{type === 'show' ? '点击查看' : '查看详情'}}
       </div>
     </div>
-    <img :src="selfList[index].thumb || defaultImage"
+    <img :src="selfList[index][showThumb] || defaultImage"
       class="img"
       :onerror="defaultImg">
     <div class="zh_img_screen"
@@ -21,7 +21,7 @@
       <div class="close"
         @click.stop="isClickFlag = !isClickFlag">点此退出预览</div>
       <div class="zh_img_box">
-        <img :src="selfList[index].image_url || selfList[index].file_url || defaultImage"
+        <img :src="selfList[index][showImg] || selfList[index].file_url || defaultImage"
           :onerror="defaultImg"
           class="screen_img">
         <div class="left handle_btn_item el-icon-arrow-left"
@@ -47,6 +47,18 @@ export default {
       required: true
     },
     pro_id: [String, Number],
+    showThumb: {
+      type: String,
+      default: 'thumb'
+    },
+    showImg: {
+      type: String,
+      default: 'image_url'
+    },
+    showId: {
+      type: String,
+      default: 'product_id'
+    },
     type: {
       type: String,
       default: 'show',
@@ -91,7 +103,7 @@ export default {
       this.isClickFlag = true
     },
     goRouter () {
-      if (!this.list[this.index].product_id) {
+      if (!this.list[this.index] || !this.list[this.index].product_id) {
         this.$message.error('该图片暂无产品信息,将为您打开大图预览模式')
         this.showBig()
         return
@@ -107,7 +119,8 @@ export default {
     selfList () {
       return !this.list || this.list.length === 0 ? [{
         image_url: '',
-        thumb: ''
+        thumb: '',
+        product_id: ''
       }] : this.list
     }
   },

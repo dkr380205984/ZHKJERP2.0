@@ -390,7 +390,7 @@ export default {
           img = img.map(itemImg => {
             return {
               thumb: itemImg.thumb,
-              image_url: itemImg.image_url,
+              image_url: itemImg.file_url,
               product_id: itemImg.sample_product_id
             }
           })

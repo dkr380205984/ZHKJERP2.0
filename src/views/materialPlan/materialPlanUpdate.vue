@@ -203,7 +203,7 @@
             :key="indexMa">
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
-            <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? itemMa.total_number/1000 + 'kg' : itemMa.total_number + itemMa.unit) : '-'}}</span>
+            <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? $toFixed(itemMa.total_number/1000) + 'kg' : $toFixed(itemMa.total_number) + itemMa.unit) : '-'}}</span>
             <span class="tb_row flex08">{{itemMa.loss || 0}}%</span>
             <span class="tb_row flex08">
               <span class="align"><em class="bigNum">{{itemMa.end_num || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
@@ -323,7 +323,7 @@ export default {
         let flag = totalData.find(valMa => valMa.material_name === itemMa.material_name && valMa.material_attribute === itemMa.material_attribute)
         if (!flag) {
           totalData.push({
-            id: null,
+            id: itemMa.id,
             material_name: itemMa.material_name,
             material_type: itemMa.material_type,
             material_attribute: itemMa.material_attribute,

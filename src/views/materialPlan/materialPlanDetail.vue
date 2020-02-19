@@ -289,7 +289,7 @@ export default {
                 color: itemColor.color,
                 number: itemColor.number
               }
-            }),
+            }).filter(itemColor => itemColor.number),
             total_number: this.$toFixed(itemMa.color_info.map(itemColor => Number(itemColor.number)).reduce((total, itemNum) => {
               return total + itemNum
             }))

@@ -359,6 +359,7 @@
             <span class="label">订单公司：</span>
             <span class="info">
               <el-select v-model="orderInfo.client_id"
+                filterable
                 placeholder="请选择订单公司"
                 @change="changeContacts">
                 <el-option v-for="item in clientList"

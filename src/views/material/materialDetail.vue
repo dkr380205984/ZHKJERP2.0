@@ -1924,7 +1924,7 @@ export default {
     }), material.list()]).then((res) => {
       this.orderInfo = res[0].data.data
       this.materialArr = res[1].data.data.total_data.filter((item) => {
-        return item.material_type === Number(this.$route.params.type)
+        return item.material_type === Number(this.$route.params.type) && item.reality_weight
       })
       this.statistic_data = this.$mergeData(this.materialArr, { mainRule: 'material_name/material_name' })
       if (this.$route.params.type === '1') {

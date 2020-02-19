@@ -218,7 +218,8 @@
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="itemOrder.image"></zh-img-list>
+              <zh-img-list :list="itemOrder.image"
+                type='open'></zh-img-list>
             </div>
             <div class="col flex08">
               {{itemOrder.number}}
@@ -420,7 +421,18 @@ export default {
       }).then(res => {
         this.list = res.data.data
         this.list.forEach(item => {
-          item.image = this.$mergeData(item.product_info, { mainRule: 'product_code', otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => item.image).reduce((total, item) => {
+          item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
+            return item.image.length > 0 ? item.image.map(itemImg => {
+              return {
+                ...itemImg,
+                product_id: item.product_id
+              }
+            }) : [{
+              image_url: '',
+              thumb: '',
+              product_id: item.product_id
+            }]
+          }).reduce((total, item) => {
             return total.concat(item)
           })
           item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
