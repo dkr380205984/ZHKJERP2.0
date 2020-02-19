@@ -85,9 +85,13 @@
           <div class="colCtn">
             <span class="label">样品图片：</span>
             <div class="imgCtn">
-              <img v-for="(item,index) in detail.image"
+              <!-- <img v-for="(item,index) in detail.image"
                 :key="index"
-                :src="item.file_url" />
+                :src="item.file_url" /> -->
+              <el-image style="max-width:150px;max-height:150px;"
+                :src="detail.image[0].file_url"
+                :preview-src-list="detail.image.map(item=>item.file_url)">
+              </el-image>
             </div>
           </div>
         </div>
