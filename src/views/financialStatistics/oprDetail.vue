@@ -14,7 +14,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">{{$route.params.oprType}}金额</span>
-              <span class="text">￥{{$formatNum(info.settle_price)}}</span>
+              <span class="text">￥{{$formatNum(info.settle_price?info.settle_price:info.deduct_price)}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
@@ -188,47 +188,60 @@
         </div>
       </div>
     </div>
-    <!-- <div class="popup"
+    <div class="popup"
       v-show="updateFlag">
       <div class="main">
         <div class="title">
-          <div class="text">订单结算</div>
+          <div class="text">订单{{$route.params.oprType}}修改</div>
           <i class="el-icon-close"
             @click="updateFlag=false"></i>
         </div>
         <div class="content">
           <div class="row">
-            <div class="label">结算日期：</div>
+            <div class="label">{{$route.params.oprType}}日期：</div>
             <div class="info">
               <el-date-picker style="width:100%"
-                v-model="settle.date"
+                v-model="updateInfo.complete_time"
                 value-format="yyyy-MM-dd"
                 type="date"
                 placeholder="选择日期">
               </el-date-picker>
             </div>
           </div>
-          <div class="row">
-            <div class="label">结算金额：</div>
+          <div class="row"
+            v-if="$route.params.oprType==='结算'">
+            <div class="label">{{$route.params.oprType}}金额：</div>
             <div class="info">
-              <zh-input placeholder="请输入结算金额"
+              <zh-input placeholder="请输入金额"
                 type="number"
-                v-model="settle.price">
+                v-model="updateInfo.settle_price">
                 <template slot="append">元</template>
               </zh-input>
             </div>
           </div>
-          <div class="row">
+          <div class="row"
+            v-if="$route.params.oprType==='扣款'">
+            <div class="label">{{$route.params.oprType}}金额：</div>
+            <div class="info">
+              <zh-input placeholder="请输入金额"
+                type="number"
+                v-model="updateInfo.deduce_price">
+                <template slot="append">元</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row"
+            v-if="$route.params.oprType==='结算'">
             <div class="label">是否开票：</div>
             <div class="info">
-              <el-radio v-model="settle.ifInvoice"
+              <el-radio v-model="updateInfo.is_invoice"
                 :label="1">已开票</el-radio>
-              <el-radio v-model="settle.ifInvoice"
+              <el-radio v-model="updateInfo.is_invoice"
                 :label="2">未开票</el-radio>
             </div>
           </div>
-          <div v-show="settle.ifInvoice === 1"
-            v-for="(item,index) in settle.invoiceDetail"
+          <div v-show="updateInfo.is_invoice === 1"
+            v-for="(item,index) in updateInfo.invoice_info"
             :key="index">
             <div class="row">
               <div class="label">开票号码：</div>
@@ -256,18 +269,18 @@
             <div class="info">
               <el-input type="textarea"
                 placeholder="请输入备注信息"
-                v-model="settle.desc"></el-input>
+                v-model="updateInfo.desc"></el-input>
             </div>
           </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="settleFlag=false">取消</div>
+            @click="updateFlag=false">取消</div>
           <div class="btn btnBlue"
-            @click="settleFn">确定</div>
+            @click="updateFn">确定</div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -308,6 +321,7 @@ export default {
         order_code: [],
         settle_code: null,
         settle_price: 0,
+        deduct_price: 0,
         status: 1
       },
       updateFlag: false,
@@ -320,6 +334,7 @@ export default {
         order_code: [],
         settle_code: null,
         settle_price: 0,
+        deduct_price: 0,
         status: 1
       }
     }
@@ -382,6 +397,18 @@ export default {
           }
         })
       }
+    },
+    updateFn () {
+
+    },
+    addInvoice () {
+      this.updateInfo.invoice_info.push({
+        invoiceNum: '',
+        invoicePrice: ''
+      })
+    },
+    deleteInvoice (index) {
+      this.updateInfo.invoice_info.splice(index, 1)
     }
   },
   mounted () {
@@ -392,6 +419,7 @@ export default {
         order_id: this.$route.params.orderId
       }).then((res) => {
         this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+        this.updateInfo = this.$clone(this.info)
         this.loading = false
       })
     } else {
@@ -401,6 +429,7 @@ export default {
         order_id: this.$route.params.orderId
       }).then((res) => {
         this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+        this.updateInfo = this.$clone(this.info)
         this.loading = false
       })
     }

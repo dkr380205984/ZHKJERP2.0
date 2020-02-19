@@ -149,7 +149,7 @@ export default {
       tag: '工序',
       msgFlag: false,
       defaultGroup: [],
-      checkRouter: ['报价单添加'] // 需要审核的路由表,目前只有报价单
+      checkRouter: ['报价单添加', '合作公司财务操作记录'] // 需要审核的路由表,目前只有报价单
     }
   },
   computed: {

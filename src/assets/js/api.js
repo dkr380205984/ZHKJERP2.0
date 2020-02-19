@@ -170,6 +170,7 @@ const price = {
 const productPlan = {
   create: (params) => http.post(`${baseUrl}/material/match/card/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/material/match/card/one`, params),
+  delete: (params) => http.post(`${baseUrl}/material/match/card/delete`, params, 'application/json'),
   getByProduct: (params) => http.get(`${baseUrl}/material/match/card/product`, params),
   setDefault: (params) => http.post(`${baseUrl}/material/match/card/default`, params, 'application/json') // 设置默认配料单
 }
