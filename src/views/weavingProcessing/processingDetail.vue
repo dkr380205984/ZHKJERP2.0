@@ -753,6 +753,7 @@ export default {
             this.msgSwitch = true
           } else {
             this.$router.push('/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
+            this.$winReload()
           }
         }
       })
@@ -806,7 +807,7 @@ export default {
                 type: 'success',
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
-              this.weaving_log.splice(index, 1)
+              this.$winReload()
             }
           })
         } else {
@@ -819,6 +820,7 @@ export default {
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
               this.weaving_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }

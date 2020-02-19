@@ -584,6 +584,11 @@ export default {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
+      error = this.colour.some((item) => item.colour.length > 8)
+      if (error) {
+        this.$message.error('配色信息长度不得超过8个字符')
+        return
+      }
       if (this.hasFitting) {
         error = this.fittingInfo.some((item) => !item.fitting_name)
       }
@@ -725,43 +730,44 @@ export default {
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list()]).then((res) => {
-      this.typeArr = res[0].data.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.name,
-          sizeArr: item.sizeArr,
-          child_size: item.child_size,
-          children: item.child.length === 0 ? null : item.child.map((item) => {
-            return {
-              value: item.id,
-              label: item.name,
-              children: item.child.length === 0 ? null : item.child.map((item) => {
-                return {
-                  value: item.id,
-                  label: item.name
-                }
-              })
-            }
-          })
-        }
+      material.list()])
+      .then((res) => {
+        this.typeArr = res[0].data.data.map((item) => {
+          return {
+            value: item.id,
+            label: item.name,
+            sizeArr: item.sizeArr,
+            child_size: item.child_size,
+            children: item.child.length === 0 ? null : item.child.map((item) => {
+              return {
+                value: item.id,
+                label: item.name,
+                children: item.child.length === 0 ? null : item.child.map((item) => {
+                  return {
+                    value: item.id,
+                    label: item.name
+                  }
+                })
+              }
+            })
+          }
+        })
+        this.flowerArr = res[1].data.data
+        this.ingredientArr = res[2].data.data
+        this.ingredientArr.forEach((item) => {
+          item.value = item.name
+        })
+        this.colourArr = res[3].data.data
+        this.colourArr.forEach((item) => {
+          item.value = item.name
+        })
+        this.postData.token = res[4].data.data
+        this.materialArr = res[5].data.data
+        this.materialArr.forEach((item) => {
+          item.value = item.name
+        })
+        this.loading = false
       })
-      this.flowerArr = res[1].data.data
-      this.ingredientArr = res[2].data.data
-      this.ingredientArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.colourArr = res[3].data.data
-      this.colourArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.postData.token = res[4].data.data
-      this.materialArr = res[5].data.data
-      this.materialArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.loading = false
-    })
   }
 }
 </script>

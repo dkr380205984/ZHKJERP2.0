@@ -1063,56 +1063,57 @@ export default {
             message: '已取消操作'
           })
         })
-      }
-      let formData = []
-      this.process_data.forEach((item) => {
-        item.product_info.forEach((itemChild) => {
-          formData.push({
-            order_id: this.$route.params.id,
-            order_type: 1,
-            product_id: item.product_id,
-            type: 2, // 类型，1 织造 2 加工
-            client_id: item.client_id,
-            size: itemChild.colorSize.split('/')[0],
-            color: itemChild.colorSize.split('/')[1],
-            count: itemChild.count,
-            number: itemChild.number,
-            complete_time: item.date,
-            production_type: item.production_type,
-            desc: item.desc
+      } else {
+        let formData = []
+        this.process_data.forEach((item) => {
+          item.product_info.forEach((itemChild) => {
+            formData.push({
+              order_id: this.$route.params.id,
+              order_type: 1,
+              product_id: item.product_id,
+              type: 2, // 类型，1 织造 2 加工
+              client_id: item.client_id,
+              size: itemChild.colorSize.split('/')[0],
+              color: itemChild.colorSize.split('/')[1],
+              count: itemChild.count,
+              number: itemChild.number,
+              complete_time: item.date,
+              production_type: item.production_type,
+              desc: item.desc
+            })
           })
         })
-      })
-      if (this.process_type === '入库') {
-        receive.create({ data: formData }).then((res) => {
-          if (res.data.status) {
-            this.$message.success('入库成功，刷新页面后更新入库数量')
-            this.process_data = []
-            this.process_flag = false
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+        if (this.process_type === '入库') {
+          receive.create({ data: formData }).then((res) => {
+            if (res.data.status) {
+              this.$message.success('入库成功，刷新页面后更新入库数量')
+              this.process_data = []
+              this.process_flag = false
+              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+                this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                this.msgSwitch = true
+              } else {
+                this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              }
             }
-          }
-        })
-      } else {
-        dispatch.create({ data: formData }).then((res) => {
-          if (res.data.status) {
-            this.$message.success('出库成功，刷新页面后更新出库数量')
-            this.process_data = []
-            this.process_flag = false
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工出库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+          })
+        } else {
+          dispatch.create({ data: formData }).then((res) => {
+            if (res.data.status) {
+              this.$message.success('出库成功，刷新页面后更新出库数量')
+              this.process_data = []
+              this.process_flag = false
+              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+                this.msgContent = '<span style="color:#1A95FF">添加</span>了一个半成品加工出库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                this.msgSwitch = true
+              } else {
+                this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              }
             }
-          }
-        })
+          })
+        }
       }
     },
     deleteLog (id, flag, index) {

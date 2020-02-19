@@ -906,6 +906,7 @@ export default {
             this.msgSwitch = true
           } else {
             this.$router.push('/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
+            this.$winReload()
           }
         }
       })
@@ -950,6 +951,7 @@ export default {
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
               this.weaving_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }
@@ -1045,6 +1047,7 @@ export default {
         if (res.data.status) {
           this.$message.success('补纱成功,请通知物料管理员订购/调取所需物料')
           this.replenish_flag = false
+          this.$winReload()
         }
       })
     },
@@ -1076,6 +1079,7 @@ export default {
                 message: '删除成功!请刷新页面后查看补纱信息变化'
               })
               this.replenish_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }
