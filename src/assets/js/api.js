@@ -170,6 +170,7 @@ const price = {
 const productPlan = {
   create: (params) => http.post(`${baseUrl}/material/match/card/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/material/match/card/one`, params),
+  delete: (params) => http.post(`${baseUrl}/material/match/card/delete`, params, 'application/json'),
   getByProduct: (params) => http.get(`${baseUrl}/material/match/card/product`, params),
   setDefault: (params) => http.post(`${baseUrl}/material/match/card/default`, params, 'application/json') // 设置默认配料单
 }
@@ -350,11 +351,13 @@ const statistics = {
 // 订单结算
 const settle = {
   create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/financial/settle/check`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/financial/settle/list`, params)
 }
 // 订单扣款
 const chargebacks = {
   create: (params) => http.post(`${baseUrl}/financial/deduct/save`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/financial/deduct/check`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params)
 }
 // 打印设置

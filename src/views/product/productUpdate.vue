@@ -591,6 +591,11 @@ export default {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
+      error = this.colour.some((item) => item.colour.length > 8)
+      if (error) {
+        this.$message.error('配色信息长度不得超过8个字符')
+        return
+      }
       if (this.hasFitting) {
         error = this.fittingInfo.some((item) => !item.fitting_name)
       }
@@ -692,95 +697,96 @@ export default {
       material.list(),
       product.detail({
         id: this.$route.params.id
-      })]).then((res) => {
-      this.typeArr = res[0].data.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.name,
-          sizeArr: item.sizeArr,
-          child_size: item.child_size,
-          children: item.child.length === 0 ? null : item.child.map((item) => {
-            return {
-              value: item.id,
-              label: item.name,
-              children: item.child.length === 0 ? null : item.child.map((item) => {
-                return {
-                  value: item.id,
-                  label: item.name
-                }
-              })
-            }
-          })
-        }
+      })])
+      .then((res) => {
+        this.typeArr = res[0].data.data.map((item) => {
+          return {
+            value: item.id,
+            label: item.name,
+            sizeArr: item.sizeArr,
+            child_size: item.child_size,
+            children: item.child.length === 0 ? null : item.child.map((item) => {
+              return {
+                value: item.id,
+                label: item.name,
+                children: item.child.length === 0 ? null : item.child.map((item) => {
+                  return {
+                    value: item.id,
+                    label: item.name
+                  }
+                })
+              }
+            })
+          }
+        })
+        this.flowerArr = res[1].data.data
+        this.ingredientArr = res[2].data.data
+        this.ingredientArr.forEach((item) => {
+          item.value = item.name
+        })
+        this.colourArr = res[3].data.data
+        this.colourArr.forEach((item) => {
+          item.value = item.name
+        })
+        this.postData.token = res[4].data.data
+        this.materialArr = res[5].data.data
+        this.materialArr.forEach((item) => {
+          item.value = item.name
+        })
+        let productInfo = res[6].data.data
+        this.name = productInfo.name
+        this.fileArr = productInfo.image.map(item => {
+          return {
+            id: item.id,
+            url: item.image_url
+          }
+        })
+        this.size = productInfo.size.map(item => {
+          return {
+            size: item.size_name,
+            desc: item.size_info,
+            weight: item.weight
+          }
+        })
+        this.product_code = productInfo.product_code
+        this.colour = productInfo.color.map(item => {
+          return {
+            colour: item.color_name
+          }
+        })
+        this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
+        this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
+        this.flower = productInfo.flower_id_new
+        this.ingredient = productInfo.component.map((item) => {
+          return {
+            ingredient_name: item.component_name,
+            ingredient_value: item.number
+          }
+        })
+        this.hasFitting = productInfo.part_data.length > 0
+        this.fittingInfo = productInfo.part_data.map((item) => {
+          return {
+            part_id: item.id,
+            fitting_name: item.part_title,
+            ingredient: item.part_component.map((item) => {
+              return {
+                ingredient_name: item.component_name,
+                ingredient_value: item.number
+              }
+            }),
+            size: item.size.map((itemSize) => {
+              return {
+                size: itemSize.size_name,
+                weight: itemSize.weight,
+                desc: itemSize.size_info,
+                number: itemSize.number
+              }
+            })
+          }
+        })
+        this.needleType = productInfo.needle_type
+        this.loading = false
       })
-      this.flowerArr = res[1].data.data
-      this.ingredientArr = res[2].data.data
-      this.ingredientArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.colourArr = res[3].data.data
-      this.colourArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.postData.token = res[4].data.data
-      this.materialArr = res[5].data.data
-      this.materialArr.forEach((item) => {
-        item.value = item.name
-      })
-      let productInfo = res[6].data.data
-      this.name = productInfo.name
-      this.fileArr = productInfo.image.map(item => {
-        return {
-          id: item.id,
-          url: item.image_url
-        }
-      })
-      this.size = productInfo.size.map(item => {
-        return {
-          size: item.size_name,
-          desc: item.size_info,
-          weight: item.weight
-        }
-      })
-      this.product_code = productInfo.product_code
-      this.colour = productInfo.color.map(item => {
-        return {
-          colour: item.color_name
-        }
-      })
-      this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
-      this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
-      this.flower = productInfo.flower_id_new
-      this.ingredient = productInfo.component.map((item) => {
-        return {
-          ingredient_name: item.component_name,
-          ingredient_value: item.number
-        }
-      })
-      this.hasFitting = productInfo.part_data.length > 0
-      this.fittingInfo = productInfo.part_data.map((item) => {
-        return {
-          part_id: item.id,
-          fitting_name: item.part_title,
-          ingredient: item.part_component.map((item) => {
-            return {
-              ingredient_name: item.component_name,
-              ingredient_value: item.number
-            }
-          }),
-          size: item.size.map((itemSize) => {
-            return {
-              size: itemSize.size_name,
-              weight: itemSize.weight,
-              desc: itemSize.size_info,
-              number: itemSize.number
-            }
-          })
-        }
-      })
-      this.needleType = productInfo.needle_type
-      this.loading = false
-    })
   }
 }
 </script>

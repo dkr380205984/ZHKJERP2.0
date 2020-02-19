@@ -110,6 +110,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnRed"
+            @click="deletePlan">删除</div>
           <div class="btn btnOrange"
             @click="$openUrl('/productPlanTable/' + $route.params.id + '/' + $route.params.type + '/' + list[listIndex].id)">打印</div>
           <div class="btn btnBlue"
@@ -176,6 +178,28 @@ export default {
           this.$message.success('设置成功')
           this.defaultIndex = this.listIndex
         }
+      })
+    },
+    deletePlan () {
+      this.$confirm('此操作将永久删除该配料单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        productPlan.delete({
+          id: this.list[this.listIndex].id
+        }).then((res) => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.$router.go(-1)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   },

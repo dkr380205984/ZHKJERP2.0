@@ -924,57 +924,59 @@
           <i class="el-icon-close"
             @click="easyStockFlag=false"></i>
         </div>
-        <div class="content"
-          v-for="(itemStock,indexStock) in stock_data"
-          :key="indexStock">
-          <div class="row"
-            v-if="!replenishFlag">
-            <div class="label">计划物料：</div>
-            <div class="info">
-              <el-select v-model="itemStock.material_id"
-                filterable
-                placeholder="请选择需要调取的物料">
-                <el-option v-for="item in materialArr"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.material_name+'/'+item.material_attribute">
-                </el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="column"
-            v-for="(item,index) in itemStock.stock"
-            :key="index">
-            <div class="row">
-              <div class="label">来源仓库：</div>
+        <div style="max-height:600px;overflow:auto">
+          <div class="content"
+            v-for="(itemStock,indexStock) in stock_data"
+            :key="indexStock">
+            <div class="row"
+              v-if="!replenishFlag">
+              <div class="label">计划物料：</div>
               <div class="info">
-                <span class="text">{{item.stock_name}}</span>
+                <el-select v-model="itemStock.material_id"
+                  filterable
+                  placeholder="请选择需要调取的物料">
+                  <el-option v-for="item in materialArr"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.material_name+'/'+item.material_attribute">
+                  </el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="column"
+              v-for="(item,index) in itemStock.stock"
+              :key="index">
+              <div class="row">
+                <div class="label">来源仓库：</div>
+                <div class="info">
+                  <span class="text">{{item.stock_name}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">调取物料：</div>
+                <div class="info">
+                  <span class="text">{{item.name}}</span>
+                  <span class="text blue">{{item.color}}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">调取数量：</div>
+                <div class="info">
+                  <zh-input style="margin-bottom:12px;width:160px"
+                    placeholder="输入数量"
+                    v-model="item.weight">
+                    <template slot="append">{{type==='1'?'kg':item.unit}}</template>
+                  </zh-input>
+                </div>
               </div>
             </div>
             <div class="row">
-              <div class="label">调取物料：</div>
+              <div class="label">备注信息：</div>
               <div class="info">
-                <span class="text">{{item.name}}</span>
-                <span class="text blue">{{item.color}}</span>
+                <el-input style="height:32px;flex:1"
+                  v-model="itemStock.desc"
+                  placeholder="请输入备注信息"></el-input>
               </div>
-            </div>
-            <div class="row">
-              <div class="label">调取数量：</div>
-              <div class="info">
-                <zh-input style="margin-bottom:12px;width:160px"
-                  placeholder="输入数量"
-                  v-model="item.weight">
-                  <template slot="append">{{type==='1'?'kg':item.unit}}</template>
-                </zh-input>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="label">备注信息：</div>
-            <div class="info">
-              <el-input style="height:32px;flex:1"
-                v-model="itemStock.desc"
-                placeholder="请输入备注信息"></el-input>
             </div>
           </div>
         </div>
@@ -1190,6 +1192,7 @@ export default {
             this.$message.success('保存成功')
             this.showGoStockPopup = false
             this.goStockInfo = []
+            this.$winReload()
           }
         })
       } else {
@@ -1499,6 +1502,7 @@ export default {
           this.$message.success('调取成功，请刷新页面后查看采购数量')
           this.easyStockFlag = false
           this.replenishFlag = false
+          this.$winReload()
         }
       })
     },
@@ -1616,6 +1620,7 @@ export default {
             this.msgSwitch = true
           } else {
             this.$router.push('/material/materialDetail/' + +this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+            this.$winReload()
           }
           this.replenishFlag = false
         }
@@ -1649,6 +1654,7 @@ export default {
                 message: '删除成功!请刷新页面后查看采购和库存变化'
               })
               this.order_stock_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }
@@ -1801,6 +1807,7 @@ export default {
             this.msgSwitch = true
           } else {
             this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+            this.$winReload()
           }
         }
       })
@@ -1866,6 +1873,7 @@ export default {
                 message: '删除成功!请刷新页面后查看加工信息变化'
               })
               this.process_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }
@@ -1969,14 +1977,12 @@ export default {
         }
         return item
       }).filter(item => item.type === Number(this.type))
-      console.log(this.order_stock_log)
       this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
       this.order_stock_info.forEach((item) => {
         item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
           return total + current.price * current.weight
         }, 0))
       })
-      console.log(this.order_stock_info)
       this.stock_list = this.$mergeData(res[6].data.data.stock_info.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
       this.processList = res[7].data.data.filter(item => Number(item.type) === 1)
       this.process_log = res[8].data.data.filter(item => item.type === Number(this.type))

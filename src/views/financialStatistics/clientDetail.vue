@@ -1027,14 +1027,12 @@ export default {
             client_type: this.type,
             order_id: orderId
           }).then((res) => {
-            if (res.data.status) {
-              this.orderOprFlag = true
-              this.orderOprList = res.data.data.map((item) => {
-                item.methods = type
-                return item
-              })
-              this.loading = false
-            }
+            this.orderOprFlag = true
+            this.orderOprList = res.data.data.map((item) => {
+              item.methods = type
+              return item
+            })
+            this.loading = false
           })
         } else {
           settle.log({
@@ -1042,14 +1040,12 @@ export default {
             client_type: this.type,
             order_id: orderId
           }).then((res) => {
-            if (res.data.status) {
-              this.orderOprFlag = true
-              this.orderOprList = res.data.data.map((item) => {
-                item.methods = type
-                return item
-              })
-              this.loading = false
-            }
+            this.orderOprFlag = true
+            this.orderOprList = res.data.data.map((item) => {
+              item.methods = type
+              return item
+            })
+            this.loading = false
           })
         }
       } else {
