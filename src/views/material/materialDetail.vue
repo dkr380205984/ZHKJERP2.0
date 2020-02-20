@@ -57,10 +57,41 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <el-tooltip class="item"
+              effect="dark"
+              :content="!checkWhichYarn?'请选取纱线进行订购操作':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线订购白胚'"
+              placement="top">
+              <div class="btn"
+                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
+                @click="easyOrder(1, true)">订购白胚</div>
+            </el-tooltip>
+            <el-tooltip class="item"
+              effect="dark"
+              :content="!checkWhichYarn?'请选取纱线进行订购操作':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线订购色纱'"
+              placement="top">
+              <div class="btn"
+                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
+                @click="easyOrder(2, true)">订购色纱</div>
+            </el-tooltip>
+            <el-tooltip class="item"
+              effect="dark"
+              :content="!checkWhichYarn?'请选取纱线为其调取白胚':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线调取库存'"
+              placement="top">
+              <div class="btn"
+                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
+                @click="selectStockFirst(statistic_data[checkWhichYarn-1].material_name,statistic_data[checkWhichYarn-1].childrenMergeInfo)">调取白胚</div>
+            </el-tooltip>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
             style="margin-right:0">
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2">单选</div>
                   <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
                   <div class="tcolumn noPad"
                     style="flex:4">
@@ -71,15 +102,20 @@
                       <div class="tcolumn">操作</div>
                     </div>
                   </div>
-                  <div class="tcolumn"
-                    v-if="type==='1'">批量操作</div>
-                  <div class="tcolumn">结余入库</div>
+                  <!-- <div class="tcolumn"
+                    v-if="type==='1'">批量操作</div> -->
+                  <!-- <div class="tcolumn">结余入库</div> -->
                 </div>
               </div>
               <div class="tbody">
                 <div class="trow"
                   v-for="(item,index) in statistic_data"
                   :key="index">
+                  <div class="tcolumn"
+                    style="flex:0.2">
+                    <el-radio v-model="checkWhichYarn"
+                      :label="index+1"></el-radio>
+                  </div>
                   <div class="tcolumn">{{item.material_name}}</div>
                   <div class="tcolumn noPad"
                     style="flex:4">
@@ -94,12 +130,12 @@
                         <a href="#order"
                           class="blue"
                           @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight)">订购</a>
-                        <span class="border"
+                        <!-- <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                           v-if="type==='1'"></span>
                         <span class="blue"
                           @click="easyStock(item.material_name,itemChild.material_attribute,itemChild.reality_weight - itemChild.order_weight, itemChild.id)"
-                          v-if="type==='1'">智能调取</span>
+                          v-if="type==='1'">智能调取</span> -->
                         <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"></span>
                         <a href="#process"
@@ -108,16 +144,16 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tcolumn"
+                  <!-- <div class="tcolumn"
                     v-if="type==='1'">
                     <a class="orange"
                       @click="selectStockFirst(item.material_name,item.childrenMergeInfo)">批量调取白胚</a>
-                  </div>
-                  <div class="tcolumn">
+                  </div> -->
+                  <!-- <div class="tcolumn">
                     <span class="blue"
                       style="margin-left:8px"
                       @click="handleGoStock">结余入库</span>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -309,12 +345,12 @@
                 <span class="once"
                   v-if="!order_flag"
                   @click="normalOrder()">普通订购</span>
-                <span class="once"
+                <!-- <span class="once"
                   v-if="!order_flag && type==='1'"
                   @click="easyOrder(1)">一键订购白胚</span>
                 <span class="once"
                   v-if="!order_flag && type==='1'"
-                  @click="easyOrder(2)">一键订购色纱</span>
+                  @click="easyOrder(2)">一键订购色纱</span> -->
                 <span class="once"
                   v-if="!order_flag && type==='2'"
                   @click="easyOrder(2)">一键订购</span>
@@ -843,8 +879,9 @@
         <div class="opr">
           <div class="btn btnGray"
             @click="easyOrderFlag = false">直接跳过</div>
-          <div class="btn btnBlue"
-            @click="commonFn">确定</div>
+          <a href="#order"
+            class="btn btnBlue"
+            @click="commonFn">确定</a>
         </div>
       </div>
     </div>
@@ -1154,6 +1191,7 @@ export default {
       stockSelectList: [],
       stockSelect: '',
       stockChildren: [],
+      checkWhichYarn: '',
       lock: true
     }
   },
@@ -1324,14 +1362,16 @@ export default {
         desc: ''
       })
     },
-    easyOrder (type) {
-      this.order_data = []
-      this.statistic_data.forEach((item) => {
-        item.childrenMergeInfo.forEach((itemChild) => {
+    easyOrder (type, ifSingle) {
+      if (ifSingle) {
+        if (!this.checkWhichYarn) {
+          return
+        }
+        this.statistic_data[this.checkWhichYarn - 1].childrenMergeInfo.forEach((itemChild) => {
           if (itemChild.reality_weight - itemChild.order_weight > 0) {
             this.order_data.push({
               material: [{
-                name: item.material_name,
+                name: this.statistic_data[this.checkWhichYarn - 1].material_name,
                 color: type === 1 ? '白胚' : itemChild.material_attribute,
                 number: itemChild.reality_weight - itemChild.order_weight,
                 unit: this.$route.params.type === '1' ? 'kg' : itemChild.unit
@@ -1344,7 +1384,28 @@ export default {
             })
           }
         })
-      })
+      } else {
+        // 一键订购，以前的功能，现在隐藏了按钮，功能保留
+        this.statistic_data.forEach((item) => {
+          item.childrenMergeInfo.forEach((itemChild) => {
+            if (itemChild.reality_weight - itemChild.order_weight > 0) {
+              this.order_data.push({
+                material: [{
+                  name: item.material_name,
+                  color: type === 1 ? '白胚' : itemChild.material_attribute,
+                  number: itemChild.reality_weight - itemChild.order_weight,
+                  unit: this.$route.params.type === '1' ? 'kg' : itemChild.unit
+                }],
+                price: '',
+                material_id: itemChild.id,
+                company_id: '',
+                complete_time: this.$getTime(),
+                desc: ''
+              })
+            }
+          })
+        })
+      }
       if (this.order_data.length > 0) {
         this.order_flag = true
         this.easyOrderFlag = true
@@ -1419,16 +1480,20 @@ export default {
       let needNum = children.reduce((total, current) => {
         return total + (current.reality_weight - current.order_weight)
       }, 0)
-      if (needNum === 0) {
+      if (needNum <= 0) {
         this.$message.warning('该物料已采购完毕')
         return
       }
       if (!finded) {
-        this.$message.warning('仓库里没有符合该名称的物料，请手动调取相似物料')
+        this.$message.warning('仓库里没有符合该名称的物料，请手动调取相似名称物料')
       } else {
         this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
-        this.stockChildren = children
-        this.showStockSelect = true
+        if (this.stockSelectList.length > 0) {
+          this.stockChildren = children
+          this.showStockSelect = true
+        } else {
+          this.$message.warning('仓库里没有符合该名称的白胚物料，请手动调取相似颜色物料')
+        }
       }
     },
     // 批量调取
@@ -1440,29 +1505,29 @@ export default {
       this.stockChildren.forEach((item, index) => {
         let whiteYarn = this.stockSelectList.find((item) => item.stock_id === this.stockSelect)
         let needNumChild = item.reality_weight - item.order_weight
-        this.stock_data.push({
-          material_id: item.id,
-          desc: '',
-          stock: []
-        })
-        if (needNumChild > 0) {
-          let stockWeight = whiteYarn.total_weight > needNumChild ? needNumChild : whiteYarn.total_weight
-          this.stock_data[index].stock.push({
-            stock_id: whiteYarn.stock_id,
-            stock_name: whiteYarn.stock_name,
-            weight: stockWeight,
-            color: whiteYarn.material_color,
-            name: name
+        let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
+        if (stockWeight > 0) {
+          this.stock_data.push({
+            material_id: item.id,
+            desc: '',
+            stock: [{
+              stock_id: whiteYarn.stock_id,
+              stock_name: whiteYarn.stock_name,
+              weight: stockWeight,
+              color: whiteYarn.material_color,
+              name: this.statistic_data[this.checkWhichYarn - 1].material_name
+            }]
           })
-          whiteYarn.total_weight = whiteYarn.total_weight - stockWeight
-          needNumChild = needNumChild - stockWeight
-          needNum = needNum - stockWeight
         }
+        whiteYarn.total_weight = whiteYarn.total_weight - stockWeight
+        needNumChild = needNumChild - stockWeight
+        needNum = needNum - stockWeight
       })
       if (needNum > 0) {
-        this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他色纱')
+        this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他仓库纱线')
       } else {
         this.showStockSelect = false
+        this.easyStockFlag = true
         if (this.stock_data[0] && this.stock_data[0].stock.length > 0) {
           this.easyStockFlag = true
         }
@@ -2043,4 +2108,11 @@ export default {
 
 <style scoped lang='less'>
 @import "~@/assets/less/material/materialDetail.less";
+</style>
+<style lang="less">
+#materialDetail {
+  .el-radio__label {
+    display: none;
+  }
+}
 </style>
