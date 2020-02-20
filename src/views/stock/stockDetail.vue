@@ -1143,9 +1143,9 @@ export default {
         if (this.yarnColorList.length === 0) {
           yarnColor.list().then(res => {
             if (res.data.status) {
-              this.yarnColorList = res.data.data.map(itemColor => {
+              this.yarnColorList = [{ value: '白胚' }, ...res.data.data.map(itemColor => {
                 return { value: itemColor.name }
-              })
+              })]
             } else {
               this.$message.error('未获取到原料颜色数据，' + res.data.message)
             }
