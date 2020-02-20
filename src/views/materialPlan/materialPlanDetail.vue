@@ -278,7 +278,7 @@ export default {
         this.showMaterialInfo = this.productMaterialTotal[0] ? this.productMaterialTotal[0].material_info : []
         this.showSizeArr = this.productMaterialTotal[0] ? this.productMaterialTotal[0].sizeArr : []
         // 处理统计数据
-        this.materialPlanTotalInfo = this.$mergeData(data.total_data, { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
+        this.materialPlanTotalInfo = this.$mergeData(data.total_data.filter(itemNum => Number(itemNum.reality_weight)), { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
         this.materialPlanTotalInfo = this.materialPlanTotalInfo.map(itemMa => {
           return {
             material_name: itemMa.material_name,
@@ -289,7 +289,7 @@ export default {
                 color: itemColor.color,
                 number: itemColor.number
               }
-            }).filter(itemColor => itemColor.number),
+            }),
             total_number: this.$toFixed(itemMa.color_info.map(itemColor => Number(itemColor.number)).reduce((total, itemNum) => {
               return total + itemNum
             }))

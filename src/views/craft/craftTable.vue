@@ -40,11 +40,11 @@
         </div>
         <div class="print_row">
           <span class="row_item w100 center">规格</span>
-          <span class="row_item left"></span>
-          <!-- <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].size_info + 'cm' : ''}}</span> -->
+          <!-- <span class="row_item left"></span> -->
+          <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].size_info + 'cm' : ''}}</span>
           <span class="row_item w100 center">克重</span>
-          <span class="row_item left"></span>
-          <!-- <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].weight + 'g' : ''}}</span> -->
+          <!-- <span class="row_item left"></span> -->
+          <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].weight + 'g' : ''}}</span>
           <span class="row_item w100 center">产品成分</span>
           <span class="row_item left">{{craftDetail.product_info.materials|filterMaterial}}</span>
         </div>

@@ -703,7 +703,7 @@
           <div class="btn btnGray"
             @click="printPopup=false">取消</div>
           <div class="btn btnBlue"
-            @click="$openUrl('/replenishTable/' + $route.params.id + '/' + $route.params.orderType + '?id=' + printInfo.filter(item=>item.checked).map(item=>item.id).join(','))">去打印</div>
+            @click="goPrint">去打印</div>
         </div>
       </div>
     </div>
@@ -780,6 +780,14 @@ export default {
           })
         }
       })
+    },
+    goPrint () {
+      let idArr = this.printInfo.filter(item => item.checked).map(item => item.id)
+      if (idArr.length === 0) {
+        this.$message.warning('请选择需要打印的补纱日志')
+        return
+      }
+      this.$openUrl('/replenishTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '?id=' + idArr.join(','))
     },
     normalWeaving (code, size, color, id, number) {
       if (number !== 'undefined' && number <= 0) {

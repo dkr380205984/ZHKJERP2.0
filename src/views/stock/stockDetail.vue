@@ -21,11 +21,11 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">仓库类型：</span>
-            <span class="text">{{stockInfo.type[0]|filterType}}</span>
+            <span class="text">{{stockInfo.type|filterType}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">管理员：</span>
-            <span class="text">{{''}}</span>
+            <span class="text">{{stockInfo.attendant.map(item=>item.user_name).join(',')}}</span>
           </div>
         </div>
         <div class="rowCtn">

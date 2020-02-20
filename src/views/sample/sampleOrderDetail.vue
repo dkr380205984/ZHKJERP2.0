@@ -169,8 +169,10 @@
               </span>
               <span class="tcolumn center">
                 <span class="trow middle_page">
-                  <span class="btn noBorder lineH54">工艺单</span>
-                  <span class="btn noBorder lineH54">配料单</span>
+                  <span class="btn noBorder lineH54"
+                    @click="$openUrl('/craft/craftDetail/' + itemPro.id.product_id + '/2')">工艺单</span>
+                  <span class="btn noBorder lineH54"
+                    @click="$openUrl('/productPlan/productPlanDetail/' + itemPro.id.product_id + '/2')">配料单</span>
                 </span>
               </span>
             </span>

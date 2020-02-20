@@ -14,7 +14,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">编号：</span>
-            <span class="text">{{orderInfo.order_code}}</span>
+            <span class="text">{{orderInfo.order_code || orderInfo.title}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">{{$route.params.orderType==='1'?'订':'样'}}单公司：</span>
@@ -996,7 +996,8 @@
           <i class="el-icon-close"
             @click="showGoStockPopup=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:500px">
           <template v-for="(itemMa,indexMa) in goStockInfo">
             <div class="row"
               :key="indexMa+'name'">
