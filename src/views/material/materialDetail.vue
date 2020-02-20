@@ -111,7 +111,7 @@
                   <div class="tcolumn"
                     v-if="type==='1'">
                     <a class="orange"
-                      @click="easyStockBatch(item.material_name,item.childrenMergeInfo)">批量调取白胚</a>
+                      @click="selectStockFirst(item.material_name,item.childrenMergeInfo)">批量调取白胚</a>
                   </div>
                   <div class="tcolumn">
                     <span class="blue"
@@ -1044,6 +1044,36 @@
         </div>
       </div>
     </div>
+    <!-- 批量调取白胚选择优先仓库 -->
+    <div class="popup"
+      v-show="showStockSelect">
+      <div class="main">
+        <div class="title">
+          <span class="tex">选择仓库</span>
+          <i class="el-icon-close"
+            @click="showStockSelect=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">选择仓库：</span>
+            <span class="info elInputInfo">
+              <el-select v-model="stockSelect">
+                <el-option v-for="(item,index) in stockSelectList"
+                  :key="index"
+                  :label="item.stock_name"
+                  :value="item.stock_id"></el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showStockSelect = false">取消</div>
+          <div class="btn btnBlue"
+            @click="easyStockBatch">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1119,6 +1149,10 @@ export default {
       showGoStockPopup: false,
       goStockInfo: [],
       stockNameArr: [],
+      showStockSelect: false,
+      stockSelectList: [],
+      stockSelect: '',
+      stockChildren: [],
       lock: true
     }
   },
@@ -1376,12 +1410,10 @@ export default {
         }
       }
     },
-    // 批量调取
-    easyStockBatch (name, children) {
+    selectStockFirst (name, children) {
       this.stock_data = []
       // 修复bug，为了保证一建调取点一下，关闭一建调取窗口，再点一下一键调取的神仙操作，你必须保持stock_list里面的值不能变化才能保证仓库里的值是对的,所以stocklist作为历史数据不能变
       let stockListCopy = this.$clone(this.stock_list)
-      // 第一步，判断库存里有没有这种原料
       let finded = stockListCopy.find((item) => item.material_name === name)
       let needNum = children.reduce((total, current) => {
         return total + (current.reality_weight - current.order_weight)
@@ -1393,36 +1425,43 @@ export default {
       if (!finded) {
         this.$message.warning('仓库里没有符合该名称的物料，请手动调取相似物料')
       } else {
-        // 第二步，调取白胚
-        children.forEach((item, index) => {
-          let whiteYarn = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚' && item.total_weight !== 0)
-          let needNumChild = item.reality_weight - item.order_weight
-          if (whiteYarn.length > 0) {
-            this.stock_data.push({
-              material_id: item.id,
-              desc: '',
-              stock: []
-            })
-          }
-          whiteYarn.forEach((itemYarn) => {
-            if (needNumChild > 0) {
-              let stockWeight = itemYarn.total_weight > needNumChild ? needNumChild : itemYarn.total_weight
-              this.stock_data[index].stock.push({
-                stock_id: itemYarn.stock_id,
-                stock_name: itemYarn.stock_name,
-                weight: stockWeight,
-                color: itemYarn.material_color,
-                name: name
-              })
-              itemYarn.total_weight = itemYarn.total_weight - stockWeight
-              needNumChild = needNumChild - stockWeight
-              needNum = needNum - stockWeight
-            }
-          })
+        this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
+        this.stockChildren = children
+        this.showStockSelect = true
+      }
+    },
+    // 批量调取
+    easyStockBatch () {
+      // 调取白胚
+      let needNum = this.stockChildren.reduce((total, current) => {
+        return total + (current.reality_weight - current.order_weight)
+      }, 0)
+      this.stockChildren.forEach((item, index) => {
+        let whiteYarn = this.stockSelectList.find((item) => item.stock_id === this.stockSelect)
+        let needNumChild = item.reality_weight - item.order_weight
+        this.stock_data.push({
+          material_id: item.id,
+          desc: '',
+          stock: []
         })
-        if (needNum > 0) {
-          this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他色纱')
+        if (needNumChild > 0) {
+          let stockWeight = whiteYarn.total_weight > needNumChild ? needNumChild : whiteYarn.total_weight
+          this.stock_data[index].stock.push({
+            stock_id: whiteYarn.stock_id,
+            stock_name: whiteYarn.stock_name,
+            weight: stockWeight,
+            color: whiteYarn.material_color,
+            name: name
+          })
+          whiteYarn.total_weight = whiteYarn.total_weight - stockWeight
+          needNumChild = needNumChild - stockWeight
+          needNum = needNum - stockWeight
         }
+      })
+      if (needNum > 0) {
+        this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他色纱')
+      } else {
+        this.showStockSelect = false
         if (this.stock_data[0] && this.stock_data[0].stock.length > 0) {
           this.easyStockFlag = true
         }
