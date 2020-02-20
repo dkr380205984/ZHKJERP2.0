@@ -82,9 +82,42 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
+          <div class="colCtn">
             <span class="label">文件信息：</span>
-            <span class="text"></span>
+            <span class="text text-warp">
+              <span v-for="(item,index) in orderInfo.order_contract"
+                :key="index + 'order'"
+                class="linkBox">
+                <i class="el-icon-view el-icon--right"></i>
+                <a :href="item.url"
+                  target="view_window"
+                  :download="item.url">{{item.name}}</a>
+              </span>
+              <span v-for="(item,index) in orderInfo.others_info"
+                :key="index + 'order'"
+                class="linkBox">
+                <i class="el-icon-view el-icon--right"></i>
+                <a :href="item.url"
+                  target="view_window"
+                  :download="item.url">{{item.name}}</a>
+              </span>
+              <span v-for="(item,index) in orderInfo.pack_means"
+                :key="index + 'order'"
+                class="linkBox">
+                <i class="el-icon-view el-icon--right"></i>
+                <a :href="item.url"
+                  target="view_window"
+                  :download="item.url">{{item.name}}</a>
+              </span>
+              <span v-for="(item,index) in orderInfo.store_means"
+                :key="index + 'order'"
+                class="linkBox">
+                <i class="el-icon-view el-icon--right"></i>
+                <a :href="item.url"
+                  target="view_window"
+                  :download="item.url">{{item.name}}</a>
+              </span>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -1102,6 +1135,35 @@ export default {
         })
       ]).then(res => {
         this.orderInfo = res[0].data.data
+        this.orderInfo.order_contract = JSON.parse(this.orderInfo.order_contract).map(item => {
+          let splitArr = item.split('/')
+          console.log(splitArr)
+          return {
+            url: item,
+            name: splitArr[splitArr.length - 1]
+          }
+        })
+        this.orderInfo.others_info = JSON.parse(this.orderInfo.others_info).map(item => {
+          let splitArr = item.split('/')
+          return {
+            url: item,
+            name: splitArr[splitArr.length - 1]
+          }
+        })
+        this.orderInfo.pack_means = JSON.parse(this.orderInfo.pack_means).map(item => {
+          let splitArr = item.split('/')
+          return {
+            url: item,
+            name: splitArr[splitArr.length - 1]
+          }
+        })
+        this.orderInfo.store_means = JSON.parse(this.orderInfo.store_means).map(item => {
+          let splitArr = item.split('/')
+          return {
+            url: item,
+            name: splitArr[splitArr.length - 1]
+          }
+        })
         let productList = []
         let numArr = this.$flatten(res[0].data.data.batch_info.map(item => {
           return item.product_info.map(itemNum => Number(itemNum.numbers))
