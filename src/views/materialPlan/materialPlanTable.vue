@@ -45,8 +45,9 @@
         </div>
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">产品详情</span>
-          <span class="row_item">
-            <span class="print_row noBorder"
+          <span class="row_item col">
+            <span class="print_row"
+              :class="{noBorder:indexPro === 0 ? true : false}"
               v-for="(itemPro,indexPro) in productInfo"
               :key="indexPro">
               <span class="row_item noBorder left w180">{{itemPro.product_code}}</span>

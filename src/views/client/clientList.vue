@@ -144,7 +144,7 @@ export default {
     computedType (type) {
       return type.map(item => {
         let flag = this.companyType.find(value => value.value === item)
-        return flag.name || ''
+        return flag ? (flag.name || '') : ''
       }).join(',')
     },
     reset () {
