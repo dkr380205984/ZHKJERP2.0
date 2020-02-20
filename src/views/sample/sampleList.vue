@@ -197,7 +197,7 @@
                 <span class="name">配</span>
               </div>
               <div class="stateCtn"
-                :class="{'green':item.quotation_id>0}">
+                :class="{'green':item.has_quotation>0}">
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>

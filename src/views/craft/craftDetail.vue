@@ -6,8 +6,6 @@
       <div class="titleCtn"
         style="display: flex;justify-content: space-between;align-items: center;">
         <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
-        <div class="btn btnBlue"
-          @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -612,6 +610,8 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnOrange"
             @click="$router.push('/craft/craftUpdate/' + craftId + '/' + $route.params.type)">修改</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
           <div class="btn btnBlue"
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
         </div>
