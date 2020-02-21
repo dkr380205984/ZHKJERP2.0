@@ -60,27 +60,27 @@
             style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
             <el-tooltip class="item"
               effect="dark"
-              :content="!checkWhichYarn?'请选取纱线进行订购操作':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线订购白胚'"
+              :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购白胚'"
               placement="top">
               <div class="btn"
-                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
-                @click="easyOrder(1, true)">订购白胚</div>
+                :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
+                @click="easyOrder(1)">订购白胚</div>
             </el-tooltip>
             <el-tooltip class="item"
               effect="dark"
-              :content="!checkWhichYarn?'请选取纱线进行订购操作':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线订购色纱'"
+              :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购色纱'"
               placement="top">
               <div class="btn"
-                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
-                @click="easyOrder(2, true)">订购色纱</div>
+                :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
+                @click="easyOrder(2)">订购色纱</div>
             </el-tooltip>
             <el-tooltip class="item"
               effect="dark"
-              :content="!checkWhichYarn?'请选取纱线为其调取白胚':'为'+statistic_data[checkWhichYarn-1].material_name+'纱线调取库存'"
+              :content="checkWhichYarn.length!==0?'请选取一个纱线进行调取操作':'调取白胚'"
               placement="top">
               <div class="btn"
-                :class="{'btnGray':!checkWhichYarn,'btnWhiteBlue':checkWhichYarn}"
-                @click="selectStockFirst(statistic_data[checkWhichYarn-1].material_name,statistic_data[checkWhichYarn-1].childrenMergeInfo)">调取白胚</div>
+                :class="{'btnGray':checkWhichYarn.length!==1,'btnWhiteBlue':checkWhichYarn.length===1}"
+                @click="selectStockFirst()">调取白胚</div>
             </el-tooltip>
           </div>
         </div>
@@ -91,7 +91,7 @@
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn"
-                    style="flex:0.2">单选</div>
+                    style="flex:0.2">选择</div>
                   <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
                   <div class="tcolumn noPad"
                     style="flex:4">
@@ -113,8 +113,7 @@
                   :key="index">
                   <div class="tcolumn"
                     style="flex:0.2">
-                    <el-radio v-model="checkWhichYarn"
-                      :label="index+1"></el-radio>
+                    <el-checkbox v-model="item.checked"></el-checkbox>
                   </div>
                   <div class="tcolumn">{{item.material_name}}</div>
                   <div class="tcolumn noPad"
@@ -237,23 +236,6 @@
                       </el-select>
                     </div>
                   </div>
-                  <div class="colCtn flex3"
-                    v-if="!replenishFlag">
-                    <div class="label">
-                      <span class="text">选择{{type==='1'?'原':'辅'}}料</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <el-select v-model="item.material_id"
-                        @change="selectMaterial($event,item)">
-                        <el-option v-for="item in materialArr"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.material_name+'/'+item.material_attribute">
-                        </el-option>
-                      </el-select>
-                    </div>
-                  </div>
                   <div class="colCtn flex3">
                     <div class="label">
                       <span class="text">单价</span>
@@ -276,10 +258,24 @@
                       <span class="text">{{type==='1'?'原料名称':'辅料名称'}}</span>
                     </div>
                     <div class="content">
-                      <el-autocomplete v-model="itemMat.name"
-                        :fetch-suggestions="searchYarn"
-                        placeholder="请输入名称">
-                      </el-autocomplete>
+                      <div class="content">
+                        <!-- 补纱的时候用补纱id，不需要订购id -->
+                        <el-select v-model="itemMat.id"
+                          v-if="!replenishFlag"
+                          @change="selectMaterial($event,itemMat)">
+                          <el-option v-for="item in materialArr"
+                            :key="item.id"
+                            :value="item.id"
+                            :label="item.material_name+'/'+item.material_attribute">
+                          </el-option>
+                        </el-select>
+                        <!-- 补纱的时候显示纱线名称 -->
+                        <el-autocomplete v-model="itemMat.name"
+                          v-if="replenishFlag"
+                          :fetch-suggestions="searchYarn"
+                          placeholder="请输入名称">
+                        </el-autocomplete>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -308,7 +304,7 @@
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
-                      v-if="indexMat===0"
+                      v-if="indexMat===0 && !replenishFlag"
                       @click="addMaterial(index)">添加</div>
                     <div class="editBtn deleteBtn"
                       v-if="indexMat>0"
@@ -351,9 +347,9 @@
                 <span class="once"
                   v-if="!order_flag && type==='1'"
                   @click="easyOrder(2)">一键订购色纱</span> -->
-                <span class="once"
+                <!-- <span class="once"
                   v-if="!order_flag && type==='2'"
-                  @click="easyOrder(2)">一键订购</span>
+                  @click="easyOrder(2)">一键订购</span> -->
                 <span class="once cancle"
                   v-if="order_flag"
                   @click="cancleOrder">取消订购</span>
@@ -849,30 +845,38 @@
           <div class="tips">
             提示信息：一键添加操作可以统一选择订购公司和物料单价，如不需要可以选择直接跳过该步骤。
           </div>
-          <div class="row">
-            <div class="label">订购公司：</div>
-            <div class="info">
-              <el-select v-model="commonCompany"
-                filterable
-                placeholder="请选择订购公司">
-                <el-option v-for="item in orderCompany"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.name"></el-option>
-              </el-select>
+          <div v-for="(item,index) in checkWhichYarn"
+            :key="index"
+            style="padding:8px;background:#f4f4f4;margin:8px 0">
+            <div class="row">
+              <div class="label">物料名称：</div>
+              <div class="info">
+                <span class="text">{{item.material_name}}</span>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">物料单价：</div>
-            <div class="info">
-              <el-input placeholder="单价"
-                class="hasMargin"
-                v-model="commonPrice[index]"
-                v-for="(item,index) in statistic_data"
-                :key="index">
-                <template slot="prepend">{{item.material_name}}</template>
-                <template slot="append">元</template>
-              </el-input>
+            <div class="row">
+              <div class="label">订购公司：</div>
+              <div class="info">
+                <el-select v-model="commonCompany[index]"
+                  filterable
+                  placeholder="请选择订购公司">
+                  <el-option v-for="item in orderCompany"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">物料单价：</div>
+              <div class="info">
+                <el-input placeholder="单价"
+                  class="hasMargin"
+                  v-model="commonPrice[index]"
+                  :key="index">
+                  <template slot="append">元</template>
+                </el-input>
+              </div>
             </div>
           </div>
         </div>
@@ -1089,26 +1093,89 @@
         <div class="title">
           <span class="tex">选择仓库</span>
           <i class="el-icon-close"
-            @click="showStockSelect=false"></i>
+            @click="resetStock"></i>
         </div>
         <div class="content">
-          <div class="row">
-            <span class="label">选择仓库：</span>
-            <span class="info elInputInfo">
-              <el-select v-model="stockSelect">
-                <el-option v-for="(item,index) in stockSelectList"
-                  :key="index"
-                  :label="item.stock_name"
-                  :value="item.stock_id"></el-option>
-              </el-select>
-            </span>
+          <div class="row"
+            style="display: block;">
+            <el-steps :active="step"
+              align-center
+              finish-status="success">
+              <el-step title="选择仓库"></el-step>
+              <el-step title="调取白胚"></el-step>
+              <el-step title="调取详情"></el-step>
+            </el-steps>
+          </div>
+          <div class="box">
+            <div class="line1">
+              <span>{{checkWhichYarn.length>0?checkWhichYarn[0].material_name:''}}</span>
+              <span v-if="step<3">所需总量：<span class="blue">{{stockMatTotalNum}}</span>kg</span>
+              <span v-if="step===3">实际调取：<span class="blue">{{stockMatReallyTotalNum}}</span>kg</span>
+            </div>
+            <div class="list"
+              v-show="step===1">
+              <div class="li">
+                <span class="once">仓库名称</span>
+                <span class="once">库存数量</span>
+                <span class="once right">操作</span>
+              </div>
+              <div class="li"
+                v-for="(item,index) in stockSelectList"
+                :key="index">
+                <span class="once">{{item.stock_name}}</span>
+                <span class="once">{{item.total_weight}}</span>
+                <span class="once right blue"
+                  v-if="item.total_weight>=stockMatTotalNum"
+                  @click="easyStockBatch(item)">调取</span>
+                <span class="once right"
+                  v-if="item.total_weight<stockMatTotalNum">库存不足</span>
+              </div>
+            </div>
+            <div class="list"
+              v-if="step===2">
+              <div class="li">
+                <span class="once">计划物料</span>
+                <span class="once">调取数量</span>
+              </div>
+              <div class="li"
+                v-for="(item,index) in stock_data"
+                :key="index">
+                <span class="once">{{item.material_name}}</span>
+                <span class="once">
+                  <el-input placeholder="请输入数量"
+                    v-model="item.stock[0].weight">
+                    <template slot="append">kg</template>
+                  </el-input>
+                </span>
+              </div>
+            </div>
+            <div class="list"
+              v-if="step===3">
+              <div class="li">
+                <span class="once">计划物料</span>
+                <span class="once">调取数量</span>
+              </div>
+              <div class="li"
+                v-for="(item,index) in stock_data"
+                :key="index">
+                <span class="once">{{item.material_name}}</span>
+                <span class="once">
+                  {{item.stock[0].weight}}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="opr">
+        <div class="opr"
+          v-if="step>1">
           <div class="btn btnGray"
-            @click="showStockSelect = false">取消</div>
+            @click="step--">上一步</div>
           <div class="btn btnBlue"
-            @click="easyStockBatch">确定</div>
+            v-if="step===2"
+            @click="step=3">下一步</div>
+          <div class="btn btnBlue"
+            v-if="step===3"
+            @click="saveStock">确认调取</div>
         </div>
       </div>
     </div>
@@ -1172,7 +1239,7 @@ export default {
       colorList: [],
       yarnList: [],
       processList: [],
-      commonCompany: '',
+      commonCompany: [],
       commonPrice: [],
       commonProcessCompany: '', // 一键加工公共单位
       commonProcessPrice: '',
@@ -1191,8 +1258,9 @@ export default {
       stockSelectList: [],
       stockSelect: '',
       stockChildren: [],
-      checkWhichYarn: '',
-      lock: true
+      lock: true,
+      step: 1,
+      stockMatTotalNum: 0
     }
   },
   methods: {
@@ -1339,10 +1407,8 @@ export default {
     },
     selectMaterial (id, data) {
       let finded = this.materialArr.find((item) => item.id === id)
-      data.material.forEach((item) => {
-        item.color = finded.material_attribute
-        item.name = finded.material_name
-      })
+      data.color = finded.material_attribute
+      data.name = finded.material_name
     },
     normalOrder (name, color, id, number, replenishFlag) {
       this.replenishFlag = replenishFlag // 补纱需要特殊处理
@@ -1353,59 +1419,46 @@ export default {
           name: name,
           color: color,
           number: number,
-          unit: ''
+          unit: '',
+          id: id || null
         }],
         price: '',
-        material_id: id || null,
         company_id: '',
         complete_time: this.$getTime(),
         desc: ''
       })
     },
-    easyOrder (type, ifSingle) {
-      if (ifSingle) {
-        if (!this.checkWhichYarn) {
-          return
-        }
-        this.statistic_data[this.checkWhichYarn - 1].childrenMergeInfo.forEach((itemChild) => {
+    easyOrder (type) {
+      if (this.checkWhichYarn.length === 0) {
+        return
+      }
+      if (this.order_data.length > 0) {
+        this.$message.warning('请先完成已有的订购信息再继续订购')
+        return
+      }
+      this.checkWhichYarn.forEach((item) => {
+        let material = []
+        item.childrenMergeInfo.forEach((itemChild) => {
           if (itemChild.reality_weight - itemChild.order_weight > 0) {
-            this.order_data.push({
-              material: [{
-                name: this.statistic_data[this.checkWhichYarn - 1].material_name,
-                color: type === 1 ? '白胚' : itemChild.material_attribute,
-                number: itemChild.reality_weight - itemChild.order_weight,
-                unit: this.$route.params.type === '1' ? 'kg' : itemChild.unit
-              }],
-              price: '',
-              material_id: itemChild.id,
-              company_id: '',
-              complete_time: this.$getTime(),
-              desc: ''
+            material.push({
+              name: item.material_name,
+              color: type === 1 ? '白胚' : itemChild.material_attribute,
+              number: itemChild.reality_weight - itemChild.order_weight,
+              unit: this.$route.params.type === '1' ? 'kg' : itemChild.unit,
+              id: itemChild.id
             })
           }
         })
-      } else {
-        // 一键订购，以前的功能，现在隐藏了按钮，功能保留
-        this.statistic_data.forEach((item) => {
-          item.childrenMergeInfo.forEach((itemChild) => {
-            if (itemChild.reality_weight - itemChild.order_weight > 0) {
-              this.order_data.push({
-                material: [{
-                  name: item.material_name,
-                  color: type === 1 ? '白胚' : itemChild.material_attribute,
-                  number: itemChild.reality_weight - itemChild.order_weight,
-                  unit: this.$route.params.type === '1' ? 'kg' : itemChild.unit
-                }],
-                price: '',
-                material_id: itemChild.id,
-                company_id: '',
-                complete_time: this.$getTime(),
-                desc: ''
-              })
-            }
+        if (material.length > 0) {
+          this.order_data.push({
+            material: material,
+            price: '',
+            company_id: '',
+            complete_time: this.$getTime(),
+            desc: ''
           })
-        })
-      }
+        }
+      })
       if (this.order_data.length > 0) {
         this.order_flag = true
         this.easyOrderFlag = true
@@ -1472,66 +1525,58 @@ export default {
         }
       }
     },
-    selectStockFirst (name, children) {
-      this.stock_data = []
-      // 修复bug，为了保证一建调取点一下，关闭一建调取窗口，再点一下一键调取的神仙操作，你必须保持stock_list里面的值不能变化才能保证仓库里的值是对的,所以stocklist作为历史数据不能变
-      let stockListCopy = this.$clone(this.stock_list)
-      let finded = stockListCopy.find((item) => item.material_name === name)
-      let needNum = children.reduce((total, current) => {
-        return total + (current.reality_weight - current.order_weight)
-      }, 0)
-      if (needNum <= 0) {
-        this.$message.warning('该物料已采购完毕')
+    selectStockFirst () {
+      if (this.checkWhichYarn.length !== 1) {
+        this.$message.warning('请选择一种纱线进行调取')
         return
       }
-      if (!finded) {
-        this.$message.warning('仓库里没有符合该名称的物料，请手动调取相似名称物料')
+      let needNum = this.checkWhichYarn[0].childrenMergeInfo.reduce((total, current) => {
+        return total + (current.reality_weight - current.order_weight)
+      }, 0)
+      if (parseInt(needNum) === 0) {
+        this.$message.warning('检测到需要调取纱线不足一公斤，请手动调取或补纱')
+        return
+      }
+      let stockListCopy = this.$clone(this.stock_list)
+      let finded = stockListCopy.find((item) => item.material_name === this.checkWhichYarn[0].material_name)
+      this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
+      if (this.stockSelectList.length > 0) {
+        this.stockMatTotalNum = needNum
+        this.showStockSelect = true
       } else {
-        this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
-        if (this.stockSelectList.length > 0) {
-          this.stockChildren = children
-          this.showStockSelect = true
-        } else {
-          this.$message.warning('仓库里没有符合该名称的白胚物料，请手动调取相似颜色物料')
-        }
+        this.$message.warning('仓库里没有符合该名称的白胚物料，请手动调取相似颜色物料')
       }
     },
     // 批量调取
-    easyStockBatch () {
+    easyStockBatch (whiteYarn) {
       // 调取白胚
-      let needNum = this.stockChildren.reduce((total, current) => {
-        return total + (current.reality_weight - current.order_weight)
-      }, 0)
-      this.stockChildren.forEach((item, index) => {
-        let whiteYarn = this.stockSelectList.find((item) => item.stock_id === this.stockSelect)
+      this.stock_data = []
+      this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
         let needNumChild = item.reality_weight - item.order_weight
         let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
         if (stockWeight > 0) {
           this.stock_data.push({
             material_id: item.id,
+            material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
             desc: '',
             stock: [{
               stock_id: whiteYarn.stock_id,
               stock_name: whiteYarn.stock_name,
               weight: stockWeight,
               color: whiteYarn.material_color,
-              name: this.statistic_data[this.checkWhichYarn - 1].material_name
+              name: this.checkWhichYarn[0].material_name
             }]
           })
         }
-        whiteYarn.total_weight = whiteYarn.total_weight - stockWeight
-        needNumChild = needNumChild - stockWeight
-        needNum = needNum - stockWeight
       })
-      if (needNum.toFixed(2) > 0) {
-        this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他仓库纱线')
-      } else {
-        this.showStockSelect = false
-        this.easyStockFlag = true
-        if (this.stock_data[0] && this.stock_data[0].stock.length > 0) {
-          this.easyStockFlag = true
-        }
-      }
+      console.log(this.stock_data)
+      this.step = 2
+    },
+    // 关闭弹窗
+    resetStock () {
+      this.step = 1
+      this.showStockSelect = false
+      this.stock_data = []
     },
     normalStock (stock, color, number, stockId, materialName) {
       this.stock_data = [{
@@ -1621,10 +1666,10 @@ export default {
           name: '',
           color: '',
           number: '',
-          unit: ''
+          unit: '',
+          id: ''
         }],
         price: '',
-        material_id: '',
         company_id: '',
         complete_time: this.$getTime(),
         desc: ''
@@ -1648,7 +1693,7 @@ export default {
         return
       }
       errorFlag = flattenData.some((item) => {
-        return !item.material_id
+        return !item.id
       })
       if (errorFlag) {
         this.$message.error('请选择物料')
@@ -1699,7 +1744,7 @@ export default {
           total_weight: item.number,
           color_code: item.color,
           material_name: item.name,
-          plan_id: this.replenishFlag ? null : item.material_id,
+          plan_id: this.replenishFlag ? null : item.id,
           type: this.type,
           vat_code: null,
           replenish_id: this.replenishFlag ? this.replenishId : null,
@@ -1772,17 +1817,11 @@ export default {
     },
     // 一键订购，统一输入订购公司和价格
     commonFn () {
-      this.order_data.forEach((item) => {
-        let index = 0
-        this.statistic_data.forEach((itemFind, indexFind) => {
-          if (itemFind.material_name === item.material[0].name) {
-            index = indexFind
-          }
-        })
+      this.order_data.forEach((item, index) => {
         item.price = this.commonPrice[index]
-        item.company_id = this.commonCompany
+        item.company_id = this.commonCompany[index]
       })
-      this.commonCompany = ''
+      this.commonCompany = []
       this.commonPrice = []
       this.easyOrderFlag = false
     },
@@ -1801,6 +1840,7 @@ export default {
     },
     addMaterial (index) {
       this.order_data[index].material.push({
+        id: '',
         color: '',
         name: '',
         number: '',
@@ -2009,6 +2049,16 @@ export default {
       })
     }
   },
+  computed: {
+    checkWhichYarn () {
+      return this.statistic_data.filter((item) => item.checked)
+    },
+    stockMatReallyTotalNum () {
+      return this.stock_data.reduce((total, current) => {
+        return total + Number(current.stock[0].weight)
+      }, 0)
+    }
+  },
   created () {
     let api = this.$route.params.orderType === '1' ? order : sampleOrder
     Promise.all([api.detail({
@@ -2110,9 +2160,4 @@ export default {
 @import "~@/assets/less/material/materialDetail.less";
 </style>
 <style lang="less">
-#materialDetail {
-  .el-radio__label {
-    display: none;
-  }
-}
 </style>
