@@ -416,9 +416,9 @@ export default {
             if (res.data.status) {
               this.$message.success('修改成功')
               this.init()
+              this.updateFlag = false
             } else {
               this.lock = true
-              this.updateFlag = false
             }
           })
         } else if (this.$route.params.oprType === '扣款') {
@@ -426,9 +426,9 @@ export default {
             if (res.data.status) {
               this.$message.success('修改成功')
               this.init()
+              this.updateFlag = false
             } else {
               this.lock = true
-              this.updateFlag = false
             }
           })
         }
