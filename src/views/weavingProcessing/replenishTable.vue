@@ -113,6 +113,9 @@ export default {
           }), { mainRule: 'percent', childrenName: 'material_info' })
         }
       })
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

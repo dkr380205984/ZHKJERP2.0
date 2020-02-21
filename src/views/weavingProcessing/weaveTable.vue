@@ -277,6 +277,9 @@ export default {
           let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
           // console.log(materialInfo)
           this.materialInfo = materialInfo
+          setTimeout(() => {
+            window.print()
+          }, 1000)
         })
       } else if (type === '2') {
         Promise.all([
@@ -333,6 +336,9 @@ export default {
           let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
           // console.log(materialInfo)
           this.materialInfo = materialInfo
+          setTimeout(() => {
+            window.print()
+          }, 1000)
         })
       }
     }

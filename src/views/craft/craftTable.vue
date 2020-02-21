@@ -1092,6 +1092,9 @@ export default {
             this.colorWeight.weft[itemChild] = this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
           })
         })
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       }
     })
   },

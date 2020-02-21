@@ -147,6 +147,9 @@ export default {
       let contact = res[2].data.data.find(item => item.id === window.sessionStorage.getItem('user_id'))
       this.contact_name = contact.name
       this.contact_tel = contact.telephone
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   filters: {

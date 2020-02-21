@@ -86,6 +86,9 @@ export default {
     ]).then(res => {
       this.orderDetail = res[0].data.data
       this.logDetail = res[1].data.data
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

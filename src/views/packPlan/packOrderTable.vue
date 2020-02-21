@@ -112,6 +112,9 @@ export default {
       this.total_price = (this.packOrderInfo.map(item => Number(item.total_price)).length > 0) ? (this.packOrderInfo.map(item => Number(item.total_price)).reduce((a, b) => a + b)) : 0
       this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + '包装辅料订购单')
       this.remark = res[2].data.data ? res[2].data.data.desc : ''
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

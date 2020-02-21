@@ -245,7 +245,7 @@ const materialPlan = {
   create: (params) => http.post(`${baseUrl}/order/material/plan/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
-  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json')
 }
 // 物料管理
 const materialManage = {
@@ -353,7 +353,8 @@ const statistics = {
 const settle = {
   create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/settle/check`, params, 'application/json'),
-  log: (params) => http.get(`${baseUrl}/financial/settle/list`, params)
+  log: (params) => http.get(`${baseUrl}/financial/settle/list`, params),
+  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params)
 }
 // 订单扣款
 const chargebacks = {

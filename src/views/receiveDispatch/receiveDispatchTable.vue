@@ -76,6 +76,9 @@ export default {
           }
         }
         this.order_code = res[1].data.data.order_code
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       })
     } else if (this.$route.query.type === '2') {
       Promise.all([
@@ -101,6 +104,9 @@ export default {
           }
         }
         this.order_code = res[1].data.data.order_code
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       })
     }
   },
