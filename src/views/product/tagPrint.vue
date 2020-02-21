@@ -84,6 +84,9 @@ export default {
           }
         })
       }
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

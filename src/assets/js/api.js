@@ -353,7 +353,8 @@ const statistics = {
 const settle = {
   create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/settle/check`, params, 'application/json'),
-  log: (params) => http.get(`${baseUrl}/financial/settle/list`, params)
+  log: (params) => http.get(`${baseUrl}/financial/settle/list`, params),
+  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params)
 }
 // 订单扣款
 const chargebacks = {

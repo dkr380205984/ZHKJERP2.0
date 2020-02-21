@@ -187,8 +187,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <!-- <div class="btn btnRed"
-            @click="deleteMaterialPlan($route.params.id,$route.params.type)">删除</div> -->
+          <div class="btn btnRed"
+            @click="deleteMaterialPlan($route.params.id,$route.params.type)">删除</div>
           <div class="btn btnBlue"
             @click="$router.push('/materialPlan/materialPlanUpdate/' + $route.params.id + '/' + $route.params.type)">修改</div>
         </div>

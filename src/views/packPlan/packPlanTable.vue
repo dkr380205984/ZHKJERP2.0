@@ -156,6 +156,9 @@ export default {
           }
         })
         this.planInfo = data
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       }
     })
   },

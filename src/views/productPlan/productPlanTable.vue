@@ -87,12 +87,12 @@
 </template>
 
 <script>
-import { productPlan, company } from '@/assets/js/api.js'
+import { productPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
-      company_name: '',
+      company_name: window.sessionStorage.getItem('company_name'),
       qrCodeUrl: '',
       update_time: '',
       user_name: '',
@@ -110,8 +110,7 @@ export default {
       productPlan.getByProduct({
         product_id: this.$route.params.id,
         product_type: this.$route.params.type
-      }),
-      company.detail()
+      })
     ]).then(res => {
       let data = res[0].data.data.find(item => Number(item.id) === Number(this.$route.params.index))
       if (data) {
@@ -130,7 +129,9 @@ export default {
       } else {
         this.$message.error('未找到相关配料单')
       }
-      this.company_name = res[1].data.data.company_name
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   filters: {

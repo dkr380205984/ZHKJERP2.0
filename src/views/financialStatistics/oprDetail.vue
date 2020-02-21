@@ -26,7 +26,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">{{$route.params.oprType}}编号：</span>
-            <span class="text">{{info.settle_code}}</span>
+            <span class="text">{{info.settle_code || info.deduct_code}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">创建人：</span>
@@ -77,37 +77,18 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="changeLogInfo.length>0">
       <div class="titleCtn">
         <span class="title">修改记录</span>
       </div>
       <div class="detailCtn">
-        <div class="timeLine">
+        <div class="timeLine"
+          v-for="(item,index) in changeLogInfo"
+          :key="index">
           <span class="circle"></span>
-          <span class="time">
-            2019-01-01
-          </span>
-          <span class="content">
-            aaaaaaaaaaaaaaaaaaaaa
-          </span>
-        </div>
-        <div class="timeLine">
-          <span class="circle"></span>
-          <span class="time">
-            2019-01-01
-          </span>
-          <span class="content">
-            aaaaaaaaaaaaaaaaaaaaa
-          </span>
-        </div>
-        <div class="timeLine">
-          <span class="circle"></span>
-          <span class="time">
-            2019-01-01
-          </span>
-          <span class="content">
-            aaaaaaaaaaaaaaaaaaaaa
-          </span>
+          <span class="time">{{item.created_at}}</span>
+          <span class="content">{{item|filterChangeStr}}</span>
         </div>
       </div>
     </div>
@@ -225,7 +206,7 @@
             <div class="info">
               <zh-input placeholder="请输入金额"
                 type="number"
-                v-model="updateInfo.deduce_price">
+                v-model="updateInfo.deduct_price">
                 <template slot="append">元</template>
               </zh-input>
             </div>
@@ -303,6 +284,7 @@ export default {
   data () {
     return {
       loading: true,
+      lock: true,
       has_check: window.sessionStorage.getItem('has_check'),
       msgSwitch: false,
       msgUrl: '',
@@ -336,7 +318,10 @@ export default {
         settle_price: 0,
         deduct_price: 0,
         status: 1
-      }
+      },
+      changeLogInfo: [],
+      page: 1,
+      total: 1
     }
   },
   methods: {
@@ -399,7 +384,57 @@ export default {
       }
     },
     updateFn () {
-
+      if (this.lock) {
+        let data = {
+          id: this.updateInfo.id,
+          client_id: this.$route.params.clentId,
+          order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+          type: this.$route.params.type
+        }
+        if (this.updateInfo.desc !== this.info.desc) {
+          data.desc = this.updateInfo.desc
+        }
+        if (this.updateInfo.complete_time !== this.info.complete_time) {
+          data.complete_time = this.updateInfo.complete_time
+        }
+        if (this.$route.params.oprType === '结算') {
+          data.is_invoice = this.updateInfo.is_invoice
+          if (this.updateInfo.settle_price !== this.info.settle_price) {
+            data.settle_price = this.updateInfo.settle_price
+          }
+          if (JSON.stringify(this.updateInfo.invoice_info) !== JSON.stringify(this.info.invoice_info)) {
+            data.invoice_info = JSON.stringify(this.updateInfo.invoice_info)
+          }
+        } else {
+          if (this.updateInfo.deduct_price !== this.info.deduct_price) {
+            data.deduct_price = this.updateInfo.deduct_price
+          }
+        }
+        this.lock = false
+        if (this.$route.params.oprType === '结算') {
+          settle.create(data).then(res => {
+            if (res.data.status) {
+              this.$message.success('修改成功')
+              this.init()
+              this.updateFlag = false
+            } else {
+              this.lock = true
+            }
+          })
+        } else if (this.$route.params.oprType === '扣款') {
+          chargebacks.create(data).then(res => {
+            if (res.data.status) {
+              this.$message.success('修改成功')
+              this.init()
+              this.updateFlag = false
+            } else {
+              this.lock = true
+            }
+          })
+        }
+      } else {
+        this.$message.warning('请勿频繁点击')
+      }
     },
     addInvoice () {
       this.updateInfo.invoice_info.push({
@@ -409,29 +444,78 @@ export default {
     },
     deleteInvoice (index) {
       this.updateInfo.invoice_info.splice(index, 1)
+    },
+    init () {
+      this.loading = true
+      if (this.$route.params.oprType === '扣款') {
+        chargebacks.log({
+          client_id: this.$route.params.clentId,
+          client_type: this.$route.params.type,
+          order_id: this.$route.params.orderId
+        }).then((res) => {
+          this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+          this.updateInfo = this.$clone(this.info)
+          this.getChangeLog(this.info.id)
+          this.loading = false
+          this.lock = true
+        })
+      } else {
+        settle.log({
+          client_id: this.$route.params.clentId,
+          client_type: this.$route.params.type,
+          order_id: this.$route.params.orderId
+        }).then((res) => {
+          this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+          this.updateInfo = this.$clone(this.info)
+          this.getChangeLog(this.info.id)
+          this.loading = false
+          this.lock = true
+        })
+      }
+    },
+    getChangeLog (id) {
+      settle.changeLog({
+        pid: id,
+        type: this.$route.params.oprType === '结算' ? 1 : 2,
+        operate_user: ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          res.data.data.forEach(item => {
+            let flag = this.changeLogInfo.find(val => val.id === item.id)
+            if (!flag) {
+              this.changeLogInfo.push(item)
+            }
+          })
+          this.changeLogInfo.sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          })
+        }
+      })
     }
   },
   mounted () {
-    if (this.$route.params.oprType === '扣款') {
-      chargebacks.log({
-        client_id: this.$route.params.clentId,
-        client_type: this.$route.params.type,
-        order_id: this.$route.params.orderId
-      }).then((res) => {
-        this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
-        this.updateInfo = this.$clone(this.info)
-        this.loading = false
-      })
-    } else {
-      settle.log({
-        client_id: this.$route.params.clentId,
-        client_type: this.$route.params.type,
-        order_id: this.$route.params.orderId
-      }).then((res) => {
-        this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
-        this.updateInfo = this.$clone(this.info)
-        this.loading = false
-      })
+    this.init()
+  },
+  filters: {
+    filterChangeStr (item) {
+      let str = ''
+      if (item.data_column === 'settle_price') {
+        str += item.user_name + '修改了结算金额,'
+        str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
+      } else if (item.data_column === 'complete_time') {
+        str += item.user_name + '修改了结算日期,'
+        str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
+      } else if (item.data_column === 'invoice_info') {
+        str += item.user_name + '修改了开票信息,'
+        str += '由原“' + item.history_data.split('invoiceNum').join('发票号码').split('invoicePrice').join('发票金额') + '”修改为“' + item.new_data.split('invoiceNum').join('发票号码').split('invoicePrice').join('发票金额') + '”'
+      } else if (item.data_column === 'desc') {
+        str += item.user_name + '修改了备注信息,'
+        str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
+      } else if (item.data_column === 'deduct_price') {
+        str += item.user_name + '修改了扣款金额,'
+        str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
+      }
+      return str
     }
   }
 }

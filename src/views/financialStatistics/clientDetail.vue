@@ -819,10 +819,10 @@
               v-for="(item,index) in orderOprList"
               :key="index">
               <div class="once"
-                style="flex:1.5">{{item.settle_code}}</div>
-              <div class="once">{{item.settle_price}}元</div>
+                style="flex:1.5">{{item.settle_code || item.deduct_code}}</div>
+              <div class="once">{{item.settle_price || item.deduct_price}}元</div>
               <div class="once"
-                style="flex:1.5">{{item.complete_time}}</div>
+                style="flex:1.5">{{$getTime(item.complete_time)}}</div>
               <div class="once">{{item.status|filterStatus}}</div>
               <div class="once blue"
                 style="cursor:pointer"
@@ -944,6 +944,7 @@ export default {
     settleFn () {
       this.loading = true
       settle.create({
+        id: null,
         client_id: this.$route.params.id,
         order_id: JSON.stringify(this.checkOrder.map((item) => item.order_id)),
         complete_time: this.settle.date,
@@ -969,6 +970,7 @@ export default {
     },
     chargebacksFn () {
       chargebacks.create({
+        id: null,
         client_id: this.$route.params.id,
         order_id: JSON.stringify(this.checkOrder.map((item) => item.order_id)),
         complete_time: this.chargebacks.date,

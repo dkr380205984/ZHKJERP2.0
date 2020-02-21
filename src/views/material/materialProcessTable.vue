@@ -104,6 +104,9 @@ export default {
       this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
       this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
       this.remark = res[2].data.data ? res[2].data.data.desc : ''
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

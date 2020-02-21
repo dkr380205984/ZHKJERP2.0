@@ -121,12 +121,12 @@
 </template>
 
 <script>
-import { price, company } from '@/assets/js/api.js'
+import { price } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
-      company_name: '',
+      company_name: window.sessionStorage.getItem('company_name'),
       price_code: '',
       create_time: '',
       create_user: '',
@@ -254,11 +254,9 @@ export default {
         { name: '非生产费用', totalPrice: data.no_product_cost },
         { name: '运输', totalPrice: data.transport_cost }
       )
-    })
-    company.detail({
-      id: window.sessionStorage.getItem('company_id')
-    }).then(res => {
-      this.company_name = res.data.data.company_name
+      setTimeout(() => {
+        window.print()
+      }, 1000)
     })
   },
   mounted () {

@@ -78,6 +78,9 @@ export default {
     }).then(res => {
       if (res.data.status !== false) {
         this.orderDetail = res.data.data
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       }
     })
   },
