@@ -245,7 +245,7 @@ const materialPlan = {
   create: (params) => http.post(`${baseUrl}/order/material/plan/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
-  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json')
 }
 // 物料管理
 const materialManage = {

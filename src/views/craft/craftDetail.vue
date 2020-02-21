@@ -451,7 +451,7 @@
                   v-for="(item,index) in item.apply"
                   :key="index">
                   <span class="colorText">{{filterMethods(item)}}</span>
-                  <span class="name">{{colorWeight.warp[item]==='NaN'?'0g':colorWeight.warp[item] + 'g'}}</span>
+                  <span class="name">{{colorWeight.weft[item]==='NaN'?'0g':colorWeight.weft[item] + 'g'}}</span>
                 </div>
               </div>
             </div>
@@ -494,7 +494,7 @@
         <div class="rowCtn"
           v-show="weftInfo.back_status===1">
           <div class="colCtn">
-            <span class="label">经向反面：</span>
+            <span class="label">纬向反面：</span>
             <div class="tableCtns">
               <hot-table :settings="tableData.weftBack"
                 ref="weftBack">
@@ -1266,10 +1266,9 @@ export default {
         const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
         const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
         const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-        this.colorNumber.warp[arrWeftBack[0][i]] = this.colorNumber.warp[arrWeftBack[0][i]] ? this.colorNumber.warp[arrWeftBack[0][i]] : 0
+        this.colorNumber.weft[arrWeftBack[0][i]] = this.colorNumber.weft[arrWeftBack[0][i]] ? this.colorNumber.weft[arrWeftBack[0][i]] : 0
         this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
       }
-      console.log(this.colorWeight)
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)

@@ -1523,7 +1523,7 @@ export default {
         needNumChild = needNumChild - stockWeight
         needNum = needNum - stockWeight
       })
-      if (needNum > 0) {
+      if (needNum.toFixed(2) > 0) {
         this.$message.warning('检测到库存白胚纱线不足,建议订购或手动调取其他仓库纱线')
       } else {
         this.showStockSelect = false
