@@ -11,6 +11,7 @@
           </span>
           <span class="item">
             <span class="label">联系人电话：</span>
+            {{user_tel}}
           </span>
           <span class="item">
             <span class="label">创建日期：</span>
@@ -27,8 +28,8 @@
       </div>
       <div class="print_body">
         <div class="print_row">
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}单号</div>
-          <div class="row_item left">{{orderInfo.order_code}}</div>
+          <div class="row_item center w180">{{$route.params.orderType === '1' ? '订' : '样'}}单号</div>
+          <div class="row_item left">{{orderInfo.order_code || orderInfo.title}}</div>
           <div class="row_item center w180">下单日期</div>
           <div class="row_item left flex08">{{orderInfo.order_time}}</div>
         </div>
@@ -111,6 +112,7 @@
           </span>
           <span class="item">
             <span class="label">联系人电话：</span>
+            {{user_tel}}
           </span>
           <span class="item">
             <span class="label">创建日期：</span>
@@ -127,8 +129,8 @@
       </div>
       <div class="print_body">
         <div class="print_row">
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '样'}}单号</div>
-          <div class="row_item left">{{orderInfo.order_code}}</div>
+          <div class="row_item center w180">{{$route.params.orderType === '1' ? '订' : '样'}}单号</div>
+          <div class="row_item left">{{orderInfo.order_code || orderInfo.title}}</div>
           <div class="row_item center w180">下单日期</div>
           <div class="row_item left flex08">{{orderInfo.order_time}}</div>
         </div>
@@ -205,7 +207,7 @@
 </template>
 
 <script>
-import { print, order, weave, processing } from '@/assets/js/api.js'
+import { print, order, weave, processing, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -214,6 +216,7 @@ export default {
       titles: '',
       remarks: '',
       user_name: window.sessionStorage.getItem('user_name'),
+      user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       orderInfo: {},
       weaveInfo: [],
@@ -221,130 +224,248 @@ export default {
     }
   },
   methods: {
-    init (type) {
-      if (type === '1') {
-        Promise.all([
-          print.detail({
-            type: 1
-          }),
-          print.detail({
-            type: 3
-          }),
-          order.detail({
-            id: this.$route.params.id
-          }),
-          weave.detail({
-            order_id: this.$route.params.id,
-            order_type: this.$route.params.orderType
+    init (type, orderType) {
+      if (+orderType === 1) {
+        if (type === '1') {
+          Promise.all([
+            print.detail({
+              type: 1
+            }),
+            print.detail({
+              type: 3
+            }),
+            order.detail({
+              id: this.$route.params.id
+            }),
+            weave.detail({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType
+            })
+          ]).then(res => {
+            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.remark = res[0].data.data ? res[0].data.data.desc : ''
+            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // 处理订单信息
+            this.orderInfo = res[2].data.data
+            let productList = []
+            res[2].data.data.batch_info.forEach(itemBatch => {
+              itemBatch.product_info.forEach(itemPro => {
+                let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+                if (!flag) {
+                  productList.push(itemPro.product_info)
+                }
+              })
+            })
+            // 处理织造分配数据
+            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
+              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              return {
+                ...item.product_info,
+                is_part: item.is_part,
+                category_info: item.category_info,
+                client_name: item.client_name,
+                size: item.size,
+                color: item.color,
+                price: item.price,
+                number: item.number,
+                compiled_time: this.$getTime(item.complete_time),
+                process_type: '织造',
+                img: flag ? flag.images : [],
+                sizeInfo: sizeInfo,
+                material_info: item.material_assign
+              }
+            })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
+            // console.log(materialInfo)
+            this.materialInfo = materialInfo
+            setTimeout(() => {
+              window.print()
+            }, 1000)
           })
-        ]).then(res => {
-          this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
-          this.remark = res[0].data.data ? res[0].data.data.desc : ''
-          this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
-          this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-          // 处理订单信息
-          this.orderInfo = res[2].data.data
-          let productList = []
-          res[2].data.data.batch_info.forEach(itemBatch => {
-            itemBatch.product_info.forEach(itemPro => {
+        } else if (type === '2') {
+          Promise.all([
+            print.detail({
+              type: 2
+            }),
+            print.detail({
+              type: 4
+            }),
+            order.detail({
+              id: this.$route.params.id
+            }),
+            processing.detail({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType
+            })
+          ]).then(res => {
+            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.remark = res[0].data.data ? res[0].data.data.desc : ''
+            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // 处理订单信息
+            this.orderInfo = res[2].data.data
+            let productList = []
+            res[2].data.data.batch_info.forEach(itemBatch => {
+              itemBatch.product_info.forEach(itemPro => {
+                let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+                if (!flag) {
+                  productList.push(itemPro.product_info)
+                }
+              })
+            })
+            // 处理织造分配数据
+            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
+              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              return {
+                ...item.product_info,
+                is_part: item.is_part,
+                category_info: item.category_info,
+                client_name: item.client_name,
+                size: item.size,
+                color: item.color,
+                price: item.price,
+                number: item.number,
+                compiled_time: this.$getTime(item.complete_time),
+                process_type: item.type,
+                img: flag ? flag.images : [],
+                sizeInfo: sizeInfo,
+                material_info: item.part_assign
+              }
+            })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
+            // console.log(materialInfo)
+            this.materialInfo = materialInfo
+            setTimeout(() => {
+              window.print()
+            }, 1000)
+          })
+        }
+      } else {
+        if (type === '1') {
+          Promise.all([
+            print.detail({
+              type: 1
+            }),
+            print.detail({
+              type: 3
+            }),
+            sampleOrder.detail({
+              id: this.$route.params.id
+            }),
+            weave.detail({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType
+            })
+          ]).then(res => {
+            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.remark = res[0].data.data ? res[0].data.data.desc : ''
+            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // 处理订单信息
+            this.orderInfo = res[2].data.data
+            let productList = []
+            res[2].data.data.product_info.forEach(itemPro => {
               let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
               if (!flag) {
                 productList.push(itemPro.product_info)
               }
             })
+            // 处理织造分配数据
+            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
+              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              return {
+                ...item.product_info,
+                is_part: item.is_part,
+                category_info: item.category_info,
+                client_name: item.client_name,
+                size: item.size,
+                color: item.color,
+                price: item.price,
+                number: item.number,
+                compiled_time: this.$getTime(item.complete_time),
+                process_type: '织造',
+                img: flag ? flag.images : [],
+                sizeInfo: sizeInfo,
+                material_info: item.material_assign
+              }
+            })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
+            // console.log(materialInfo)
+            this.materialInfo = materialInfo
+            setTimeout(() => {
+              window.print()
+            }, 1000)
           })
-          // 处理织造分配数据
-          let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-            let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-            let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
-            return {
-              ...item.product_info,
-              is_part: item.is_part,
-              category_info: item.category_info,
-              client_name: item.client_name,
-              size: item.size,
-              color: item.color,
-              price: item.price,
-              number: item.number,
-              compiled_time: this.$getTime(item.complete_time),
-              process_type: '织造',
-              img: flag ? flag.images : [],
-              sizeInfo: sizeInfo,
-              material_info: item.material_assign
-            }
-          })
-          this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-          let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
-          // console.log(materialInfo)
-          this.materialInfo = materialInfo
-          setTimeout(() => {
-            window.print()
-          }, 1000)
-        })
-      } else if (type === '2') {
-        Promise.all([
-          print.detail({
-            type: 2
-          }),
-          print.detail({
-            type: 4
-          }),
-          order.detail({
-            id: this.$route.params.id
-          }),
-          processing.detail({
-            order_id: this.$route.params.id,
-            order_type: this.$route.params.orderType
-          })
-        ]).then(res => {
-          this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
-          this.remark = res[0].data.data ? res[0].data.data.desc : ''
-          this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
-          this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-          // 处理订单信息
-          this.orderInfo = res[2].data.data
-          let productList = []
-          res[2].data.data.batch_info.forEach(itemBatch => {
-            itemBatch.product_info.forEach(itemPro => {
+        } else if (type === '2') {
+          Promise.all([
+            print.detail({
+              type: 2
+            }),
+            print.detail({
+              type: 4
+            }),
+            sampleOrder.detail({
+              id: this.$route.params.id
+            }),
+            processing.detail({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType
+            })
+          ]).then(res => {
+            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.remark = res[0].data.data ? res[0].data.data.desc : ''
+            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
+            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // 处理订单信息
+            this.orderInfo = res[2].data.data
+            let productList = []
+            res[2].data.data.product_info.forEach(itemPro => {
               let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
               if (!flag) {
                 productList.push(itemPro.product_info)
               }
             })
+            // 处理织造分配数据
+            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
+              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              return {
+                ...item.product_info,
+                is_part: item.is_part,
+                category_info: item.category_info,
+                client_name: item.client_name,
+                size: item.size,
+                color: item.color,
+                price: item.price,
+                number: item.number,
+                compiled_time: this.$getTime(item.complete_time),
+                process_type: item.type,
+                img: flag ? flag.images : [],
+                sizeInfo: sizeInfo,
+                material_info: item.part_assign
+              }
+            })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
+            // console.log(materialInfo)
+            this.materialInfo = materialInfo
+            setTimeout(() => {
+              window.print()
+            }, 1000)
           })
-          // 处理织造分配数据
-          let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-            let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-            let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
-            return {
-              ...item.product_info,
-              is_part: item.is_part,
-              category_info: item.category_info,
-              client_name: item.client_name,
-              size: item.size,
-              color: item.color,
-              price: item.price,
-              number: item.number,
-              compiled_time: this.$getTime(item.complete_time),
-              process_type: item.type,
-              img: flag ? flag.images : [],
-              sizeInfo: sizeInfo,
-              material_info: item.part_assign
-            }
-          })
-          this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-          let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
-          // console.log(materialInfo)
-          this.materialInfo = materialInfo
-          setTimeout(() => {
-            window.print()
-          }, 1000)
-        })
+        }
       }
     }
   },
   created () {
-    this.init(this.$route.query.type)
+    this.init(this.$route.query.type, this.$route.params.orderType)
   },
   mounted () {
     const QRCode = require('qrcode')

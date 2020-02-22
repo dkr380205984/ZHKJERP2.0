@@ -406,6 +406,8 @@ export default {
             return {
               show: false,
               colorSize: item.color_size,
+              product_id: item.product_info.product_id,
+              product_type: item.product_info.product_type,
               product_code: item.product_info.product_code,
               img: item.product_info.images,
               category_name: item.product_info.category_name,

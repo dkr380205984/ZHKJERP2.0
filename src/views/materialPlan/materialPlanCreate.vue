@@ -69,8 +69,8 @@
                 class="tb_collapse tb_content bigPadding">
                 <span class="tb_row two_line">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
                 <span class="tb_row">{{itemPro.size + '/' + itemPro.color}}</span>
-                <span class="tb_row flex08">{{itemPro.order_num + '' +itemPro.unit}}</span>
-                <span class="tb_row flex08">{{itemPro.stock_num + '' +itemPro.unit}}</span>
+                <span class="tb_row flex08">{{$toFixed(itemPro.order_num) + '' +itemPro.unit}}</span>
+                <span class="tb_row flex08">{{$toFixed(itemPro.stock_num) + '' +itemPro.unit}}</span>
                 <!-- <span class="tb_row"
                   @click.stop="returnFalse">
                   <zh-input placeholder="数量"
@@ -117,7 +117,7 @@
               <div class="tableCtnLv2">
                 <div class="tb_header noBgColor bigPadding">
                   <span class="tb_row">产品部位</span>
-                  <span class="tb_row flex12">物料名称</span>
+                  <span class="tb_row flex15">物料名称</span>
                   <span class="tb_row">物料颜色</span>
                   <span class="tb_row flex08">单件数量</span>
                   <span class="tb_row flex08">合计数量</span>
@@ -139,18 +139,18 @@
                       </el-option>
                     </el-select>
                   </span>
-                  <span class="tb_row flex12">
+                  <span class="tb_row flex15">
                     <el-autocomplete v-if="itemMa.type === 1 "
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchYarn"
-                      style="width:130px"
+                      style="width:210px"
                       @change="computedTotal"
                       placeholder="请输入原料名称">
                     </el-autocomplete>
                     <el-autocomplete v-if="itemMa.type === 2"
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchMaterial"
-                      style="width:130px"
+                      style="width:210px"
                       @change="computedTotal"
                       placeholder="请输入辅料名称">
                     </el-autocomplete>
@@ -162,8 +162,8 @@
                       style="width:130px">
                     </zh-input>
                   </span>
-                  <span class="tb_row flex08">{{itemMa.number ? itemMa.number + '' + itemMa.unit : '-'}}</span>
-                  <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + '' + itemMa.unit : '-'}}</span>
+                  <span class="tb_row flex08">{{itemMa.number ? $toFixed(itemMa.number) + '' + itemMa.unit : '-'}}</span>
+                  <span class="tb_row flex08">{{itemMa.total_number ? $toFixed(itemMa.total_number) + '' + itemMa.unit : '-'}}</span>
                   <span class="tb_row">
                     <zh-input placeholder="损耗"
                       :disabled="itemMa.disabled"
@@ -219,10 +219,10 @@
             :key="indexMa">
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
-            <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? itemMa.total_number/1000 + 'kg' : itemMa.total_number + itemMa.unit) : '-'}}</span>
-            <span class="tb_row flex08">{{itemMa.loss || 0}}%</span>
+            <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? $toFixed(itemMa.total_number/1000) + 'kg' : $toFixed(itemMa.total_number) + itemMa.unit) : '-'}}</span>
+            <span class="tb_row flex08">{{$toFixed(itemMa.loss) || 0}}%</span>
             <span class="tb_row flex08">
-              <span class="align"><em class="bigNum">{{itemMa.end_num || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
+              <span class="align"><em class="bigNum">{{$toFixed(itemMa.end_num) || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
             </span>
           </div>
         </div>

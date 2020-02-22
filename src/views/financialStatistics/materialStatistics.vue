@@ -52,11 +52,11 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">{{item.name}}</div>
-            <div class="col">{{item.use_total}}</div>
-            <div class="col">{{item.order_total}}</div>
-            <div class="col">{{item.pre_price}}</div>
-            <div class="col">{{item.total_price}}</div>
-            <div class="col">{{item.stock_number}}</div>
+            <div class="col">{{$toFixed(item.use_total)}}</div>
+            <div class="col">{{$toFixed(item.order_total)}}</div>
+            <div class="col">{{$toFixed(item.pre_price)}}</div>
+            <div class="col">{{$toFixed(item.total_price)}}</div>
+            <div class="col">{{$toFixed(item.stock_number)}}</div>
             <div class="col">
               <span class="opr"
                 @click="$router.push('/financialStatistics/materialDetail/' + item.name + '/' + type)">详情</span>

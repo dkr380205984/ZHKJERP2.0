@@ -88,16 +88,16 @@
 </template>
 
 <script>
-import { materialPlan, company, auth } from '@/assets/js/api.js'
+import { materialPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
       params: {},
       orderInfo: {},
-      company_name: '',
-      contact_name: '',
-      contact_tel: '',
+      company_name: window.sessionStorage.getItem('company_name'),
+      contact_name: window.sessionStorage.getItem('user_name'),
+      contact_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       productInfo: [],
       materialInfo: []
@@ -110,15 +110,11 @@ export default {
       let data = item.split('=')
       this.params[data[0]] = data[1]
     })
-    Promise.all([
-      materialPlan.detail({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type
-      }),
-      company.detail(),
-      auth.list()
-    ]).then(res => {
-      let data = res[0].data.data
+    materialPlan.detail({
+      order_id: this.$route.params.id,
+      order_type: this.$route.params.type
+    }).then(res => {
+      let data = res.data.data
       this.orderInfo = data.order_info
       if (this.params.proId) {
         this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
@@ -141,12 +137,6 @@ export default {
           itemMa.total_weight = Number(itemMa.total_weight || 0) + Number(itemColor.weight)
         })
       })
-      // 初始化工厂抬头
-      this.company_name = res[1].data.data.company_name
-      // 初始化联系人信息
-      let contact = res[2].data.data.find(item => item.id === window.sessionStorage.getItem('user_id'))
-      this.contact_name = contact.name
-      this.contact_tel = contact.telephone
       setTimeout(() => {
         window.print()
       }, 1000)

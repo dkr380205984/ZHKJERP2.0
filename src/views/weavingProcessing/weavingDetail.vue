@@ -277,7 +277,7 @@
                       <div class="tcolumn">产品信息</div>
                       <div class="tcolumn">尺码颜色</div>
                       <div class="tcolumn">单价(元)</div>
-                      <div class="tcolumn">数量(元)</div>
+                      <div class="tcolumn">数量</div>
                       <div class="tcolumn">总价</div>
                       <div class="tcolumn">完成时间</div>
                     </div>
@@ -704,6 +704,14 @@
             @click="printPopup=false">取消</div>
           <div class="btn btnBlue"
             @click="goPrint">去打印</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
         </div>
       </div>
     </div>

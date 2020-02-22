@@ -150,7 +150,8 @@
               :key="indexPro">
               <span class="tcolumn">
                 <div class="twoLineText">
-                  <span>{{itemPro.product_info.product_code}}</span>
+                  <span @click="$openUrl('/sample/sampleDetail/' + itemPro.product_info.product_id)"
+                    style="color:#1A95FF;cursor: pointer;">{{itemPro.product_info.product_code}}</span>
                   <span>({{itemPro.product_info|filterType}})</span>
                 </div>
               </span>
@@ -169,10 +170,12 @@
               </span>
               <span class="tcolumn center">
                 <span class="trow middle_page">
-                  <span class="btn noBorder lineH54"
+                  <!-- <span class="btn noBorder lineH54"
                     @click="$openUrl('/craft/craftDetail/' + itemPro.id.product_id + '/2')">工艺单</span>
                   <span class="btn noBorder lineH54"
-                    @click="$openUrl('/productPlan/productPlanDetail/' + itemPro.id.product_id + '/2')">配料单</span>
+                    @click="$openUrl('/productPlan/productPlanDetail/' + itemPro.id.product_id + '/2')">配料单</span> -->
+                  <span class="btn noBorder lineH54"
+                    @click="$openUrl('/sample/sampleDetail/' + itemPro.id.product_id)">查看详情</span>
                 </span>
               </span>
             </span>
@@ -1052,6 +1055,14 @@
               v-if="showCanclePopup === 4 && isCommit === 'compiled'"
               @click="closePopup">完成</div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
         </div>
       </div>
     </div>

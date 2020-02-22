@@ -7,9 +7,11 @@
           <span class="title">{{companyName}}物料预定购单</span>
           <span class="item">
             <span class="label">创建人：</span>
+            {{user_name}}
           </span>
           <span class="item">
             <span class="label">联系电话：</span>
+            {{user_tel}}
           </span>
           <span class="item">
             <span class="label">创建时间：</span>
@@ -62,15 +64,14 @@ import { materialOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: '桐庐凯瑞针纺',
+      companyName: window.sessionStorage.getItem('company_name'),
+      user_name: window.sessionStorage.getItem('user_name'),
+      user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       orderDetail: {
         material_info: []
       }
     }
-  },
-  methods: {
-
   },
   created () {
     materialOrder.detail({

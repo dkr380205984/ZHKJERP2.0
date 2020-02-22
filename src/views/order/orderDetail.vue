@@ -158,7 +158,7 @@
                   :key="indexPro">
                   <span class="tb_row"
                     style="cursor: pointer;color:#1A95FF"
-                    @click="$router.push('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                    @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
                   <span class="tb_row middle">
                     <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
                   </span>
@@ -1039,8 +1039,15 @@
             <div class="btn btnBlue"
               v-if="showCanclePopup === 6 && isCommit === 'compiled'"
               @click="closePopup">完成</div>
-
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
         </div>
       </div>
     </div>

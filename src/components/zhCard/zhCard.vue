@@ -12,7 +12,8 @@
       <ul class="zh_card_right">
         <li>
           <span class="title">产品编号:</span>
-          <span class="info blue">{{data.product_code}}</span>
+          <span class="info blue"
+            @click="openUrl(data.product_type,data.product_id)">{{data.product_code}}</span>
         </li>
         <li>
           <span class="title">产品品类:</span>
@@ -53,6 +54,8 @@ export default {
         return {
           product_code: '',
           img: [],
+          product_id: '',
+          product_type: 1,
           category_name: '',
           type_name: '',
           style_name: '',
@@ -70,6 +73,15 @@ export default {
   filters: {
     filterType (item) {
       return [item.category_name, item.type_name, item.style_name].join('/')
+    }
+  },
+  methods: {
+    openUrl (type, id) {
+      if (type === 1) {
+        this.$openUrl('/product/productDetail/' + id)
+      } else {
+        this.$openUrl('/sample/sampleDetail/' + id)
+      }
     }
   }
   // created () {

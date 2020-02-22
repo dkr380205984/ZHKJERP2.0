@@ -310,7 +310,7 @@
                       <div class="tcolumn">工序</div>
                       <div class="tcolumn">所需辅料</div>
                       <div class="tcolumn">单价(元)</div>
-                      <div class="tcolumn">数量(元)</div>
+                      <div class="tcolumn">数量</div>
                       <div class="tcolumn">总价</div>
                       <div class="tcolumn">完成时间</div>
                     </div>
@@ -570,6 +570,14 @@
             @click="easyProcess_flag = false">直接跳过</div>
           <div class="btn btnBlue"
             @click="commonFn">确定</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
         </div>
       </div>
     </div>
