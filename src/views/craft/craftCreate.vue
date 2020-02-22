@@ -513,6 +513,9 @@
                   <span>{{index2+1}}</span>
                   <div class="copyBtn"
                     @click="copyGL(index1,index2)">复制</div>
+                  <div class="copyBtn"
+                    style="top:98px;color:#F5222D"
+                    @click="deleteGLChildren(index1,index2)">删除</div>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"
@@ -2583,9 +2586,13 @@ export default {
     addGLChildren (index) {
       this.GL[index].push(['', '', ''])
     },
-    deleteGLChildren (index) {
+    deleteGLChildren (index, index2) {
       if (this.GL[index].length > 1) {
-        this.GL[index].pop()
+        if (index2) {
+          this.GL[index].splice(index2, 1)
+        } else {
+          this.GL[index].pop()
+        }
       } else {
         this.$message.error({
           message: '至少有一个纹版'
@@ -3526,6 +3533,7 @@ export default {
           desc: this.remarkPM
         }
       }
+      this.loading = true
       craft.create(formData).then((res) => {
         if (res.data.code === 200) {
           this.$message.success('保存成功')

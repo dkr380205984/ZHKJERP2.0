@@ -2468,6 +2468,7 @@ export default {
           desc: this.remarkPM
         }
       }
+      this.loading = true
       craft.update(formData).then((res) => {
         if (res.data.code === 200) {
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
@@ -2482,7 +2483,8 @@ export default {
     }
   },
   mounted () {
-    Promise.all([yarn.list(),
+    Promise.all([
+      yarn.list(),
       craftConfig.getAll(),
       yarnColor.list(),
       material.list(),

@@ -343,6 +343,7 @@ export default {
         this.$message.error(error)
         return
       }
+      this.loading = true
       productPlan.create({ data: formData }).then((res) => {
         if (res.data.status) {
           this.$message.success('添加成功')
@@ -416,7 +417,6 @@ export default {
           value: item.name
         }
       })
-      console.log(this.list)
       // 导入工艺单数据
       let craft = res[4].data.data
       if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft)) {

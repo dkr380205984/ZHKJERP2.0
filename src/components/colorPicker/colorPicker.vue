@@ -73,6 +73,12 @@ export default {
           }).concat(res.data.data)
         })
       }
+    },
+    tips (newVal) {
+      this.$emit('input', {
+        color: this.color,
+        name: newVal
+      })
     }
   },
   methods: {

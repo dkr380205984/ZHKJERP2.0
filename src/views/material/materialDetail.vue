@@ -757,8 +757,18 @@
         <div class="rowCtn"
           style="display:block;overflow:hidden"
           v-if="otherYarnFlag">
-          <div class="normalTb"
-            style="width:100%">
+          <div style="height:32px;margin:20px 32px;width:300px">
+            <el-input class="inputs"
+              v-model="yarnWord"
+              @change="getOtherYarnList"
+              placeholder="输入相似物料名称按回车键查询">
+              <template slot="append">
+                <i class="el-icon-search"
+                  @click="getOtherYarnList"></i>
+              </template>
+            </el-input>
+          </div>
+          <div class="normalTb">
             <div class="thead">
               <div class="trow">
                 <div class="tcolumn">仓库名称</div>
@@ -1260,7 +1270,8 @@ export default {
       stockChildren: [],
       lock: true,
       step: 1,
-      stockMatTotalNum: 0
+      stockMatTotalNum: 0,
+      yarnWord: ''
     }
   },
   methods: {
@@ -1539,9 +1550,13 @@ export default {
       }
       let stockListCopy = this.$clone(this.stock_list)
       let finded = stockListCopy.find((item) => item.material_name === this.checkWhichYarn[0].material_name)
+      if (!finded) {
+        this.$message.warning('没有符合该原料名称的库存纱线，可以手动搜索相似名称纱线进行调取')
+        return
+      }
       this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
       if (this.stockSelectList.length > 0) {
-        this.stockMatTotalNum = needNum
+        this.stockMatTotalNum = needNum.toFixed(2)
         this.showStockSelect = true
       } else {
         this.$message.warning('仓库里没有符合该名称的白胚物料，请手动调取相似颜色物料')
@@ -2040,6 +2055,7 @@ export default {
     },
     getOtherYarnList () {
       yarnStock.list({
+        material_name: this.yarnWord,
         type: this.$route.params.type,
         page: this.pages,
         limit: 5
@@ -2054,9 +2070,9 @@ export default {
       return this.statistic_data.filter((item) => item.checked)
     },
     stockMatReallyTotalNum () {
-      return this.stock_data.reduce((total, current) => {
+      return (this.stock_data.reduce((total, current) => {
         return total + Number(current.stock[0].weight)
-      }, 0)
+      }, 0)).toFixed(2)
     }
   },
   created () {
