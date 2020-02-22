@@ -3297,12 +3297,12 @@ export default {
       }
       if (this.PMFlag === 'normal') {
         errorInput = this.repeatPM.some((item) => {
-          return item.number === '' || Number(item.number) === 0
+          return item.number === '' || Number(item.number) === 0 || !item.value
         })
       } else {
         this.repeatPM.forEach((item) => {
           item.children.forEach((itemChild) => {
-            if (itemChild.number === '') {
+            if (!itemChild.number || !itemChild.value) {
               errorInput = true
             }
           })
