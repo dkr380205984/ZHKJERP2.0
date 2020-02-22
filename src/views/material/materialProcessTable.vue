@@ -20,7 +20,7 @@
       <div class="print_body">
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单号</span>
-          <span class="row_item left">{{orderInfo.order_code}}</span>
+          <span class="row_item left">{{orderInfo.order_code || orderInfo.title}}</span>
           <span class="row_item center w180">订单公司</span>
           <span class="row_item left flex08">{{orderInfo.client_name}}</span>
         </div>
@@ -63,13 +63,13 @@
 </template>
 
 <script>
-import { order, materialProcess, print } from '@/assets/js/api.js'
+import { order, materialProcess, print, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       companyName: window.sessionStorage.getItem('company_name'),
       user_name: window.sessionStorage.getItem('user_name'),
-      user_tel: window.sessionStorage.getItem('user_telephone'),
+      user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       orderInfo: {},
       processInfo: [],
@@ -79,35 +79,66 @@ export default {
     }
   },
   methods: {
-
+    init (type) {
+      if (+type === 1) {
+        Promise.all([
+          order.detail({
+            id: this.$route.params.id
+          }),
+          materialProcess.detail({
+            order_type: this.$route.params.orderType,
+            order_id: this.$route.params.id
+          }),
+          print.detail({
+            type: this.$route.params.type === '1' ? 7 : 8
+          })
+        ]).then(res => {
+          this.orderInfo = res[0].data.data
+          let processInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
+          console.log(processInfo)
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'process_type' }] } }).map(item => {
+            item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
+            return item
+          })
+          this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
+          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
+          this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          setTimeout(() => {
+            window.print()
+          }, 1000)
+        })
+      } else {
+        Promise.all([
+          sampleOrder.detail({
+            id: this.$route.params.id
+          }),
+          materialProcess.detail({
+            order_type: this.$route.params.orderType,
+            order_id: this.$route.params.id
+          }),
+          print.detail({
+            type: this.$route.params.type === '1' ? 7 : 8
+          })
+        ]).then(res => {
+          this.orderInfo = res[0].data.data
+          let processInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
+          console.log(processInfo)
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'process_type' }] } }).map(item => {
+            item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
+            return item
+          })
+          this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
+          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
+          this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          setTimeout(() => {
+            window.print()
+          }, 1000)
+        })
+      }
+    }
   },
   created () {
-    Promise.all([
-      order.detail({
-        id: this.$route.params.id
-      }),
-      materialProcess.detail({
-        order_type: this.$route.params.orderType,
-        order_id: this.$route.params.id
-      }),
-      print.detail({
-        type: this.$route.params.type === '1' ? 7 : 8
-      })
-    ]).then(res => {
-      this.orderInfo = res[0].data.data
-      let processInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
-      console.log(processInfo)
-      this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'process_type' }] } }).map(item => {
-        item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
-        return item
-      })
-      this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
-      this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
-      this.remark = res[2].data.data ? res[2].data.data.desc : ''
-      setTimeout(() => {
-        window.print()
-      }, 1000)
-    })
+    this.init(this.$route.params.orderType)
   },
   mounted () {
     const QRCode = require('qrcode')
