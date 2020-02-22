@@ -96,6 +96,21 @@ export default {
       } else {
         this.firstFlag = false
       }
+    },
+    list: {
+      deep: true,
+      handler (newVal) {
+        if (this.index > 0) {
+          this.firstFlag = false
+        } else {
+          this.firstFlag = true
+        }
+        if (this.index === this.selfList.length - 1) {
+          this.lastFlag = true
+        } else {
+          this.lastFlag = false
+        }
+      }
     }
   },
   methods: {

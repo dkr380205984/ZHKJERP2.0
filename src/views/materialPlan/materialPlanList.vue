@@ -136,7 +136,9 @@
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="itemOrder.image"></zh-img-list>
+              <zh-img-list :list="itemOrder.image"
+                type='open'
+                :order_type="orderType ? 'product' : 'sample'"></zh-img-list>
             </div>
             <div class="col flex08">{{itemOrder.number}}</div>
             <div class="col flex08">{{itemOrder.group_name}}</div>
@@ -255,7 +257,7 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id,
           group_id: this.group_id,
-          status: this.state
+          status_material_plan: this.has_materialPlan
         }).then(res => {
           this.list = res.data.data
           this.list.forEach(item => {

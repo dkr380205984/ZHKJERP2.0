@@ -245,6 +245,14 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

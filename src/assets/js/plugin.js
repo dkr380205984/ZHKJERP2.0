@@ -249,7 +249,7 @@ const plugin = {
     } else if (number % 0.1 === 0) {
       return Number(Number(number).toFixed(1))
     } else if (number % 0.01 === 0 || number % 0.01 !== 0) {
-      return Number(number.toFixed(2))
+      return Number(Number(number).toFixed(2))
     }
   },
   /************************************
