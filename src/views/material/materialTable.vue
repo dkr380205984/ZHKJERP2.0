@@ -18,11 +18,17 @@
         </div>
       </div>
       <div class="print_body">
-        <div class="print_row has_marginBottom">
+        <div class="print_row">
           <span class="row_item center w180">订单号</span>
           <span class="row_item left">{{orderInfo.order_code || orderInfo.title}}</span>
+          <span class="row_item center w180">下单日期</span>
+          <span class="row_item left flex08">{{orderInfo.order_time}}</span>
+        </div>
+        <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单公司</span>
-          <span class="row_item left flex08">{{orderInfo.client_name}}</span>
+          <span class="row_item left">{{orderInfo.client_name}}</span>
+          <span class="row_item center w180">负责小组</span>
+          <span class="row_item left flex08">{{orderInfo.group_name}}</span>
         </div>
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">加工单位</span>

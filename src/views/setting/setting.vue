@@ -317,9 +317,14 @@
           </template>
           <template v-if="cName==='纱线原料'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="updataYarn('add')"
-                style="width:6em">添加纱线</div>
+              <div class="filterCtn">
+                <div class="addBtn"
+                  @click="updataYarns"
+                  style="width:6em">批量添加纱线</div>
+                <div class="addBtn"
+                  @click="updataYarn('add')"
+                  style="width:6em">添加纱线</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -1657,6 +1662,139 @@
         </div>
       </div>
     </div> -->
+    <!-- 批量添加纱线 -->
+    <div class="popup"
+      v-if="updataYarnsFlag">
+      <div class="main"
+        :style="{width:!yarnAddType ? '1100px' : ''}">
+        <div class="title">
+          <span class="text">添加纱线原料</span>
+          <i class="el-icon-close"
+            @click="updataYarnsFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">添加方式：</span>
+            <div class="info"
+              style="display:flex;align-items:center">
+              <el-radio-group v-model="yarnAddType">
+                <el-radio :label="true">名称添加</el-radio>
+                <el-radio :label="false">格式添加</el-radio>
+              </el-radio-group>
+            </div>
+          </div>
+          <template v-if="yarnAddType">
+            <div class="row"
+              v-for="(itemYarn,indexYarn) in editYarnInfo"
+              :key="indexYarn">
+              <span class="label">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
+              <div class="info">
+                <el-input placeholder="请输入纱线名称"
+                  v-model="itemYarn.name"></el-input>
+              </div>
+              <div class="editBtn blue"
+                v-if="indexYarn === 0"
+                @click="addItem(editYarnInfo,'yarn')">添加</div>
+              <div class="editBtn red"
+                v-else
+                @click="deleteItem(editYarnInfo,indexYarn)">删除</div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="row">
+              <span class="label">格式添加：</span>
+              <div class="info">
+                <el-input placeholder="取值阈值"
+                  v-model="layoutData.thresholdValues"
+                  class="elInput w100 hasMarginRight"
+                  @change="buildYarnList"></el-input>
+                <el-input placeholder="取值"
+                  v-model="layoutData.firstValue"
+                  class="elInput w80"
+                  @change="buildYarnList"></el-input>
+                -
+                <el-input placeholder="取值"
+                  v-model="layoutData.lastValue"
+                  class="elInput w80 hasMarginRight"
+                  @change="buildYarnList"></el-input>
+                <el-select v-model="layoutData.unit"
+                  class="elInput w100 hasMarginRight"
+                  placeholder="支/cm/S/公分"
+                  @change="buildYarnList">
+                  <el-option v-for="item in layoutData.unitArr"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+                <el-input placeholder="纱线名称"
+                  v-model="layoutData.yarnName"
+                  class="elInput w150 hasMarginRight"
+                  @change="buildYarnList"></el-input>
+                <el-input placeholder="#"
+                  v-model="layoutData.colorCodeUnit"
+                  class="elInput w50 hasMarginRight"
+                  @change="buildYarnList"></el-input>
+                <el-input placeholder="色号"
+                  v-model="layoutData.firstColorCode"
+                  class="elInput w80"
+                  @change="buildYarnList"></el-input>
+                -
+                <el-input placeholder="色号"
+                  v-model="layoutData.lastColorCode"
+                  class="elInput w80 hasMarginRight"
+                  @change="buildYarnList"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <span class="label">名称预览：</span>
+              <div class="info tagCtn">
+                <span class="yarnNameTag"
+                  v-for="(itemYarn,indexYarn) in layoutData.yarnNameList"
+                  :key="indexYarn">
+                  <span class="name">{{itemYarn}}</span>
+                  <span class="el-icon-close icon"
+                    @click="deleteItem(layoutData.yarnNameList,indexYarn)"></span>
+                </span>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in layoutData.yarnPriceArr"
+              :key="index">
+              <div class="label">报价信息：</div>
+              <div class="info flex">
+                <el-select v-model="item.company"
+                  style="margin-right:16px"
+                  filterable
+                  placeholder="请选择公司">
+                  <el-option v-for="item in clientList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <zh-input v-model="item.price"
+                  type='number'
+                  placeholder="请输入报价">
+                  <template slot="append">元/kg</template>
+                </zh-input>
+              </div>
+              <div class="editBtn blue"
+                @click="addClient(layoutData.yarnPriceArr)"
+                v-if="index===0">添加</div>
+              <div class="editBtn red"
+                @click="deleteClient(layoutData.yarnPriceArr,index)"
+                v-if="index>0">删除</div>
+            </div>
+          </template>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showPopup=false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveYarns">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1927,7 +2065,26 @@ export default {
         { value: '衣架' },
         { value: '警报器' },
         { value: '洗标' }
-      ]
+      ],
+      // 批量添加纱线
+      updataYarnsFlag: false,
+      yarnAddType: true,
+      layoutData: {
+        thresholdValues: '',
+        firstValue: '',
+        lastValue: '',
+        unit: '',
+        unitArr: [{ name: '支' }, { name: 'cm' }, { name: 'S' }, { name: '公分' }],
+        yarnName: '',
+        colorCodeUnit: '',
+        firstColorCode: '',
+        lastColorCode: '',
+        yarnNameList: [],
+        yarnPriceArr: [
+          { company: '', price: '' }
+        ]
+      },
+      editYarnInfo: [{ name: '' }]
     }
   },
   watch: {
@@ -2023,6 +2180,37 @@ export default {
     }
   },
   methods: {
+    // 批量添加
+    updataYarns () {
+      this.updataYarnsFlag = true
+    },
+    buildYarnList () {
+      this.layoutData.yarnNameList = []
+      let thresholdValues = Number(this.layoutData.thresholdValues)
+      let fixedNum = thresholdValues.toString().split('.')[1] ? thresholdValues.toString().split('.')[1].length : 0
+      let firstValue = Number(this.layoutData.firstValue)
+      let lastValue = Number(this.layoutData.lastValue)
+      let unit = this.layoutData.unit
+      let yarnName = this.layoutData.yarnName
+      let colorCodeUnit = this.layoutData.colorCodeUnit
+      let firstColorCode = Number(this.layoutData.firstColorCode)
+      let lastColorCode = Number(this.layoutData.lastColorCode)
+      if (thresholdValues && (firstValue || firstValue === 0) && lastValue && unit && yarnName) {
+        for (let i = firstValue; lastValue >= i;) {
+          if (colorCodeUnit && (firstColorCode || firstColorCode === 0) && lastColorCode) {
+            for (let j = firstColorCode; lastColorCode >= j; j++) {
+              this.layoutData.yarnNameList.push([i.toFixed(fixedNum), unit, yarnName, colorCodeUnit, j].join(''))
+            }
+          } else {
+            this.layoutData.yarnNameList.push([i.toFixed(fixedNum), unit, yarnName].join(''))
+          }
+          i += thresholdValues
+        }
+      }
+    },
+    saveYarns () {
+
+    },
     // 报价单预加载
     savePriceLoading () {
       if (!this.priceEditInfo.title) {
@@ -3437,6 +3625,8 @@ export default {
         data.push({
           name: ''
         })
+      } else if (type === 'yarn') {
+        data.push({ name: '' })
       }
     },
     deleteItem (data, index) {

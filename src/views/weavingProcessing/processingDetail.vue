@@ -315,7 +315,7 @@
                       <div class="tcolumn">完成时间</div>
                     </div>
                   </div>
-                  <div class="tcolumn">操作</div>
+                  <div class="tcolumn center">操作</div>
                 </div>
               </div>
               <div class="tbody">
@@ -344,10 +344,14 @@
                       <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
                     </div>
                   </div>
-                  <div class="tcolumn">
+                  <div class="tcolumn center">
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
+                      v-if="havePartMaterial(item.childrenMergeInfo)"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=2&clientId=' + item.client_id)">打印</span>
+                    <span class="btn noBorder"
+                      v-else
+                      style="padding:0;margin:0;color:rgba(0,0,0,0.4);cursor: not-allowed;">无辅料信息</span>
                   </div>
                 </div>
               </div>
@@ -463,7 +467,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tcolumn">操作</div>
+                  <!-- <div class="tcolumn">操作</div> -->
                 </div>
               </div>
               <div class="tbody">
@@ -494,10 +498,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="tcolumn">
+                  <!-- <div class="tcolumn">
                     <span class="btn noBorder"
                       style="padding:0;margin:0">打印</span>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -617,6 +621,14 @@ export default {
     }
   },
   methods: {
+    // 检测是否含有辅料（判断是否可以入打印页面）
+    havePartMaterial (data) {
+      let materialArr = []
+      data.forEach(item => {
+        materialArr.push(...item.part_assign)
+      })
+      return materialArr.length
+    },
     normalProcess (id, size, color, number) {
       // if (number !== 'undefined' && number <= 0) {
       //   this.$message.warning('该产品已分配完毕')

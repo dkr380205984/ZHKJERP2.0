@@ -828,9 +828,11 @@
                 <div class="content">
                   <el-select v-model="itemMa.productName"
                     filterable
-                    default-first-option
-                    clearable
-                    placeholder="请选择需要操作的辅料"
+                    remote
+                    reserve-keyword
+                    placeholder="请选择需要操作的产品"
+                    :remote-method="getProductListSelect"
+                    :loading="selectLoading"
                     @change="getProductSizeColorInfo($event,itemMa)">
                     <el-option v-for="item in productNameList"
                       :key="item.id"
@@ -838,6 +840,18 @@
                       :value="item.id">
                     </el-option>
                   </el-select>
+                  <!-- <el-select v-model="itemMa.productName"
+                    filterable
+                    default-first-option
+                    clearable
+                    placeholder="请选择需要操作的产品"
+                    @change="getProductSizeColorInfo($event,itemMa)">
+                    <el-option v-for="item in productNameList"
+                      :key="item.id"
+                      :label="item.product_code + '(' + item.category_info.product_category + '/' + item.type_name + '/' +item.style_name +')'"
+                      :value="item.id">
+                    </el-option>
+                  </el-select> -->
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -1024,8 +1038,10 @@ export default {
   data () {
     return {
       loading: true,
+      selectLoading: false,
       stockInfo: {
-        type: []
+        type: [],
+        attendant: []
       },
       nowTime: this.$getTime(),
       yarnList: [],
@@ -1195,15 +1211,24 @@ export default {
       } else if (type === 4) {
         this.getProductList(1)
         this.getProductLog(1)
-        if (this.productNameList.length === 0) {
-          product.list().then(res => {
-            if (res.data.status === false) {
-              this.$message.error('获取产品列表失败，' + res.data.message)
-            } else {
-              this.productNameList = res.data.data
-            }
-          })
-        }
+      }
+    },
+    getProductListSelect (keyword) {
+      if (keyword !== '') {
+        this.selectLoading = true
+        product.list({
+          page: 1,
+          limit: 9999,
+          product_code: keyword,
+          type: 1
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.selectLoading = false
+            this.productNameList = res.data.data
+          }
+        })
+      } else {
+        this.productNameList = []
       }
     },
     getYarnList (page) {
