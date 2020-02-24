@@ -2229,6 +2229,7 @@ export default {
         })
         return
       }
+      console.log(this.repeatPM)
       if (this.PMFlag === 'normal') {
         errorInput = this.repeatPM.some((item) => {
           return item.number === '' || Number(item.number) === 0 || !item.value
@@ -2236,9 +2237,11 @@ export default {
       } else {
         this.repeatPM.forEach((item) => {
           item.children.forEach((itemChild) => {
-            if (!itemChild.number || !itemChild.value) {
-              errorInput = true
-            }
+            itemChild.children.forEach((itemSon) => {
+              if (!itemChild.number || !itemSon.value || itemSon.repeat) {
+                errorInput = true
+              }
+            })
           })
         })
       }

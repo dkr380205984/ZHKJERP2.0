@@ -3302,9 +3302,11 @@ export default {
       } else {
         this.repeatPM.forEach((item) => {
           item.children.forEach((itemChild) => {
-            if (!itemChild.number || !itemChild.value) {
-              errorInput = true
-            }
+            itemChild.children.forEach((itemSon) => {
+              if (!itemChild.number || !itemSon.value || itemSon.repeat) {
+                errorInput = true
+              }
+            })
           })
         })
       }
