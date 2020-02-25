@@ -776,36 +776,38 @@ export default {
       // console.log(data)
     },
     getInitPlanInfo (id) {
-      packPlan.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.stauts !== false) {
-          // 初始化数据
-          this.planTb = res.data.data.map(item => {
-            return {
-              id: item.id,
-              packPlanInfo: JSON.parse(item.pack_info),
-              packPlanTotal: JSON.parse(item.material_info)
-            }
-          })
-          if (this.planTb.length > 0) {
-            if (id) {
-              this.activePlanId = id
-              this.packPlanInfo = this.planTb.find(item => item.id === id).packPlanInfo
-              this.packPlanTotal = this.planTb.find(item => item.id === id).packPlanTotal
-            } else {
-              this.activePlanId = this.planTb[0].id
-              this.packPlanInfo = this.planTb[0].packPlanInfo
-              this.packPlanTotal = this.planTb[0].packPlanTotal
-            }
-          } else {
-            this.planTb = [
-              {
-                id: ''
-              }
-            ]
+      Promise.all([
+        packag.list(),
+        packPlan.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        })
+      ]).then(res => {
+        this.packList = res[0].data.data
+        // 初始化数据
+        this.planTb = res[1].data.data.map(item => {
+          return {
+            id: item.id,
+            packPlanInfo: JSON.parse(item.pack_info),
+            packPlanTotal: JSON.parse(item.material_info)
           }
+        })
+        if (this.planTb.length > 0) {
+          if (id) {
+            this.activePlanId = id
+            this.packPlanInfo = this.planTb.find(item => item.id === id).packPlanInfo
+            this.packPlanTotal = this.planTb.find(item => item.id === id).packPlanTotal
+          } else {
+            this.activePlanId = this.planTb[0].id
+            this.packPlanInfo = this.planTb[0].packPlanInfo
+            this.packPlanTotal = this.planTb[0].packPlanTotal
+          }
+        } else {
+          this.planTb = [
+            {
+              id: ''
+            }
+          ]
         }
       })
     },
@@ -818,18 +820,10 @@ export default {
     }
   },
   created () {
-    Promise.all([
-      packag.list(),
-      order.editDetail({
-        id: this.$route.params.id
-      })
-      // packPlan.detail({
-      //   order_id: this.$route.params.id,
-      //   order_type: 1
-      // })
-    ]).then(res => {
-      this.packList = res[0].data.data
-      this.orderInfo = res[1].data.data
+    order.editDetail({
+      id: this.$route.params.id
+    }).then(res => {
+      this.orderInfo = res.data.data
       let productList = this.orderInfo.order_batch.map(itemBatch => {
         return itemBatch.product_info.map(itemPro => itemPro.product_info)
       })
