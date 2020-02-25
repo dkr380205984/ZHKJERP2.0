@@ -119,7 +119,8 @@ const client = {
   create: (params) => http.post(`${baseUrl}/client/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/client/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
-  list: (params) => http.get(`${baseUrl}/client/list`, params)
+  list: (params) => http.get(`${baseUrl}/client/list`, params),
+  disable: (params) => http.post(`${baseUrl}/client/status/check`, params, 'application/json')
 }
 // 人员管理
 const auth = {

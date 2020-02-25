@@ -1142,7 +1142,7 @@ export default {
         })
       ]).then(res => {
         this.orderInfo = res[0].data.data
-        this.orderInfo.order_contract = JSON.parse(this.orderInfo.order_contract).map(item => {
+        this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
           console.log(splitArr)
           return {
@@ -1150,21 +1150,21 @@ export default {
             name: splitArr[splitArr.length - 1]
           }
         })
-        this.orderInfo.others_info = JSON.parse(this.orderInfo.others_info).map(item => {
+        this.orderInfo.others_info = !this.this.orderInfo.others_info ? [] : JSON.parse(this.orderInfo.others_info).map(item => {
           let splitArr = item.split('/')
           return {
             url: item,
             name: splitArr[splitArr.length - 1]
           }
         })
-        this.orderInfo.pack_means = JSON.parse(this.orderInfo.pack_means).map(item => {
+        this.orderInfo.pack_means = !this.orderInfo.pack_means ? [] : JSON.parse(this.orderInfo.pack_means).map(item => {
           let splitArr = item.split('/')
           return {
             url: item,
             name: splitArr[splitArr.length - 1]
           }
         })
-        this.orderInfo.store_means = JSON.parse(this.orderInfo.store_means).map(item => {
+        this.orderInfo.store_means = !this.orderInfo.store_means ? [] : JSON.parse(this.orderInfo.store_means).map(item => {
           let splitArr = item.split('/')
           return {
             url: item,

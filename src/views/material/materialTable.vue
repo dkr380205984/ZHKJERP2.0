@@ -34,7 +34,7 @@
           <span class="row_item center w180">加工单位</span>
           <span class="row_item left">{{$route.query.clientName}}</span>
           <span class="row_item center w180">总价</span>
-          <span class="row_item left flex08">{{total_price}}元</span>
+          <span class="row_item left flex08">{{$toFixed(total_price)}}元</span>
         </div>
         <template v-for="(item,index) in materialInfo">
           <div class="print_row bgGray"
@@ -42,15 +42,15 @@
             <span class="row_item w180 center">{{$route.params.type === '1' ? '原' : '辅'}}料名称{{index + 1}}</span>
             <span class="row_item left">{{item.material_name}}</span>
             <span class="row_item w180 center">总价</span>
-            <span class="row_item left flex08">{{item.total_price || 0}}元</span>
+            <span class="row_item left flex08">{{$toFixed(item.total_price) || 0}}元</span>
           </div>
           <template v-for="(itemColor,indexColor) in item.color_info">
             <div class="print_row"
               :key="indexColor + 'content' + index">
               <span class="row_item w180 center">颜色{{indexColor+1}}</span>
               <span class="row_item noBorder left">{{itemColor.color}}</span>
-              <span class="row_item noBorder left">{{itemColor.price || 0}}元/kg</span>
-              <span class="row_item noBorder left">{{itemColor.number || 0}}kg</span>
+              <span class="row_item noBorder left">{{$toFixed(itemColor.price) || 0}}元/kg</span>
+              <span class="row_item noBorder left">{{$toFixed(itemColor.number) || 0}}kg</span>
               <span class="row_item noBorder left">{{itemColor.complete_time}}</span>
             </div>
           </template>

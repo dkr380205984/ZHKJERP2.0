@@ -97,7 +97,7 @@
                   :key="indexMat">
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
-                  <div class="tcolumn">{{itemMat.number}}{{itemMat.unit}}</div>
+                  <div class="tcolumn">{{$toFixed(itemMat.number)}}{{itemMat.unit}}</div>
                 </div>
               </div>
             </div>

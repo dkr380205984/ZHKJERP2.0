@@ -12,6 +12,15 @@
               @change="changeRouter(1)"
               placeholder="输入编号按回车键查询">
             </el-input>
+            <el-select v-model="clientStatus"
+              placeholder="筛选状态"
+              class="inputs">
+              <el-option v-for="item in statusArr"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
             <div class="btn btnGray"
               style="margin-left:0"
               @click="reset">重置</div>
@@ -79,8 +88,11 @@
             <div class="col middle flex08">
               <span class="opr"
                 @click="$router.push('/client/clientDetail/' + itemClient.id)">详情</span>
-              <span class="opr"
+              <span class="opr orange"
                 @click="$router.push('/client/clientUpdate/' + itemClient.id)">修改</span>
+              <span class="opr"
+                :class="{'red':itemClient.status > 0}"
+                @click="disableClient(itemClient.id)">{{itemClient.status > 0 ? '禁用' : '启用'}}</span>
             </div>
           </div>
         </div>
@@ -112,10 +124,41 @@ export default {
       searchTypeFlag: false,
       pages: 1,
       total: 0,
-      companyType: companyType
+      companyType: companyType,
+      clientStatus: 1,
+      statusArr: [
+        {
+          label: '全部',
+          value: ''
+        }, {
+          label: '合作中',
+          value: 1
+        }
+      ]
     }
   },
   methods: {
+    disableClient (id) {
+      this.$confirm('此操作将禁用该客户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        client.disable({
+          id: id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('禁用成功')
+            this.getClientList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
@@ -132,7 +175,8 @@ export default {
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
-        type: this.client_type
+        type: this.client_type,
+        status: this.clientStatus
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data
@@ -161,6 +205,9 @@ export default {
     },
     $route (newVal) {
       this.getFilters()
+      this.getClientList()
+    },
+    clientStatus (newVal) {
       this.getClientList()
     }
   }

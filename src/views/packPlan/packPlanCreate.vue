@@ -210,8 +210,10 @@
           <div class="editItem addItem"
             @click="addItem(itemPlan,'addPack',indexPlan)">+添加包装</div>
         </div>
-        <div class="rowCtn"
-          v-if="indexPlan === packPlanInfo.length -1">
+      </div>
+      <div class="editCtn"
+        style="padding:0">
+        <div class="rowCtn">
           <div class="btn btnWhiteBlue"
             @click="addItem(packPlanInfo,'planInfo')">添加级别</div>
         </div>
@@ -518,9 +520,12 @@ export default {
           ])
         }
       } else if (type === 'addPack') {
-        let lastNum = parseInt(this.$clone(item).sort((a, b) => {
-          return parseInt(b.pack_code) - parseInt(a.pack_code)
-        })[0].pack_code) + 1
+        let lastNum = 1
+        if (item.length !== 0) {
+          lastNum = parseInt(this.$clone(item).sort((a, b) => {
+            return parseInt(b.pack_code) - parseInt(a.pack_code)
+          })[0].pack_code) + 1
+        }
         if (index === 0) {
           item.push({
             pack_code: lastNum + 'A',
@@ -601,13 +606,16 @@ export default {
           })
         })
       })
+      console.log(this.$clone(packPlanTotal))
       packPlanTotal = this.$mergeData(packPlanTotal, { mainRule: 'pack_name', otherRule: [{ name: 'size_info' }, { name: 'attr' }, { name: 'number', type: 'add' }], childrenName: 'item_id' })
+      console.log(this.$clone(packPlanTotal))
       this.packPlanTotal = packPlanTotal.map(item => {
         item.item_id = item.item_id.map(value => value.item_id)
         return item
       })
       // 自动计算包装数量
       let data = this.$clone(this.packPlanInfo).reverse()
+      console.log(this.$clone(data))
       let packNumArr = [] // 数据存放
       data.forEach((item, key) => {
         item.forEach(value => {
@@ -618,15 +626,19 @@ export default {
             })
           }
           value.pack_info.forEach(val => {
+            let flagFilter = packNumArr.filter(itemVal => itemVal.pack_id === value.pack_code).map(itemVal => itemVal.number)
             if (key !== data.length - 1) {
               packNumArr.push({
                 pack_id: val.name,
-                number: Number(val.number || 0) * Number(value.total_box || 1)
+                number: Number(val.number || 0) * Number(flagFilter.length > 0 ? flagFilter.reduce((numA, numB) => {
+                  return (+numA) + (+numB)
+                }) : 1)
               })
             }
           })
         })
       })
+      console.log(this.$clone(packNumArr))
       // 将计算结果合并至统计数据中
       packNumArr.forEach(item => {
         let flag = this.packPlanTotal.find(value => value.item_id.indexOf(item.pack_id) !== -1)
