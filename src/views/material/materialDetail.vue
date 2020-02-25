@@ -1612,14 +1612,13 @@ export default {
       }
       let stockListCopy = this.$clone(this.stock_list)
       let finded = stockListCopy.find((item) => item.material_name === this.checkWhichYarn[0].material_name)
-      if (!finded) {
-        this.$message.warning('没有符合该原料名称的物料，可以手动搜索相似名称进行调取')
-        return
-      }
+      // if (!finded) {
+      //   this.$message.warning('没有符合该原料名称的物料，可以手动搜索相似名称进行调取')
+      //   return
+      // }
       this.stockMatTotalNum = needNum.toFixed(2)
       this.showStockSelect = true
       this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
-      console.log(this.stockSelectList)
       // 如果仓库有名称完全一样的白胚，就直接进入调取步骤，否则进入搜索纱线步骤
       if (this.stockSelectList.length > 0) {
         this.step = 1

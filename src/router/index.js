@@ -305,6 +305,10 @@ const routes = [
       name: '订单财务统计',
       component: () => import('../views/financialStatistics/orderStatistics.vue')
     }, {
+      path: '/financialStatistics/sampleStatistics/:params',
+      name: '样单财务统计',
+      component: () => import('../views/financialStatistics/sampleStatistics.vue')
+    }, {
       path: '/financialStatistics/productStatistics/:params',
       name: '产品产量统计',
       component: () => import('../views/financialStatistics/productStatistics.vue')

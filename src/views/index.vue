@@ -287,6 +287,9 @@ export default {
           name: '订单财务统计',
           url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
         }, {
+          name: '样单财务统计',
+          url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+        }, {
           name: '产品产量统计',
           url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id='
         }, {
