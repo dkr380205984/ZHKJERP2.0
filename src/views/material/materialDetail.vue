@@ -76,11 +76,11 @@
             </el-tooltip>
             <el-tooltip class="item"
               effect="dark"
-              :content="checkWhichYarn.length!==0?'请选取一个纱线进行调取操作':'调取白胚'"
+              :content="checkWhichYarn.length!==0?'请选取一个纱线进行调取操作':'批量调取'"
               placement="top">
               <div class="btn"
                 :class="{'btnGray':checkWhichYarn.length!==1,'btnWhiteBlue':checkWhichYarn.length===1}"
-                @click="selectStockFirst()">调取白胚</div>
+                @click="selectStockFirst()">批量调取</div>
             </el-tooltip>
           </div>
         </div>
@@ -1111,21 +1111,67 @@
             <el-steps :active="step"
               align-center
               finish-status="success">
+              <el-step title="搜索物料"></el-step>
               <el-step title="选择仓库"></el-step>
-              <el-step title="调取白胚"></el-step>
-              <el-step title="调取详情"></el-step>
+              <el-step title="仓库调取"></el-step>
+              <el-step title="调取统计"></el-step>
             </el-steps>
           </div>
           <div class="box">
             <div class="line1">
-              <span>{{checkWhichYarn.length>0?checkWhichYarn[0].material_name:''}}</span>
-              <span v-if="step<3">所需总量：<span class="blue">{{stockMatTotalNum}}</span>kg</span>
-              <span v-if="step===3">实际调取：<span class="blue">{{stockMatReallyTotalNum}}</span>kg</span>
+              <span>原料名称：{{checkWhichYarn.length>0?checkWhichYarn[0].material_name:''}}</span>
+              <span v-if="step<3">所需总量：<span class="blue">{{stockMatTotalNum}}</span></span>
+              <span v-if="step===3">实际调取：<span class="blue">{{stockMatReallyTotalNum}}</span></span>
+            </div>
+            <div class="line1"
+              v-if="step>1">
+              <span>调取仓库：{{stockYarnInfo.from}}</span>
+              <span>调取纱线：{{stockYarnInfo.material}}</span>
+            </div>
+            <div class="list"
+              v-loading="searchYarnLoading"
+              v-show="step===0">
+              <div class="serachCtn">
+                <div style="height:32px;margin:20px 32px;width:300px">
+                  <el-input class="inputs"
+                    v-model="searchYarnWord"
+                    @change="searchYarnFn"
+                    placeholder="输入相似物料名称按回车键查询">
+                    <template slot="append">
+                      <i class="el-icon-search"
+                        @click="searchYarnFn"></i>
+                    </template>
+                  </el-input>
+                </div>
+              </div>
+              <div class="li">
+                <span class="once">物料名称</span>
+                <span class="once">库存数量</span>
+                <span class="once right">操作</span>
+              </div>
+              <div class="li"
+                v-if="searchYarnList.length===0">
+                <div style="text-alignt:center">未找到物料库存</div>
+              </div>
+              <div class="li"
+                v-for="(item,index) in searchYarnList"
+                :key="index">
+                <span class="once">{{item.name}}</span>
+                <span class="once">{{item.stock_number}}</span>
+                <span class="once right">
+                  <span class="once right blue"
+                    v-if="item.stock_number>=stockMatTotalNum"
+                    @click="chooseMat(item.name)">调取</span>
+                  <span class="once right"
+                    v-if="item.stock_number<stockMatTotalNum">库存不足</span>
+                </span>
+              </div>
             </div>
             <div class="list"
               v-show="step===1">
               <div class="li">
                 <span class="once">仓库名称</span>
+                <span class="once">纱线颜色</span>
                 <span class="once">库存数量</span>
                 <span class="once right">操作</span>
               </div>
@@ -1133,6 +1179,7 @@
                 v-for="(item,index) in stockSelectList"
                 :key="index">
                 <span class="once">{{item.stock_name}}</span>
+                <span class="once">{{item.material_color}}</span>
                 <span class="once">{{item.total_weight}}</span>
                 <span class="once right blue"
                   v-if="item.total_weight>=stockMatTotalNum"
@@ -1176,13 +1223,13 @@
             </div>
           </div>
         </div>
-        <div class="opr"
-          v-if="step>1">
+        <div class="opr">
           <div class="btn btnGray"
-            @click="step--">上一步</div>
+            v-if="step>0"
+            @click="step--">{{step===1?'搜索其他物料':'上一步'}}</div>
           <div class="btn btnBlue"
-            v-if="step===2"
-            @click="step=3">下一步</div>
+            @click="step ++"
+            v-if="step===2">下一步</div>
           <div class="btn btnBlue"
             v-if="step===3"
             @click="saveStock">确认调取</div>
@@ -1202,7 +1249,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock, statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1277,9 +1324,16 @@ export default {
       stockSelect: '',
       stockChildren: [],
       lock: true,
-      step: 1,
+      step: 0,
       stockMatTotalNum: 0,
-      yarnWord: ''
+      stockYarnInfo: {
+        from: '',
+        material: ''
+      },
+      yarnWord: '', // 仓库物料搜索keyword
+      searchYarnWord: '', // 调取弹窗物料搜索keyword
+      searchYarnLoading: false,
+      searchYarnList: []
     }
   },
   methods: {
@@ -1559,19 +1613,24 @@ export default {
       let stockListCopy = this.$clone(this.stock_list)
       let finded = stockListCopy.find((item) => item.material_name === this.checkWhichYarn[0].material_name)
       if (!finded) {
-        this.$message.warning('没有符合该原料名称的库存纱线，可以手动搜索相似名称纱线进行调取')
+        this.$message.warning('没有符合该原料名称的物料，可以手动搜索相似名称进行调取')
         return
       }
+      this.stockMatTotalNum = needNum.toFixed(2)
+      this.showStockSelect = true
       this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
+      console.log(this.stockSelectList)
+      // 如果仓库有名称完全一样的白胚，就直接进入调取步骤，否则进入搜索纱线步骤
       if (this.stockSelectList.length > 0) {
-        this.stockMatTotalNum = needNum.toFixed(2)
-        this.showStockSelect = true
+        this.step = 1
       } else {
-        this.$message.warning('仓库里没有符合该名称的白胚物料，请手动调取相似颜色物料')
+        this.step = 0
+        // this.$message.warning('仓库里没有符合该名称的白胚物料，请手动搜索相似名称物料进行搜索')
       }
     },
     // 批量调取
     easyStockBatch (whiteYarn) {
+      console.log(whiteYarn)
       // 调取白胚
       this.stock_data = []
       this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
@@ -1592,8 +1651,37 @@ export default {
           })
         }
       })
-      console.log(this.stock_data)
+      this.stockYarnInfo = {
+        from: whiteYarn.stock_name,
+        material: (whiteYarn.material_name || this.checkWhichYarn[0].material_name) + '/' + whiteYarn.material_color
+      }
       this.step = 2
+    },
+    // 批量调取搜索物料
+    searchYarnFn () {
+      this.searchYarnLoading = true
+      statistics.materialList({
+        limit: 10,
+        page: 1,
+        keyword: this.searchYarnWord,
+        type: this.$route.params.type
+      }).then((res) => {
+        this.searchYarnList = res.data.data
+        this.searchYarnLoading = false
+      })
+    },
+    chooseMat (name) {
+      this.searchYarnLoading = true
+      yarnStock.list({
+        material_name: name,
+        type: this.$route.params.type,
+        page: 1,
+        limit: 10
+      }).then((res) => {
+        this.stockSelectList = res.data.data
+        this.step = 1
+        this.searchYarnLoading = false
+      })
     },
     // 关闭弹窗
     resetStock () {
