@@ -321,9 +321,9 @@
                 <div class="addBtn"
                   @click="updataYarns"
                   style="width:6em">批量添加纱线</div>
-                <div class="addBtn"
+                <!-- <div class="addBtn"
                   @click="updataYarn('add')"
-                  style="width:6em">添加纱线</div>
+                  style="width:6em">添加纱线</div> -->
               </div>
               <div class="normalTb">
                 <div class="thead">
@@ -1666,7 +1666,7 @@
     <div class="popup"
       v-if="updataYarnsFlag">
       <div class="main"
-        :style="{width:!yarnAddType ? '1100px' : ''}">
+        :style="{width:!yarnAddType ? '1100px' : '800px'}">
         <div class="title">
           <span class="text">添加纱线原料</span>
           <i class="el-icon-close"
@@ -1686,7 +1686,7 @@
           <template v-if="yarnAddType">
             <div class="row"
               v-for="(itemYarn,indexYarn) in editYarnInfo"
-              :key="indexYarn">
+              :key="indexYarn + 'yarn'">
               <span class="label">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
               <div class="info">
                 <el-input placeholder="请输入纱线名称"
@@ -1758,34 +1758,38 @@
                 </span>
               </div>
             </div>
-            <div class="row"
-              v-for="(item,index) in layoutData.yarnPriceArr"
-              :key="index">
-              <div class="label">报价信息：</div>
-              <div class="info flex">
-                <el-select v-model="item.company"
-                  style="margin-right:16px"
-                  filterable
-                  placeholder="请选择公司">
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
-                <zh-input v-model="item.price"
-                  type='number'
-                  placeholder="请输入报价">
-                  <template slot="append">元/kg</template>
-                </zh-input>
-              </div>
-              <div class="editBtn blue"
-                @click="addClient(layoutData.yarnPriceArr)"
-                v-if="index===0">添加</div>
-              <div class="editBtn red"
-                @click="deleteClient(layoutData.yarnPriceArr,index)"
-                v-if="index>0">删除</div>
-            </div>
           </template>
+          <div class="row"
+            v-for="(item,index) in layoutData.yarnPriceArr"
+            :key="index + 'price'">
+            <div class="label">报价信息：</div>
+            <div class="info flex">
+              <el-select v-model="item.company"
+                style="margin-right:16px"
+                filterable
+                placeholder="请选择公司">
+                <el-option v-for="item in clientList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"></el-option>
+              </el-select>
+              <zh-input v-model="item.price"
+                style="margin-right:16px"
+                type='number'
+                placeholder="请输入报价">
+                <template slot="append">元/kg</template>
+              </zh-input>
+              <zh-input v-model="item.desc"
+                placeholder="备注">
+              </zh-input>
+            </div>
+            <div class="editBtn blue"
+              @click="addClient(layoutData.yarnPriceArr)"
+              v-if="index===0">添加</div>
+            <div class="editBtn red"
+              @click="deleteClient(layoutData.yarnPriceArr,index)"
+              v-if="index>0">删除</div>
+          </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -2081,7 +2085,7 @@ export default {
         lastColorCode: '',
         yarnNameList: [],
         yarnPriceArr: [
-          { company: '', price: '' }
+          { company: '', price: '', desc: '' }
         ]
       },
       editYarnInfo: [{ name: '' }]
@@ -2209,7 +2213,56 @@ export default {
       }
     },
     saveYarns () {
-
+      let data = []
+      let flag = true
+      if (this.yarnAddType) {
+        this.editYarnInfo.filter(item => item.name).forEach(item => {
+          if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
+            flag = false
+          }
+          data.push({
+            name: item.name,
+            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+              return {
+                client_id: itemInner.company,
+                price: itemInner.price,
+                desc: itemInner.desc
+              }
+            })
+          })
+        })
+      } else {
+        this.layoutData.yarnNameList.forEach(item => {
+          if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
+            flag = false
+          }
+          data.push({
+            name: item,
+            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+              return {
+                client_id: itemInner.company,
+                price: itemInner.price,
+                desc: itemInner.desc
+              }
+            })
+          })
+        })
+      }
+      if (!flag) {
+        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+        return
+      }
+      if (data.length !== 0) {
+        yarn.create({ data: data }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('添加成功')
+            this.getYarnName()
+            this.closeAndResetInfo('yarn')
+          }
+        })
+      } else {
+        this.$message.warning('无可提交的数据')
+      }
     },
     // 报价单预加载
     savePriceLoading () {
@@ -2996,7 +3049,8 @@ export default {
     addClient (item) {
       item.push({
         price: '',
-        company: ''
+        company: '',
+        desc: ''
       })
     },
     deleteClient (item, index) {
