@@ -2954,26 +2954,14 @@ export default {
     },
     // 查找工艺单
     remoteMethod (query) {
-      console.log(query)
       if (query !== '') {
         this.loadingS = true
-        product.list({
-          product_code: query,
+        craft.list({
+          craft_code: query,
           limit: 20,
-          page: 1,
-          category_id: null,
-          type_id: null,
-          style_id: null,
-          flower_id: null,
-          has_plan: null,
-          has_craft: 1,
-          has_quotation: null,
-          user_name: null,
-          type: 1,
-          start_time: null,
-          end_time: null
+          page: 1
         }).then((res) => {
-          this.gydArr = res.data.data
+          this.gydArr = res.data.data.map((item) => item.product_info)
           console.log(this.gydArr)
           this.loadingS = false
         })

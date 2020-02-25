@@ -1,34 +1,27 @@
 <template>
   <div class="indexMain"
-    id="sampleStatistics">
+    id="orderStatistics">
     <div class="module"
       v-loading="loadingTop">
       <div class="listHead">
         <div class="box">
-          <div class="boxTop">订单总额</div>
+          <div class="boxTop">打样数量</div>
           <div class="boxBottom">
-            <span class="num">{{$toFixed(orderStatistics.DDZE)}}</span>
-            <span class="em">万元</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop">下单数量</div>
-          <div class="boxBottom">
-            <span class="num">{{$toFixed(orderStatistics.XDSL)}}</span>
+            <span class="num">{{$toFixed(orderStatistics.DYSL)}}</span>
             <span class="em">万</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop">出库数量</div>
+          <div class="boxTop">确认数量</div>
           <div class="boxBottom">
-            <span class="num">{{$toFixed(orderStatistics.CKSL)}}</span>
+            <span class="num">{{$toFixed(orderStatistics.QRSL)}}</span>
             <span class="em">万</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop">实际总值</div>
+          <div class="boxTop">客户付费</div>
           <div class="boxBottom">
-            <span class="num">{{$toFixed(orderStatistics.SJZZ)}}</span>
+            <span class="num">{{$toFixed(orderStatistics.KHFF)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
@@ -125,10 +118,10 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">出库数量</span>
+              <span class="text">打样数量</span>
             </div>
             <div class="col">
-              <span class="text">实际总值</span>
+              <span class="text">客户付费</span>
             </div>
             <div class="col">
               <span class="text">工厂成本</span>
@@ -144,11 +137,12 @@
             <div class="col">{{item.order_time}}</div>
             <div class="col">{{item.client_name}}</div>
             <div class="col">{{item.group_name}}</div>
-            <div class="col">{{item.pack_number}}</div>
-            <div class="col">{{item.reality_number}}</div>
+            <div class="col">{{item.numbers}}</div>
+            <div class="col">{{item.client_pay}}</div>
             <div class="col">{{item.company_cost}}</div>
             <div class="col">
-              <span class="opr">详情</span>
+              <span class="opr"
+                @click="$router.push('/sample/sampleDetail/' + item.id)">详情</span>
             </div>
           </div>
         </div>
@@ -185,10 +179,9 @@ export default {
       searchCompanyFlag: false,
       searchGroupFlag: false,
       orderStatistics: {
-        DDZE: '', // 订单总额
-        XDSL: '', // 下单数量
-        CKSL: '', // 出库数量
-        SJZZ: '', // 实际总值
+        DYSL: '', // 打样数量
+        QRSL: '', // 确认数量
+        KHFF: '', // 客户付费
         GCCB: ''// 工厂成本
       }
     }
@@ -213,7 +206,7 @@ export default {
     },
     getList () {
       this.loading = true
-      statistics.orderList({
+      statistics.sampleList({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
@@ -249,17 +242,16 @@ export default {
   mounted () {
     this.getFilters()
     this.getList()
-    Promise.all([group.list(), client.list(), statistics.orderStatistics()]).then((res) => {
+    Promise.all([group.list(), client.list(), statistics.sampleStatistics()]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
       let orderStatistics = res[2].data.data
       this.orderStatistics = {
-        DDZE: orderStatistics.order_total_price / 10000, // 订单总额
-        XDSL: orderStatistics.order_total_number / 10000, // 下单数量
-        CKSL: orderStatistics.order_total_pack_real / 10000, // 出库数量
-        SJZZ: orderStatistics.order_total_reality / 10000, // 实际总值
+        DYSL: orderStatistics.order_total_number / 10000, // 打样数量
+        QRSL: orderStatistics.order_total_reality / 10000, // 确认数量
+        KHFF: orderStatistics.client_pay / 10000, // 客户付费
         GCCB: orderStatistics.company_cost / 10000// 工厂成本
       }
       this.loadingTop = false
@@ -269,5 +261,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/financialStatistics/sampleStatistics.less";
+@import "~@/assets/less/financialStatistics/orderStatistics.less";
 </style>

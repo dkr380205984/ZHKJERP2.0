@@ -339,6 +339,8 @@ const finance = {
 }
 // 统计模块（财务统计模块）
 const statistics = {
+  sampleList: (params) => http.get(`${baseUrl}/financial/sample/order/overall/count/list`, params),
+  sampleStatistics: (params) => http.get(`${baseUrl}/financial/sample/order/overall/count/total`, params),
   orderList: (params) => http.get(`${baseUrl}/financial/order/overall/count/list`, params),
   orderStatistics: (params) => http.get(`${baseUrl}/financial/order/overall/count/total`, params),
   materialList: (params) => http.get(`${baseUrl}/financial/material/use/count/list`, params),

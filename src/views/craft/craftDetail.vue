@@ -614,6 +614,8 @@
             @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
           <div class="btn btnBlue"
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
+          <div class="btn btnRed"
+            @click="deleteCraft">删除</div>
         </div>
       </div>
     </div>
@@ -1584,6 +1586,27 @@ export default {
         this.warpCanvasBack = warpCanvas
         this.weftCanvasBack = weftCanvasBack
       }
+    },
+    deleteCraft () {
+      this.$confirm('此操作将永久删除该工艺单, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        craft.delete({
+          id: this.craftId
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('删除成功')
+            this.$router.go(-1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   created () {
