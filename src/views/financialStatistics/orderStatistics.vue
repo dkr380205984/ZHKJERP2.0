@@ -217,7 +217,7 @@ export default {
       statistics.orderList({
         limit: 10,
         page: this.pages,
-        keyword: this.keyword,
+        order_code: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,

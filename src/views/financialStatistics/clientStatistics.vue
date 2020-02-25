@@ -103,7 +103,7 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">
-              <span class="text">{{item.type}}</span>
+              <span class="text">{{item.type|filterTypes}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.name}}</span>
@@ -220,6 +220,14 @@ export default {
     client.list().then((res) => {
       this.companyArr = res.data.data
     })
+  },
+  filters: {
+    filterTypes (item) {
+      return item.map(val => {
+        let flag = companyType.find(valItem => valItem.value === val)
+        return flag ? flag.name : ''
+      }).join(',')
+    }
   }
 }
 </script>

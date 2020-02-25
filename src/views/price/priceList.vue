@@ -25,7 +25,8 @@
               @change="changeRouter(1)">
             </el-date-picker>
             <div class="btn btnGray"
-              style="margin-left:0">重置</div>
+              style="margin-left:0"
+              @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
           </div>
         </div>
         <div class="list">

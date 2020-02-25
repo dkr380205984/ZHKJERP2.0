@@ -7,10 +7,22 @@
         <div class="filterCtn">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
+            <el-select class="inputs"
+              filterable
+              clearable
               placeholder="请输入订单公司名称"
               v-model="keyword"
-              @change="changeRouter(1)"></el-input>
+              @change="changeRouter(1)">
+              <el-option v-for="item in clientList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <!-- <el-input class="inputs"
+              placeholder="请输入订单公司名称"
+              v-model="keyword"
+              @change="changeRouter(1)"></el-input> -->
             <el-date-picker v-model="date"
               style="width:290px"
               class="inputs"
@@ -97,7 +109,7 @@
 </template>
 
 <script>
-import { materialOrder } from '@/assets/js/api.js'
+import { materialOrder, client } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -107,7 +119,8 @@ export default {
       list: [],
       page: 1,
       total: 0,
-      keyword: ''
+      keyword: '',
+      clientList: []
     }
   },
   watch: {
@@ -126,7 +139,7 @@ export default {
       materialOrder.list({
         limit: 10,
         page: this.page,
-        keyword: this.keyword,
+        client_id: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then((res) => {
@@ -157,6 +170,13 @@ export default {
   created () {
     this.getFilters()
     this.getList()
+    client.list({
+      type: 2
+    }).then(res => {
+      if (res.data.status !== false) {
+        this.clientList = res.data.data
+      }
+    })
   }
 }
 </script>

@@ -8,7 +8,20 @@
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
-              placeholder="请输入编号查询"></el-input>
+              v-model="keyword"
+              placeholder="请输入编号查询"
+              @change="getStockList"></el-input>
+            <el-select v-model="stockTypeFilter"
+              clearable
+              placeholder="筛选仓库类型"
+              class="inputs"
+              @change="getStockList">
+              <el-option v-for="item in stockTypeArr"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
           </div>
@@ -157,6 +170,7 @@ export default {
     return {
       loading: true,
       keyword: '',
+      stockTypeFilter: '',
       showPopup: false,
       stockType: '',
       stockTypeArr: [
@@ -221,7 +235,11 @@ export default {
       })
     },
     getStockList () {
-      stock.list().then(res => {
+      this.loading = true
+      stock.list({
+        keyword: this.keyword,
+        type: this.stockTypeFilter
+      }).then(res => {
         if (res.data.status !== false) {
           this.stockList = res.data.data
           this.total = res.data.meta.total
