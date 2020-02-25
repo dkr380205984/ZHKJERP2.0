@@ -8,20 +8,32 @@
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"></zh-message>
-        <div class="selectCtn">
+        <div class="selectCtn"
+          style="width:460px;margin:10px 0">
+          <el-select v-model="selectSearchWhich"
+            style="width:170px;float:left">
+            <el-option label="搜产品编号"
+              value="搜产品编号"></el-option>
+            <el-option label="搜样品编号"
+              value="搜样品编号"></el-option>
+            <el-option label="搜工艺单编号"
+              value="搜工艺单编号"></el-option>
+          </el-select>
           <el-select filterable
+            style="width:270px;float:right"
             remote
             reserve-keyword
             v-model="gyd"
             :remote-method="remoteMethod"
             :loading="loadingS"
             @change="getCraft"
-            placeholder="输入工艺单编号导入工艺单">
+            placeholder="输入编号导入工艺单">
             <el-option v-for="item in gydArr"
               :key="item.id"
-              :label="item.product_code"
+              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
               :value="item.id">
-              <span>{{ item.product_code }}</span>
+              <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
+              <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
               <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_info.product_category}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
             </el-option>
           </el-select>
@@ -1387,6 +1399,7 @@ export default {
   },
   data () {
     return {
+      selectSearchWhich: '搜产品编号',
       loading: true,
       loadingS: false,
       msgSwitch: false,
@@ -2957,11 +2970,17 @@ export default {
       if (query !== '') {
         this.loadingS = true
         craft.list({
-          craft_code: query,
+          sample_code: this.selectSearchWhich === '搜样品编号' ? query : '',
+          product_code: this.selectSearchWhich === '搜产品编号' ? query : '',
+          craft_code: this.selectSearchWhich === '搜工艺单编号' ? query : '',
           limit: 20,
           page: 1
         }).then((res) => {
-          this.gydArr = res.data.data.map((item) => item.product_info)
+          this.gydArr = res.data.data.map((item) => {
+            item.product_info.id = item.id
+            item.product_info.craft_code = item.craft_code
+            return item.product_info
+          })
           console.log(this.gydArr)
           this.loadingS = false
         })
@@ -2972,12 +2991,10 @@ export default {
     // 导入单张工艺单
     getCraft (code) {
       this.loading = true
-      craft.getByProduct({
-        product_id: code,
-        product_type: 1
+      craft.detail({
+        id: code
       }).then((res) => {
         let data = res.data.data
-        console.log(data)
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
         this.colour = this.warpInfo.color_data.map((item, index) => {

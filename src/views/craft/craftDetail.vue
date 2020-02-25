@@ -25,6 +25,10 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
+            <span class="label">工艺编号：</span>
+            <span class="text">{{productInfo.craft_code}}</span>
+          </div>
+          <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
             <span class="text">{{productInfo.materials|filterMaterials}}</span>
           </div>
@@ -1179,6 +1183,7 @@ export default {
       this.weight = 0
       this.craftId = data.id
       this.productInfo = data.product_info
+      this.productInfo.craft_code = data.craft_code
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)

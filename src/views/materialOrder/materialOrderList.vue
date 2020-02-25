@@ -7,10 +7,6 @@
         <div class="filterCtn">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              placeholder="请输入订单公司名称"
-              v-model="keyword"
-              @change="changeRouter(1)"></el-input>
             <el-date-picker v-model="date"
               style="width:290px"
               class="inputs"
@@ -34,7 +30,29 @@
               <span class="text">订购日期</span>
             </div>
             <div class="col">
-              <span class="text">订单公司</span>
+              <span class="text">
+                <span class="text"
+                  v-show="!searchCompanyFlag">外贸公司
+                  <i class="el-icon-search iconBtn"
+                    @click="searchCompanyFlag=true"></i>
+                </span>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchCompanyFlag"
+                    class="filterBox">
+                    <el-select v-model="company_id"
+                      @change="changeRouter(1)"
+                      clearable
+                      filterable
+                      placeholder="筛选公司">
+                      <el-option v-for="(item,index) in companyArr"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </transition>
+              </span>
             </div>
             <div class="col">
               <span class="text">预付款(元)</span>
@@ -97,7 +115,7 @@
 </template>
 
 <script>
-import { materialOrder } from '@/assets/js/api.js'
+import { materialOrder, client } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -107,7 +125,10 @@ export default {
       list: [],
       page: 1,
       total: 0,
-      keyword: ''
+      client_id: '',
+      company_id: '',
+      companyArr: [],
+      searchCompanyFlag: false
     }
   },
   watch: {
@@ -126,7 +147,7 @@ export default {
       materialOrder.list({
         limit: 10,
         page: this.page,
-        keyword: this.keyword,
+        client_id: this.company_id,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then((res) => {
@@ -144,19 +165,24 @@ export default {
       } else {
         this.date = ''
       }
-      this.keyword = params.keyword
+      this.company_id = params.client_id
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/materialOrder/materialOrderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date)
+      this.$router.push('/materialOrder/materialOrderList/page=' + pages + '&&client_id=' + this.company_id + '&&date=' + this.date)
     },
     reset () {
-      this.$router.push('/materialOrder/materialOrderList/page=1&&keyword=&&date=')
+      this.$router.push('/materialOrder/materialOrderList/page=1&&client_id=&&date=')
     }
   },
   created () {
     this.getFilters()
     this.getList()
+    client.list().then((res) => {
+      this.companyArr = res.data.data.filter((item) => {
+        return item.type.indexOf(2) !== -1
+      })
+    })
   }
 }
 </script>

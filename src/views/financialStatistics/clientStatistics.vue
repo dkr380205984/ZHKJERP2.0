@@ -103,7 +103,7 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">
-              <span class="text">{{item.type}}</span>
+              <span class="text">{{item.type|filterType}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.name}}</span>
@@ -159,6 +159,11 @@ export default {
         DJS: 0, // 待结算
         YKK: 0 // 已扣款
       }
+    }
+  },
+  filters: {
+    filterType (type) {
+      return type.map((item) => companyType.find((itemFind) => itemFind.value === Number(item)).name).join('/')
     }
   },
   watch: {
