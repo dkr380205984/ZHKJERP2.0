@@ -189,11 +189,13 @@ export default {
         productPlan.delete({
           id: this.list[this.listIndex].id
         }).then((res) => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          this.$router.go(-1)
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.$router.go(-1)
+          }
         })
       }).catch(() => {
         this.$message({

@@ -775,6 +775,7 @@ export default {
                 this.msgSwitch = true
               } else {
                 this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                this.$winReload()
               }
             }
           })
@@ -815,6 +816,7 @@ export default {
               this.msgSwitch = true
             } else {
               this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              this.$winReload()
             }
           }
         })
@@ -1046,6 +1048,7 @@ export default {
                   this.msgSwitch = true
                 } else {
                   this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                  this.$winReload()
                 }
               }
             })
@@ -1061,6 +1064,7 @@ export default {
                   this.msgSwitch = true
                 } else {
                   this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                  this.$winReload()
                 }
               }
             })
@@ -1103,6 +1107,7 @@ export default {
                 this.msgSwitch = true
               } else {
                 this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                this.$winReload()
               }
             }
           })
@@ -1118,6 +1123,7 @@ export default {
                 this.msgSwitch = true
               } else {
                 this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+                this.$winReload()
               }
             }
           })
@@ -1150,6 +1156,7 @@ export default {
               if (res.data.status) {
                 this.$message.success('删除成功，请刷新页面后查看入库变化')
                 this.log.splice(index, 1)
+                this.$winReload()
               }
             })
           } else {
@@ -1159,6 +1166,7 @@ export default {
               if (res.data.status) {
                 this.$message.success('删除成功，请刷新页面后查看入库变化')
                 this.log.splice(index, 1)
+                this.$winReload()
               }
             })
           }

@@ -634,6 +634,7 @@ export default {
             this.msgSwitch = true
           } else {
             this.$router.push('/inspection/finishedDetail/' + this.$route.params.id)
+            this.$winReload()
           }
         }
       })
@@ -698,6 +699,7 @@ export default {
             if (res.data.status) {
               this.$message.success('删除成功，请刷新页面后查看检验数量变化')
               this.inspection_log.splice(index, 1)
+              this.$winReload()
             }
           })
         }
