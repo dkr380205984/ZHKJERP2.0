@@ -3123,10 +3123,13 @@ export default {
         this.coefficient = data.yarn_coefficient.map((item) => item.value)
 
         // 懒得改，直接重置，如果遇到设计模式有问题，可照此方法，直接覆盖掉之前的表格，解决一切烦恼
+        // 加一个定时器，解决反面有时候需要按一下才会出来的bug,保守估计，页面dom v-show为false的时候发生了一些神奇的事情
+        setTimeout(() => {
+          this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
+          this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
+        }, 500)
         this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
         this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
-        this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
-        this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
 
         this.loading = false
       })
@@ -3334,6 +3337,76 @@ export default {
         })
         return
       }
+      // 重算下经纬根数，保证提交的数据是对的
+      let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
+      let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
+      let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+      let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+      merge.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWarp[item.row - 2][i] = arrWarp[item.row - 2][item.col]
+          }
+        }
+      })
+      mergeBack.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWarpBack[item.row - 2][i] = arrWarpBack[item.row - 2][item.col]
+          }
+        }
+      })
+      let sum = 0
+      arrWarp[0].forEach((item, index) => {
+        let item1 = item ? Number(item) : 0
+        let item2 = arrWarp[1][index] ? Number(arrWarp[1][index]) : 1
+        let item3 = arrWarp[2][index] ? Number(arrWarp[2][index]) : 1
+        sum += item1 * item2 * item3
+      })
+      if (this.ifDouble.warp) {
+        arrWarpBack[0].forEach((item, index) => {
+          let item1 = item ? Number(item) : 0
+          let item2 = arrWarpBack[1][index] ? Number(arrWarpBack[1][index]) : 1
+          let item3 = arrWarpBack[2][index] ? Number(arrWarpBack[2][index]) : 1
+          sum += item1 * item2 * item3
+        })
+      }
+      this.warpInfo.weft = sum
+      let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
+      let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
+      merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+      mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+      merge.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWeft[item.row - 2][i] = arrWeft[item.row - 2][item.col]
+          }
+        }
+      })
+      mergeBack.forEach((item) => {
+        if (item.row === 3 || item.row === 4) {
+          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+            arrWeftBack[item.row - 2][i] = arrWeftBack[item.row - 2][item.col]
+          }
+        }
+      })
+      sum = 0
+      arrWeft[0].forEach((item, index) => {
+        let item1 = item ? Number(item) : 0
+        let item2 = arrWeft[1][index] ? Number(arrWeft[1][index]) : 1
+        let item3 = arrWeft[2][index] ? Number(arrWeft[2][index]) : 1
+        sum += item1 * item2 * item3
+      })
+      if (this.ifDouble.weft) {
+        arrWeftBack[0].forEach((item, index) => {
+          let item1 = item ? Number(item) : 0
+          let item2 = arrWeftBack[1][index] ? Number(arrWeftBack[1][index]) : 1
+          let item3 = arrWeftBack[2][index] ? Number(arrWeftBack[2][index]) : 1
+          sum += item1 * item2 * item3
+        })
+      }
+      this.weftInfo.total = sum
+      // 重算经纬代码到此截至
       let formData = {
         id: null,
         is_draft: 1,
