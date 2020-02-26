@@ -147,6 +147,8 @@
                   </div>
                   <div class="tcolumn flexCenter">
                     <span class="opr"
+                      @click="item.colourSizeArr[item.colourSizeIndex].materials.push($clone(itemMaterial))">复制</span>
+                    <span class="opr"
                       @click="deleteMaterial(index,indexMaterial)">删除</span>
                   </div>
                 </div>

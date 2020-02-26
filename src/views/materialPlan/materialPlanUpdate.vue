@@ -169,6 +169,8 @@
                     </zh-input>
                   </span>
                   <span class="tb_row middle flex08">
+                    <span class="tb_handle_btn blue"
+                      @click="itemPro.material_info.push($clone(itemMa))">复制</span>
                     <span class="tb_handle_btn red"
                       @click="deleteItem(itemPro.material_info,indexMa)">删除</span>
                   </span>
