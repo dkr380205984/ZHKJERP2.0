@@ -911,9 +911,6 @@ export default {
           mergeData.push({ value: val, colspan: 1 })
         }
       }
-      if (index === 5) {
-        console.log(mergeData)
-      }
       return mergeData
     },
     // 返回字号
@@ -1074,12 +1071,14 @@ export default {
           const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
           const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
           const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
+          colorNumber.warp[arrWarpBack[0][i]] = colorNumber.warp[arrWarpBack[0][i]] ? colorNumber.warp[arrWarpBack[0][i]] : 0
           colorNumber.warp[arrWarpBack[0][i]] += x * y * z
         }
         for (let i = 0; i < arrWeftBack[0].length; i++) {
           const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
           const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
           const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
+          colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
           colorNumber.weft[arrWeftBack[0][i]] += x * y * z
         }
         this.warp_data.material_data.forEach((item) => {

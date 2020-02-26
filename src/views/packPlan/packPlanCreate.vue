@@ -809,6 +809,7 @@ export default {
             }
           ]
         }
+        this.getActivePlanInfo()
       })
     },
     querySearchPack (queryString, cb) {
@@ -817,47 +818,8 @@ export default {
       var results = queryString ? restaurants.filter(item => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
-    }
-  },
-  created () {
-    order.editDetail({
-      id: this.$route.params.id
-    }).then(res => {
-      this.orderInfo = res.data.data
-      let productList = this.orderInfo.order_batch.map(itemBatch => {
-        return itemBatch.product_info.map(itemPro => itemPro.product_info)
-      })
-      let newProductList = []
-      productList.forEach(item => {
-        item.forEach(itemPro => {
-          if (!(newProductList.find(value => value.product_id === itemPro.product_id))) {
-            newProductList.push(itemPro)
-          }
-        })
-      })
-      this.productList = newProductList.map(itemPro => {
-        let sizeColor = itemPro.size_measurement.map(itemSize => {
-          return {
-            label: itemSize.size_name,
-            value: itemSize.size_name,
-            children: itemPro.color.map(itemColor => {
-              return {
-                label: itemColor.color_name,
-                value: itemColor.color_name
-              }
-            })
-          }
-        })
-        return {
-          ...itemPro,
-          sizeColor: sizeColor
-        }
-      })
-      this.getInitPlanInfo()
-    })
-  },
-  watch: {
-    activePlanId () {
+    },
+    getActivePlanInfo () {
       let data = []
       this.$clone(this.packPlanInfo).forEach(item => {
         data = data.concat(item)
@@ -900,6 +862,48 @@ export default {
         }
       })
       this.planPackInfo = data
+    }
+  },
+  created () {
+    order.editDetail({
+      id: this.$route.params.id
+    }).then(res => {
+      this.orderInfo = res.data.data
+      let productList = this.orderInfo.order_batch.map(itemBatch => {
+        return itemBatch.product_info.map(itemPro => itemPro.product_info)
+      })
+      let newProductList = []
+      productList.forEach(item => {
+        item.forEach(itemPro => {
+          if (!(newProductList.find(value => value.product_id === itemPro.product_id))) {
+            newProductList.push(itemPro)
+          }
+        })
+      })
+      this.productList = newProductList.map(itemPro => {
+        let sizeColor = itemPro.size_measurement.map(itemSize => {
+          return {
+            label: itemSize.size_name,
+            value: itemSize.size_name,
+            children: itemPro.color.map(itemColor => {
+              return {
+                label: itemColor.color_name,
+                value: itemColor.color_name
+              }
+            })
+          }
+        })
+        return {
+          ...itemPro,
+          sizeColor: sizeColor
+        }
+      })
+      this.getInitPlanInfo()
+    })
+  },
+  watch: {
+    activePlanId () {
+      this.getActivePlanInfo()
     }
   },
   filters: {

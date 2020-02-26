@@ -1150,7 +1150,7 @@ export default {
             name: splitArr[splitArr.length - 1]
           }
         })
-        this.orderInfo.others_info = !this.this.orderInfo.others_info ? [] : JSON.parse(this.orderInfo.others_info).map(item => {
+        this.orderInfo.others_info = !this.orderInfo.others_info ? [] : JSON.parse(this.orderInfo.others_info).map(item => {
           let splitArr = item.split('/')
           return {
             url: item,

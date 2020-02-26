@@ -116,6 +116,40 @@
             @click="$openUrl('/productPlanTable/' + $route.params.id + '/' + $route.params.type + '/' + list[listIndex].id)">打印</div>
           <div class="btn btnBlue"
             @click="$router.push('/productPlan/productPlanUpdate/'+list[listIndex].id + '/' + $route.params.type)">修改</div>
+          <div class="btn btnBlue"
+            @click="getOrderList(productInfo.product_code)">计划物料</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-if="showOrderListFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">请选择您需要填写的订单</span>
+          <span class="el-icon-close"
+            @click="showOrderListFlag = false"></span>
+        </div>
+        <div class="content"
+          v-loading='showOrderListLoading'>
+          <div class="row flax_warp">
+            <template v-if="orderList.length > 0">
+              <el-radio-group v-model="checkedOrderId"
+                v-for="(item,index) in orderList"
+                :key="index"
+                style="margin:4px 0">
+                <el-radio :label="item.id">{{item.order_code}}</el-radio>
+              </el-radio-group>
+            </template>
+            <template v-else>
+              暂无相关订单
+            </template>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGary"
+            @click="showOrderListFlag = false">取消</div>
+          <div class="btn btnBlue"
+            @click="goMaterialPlan(checkedOrderId)">确定</div>
         </div>
       </div>
     </div>
@@ -123,7 +157,7 @@
 </template>
 
 <script>
-import { productPlan } from '@/assets/js/api.js'
+import { productPlan, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -148,7 +182,12 @@ export default {
       }],
       listIndex: 0,
       defaultIndex: 0,
-      plan_id: 0
+      plan_id: 0,
+      // 搜索相关订单信息
+      showOrderListFlag: false,
+      showOrderListLoading: false,
+      orderList: [],
+      checkedOrderId: ''
     }
   },
   filters: {
@@ -165,6 +204,29 @@ export default {
     }
   },
   methods: {
+    // 获取与该产品相关的订单
+    getOrderList (code) {
+      this.showOrderListFlag = true
+      this.showOrderListLoading = true
+      order.list({
+        limit: 9999,
+        page: 1,
+        product_code: code
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderList = res.data.data
+          this.showOrderListLoading = false
+        }
+      })
+    },
+    goMaterialPlan (id) {
+      let flag = this.orderList.find(item => item.id === id)
+      if (flag) {
+        flag.has_plan > 0 ? this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1') : this.$router.push('/materialPlan/materialPlanCreate/' + id + '/' + this.$route.params.type)
+      } else {
+        this.$message.warning('请选择需要前往添加物料计划的订单')
+      }
+    },
     changePlan (index) {
       this.listIndex = index
       this.plan_id = this.list[this.listIndex].id
