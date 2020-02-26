@@ -695,7 +695,8 @@
           id='yarn'>
           <div class="btn noBorder noMargin"
             @click="deleteLog('all',outPackingLog,'outPacking')">批量删除</div>
-          <div class="btn noBorder noMargin">批量打印</div>
+          <div class="btn noBorder noMargin"
+            @click="downloadStock">批量导出excel</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -757,7 +758,6 @@
               <template v-else>无</template>
             </span>
             <span class="tb_row middle">
-              <span class="tb_handle_btn blue">打印</span>
               <span class="tb_handle_btn red"
                 @click="deleteLog('one',itemLog.id,'outPacking')">删除</span>
             </span>
@@ -1305,6 +1305,46 @@ export default {
         { title: '颜色', key: 'color' },
         { title: '实际装箱数', key: 'number' },
         { title: '操作人', key: 'user_name' }
+      ], this.orderInfo)
+    },
+    downloadStock () {
+      let data = []
+      this.outPackingLog.forEach(item => {
+        data.push(...item.filter(value => value.checked))
+      })
+      if (data.length === 0) {
+        this.$message.error('请选择需要导出的日志')
+        return
+      }
+      data = data.map(item => {
+        let obj = {}
+        item.other_info.forEach(itemInner => {
+          if (itemInner.name === '出库国家') {
+            obj.country = itemInner.info
+          } else if (itemInner.name === '运输地址') {
+            obj.address = itemInner.info
+          } else if (itemInner.name === '港口') {
+            obj.port = itemInner.info
+          }
+        })
+        return {
+          ...item,
+          ...obj
+        }
+      })
+      downloadExcel(data, [
+        { title: '操作时间', key: 'created_at' },
+        { title: '运输单位', key: 'client_name' },
+        { title: '运输箱数', key: 'number' },
+        { title: '立方数(m³)', key: 'cube_number' },
+        { title: '单价', key: 'price' },
+        { title: '总价', key: 'total_price' },
+        { title: '出口国家', key: 'country' },
+        { title: '运输地址', key: 'address' },
+        { title: '港口', key: 'port' },
+        { title: '完成时间', key: 'compile_time' },
+        { title: '操作人', key: 'user_name' },
+        { title: '备注', key: 'remark' }
       ], this.orderInfo)
     }
   },

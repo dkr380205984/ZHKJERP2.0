@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import { productPlan, order } from '@/assets/js/api.js'
+import { productPlan, order, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -208,16 +208,32 @@ export default {
     getOrderList (code) {
       this.showOrderListFlag = true
       this.showOrderListLoading = true
-      order.list({
-        limit: 9999,
-        page: 1,
-        product_code: code
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.orderList = res.data.data
-          this.showOrderListLoading = false
-        }
-      })
+      if (this.$route.params.type === '1') {
+        order.list({
+          limit: 9999,
+          page: 1,
+          product_code: code
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.orderList = res.data.data
+            this.showOrderListLoading = false
+          }
+        })
+      } else {
+        sampleOrder.list({
+          limit: 9999,
+          page: 1,
+          product_code: code
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.orderList = res.data.data.map(item => {
+              item.order_code = item.title
+              return item
+            })
+            this.showOrderListLoading = false
+          }
+        })
+      }
     },
     goMaterialPlan (id) {
       let flag = this.orderList.find(item => item.id === id)

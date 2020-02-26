@@ -140,11 +140,17 @@
                     </el-autocomplete>
                   </span>
                   <span class="tb_row">
-                    <zh-input placeholder="请输入颜色"
+                    <!-- <zh-input placeholder="请输入颜色"
                       v-model="itemMa.color"
                       @change="computedTotal"
                       style="width:130px">
-                    </zh-input>
+                    </zh-input> -->
+                    <el-autocomplete placeholder="请输入颜色"
+                      v-model="itemMa.color"
+                      @select="computedTotal"
+                      style="width:130px"
+                      :fetch-suggestions="querySearch"
+                      :trigger-on-focus="false"></el-autocomplete>
                   </span>
                   <span class="tb_row flex08">{{itemMa.number ? $toFixed(itemMa.number) + '' + itemMa.unit : '-'}}</span>
                   <span class="tb_row flex08">{{itemMa.total_number ? $toFixed(itemMa.total_number) + '' + itemMa.unit : '-'}}</span>
@@ -170,7 +176,7 @@
                   </span>
                   <span class="tb_row middle flex08">
                     <span class="tb_handle_btn blue"
-                      @click="itemPro.material_info.push($clone(itemMa))">复制</span>
+                      @click="copyItem(itemPro.material_info,itemMa)">复制</span>
                     <span class="tb_handle_btn red"
                       @click="deleteItem(itemPro.material_info,indexMa)">删除</span>
                   </span>
@@ -228,7 +234,7 @@
 </template>
 
 <script>
-import { materialPlan, yarn, material } from '@/assets/js/api.js'
+import { materialPlan, yarn, material, pantongList, yarnColor } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -246,6 +252,25 @@ export default {
     }
   },
   methods: {
+    querySearch (queryString, cb) {
+      if (this.colorList.length === 0) {
+        Promise.all([
+          pantongList(),
+          yarnColor.list()
+        ]).then(res => {
+          this.colorList = res[0].data.data.concat(res[1].data.data).map(item => {
+            return {
+              value: item.name
+            }
+          })
+          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+          cb(filterArr)
+        })
+      } else {
+        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+        cb(filterArr)
+      }
+    },
     saveAll () {
       if (!this.lock) {
         this.$message.warning('请勿频繁点击')
@@ -456,7 +481,6 @@ export default {
     },
     searchYarn (queryString, cb) {
       let result = queryString ? this.yarnList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.yarnList
-      console.log(result)
       cb(result)
     },
     searchMaterial (queryString, cb) {
@@ -478,6 +502,10 @@ export default {
       }).sort((a, b) => {
         return a.material_name.localeCompare(b.material_name)
       })
+    },
+    copyItem (data, item) {
+      data.push(this.$clone(item))
+      this.computedTotal()
     }
   },
   created () {

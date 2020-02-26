@@ -122,7 +122,7 @@
         <div class="right">
           <span class="text">扫一扫<br />更新生产进度</span>
           <span class="qrCode_box">
-            <img :src="qrCodeUrl"
+            <img :src="qrCodeUrl2"
               alt="二维码">
           </span>
         </div>
@@ -218,6 +218,7 @@ export default {
       user_name: window.sessionStorage.getItem('user_name'),
       user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
+      qrCodeUrl2: '',
       orderInfo: {},
       weaveInfo: [],
       materialInfo: []
@@ -469,11 +470,29 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
-      if (!err) {
-        this.qrCodeUrl = url
-      }
-    })
+    if (+this.$route.query.type === 1) {
+      QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          this.qrCodeUrl = url
+        }
+      })
+      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/1/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          this.qrCodeUrl2 = url
+        }
+      })
+    } else {
+      QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          this.qrCodeUrl = url
+        }
+      })
+      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/2/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          this.qrCodeUrl2 = url
+        }
+      })
+    }
   },
   filters: {
     filterType (item) {

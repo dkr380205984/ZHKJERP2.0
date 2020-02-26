@@ -7,14 +7,15 @@
           <span class="title">{{company_name}}配料单</span>
           <span class="item">
             <span class="label">配料单编号：</span>
+            {{productInfo.product_code}}
           </span>
           <span class="item">
             <span class="label">创建人：</span>
-            <span>{{user_name}}</span>
+            {{user_name}}
           </span>
           <span class="item">
             <span class="label">创建时间：</span>
-            <span>{{update_time}}</span>
+            {{update_time}}
           </span>
         </div>
         <div class="right">
@@ -56,7 +57,7 @@
             <div class="row_item noBorder left">{{item.size + '/' + item.color}}</div>
             <div class="row_item noBorder right">
               <span>尺码：{{item.size_info}}cm</span>
-              <span style="margin-left:16px">克重：{{item.weight}}g</span>
+              <span style="margin-left:16px">克重：{{$toFixed(item.weight)}}g</span>
             </div>
           </div>
           <div class="print_row"
@@ -67,7 +68,7 @@
               <span class="print_row noBorder canWarp">
                 <span class="row_item center warpMax4"
                   v-for="(itemColor,indexColor) in itemMa.color_info"
-                  :key="indexColor">{{itemColor.attr}}<br />{{itemColor.weight +itemColor.unit}}</span>
+                  :key="indexColor">{{itemColor.attr}}<br />{{$toFixed(itemColor.weight) +itemColor.unit}}</span>
                 <span class="row_item center warpMax4"
                   v-for="(itemColor,indexColor) in 4-(itemMa.color_info.length%4)"
                   :key="indexColor + 'false'"></span>
@@ -144,7 +145,7 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/productPlan/productPlanDetail/' + this.productInfo.product_id + '/1', { errorCorrectionLevel: 'H' }, (err, url) => {
+    QRCode.toDataURL(window.location.origin + '/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
       if (!err) {
         this.qrCodeUrl = url
       }

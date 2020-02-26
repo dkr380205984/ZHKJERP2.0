@@ -130,8 +130,12 @@
                   </div>
                   <div class="tcolumn">
                     <span class="inputs">
-                      <el-input :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
-                        v-model="itemMaterial.attr"></el-input>
+                      <!-- <el-input :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
+                        v-model="itemMaterial.attr"></el-input> -->
+                      <el-autocomplete v-model="itemMaterial.attr"
+                        :fetch-suggestions="querySearch"
+                        :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
+                        :trigger-on-focus="false"></el-autocomplete>
                     </span>
                   </div>
                   <div class="tcolumn">
@@ -175,7 +179,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { yarn, material, yarnColor, productPlan } from '@/assets/js/api.js'
+import { yarn, material, yarnColor, productPlan, pantongList } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -205,7 +209,8 @@ export default {
         colourSizeIndex: 0
       }],
       yarnList: [],
-      materialList: []
+      materialList: [],
+      colorList: []
     }
   },
   filters: {
@@ -222,6 +227,25 @@ export default {
     }
   },
   methods: {
+    querySearch (queryString, cb) {
+      if (this.colorList.length === 0) {
+        Promise.all([
+          pantongList(),
+          yarnColor.list()
+        ]).then(res => {
+          this.colorList = res[0].data.data.concat(res[1].data.data).map(item => {
+            return {
+              value: item.name
+            }
+          })
+          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+          cb(filterArr)
+        })
+      } else {
+        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+        cb(filterArr)
+      }
+    },
     // 添加原料
     addMaterial (index) {
       let unit = this.list[index].chooseMaterial === 1 ? 'g' : ''
