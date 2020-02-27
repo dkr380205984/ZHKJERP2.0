@@ -8,7 +8,7 @@
       </div>
       <div class="material">
         <span class="icon">原</span>
-        <span class="name">{{$route.params.name}}</span>
+        <span class="name">{{$strToAscII($route.params.name,true)}}</span>
         <span class="date">统计时间段（2018-09-02 至 2019-02-02）</span>
       </div>
       <div class="flexBox">
@@ -340,7 +340,7 @@ export default {
     getWLDGList () {
       this.loading = true
       materialManage.detail({
-        material_name: this.$route.params.name,
+        material_name: this.$strToAscII(this.$route.params.name, true),
         client_id: this.WLDGCMP
       }).then((res) => {
         this.WLDGList = res.data.data
@@ -351,7 +351,7 @@ export default {
     getWLYDGList () {
       this.loading = true
       materialOrder.list({
-        material_name: this.$route.params.name,
+        material_name: this.$strToAscII(this.$route.params.name, true),
         client_id: this.WLYDGCMP
       }).then((res) => {
         console.log(res)
@@ -363,14 +363,14 @@ export default {
   },
   mounted () {
     Promise.all([statistics.materialDetail({
-      material_name: this.$route.params.name,
+      material_name: this.$strToAscII(this.$route.params.name, true),
       type: this.$route.params.type
     }), materialOrder.list({
-      material_name: this.$route.params.name
+      material_name: this.$strToAscII(this.$route.params.name, true)
     }), yarnStock.list({
-      material_name: this.$route.params.name
+      material_name: this.$strToAscII(this.$route.params.name, true)
     }), materialManage.detail({
-      material_name: this.$route.params.name
+      material_name: this.$strToAscII(this.$route.params.name, true)
     }), client.list()]).then((res) => {
       this.WLDGList = res[3].data.data
       this.WLDGTotal = res[3].data.data.length

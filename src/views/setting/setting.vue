@@ -1013,7 +1013,8 @@
         </div>
       </template>
       <template v-if="cName==='纱线原料'">
-        <div class="main">
+        <div class="main"
+          style="width:800px">
           <div class="title">
             <div class="text">{{yarn_handle_type === 'add' ? '添加纱线原料' : '更新纱线信息'}}</div>
             <i class="el-icon-close"
@@ -1043,8 +1044,12 @@
                 </el-select>
                 <zh-input v-model="item.price"
                   type='number'
+                  style="margin-right:16px"
                   placeholder="请输入报价">
                   <template slot="append">元/kg</template>
+                </zh-input>
+                <zh-input v-model="item.desc"
+                  placeholder="备注信息">
                 </zh-input>
               </div>
               <div class="editBtn blue"
@@ -2214,12 +2219,12 @@ export default {
     },
     saveYarns () {
       let data = []
-      let flag = true
+      // let flag = true
       if (this.yarnAddType) {
         this.editYarnInfo.filter(item => item.name).forEach(item => {
-          if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item.name,
             price_data: this.layoutData.yarnPriceArr.map(itemInner => {
@@ -2233,9 +2238,9 @@ export default {
         })
       } else {
         this.layoutData.yarnNameList.forEach(item => {
-          if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item,
             price_data: this.layoutData.yarnPriceArr.map(itemInner => {
@@ -2248,10 +2253,10 @@ export default {
           })
         })
       }
-      if (!flag) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      // if (!flag) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (data.length !== 0) {
         yarn.create({ data: data }).then((res) => {
           if (res.data.status) {
@@ -2958,20 +2963,25 @@ export default {
       })
     },
     saveYarnName () {
-      if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      // if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
-          id: this.changeYarnInfo.id,
-          name: this.changeYarnInfo.yarnName,
-          price_data: this.changeYarnInfo.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
-            return {
-              client_id: itemPrice.company,
-              price: itemPrice.price
+          data: [
+            {
+              id: this.changeYarnInfo.id,
+              name: this.changeYarnInfo.yarnName,
+              price_data: this.changeYarnInfo.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+                return {
+                  client_id: itemPrice.company,
+                  price: itemPrice.price,
+                  desc: itemPrice.desc || ''
+                }
+              })
             }
-          })
+          ]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -3024,7 +3034,8 @@ export default {
           yarnName: '',
           yarnPriceArr: [{
             price: '',
-            company: ''
+            company: '',
+            desc: ''
           }]
         }
       }
@@ -3035,13 +3046,15 @@ export default {
         this.changeYarnInfo.yarnPriceArr = item.price.map(itemPrice => {
           return {
             company: itemPrice.client_id.toString(),
-            price: itemPrice.price
+            price: itemPrice.price,
+            desc: itemPrice.desc
           }
         })
         if (this.changeYarnInfo.yarnPriceArr.length === 0) {
           this.changeYarnInfo.yarnPriceArr = [{
             company: '',
-            price: ''
+            price: '',
+            desc: ''
           }]
         }
       }

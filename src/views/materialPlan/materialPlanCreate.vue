@@ -144,14 +144,14 @@
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchYarn"
                       style="width:210px"
-                      @change="computedTotal"
+                      @select="computedTotal"
                       placeholder="请输入原料名称">
                     </el-autocomplete>
                     <el-autocomplete v-if="itemMa.type === 2"
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchMaterial"
                       style="width:210px"
-                      @change="computedTotal"
+                      @select="computedTotal"
                       placeholder="请输入辅料名称">
                     </el-autocomplete>
                   </span>
@@ -269,6 +269,7 @@ export default {
   },
   methods: {
     querySearch (queryString, cb) {
+      this.computedTotal()
       if (this.colorList.length === 0) {
         Promise.all([
           pantongList(),
@@ -491,10 +492,12 @@ export default {
     //   this.changeEndNum(item)
     // },
     searchYarn (queryString, cb) {
+      this.computedTotal()
       let result = queryString ? this.yarnList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.yarnList
       cb(result)
     },
     searchMaterial (queryString, cb) {
+      this.computedTotal()
       let result = queryString ? this.materialList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialList
       cb(result)
     },

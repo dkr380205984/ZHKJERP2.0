@@ -1874,6 +1874,10 @@ export default {
           }
         })
       } else if (type === 'sampleForProduct') {
+        if (!(this.sampleForProductId.length > 0)) {
+          this.$message.warning('请选择需要转为产品的样品')
+          return
+        }
         this.isCommit = 'commit'
         sampleOrder.changeStatus({
           order_id: this.activeSampleOrderId,

@@ -89,7 +89,7 @@
                 :key="index"
                 :src="item.image_url" /> -->
               <el-image style="max-width:150px;max-height:150px;"
-                :src="detail.image[0].image_url"
+                :src="detail.image[0] ? detail.image[0].image_url : ''"
                 :preview-src-list="detail.image.map(item=>item.image_url)">
               </el-image>
             </div>
@@ -263,6 +263,49 @@
                     @click="noOpr">...</span>
                 </div>
               </div>
+              <div class="rect">
+                <div class="tab"
+                  v-if="detail.order_info.length>1">
+                  <div class="circle"
+                    :class="{'active':order_index===index-1}"
+                    v-for="index in detail.order_info.length"
+                    :key="index"
+                    @click="order_index=index-1"></div>
+                </div>
+                <div class="main">
+                  <div class="icon"
+                    :class="{'green': detail.order_info.length > 0,'gray': detail.order_info.length===0}">
+                    <img src="../../assets/image/sample/price_icon.png" />
+                  </div>
+                  <div class="content">
+                    <div class="text title">订单</div>
+                    <div class="text"
+                      v-if="detail.order_info.length ===0">待添加</div>
+                    <div class="text"
+                      v-if="detail.order_info.length > 0"
+                      style="color:#1A95FF">{{detail.order_info.length>0?detail.order_info[order_index].order_code:''}}</div>
+                    <div class="text"
+                      v-if="detail.order_info.length > 0">{{detail.order_info.length>0?detail.order_info[order_index].order_time:''}}</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <span v-if="detail.order_info.length===0"
+                    class="opration"
+                    @click="$router.push('/order/orderCreate')">添加</span>
+                  <!-- <span v-if="detail.order_info.length > 0"
+                    class="opration"
+                    @click="$router.push('/price/priceDetail/'+detail.order_info[order_index].id)">预览</span> -->
+                  <!-- <span v-if="detail.order_info.length > 0"
+                    class="opration"
+                    @click="openWin('/pricePrintTable/' + detail.order_info[order_index].id )">打印</span> -->
+                  <span v-if="detail.order_info.length > 0"
+                    class="opration"
+                    @click="$router.push('/order/orderDetail/'+detail.order_info[order_index].id)">详情</span>
+                  <span v-if="detail.order_info.length > 0"
+                    class="opration"
+                    @click="noOpr">...</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -384,6 +427,7 @@ export default {
         has_plan: 0,
         product_plan_info: null,
         quotation_info: [],
+        order_info: [],
         image: [],
         component: [],
         product_code: '',
@@ -393,6 +437,7 @@ export default {
         needle_type: ''
       },
       quotation_index: 0,
+      order_index: 0,
       chinaNum: chinaNum,
       qrCodeUrl: '',
       printFlag: false,

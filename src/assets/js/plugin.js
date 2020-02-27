@@ -298,6 +298,26 @@ const plugin = {
     var str = num.toString()
     var reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
     return str.replace(reg, '$1,')
+  },
+  strToAscII (string, flag) {
+    let strSpecialCharacters = ['%', '/'] // 转化特殊字符'['与']'不可使用
+    if (!flag) {
+      strSpecialCharacters.forEach(item => {
+        string = string.split(item).join('<!--' + item.charCodeAt() + '-->')
+      })
+    } else {
+      let stringArr = string.split('<!--').map(item => {
+        if (item.indexOf('-->') === -1) {
+          return item
+        } else {
+          let innetItem = item.split('-->')
+          innetItem[0] = String.fromCharCode(innetItem[0])
+          return innetItem.join('')
+        }
+      })
+      string = stringArr.join('')
+    }
+    return string
   }
 }
 export default {
@@ -312,5 +332,6 @@ export default {
     Vue.prototype.$newSplice = plugin.newSplice
     Vue.prototype.$goElView = plugin.goElView
     Vue.prototype.$formatNum = plugin.formatNum
+    Vue.prototype.$strToAscII = plugin.strToAscII
   }
 }
