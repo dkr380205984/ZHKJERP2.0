@@ -317,7 +317,14 @@
           </template>
           <template v-if="cName==='纱线原料'">
             <div class="flowerCtn">
-              <div class="filterCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;">
+                <el-autocomplete v-model="filterYarnKeyword"
+                  clearable
+                  :trigger-on-focus="false"
+                  style="width:200px;height:32px"
+                  :fetch-suggestions="querySearchYarn"
+                  placeholder="搜索纱线"></el-autocomplete>
                 <div class="addBtn"
                   @click="updataYarns"
                   style="width:6em">批量添加纱线</div>
@@ -1694,8 +1701,13 @@
               :key="indexYarn + 'yarn'">
               <span class="label">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
               <div class="info">
-                <el-input placeholder="请输入纱线名称"
-                  v-model="itemYarn.name"></el-input>
+                <!-- <el-input placeholder="请输入纱线名称"
+                  v-model="itemYarn.name"></el-input> -->
+                <el-autocomplete v-model="itemYarn.name"
+                  :fetch-suggestions="querySearchYarn"
+                  :trigger-on-focus="false"
+                  placeholder="请输入纱线名称"
+                  @select="handleSelectYarn"></el-autocomplete>
               </div>
               <div class="editBtn blue"
                 v-if="indexYarn === 0"
@@ -1872,6 +1884,7 @@ export default {
       methods: '',
       methodsTotal: 1,
       methodsPage: 1,
+      // 纱线名称
       yarnNameList: [],
       changeYarnInfo: {
         id: '',
@@ -1884,6 +1897,8 @@ export default {
       yarnNameTotal: 1,
       yarnNamePage: 1,
       clientList: [],
+      filterYarnKeyword: '',
+      // 纱线颜色
       yarnColorList: [],
       yarnColor: '',
       yarnColorCode: '',
@@ -2139,6 +2154,13 @@ export default {
       } else if (val === '报价预加载') {
         this.getPriceLoading()
       }
+    },
+    filterYarnKeyword (val) {
+      if (val) {
+        this.yarnNameTotal = this.yarnNameList.filter(item => item.name.indexOf(this.filterYarnKeyword) !== -1).length || 1
+      } else {
+        this.yarnNameTotal = this.yarnNameList.length
+      }
     }
   },
   computed: {
@@ -2167,7 +2189,8 @@ export default {
       return this.methodsList.slice((this.methodsPage - 1) * 5, this.methodsPage * 5)
     },
     yarnNameArr () {
-      return this.yarnNameList.slice((this.yarnNamePage - 1) * 5, this.yarnNamePage * 5)
+      let returnArr = this.filterYarnKeyword ? this.yarnNameList.filter(item => item.name.indexOf(this.filterYarnKeyword) !== -1) : this.yarnNameList
+      return returnArr.slice((this.yarnNamePage - 1) * 5, this.yarnNamePage * 5)
     },
     yarnColorArr () {
       return this.yarnColorList.slice((this.yarnColorPage - 1) * 5, this.yarnColorPage * 5)
@@ -2268,6 +2291,18 @@ export default {
       } else {
         this.$message.warning('无可提交的数据')
       }
+    },
+    querySearchYarn (queryString, cb) {
+      var restaurants = this.yarnNameArr.map(item => {
+        return {
+          value: item.name
+        }
+      })
+      var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : []
+      cb(results)
+    },
+    handleSelectYarn (item) {
+      this.$message.warning('物料"' + item.value + '"已存在,无需再次添加')
     },
     // 报价单预加载
     savePriceLoading () {

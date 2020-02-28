@@ -780,7 +780,8 @@
     </div>
     <div class="popup"
       v-show="showCanclePopup">
-      <div class="main">
+      <div class="main"
+        style="width:600px">
         <div class="title">
           <span class="text">取消订单{{showCanclePopup|filterTitle}}</span>
           <span class="el-icon-close"
@@ -1014,7 +1015,7 @@
           <!-- </div> -->
         </div>
         <div class="opr"
-          style="justify-content: space-between;">
+          :style="{'justify-content': showCanclePopup > 4 ? 'flex-end' : 'space-between'}">
           <div class="btn btnGray"
             @click="clearData(showCanclePopup)"
             v-if='(showCanclePopup === 1 || showCanclePopup === 2 || showCanclePopup === 3 || showCanclePopup === 4)'>清空该页数据</div>
@@ -1022,6 +1023,9 @@
             <div class="btn btnGray"
               v-if="showCanclePopup === 1 && isCommit"
               @click="closePopup">取消</div>
+            <div class="btn btnGray"
+              v-if="showCanclePopup<5"
+              @click="jumpGoStock">跳过结余</div>
             <div class="btn btnGray"
               v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
               @click="showCanclePopup--">上一步</div>
@@ -1134,6 +1138,40 @@ export default {
     }
   },
   methods: {
+    // 取消订单时跳过结余操作
+    jumpGoStock () {
+      this.showCanclePopup = 5
+      this.cancleYarn = [
+        {
+          material_name: '',
+          type: 1,
+          color: '',
+          weight: '',
+          unit: ''
+        }
+      ]
+      this.cancleMaterial = [
+        {
+          material_name: '',
+          type: 2,
+          color: '',
+          weight: '',
+          unit: ''
+        }
+      ]
+      this.canclePack = [
+        {
+          material_name: '',
+          size: '',
+          attribute: '',
+          number: ''
+        }
+      ]
+      this.canCleProduct = this.canCleProduct.map(item => {
+        item.number = ''
+        return item
+      })
+    },
     init () {
       this.loading = true
       Promise.all([
