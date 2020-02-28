@@ -130,8 +130,10 @@
                   </div>
                   <div class="tcolumn">
                     <span class="inputs">
-                      <el-input :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
-                        v-model="itemMaterial.attr"></el-input>
+                      <el-autocomplete class="inline-input"
+                        :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
+                        v-model="itemMaterial.attr"
+                        :fetch-suggestions="searchColor"></el-autocomplete>
                     </span>
                   </div>
                   <div class="tcolumn">
@@ -206,7 +208,8 @@ export default {
         colourSizeIndex: 0
       }],
       yarnList: [],
-      materialList: []
+      materialList: [],
+      colorList: []
     }
   },
   filters: {
@@ -253,6 +256,10 @@ export default {
     },
     searchMaterial (queryString, cb) {
       let result = queryString ? this.materialList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialList
+      cb(result)
+    },
+    searchColor (queryString, cb) {
+      let result = queryString ? this.colorList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.colorList
       cb(result)
     },
     // 快捷操作 同步尺寸或者配色相同的信息
@@ -371,6 +378,11 @@ export default {
     })]).then((res) => {
       this.productInfo = res[0].data.data
       this.list[0].product_id = this.productInfo.id
+      this.colorList = res[3].data.data.map((item) => {
+        return {
+          value: item.name
+        }
+      })
       this.productInfo.size.forEach((itemSize) => {
         this.productInfo.color.forEach((itemColour) => {
           this.list[0].colourSizeArr.push({
@@ -423,7 +435,8 @@ export default {
         this.$alert('检测到该产品已有工艺单信息，已自动为您同步了工艺单原料信息', '提示', {
           confirmButtonText: '确定'
         })
-        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_wight : craft[0].peise_yarn_wight
+        console.log(craft.find((itemFind) => itemFind.is_default === 1).peise_yarn_wight)
+        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_wight : ((craft.find((itemFind) => itemFind.is_default === 1)).peise_yarn_wight)
         this.list[0].colourSizeArr.forEach((item) => {
           if (craftMat[item.colour_name]) {
             let arr = []

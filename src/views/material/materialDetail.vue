@@ -645,7 +645,7 @@
                 {{item.client_name}}
               </span>
             </span>
-            <span class="tb_row flex2">{{item.material_name}}</span>
+            <span class="tb_row flex2">{{item.material_name + '/' + item.before_color}}</span>
             <span class="tb_row">{{item.color_code}}</span>
             <span class="tb_row flex08">{{item.price}}</span>
             <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>

@@ -1184,6 +1184,14 @@ export default {
       this.craftId = data.id
       this.productInfo = data.product_info
       this.productInfo.craft_code = data.craft_code
+      this.colorWeight = {
+        warp: [],
+        weft: []
+      }
+      this.colorNumber = {
+        warp: [],
+        weft: []
+      }
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)
@@ -1302,6 +1310,7 @@ export default {
           }
         })
       })
+      console.log(this.colorWeight)
       this.colorWeight.warp.forEach((item) => {
         this.weight += item === 'NaN' ? 0 : Number(item)
       })
@@ -1319,6 +1328,7 @@ export default {
         })
       })
       this.weight = this.weight.toFixed(1)
+
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / this.warpInfo.reed_width * 600 * 4
       // 展平合并信息
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {

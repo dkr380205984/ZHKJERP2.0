@@ -57,10 +57,25 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <el-tooltip class="item"
+              effect="dark"
+              :content="checkWeaveList.length===0?'请选取一款产品进行批量分配操作':'批量分配'"
+              placement="top">
+              <div class="btn "
+                :class="{'btnGray':checkWeaveList.length===0,'btnWhiteBlue':checkWeaveList.length>0}"
+                @click="easyWeaving()">批量分配</div>
+            </el-tooltip>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
             style="margin-right:0">
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2">选择</div>
                   <div class="tcolumn">产品编号</div>
                   <div class="tcolumn noPad"
                     style="flex:5">
@@ -83,6 +98,10 @@
                 <div class="trow"
                   v-for="(item,index) in weaving_info"
                   :key="index">
+                  <div class="tcolumn"
+                    style="flex:0.2">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </div>
                   <div class="tcolumn">
                     <span>{{item.product_code}}</span>
                     <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
@@ -138,75 +157,74 @@
                   </div>
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">产品尺码颜色</span>
+                      <span class="text">选择产品</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <el-select v-model="item.product_name"
                         filterable
-                        placeholder="请选择需要织造的产品/配件"
+                        placeholder="请选择需要织造的产品"
                         @change="selectPart(index,$event)">
                         <el-option v-for="item in productArr"
                           :key="item.name"
-                          :value="item.name"
-                          :label="item.name"></el-option>
-                      </el-select>
-                    </div>
-                  </div>
-                  <div class="colCtn flex3">
-                    <div class="label">
-                      <span class="text">产品信息</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <el-select v-model="item.part_id"
-                        filterable
-                        placeholder="请选择需要织造的产品/配件">
-                        <el-option v-for="item in item.part_data"
-                          :key="item.id"
-                          :value="item.id"
+                          :value="item.code"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
                   </div>
                 </div>
-                <div class="rowCtn">
+                <div class="rowCtn"
+                  v-for="(itemChild,indexChild) in item.mixedData"
+                  :key="indexChild">
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">配件/尺码/颜色</span>
+                      <span class="explanation">(必填)</span>
+                    </div>
+                    <div class="content">
+                      <el-select v-model="itemChild.partColorSize"
+                        no-data-text="请先选择产品"
+                        placeholder="请选择配件/尺码/颜色">
+                        <el-option v-for="item in item.part_data"
+                          :key="item.name + '/' +item.size + '/' + item.color"
+                          :value="item.id + '/' +item.size + '/' + item.color"
+                          :label="item.name + '/' +item.size + '/' + item.color"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                  <div class="colCtn flex3">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">分配数量</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        v-model="item.number"
+                        v-model="itemChild.number"
                         placeholder="请输入分配数量">
                       </zh-input>
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">单价</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        v-model="item.price"
+                        v-model="itemChild.price"
                         placeholder="请输入单价">
                         <template slot="append">元</template>
                       </zh-input>
                     </div>
-                  </div>
-                  <div class="colCtn flex3">
-                    <div class="label">
-                      <span class="text">总价</span>
-                      <span class="explanation">(自动计算)</span>
-                    </div>
-                    <div class="content">
-                      <div class="input">
-                        <span class="span">{{Number(item.price*item.number)}}</span>
-                        <span class="append">元</span>
-                      </div>
-                    </div>
+                    <div class="editBtn addBtn"
+                      v-if="indexChild===0"
+                      @click="addMixedData(index)">添加</div>
+                    <div class="editBtn deleteBtn"
+                      v-if="indexChild>0"
+                      @click="deleteMixedData(index,indexChild)">删除</div>
                   </div>
                 </div>
                 <div class="rowCtn">
@@ -240,9 +258,9 @@
                 <span class="once"
                   v-if="!weaving_flag"
                   @click="normalWeaving()">普通分配</span>
-                <span class="once"
+                <!-- <span class="once"
                   v-if="!weaving_flag"
-                  @click="easyWeaving">一键分配</span>
+                  @click="easyWeaving">一键分配</span> -->
                 <span class="once cancle"
                   v-if="weaving_flag"
                   @click="cancleWeaving">取消分配</span>
@@ -537,41 +555,52 @@
           <i class="el-icon-close"
             @click="easyWeaving_flag=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:600px">
           <div class="tips">
-            提示信息：一键分配操作只能为产品大身分配数量，如果需要为产品配件分配织造工序，可以手动添加，本步骤可以统一选择织造单位,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
+            提示信息：批量分配操作只能为产品大身分配数量，如果需要为产品配件分配织造工序，可以手动添加，本步骤可以统一选择织造单位,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
-          <div class="row">
-            <div class="label">织造单位：</div>
-            <div class="info">
-              <el-select v-model="commonCompany"
-                filterable
-                placeholder="请选择织造单位">
-                <el-option v-for="item in companyArr"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.name"></el-option>
-              </el-select>
+          <div style="background: #f4f4f4;padding: 8px;margin: 12px 0;"
+            v-for="(item,index) in checkWeaveList"
+            :key="index">
+            <div class="row">
+              <div class="label">产品名称：</div>
+              <div class="info">
+                <span class="text">{{item.product_code}}({{item.category_name}}/{{item.type_name}}/{{item.style_name}})</span>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">单价：</div>
-            <div class="info">
-              <zh-input v-model="commonPrice"
-                placeholder="请输入单价">
-                <template slot="append">元</template>
-              </zh-input>
+            <div class="row">
+              <div class="label">织造单位：</div>
+              <div class="info">
+                <el-select v-model="commonCompany[index]"
+                  filterable
+                  placeholder="请选择织造单位">
+                  <el-option v-for="item in companyArr"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">截止日期：</div>
-            <div class="info">
-              <el-date-picker v-model="commonDate"
-                value-format="yyyy-MM-dd"
-                style="width:100%"
-                type="date"
-                placeholder="选择截止日期">
-              </el-date-picker>
+            <div class="row">
+              <div class="label">单价：</div>
+              <div class="info">
+                <zh-input v-model="commonPrice[index]"
+                  placeholder="请输入单价">
+                  <template slot="append">元</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">截止日期：</div>
+              <div class="info">
+                <el-date-picker v-model="commonDate[index]"
+                  value-format="yyyy-MM-dd"
+                  style="width:100%"
+                  type="date"
+                  placeholder="选择截止日期">
+                </el-date-picker>
+              </div>
             </div>
           </div>
         </div>
@@ -744,9 +773,9 @@ export default {
       weaving_log: [],
       weaving_flag: false,
       easyWeaving_flag: false,
-      commonCompany: '',
-      commonPrice: '',
-      commonDate: '',
+      commonCompany: [],
+      commonPrice: [],
+      commonDate: [],
       replenish_flag: false,
       replenish_yarn: [],
       replenish_data: {
@@ -768,6 +797,11 @@ export default {
       replenish_log: [],
       printInfo: [],
       printPopup: false
+    }
+  },
+  computed: {
+    checkWeaveList () {
+      return this.weaving_info.filter((item) => item.checked)
     }
   },
   methods: {
@@ -805,35 +839,51 @@ export default {
       this.weaving_flag = true
       this.weaving_data.push({
         company_id: '',
-        product_name: code ? code + '(' + size + '/' + color + ')' : '',
-        part_id: id || '',
-        price: '',
-        part_data: [],
-        number: number || '',
+        product_name: code || '',
+        mixedData: [{
+          partColorSize: id ? id + '/' + size + '/' + color : '',
+          price: '',
+          number: ''
+        }],
         complete_time: '',
+        part_data: [],
         desc: ''
       })
       if (code) {
-        this.selectPart(this.weaving_data.length - 1, code + '(' + size + '/' + color + ')')
+        this.selectPart(this.weaving_data.length - 1, code)
       }
     },
     easyWeaving () {
-      this.weaving_data = []
-      this.weaving_info.forEach((item) => {
+      if (this.weaving_data.length > 0) {
+        this.$message.warning('检测到有未完成的织造分配操作，请完成已有的操作后再进行批量分配')
+        return
+      }
+      if (this.checkWeaveList.length === 0) {
+        this.$message.warning('请至少选择一种产品进行分配')
+      }
+      this.weaving_flag = true
+      this.easyWeaving_flag = true
+      this.checkWeaveList.forEach((item) => {
+        let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
           if (itemChild.part_data[0].number - itemChild.part_data[0].weavingNum > 0) {
-            this.weaving_data.push({
-              company_id: '',
-              product_name: item.product_code + '(' + itemChild.size + '/' + itemChild.color + ')',
-              part_id: itemChild.part_data[0].id, // 大身数据都在part_data第一个
+            mixedData.push({
+              partColorSize: itemChild.part_data[0].id + '/' + itemChild.size + '/' + itemChild.color,
               price: '',
-              number: itemChild.part_data[0].number - itemChild.part_data[0].weavingNum,
-              complete_time: '',
-              desc: '',
-              part_data: this.productArr.find((itemFind) => itemFind.name === (item.product_code + '(' + itemChild.size + '/' + itemChild.color + ')')).part_data
+              number: itemChild.part_data[0].number - itemChild.part_data[0].weavingNum
             })
           }
         })
+        if (mixedData.length > 0) {
+          this.weaving_data.push({
+            company_id: '',
+            product_name: item.product_code,
+            mixedData: mixedData,
+            complete_time: '',
+            part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
+            desc: ''
+          })
+        }
       })
       if (this.weaving_data.length === 0) {
         this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
@@ -845,10 +895,12 @@ export default {
     addWeaving () {
       this.weaving_data.push({
         company_id: '',
-        product_name: '',
-        part_id: '',
-        price: '',
-        number: '',
+        product_part: '',
+        mixedData: [{
+          partColorSize: '',
+          price: '',
+          number: ''
+        }],
         complete_time: '',
         part_data: [],
         desc: ''
@@ -873,41 +925,47 @@ export default {
           errMsg = '请选择织造单位'
         } else if (!item.product_name) {
           errorFlag = true
-          errMsg = '请选择产品尺码颜色'
-        } else if (!item.part_id) {
-          errorFlag = true
-          errMsg = '请选择产品信息'
-        } else if (!item.number) {
-          errorFlag = true
-          errMsg = '请输入分配数量'
-        } else if (!item.price) {
-          errorFlag = true
-          errMsg = '请输入单价信息'
+          errMsg = '请选择产品'
         } else if (!item.complete_time) {
           errorFlag = true
           errMsg = '请选择截至日期'
         }
+        item.mixedData.forEach((itemChild) => {
+          if (!itemChild.partColorSize) {
+            errorFlag = true
+            errMsg = '请选择尺码颜色信息'
+          } else if (!itemChild.number) {
+            errorFlag = true
+            errMsg = '请输入分配数量'
+          } else if (!itemChild.price) {
+            errorFlag = true
+            errMsg = '请输入单价信息'
+          }
+        })
       })
       if (errorFlag) {
         this.$message.error(errMsg)
         return
       }
-      let formData = this.weaving_data.map((item) => {
-        let finded = this.productArr.find((itemFind) => itemFind.name === item.product_name)
-        let partFlag = item.part_data.find((itemFind) => itemFind.id === item.part_id).name === '大身' // 判断是否为大身
-        return {
-          order_id: this.$route.params.id,
-          order_type: this.$route.params.orderType,
-          product_id: item.part_id, // 配件id
-          client_id: item.company_id,
-          complete_time: this.$getTime(item.complete_time),
-          desc: item.desc,
-          price: item.price,
-          number: item.number,
-          size: finded.size,
-          color: finded.color,
-          is_part: partFlag ? 1 : 2
-        }
+      let formData = []
+      this.weaving_data.forEach((item) => {
+        item.mixedData.forEach((itemChild) => {
+          let partColorSize = itemChild.partColorSize.split('/')
+          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '大身' // 判断是否为大身
+          formData.push({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType,
+            product_id: partColorSize[0], // 配件id
+            client_id: item.company_id,
+            complete_time: this.$getTime(item.complete_time),
+            desc: item.desc,
+            price: itemChild.price,
+            number: itemChild.number,
+            size: partColorSize[1],
+            color: partColorSize[2],
+            is_part: partFlag ? 1 : 2
+          })
+        })
       })
       weave.create({
         data: formData
@@ -928,14 +986,26 @@ export default {
       })
     },
     selectPart (index, name) {
-      this.weaving_data[index].part_data = this.productArr.find((item) => item.name === name).part_data
+      this.weaving_data[index].part_data = this.productArr.find((item) => item.code === name).part_data
+    },
+    addMixedData (index) {
+      this.weaving_data[index].mixedData.push({
+        partColorSize: '',
+        price: '',
+        number: ''
+      })
+    },
+    deleteMixedData (index, indexChild) {
+      this.weaving_data[index].mixedData.splice(indexChild, 1)
     },
     // 填写公共信息
     commonFn () {
-      this.weaving_data.forEach((item) => {
-        item.company_id = this.commonCompany
-        item.price = this.commonPrice
-        item.complete_time = this.commonDate
+      this.weaving_data.forEach((item, index) => {
+        item.company_id = this.commonCompany[index]
+        item.mixedData.forEach((itemChild) => {
+          itemChild.price = this.commonPrice[index]
+        })
+        item.complete_time = this.commonDate[index]
         this.easyWeaving_flag = false
       })
     },
@@ -1107,7 +1177,7 @@ export default {
       })
     }
   },
-  mounted () {
+  created () {
     let api = this.$route.params.orderType === '1' ? order : sampleOrder
     Promise.all([api.detail({
       id: this.$route.params.id
@@ -1149,16 +1219,19 @@ export default {
       })
       this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }] })
       this.weaving_info.forEach((item) => {
+        let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
-          this.productArr.push({
-            name: item.product_code + '(' + itemChild.size + '/' + itemChild.color + ')',
-            code: item.product_code,
-            color: itemChild.color,
-            size: itemChild.size,
-            part_data: itemChild.part_data
+          itemChild.part_data.forEach((itemPart) => {
+            mixedData.push(itemPart)
           })
         })
+        this.productArr.push({
+          name: item.product_code + '(' + item.category_name + '/' + item.type_name + '/' + item.style_name + ')',
+          code: item.product_code,
+          part_data: mixedData
+        })
       })
+      console.log(this.weaving_info, this.productArr)
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
       })
