@@ -49,7 +49,7 @@
                   </el-submenu>
                   <el-menu-item index="change"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3001">修改样单</el-menu-item>
+                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">修改样单</el-menu-item>
                   <el-menu-item index="showCanclePopup"
                     class="elMenuItem"
                     v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">取消样单</el-menu-item>
@@ -899,7 +899,8 @@
     <!-- 取消样单 -->
     <div class="popup"
       v-show="showCanclePopup">
-      <div class="main">
+      <div class="main"
+        style="width:600px">
         <div class="title">
           <span class="text">取消订单{{showCanclePopup|filterTitle}}</span>
           <span class="el-icon-close"
@@ -1038,6 +1039,9 @@
               v-if="showCanclePopup === 1"
               @click="closePopup">取消</div>
             <div class="btn btnGray"
+              v-if="showCanclePopup<3"
+              @click="jumpGoStock">跳过结余</div>
+            <div class="btn btnGray"
               v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
               @click="showCanclePopup--">上一步</div>
             <div class="btn btnBlue"
@@ -1168,6 +1172,28 @@ export default {
     }
   },
   methods: {
+    // 取消样单时跳过结余操作
+    jumpGoStock () {
+      this.showCanclePopup = 3
+      this.cancleYarn = [
+        {
+          material_name: '',
+          type: 1,
+          color: '',
+          weight: '',
+          unit: ''
+        }
+      ]
+      this.cancleMaterial = [
+        {
+          material_name: '',
+          type: 2,
+          color: '',
+          weight: '',
+          unit: ''
+        }
+      ]
+    },
     init (type) {
       this.loading = true
       sampleOrder.detail({

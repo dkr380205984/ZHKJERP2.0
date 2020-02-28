@@ -200,6 +200,36 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showRouterPopup">
+      <div class="main">
+        <div class="title">
+          <span style="display:flex;justify-content:center;flex:auto">请选择需要您要跳转的页面</span>
+          <span class="el-icon-close"
+            @click="showRouterPopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.type )">原料订购</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/2/' + $route.params.type )">辅料订购</div>
+          </div>
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/' + $route.params.type + '/1')">原料出入库</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/' + $route.params.type + '/2')">辅料出入库</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -216,7 +246,8 @@ export default {
       activeProId: '',
       showMaterialInfo: [],
       showSizeArr: [],
-      materialPlanTotalInfo: []
+      materialPlanTotalInfo: [],
+      showRouterPopup: false
     }
   },
   created () {
@@ -308,6 +339,9 @@ export default {
       }
       this.loading = false
     })
+    if (this.$route.query.showRouterPopup === 'true') {
+      this.showRouterPopup = true
+    }
   },
   methods: {
     changeActiveProId (item) {

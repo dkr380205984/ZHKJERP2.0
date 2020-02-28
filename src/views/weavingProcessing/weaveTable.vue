@@ -102,7 +102,8 @@
         </div>
       </div>
     </div>
-    <div class="printTable">
+    <div class="printTable"
+      v-if="!(materialInfo.length === 0 && $route.query.type === '2')">
       <div class="print_head">
         <div class="left">
           <span class="title">{{titles}}</span>

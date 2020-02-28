@@ -345,13 +345,13 @@
                     </div>
                   </div>
                   <div class="tcolumn center">
+                    <!-- v-if="havePartMaterial(item.childrenMergeInfo)" -->
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
-                      v-if="havePartMaterial(item.childrenMergeInfo)"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=2&clientId=' + item.client_id)">打印</span>
-                    <span class="btn noBorder"
+                    <!-- <span class="btn noBorder"
                       v-else
-                      style="padding:0;margin:0;color:rgba(0,0,0,0.4);cursor: not-allowed;">无辅料信息</span>
+                      style="padding:0;margin:0;color:rgba(0,0,0,0.4);cursor: not-allowed;">无辅料信息</span> -->
                   </div>
                 </div>
               </div>
