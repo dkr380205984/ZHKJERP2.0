@@ -1126,7 +1126,7 @@
             <div class="line1"
               v-if="step>1">
               <span>调取仓库：{{stockYarnInfo.from}}</span>
-              <span>调取纱线：{{stockYarnInfo.material}}</span>
+              <span>调取纱线：{{stockYarnInfo.material_name + '/' + stockYarnInfo.material_color}}</span>
             </div>
             <div class="list"
               v-loading="searchYarnLoading"
@@ -1618,7 +1618,7 @@ export default {
       // }
       this.stockMatTotalNum = needNum.toFixed(2)
       this.showStockSelect = true
-      this.stockSelectList = finded.childrenMergeInfo.filter((item) => item.material_color === '白胚')
+      this.stockSelectList = finded ? finded.childrenMergeInfo.filter((item) => item.material_color === '白胚') : []
       // 如果仓库有名称完全一样的白胚，就直接进入调取步骤，否则进入搜索纱线步骤
       if (this.stockSelectList.length > 0) {
         this.step = 1
@@ -1652,7 +1652,8 @@ export default {
       })
       this.stockYarnInfo = {
         from: whiteYarn.stock_name,
-        material: (whiteYarn.material_name || this.checkWhichYarn[0].material_name) + '/' + whiteYarn.material_color
+        material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
+        material_color: whiteYarn.material_color
       }
       this.step = 2
     },
@@ -1716,12 +1717,13 @@ export default {
       }
       let stockData = []
       let orderData = []
+      console.log(this.stock_data)
       this.stock_data.forEach((item) => {
         item.stock.forEach((itemChild) => {
           stockData.push({
             order_type: this.$route.params.orderType,
-            material_name: itemChild.name,
-            color_code: itemChild.color,
+            material_name: this.stockYarnInfo.material_name,
+            color_code: this.stockYarnInfo.material_color,
             weight: itemChild.weight,
             vat_code: null,
             plan_id: this.replenishFlag ? null : item.material_id,
@@ -1738,8 +1740,8 @@ export default {
             total_price: 0,
             price: 0,
             total_weight: itemChild.weight,
-            color_code: itemChild.color,
-            material_name: itemChild.name,
+            color_code: this.stockYarnInfo.material_color,
+            material_name: this.stockYarnInfo.material_name,
             plan_id: this.replenishFlag ? null : item.material_id,
             type: this.type,
             vat_code: null,
