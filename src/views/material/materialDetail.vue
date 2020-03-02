@@ -1663,6 +1663,7 @@ export default {
       statistics.materialList({
         limit: 10,
         page: 1,
+        weight: this.stockMatTotalNum,
         keyword: this.searchYarnWord,
         type: this.$route.params.type
       }).then((res) => {

@@ -271,9 +271,9 @@
                 <span class="once"
                   v-if="!process_flag"
                   @click="normalProcess()">普通分配</span>
-                <span class="once"
+                <!-- <span class="once"
                   v-if="!process_flag"
-                  @click="easyProcess">一键分配</span>
+                  @click="easyProcess">一键分配</span> -->
                 <span class="once cancle"
                   v-if="process_flag"
                   @click="cancleProcess">取消分配</span>

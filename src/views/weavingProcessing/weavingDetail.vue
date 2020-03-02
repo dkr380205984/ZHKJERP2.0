@@ -558,7 +558,7 @@
         <div class="content"
           style="max-height:600px">
           <div class="tips">
-            提示信息：批量分配操作只能为产品大身分配数量，如果需要为产品配件分配织造工序，可以手动添加，本步骤可以统一选择织造单位,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
+            提示信息：本步骤可以统一选择织造单位,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
           <div style="background: #f4f4f4;padding: 8px;margin: 12px 0;"
             v-for="(item,index) in checkWeaveList"
@@ -567,6 +567,18 @@
               <div class="label">产品名称：</div>
               <div class="info">
                 <span class="text">{{item.product_code}}({{item.category_name}}/{{item.type_name}}/{{item.style_name}})</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">选择部件：</div>
+              <div class="info">
+                <el-select placeholder="请选择产品部件"
+                  v-model="item.checkPart">
+                  <el-option v-for="(itemChild,indexChild) in item.childrenMergeInfo[0].part_data"
+                    :key="indexChild"
+                    :label="itemChild.name"
+                    :value="itemChild.id"></el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
@@ -605,8 +617,8 @@
           </div>
         </div>
         <div class="opr">
-          <div class="btn btnGray"
-            @click="easyWeaving_flag = false">直接跳过</div>
+          <!-- <div class="btn btnGray"
+            @click="easyWeaving_flag = false">直接跳过</div> -->
           <div class="btn btnBlue"
             @click="commonFn">确定</div>
         </div>
@@ -860,37 +872,38 @@ export default {
       }
       if (this.checkWeaveList.length === 0) {
         this.$message.warning('请至少选择一种产品进行分配')
+        return
       }
-      this.weaving_flag = true
       this.easyWeaving_flag = true
-      this.checkWeaveList.forEach((item) => {
-        let mixedData = []
-        item.childrenMergeInfo.forEach((itemChild) => {
-          if (itemChild.part_data[0].number - itemChild.part_data[0].weavingNum > 0) {
-            mixedData.push({
-              partColorSize: itemChild.part_data[0].id + '/' + itemChild.size + '/' + itemChild.color,
-              price: '',
-              number: itemChild.part_data[0].number - itemChild.part_data[0].weavingNum
-            })
-          }
-        })
-        if (mixedData.length > 0) {
-          this.weaving_data.push({
-            company_id: '',
-            product_name: item.product_code,
-            mixedData: mixedData,
-            complete_time: '',
-            part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
-            desc: ''
-          })
-        }
-      })
-      if (this.weaving_data.length === 0) {
-        this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
-      } else {
-        this.weaving_flag = true
-        this.easyWeaving_flag = true
-      }
+      console.log(this.checkWeaveList)
+      // this.checkWeaveList.forEach((item) => {
+      //   let mixedData = []
+      //   item.childrenMergeInfo.forEach((itemChild) => {
+      //     if (itemChild.part_data[0].number - itemChild.part_data[0].weavingNum > 0) {
+      //       mixedData.push({
+      //         partColorSize: itemChild.part_data[0].id + '/' + itemChild.size + '/' + itemChild.color,
+      //         price: '',
+      //         number: itemChild.part_data[0].number - itemChild.part_data[0].weavingNum
+      //       })
+      //     }
+      //   })
+      //   if (mixedData.length > 0) {
+      //     this.weaving_data.push({
+      //       company_id: '',
+      //       product_name: item.product_code,
+      //       mixedData: mixedData,
+      //       complete_time: '',
+      //       part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
+      //       desc: ''
+      //     })
+      //   }
+      // })
+      // if (this.weaving_data.length === 0) {
+      //   this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
+      // } else {
+      //   this.weaving_flag = true
+      //   this.easyWeaving_flag = true
+      // }
     },
     addWeaving () {
       this.weaving_data.push({
@@ -1000,6 +1013,41 @@ export default {
     },
     // 填写公共信息
     commonFn () {
+      this.checkWeaveList.forEach((item) => {
+        if (!item.checkPart) {
+          item.checkPart = item.childrenMergeInfo.part_data[0].id
+        }
+      })
+      this.checkWeaveList.forEach((item) => {
+        let mixedData = []
+        item.childrenMergeInfo.forEach((itemChild) => {
+          let part = itemChild.part_data.find((itemFind) => { return Number(itemFind.id) === Number(item.checkPart) })
+          console.log(part)
+          if (part.number - part.weavingNum > 0) {
+            mixedData.push({
+              partColorSize: part.id + '/' + itemChild.size + '/' + itemChild.color,
+              price: '',
+              number: part.number - part.weavingNum
+            })
+          }
+        })
+        if (mixedData.length > 0) {
+          this.weaving_data.push({
+            company_id: '',
+            product_name: item.product_code,
+            mixedData: mixedData,
+            complete_time: '',
+            part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
+            desc: ''
+          })
+        }
+      })
+      if (this.weaving_data.length === 0) {
+        this.$message.warning('已选择的产品部件已分配完毕，如需分配其他部件，请手动分配')
+      } else {
+        this.weaving_flag = true
+        this.easyWeaving_flag = true
+      }
       this.weaving_data.forEach((item, index) => {
         item.company_id = this.commonCompany[index]
         item.mixedData.forEach((itemChild) => {
