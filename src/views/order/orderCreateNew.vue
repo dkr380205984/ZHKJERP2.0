@@ -3,11 +3,20 @@
     class='indexMain'
     v-loading='loading'>
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display: flex;justify-content: space-between;align-items: center;">
+        <span class="title">
+          基本信息
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <el-autocomplete style="width:200px;height:32px"
+          v-model="importKeyword"
+          :fetch-suggestions="querySearchOrder"
+          placeholder="导入产品订单"
+          :trigger-on-focus="false"
+          @select="importOrder"></el-autocomplete>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -673,10 +682,27 @@ export default {
       order_file_arr: [],
       packag_file_arr: [],
       box_file_arr: [],
-      other_file_arr: []
+      other_file_arr: [],
+      importKeyword: ''
     }
   },
   methods: {
+    querySearchOrder (querystring, cb) {
+      order.list({
+        page: 1,
+        limit: 9999,
+        keyword: querystring
+      }).then(res => {
+        if (res.data.status !== false) {
+          cb(res.data.data.map(item => {
+            return {
+              value: item.order_code,
+              id: item.id
+            }
+          }))
+        }
+      })
+    },
     addItem (item, type) {
       if (type === 'code') {
         item.push({ code: '' })
@@ -775,7 +801,6 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
-      console.log(item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
@@ -981,7 +1006,6 @@ export default {
       const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       let data = {
-        id: this.$route.params.id,
         order_code: this.order_code.map(item => {
           return item.code
         }).join(';'),
@@ -1038,6 +1062,134 @@ export default {
       if (flag) {
         this.contactArr = flag.contacts
       }
+    },
+    importOrder (event) {
+      this.loading = true
+      order.editDetail({
+        id: event.id
+      }).then(res => {
+        if (res.data.status === false) {
+          return
+        }
+        // 初始化修改订单数据
+        let orderInfo = res.data.data
+        this.order_code = orderInfo.order_code.split(';').map(item => {
+          return {
+            code: item
+          }
+        })
+        this.client_id = orderInfo.client_id.toString()
+        this.getContact(this.client_id)
+        this.contact_id = orderInfo.contacts_id
+        this.group_id = orderInfo.group_id
+        this.unit = orderInfo.account_unit
+        this.exchange_rate = orderInfo.exchange_rate
+        this.tax_prop = orderInfo.tax_rate
+        this.order_time = orderInfo.order_time
+        let orderBatch = []
+        let arr = [] // 存储产品id
+        orderInfo.order_batch.forEach(itemBatch => {
+          let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
+            items.id = items.product_info.product_id.toString()
+            items.unit = items.product_info.unit
+            items.sizeColor = items.product_info.size_measurement.map(valSize => {
+              return {
+                value: valSize.size_name,
+                label: valSize.size_name,
+                children: items.product_info.color.map(valColor => {
+                  return {
+                    value: valColor.color_name,
+                    label: valColor.color_name
+                  }
+                })
+              }
+            })
+            delete items.product_info
+            delete items.image
+            return items
+          }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_name/size', 'color_name/color', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+          orderBatch.push({
+            time: itemBatch.delivery_time,
+            batch_info: productInfo
+          })
+          itemBatch.product_info.forEach(itemPro => {
+            let flag = arr.find(itemId => itemId.id === itemPro.product_info.product_id.toString())
+            if (!flag) {
+              arr.push({
+                category_info: {
+                  name: itemPro.product_info.unit,
+                  product_category: itemPro.product_info.category_name
+                },
+                checked: true,
+                color: itemPro.product_info.color,
+                flower_id: itemPro.product_info.flower_name,
+                id: itemPro.product_info.product_id.toString(),
+                product_code: itemPro.product_info.product_code,
+                sizeColor: itemPro.product_info.size_measurement.map(valSize => {
+                  return {
+                    value: valSize.size_name,
+                    label: valSize.size_name,
+                    children: itemPro.product_info.color.map(valColor => {
+                      return {
+                        value: valColor.color_name,
+                        label: valColor.color_name
+                      }
+                    })
+                  }
+                }),
+                size: itemPro.product_info.size_measurement
+              })
+            }
+          })
+        })
+        this.checkedProList = arr
+        this.batchDate = orderBatch.map(itemBatch => {
+          return {
+            time: itemBatch.time,
+            batch_info: itemBatch.batch_info.map(itemPro => {
+              return {
+                id: itemPro.id,
+                product_info: itemPro.product_info.map(itemSize => {
+                  return {
+                    size_color: [itemSize.size, itemSize.color],
+                    number: itemSize.number,
+                    price: itemSize.price
+                  }
+                }),
+                sizeColor: itemPro.sizeColor,
+                unit: itemPro.unit
+              }
+            })
+          }
+        })
+        this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.total_price = orderInfo.total_price
+        this.remark = orderInfo.remark
+        this.loading = false
+      })
     }
   },
   created () {
@@ -1045,132 +1197,12 @@ export default {
     Promise.all([
       client.list(),
       group.list(),
-      getToken(),
-      order.editDetail({
-        id: this.$route.params.id
-      })
+      getToken()
     ]).then(res => {
       this.loading = true
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
-      // 初始化修改订单数据
-      let orderInfo = res[3].data.data
-      this.order_code = orderInfo.order_code.split(';').map(item => {
-        return {
-          code: item
-        }
-      })
-      this.client_id = orderInfo.client_id.toString()
-      this.getContact(this.client_id)
-      this.contact_id = orderInfo.contacts_id
-      this.group_id = orderInfo.group_id
-      this.unit = orderInfo.account_unit
-      this.exchange_rate = orderInfo.exchange_rate
-      this.tax_prop = orderInfo.tax_rate
-      this.order_time = orderInfo.order_time
-      let orderBatch = []
-      let arr = [] // 存储产品id
-      orderInfo.order_batch.forEach(itemBatch => {
-        let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
-          items.id = items.product_info.product_id.toString()
-          items.unit = items.product_info.unit
-          items.sizeColor = items.product_info.size_measurement.map(valSize => {
-            return {
-              value: valSize.size_name,
-              label: valSize.size_name,
-              children: items.product_info.color.map(valColor => {
-                return {
-                  value: valColor.color_name,
-                  label: valColor.color_name
-                }
-              })
-            }
-          })
-          delete items.product_info
-          delete items.image
-          return items
-        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_name/size', 'color_name/color', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
-        orderBatch.push({
-          time: itemBatch.delivery_time,
-          batch_info: productInfo
-        })
-        itemBatch.product_info.forEach(itemPro => {
-          let flag = arr.find(itemId => itemId.id === itemPro.product_info.product_id.toString())
-          if (!flag) {
-            arr.push({
-              category_info: {
-                name: itemPro.product_info.unit,
-                product_category: itemPro.product_info.category_name
-              },
-              checked: true,
-              color: itemPro.product_info.color,
-              flower_id: itemPro.product_info.flower_name,
-              id: itemPro.product_info.product_id.toString(),
-              product_code: itemPro.product_info.product_code,
-              sizeColor: itemPro.product_info.size_measurement.map(valSize => {
-                return {
-                  value: valSize.size_name,
-                  label: valSize.size_name,
-                  children: itemPro.product_info.color.map(valColor => {
-                    return {
-                      value: valColor.color_name,
-                      label: valColor.color_name
-                    }
-                  })
-                }
-              }),
-              size: itemPro.product_info.size_measurement
-            })
-          }
-        })
-      })
-      this.checkedProList = arr
-      this.batchDate = orderBatch.map(itemBatch => {
-        return {
-          time: itemBatch.time,
-          batch_info: itemBatch.batch_info.map(itemPro => {
-            return {
-              id: itemPro.id,
-              product_info: itemPro.product_info.map(itemSize => {
-                return {
-                  size_color: [itemSize.size, itemSize.color],
-                  number: itemSize.number,
-                  price: itemSize.price
-                }
-              }),
-              sizeColor: itemPro.sizeColor,
-              unit: itemPro.unit
-            }
-          })
-        }
-      })
-      this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.total_price = orderInfo.total_price
-      this.remark = orderInfo.remark
       this.loading = false
     })
   },

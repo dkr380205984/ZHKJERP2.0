@@ -336,6 +336,20 @@ export default {
           loss_f: itemPro.other_loss,
           product_number: itemPro.production_num
         })
+        itemPro.part_data.forEach(itemPart => {
+          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+          if (flag) {
+            productionData.push({
+              product_id: itemPart.id,
+              color_name: itemPro.color,
+              size_name: flag.size_name,
+              order_number: Math.ceil(itemPro.order_num * flag.number),
+              loss_y: itemPro.material_loss,
+              loss_f: itemPro.other_loss,
+              product_number: Math.ceil(itemPro.production_num * flag.number)
+            })
+          }
+        })
         itemPro.material_info.forEach(itemMa => {
           detailData.push({
             product_id: itemMa.product_part,
@@ -533,6 +547,7 @@ export default {
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
       let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size', 'color'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
+      console.log(materialPlanInfo)
       this.materialPlanInfo = materialPlanInfo.map(itemPro => {
         return {
           product_code: itemPro.product_code,
@@ -582,7 +597,8 @@ export default {
               end_num: '',
               unit: itemMa.unit
             }
-          }))
+          })),
+          part_data: itemPro.part_data
         }
       })
       this.computedTotal()

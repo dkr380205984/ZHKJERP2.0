@@ -63,7 +63,7 @@ const routes = [
     }, {
       path: '/sample/sampleOrderCreate',
       name: '样品订单添加',
-      component: () => import('../views/sample/sampleOrderCreate.vue')
+      component: () => import('../views/sample/sampleOrderCreateNew.vue')
     }, {
       path: '/sample/sampleOrderUpdate/:id',
       name: '样品订单修改',
@@ -131,7 +131,7 @@ const routes = [
     }, {
       path: '/order/orderCreate',
       name: '订单添加',
-      component: () => import('../views/order/orderCreate.vue')
+      component: () => import('../views/order/orderCreateNew.vue')
     }, {
       path: '/order/orderUpdate/:id',
       name: '订单修改',

@@ -238,7 +238,7 @@ export default {
     goMaterialPlan (id) {
       let flag = this.orderList.find(item => item.id === id)
       if (flag) {
-        flag.has_plan > 0 ? this.$router.push('/materialPlan/materialPlanDetail/' + id + '/1') : this.$router.push('/materialPlan/materialPlanCreate/' + id + '/' + this.$route.params.type)
+        flag.has_plan > 0 ? this.$router.push('/materialPlan/materialPlanDetail/' + id + '/' + this.$route.params.type) : this.$router.push('/materialPlan/materialPlanCreate/' + id + '/' + this.$route.params.type)
       } else {
         this.$message.warning('请选择需要前往添加物料计划的订单')
       }
