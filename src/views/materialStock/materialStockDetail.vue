@@ -288,8 +288,8 @@
                         :key="indexColor">
                         <div class="tcolumn">{{itemColor.attr}}</div>
                         <span class="tcolumn">{{itemColor.order_weight}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
-                        <span class="tcolumn">{{$toFixed(itemColor.goStockNumEnd || 0)}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
-                        <span class="tcolumn">{{$toFixed(Number(itemColor.order_weight ? itemColor.order_weight : 0) - Number(itemColor.goStockNumEnd ? itemColor.goStockNumEnd : 0))}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
+                        <span class="tcolumn green">{{$toFixed(itemColor.goStockNumEnd || 0)}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
+                        <span class="tcolumn orange">{{$toFixed(Number(itemColor.order_weight ? itemColor.order_weight : 0) - Number(itemColor.goStockNumEnd ? itemColor.goStockNumEnd : 0))}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
                         <span class="tcolumn">{{$getTime(itemColor.updated_at)}}</span>
                         <span class="tcolumn center"
                           style="flex:1.5">
@@ -306,6 +306,7 @@
                   </div>
                 </div>
                 <div class="editCtn bgGary_page"
+                  id="handleMaterial"
                   v-for="(itemStock,indexStock) in stockEditInfo"
                   :key="indexStock">
                   <span class="closeIcon_page el-icon-circle-close"
@@ -644,9 +645,10 @@
                 effect="dark"
                 :content="checkWhichWeave.length===0?'请选取单位进行批量操作':'批量操作'"
                 placement="top">
-                <div class="btn"
+                <a class="btn"
+                  href="#handleWeave"
                   :class="{'btnGray':checkWhichWeave.length===0,'btnWhiteBlue':checkWhichWeave.length>0}"
-                  @click="batchBtnClickWeave">批量操作</div>
+                  @click="batchBtnClickWeave">批量操作</a>
               </el-tooltip>
             </div>
           </div>
@@ -683,7 +685,8 @@
                     :key="index">
                     <div class="tcolumn"
                       style="flex:0.2">
-                      <el-checkbox v-model="item.checked"></el-checkbox>
+                      <el-checkbox v-model="item.checked"
+                        @change="watchCheckedNum($event,item)"></el-checkbox>
                     </div>
                     <div class="tcolumn">{{item.client_name}}</div>
                     <div class="tcolumn noPad"
@@ -699,8 +702,8 @@
                             :key="indexColor">
                             <span class="tcolumn">{{itemColor.attr}}</span>
                             <span class="tcolumn">{{itemColor.unit === 'g' ? $toFixed(itemColor.weight/1000 || 0) : $toFixed(itemColor.weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
-                            <span class="tcolumn">{{itemColor.unit === 'g' ? $toFixed((itemColor.outStockNum || 0)) : $toFixed((itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
-                            <span class="tcolumn">{{itemColor.unit === 'g' ? $toFixed(itemColor.weight/1000 - (itemColor.outStockNum || 0)) : $toFixed(itemColor.weight - (itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                            <span class="tcolumn green">{{itemColor.unit === 'g' ? $toFixed((itemColor.outStockNum || 0)) : $toFixed((itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                            <span class="tcolumn orange">{{itemColor.unit === 'g' ? $toFixed(itemColor.weight/1000 - (itemColor.outStockNum || 0)) : $toFixed(itemColor.weight - (itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                             <span class="tcolumn center">
                               <span class="btn noBorder noMargin"
                                 @click="handleClickProcess(item,itemMa,itemColor)">出库</span>
@@ -712,6 +715,7 @@
                   </div>
                 </div>
                 <div class="editCtn bgGary_page"
+                  id="handleWeave"
                   v-for="(itemWeave,indexWeave) in weaveStockEditInfo"
                   :key="indexWeave">
                   <span class="closeIcon_page el-icon-circle-close"
@@ -870,10 +874,47 @@
           <div class="tb_header">
             <span class="tb_row flex04"></span>
             <span class="tb_row">出入库时间</span>
+            <span class="tb_row">
+              <template v-if="!showFilterClientBox">
+                出入库单位
+                <span class="filterIcon el-icon-search"
+                  @click="showFilterClientBox = true"></span>
+              </template>
+              <template v-else>
+                <el-select v-model="filterHandleClient"
+                  clearable
+                  class="filterInput"
+                  placeholder="筛选类型">
+                  <el-option v-for="item in handleClientArr"
+                    :key="item.client_name"
+                    :label="item.client_name"
+                    :value="item.client_name">
+                  </el-option>
+                </el-select>
+              </template>
+            </span>
             <span class="tb_row">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
             <span class="tb_row flex08">颜色</span>
             <span class="tb_row flex08">数量</span>
-            <span class="tb_row flex08">操作类型</span>
+            <span class="tb_row flex08">
+              <template v-if="!showFilterTypeBox">
+                操作类型
+                <span class="filterIcon el-icon-search"
+                  @click="showFilterTypeBox = true"></span>
+              </template>
+              <template v-else>
+                <el-select v-model="filterHandleType"
+                  clearable
+                  class="filterInput"
+                  placeholder="筛选类型">
+                  <el-option v-for="item in handleTypeArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </template>
+            </span>
             <span class="tb_row flex08">操作人</span>
             <span class="tb_row middle flex08">操作</span>
           </div>
@@ -884,6 +925,7 @@
               <el-checkbox v-model="itemLog.checked"></el-checkbox>
             </span>
             <span class="tb_row">{{itemLog.complete_time}}</span>
+            <span class="tb_row">{{itemLog.client_name}}</span>
             <span class="tb_row">{{itemLog.material_name}}</span>
             <span class="tb_row flex08">{{itemLog.material_color}}</span>
             <span class="tb_row flex08">{{itemLog.total_weight}}</span>
@@ -1059,7 +1101,7 @@
         <div class="opr">
           <div class="btn btnGray"
             @click="stockHandles">直接跳过</div>
-          <a href="#order"
+          <a href="#handleMaterial"
             class="btn btnBlue"
             @click="stockHandles">确定</a>
         </div>
@@ -1097,7 +1139,104 @@ export default {
       easyHandleInfo: {
         client_name: '',
         handleType: 'out'
+      },
+      showFilterTypeBox: false,
+      filterHandleType: '',
+      handleTypeArr: [
+        {
+          value: 1,
+          label: '出库'
+        }, {
+          value: 2,
+          label: '入库'
+        }, {
+          value: 3,
+          label: '最终入库'
+        }, {
+          value: 4,
+          label: '织造出库'
+        }
+      ],
+      showFilterClientBox: false,
+      filterHandleClient: '',
+      handleClientArr: [],
+      cloneStockLog: []
+    }
+  },
+  watch: {
+    filterHandleType (newVal) {
+      if (newVal) {
+        if (this.filterHandleClient) {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +newVal && item.client_name === this.filterHandleClient).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        } else {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +newVal).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        }
+      } else {
+        if (this.filterHandleClient) {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => item.client_name === this.filterHandleClient).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        } else {
+          this.stockLog = this.$newSplice(this.cloneStockLog.map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        }
       }
+      this.stockLogPages = 1
+      this.stockLogTotal = this.stockLog.length
+    },
+    filterHandleClient (newVal) {
+      if (newVal) {
+        if (this.filterHandleType) {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +this.filterHandleType && item.client_name === newVal).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        } else {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => item.client_name === newVal).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        }
+      } else {
+        if (this.filterHandleType) {
+          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +this.filterHandleType).map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        } else {
+          this.stockLog = this.$newSplice(this.cloneStockLog.map(item => {
+            return {
+              checked: false,
+              ...item
+            }
+          }), 5)
+        }
+      }
+      this.stockLogPages = 1
+      this.stockLogTotal = this.stockLog.length
     }
   },
   methods: {
@@ -1111,7 +1250,7 @@ export default {
         return {
           material_name: item.material_name,
           client_name: '',
-          handleType: 'out'
+          handleType: 'end_go'
         }
       })
       this.easyHandlePopupFlag = true
@@ -1119,24 +1258,44 @@ export default {
     // 快捷按钮点击跳过与确定时
     stockHandles () {
       let data = this.materialStockInfo.filter(item => item.checked)
-      this.stockEditInfo.push(...data.map(item => {
+      let pushData = []
+      data.forEach(item => {
         let flag = this.easyHandleInfo.find(items => items.material_name === item.material_name)
-        return {
-          client_name: flag ? flag.client_name : '',
-          editType: flag ? flag.handleType : 'out',
-          material_info: item.color_info.map(itemColor => {
-            return {
-              material_name: item.material_name,
-              material_attribute: itemColor.attr,
-              number: this.$toFixed((itemColor.order_weight || 0) - (itemColor.goStockNumEnd || 0))
-            }
-          }),
-          time: this.$getTime(),
-          remark: ''
+        let colorInfo = null
+        if (flag.handleType === 'end_go') {
+          colorInfo = item.color_info.filter(itemColor => this.$toFixed((itemColor.order_weight || 0) - (itemColor.goStockNumEnd || 0)) > 0)
+        } else {
+          colorInfo = item.color_info
         }
-      }))
-      this.easyHandleInfo = []
-      this.easyHandlePopupFlag = false
+        let materialInfo = colorInfo.map(itemColor => {
+          return {
+            material_name: item.material_name,
+            material_attribute: itemColor.attr,
+            number: flag.handleType === 'end_go' ? this.$toFixed((itemColor.order_weight || 0) - (itemColor.goStockNumEnd || 0)) : '',
+            color_info: item.color_info.map(itemColorInner => {
+              return {
+                name: itemColorInner.attr
+              }
+            })
+          }
+        })
+        if (materialInfo.length !== 0) {
+          pushData.push({
+            client_name: flag ? flag.client_name : '',
+            editType: flag ? flag.handleType : 'end_go',
+            material_info: materialInfo,
+            time: this.$getTime(),
+            remark: ''
+          })
+        }
+      })
+      if (pushData.length === 0) {
+        this.$message.warning('检测到最终入库已完成，无需继续入库')
+      } else {
+        this.stockEditInfo.push(...pushData)
+        this.easyHandleInfo = []
+        this.easyHandlePopupFlag = false
+      }
     },
     // 织造加工module点击批量操作时
     batchBtnClickWeave () {
@@ -1148,21 +1307,34 @@ export default {
       let data = []
       checkedData.forEach(item => {
         item.material_info.forEach(itemMa => {
-          data.push({
+          let obj = {
             client_name: item.client_id,
-            editType: 'out',
-            material_info: itemMa.color_info.map(itemColor => {
+            editType: 4,
+            material_info: itemMa.color_info.filter(itemColor => this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0)) > 0).map(itemColor => {
               return {
                 material_name: itemMa.material_name,
                 material_attribute: itemColor.attr,
-                number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0))
+                number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0)),
+                color_info: itemMa.color_info.map(itemColorInner => {
+                  return {
+                    name: itemColorInner.attr
+                  }
+                })
               }
             }),
             time: this.$getTime(),
             remark: ''
-          })
+          }
+          if (obj.material_info.length !== 0) {
+            this.changeMaterialInfo(item.client_id, obj)
+            data.push(obj)
+          }
         })
       })
+      if (data.length === 0) {
+        this.$message.warning('检测到物料已出库完成，无需出库')
+        return
+      }
       this.weaveStockEditInfo.push(...data)
     },
     // 批量导出excel
@@ -1181,6 +1353,7 @@ export default {
       })
       downloadExcel(data, [
         { title: '出入库时间', key: 'complete_time' },
+        { title: '出入库单位', key: 'client_name' },
         { title: this.$route.params.type === '1' ? '原料名称' : '辅料名称', key: 'material_name' },
         { title: '颜色', key: 'material_color' },
         { title: '数量', key: 'total_weight' },
@@ -1378,10 +1551,11 @@ export default {
     },
     // 原料出入库module点击表格内操作时
     handleClick (item, itemInner, type) {
+      let num = this.$toFixed((itemInner.order_weight || 0) - (itemInner.goStockNumEnd || 0))
       let materialInfo = {
         material_name: item.material_name,
         material_attribute: itemInner.attr,
-        number: this.$toFixed((itemInner.order_weight || 0) - (itemInner.goStockNumEnd || 0)),
+        number: num,
         material_type: itemInner.type
       }
       let obj = {
@@ -1396,10 +1570,11 @@ export default {
     },
     // 织造加工module点击表格内操作时
     handleClickProcess (item, itemMa, itemColor) {
+      let num = this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0))
       let materialInfo = {
         material_name: itemMa.material_name,
         material_attribute: itemColor.attr,
-        number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0))
+        number: num > 0 ? num : 0
       }
       let obj = {
         client_name: item.client_id,
@@ -1496,7 +1671,7 @@ export default {
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1)
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-          this.materialClient = this.$mergeData(res[0].data.data.material_order_client, { mainRule: ['client_name', 'client_id'] })
+          this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化织造出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { 'name': 'client_id' }] }).map(items => {
             return {
@@ -1535,6 +1710,12 @@ export default {
             }
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
+          this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 1))
+          this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
+            return {
+              client_name: item.client_name
+            }
+          })
           this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 1).map(item => {
             return {
               ...item,
@@ -1559,7 +1740,6 @@ export default {
                 let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
                 if (materialFlag) {
                   let colorFlag = materialFlag.color_info.find(value => (value.attr === itemInner.material_color || (value.attr === undefined && itemInner.material_color === '')))
-                  console.log(colorFlag)
                   if (colorFlag) {
                     // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
                     if (itemInner.type === 4) {
@@ -1591,7 +1771,7 @@ export default {
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-          this.materialClient = this.$mergeData(res[0].data.data.material_process_client, { mainRule: ['client_name', 'client_id'] })
+          this.materialClient = this.$mergeData(res[0].data.data.material_process_client.concat(res[0].data.data.material_order_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化加工出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
             return {
@@ -1636,6 +1816,12 @@ export default {
             }
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
+          this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 2))
+          this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
+            return {
+              client_name: item.client_name
+            }
+          })
           this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 2).map(item => {
             return {
               ...item,
@@ -1649,7 +1835,6 @@ export default {
               if (materialFlag) {
                 let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
                 if (colorFlag) {
-                  // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
                   if (itemInner.type === 3) {
                     colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
                   }
@@ -1660,9 +1845,7 @@ export default {
                 let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
                 if (materialFlag) {
                   let colorFlag = materialFlag.color_info.find(value => (value.attr === itemInner.material_color || (value.attr === undefined && itemInner.material_color === '')))
-                  console.log(colorFlag)
                   if (colorFlag) {
-                    // colorFlag.goStockNum = Number(colorFlag.goStockNum || 0) + Number(itemInner.total_weight)
                     if (itemInner.type === 4) {
                       colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
                     }
@@ -1673,6 +1856,13 @@ export default {
           })
           this.loading = false
         })
+      }
+    },
+    // 监听织造不能同时选择
+    watchCheckedNum (eve, item) {
+      if (eve && this.weaveInfo.filter(items => items.checked).length > 1) {
+        this.$message.warning('单次只能对一个单位进行批量操作')
+        item.checked = false
       }
     }
   },
@@ -1699,9 +1889,11 @@ export default {
 @import "~@/assets/less/materialStock/materialStockDetail.less";
 </style>
 <style lang="less">
-#materialStock {
-  .el-date-editor.el-input {
-    width: 100% !important;
+#materialStockDetail {
+  .filterInput {
+    .el-input__inner {
+      height: 32px !important;
+    }
   }
 }
 </style>
