@@ -320,6 +320,20 @@ export default {
           loss_f: itemPro.other_loss,
           product_number: itemPro.production_num
         })
+        itemPro.part_data.forEach(itemPart => {
+          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+          if (flag) {
+            productionData.push({
+              product_id: itemPart.id,
+              color_name: itemPro.color,
+              size_name: flag.size_name,
+              order_number: Math.ceil(itemPro.order_num * flag.number),
+              loss_y: itemPro.material_loss,
+              loss_f: itemPro.other_loss,
+              product_number: Math.ceil(itemPro.production_num * flag.number)
+            })
+          }
+        })
         itemPro.material_info.forEach(itemMa => {
           detailData.push({
             product_id: itemMa.product_part,
@@ -551,6 +565,7 @@ export default {
               id: itemPart.id
             }
           }))),
+          part_data: itemPro.part_data,
           material_info: itemPro.material_info.map(itemMa => {
             return {
               product_part: itemMa.product_id,
