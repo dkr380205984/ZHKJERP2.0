@@ -2238,7 +2238,7 @@ export default {
         this.repeatPM.forEach((item) => {
           item.children.forEach((itemChild) => {
             itemChild.children.forEach((itemSon) => {
-              if (!itemChild.number || !itemSon.value || itemSon.repeat) {
+              if (!itemChild.number || !itemSon.value || !itemSon.repeat) {
                 errorInput = true
               }
             })
@@ -2247,7 +2247,7 @@ export default {
       }
       if (errorInput) {
         this.$message.error({
-          message: '请填写穿综循环的根数'
+          message: '请检查穿综循环是否漏填'
         })
         return
       }

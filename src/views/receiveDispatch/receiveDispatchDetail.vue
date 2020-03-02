@@ -525,7 +525,7 @@
                   style="flex:1.8">
                   {{item.product_code.code}}
                   <br />
-                  {{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}
+                  {{item.category_info.category_name?(item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name):item.product_code.name}}
                 </span>
                 <span class="tb_row">
                   {{item.size}}
@@ -1290,6 +1290,7 @@ export default {
           this.selectProduct(flag.product_id, 0, 'process_data')
         }
       }
+      console.log(this.log)
       this.loading = false
     })
   }
