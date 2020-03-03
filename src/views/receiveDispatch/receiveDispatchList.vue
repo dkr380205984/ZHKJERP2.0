@@ -187,7 +187,7 @@ export default {
     }
   },
   watch: {
-    page (newVal) {
+    pages (newVal) {
       this.changeRouter(newVal)
     },
     $route (newVal) {
@@ -199,7 +199,7 @@ export default {
   methods: {
     getFilters () {
       let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.pages = Number(params.page)
       this.keyword = params.keyword
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')

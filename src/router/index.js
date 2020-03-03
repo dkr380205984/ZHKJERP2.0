@@ -47,7 +47,7 @@ const routes = [
     }, {
       path: '/sample/sampleCreate',
       name: '样品添加',
-      component: () => import('../views/sample/sampleCreate.vue')
+      component: () => import('../views/sample/sampleCreateNew.vue')
     }, {
       path: '/sample/sampleDetail/:id',
       name: '样品详情',
@@ -79,7 +79,7 @@ const routes = [
     }, {
       path: '/product/productCreate',
       name: '产品添加',
-      component: () => import('../views/product/productCreate.vue')
+      component: () => import('../views/product/productCreateNew.vue')
     }, {
       path: '/product/productList/:params',
       name: '产品列表',
