@@ -33,11 +33,17 @@
           <span class="row_item center w180">订购日期</span>
           <span class="row_item left">{{orderDetail.order_time}}</span>
         </div>
-        <div class="print_row has_marginBottom">
+        <div class="print_row">
           <span class="row_item center w180">订购数量</span>
           <span class="row_item left">{{orderDetail.total_weight}}kg</span>
           <span class="row_item center w180">订单总价</span>
+          <span class="row_item left">{{orderTotalPrice}}元</span>
+        </div>
+        <div class="print_row has_marginBottom">
+          <span class="row_item center w180">预付款</span>
           <span class="row_item left">{{orderDetail.total_price}}元</span>
+          <span class="row_item center w180">待付款</span>
+          <span class="row_item left">{{$toFixed(orderTotalPrice-orderDetail.total_price)}}元</span>
         </div>
         <div class="print_row"
           v-for="(item,index) in orderDetail.material_info"
@@ -70,7 +76,8 @@ export default {
       qrCodeUrl: '',
       orderDetail: {
         material_info: []
-      }
+      },
+      orderTotalPrice: ''
     }
   },
   created () {
@@ -79,6 +86,11 @@ export default {
     }).then(res => {
       if (res.data.status !== false) {
         this.orderDetail = res.data.data
+        this.orderTotalPrice = this.orderDetail.material_info.map(item => {
+          return this.$toFixed((item.weight || 0) * (item.price || 0))
+        }).reduce((a, b) => {
+          return this.$toFixed(a + b)
+        })
         setTimeout(() => {
           window.print()
         }, 1000)

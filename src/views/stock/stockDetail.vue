@@ -218,8 +218,8 @@
           </div>
           <div class="btnCtn_page"
             id='yarn'>
-            <div class="btn noBorder noMargin"
-              @click="deleteLog(yarnLog,'yarnLog')">批量删除</div>
+            <!-- <div class="btn noBorder noMargin"
+              @click="deleteLog(yarnLog,'yarnLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @click="downloadYarn">批量导出excel</div>
           </div>
@@ -457,8 +457,8 @@
           </div>
           <div class="btnCtn_page"
             id='material'>
-            <div class="btn noBorder noMargin"
-              @click="deleteLog(materialLog,'materialLog')">批量删除</div>
+            <!-- <div class="btn noBorder noMargin"
+              @click="deleteLog(materialLog,'materialLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @click="downloadMaterial">批量导出excel</div>
           </div>
@@ -699,8 +699,8 @@
           </div>
           <div class="btnCtn_page"
             id='pack'>
-            <div class="btn noBorder noMargin"
-              @click="deleteLog(packLog,'packLog')">批量删除</div>
+            <!-- <div class="btn noBorder noMargin"
+              @click="deleteLog(packLog,'packLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @click="downloadPack">批量导出excel</div>
           </div>
@@ -959,8 +959,8 @@
           </div>
           <div class="btnCtn_page"
             id='product'>
-            <div class="btn noBorder noMargin"
-              @click="deleteLog(productLog,'productLog')">批量删除</div>
+            <!-- <div class="btn noBorder noMargin"
+              @click="deleteLog(productLog,'productLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @change="downloadProduct">批量导出excel</div>
           </div>
@@ -1953,7 +1953,6 @@ export default {
           // company_id: window.sessionStorage.getItem('company_id')
         }
       })
-      console.log(data)
       stock.productStock({
         data: data
       }).then(res => {
@@ -2015,93 +2014,93 @@ export default {
         })
       }
     },
-    deleteLog (item, type) {
-      if (type === 'yarnLog') {
-        let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-        if (data.length === 0) {
-          this.$message.warning('检测到未选中日志')
-        } else {
-          this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            })
-          })
-        }
-      } else if (type === 'materialLog') {
-        let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-        if (data.length === 0) {
-          this.$message.warning('检测到未选中日志')
-        } else {
-          this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            })
-          })
-        }
-      } else if (type === 'packLog') {
-        let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-        if (data.length === 0) {
-          this.$message.warning('检测到未选中日志')
-        } else {
-          this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            })
-          })
-        }
-      } else if (type === 'productLog') {
-        let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-        if (data.length === 0) {
-          this.$message.warning('检测到未选中日志')
-        } else {
-          this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消'
-            })
-          })
-        }
-      }
-    },
+    // deleteLog (item, type) {
+    //   if (type === 'yarnLog') {
+    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
+    //     if (data.length === 0) {
+    //       this.$message.warning('检测到未选中日志')
+    //     } else {
+    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
+    //         confirmButtonText: '确定',
+    //         cancelButtonText: '取消',
+    //         type: 'warning'
+    //       }).then(() => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '删除成功!'
+    //         })
+    //       }).catch(() => {
+    //         this.$message({
+    //           type: 'info',
+    //           message: '已取消'
+    //         })
+    //       })
+    //     }
+    //   } else if (type === 'materialLog') {
+    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
+    //     if (data.length === 0) {
+    //       this.$message.warning('检测到未选中日志')
+    //     } else {
+    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
+    //         confirmButtonText: '确定',
+    //         cancelButtonText: '取消',
+    //         type: 'warning'
+    //       }).then(() => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '删除成功!'
+    //         })
+    //       }).catch(() => {
+    //         this.$message({
+    //           type: 'info',
+    //           message: '已取消'
+    //         })
+    //       })
+    //     }
+    //   } else if (type === 'packLog') {
+    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
+    //     if (data.length === 0) {
+    //       this.$message.warning('检测到未选中日志')
+    //     } else {
+    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
+    //         confirmButtonText: '确定',
+    //         cancelButtonText: '取消',
+    //         type: 'warning'
+    //       }).then(() => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '删除成功!'
+    //         })
+    //       }).catch(() => {
+    //         this.$message({
+    //           type: 'info',
+    //           message: '已取消'
+    //         })
+    //       })
+    //     }
+    //   } else if (type === 'productLog') {
+    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
+    //     if (data.length === 0) {
+    //       this.$message.warning('检测到未选中日志')
+    //     } else {
+    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
+    //         confirmButtonText: '确定',
+    //         cancelButtonText: '取消',
+    //         type: 'warning'
+    //       }).then(() => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '删除成功!'
+    //         })
+    //       }).catch(() => {
+    //         this.$message({
+    //           type: 'info',
+    //           message: '已取消'
+    //         })
+    //       })
+    //     }
+    //   }
+    // },
     goLog (item, type) {
       if (type === 'yarn') {
         this.searchYarnLog = item.material_name
