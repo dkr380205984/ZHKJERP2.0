@@ -224,7 +224,7 @@ export default {
           url: '/materialOrder/materialOrderCreate'
         }, {
           name: '预订购列表',
-          url: '/materialOrder/materialOrderList/page=1&&keyword=&&date='
+          url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
         }, {
           name: '订单物料列表',
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'

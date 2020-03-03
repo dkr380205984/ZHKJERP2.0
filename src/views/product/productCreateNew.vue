@@ -3,22 +3,31 @@
     class="indexMain"
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <span class="productCode">{{sample_product_code}}</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display:flex;align-items:center;justify-content: space-between;">
+        <span class="title">
+          基本信息
+          <span class="productCode">{{productCode}}</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <el-autocomplete v-model="importKeyword"
+          style="width:200px;height:32px"
+          :fetch-suggestions="querySearchProduct"
+          placeholder="输入产品编号导入产品"
+          :trigger-on-focus="false"
+          @select="importPorduct"></el-autocomplete>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品名称</span>
+              <span class="text">产品名称</span>
             </div>
             <div class="content">
-              <zh-input errorMsg="样品名称不能超过10个字"
-                placeholder="请输入样品名称"
+              <zh-input errorMsg="产品名称不能超过10个字"
+                placeholder="请输入产品名称"
                 maxLength="10"
                 v-model="name">
               </zh-input>
@@ -26,23 +35,23 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品品类</span>
+              <span class="text">产品品类</span>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
               <el-cascader v-model="type"
-                placeholder="请选择样品品类"
+                placeholder="请选择产品品类"
                 :options="typeArr">
               </el-cascader>
             </div>
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品花型</span>
+              <span class="text">产品花型</span>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-select placeholder="请选择样品花型"
+              <el-select placeholder="请选择产品花型"
                 v-model="flower">
                 <el-option v-for="(item,index) in flowerArr"
                   :key="index"
@@ -73,7 +82,7 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="index===0">
-              <span class="text">样品成分</span>
+              <span class="text">产品成分</span>
               <span class="explanation">(必填,成分比例相加为100%)</span>
             </div>
             <div class="content">
@@ -106,12 +115,12 @@
           <div class="colCtn">
             <div class="label"
               v-show="index===0">
-              <span class="text">样品规格</span>
+              <span class="text">产品规格</span>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
               <el-select v-model="item.size"
-                placeholder="请选择样品规格">
+                placeholder="请选择产品规格">
                 <el-option v-for="(item,index) in sizeArr"
                   :key="index"
                   :label="item.name"
@@ -153,7 +162,7 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="index===0">
-              <span class="text">样品配色</span>
+              <span class="text">产品配色</span>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
@@ -208,8 +217,7 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="indexIngredient===0">
-              <span class="text">样品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
+              <span class="text">配件成分</span>
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
@@ -247,7 +255,7 @@
             <span class="content">
               <el-select v-model="itemSize.size"
                 disabled
-                placeholder="请选择样品规格">
+                placeholder="请选择产品规格">
                 <el-option v-for="item in sizeArr"
                   :key="item.value"
                   :label="item.name"
@@ -309,7 +317,7 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品图片</span>
+              <span class="text">产品图片</span>
             </div>
             <div class="content autoHeight">
               <el-upload class="upload"
@@ -352,7 +360,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="submit">修改</div>
+            @click="submit">添加</div>
         </div>
       </div>
     </div>
@@ -360,16 +368,17 @@
 </template>
 
 <script>
-import { chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile } from '@/assets/js/api.js'
+import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
+import { productType, flower, ingredient, colour, getToken, material, product, deleteFile } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
       msgSwitch: false,
+      letterArr: letterArr,
       msgUrl: '',
       msgContent: '',
-      sample_product_code: '',
+      product_code: ['C', '00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
       name: '',
       type: [],
@@ -403,7 +412,8 @@ export default {
       }],
       // 配件类型从辅料里面选
       materialArr: [],
-      needleType: ''
+      needleType: '',
+      importKeyword: ''
     }
   },
   methods: {
@@ -432,11 +442,11 @@ export default {
         type: 'warning'
       }).then(() => {
         if (id) {
-          sample.delete({
+          product.delete({
             id: id
           }).then((res) => {
             if (res.data.status) {
-              this.fittingInfo.splice(index, 1)
+              this.fittingInfo.splice(index)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
@@ -444,7 +454,7 @@ export default {
             }
           })
         } else {
-          this.fittingInfo.splice(index, 1)
+          this.fittingInfo.splice(index)
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -506,7 +516,7 @@ export default {
         return false
       }
       if (!isLt2M) {
-        this.$message.error('图片大小不能超过 6MB!')
+        this.$message.error('图片大小不能超过 10MB!')
         return false
       }
     },
@@ -552,21 +562,20 @@ export default {
     submit () {
       let error = false
       if (this.type.length <= 0) {
-        this.$message.error('请选择样品品类')
+        this.$message.error('请选择产品品类')
         return
       }
       if (!this.flower) {
-        this.$message.error('请选择样品花型')
+        this.$message.error('请选择产品花型')
         return
       }
       error = this.ingredient.some((item) => {
         return !item.ingredient_name || !item.ingredient_value
       })
       if (error) {
-        this.$message.error('请将样品成分信息填写完整')
+        this.$message.error('请将产品成分信息填写完整')
         return
       }
-
       let arr = this.ingredient.map(item => {
         return item.ingredient_value
       })
@@ -574,19 +583,19 @@ export default {
         return Number(total) + Number(item)
       })
       if (Number(total) !== 100) {
-        this.$message.error('样品成分比例总和不等于100%，请检查比例')
+        this.$message.error('产品成分比例总和不等于100%，请检查比例')
         return
       }
       error = this.size.some((item) => {
         return !item.size || !item.weight || !item.desc
       })
       if (error) {
-        this.$message.error('请将样品规格信息填写完整')
+        this.$message.error('请将产品规格信息填写完整')
         return
       }
       error = this.colour.some((item) => !item.colour)
       if (error) {
-        this.$message.error('请将样品配色信息填写完整')
+        this.$message.error('请将产品配色信息填写完整')
       }
       error = this.colour.some((item) => item.colour.search('/') !== -1)
       if (error) {
@@ -605,16 +614,15 @@ export default {
         this.$message.error('请输入配件名称')
         return
       }
-
       let partData = this.fittingInfo.map((item) => {
         return {
           part_id: item.part_id ? item.part_id : '',
-          name: item.fitting_name,
+          part_title: item.fitting_name,
           part_category: '',
-          // part_color: this.colour.map((item) => {
-          //   return { color_name: item.colour }
-          // }),
-          data_size: item.size.map((itemSize) => {
+          part_color: this.colour.map((item) => {
+            return { color_name: item.colour }
+          }),
+          part_size: item.size.map((itemSize) => {
             return {
               weight: itemSize.weight,
               size_name: itemSize.size,
@@ -622,24 +630,34 @@ export default {
               number: itemSize.number
             }
           }),
-          data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
+          part_component: item.ingredient.map((item) => {
+            return {
+              component_name: item.ingredient_name,
+              number: item.ingredient_value
+            }
+          })
         }
       })
       const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
-        id: this.$route.params.id,
-        sample_product_code: this.sample_product_code,
+        product_code: this.product_code.join(''),
         name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
         style_id: this.type[2],
+        type: 1,
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        data_image: imgArr,
-        data_color: this.colour.map((item) => { return { color_name: item.colour } }),
-        data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
-        data_size: this.size.map(item => {
+        image: imgArr,
+        color: this.colour.map((item) => item.colour),
+        component: this.ingredient.map((item) => {
+          return {
+            component_name: item.ingredient_name,
+            number: item.ingredient_value
+          }
+        }),
+        size: this.size.map(item => {
           return {
             weight: item.weight,
             size_name: item.size,
@@ -648,21 +666,137 @@ export default {
         }),
         part_data: this.hasFitting ? partData : []
       }
-      sample.create(formData).then((res) => {
+      product.create(formData).then((res) => {
         if (res.data.status) {
-          this.$message.success('修改成功')
+          this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/sample/sampleDetail/' + this.$route.params.id
-            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个样品<span style="color:#1A95FF">' + res.data.data.sample_product_code + '</span>(' + res.data.data.category_name + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_name + ')'
+            this.msgUrl = '/product/productDetail/' + res.data.data.id
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
             this.msgSwitch = true
           } else {
-            this.$router.push('/sample/sampleDetail/' + this.$route.params.id)
+            this.$router.push('/product/productDetail/' + res.data.data.id)
           }
+        }
+      })
+    },
+    querySearchProduct (queryString, cb) {
+      product.list({
+        product_code: queryString,
+        page: 1,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          cb(res.data.data.map(item => {
+            return {
+              value: item.product_code,
+              id: item.id
+            }
+          }))
+        }
+      })
+    },
+    importPorduct (eve) {
+      product.detail({
+        id: eve.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let productInfo = res.data.data
+          this.name = productInfo.name
+          this.fileArr = productInfo.image.map(item => {
+            return {
+              id: item.id,
+              url: item.image_url
+            }
+          })
+          this.size = productInfo.size.map(item => {
+            return {
+              size: item.size_name,
+              desc: item.size_info,
+              weight: item.weight
+            }
+          })
+          // this.product_code = productInfo.product_code.slice(0, 8)
+          this.colour = productInfo.color.map(item => {
+            return {
+              colour: item.color_name
+            }
+          })
+          this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
+          this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
+          this.flower = productInfo.flower_id_new
+          this.ingredient = productInfo.component.map((item) => {
+            return {
+              ingredient_name: item.component_name,
+              ingredient_value: item.number
+            }
+          })
+          this.hasFitting = productInfo.part_data.length > 0
+          this.fittingInfo = productInfo.part_data.map((item) => {
+            return {
+              part_id: item.id,
+              fitting_name: item.part_title,
+              ingredient: item.part_component.map((item) => {
+                return {
+                  ingredient_name: item.component_name,
+                  ingredient_value: item.number
+                }
+              }),
+              size: item.size.map((itemSize) => {
+                return {
+                  size: itemSize.size_name,
+                  weight: itemSize.weight,
+                  desc: itemSize.size_info,
+                  number: itemSize.number
+                }
+              })
+            }
+          })
+          this.needleType = productInfo.needle_type
         }
       })
     }
   },
   watch: {
+    type (newVal) {
+      this.product_code[2] = 'X'
+      this.product_code[3] = 'X'
+      this.product_code[4] = 'X'
+      if (newVal.length !== 0) {
+        const obj = this.typeArr.find((item) => item.value === newVal[0])
+        this.sizeArr = obj.child_size
+        this.child_size = obj.sizeArr
+      }
+      this.typeArr.forEach((item, index) => {
+        if (item.value === newVal[0]) {
+          this.$set(this.product_code, 2, letterArr[index])
+        }
+        if (item.children) {
+          item.children.forEach((item2, index2) => {
+            if (item2.value === newVal[1]) {
+              this.$set(this.product_code, 3, letterArr[index2])
+            }
+            if (item2.children) {
+              item2.children.forEach((item3, index3) => {
+                if (item3.value === newVal[2]) {
+                  this.$set(this.product_code, 4, letterArr[index3])
+                }
+              })
+            }
+          })
+        }
+      })
+    },
+    flower (newVal) {
+      this.flowerArr.forEach((item, index) => {
+        if (item.id === newVal) {
+          let code = index + 1
+          if (code < 10) {
+            code = '0' + code
+          }
+          this.$set(this.product_code, 5, code)
+        }
+      })
+    },
     size: {
       deep: true,
       handler: function (newVal) {
@@ -680,16 +814,14 @@ export default {
     }
   },
   mounted () {
+    this.product_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),
       flower.list(),
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list(),
-      sample.editDetail({
-        id: this.$route.params.id
-      })
+      material.list()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -725,61 +857,13 @@ export default {
       this.materialArr.forEach((item) => {
         item.value = item.name
       })
-      let productInfo = res[6].data.data
-      this.sample_product_code = productInfo.product_code
-      this.sampleName = productInfo.name
-      this.fileArr = productInfo.image.map(item => {
-        return {
-          url: item.image_url
-        }
-      })
-      this.size = productInfo.size.map(item => {
-        return {
-          size: item.size_name,
-          desc: item.size_info,
-          weight: item.weight
-        }
-      })
-      this.product_code = productInfo.product_code
-      this.colour = productInfo.color.map(item => {
-        return {
-          colour: item.color_name
-        }
-      })
-      this.name = productInfo.name
-      this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
-      this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
-      this.flower = productInfo.flower_id
-      this.ingredient = productInfo.component.map((item) => {
-        return {
-          ingredient_name: item.component_name,
-          ingredient_value: item.number
-        }
-      })
-      this.hasFitting = productInfo.part_data.length > 0
-      this.fittingInfo = productInfo.part_data.map((item) => {
-        return {
-          part_id: item.id,
-          fitting_name: item.name,
-          ingredient: item.component.map((item) => {
-            return {
-              ingredient_name: item.component_name,
-              ingredient_value: item.number
-            }
-          }),
-          size: item.size.map((itemSize) => {
-            return {
-              size: itemSize.size_name,
-              weight: itemSize.weight,
-              desc: itemSize.size_info,
-              number: itemSize.number
-            }
-          })
-        }
-      })
-      this.needleType = productInfo.needle_type
       this.loading = false
     })
+  },
+  computed: {
+    productCode () {
+      return this.product_code.join('')
+    }
   }
 }
 </script>
