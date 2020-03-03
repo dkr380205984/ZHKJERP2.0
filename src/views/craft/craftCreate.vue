@@ -2999,7 +2999,7 @@ export default {
         this.weftInfo = data.weft_data
         this.colour = this.warpInfo.color_data.map((item, index) => {
           return {
-            value: item.product_color,
+            value: '',
             colorWarp: item.color_scheme.map((item) => {
               return {
                 name: item.name,

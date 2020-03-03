@@ -1693,17 +1693,22 @@ export default {
     normalStock (stock, color, number, stockId, materialName) {
       this.stock_data = [{
         material_id: '',
+        material_name: '',
         desc: '',
-        stock: []
+        stock: [{
+          stock_id: stockId,
+          stock_name: stock,
+          weight: '',
+          color: color,
+          name: materialName || this.stock_list[this.stockDefault].material_name
+        }]
       }]
+      this.stockYarnInfo = {
+        from: stock,
+        material_name: materialName || this.stock_list[this.stockDefault].material_name,
+        material_color: color
+      }
       this.easyStockFlag = true
-      this.stock_data[0].stock.push({
-        stock_id: stockId,
-        stock_name: stock,
-        weight: '',
-        color: color,
-        name: materialName || this.stock_list[this.stockDefault].material_name
-      })
     },
     saveStock () {
       // 数据验证
