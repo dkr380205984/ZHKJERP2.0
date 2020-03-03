@@ -730,7 +730,7 @@ export default {
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
-          url: item.file_url
+          url: item.image_url
         }
       })
       this.size = productInfo.size.map(item => {

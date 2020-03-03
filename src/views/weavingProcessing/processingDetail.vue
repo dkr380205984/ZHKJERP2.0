@@ -57,10 +57,25 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <el-tooltip class="item"
+              effect="dark"
+              :content="checkProcessList.length===0?'请选取一款产品进行批量分配操作':'批量分配'"
+              placement="top">
+              <div class="btn "
+                :class="{'btnGray':checkProcessList.length===0,'btnWhiteBlue':checkProcessList.length>0}"
+                @click="easyProcess()">批量分配</div>
+            </el-tooltip>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
             style="margin-right:0">
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2">选择</div>
                   <div class="tcolumn">产品编号</div>
                   <div class="tcolumn noPad"
                     style="flex:4">
@@ -77,6 +92,10 @@
                 <div class="trow"
                   v-for="(item,index) in process_info"
                   :key="index">
+                  <div class="tcolumn"
+                    style="flex:0.2">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </div>
                   <div class="tcolumn">
                     <span>{{item.product_code}}</span>
                     <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
@@ -517,55 +536,66 @@
           <i class="el-icon-close"
             @click="easyProcess_flag=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:600px">
           <div class="tips">
             提示信息：本步骤可以统一选择加工单位,加工工序，加工单价和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
-          <div class="row">
-            <div class="label">加工单位：</div>
-            <div class="info">
-              <el-select v-model="commonCompany"
-                filterable
-                placeholder="请选择加工单位">
-                <el-option v-for="item in companyArr"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.name"></el-option>
-              </el-select>
+          <div style="background: #f4f4f4;padding: 8px;margin: 12px 0;"
+            v-for="(item,index) in checkProcessList"
+            :key="index">
+            <div class="row">
+              <div class="label">产品名称：</div>
+              <div class="info">
+                <span class="text">{{item.product_code}}({{item.category_name}}/{{item.type_name}}/{{item.style_name}})</span>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">加工工序：</div>
-            <div class="info">
-              <el-select v-model="commonProcess"
-                filterable
-                multiple
-                placeholder="请选择加工工序">
-                <el-option v-for="item in processArr"
-                  :key="item.name"
-                  :value="item.name"
-                  :label="item.name"></el-option>
-              </el-select>
+            <div class="row">
+              <div class="label">加工单位：</div>
+              <div class="info">
+                <el-select v-model="commonCompany[index]"
+                  filterable
+                  placeholder="请选择加工单位">
+                  <el-option v-for="item in companyArr"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">单价：</div>
-            <div class="info">
-              <zh-input v-model="commonPrice"
-                placeholder="请输入单价">
-                <template slot="append">元</template>
-              </zh-input>
+            <div class="row">
+              <div class="label">加工工序：</div>
+              <div class="info">
+                <el-select v-model="commonProcess[index]"
+                  filterable
+                  multiple
+                  placeholder="请选择加工工序">
+                  <el-option v-for="item in processArr"
+                    :key="item.name"
+                    :value="item.name"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">截止日期：</div>
-            <div class="info">
-              <el-date-picker v-model="commonDate"
-                value-format="yyyy-MM-dd"
-                style="width:100%"
-                type="date"
-                placeholder="选择截止日期">
-              </el-date-picker>
+            <div class="row">
+              <div class="label">单价：</div>
+              <div class="info">
+                <zh-input v-model="commonPrice[index]"
+                  placeholder="请输入单价">
+                  <template slot="append">元</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">截止日期：</div>
+              <div class="info">
+                <el-date-picker v-model="commonDate[index]"
+                  value-format="yyyy-MM-dd"
+                  style="width:100%"
+                  type="date"
+                  placeholder="选择截止日期">
+                </el-date-picker>
+              </div>
             </div>
           </div>
         </div>
@@ -614,10 +644,15 @@ export default {
       process_detail: [],
       easyProcess_flag: false,
       process_flag: false,
-      commonCompany: '',
-      commonPrice: '',
-      commonDate: '',
+      commonCompany: [],
+      commonPrice: [],
+      commonDate: [],
       commonProcess: []
+    }
+  },
+  computed: {
+    checkProcessList () {
+      return this.process_info.filter((item) => item.checked)
     }
   },
   methods: {
@@ -654,8 +689,15 @@ export default {
       })
     },
     easyProcess () {
-      this.process_data = []
-      this.process_info.forEach((item) => {
+      if (this.process_data.length > 0) {
+        this.$message.warning('检测到有未完成的半成品加工分配操作，请完成已有的操作后再进行批量分配')
+        return
+      }
+      if (this.checkProcessList.length === 0) {
+        this.$message.warning('请至少选择一种产品进行分配')
+        return
+      }
+      this.checkProcessList.forEach((item) => {
         this.process_data.push({
           product_id: item.product_id,
           company_id: '',
@@ -677,7 +719,7 @@ export default {
         })
       })
       if (this.process_data.length === 0) {
-        this.$message.warning('所有产品已分配完毕')
+        this.$message.warning('检测到已选的产品已分配完毕')
       } else {
         this.process_flag = true
         this.easyProcess_flag = true
@@ -802,14 +844,19 @@ export default {
       }, 0)
     },
     commonFn () {
-      this.process_data.forEach((item) => {
-        item.company_id = this.commonCompany
-        item.complete_time = this.commonDate
-        item.process_type = this.commonProcess
+      this.process_data.forEach((item, index) => {
+        item.company_id = this.commonCompany[index]
+        item.complete_time = this.commonDate[index]
+        item.process_type = this.commonProcess[index]
         item.product_info.forEach((item) => {
-          item.price = this.commonPrice
+          item.price = this.commonPrice[index]
         })
       })
+      this.commonCompany = []
+      this.commonDate = []
+      this.commonProcess = []
+      this.commonPrice = []
+      this.$message.success('公共信息已经填写完毕，如有辅料信息请按需填写')
       this.easyProcess_flag = false
     },
     deleteLog (id, index) {
