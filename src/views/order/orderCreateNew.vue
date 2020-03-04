@@ -613,7 +613,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">修改</div>
+            @click="saveAll">添加</div>
         </div>
       </div>
     </div>
@@ -1045,10 +1045,10 @@ export default {
       }
       order.create(data).then(res => {
         if (res.data.status) {
-          this.$message.success('修改成功')
+          this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/order/orderDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
             this.msgSwitch = true
           } else {
             this.$router.push('/order/orderDetail/' + res.data.data.id)

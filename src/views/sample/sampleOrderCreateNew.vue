@@ -399,7 +399,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">修改</div>
+            @click="saveAll">添加</div>
         </div>
       </div>
     </div>
@@ -645,7 +645,6 @@ export default {
         return
       }
       let data = {
-        id: this.$route.params.id,
         title: this.sample_order_title,
         type: this.sample_type,
         order_time: this.order_time,
@@ -670,10 +669,10 @@ export default {
       sampleOrder.create(data).then(res => {
         this.lock = true
         if (res.data.status) {
-          this.$message.success('修改成功')
+          this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/sample/sampleOrderDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#E6A23C">修改</span>了一个样单<span style="color:#1A95FF">' + res.data.data.title + '</span>'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个样单<span style="color:#1A95FF">' + res.data.data.title + '</span>'
             this.msgSwitch = true
           } else {
             this.$router.push('/sample/sampleOrderDetail/' + res.data.data.id)
