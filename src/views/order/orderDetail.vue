@@ -54,7 +54,7 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">联系人：</span>
-            <span class="text">{{orderInfo.user_name}}</span>
+            <span class="text">{{orderInfo.contacts}}</span>
           </div>
         </div>
         <div class="rowCtn">

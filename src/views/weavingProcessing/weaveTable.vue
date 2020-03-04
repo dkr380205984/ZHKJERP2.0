@@ -250,19 +250,19 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            let productList = []
-            res[2].data.data.batch_info.forEach(itemBatch => {
-              itemBatch.product_info.forEach(itemPro => {
-                let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-                if (!flag) {
-                  productList.push(itemPro.product_info)
-                }
-              })
-            })
+            // let productList = []
+            // res[2].data.data.batch_info.forEach(itemBatch => {
+            //   itemBatch.product_info.forEach(itemPro => {
+            //     let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+            //     if (!flag) {
+            //       productList.push(itemPro.product_info)
+            //     }
+            //   })
+            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
@@ -274,7 +274,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: flag ? flag.images : [],
+                img: item.category_info.images,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
               }
@@ -309,19 +309,19 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            let productList = []
-            res[2].data.data.batch_info.forEach(itemBatch => {
-              itemBatch.product_info.forEach(itemPro => {
-                let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-                if (!flag) {
-                  productList.push(itemPro.product_info)
-                }
-              })
-            })
+            // let productList = []
+            // res[2].data.data.batch_info.forEach(itemBatch => {
+            //   itemBatch.product_info.forEach(itemPro => {
+            //     let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+            //     if (!flag) {
+            //       productList.push(itemPro.product_info)
+            //     }
+            //   })
+            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
@@ -333,7 +333,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: flag ? flag.images : [],
+                img: item.category_info.images,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }
@@ -370,17 +370,17 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            let productList = []
-            res[2].data.data.product_info.forEach(itemPro => {
-              let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-              if (!flag) {
-                productList.push(itemPro.product_info)
-              }
-            })
+            // let productList = []
+            // res[2].data.data.product_info.forEach(itemPro => {
+            //   let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+            //   if (!flag) {
+            //     productList.push(itemPro.product_info)
+            //   }
+            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
@@ -392,7 +392,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: flag ? flag.images : [],
+                img: item.category_info.images,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
               }
@@ -427,17 +427,17 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            let productList = []
-            res[2].data.data.product_info.forEach(itemPro => {
-              let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-              if (!flag) {
-                productList.push(itemPro.product_info)
-              }
-            })
+            // let productList = []
+            // res[2].data.data.product_info.forEach(itemPro => {
+            //   let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
+            //   if (!flag) {
+            //     productList.push(itemPro.product_info)
+            //   }
+            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = productList.find(itemPro => itemPro.product_code === item.product_info.code)
-              let sizeInfo = flag ? flag.size_measurement.find(itemSize => itemSize.size_name === item.size) : {}
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
@@ -449,7 +449,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: flag ? flag.images : [],
+                img: item.category_info.images,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }

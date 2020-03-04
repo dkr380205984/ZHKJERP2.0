@@ -959,7 +959,6 @@ export default {
           this.hasFitting = productInfo.part_data.length > 0
           this.fittingInfo = productInfo.part_data.map((item) => {
             return {
-              part_id: item.id,
               fitting_name: item.name,
               ingredient: item.component.map((item) => {
                 return {

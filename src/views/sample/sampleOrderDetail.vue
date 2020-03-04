@@ -24,43 +24,54 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown> -->
+            <div class="btn btnGray"
+              style="line-height:36px;"
+              @click="changeOrderStatus('showCanclePopup')"
+              v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">取消订单</div>
+            <div class="btn btnGreen"
+              style="height:38px;line-height:38px;margin-right:16px"
+              @click="changeOrderStatus('waitConfirm')"
+              v-if="sampleOrderInfo.status === 3002">待客户确定</div>
+            <!-- <div class="btn btnGray"
+              style="line-height:36px"></div> -->
             <el-menu mode="horizontal">
               <el-menu class="editMenu"
                 mode="horizontal"
                 @select="changeOrderStatus">
                 <el-submenu index="1"
+                  v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004"
                   popper-class='handleMenuSample'>
-                  <template slot="title">操作</template>
-                  <el-menu-item index="waitConfirm"
+                  <template slot="title">已确定</template>
+                  <el-menu-item index="continue"
+                    class="elMenuItem">继续打样</el-menu-item>
+                  <el-menu-item index="addOrder"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3002">待客户确认</el-menu-item>
-                  <el-submenu index="1-2"
+                    v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">大货生产</el-menu-item>
+                  <el-menu-item index="ok"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">
+                    v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
+                  <!-- <el-menu-item index="waitConfirm"
+                    class="elMenuItem"
+                    v-if="sampleOrderInfo.status === 3002">待客户确认</el-menu-item> -->
+                  <!-- <el-submenu index="1-2"
+                    class="elMenuItem">
                     <template slot="title">已确认</template>
-                    <el-menu-item index="continue"
-                      class="elMenuItem">继续打样</el-menu-item>
-                    <el-menu-item index="ok"
-                      class="elMenuItem"
-                      v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
-                    <el-menu-item index="addOrder"
-                      class="elMenuItem"
-                      v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">大货生产</el-menu-item>
-                  </el-submenu>
-                  <el-menu-item index="change"
+                  </el-submenu> -->
+                  <!-- <el-menu-item index="change"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">修改样单</el-menu-item>
-                  <el-menu-item index="showCanclePopup"
+                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">修改样单</el-menu-item> -->
+                  <!-- <el-menu-item index="showCanclePopup"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">取消样单</el-menu-item>
-                  <el-menu-item index="isNoHandle"
+                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">取消样单</el-menu-item> -->
+                  <!-- <el-menu-item index="isNoHandle"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3003 || sampleOrderInfo.status === 3004">无法操作</el-menu-item>
+                    v-if="sampleOrderInfo.status === 3003 || sampleOrderInfo.status === 3004">无法操作</el-menu-item> -->
                 </el-submenu>
               </el-menu>
             </el-menu>
           </div>
-          <div class="otherInfo">
+          <div class="otherInfo"
+            style="flex-direction:row">
             <div class="block">
               <span class="label">状态</span>
               <span :class="{'text':true,'orange':sampleOrderInfo.status === 3001, 'blue':sampleOrderInfo.status === 3002,'red':sampleOrderInfo.status === 3003,'green':sampleOrderInfo.status === 3004}">{{sampleOrderInfo.status|filterStatus}}</span>
@@ -112,8 +123,14 @@
             <span class="label">样单类型：</span>
             <span class="text">{{sampleOrderInfo.type|filterOrderType}}</span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
+            <span class="text">{{sampleOrderInfo.deliver_time}}</span>
+          </div>
+          <div class="colCtn">
+            <span class="label">客户付费：</span>
             <span class="text">{{sampleOrderInfo.deliver_time}}</span>
           </div>
         </div>
@@ -175,6 +192,7 @@
                   <span class="btn noBorder lineH54"
                     @click="$openUrl('/productPlan/productPlanDetail/' + itemPro.id.product_id + '/2')">配料单</span> -->
                   <span class="btn noBorder lineH54"
+                    style="margin:0"
                     @click="$openUrl('/sample/sampleDetail/' + itemPro.id.product_id)">查看详情</span>
                 </span>
               </span>
@@ -703,7 +721,7 @@
             align-center>
             <el-step title="修改样品信息"></el-step>
             <el-step title="打样信息"></el-step>
-            <el-step title="客户付费"></el-step>
+            <!-- <el-step title="客户付费"></el-step> -->
             <el-step title="完成"></el-step>
           </el-steps>
         </div>
@@ -786,7 +804,7 @@
             </span>
           </div>
         </div>
-        <div class="content"
+        <!-- <div class="content"
           v-if="showChangeSampleOrderPopup === 3">
           <div class="row">
             <span class="label">客户付费：</span>
@@ -855,9 +873,9 @@
               </div>
             </template>
           </template>
-        </div>
+        </div> -->
         <div class="content center_popup"
-          v-if="showChangeSampleOrderPopup === 4 || showChangeSampleOrderPopup === 5">
+          v-if="showChangeSampleOrderPopup === 3 || showChangeSampleOrderPopup === 4">
           <!-- <div class="row"> -->
           <span class="el-icon-warning-outline orange"
             v-if="isCommit === 'before'">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户已确定”，是否继续?</span>
@@ -880,18 +898,18 @@
             v-show="showChangeSampleOrderPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
             @click="showChangeSampleOrderPopup--">上一步</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup < 4"
+            v-show="showChangeSampleOrderPopup < 3"
             @click="addShowChangeSampleOrderPopup(showChangeSampleOrderPopup)">下一步</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup === 4 && isCommit === 'before'"
+            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'before'"
             @click="changeOrderStatus('continueSample')">确定</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup === 4 && isCommit === 'error'"
+            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'error'"
             @click="changeOrderStatus('continueSample')">重试<em class="el-icon-refresh-left"></em></div>
           <div class="btn btnBlue"
-            v-if="showChangeSampleOrderPopup === 4  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            v-if="showChangeSampleOrderPopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
           <div class="btn btnBlue"
-            v-if="showChangeSampleOrderPopup === 5 && isCommit === 'compiled'"
+            v-if="showChangeSampleOrderPopup === 4 && isCommit === 'compiled'"
             @click="closePopup">完成</div>
         </div>
       </div>
@@ -1067,6 +1085,9 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnOrange"
+            v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002"
+            @click="changeOrderStatus('change')">修改</div>
         </div>
       </div>
     </div>
@@ -1713,54 +1734,54 @@ export default {
           this.$message.error('请填写需要打样样品的数量')
           return
         }
-        let clientPay = []
-        if (this.continueSampleInfo.isCustomerPay) {
-          clientPay = this.continueSampleInfo.product_info.map(item => {
-            if (!item.product_id) {
-              flag.id = false
-            }
-            if (!item.size_color[0] || !item.size_color[1]) {
-              flag.sizeColor = false
-            }
-            if (!item.price) {
-              flag.price = false
-            }
-            if (!item.numbers) {
-              flag.numbers = false
-            }
-            if (!item.total_price) {
-              flag.total_price = false
-            }
-            return {
-              product_id: item.product_id,
-              color: item.size_color[1],
-              size: item.size_color[0],
-              price: item.price,
-              number: item.numbers,
-              total_price: item.total_price
-            }
-          })
-        }
-        if (!flag.id) {
-          this.$message.error('请选择需要付费的样品')
-          return
-        }
-        if (!flag.sizeColor) {
-          this.$message.error('请选择需要付费样品的尺码颜色')
-          return
-        }
-        if (!flag.numbers) {
-          this.$message.error('请填写需要付费样品的数量')
-          return
-        }
-        if (!flag.price) {
-          this.$message.error('请填写需要付费样品的单价')
-          return
-        }
-        if (!flag.total_price) {
-          this.$message.error('请填写需要付费总价')
-          return
-        }
+        // let clientPay = []
+        // if (this.continueSampleInfo.isCustomerPay) {
+        //   clientPay = this.continueSampleInfo.product_info.map(item => {
+        //     if (!item.product_id) {
+        //       flag.id = false
+        //     }
+        //     if (!item.size_color[0] || !item.size_color[1]) {
+        //       flag.sizeColor = false
+        //     }
+        //     if (!item.price) {
+        //       flag.price = false
+        //     }
+        //     if (!item.numbers) {
+        //       flag.numbers = false
+        //     }
+        //     if (!item.total_price) {
+        //       flag.total_price = false
+        //     }
+        //     return {
+        //       product_id: item.product_id,
+        //       color: item.size_color[1],
+        //       size: item.size_color[0],
+        //       price: item.price,
+        //       number: item.numbers,
+        //       total_price: item.total_price
+        //     }
+        //   })
+        // }
+        // if (!flag.id) {
+        //   this.$message.error('请选择需要付费的样品')
+        //   return
+        // }
+        // if (!flag.sizeColor) {
+        //   this.$message.error('请选择需要付费样品的尺码颜色')
+        //   return
+        // }
+        // if (!flag.numbers) {
+        //   this.$message.error('请填写需要付费样品的数量')
+        //   return
+        // }
+        // if (!flag.price) {
+        //   this.$message.error('请填写需要付费样品的单价')
+        //   return
+        // }
+        // if (!flag.total_price) {
+        //   this.$message.error('请填写需要付费总价')
+        //   return
+        // }
         this.isCommit = 'commit'
         let title = this.sampleOrderArr[0].title
         title += '-第' + (this.chinaNum[this.sampleOrderArr.length] || this.sampleOrderArr.length) + '次'
@@ -1774,8 +1795,8 @@ export default {
           contacts_id: this.sampleOrderInfo.contacts_id,
           deliver_time: this.continueSampleInfo.time,
           desc: '',
-          product_info: productInfo,
-          client_pay: clientPay
+          product_info: productInfo
+          // client_pay: clientPay
         }).then(res => {
           if (res.data.status !== false) {
             this.showChangeSampleOrderPopup++
