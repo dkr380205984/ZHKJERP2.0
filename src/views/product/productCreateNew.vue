@@ -616,7 +616,6 @@ export default {
       }
       let partData = this.fittingInfo.map((item) => {
         return {
-          part_id: item.part_id ? item.part_id : '',
           part_title: item.fitting_name,
           part_category: '',
           part_color: this.colour.map((item) => {
@@ -733,7 +732,6 @@ export default {
           this.hasFitting = productInfo.part_data.length > 0
           this.fittingInfo = productInfo.part_data.map((item) => {
             return {
-              part_id: item.id,
               fitting_name: item.part_title,
               ingredient: item.part_component.map((item) => {
                 return {

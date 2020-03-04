@@ -325,6 +325,56 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">关联产品：</div>
+            <!-- <div class="text"> -->
+            <div class="tableCtnLv2">
+              <div class="tb_header">
+                <span class="tb_row middle">产品编号</span>
+                <span class="tb_col"
+                  style="flex:4">
+                  <span class="tb_col_item">
+                    <span class="tb_row middle">工艺单编号</span>
+                    <span class="tb_row middle">配料单编号</span>
+                    <span class="tb_row middle">操作时间</span>
+                    <span class="tb_row middle">操作</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tb_content">
+                <span class="tb_row middle">{{detail.sample_product_code}}</span>
+                <span class="tb_col"
+                  style="flex:4">
+                  <span class="tb_col_item"
+                    v-for="(item,index) in detail.related_product"
+                    :key="index">
+                    <span class="tb_row middle">
+                      <span class="tb_handle_btn blue"
+                        v-if="item.craft_code"
+                        @click="$router.push('/craft/craftDetail/' + item.product_id + '/1')">{{item.craft_code}}</span>
+                      <span style="color:rgba(0,0,0,0.4)"
+                        v-else>无</span>
+                    </span>
+                    <span class="tb_row middle">
+                      <span class="tb_handle_btn blue"
+                        v-if="item.material_match_id"
+                        @click="$router.push('/productPlan/productPlanDetail/' + item.product_id + '/1')">{{item.material_match_id}}</span>
+                      <span style=""
+                        v-else>无</span>
+                    </span>
+                    <span class="tb_row middle">{{item.create_time}}</span>
+                    <span class="tb_row middle">
+                      <span class="tb_handle_btn blue"
+                        @click="$router.push('/product/productDetail/' + item.product_id)">详情</span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <!-- </div> -->
+          </div>
+        </div>
       </div>
     </div>
     <div class="module"
@@ -576,6 +626,7 @@ export default {
         if (!this.detail.quotation_info) {
           this.detail.quotation_info = []
         }
+        // this.detail.related_product = this.$mergeData(this.detail.related_product, { mainRule: 'product_code', childrenName: 'other_info' })
         this.loading = false
       }
     })
