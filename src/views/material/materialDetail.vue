@@ -60,6 +60,14 @@
             style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
             <el-tooltip class="item"
               effect="dark"
+              :content="checkWhichYarn.length===0?'请选取纱线进行加工操作':'批量加工'"
+              placement="top">
+              <div class="btn"
+                :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
+                @click="easyProcess">批量加工</div>
+            </el-tooltip>
+            <el-tooltip class="item"
+              effect="dark"
               :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购白胚'"
               placement="top">
               <div class="btn"
@@ -488,16 +496,18 @@
                   </div>
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">加工{{type==='1'?'原':'辅'}}料</span>
-                      <span class="explanation">(必填)</span>
+                      <span class="text">加工工序</span>
+                      <span class="explanation">(可多选)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.material_id">
-                        <el-option v-for="item in materialArr"
+                      <el-select v-model="item.process"
+                        filterable
+                        multiple
+                        placeholder="请选择加工工序">
+                        <el-option v-for="item in processList"
                           :key="item.id"
-                          :value="item.id"
-                          :label="item.material_name+'/'+item.material_attribute">
-                        </el-option>
+                          :value="item.name"
+                          :label="item.name"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -508,18 +518,16 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">加工工序</span>
-                      <span class="explanation">(可多选)</span>
+                      <span class="text">加工{{type==='1'?'原':'辅'}}料</span>
+                      <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="itemChild.process"
-                        filterable
-                        multiple
-                        placeholder="请选择加工工序">
-                        <el-option v-for="item in processList"
+                      <el-select v-model="itemChild.material_id">
+                        <el-option v-for="item in materialArr"
                           :key="item.id"
-                          :value="item.name"
-                          :label="item.name"></el-option>
+                          :value="item.id"
+                          :label="item.material_name+'/'+item.material_attribute">
+                        </el-option>
                       </el-select>
                     </div>
                   </div>
@@ -587,9 +595,9 @@
                 <span class="once"
                   v-if="!process_flag"
                   @click="normalProcess()">普通加工</span>
-                <span class="once"
+                <!-- <span class="once"
                   v-if="!process_flag"
-                  @click="easyProcess">一键加工</span>
+                  @click="easyProcess">一键加工</span> -->
                 <span class="once cancle"
                   v-if="process_flag"
                   @click="cancleProcess">取消加工</span>
@@ -911,59 +919,71 @@
           <div class="tips">
             提示信息：一键加工操作可以统一选择加工单位,加工单价,加工工序和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
-          <div class="row">
-            <div class="label">加工单位：</div>
-            <div class="info">
-              <el-select v-model="commonProcessCompany"
-                filterable
-                placeholder="请选择加工单位">
-                <el-option v-for="item in processCompany"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.name"></el-option>
-              </el-select>
+          <div v-for="(item,index) in checkWhichYarn"
+            :key="index"
+            style="padding:8px;background:#f4f4f4;margin:8px 0">
+            <div class="row">
+              <div class="label">物料名称：</div>
+              <div class="info">
+                <span class="text">{{item.material_name}}</span>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">加工单价：</div>
-            <div class="info">
-              <el-input v-model="commonProcessPrice"
-                placeholder="请输入加工单价">
-                <template slot="append">元</template>
-              </el-input>
+            <div class="row">
+              <div class="label">加工单位：</div>
+              <div class="info">
+                <el-select v-model="commonProcessCompany[index]"
+                  filterable
+                  placeholder="请选择加工单位">
+                  <el-option v-for="item in processCompany"
+                    :key="item.id"
+                    :value="item.id"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">加工工序：</div>
-            <div class="info">
-              <el-select v-model="commonProcess"
-                filterable
-                multiple
-                placeholder="请选择加工工序">
-                <el-option v-for="item in processList"
-                  :key="item.id"
-                  :value="item.name"
-                  :label="item.name"></el-option>
-              </el-select>
+            <div class="row">
+              <div class="label">加工单价：</div>
+              <div class="info">
+                <el-input v-model="commonProcessPrice[index]"
+                  placeholder="请输入加工单价">
+                  <template slot="append">元</template>
+                </el-input>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">截止日期：</div>
-            <div class="info">
-              <el-date-picker v-model="commonDate"
-                value-format="yyyy-MM-dd"
-                style="width:100%"
-                type="date"
-                placeholder="选择截止日期">
-              </el-date-picker>
+            <div class="row">
+              <div class="label">加工工序：</div>
+              <div class="info">
+                <el-select v-model="commonProcess[index]"
+                  filterable
+                  multiple
+                  placeholder="请选择加工工序">
+                  <el-option v-for="item in processList"
+                    :key="item.id"
+                    :value="item.name"
+                    :label="item.name"></el-option>
+                </el-select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">截止日期：</div>
+              <div class="info">
+                <el-date-picker v-model="commonDate[index]"
+                  value-format="yyyy-MM-dd"
+                  style="width:100%"
+                  type="date"
+                  placeholder="选择截止日期">
+                </el-date-picker>
+              </div>
             </div>
           </div>
         </div>
         <div class="opr">
-          <div class="btn btnGray"
-            @click="easyProcessFlag = false">直接跳过</div>
-          <div class="btn btnBlue"
-            @click="commonFnProcess">确定</div>
+          <a href="#process"
+            class="btn btnGray"
+            @click="easyProcessFlag = false">直接跳过</a>
+          <a href="#process"
+            class="btn btnBlue"
+            @click="commonFnProcess">确定</a>
         </div>
       </div>
     </div>
@@ -1306,10 +1326,10 @@ export default {
       processList: [],
       commonCompany: [],
       commonPrice: [],
-      commonProcessCompany: '', // 一键加工公共单位
-      commonProcessPrice: '',
+      commonProcessCompany: [], // 一键加工公共单位
+      commonProcessPrice: [],
       commonProcess: [],
-      commonDate: '',
+      commonDate: [],
       replenishList: [],
       replenishFlag: false,
       replenishId: '', // 补纱flag为true时传replenishId
@@ -1944,16 +1964,18 @@ export default {
       this.easyOrderFlag = false
     },
     commonFnProcess () {
-      this.process_data.forEach((item) => {
-        item.processList[0].price = this.commonProcessPrice
-        item.processList[0].process = this.commonProcess
-        item.company_id = this.commonProcessCompany
-        item.complete_time = this.commonDate
+      this.process_data.forEach((item, index) => {
+        item.processList.forEach((itemChild) => {
+          itemChild.price = this.commonProcessPrice[index]
+        })
+        item.process = this.commonProcess[index]
+        item.company_id = this.commonProcessCompany[index]
+        item.complete_time = this.commonDate[index]
       })
-      this.commonProcessCompany = ''
-      this.commonProcessPrice = ''
+      this.commonProcessCompany = []
+      this.commonProcessPrice = []
       this.commonProcess = []
-      this.commonDate = ''
+      this.commonDate = []
       this.easyProcessFlag = false
     },
     addMaterial (index) {
@@ -1971,31 +1993,41 @@ export default {
     normalProcess (id, number) {
       this.process_flag = true
       this.process_data.push({
-        material_id: id,
         company_id: '',
         processList: [{
+          material_id: id,
           number: number,
-          price: '',
-          process: []
+          price: ''
         }],
+        process: [],
         complete_time: '',
         desc: ''
       })
     },
     easyProcess () {
-      this.statistic_data.forEach((item) => {
+      if (this.checkWhichYarn.length === 0) {
+        this.$message.warning('请选择一种纱线进行加工')
+        return
+      }
+      if (this.process_data.length > 0) {
+        this.$message.warning('请先完成已有的加工信息再继续订购')
+        return
+      }
+      this.checkWhichYarn.forEach((item) => {
+        let material = []
         item.childrenMergeInfo.forEach((itemChild) => {
-          this.process_data.push({
+          material.push({
             material_id: itemChild.id,
-            company_id: '',
-            processList: [{
-              number: itemChild.order_weight,
-              price: '',
-              process: []
-            }],
-            complete_time: '',
-            desc: ''
+            number: itemChild.order_weight,
+            price: ''
           })
+        })
+        this.process_data.push({
+          company_id: '',
+          processList: material,
+          complete_time: '',
+          process: [],
+          desc: ''
         })
       })
       this.easyProcessFlag = true
@@ -2010,17 +2042,21 @@ export default {
           errorMsg = '请选择加工单位'
           return
         }
-        if (!item.material_id) {
-          errorFlag = true
-          errorMsg = '请选择物料'
-          return
-        }
         if (!item.complete_time) {
           errorFlag = true
           errorMsg = '请选择截止日期'
           return
         }
+        if (item.process.length === 0) {
+          errorFlag = true
+          errorMsg = '请选择加工工序'
+        }
         item.processList.forEach((itemChild) => {
+          if (!itemChild.material_id) {
+            errorFlag = true
+            errorMsg = '请选择物料'
+            return
+          }
           if (!itemChild.number) {
             errorFlag = true
             errorMsg = '请输入数量'
@@ -2029,11 +2065,6 @@ export default {
           if (!itemChild.price) {
             errorFlag = true
             errorMsg = '请输入单价'
-            return
-          }
-          if (itemChild.process.length === 0) {
-            errorFlag = true
-            errorMsg = '请选择加工工序'
           }
         })
       })
@@ -2046,7 +2077,7 @@ export default {
         item.processList.forEach((itemChild) => {
           formData.push({
             order_type: this.$route.params.orderType,
-            process_type: itemChild.process.join('/'),
+            process_type: item.process.join('/'),
             type: this.type,
             order_id: this.$route.params.id,
             client_id: item.company_id,
@@ -2054,7 +2085,7 @@ export default {
             weight: itemChild.number,
             desc: item.desc,
             complete_time: this.$getTime(item.complete_time),
-            plan_id: item.material_id
+            plan_id: itemChild.material_id
           })
         })
       })
@@ -2087,12 +2118,13 @@ export default {
     },
     addProcess (index) {
       this.process_data.push({
-        material_id: '',
         company_id: '',
+        process: [],
         processList: [{
+          material_id: '',
           number: '',
-          price: '',
-          process: []
+          price: ''
+
         }],
         complete_time: '',
         desc: ''
@@ -2102,7 +2134,7 @@ export default {
       this.process_data[index].processList.push({
         number: '',
         price: '',
-        process: []
+        material_id: ''
       })
     },
     deleteProcessChild (index, indexChild) {
