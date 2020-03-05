@@ -585,6 +585,7 @@ export default {
     }
   },
   mounted () {
+    document.getElementsByClassName('body')[0].scrollTo(0, 0)
     Promise.all([
       notify.list({
         limit: 7,

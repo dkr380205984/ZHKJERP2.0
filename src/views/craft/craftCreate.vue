@@ -2474,7 +2474,7 @@ export default {
       return new Array(this.repeatPM.length).fill('').map((item, index) => this.romanNum[index])
     },
     weimi () {
-      if (this.weftInfo.neichang && this.weftInfo.rangwei) {
+      if (this.weftInfo.neichang) {
         return ((this.weftInfo.total / (this.weftInfo.neichang))).toFixed(2)
       } else {
         return 0
