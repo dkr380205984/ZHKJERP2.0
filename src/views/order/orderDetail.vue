@@ -164,8 +164,8 @@
                   </span>
                   <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
                   <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tb_row">{{itemPro.unit_price + '元'}}</span>
-                  <span class="tb_row">{{(Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)}}元</span>
+                  <span class="tb_row">{{$toFixed(itemPro.unit_price) + '元'}}</span>
+                  <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}元</span>
                 </span>
               </span>
             </span>

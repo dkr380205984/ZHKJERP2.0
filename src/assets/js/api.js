@@ -229,7 +229,8 @@ const sampleOrder = {
   editDetail: (params) => http.get(`${baseUrl}/sample/orders/edit`, params),
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params),
-  changeStatus: (params) => http.post(`${baseUrl}/sample/status/check`, params, 'application/json')
+  changeStatus: (params) => http.post(`${baseUrl}/sample/status/check`, params, 'application/json'),
+  clientPay: (params) => http.post(`${baseUrl}/order/client/pay`, params, 'application/json')
 }
 // 物料预定购
 const materialOrder = {

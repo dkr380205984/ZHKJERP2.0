@@ -131,7 +131,12 @@
           </div>
           <div class="colCtn">
             <span class="label">客户付费：</span>
-            <span class="text">{{sampleOrderInfo.deliver_time}}</span>
+            <span class="text">
+              <div class="btn btnWhiteBlue"
+                v-if="!sampleOrderInfo.isClientPay"
+                @click="changeOrderStatus('CustomerPayFlag')">付费</div>
+              <template v-else>{{sampleOrderInfo.clientPayPrice}}元</template>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -156,6 +161,7 @@
                 <span class="trow">
                   <span class="tcolumn">尺码/颜色</span>
                   <span class="tcolumn">打样数量</span>
+                  <span class="tcolumn">单价</span>
                 </span>
               </span>
               <span class="tcolumn center">相关信息</span>
@@ -183,6 +189,7 @@
                   :key="indexSize">
                   <span class="tcolumn">{{itemSize.size + ' / ' + itemSize.color}}</span>
                   <span class="tcolumn">{{itemSize.numbers + itemPro.product_info.unit}}</span>
+                  <span class="tcolumn">{{itemSize.payPrice ? itemSize.payPrice : '待定'}}</span>
                 </span>
               </span>
               <span class="tcolumn center">
@@ -1080,6 +1087,92 @@
         </div>
       </div>
     </div>
+    <!-- 客户付费 -->
+    <div class="popup"
+      v-if="customerPayPopupFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">客户付费</span>
+          <span class="el-icon-close"
+            @click="customerPayPopupFlag = false"></span>
+        </div>
+        <div class="content">
+          <!-- <div class="row">
+            <span class="label">客户付费：</span>
+            <span class="info info_col_middle">
+              <el-switch v-model="continueSampleInfo.isCustomerPay"
+                active-text="是"
+                inactive-text="否">
+              </el-switch>
+            </span>
+          </div> -->
+          <!-- <template v-if="continueSampleInfo.isCustomerPay"> -->
+          <template v-for="(itemPro,indexPro) in continueSampleInfo.product_info">
+            <div class="row"
+              :key="indexPro+'code'">
+              <!-- <span class="label"></span> -->
+              <span class="info">
+                <el-select v-model="itemPro.product_id"
+                  filterable
+                  disabled
+                  placeholder="请选择样品"
+                  @change="changeProductSizeColorArr(itemPro,$event)">
+                  <el-option v-for="item in productList"
+                    :key="item.product_id"
+                    :label="item.product_code"
+                    :value="item.product_id">
+                  </el-option>
+                </el-select>
+              </span>
+            </div>
+            <div class="row"
+              :key="indexPro + 'info'">
+              <!-- <span class="label"></span> -->
+              <span class="info popup_info_page">
+                <el-cascader class="elInput"
+                  v-model="itemPro.size_color"
+                  placeholder='尺码/颜色'
+                  disabled
+                  :options="itemPro.sizeColorArr"></el-cascader>
+                <zh-input v-model="itemPro.numbers"
+                  class="elInput"
+                  type='number'
+                  placeholder='付费数量'
+                  @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
+                  <template slot="append">{{itemPro.unit}}</template>
+                </zh-input>
+              </span>
+            </div>
+            <div class="row"
+              :key="indexPro + 'price'">
+              <!-- <span class="label"></span> -->
+              <span class="info popup_info_page">
+                <zh-input v-model="itemPro.price"
+                  class="elInput"
+                  type='number'
+                  placeholder='单价'
+                  @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
+                  <template slot="append">元</template>
+                </zh-input>
+                <zh-input v-model="itemPro.total_price"
+                  class="elInput"
+                  type='number'
+                  placeholder='总价'>
+                  <template slot="append">元</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+          <!-- </template> -->
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="customerPayPopupFlag = false">取消</div>
+          <div class="btn btnBlue"
+            @click="changeOrderStatus('customerPay')">确定</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1189,7 +1282,8 @@ export default {
       materialStockId: '',
       changeSampleForProductPopup: false, // 样品转为产品窗口
       sampleForProductId: [],
-      isOkStatus: false
+      isOkStatus: false,
+      customerPayPopupFlag: false // 客户付费窗口flag
     }
   },
   methods: {
@@ -1222,6 +1316,21 @@ export default {
       }).then(res => {
         let sampleOrderInfo = res.data.data
         this.sampleOrderArr = [sampleOrderInfo].concat(this.$clone(sampleOrderInfo.child_data)).map((item, index) => {
+          item.product_info.forEach(itemPro => {
+            itemPro.size_info.forEach(itemSize => {
+              let flag = item.client_pay.find(itemInner => (itemInner.size === itemSize.size && itemInner.color === itemSize.color && +itemPro.id.product_id === +itemInner.product_info.product_id))
+              if (flag) {
+                itemSize.payNum = flag.number
+                itemSize.payPrice = flag.price
+              }
+            })
+          })
+          if (item.client_pay.length > 0) {
+            item.isClientPay = true
+            item.clientPayPrice = this.$toFixed(item.client_pay.map(itemPrice => itemPrice.price * itemPrice.number).reduce((a, b) => {
+              return a + b
+            }))
+          }
           return {
             showComponentsName: this.chinaNum[index] + '次打样',
             ...item
@@ -1657,33 +1766,6 @@ export default {
         })
       } else if (type === 'continue') {
         this.showChangeSampleOrderPopup = 1
-        this.continueSampleInfo.product_info = this.$flatten(this.sampleOrderInfo.product_info.map(itemPro => {
-          return {
-            product_id: itemPro.product_info.product_id,
-            sizeColorArr: JSON.stringify(itemPro.product_info.size_measurement.map(itemSize => {
-              return {
-                label: itemSize.size_name,
-                value: itemSize.size_name,
-                children: itemPro.product_info.color.map(itemColor => {
-                  return {
-                    label: itemColor.color_name,
-                    value: itemColor.color_name
-                  }
-                })
-              }
-            })),
-            unit: itemPro.product_info.unit,
-            size_info: itemPro.size_info
-          }
-        })).map(itemPro => {
-          return {
-            product_id: itemPro.product_id,
-            number: itemPro.numbers,
-            size_color: [itemPro.size, itemPro.color],
-            sizeColorArr: JSON.parse(itemPro.sizeColorArr),
-            unit: itemPro.unit
-          }
-        })
       } else if (type === 'continueSample') {
         if (this.continueSampleInfo.type !== 0 && !this.continueSampleInfo.type) {
           this.$message.error('请选择打样类型')
@@ -1938,6 +2020,104 @@ export default {
             this.$message.success('修改样单状态为"客户已确认"成功')
           } else {
             this.isCommit = 'error'
+          }
+        })
+      } else if (type === 'CustomerPayFlag') {
+        this.customerPayPopupFlag = true
+        this.continueSampleInfo.product_info = this.$flatten(this.sampleOrderInfo.product_info.map(itemPro => {
+          return {
+            product_id: itemPro.product_info.product_id,
+            sizeColorArr: JSON.stringify(itemPro.product_info.size_measurement.map(itemSize => {
+              return {
+                label: itemSize.size_name,
+                value: itemSize.size_name,
+                children: itemPro.product_info.color.map(itemColor => {
+                  return {
+                    label: itemColor.color_name,
+                    value: itemColor.color_name
+                  }
+                })
+              }
+            })),
+            unit: itemPro.product_info.unit,
+            size_info: itemPro.size_info
+          }
+        })).map(itemPro => {
+          return {
+            product_id: itemPro.product_id,
+            number: itemPro.numbers,
+            size_color: [itemPro.size, itemPro.color],
+            sizeColorArr: JSON.parse(itemPro.sizeColorArr),
+            unit: itemPro.unit
+          }
+        })
+      } else if (type === 'customerPay') {
+        let flag = {
+          id: true,
+          sizeColor: true,
+          numbers: true,
+          price: true,
+          total_price: true
+        }
+        let clientPay = []
+        // if (this.continueSampleInfo.isCustomerPay) {
+        clientPay = this.continueSampleInfo.product_info.map(item => {
+          if (!item.product_id) {
+            flag.id = false
+          }
+          if (!item.size_color[0] || !item.size_color[1]) {
+            flag.sizeColor = false
+          }
+          if (!item.price) {
+            flag.price = false
+          }
+          if (!item.numbers) {
+            flag.numbers = false
+          }
+          if (!item.total_price) {
+            flag.total_price = false
+          }
+          return {
+            product_id: item.product_id,
+            order_id: this.activeSampleOrderId,
+            client_id: this.sampleOrderInfo.client_id,
+            color: item.size_color[1],
+            size: item.size_color[0],
+            price: item.price,
+            number: item.numbers,
+            total_price: item.total_price
+          }
+        })
+        // }
+        if (!flag.id) {
+          this.$message.error('请选择需要付费的样品')
+          return
+        }
+        if (!flag.sizeColor) {
+          this.$message.error('请选择需要付费样品的尺码颜色')
+          return
+        }
+        if (!flag.numbers) {
+          this.$message.error('请填写需要付费样品的数量')
+          return
+        }
+        if (!flag.price) {
+          this.$message.error('请填写需要付费样品的单价')
+          return
+        }
+        if (!flag.total_price) {
+          this.$message.error('请填写需要付费总价')
+          return
+        }
+        this.loading = false
+        sampleOrder.clientPay({
+          data: clientPay
+        }).then(res => {
+          this.loading = true
+          if (res.data.status !== false) {
+            this.$message.success('提交成功')
+            this.customerPayPopupFlag = false
+            this.init()
           }
         })
       } else if (type === 'isNoHandle') {
