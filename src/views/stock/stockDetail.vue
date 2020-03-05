@@ -159,10 +159,12 @@
               <div class="colCtn flex3">
                 <div class="label">
                   <span class="text">备注</span>
+                  <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <zh-input placeholder="请输入备注"
-                    v-model="itemYarn.remark"></zh-input>
+                  <el-autocomplete v-model="itemYarn.remark"
+                    :fetch-suggestions="querySearchRemark"
+                    placeholder="请输入备注"></el-autocomplete>
                 </div>
               </div>
             </div>
@@ -400,8 +402,9 @@
                   <span class="text">备注</span>
                 </div>
                 <div class="content">
-                  <zh-input placeholder="请输入备注"
-                    v-model="itemMa.remark"></zh-input>
+                  <el-autocomplete v-model="itemMa.remark"
+                    :fetch-suggestions="querySearchRemark"
+                    placeholder="请输入备注"></el-autocomplete>
                 </div>
               </div>
             </div>
@@ -642,8 +645,9 @@
                   <span class="text">备注</span>
                 </div>
                 <div class="content">
-                  <zh-input placeholder="请输入备注"
-                    v-model="itemMa.remark"></zh-input>
+                  <el-autocomplete v-model="itemMa.remark"
+                    :fetch-suggestions="querySearchRemark"
+                    placeholder="请输入备注"></el-autocomplete>
                 </div>
               </div>
             </div>
@@ -901,8 +905,9 @@
                   <span class="text">备注</span>
                 </div>
                 <div class="content">
-                  <zh-input placeholder="请输入备注"
-                    v-model="itemMa.remark"></zh-input>
+                  <el-autocomplete v-model="itemMa.remark"
+                    :fetch-suggestions="querySearchRemark"
+                    placeholder="请输入备注"></el-autocomplete>
                 </div>
               </div>
             </div>
@@ -941,17 +946,6 @@
                 placeholder="输入编号按回车键查询"
                 @change="getProductLog">
               </el-input>
-              <!-- <el-select v-model="ProductAction"
-                class="inputs"
-                filterable
-                placeholder="请选择需要筛选的类型"
-                @change="getMaterialLog">
-                <el-option v-for="(item,index) in actionArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.action">
-                </el-option>
-              </el-select> -->
               <div class="btn btnGray"
                 style="margin-left:0"
                 @click="resetEditInfo('filterProductLog')">重置</div>
@@ -959,8 +953,6 @@
           </div>
           <div class="btnCtn_page"
             id='product'>
-            <!-- <div class="btn noBorder noMargin"
-              @click="deleteLog(productLog,'productLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @change="downloadProduct">批量导出excel</div>
           </div>
@@ -1058,48 +1050,6 @@ export default {
       yarnAction: '',
       yarnEditInfo: [],
       actionTypeArr: ['', '入库', '出库'],
-      // actionArr: [
-      //   {
-      //     name: '预定购入库',
-      //     action: 1
-      //   },
-      //   {
-      //     name: '加工出库',
-      //     action: 2
-      //   },
-      //   {
-      //     name: '加工入库',
-      //     action: 3
-      //   },
-      //   {
-      //     name: '生产出库',
-      //     action: 4
-      //   },
-      //   {
-      //     name: '订购入库',
-      //     action: 5
-      //   },
-      //   {
-      //     name: '结余入库',
-      //     action: 6
-      //   },
-      //   {
-      //     name: '结余出库',
-      //     action: 7
-      //   },
-      //   {
-      //     name: '订单取消入库',
-      //     action: 8
-      //   },
-      //   {
-      //     name: '仓库入库',
-      //     action: 10
-      //   },
-      //   {
-      //     name: '仓库出库',
-      //     action: 13
-      //   }
-      // ],
       actionArr: [
         {
           name: '预定购入库',
@@ -1702,7 +1652,8 @@ export default {
         name: true,
         attr: true,
         number: true,
-        type: true
+        type: true,
+        remark: true
       }
       this.yarnEditInfo.forEach(itemMa => {
         if (!itemMa.yarnName) {
@@ -1716,6 +1667,9 @@ export default {
         }
         if (!itemMa.number) {
           flag.number = false
+        }
+        if (!itemMa.remark) {
+          flag.remark = false
         }
       })
       if (!flag.name) {
@@ -1732,6 +1686,10 @@ export default {
       }
       if (!flag.number) {
         this.$message.error('检测到有未填写的操作数量，请填写')
+        return
+      }
+      if (!flag.remark) {
+        this.$message.error('请输入备注')
         return
       }
       let data = this.yarnEditInfo.map(item => {
@@ -1766,7 +1724,8 @@ export default {
         name: true,
         attr: true,
         number: true,
-        type: true
+        type: true,
+        remark: true
       }
       this.materialEditInfo.forEach(itemMa => {
         if (!itemMa.materialName) {
@@ -1780,6 +1739,9 @@ export default {
         }
         if (!itemMa.number) {
           flag.number = false
+        }
+        if (!itemMa.remark) {
+          flag.remark = false
         }
       })
       if (!flag.name) {
@@ -1796,6 +1758,10 @@ export default {
       }
       if (!flag.number) {
         this.$message.error('检测到有未填写的操作数量，请填写')
+        return
+      }
+      if (!flag.remark) {
+        this.$message.error('请输入备注')
         return
       }
       let data = this.materialEditInfo.map(item => {
@@ -1831,7 +1797,8 @@ export default {
         attr: true,
         number: true,
         type: true,
-        size: true
+        size: true,
+        remark: true
       }
       this.packEditInfo.forEach(itemMa => {
         if (!itemMa.packName) {
@@ -1848,6 +1815,9 @@ export default {
         }
         if (!itemMa.number) {
           flag.number = false
+        }
+        if (!itemMa.remark) {
+          flag.remark = false
         }
       })
       if (!flag.name) {
@@ -1870,6 +1840,10 @@ export default {
         this.$message.error('检测到有未填写的操作数量，请填写')
         return
       }
+      if (!flag.remark) {
+        this.$message.error('请输入备注')
+        return
+      }
       let data = this.packEditInfo.map(item => {
         return {
           material_name: item.packName,
@@ -1883,7 +1857,6 @@ export default {
           user_id: window.sessionStorage.getItem('user_id')
         }
       })
-      console.log(data)
       stock.packStock({
         data: data
       }).then(res => {
@@ -1903,7 +1876,8 @@ export default {
         size: true,
         color: true,
         number: true,
-        type: true
+        type: true,
+        remark: true
       }
       this.productEditInfo.forEach(itemMa => {
         if (!itemMa.productName) {
@@ -1920,6 +1894,9 @@ export default {
         }
         if (!itemMa.number) {
           flag.number = false
+        }
+        if (!itemMa.remark) {
+          flag.remark = false
         }
       })
       if (!flag.name) {
@@ -1940,6 +1917,10 @@ export default {
       }
       if (!flag.number) {
         this.$message.error('检测到有未填写的操作数量，请填写')
+        return
+      }
+      if (!flag.remark) {
+        this.$message.error('请输入备注')
         return
       }
       let data = this.productEditInfo.map(item => {
@@ -2014,93 +1995,6 @@ export default {
         })
       }
     },
-    // deleteLog (item, type) {
-    //   if (type === 'yarnLog') {
-    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-    //     if (data.length === 0) {
-    //       this.$message.warning('检测到未选中日志')
-    //     } else {
-    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning'
-    //       }).then(() => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '删除成功!'
-    //         })
-    //       }).catch(() => {
-    //         this.$message({
-    //           type: 'info',
-    //           message: '已取消'
-    //         })
-    //       })
-    //     }
-    //   } else if (type === 'materialLog') {
-    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-    //     if (data.length === 0) {
-    //       this.$message.warning('检测到未选中日志')
-    //     } else {
-    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning'
-    //       }).then(() => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '删除成功!'
-    //         })
-    //       }).catch(() => {
-    //         this.$message({
-    //           type: 'info',
-    //           message: '已取消'
-    //         })
-    //       })
-    //     }
-    //   } else if (type === 'packLog') {
-    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-    //     if (data.length === 0) {
-    //       this.$message.warning('检测到未选中日志')
-    //     } else {
-    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning'
-    //       }).then(() => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '删除成功!'
-    //         })
-    //       }).catch(() => {
-    //         this.$message({
-    //           type: 'info',
-    //           message: '已取消'
-    //         })
-    //       })
-    //     }
-    //   } else if (type === 'productLog') {
-    //     let data = this.$flatten(item).filter(itemLog => itemLog.checked)
-    //     if (data.length === 0) {
-    //       this.$message.warning('检测到未选中日志')
-    //     } else {
-    //       this.$confirm('此操作将永久删除该日志，请谨慎操作, 是否继续?', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning'
-    //       }).then(() => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '删除成功!'
-    //         })
-    //       }).catch(() => {
-    //         this.$message({
-    //           type: 'info',
-    //           message: '已取消'
-    //         })
-    //       })
-    //     }
-    //   }
-    // },
     goLog (item, type) {
       if (type === 'yarn') {
         this.searchYarnLog = item.material_name
@@ -2119,6 +2013,21 @@ export default {
         return
       }
       document.getElementById(type).scrollIntoView(true)
+    },
+    querySearchRemark (queryString, cb) {
+      let returnDataArr = [
+        {
+          value: '手工入库'
+        },
+        {
+          value: '数据填错'
+        },
+        {
+          value: '出售'
+        }
+      ]
+      let returnData = queryString ? returnDataArr.filter(item => item.value.indexOf(queryString) !== -1) : returnDataArr
+      cb(returnData)
     }
   },
   created () {
