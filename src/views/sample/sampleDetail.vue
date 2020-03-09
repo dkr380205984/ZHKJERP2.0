@@ -88,9 +88,11 @@
               <!-- <img v-for="(item,index) in detail.image"
                 :key="index"
                 :src="item.image_url" /> -->
-              <el-image style="max-width:150px;max-height:150px;"
-                :src="detail.image[0]? detail.image[0].image_url : ''"
-                :preview-src-list="detail.image.map(item=>item.image_url)">
+              <el-image style="width:150px;height:150px;margin-right:16px"
+                v-for="(item,index) in detail.image"
+                :key="index"
+                :src="item.image_url || ''"
+                :preview-src-list="[item.image_url]">
               </el-image>
             </div>
           </div>
@@ -436,28 +438,32 @@
           </span>
           <span class="row">
             <span class="label">产品规格：</span>
-            <span class="info colCenter">
+            <span class="info">
               <el-checkbox :indeterminate="isIndeterminateSize"
                 v-model="checkAllSize"
                 @change="handleCheckAllSize">全选</el-checkbox>
-              <el-checkbox v-for="size in detail.size"
-                :label="size.size_name"
-                :key="size.size_name"
-                v-model="size.checked"
-                @change="handleCheckSize">{{size.size_name}}</el-checkbox>
+              <el-checkbox-group v-model="checkedSize"
+                @change="handleCheckSize">
+                <el-checkbox v-for="size in detail.size"
+                  :label="size.size_name"
+                  :key="size.size_name">{{size.size_name}}</el-checkbox>
+              </el-checkbox-group>
             </span>
           </span>
           <span class="row">
             <span class="label">产品配色：</span>
-            <span class="info colCenter">
+            <span class="info">
               <el-checkbox :indeterminate="isIndeterminateColor"
                 v-model="checkAllColor"
                 @change="handleCheckAllColor">全选</el-checkbox>
-              <el-checkbox v-for="color in detail.color"
-                :label="color.color_name"
-                :key="color.color_name"
-                v-model="color.checked"
-                @change="handleCheckColor">{{color.color_name}}</el-checkbox>
+              <el-checkbox-group v-model="checkedColor"
+                @change="handleCheckColor">
+                <el-checkbox v-for="color in detail.color"
+                  :label="color.color_name"
+                  :key="color.color_name">{{color.color_name}}</el-checkbox>
+              </el-checkbox-group>
+              <!-- <el-checkbox                 :key="color.color_name + detail.color.filter(item=>item.checked).length"
+                v-model="color.checked">{{color.color_name}}</el-checkbox> -->
             </span>
           </span>
         </div>
@@ -539,57 +545,57 @@ export default {
     },
     handleCheckAllSize ($event) {
       this.isIndeterminateSize = false
-      this.detail.size.forEach(itemSize => {
-        itemSize.checked = $event
-      })
-    },
-    handleCheckSize () {
-      let data = this.detail.size.filter(itemSize => !itemSize.checked)
-      if (data.length > 0) {
-        this.checkAllSize = false
-        if (data.length === this.detail.size.length) {
-          this.isIndeterminateSize = false
-        } else {
-          this.isIndeterminateSize = true
-        }
+      if ($event) {
+        this.checkedSize = this.detail.size.map(item => item.size_name)
       } else {
+        this.checkedSize = []
+      }
+    },
+    handleCheckSize (event) {
+      event = event || this.checkedSize
+      if (event.length === this.detail.size.length) {
         this.checkAllSize = true
         this.isIndeterminateSize = false
+      } else if (event.length === 0) {
+        this.isIndeterminateSize = false
+        this.checkAllSize = false
+      } else {
+        this.checkAllSize = false
+        this.isIndeterminateSize = true
       }
     },
     handleCheckAllColor ($event) {
       this.isIndeterminateColor = false
-      this.detail.color.forEach(itemColor => {
-        itemColor.checked = $event
-      })
-    },
-    handleCheckColor () {
-      let data = this.detail.color.filter(itemColor => !itemColor.checked)
-      if (data.length > 0) {
-        this.checkAllColor = false
-        if (data.length === this.detail.color.length) {
-          this.isIndeterminateColor = false
-        } else {
-          this.isIndeterminateColor = true
-        }
+      if ($event) {
+        this.checkedColor = this.detail.color.map(item => item.color_name)
       } else {
+        this.checkedColor = []
+      }
+    },
+    handleCheckColor (event) {
+      event = event || this.checkedColor
+      if (event.length === this.detail.color.length) {
         this.checkAllColor = true
         this.isIndeterminateColor = false
+      } else if (event.length === 0) {
+        this.isIndeterminateColor = false
+        this.checkAllColor = false
+      } else {
+        this.checkAllColor = false
+        this.isIndeterminateColor = true
       }
     },
     openTagPrint () {
       this.printFlag = false
-      let checkSize = this.detail.size.filter(itemSize => itemSize.checked).map(itemSize => itemSize.size_name)
-      let checkColor = this.detail.color.filter(itemColor => itemColor.checked).map(itemColor => itemColor.color_name)
-      if (checkSize.length === 0) {
+      if (this.checkedSize.length === 0) {
         this.$message.error('检测到未选择尺码规格')
         return
       }
-      if (checkColor.length === 0) {
+      if (this.checkedColor.length === 0) {
         this.$message.error('检测到未选择配色')
         return
       }
-      this.$openUrl('/tagSamplePrint/' + this.$route.params.id + '/' + checkSize.join('&') + '&&' + checkColor.join('&'))
+      this.$openUrl('/tagSamplePrint/' + this.$route.params.id + '/' + this.checkedSize.join('&') + '&&' + this.checkedColor.join('&'))
     }
   },
   mounted () {
@@ -606,16 +612,12 @@ export default {
         this.detail = res.data.data
         this.detail.size.forEach((itemSize, indexSize) => {
           if (indexSize === 0) {
-            itemSize.checked = true
-          } else {
-            itemSize.checked = false
+            this.checkedSize.push(itemSize.size_name)
           }
         })
         this.detail.color.forEach((itemColor, indexColor) => {
           if (indexColor === 0) {
-            itemColor.checked = true
-          } else {
-            itemColor.checked = false
+            this.checkedColor.push(itemColor.color_name)
           }
         })
         this.handleCheckSize()

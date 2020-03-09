@@ -4,11 +4,13 @@
     v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
-        <div class="title">订单信息</div>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"
-          :afterSend="$winReload"></zh-message>
+        <div class="title">
+          订单信息
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"
+            :afterSend="$winReload"></zh-message>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -93,11 +95,54 @@
     </div>
     <div class="module">
       <div class="titleCtn">
+        <span class="title">调取包装辅料</span>
+      </div>
+      <div class="listCtn hasBorderTop"
+        v-loading='stockLoading'>
+        <zh-transition :list="stockTitleInfo"
+          showKey='name'
+          @changed="catFilterConditions"></zh-transition>
+        <div class="tableCtnLv2">
+          <div class="tb_header">
+            <span class="tb_row">仓库名称</span>
+            <span class="tb_row">包装名称</span>
+            <span class="tb_row">包装规格</span>
+            <span class="tb_row">包装属性</span>
+            <span class="tb_row">库存数量</span>
+            <span class="tb_row middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in stockList"
+            :key="index">
+            <span class="tb_row">{{item.stock_name}}</span>
+            <span class="tb_row">{{item.material_name}}</span>
+            <span class="tb_row">{{item.size ? item.size + 'cm' : ''}}</span>
+            <span class="tb_row">{{item.attribute}}</span>
+            <span class="tb_row">{{item.total_number}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn blue"
+                @click="showStockPopup(item)">调取</span>
+            </span>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="stockTotal"
+            :current-page.sync="stockPages">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
         <div class="title">包装辅料订购</div>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="flexTb"
-          style="margin:0">
+          style="margin:0"
+          ref="orderModule">
           <div class="thead">
             <span class="trow">
               <span class="tcolumn flex16">订购单位</span>
@@ -183,31 +228,8 @@
                   class="elInput"
                   :fetch-suggestions="querySearchPack"
                   placeholder="请选择包装"></el-autocomplete>
-                <!-- <el-select v-model="itemOrder.pack_name"
-                  class="elInput"
-                  filterable
-                  default-first-option
-                  placeholder="请选择包装辅料">
-                  <el-option v-for="item in activePlanInfo"
-                    :key="item.id"
-                    :label="item.pack_name"
-                    :value="item.pack_name">
-                  </el-option>
-                </el-select> -->
               </div>
             </div>
-            <!-- <div class="colCtn flex3">
-              <div class="label">
-                <span class="text">规格</span>
-                <span class="explanation">（必填）</span>
-              </div>
-              <div class="content">
-                <zh-input placeholder="请输入包装规格"
-                  v-model="itemOrder.size_info">
-                  <template slot="append">cm</template>
-                </zh-input>
-              </div>
-            </div> -->
             <div class="colCtn flex3">
               <div class="label">
                 <span class="text">属性</span>
@@ -418,10 +440,58 @@
         </div>
       </div>
     </div>
+    <!-- 调取窗口 -->
+    <div class="popup"
+      v-if="stockPopupFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">调取包装辅料</span>
+          <span class="el-icon-close"
+            @click="stockPopupFlag = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">仓库名称：</span>
+            <span class="info">{{stockInfo.stock_name}}</span>
+          </div>
+          <div class="row">
+            <span class="label">包装辅料：</span>
+            <span class="info">{{stockInfo.material_name}}</span>
+          </div>
+          <div class="row">
+            <span class="label">包装规格：</span>
+            <span class="info">{{stockInfo.size ? stockInfo.size + 'cm' : '无'}}</span>
+          </div>
+          <div class="row">
+            <span class="label">包装属性：</span>
+            <span class="info">{{stockInfo.attribute || '无'}}</span>
+          </div>
+          <div class="row">
+            <span class="label">库存数量：</span>
+            <span class="info">{{stockInfo.total_number}}</span>
+          </div>
+          <div class="row">
+            <span class="label">调取数量：</span>
+            <span class="info">
+              <zh-input v-model="stockInfo.stock_number"
+                type='number'
+                placeholder="请输入调取数量"></zh-input>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="stockPopupFlag = false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveStockPack">调取</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnGray">返回</div>
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
           <!-- <div class="btn btnBlue">提交</div> -->
         </div>
       </div>
@@ -432,7 +502,7 @@
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { packPlan, packag, order, client } from '@/assets/js/api.js'
+import { packPlan, packag, order, client, packStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -453,10 +523,84 @@ export default {
       packOrderInfo: [],
       pageLog: 1,
       totalLog: 1,
-      lock: true
+      lock: true,
+      // 库存调取数据
+      stockLoading: true,
+      stockTitleInfo: [
+        {
+          name: '所有包装库存',
+          value: ''
+        }
+      ],
+      stockList: [],
+      stockPages: 1,
+      stockTotal: 1,
+      stockPopupFlag: false,
+      stockInfo: {
+        stock_id: '',
+        stock_name: '',
+        material_name: '',
+        attribute: '',
+        size: '',
+        total_number: '',
+        stock_number: ''
+      }
     }
   },
   methods: {
+    init (activePlanId) {
+      this.loading = true
+      Promise.all([
+        packPlan.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        }),
+        packag.list(),
+        order.editDetail({
+          id: this.$route.params.id
+        }),
+        client.list()
+      ]).then(res => {
+        this.packList = res[1].data.data
+        this.orderInfo = res[2].data.data
+        this.clientList = res[3].data.data.filter(item => item.type.indexOf(7) !== -1)
+        this.planTb = res[0].data.data.map(item => {
+          let planInfo = JSON.parse(item.material_info).map(itemInner => {
+            let flag = this.packList.find(items => items.name === itemInner.pack_name)
+            itemInner.unit = flag ? flag.unit : '个'
+            return itemInner
+          })
+          return {
+            id: item.id,
+            planInfo: planInfo
+          }
+        })
+        if (this.planTb.length > 0) {
+          if (activePlanId) {
+            this.activePlanId = activePlanId
+            this.activePlanInfo = this.planTb.find(item => item.id === activePlanId).planInfo
+          } else {
+            this.activePlanId = this.planTb[0].id
+            this.activePlanInfo = this.planTb[0].planInfo
+          }
+        }
+        this.stockTitleInfo = this.activePlanInfo.map(item => {
+          return {
+            name: item.pack_name,
+            value: item.pack_name
+          }
+        }).concat({
+          name: '所有包装库存',
+          value: ''
+        })
+        if (!this.activeFilterKeyword) {
+          this.activeFilterKeyword = this.stockTitleInfo[0]
+        }
+        this.getPackStockList(this.stockTitleInfo[0].value)
+        this.getLog()
+        this.loading = false
+      })
+    },
     // 批量导出excel
     download () {
       let data = []
@@ -506,7 +650,7 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('删除成功')
-            window.location.reload()
+            this.init()
           }
         })
       }).catch(() => {
@@ -593,6 +737,8 @@ export default {
         compile_time: this.$getTime(),
         remark: ''
       })
+      let elementGo = this.$refs.orderModule
+      elementGo.scrollIntoView()
     },
     saveAll () {
       if (this.lock) {
@@ -677,7 +823,10 @@ export default {
         })
         this.lock = false
         packPlan.packOrder({
-          data: data
+          data: {
+            order_data: data,
+            stock_data: null
+          }
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('保存成功')
@@ -722,28 +871,22 @@ export default {
       this.activePlanInfo.forEach(item => {
         item.orderNum = 0
       })
-      packPlan.packOrderLog({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        res.data.data.forEach(item => {
+      Promise.all([
+        packStock.log({
+          order_id: this.$route.params.id
+        }),
+        packPlan.packOrderLog({
+          order_id: this.$route.params.id,
+          order_type: 1
+        })
+      ]).then(res => {
+        res[1].data.data.forEach(item => {
           let flag = this.packList.find(items => items.name === item.material_name)
           item.unit = flag ? flag.unit : '个'
-          // let packFlag = this.activePlanInfo.find(items => items.pack_name === item.material_name)
-          // if (packFlag) {
-          //   packFlag.orderNum = Number(packFlag.orderNum || 0) + Number(item.number)
-          // }
-          // let planFlag = this.planTb.find(items => items.id === item.pack_plan_id)
-          // if (planFlag) {
-          //   let packFlag = planFlag.planInfo.find(items => items.pack_name === item.material_name)
-          //   if (packFlag) {
-          //     packFlag.orderNum = Number(packFlag.orderNum || 0) + Number(item.number)
-          //   }
-          // }
         })
         this.planTb.forEach(itemPlan => {
           itemPlan.planInfo.forEach(itemPack => {
-            let filterLog = res.data.data.filter(items => items.pack_plan_id === itemPlan.id && items.material_name === itemPack.pack_name).map(items => Number(items.number || 0))
+            let filterLog = res[1].data.data.filter(items => items.pack_plan_id === itemPlan.id && items.material_name === itemPack.pack_name).map(items => Number(items.number || 0))
             if (filterLog.length > 0) {
               itemPack.orderNum = filterLog.reduce((total, value) => {
                 return total + value
@@ -751,14 +894,14 @@ export default {
             }
           })
         })
-        this.orderLog = this.$newSplice(this.$clone(res.data.data).map(item => {
+        this.orderLog = this.$newSplice(this.$clone(res[1].data.data).map(item => {
           return {
             ...item,
             checked: false
           }
         }), 5)
         this.totalLog = this.orderLog.length
-        this.packOrderInfo = this.$mergeData(this.$clone(res.data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
+        this.packOrderInfo = this.$mergeData(this.$clone(res[1].data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
         this.loading = false
       })
     },
@@ -784,41 +927,80 @@ export default {
       var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
+    },
+    catFilterConditions (eve) {
+      this.getPackStockList(eve.value)
+    },
+    getPackStockList (keyword) {
+      this.stockLoading = true
+      packStock.list({
+        limit: 5,
+        page: this.stockPages,
+        material_name: keyword
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.stockList = res.data.data
+          this.stockTotal = res.data.meta.total
+        }
+        this.stockLoading = false
+      })
+    },
+    showStockPopup (item) {
+      this.stockPopupFlag = true
+      this.stockInfo = {
+        stock_id: item.stock_id,
+        stock_name: item.stock_name,
+        material_name: item.material_name,
+        attribute: item.attribute,
+        size: item.size,
+        total_number: item.total_number,
+        stock_number: ''
+      }
+    },
+    saveStockPack () {
+      if (this.lock) {
+        if (!this.stockInfo.stock_number) {
+          this.$message.error('请输入调取数量')
+          return
+        }
+        let data = [{
+          stock_id: this.stockInfo.stock_id,
+          material_name: this.stockInfo.material_name,
+          size: this.stockInfo.size,
+          attribute: this.stockInfo.attribute,
+          order_id: this.$route.params.id,
+          number: -this.stockInfo.stock_number,
+          action_type: 3,
+          desc: null
+        }]
+        this.lock = false
+        packPlan.packOrder({
+          data: {
+            stock_data: data,
+            order_data: null
+          }
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('调取成功')
+            this.packOrderEdit = []
+            this.getLog()
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装调取信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/packPlan/packOrderDetail/' + this.$route.params.id)
+            }
+          }
+          this.lock = true
+        })
+      } else {
+        this.$message.warning('请勿频繁操作')
+      }
     }
   },
   created () {
-    Promise.all([
-      packPlan.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }),
-      packag.list(),
-      order.editDetail({
-        id: this.$route.params.id
-      }),
-      client.list()
-    ]).then(res => {
-      this.packList = res[1].data.data
-      this.orderInfo = res[2].data.data
-      this.clientList = res[3].data.data.filter(item => item.type.indexOf(7) !== -1)
-      this.planTb = res[0].data.data.map(item => {
-        let planInfo = JSON.parse(item.material_info).map(itemInner => {
-          let flag = this.packList.find(items => items.name === itemInner.pack_name)
-          itemInner.unit = flag ? flag.unit : '个'
-          return itemInner
-        })
-        return {
-          id: item.id,
-          planInfo: planInfo
-        }
-      })
-      if (this.planTb.length > 0) {
-        this.activePlanId = this.planTb[0].id
-        this.activePlanInfo = this.planTb[0].planInfo
-      }
-      this.getLog()
-      this.loading = false
-    })
+    this.init()
   }
 }
 </script>

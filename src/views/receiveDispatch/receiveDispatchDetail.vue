@@ -488,7 +488,7 @@
             @click="deleteLog('all')">批量删除</div>
           <div class="btn noBorder noMargin"
             style="display:inline-block"
-            @click="printTag">批量打印</div>
+            @click="printTag">批量打印标签</div>
         </div>
         <div class="rowCtn">
           <div class="colCtn"
@@ -619,16 +619,12 @@ export default {
       ], this.orderInfo)
     },
     printTag () {
-      if (this.log.filter(item => item.checked).length > 1) {
-        this.$message.warning('该功能仅限单个日志打印')
+      let flag = this.log.filter(items => items.checked)
+      if (flag.length === 0) {
+        this.$message.warning('请勾选您需要打印成标签的日志')
         return
       }
-      let flag = this.log.find(items => items.checked)
-      if (flag) {
-        this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + flag.id + '&type=' + (flag.flag === '入库' ? 1 : 2))
-      } else {
-        this.$message.warning('请勾选您需要打印成标签的日志')
-      }
+      this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + flag.map(item => item.id).join(','))
     },
     querySearchProcess (queryString, cb) {
       var restaurants = this.processTypeList

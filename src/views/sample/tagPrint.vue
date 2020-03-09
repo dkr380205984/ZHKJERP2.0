@@ -40,7 +40,7 @@
           <img :src="qrCodeUrl"
             alt=""
             class="tag_qrCode">
-          <span class="tag_text">扫码查看更多</span>
+          <span class="tag_text">{{$getTime()}}</span>
         </div>
       </div>
     </template>

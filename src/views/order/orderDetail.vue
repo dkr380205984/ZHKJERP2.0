@@ -1577,8 +1577,8 @@ export default {
               name: '订单产值',
               unit: '件',
               price_info: [{
-                number: data.order.order_total_value,
-                total_price: data.order.total_number,
+                number: data.order.total_number,
+                total_price: data.order.order_total_value,
                 pre_price: data.order.order_pre_value
               }]
             },

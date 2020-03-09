@@ -683,7 +683,7 @@
               <el-input class="inputs"
                 v-model="searchPackLog"
                 placeholder="输入辅料按回车键查询"
-                @change="getPackLog">
+                @change="getPackLog(1)">
               </el-input>
               <!-- <el-select v-model="packAction"
                 class="inputs"
@@ -944,7 +944,7 @@
               <el-input class="inputs"
                 v-model="searchProductLog"
                 placeholder="输入编号按回车键查询"
-                @change="getProductLog">
+                @change="getProductLog(1)">
               </el-input>
               <div class="btn btnGray"
                 style="margin-left:0"
@@ -1049,7 +1049,7 @@ export default {
       searchYarnLog: '',
       yarnAction: '',
       yarnEditInfo: [],
-      actionTypeArr: ['', '入库', '出库'],
+      actionTypeArr: ['', '入库', '出库', '调取出库'],
       actionArr: [
         {
           name: '预定购入库',
@@ -1341,8 +1341,8 @@ export default {
         if (res.data.status === false) {
           this.$message.error('获取包装库存列表失败，' + res.data.message)
         } else {
-          this.packList = res.data.data.data
-          this.packTotal = res.data.data.total
+          this.packList = res.data.data
+          this.packTotal = res.data.meta.total
         }
         this.loading = false
       })

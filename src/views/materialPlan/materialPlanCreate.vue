@@ -156,11 +156,6 @@
                     </el-autocomplete>
                   </span>
                   <span class="tb_row">
-                    <!-- <zh-input placeholder="请输入颜色"
-                      v-model="itemMa.color"
-                      @change="computedTotal"
-                      style="width:130px">
-                    </zh-input> -->
                     <el-autocomplete placeholder="请输入颜色"
                       v-model="itemMa.color"
                       @select="computedTotal"
@@ -351,19 +346,37 @@ export default {
           }
         })
         itemPro.material_info.forEach(itemMa => {
-          detailData.push({
-            product_id: itemMa.product_part,
-            material_name: itemMa.material_name,
-            material_type: itemMa.type,
-            material_attribute: itemMa.color,
-            loss: itemMa.material_loss,
-            single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
-            reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
-            total_weight: itemMa.total_number,
-            size_name: itemPro.size,
-            color_name: itemPro.color,
-            unit: itemMa.unit
-          })
+          let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_part)
+          if (partName) {
+            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+            detailData.push({
+              product_id: itemMa.product_part,
+              material_name: itemMa.material_name,
+              material_type: itemMa.type,
+              material_attribute: itemMa.color,
+              loss: itemMa.material_loss,
+              single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num / (sizeFlag ? sizeFlag.number : 1),
+              reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
+              total_weight: itemMa.total_number,
+              size_name: itemPro.size,
+              color_name: itemPro.color,
+              unit: itemMa.unit
+            })
+          } else {
+            detailData.push({
+              product_id: itemMa.product_part,
+              material_name: itemMa.material_name,
+              material_type: itemMa.type,
+              material_attribute: itemMa.color,
+              loss: itemMa.material_loss,
+              single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
+              reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
+              total_weight: itemMa.total_number,
+              size_name: itemPro.size,
+              color_name: itemPro.color,
+              unit: itemMa.unit
+            })
+          }
         })
       })
       this.materialTotalInfo.forEach(itemMa => {
@@ -462,12 +475,6 @@ export default {
         if (item.total_number && item.end_num) {
           item.material_loss = this.$toFixed(item.type === 1 ? ((item.end_num * 1000 / item.total_number) - 1) * 100 : ((item.end_num / item.total_number) - 1) * 100)
         }
-        // } else if (type === 'production') {
-        //   if (item.material_loss) {
-        //     this.changeLossInner(item, 'loss')
-        //   } else if (item.end_num) {
-        //     this.changeLossInner(item, 'end_num')
-        //   }
       }
       this.computedTotal()
     },
@@ -586,13 +593,18 @@ export default {
               unit: itemMa.unit
             }
           }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+            let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
+            let sizeFlag = ''
+            if (partName) {
+              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+            }
             return {
               product_part: itemMa.product_id,
               material_name: itemMa.material_name,
               type: itemMa.type,
               color: itemMa.material_attribute,
               number: itemMa.weight,
-              total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
+              total_number: this.$toFixed(itemMa.weight * itemPro.numbers * (sizeFlag ? sizeFlag.number : 1)),
               material_loss: '',
               end_num: '',
               unit: itemMa.unit

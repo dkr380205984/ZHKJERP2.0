@@ -19,7 +19,13 @@
           </span>
         </div>
         <div class="right">
-          <span class="text">
+          <span class="qrCode_box"
+            style="margin-right:16px"
+            v-if="craftDetail.product_info.img.length>0">
+            <img :src="craftDetail.product_info.img[0].image_url" />
+          </span>
+          <span class="text"
+            v-else>
             扫一扫
             <br />
             更新生产进度
@@ -39,14 +45,14 @@
           <span class="row_item left">{{craftDetail.product_info.product_code}}</span>
         </div>
         <div class="print_row">
-          <span class="row_item w100 center">规格</span>
+          <span class="row_item w100 center">工艺单名称</span>
           <!-- <span class="row_item left"></span> -->
-          <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].size_info + 'cm' : ''}}</span>
-          <span class="row_item w100 center">克重</span>
+          <span class="row_item left">{{craftDetail.title || ''}}</span>
+          <span class="row_item w100 center">大身规格</span>
           <!-- <span class="row_item left"></span> -->
-          <span class="row_item left">{{craftDetail.product_info.size[0] ? craftDetail.product_info.size[0].weight + 'g' : ''}}</span>
-          <span class="row_item w100 center">产品成分</span>
-          <span class="row_item left">{{craftDetail.product_info.materials|filterMaterial}}</span>
+          <span class="row_item left">{{craftDetail.size ? craftDetail.size + 'cm' : ''}}</span>
+          <span class="row_item w100 center">大身克重</span>
+          <span class="row_item left">{{craftDetail.weight ? craftDetail.weight + 'g' : ''}}</span>
         </div>
         <!-- 经向 -->
         <div class="print_row h261">
@@ -135,7 +141,8 @@
         </div>
         <!-- 整经工艺 -->
         <div class="print_row h80">
-          <span class="col_title noPadding">整经工艺</span>
+          <span class="col_title noPadding"
+            style="font-size:18px">整经工艺</span>
           <span class="row_item col">
             <span class="print_row h40 noBorder">
               <span class="row_item w180 center">整经总头纹</span>
