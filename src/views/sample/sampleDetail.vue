@@ -193,7 +193,8 @@
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">详情</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/2')">添加</span>
                 </div>
               </div>
               <div class="rect">
@@ -235,7 +236,8 @@
                     class="opration"
                     @click="$router.push('/productPlan/productPlanDetail/'+ $route.params.id + '/2')">详情</span>
                   <span v-if="detail.plan_info&&detail.plan_info.length>0"
-                    class="opration">...</span>
+                    class="opration"
+                    @click="$router.push('/productPlan/productPlanCreate/'+ $route.params.id + '/2')">添加</span>
                 </div>
               </div>
               <div class="rect">
@@ -278,7 +280,7 @@
                     @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">详情</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
-                    @click="noOpr">...</span>
+                    @click="$router.push('/price/priceCreate?productId=' + $route.params.id + '&productType=2')">添加</span>
                 </div>
               </div>
               <div class="rect">
@@ -321,7 +323,7 @@
                     @click="$router.push('/sample/sampleOrderDetail/'+detail.order_info[order_index].id)">详情</span>
                   <span v-if="detail.order_info.length > 0"
                     class="opration"
-                    @click="noOpr">...</span>
+                    @click="$router.push('/sample/sampleOrderCreate')">添加</span>
                 </div>
               </div>
             </div>

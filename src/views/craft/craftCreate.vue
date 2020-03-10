@@ -122,6 +122,10 @@
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
+              <div v-if="index===0"
+                class="editBtn deleteBtn"
+                style="margin-bottom:16px;margin-right:16p;margin-left:0"
+                @click="deleteColour(index)">删除配色</div>
               <color-picker style="margin-bottom:16px"
                 v-for="(itemColor,indexColor) in item.colorWarp"
                 :key="'color' + indexColor"
@@ -835,6 +839,10 @@
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
+              <div v-if="index===0"
+                class="editBtn deleteBtn"
+                style="margin-bottom:16px;margin-right:16p;margin-left:0"
+                @click="deleteColour(index)">删除配色</div>
               <color-picker style="margin-bottom:16px"
                 v-for="(itemColor,indexColor) in item.colorWeft"
                 :key="indexColor + (itemColor.color?itemColor.color:0)"
@@ -1045,6 +1053,39 @@
         <span class="title">其他信息</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">工艺单名称</span>
+            </div>
+            <div class="content">
+              <el-input v-model="ZDYMC"
+                placeholder="请输入工艺单名称"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">大身规格</span>
+            </div>
+            <div class="content">
+              <el-input v-model="DSGG"
+                placeholder="请输入大身规格">
+                <template slot="append">cm</template>
+              </el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">大身克重</span>
+            </div>
+            <div class="content">
+              <el-input v-model="DSKZ"
+                placeholder="请输入大身克重">
+                <template slot="append">g</template>
+              </el-input>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
           :key="index">
@@ -1399,6 +1440,9 @@ export default {
   },
   data () {
     return {
+      ZDYMC: '',//新增字段，自定义名称
+      DSGG: '',//新增字段，大身规格
+      DSKZ: '',//新增值字段，大身克重
       selectSearchWhich: '搜产品编号',
       loading: true,
       loadingS: false,
@@ -2995,6 +3039,9 @@ export default {
         id: code
       }).then((res) => {
         let data = res.data.data
+        this.ZDYMC = data.title
+        this.DSGG = data.size
+        this.DSKZ = data.weight
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
         this.colour = this.warpInfo.color_data.map((item, index) => {
@@ -3410,10 +3457,12 @@ export default {
       let formData = {
         id: null,
         is_draft: 1,
+        title: this.ZDYMC,
         product_type: this.$route.params.type,
         company_id: window.sessionStorage.getItem('company_id'),
         product_id: this.$route.params.id,
-        weight: this.weight,
+        size: this.DSGG,
+        weight: this.DSKZ,
         desc: this.desc,
         yarn_coefficient: this.allMaterial.map((item, index) => {
           return {

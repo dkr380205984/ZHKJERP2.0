@@ -999,6 +999,39 @@
         <span class="title">其他信息</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">工艺单名称</span>
+            </div>
+            <div class="content">
+              <el-input v-model="ZDYMC"
+                placeholder="请输入工艺单名称"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">大身规格</span>
+            </div>
+            <div class="content">
+              <el-input v-model="DSGG"
+                placeholder="请输入大身规格">
+                <template slot="append">cm</template>
+              </el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">大身克重</span>
+            </div>
+            <div class="content">
+              <el-input v-model="DSKZ"
+                placeholder="请输入大身克重">
+                <template slot="append">g</template>
+              </el-input>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
           :key="index">
@@ -1057,6 +1090,9 @@ export default {
   data () {
     return {
       loading: true,
+      ZDYMC: '',
+      DSGG: '',
+      DSKZ: '',
       loadingS: false,
       msgSwitch: false,
       msgUrl: '',
@@ -2270,7 +2306,9 @@ export default {
         product_type: this.$route.params.type,
         is_draft: 1,
         company_id: window.sessionStorage.getItem('company_id'),
-        weight: this.weight,
+        title: this.ZDYMC,
+        size: this.DSGG,
+        weight: this.DSKZ,
         desc: this.desc,
         yarn_coefficient: this.allMaterial.map((item, index) => {
           return {
@@ -2434,7 +2472,6 @@ export default {
           xiachiya: this.weftInfo.xiachiya,
           neichang: this.weftInfo.neichang,
           rangwei: this.weftInfo.rangwei,
-
           total: this.weftInfo.total,
           contract_ratio: 100 // 缩率工艺单用不到，默认100
         },
@@ -2507,6 +2544,9 @@ export default {
       this.colorArr = res[2].data.data
       this.commonPMArr = res[4].data.data
       let data = res[5].data.data
+      this.ZDYMC = data.title
+      this.DSGG = data.size
+      this.DSKZ = data.weight
       this.productInfo = data.product_info
       this.colourArr = this.productInfo.color
       this.craftId = data.id

@@ -515,6 +515,20 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">名称：</div>
+            <div class="text">{{ZDYMC}}</div>
+          </div>
+          <div class="colCtn">
+            <div class="label">大身规格：</div>
+            <div class="text">{{DSGG}}cm</div>
+          </div>
+          <div class="colCtn">
+            <div class="label">大身克重：</div>
+            <div class="text">{{DSKZ}}g</div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <div class="label">物料系数：</div>
             <div class="lineCtn">
               <div class="line"
@@ -925,7 +939,10 @@ export default {
       },
       weight: 0,
       coefficient: [],
-      desc: ''
+      desc: '',
+      ZDYMC: '',
+      DSGG: '',
+      DSKZ: ''
     }
   },
   filters: {
@@ -1182,6 +1199,9 @@ export default {
       this.selectColour = -1
       this.weight = 0
       this.craftId = data.id
+      this.ZDYMC = data.title
+      this.DSGG = data.size
+      this.DSKZ = data.weight
       this.productInfo = data.product_info
       this.productInfo.craft_code = data.craft_code
       this.colorWeight = {
