@@ -215,7 +215,7 @@
             <div class="col">
               <div :class="{'stateCtn':true, 'rowFlex':true, 'red':itemOrder.status === 3003,'green':itemOrder.status === 3004,'blue':itemOrder.status === 3002,'orange':itemOrder.status === 3001}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.status === 3001 ? '已创建' :itemOrder.status=== 3002 ? '进行中': itemOrder.status === 3004 ? '已完成' : '已取消'}}</span>
+                <span class="name">{{itemOrder.status === 3001 ? '已创建' :(itemOrder.status=== 3002 ? '进行中':( itemOrder.status === 3004 ? '已完成' : '已取消'))}}</span>
               </div>
             </div>
             <div class="col">

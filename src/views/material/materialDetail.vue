@@ -1176,14 +1176,14 @@
               <div class="li"
                 v-for="(item,index) in searchYarnList"
                 :key="index">
-                <span class="once">{{item.name}}</span>
-                <span class="once">{{item.stock_number}}</span>
+                <span class="once">{{item.material_name}}</span>
+                <span class="once">{{item.total_weight}}</span>
                 <span class="once right">
                   <span class="once right blue"
-                    v-if="item.stock_number>=stockMatTotalNum"
-                    @click="chooseMat(item.name)">调取</span>
+                    v-if="item.total_weight>=stockMatTotalNum"
+                    @click="chooseMat(item.material_name)">调取</span>
                   <span class="once right"
-                    v-if="item.stock_number<stockMatTotalNum">库存不足</span>
+                    v-if="item.total_weight<stockMatTotalNum">库存不足</span>
                 </span>
               </div>
             </div>
@@ -1269,7 +1269,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock, statistics } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1680,11 +1680,11 @@ export default {
     // 批量调取搜索物料
     searchYarnFn () {
       this.searchYarnLoading = true
-      statistics.materialList({
+      yarnStock.list({
         limit: 10,
         page: 1,
         weight: this.stockMatTotalNum,
-        keyword: this.searchYarnWord,
+        material_name: this.searchYarnWord,
         type: this.$route.params.type
       }).then((res) => {
         this.searchYarnList = res.data.data

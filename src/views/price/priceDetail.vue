@@ -42,6 +42,16 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
+            <span class="label">审核人：</span>
+            <span class="text">{{check_user?check_user:'暂无'}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">审核时间：</span>
+            <span class="text">{{check_time?check_time:'暂无'}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
             <span class="label">外贸公司：</span>
             <span class="text">{{client_name}}</span>
           </div>
@@ -314,7 +324,9 @@ export default {
       product_info: [],
       file_url: [],
       price_info: [],
-      basic_info: []
+      basic_info: [],
+      check_time: '',
+      check_user: ''
     }
   },
   methods: {
@@ -389,6 +401,8 @@ export default {
         if (res.data.status) {
           let data = res.data.data
           this.code = data.quotation_code
+          this.check_time = data.check_time
+          this.check_user = data.check_user
           this.create_user_id = data.user_id
           this.create_user = data.user_name
           this.client_name = data.client_name
