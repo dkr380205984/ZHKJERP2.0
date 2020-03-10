@@ -9,7 +9,7 @@
             <span class="label">筛选条件：</span>
             <el-input class="inputs"
               v-model="keyword"
-              placeholder="请输入编号查询"
+              placeholder="请输入仓库名称查询"
               @change="getStockList"></el-input>
             <el-select v-model="stockTypeFilter"
               clearable

@@ -432,9 +432,7 @@ export default {
           item.partNum = finded.number
           item.materials = [{
             name: itemPart.part_title || itemPart.name,
-            attr: itemPart.part_component.map((itemChild) => {
-              return itemChild.number + '%' + itemChild.component_name
-            }).join('/'),
+            attr: item.colour_name,
             number: 1,
             unit: '个'
           }]

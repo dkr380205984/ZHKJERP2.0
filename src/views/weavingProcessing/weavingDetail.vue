@@ -1065,7 +1065,7 @@ export default {
       }).then(() => {
         if (id === 'all') {
           weave.delete({
-            id: this.weaving_log.filter((item) => item.check).map((item) => item.id)
+            id: this.weaving_log.filter((item) => item.checked).map((item) => item.id)
           }).then((res) => {
             if (res.data.status) {
               this.$message({

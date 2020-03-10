@@ -409,7 +409,7 @@
                       style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                       v-if="type==='1'"></span>
                     <span class="blue"
-                      @click="easyStock(item.material_name,item.material_color,item.need_weight-item.order_weight, item.id,true)"
+                      @click="supplyStock(item.material_name,item.material_color,item.need_weight-item.order_weight, item.id)"
                       v-if="type==='1'">调取</span>
                   </div>
                 </div>
@@ -1139,7 +1139,7 @@
           </div>
           <div class="box">
             <div class="line1">
-              <span>原料名称：{{checkWhichYarn.length>0?checkWhichYarn[0].material_name:''}}</span>
+              <span>原料名称：{{checkWhichYarn.length>0?checkWhichYarn[0].material_name:supplyMatName}}</span>
               <span v-if="step<3">所需总量：<span class="blue">{{stockMatTotalNum}}</span></span>
               <span v-if="step===3">实际调取：<span class="blue">{{stockMatReallyTotalNum}}</span></span>
             </div>
@@ -1346,6 +1346,7 @@ export default {
       lock: true,
       step: 0,
       stockMatTotalNum: 0,
+      supplyMatName: '',
       stockYarnInfo: {
         from: '',
         material: ''
@@ -1618,6 +1619,39 @@ export default {
         }
       }
     },
+    // 补纱调取
+    supplyStock (name, color, number, id) {
+      if (parseInt(number) > 0) {
+        this.stock_data = [{
+          material_id: id,
+          material_name: name + '/' + color,
+          desc: '',
+          stock: [{
+            stock_id: '',
+            stock_name: '',
+            weight: '',
+            color: '',
+            name: name
+          }]
+        }]
+        this.supplyMatName = name
+        this.stockMatTotalNum = number
+        this.replenishFlag = true
+        yarnStock.list({
+          limit: 10,
+          page: 1,
+          weight: number,
+          material_name: name,
+          type: this.$route.params.type
+        }).then((res) => {
+          this.searchYarnList = res.data.data
+          this.step = 0
+          this.showStockSelect = true
+        })
+      } else {
+        this.$message.warning('检测到需要调取纱线不足一公斤，请手动调取或补纱')
+      }
+    },
     selectStockFirst () {
       if (this.checkWhichYarn.length !== 1) {
         this.$message.warning('请选择一种纱线进行调取')
@@ -1649,27 +1683,33 @@ export default {
     },
     // 批量调取
     easyStockBatch (whiteYarn) {
-      console.log(whiteYarn)
       // 调取白胚
-      this.stock_data = []
-      this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
-        let needNumChild = item.reality_weight - item.order_weight
-        let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
-        if (stockWeight > 0) {
-          this.stock_data.push({
-            material_id: item.id,
-            material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
-            desc: '',
-            stock: [{
-              stock_id: whiteYarn.stock_id,
-              stock_name: whiteYarn.stock_name,
-              weight: stockWeight,
-              color: whiteYarn.material_color,
-              name: this.checkWhichYarn[0].material_name
-            }]
-          })
-        }
-      })
+      if (!this.replenishFlag) {
+        this.stock_data = []
+        this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
+          let needNumChild = item.reality_weight - item.order_weight
+          let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
+          if (stockWeight > 0) {
+            this.stock_data.push({
+              material_id: item.id,
+              material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
+              desc: '',
+              stock: [{
+                stock_id: whiteYarn.stock_id,
+                stock_name: whiteYarn.stock_name,
+                weight: stockWeight,
+                color: whiteYarn.material_color,
+                name: this.checkWhichYarn[0].material_name
+              }]
+            })
+          }
+        })
+      } else {
+        this.stock_data[0].stock[0].stock_id = whiteYarn.stock_id
+        this.stock_data[0].stock[0].stock_name = whiteYarn.stock_name
+        this.stock_data[0].stock[0].weight = this.stockMatTotalNum
+        this.stock_data[0].stock[0].color = whiteYarn.material_color
+      }
       this.stockYarnInfo = {
         from: whiteYarn.stock_name,
         material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
@@ -1743,7 +1783,6 @@ export default {
       }
       let stockData = []
       let orderData = []
-      console.log(this.stock_data)
       this.stock_data.forEach((item) => {
         item.stock.forEach((itemChild) => {
           stockData.push({
@@ -1753,7 +1792,7 @@ export default {
             weight: itemChild.weight,
             vat_code: null,
             plan_id: this.replenishFlag ? null : item.material_id,
-            replenish_id: this.replenishFlag ? this.replenishId : null,
+            replenish_id: this.replenishFlag ? item.material_id : null,
             order_id: this.$route.params.id,
             stock_id: itemChild.stock_id,
             attribute: '',
@@ -1771,7 +1810,7 @@ export default {
             plan_id: this.replenishFlag ? null : item.material_id,
             type: this.type,
             vat_code: null,
-            replenish_id: this.replenishFlag ? this.replenishId : null,
+            replenish_id: this.replenishFlag ? item.material_id : null,
             type_source: 1, // 1调取，2订购
             attribute: null,
             stock_id: itemChild.stock_id,

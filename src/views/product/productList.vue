@@ -112,10 +112,10 @@
             </div>
             <div class="col">
               <span class="text">创建时间
-                <span class="iconCtn">
+                <!-- <span class="iconCtn">
                   <i class="el-icon-caret-top green"></i>
                   <i class="el-icon-caret-bottom"></i>
-                </span>
+                </span> -->
               </span>
             </div>
             <div class="col">
