@@ -1004,16 +1004,17 @@
           <div :class="{'swich':true,'active':activeType === 'plan'}"
             @click="activeType = 'plan'">计划</div>
           <div :class="{'swich':true,'active':activeType === 'order'}"
-            @click="activeType = 'order'">采购</div>
+            @click="getMaterialOrder">采购</div>
           <div :class="{'swich':true,'active':activeType === 'process'}"
-            @click="activeType = 'process'">加工</div>
+            @click="getMaterialProcess">加工</div>
         </div>
       </div>
       <div class="listCtn hasBorderTop">
-        <div class="flexTb">
+        <div class="flexTb"
+          v-if="activeType === 'plan'">
           <div class="thead">
             <span class="trow">
-              <span class="tcolumn">计划原料</span>
+              <span class="tcolumn">计划{{$route.params.type === '1' ? '原' : '辅'}}料</span>
               <span class="tcolumn noPad flex20">
                 <span class="trow">
                   <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
@@ -1024,7 +1025,7 @@
           </div>
           <div class="tbody">
             <span class="trow"
-              v-for="(item,index) in totalInfo[activeType]"
+              v-for="(item,index) in totalInfo.plan"
               :key="index">
               <span class="tcolumn">{{item.material_name}}</span>
               <span class="tcolumn noPadding flex20">
@@ -1036,6 +1037,135 @@
                 </span>
               </span>
               <span class="tcolumn">{{item.color_info.map(items=>item.type === 1 ? items.number/1000 : items.number).reduce((a,b)=>{return Number(a)+Number(b)})}}{{item.type === 1 ? 'kg' : item.unit}}</span>
+            </span>
+          </div>
+        </div>
+        <div class="flexTb"
+          v-if="activeType === 'order'">
+          <div class="thead">
+            <span class="trow">
+              <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
+              <span class="tcolumn noPad flex50">
+                <span class="trow">
+                  <span class="tcolumn">订购来源</span>
+                  <span class="tcolumn noPad flex40">
+                    <span class="trow">
+                      <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
+                      <span class="tcolumn">重量</span>
+                      <span class="tcolumn">备注</span>
+                      <span class="tcolumn">完成时间</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </div>
+          <div class="tbody">
+            <span class="trow"
+              v-for="(item,index) in totalInfo.order"
+              :key="index">
+              <span class="tcolumn">{{item.material_name}}</span>
+              <span class="tcolumn noPad flex50">
+                <span class="trow"
+                  v-for="(itemSource,indexSource) in item.source_info"
+                  :key="indexSource">
+                  <span class="tcolumn">
+                    <span :class="{'green':itemSource.type_source === 1,'orange':itemSource.type_source === 2}">{{itemSource.type_source === 1 ? '调取' : '订购'}}</span>
+                    <span>{{itemSource.client_name || itemSource.stock_name}}</span>
+                  </span>
+                  <span class="tcolumn noPad flex40">
+                    <span class="trow"
+                      v-for="(itemColor,indexColor) in itemSource.color_info"
+                      :key='indexColor'>
+                      <span class="tcolumn">{{itemColor.color_code}}</span>
+                      <span class="tcolumn">{{itemColor.weight}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
+                      <span class="tcolumn">
+                        <template v-if="itemColor.desc">
+                          <el-popover placement="top-start"
+                            title="备注信息"
+                            width="200"
+                            trigger="hover"
+                            :content="itemColor.desc">
+                            <div class="btn noBorder"
+                              slot="reference">查看</div>
+                          </el-popover>
+                        </template>
+                        <template v-else>无</template>
+                      </span>
+                      <span class="tcolumn">{{$getTime(itemColor.complete_time)}}</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="flexTb"
+          v-if="activeType === 'process'">
+          <div class="thead">
+            <span class="trow">
+              <span class="tcolumn">加工单位</span>
+              <span class="tcolumn noPad flex50">
+                <span class="trow">
+                  <span class="tcolumn">加工类型</span>
+                  <span class="tcolumn noPad flex50">
+                    <span class="trow">
+                      <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
+                      <span class="tcolumn noPad flex40">
+                        <span class="trow">
+                          <span class="tcolumn">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
+                          <span class="tcolumn">重量</span>
+                          <span class="tcolumn">备注</span>
+                          <span class="tcolumn">完成时间</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </div>
+          <div class="tbody">
+            <span class="trow"
+              v-for="(item,index) in totalInfo.process"
+              :key="index">
+              <span class="tcolumn">{{item.client_name}}</span>
+              <span class="tcolumn noPad flex50">
+                <span class="trow"
+                  v-for="(itemType,indexType) in item.process_info"
+                  :key="indexType">
+                  <span class="tcolumn">{{itemType.process_type}}</span>
+                  <span class="tcolumn noPad flex50">
+                    <span class="trow"
+                      v-for="(itemMa,indexMa) in itemType.material_info"
+                      :key="indexMa">
+                      <span class="tcolumn">{{itemMa.material_name}}</span>
+                      <span class="tcolumn noPad flex40">
+                        <span class="trow"
+                          v-for="(itemColor,indexColor) in itemMa.color_info"
+                          :key="indexColor">
+                          <span class="tcolumn">{{itemColor.material_color}}</span>
+                          <span class="tcolumn">{{itemColor.weight}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
+                          <span class="tcolumn">
+                            <template v-if="itemColor.desc">
+                              <el-popover placement="top-start"
+                                title="备注信息"
+                                width="200"
+                                trigger="hover"
+                                :content="itemColor.desc">
+                                <div class="btn noBorder"
+                                  slot="reference">查看</div>
+                              </el-popover>
+                            </template>
+                            <template v-else>无</template>
+                          </span>
+                          <span class="tcolumn">{{$getTime(itemColor.complete_time)}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
             </span>
           </div>
         </div>
@@ -1112,7 +1242,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { materialStock, weave, processing, replenish } from '@/assets/js/api.js'
+import { materialStock, weave, processing, replenish, materialManage, materialProcess } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1691,24 +1821,6 @@ export default {
               unit: item.unit
             }
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-          this.totalInfo.order = this.$mergeData(this.$clone(materialPlan).map(item => {
-            return {
-              type: item.material_type,
-              material_name: item.material_name,
-              color: item.material_attribute,
-              number: item.material_type === 1 ? item.order_weight * 1000 : item.order_weight,
-              unit: item.unit
-            }
-          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-          this.totalInfo.process = this.$mergeData(this.$clone(materialPlan).map(item => {
-            return {
-              type: item.material_type,
-              material_name: item.material_name,
-              color: item.material_attribute,
-              number: item.material_type === 1 ? item.process_weight * 1000 : item.process_weight,
-              unit: item.unit
-            }
-          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
           this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 1))
           this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
@@ -1797,24 +1909,6 @@ export default {
               unit: item.unit
             }
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-          this.totalInfo.order = this.$mergeData(this.$clone(materialPlan).map(item => {
-            return {
-              type: item.material_type,
-              material_name: item.material_name,
-              color: item.material_attribute,
-              number: item.material_type === 1 ? item.order_weight * 1000 : item.order_weight,
-              unit: item.unit
-            }
-          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
-          this.totalInfo.process = this.$mergeData(this.$clone(materialPlan).map(item => {
-            return {
-              type: item.material_type,
-              material_name: item.material_name,
-              color: item.material_attribute,
-              number: item.material_type === 1 ? item.process_weight * 1000 : item.process_weight,
-              unit: item.unit
-            }
-          }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
           this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 2))
           this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
@@ -1864,6 +1958,34 @@ export default {
         this.$message.warning('单次只能对一个单位进行批量操作')
         item.checked = false
       }
+    },
+    // 获取订购日志
+    getMaterialOrder () {
+      this.activeType = 'order'
+      materialManage.detail({
+        order_type: this.$route.params.orderType,
+        order_id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res.data.data)
+          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['material_name'], childrenName: 'source_info', childrenRule: { mainRule: ['client_name', 'type_source', 'stock_name'], childrenName: 'color_info', childrenRule: { mainRule: 'before_color/color_code', otherRule: [{ name: 'weight', type: 'add' }, { name: 'type' }, { name: 'unit' }, { name: 'desc' }, { name: 'complete_time' }] } } })
+          this.totalInfo.order = data
+        }
+      })
+    },
+    // 获取加工日志
+    getMaterialProcess () {
+      this.activeType = 'process'
+      materialProcess.detail({
+        order_type: this.$route.params.orderType,
+        order_id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res.data.data)
+          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['client_name'], childrenName: 'process_info', childrenRule: { mainRule: 'process_type', childrenName: 'material_info', childrenRule: { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: 'material_color', otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'complete_time' }, { name: 'type' }] } } } })
+          this.totalInfo.process = data
+        }
+      })
     }
   },
   created () {

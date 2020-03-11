@@ -222,10 +222,10 @@
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/' + $route.params.type + '/1')">原料出入库</div>
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/1/' + $route.params.type)">原料出入库</div>
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/' + $route.params.type + '/2')">辅料出入库</div>
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/2/' + $route.params.type)">辅料出入库</div>
           </div>
         </div>
       </div>

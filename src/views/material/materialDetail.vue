@@ -1256,6 +1256,37 @@
         </div>
       </div>
     </div>
+    <!-- 打印单扫码进入页面后 -->
+    <div class="popup"
+      v-if="showRouterPopup">
+      <div class="main">
+        <div class="title">
+          <span style="display:flex;justify-content:center;flex:auto">请选择需要您要跳转的页面</span>
+          <span class="el-icon-close"
+            @click="showRouterPopup = false"></span>
+        </div>
+        <div class="content">
+          <!-- <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.type )">原料订购</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/2/' + $route.params.type )">辅料订购</div>
+          </div> -->
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料出入库</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/2/' + $route.params.orderType)">辅料出入库</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1354,7 +1385,8 @@ export default {
       yarnWord: '', // 仓库物料搜索keyword
       searchYarnWord: '', // 调取弹窗物料搜索keyword
       searchYarnLoading: false,
-      searchYarnList: []
+      searchYarnList: [],
+      showRouterPopup: false
     }
   },
   methods: {
@@ -2342,6 +2374,9 @@ export default {
       this.total = res[10].data.meta.total
       this.loading = false
     })
+    if (this.$route.query.showRouterPopup === 'true') {
+      this.showRouterPopup = true
+    }
   }
 }
 </script>

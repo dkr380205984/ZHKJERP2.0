@@ -176,7 +176,7 @@
                       v-for="(itemMa,indexMa) in itemTime.material_info"
                       :key="indexMa">
                       <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.price ? itemMa.price + itemMa.unit + '/元' :'/'}}</span>
+                      <span class="tcolumn">{{itemMa.price ? itemMa.price + '元/' + itemMa.unit :'/'}}</span>
                       <span class="tcolumn">{{itemMa.number ? itemMa.number + itemMa.unit : '/'}}</span>
                       <span class="tcolumn">{{itemMa.total_price ? itemMa.total_price + '元' : '/'}}</span>
                     </span>
@@ -227,7 +227,8 @@
                 <el-autocomplete v-model="itemOrder.pack_name"
                   class="elInput"
                   :fetch-suggestions="querySearchPack"
-                  placeholder="请选择包装"></el-autocomplete>
+                  placeholder="请选择包装"
+                  @select="handleSelect($event,itemOrder)"></el-autocomplete>
               </div>
             </div>
             <div class="colCtn flex3">
@@ -304,7 +305,7 @@
                   v-model="itemOrder.one_price"
                   @input="computedTotalPrice(itemOrder)"
                   type='number'>
-                  <template slot="append">{{(itemOrder.unit || '个') + '/元'}}</template>
+                  <template slot="append">{{'元/'+ (itemOrder.unit || '个') }}</template>
                 </zh-input>
               </span>
             </div>
@@ -804,21 +805,22 @@ export default {
         }
         let data = this.packOrderEdit.map(item => {
           return {
-            order_id: this.$route.params.id,
             pack_plan_id: this.activePlanId,
-            order_type: 1,
-            client_id: item.order_client,
-            material_name: item.pack_name,
-            pack_size: item.size_info,
+            price_square: item.price,
+            desc: item.remark,
+            order_time: item.compile_time,
+            total_price: item.total_price,
             attribute: item.attr,
+            pack_size: item.size_info,
             price_type: item.computed_method,
             size: JSON.stringify([item.long_box, item.width_box, item.height_box]),
-            price_square: item.price,
             price: item.one_price,
             number: item.number,
-            total_price: item.total_price,
-            order_time: item.compile_time,
-            desc: item.remark
+            client_id: item.order_client,
+            material_name: item.pack_name,
+            order_type: 1,
+            order_id: this.$route.params.id,
+            unit: item.unit || '个'
           }
         })
         this.lock = false
@@ -880,13 +882,28 @@ export default {
           order_type: 1
         })
       ]).then(res => {
-        res[1].data.data.forEach(item => {
+        console.log(res)
+        let stockLog = res[0].data.map(item => {
           let flag = this.packList.find(items => items.name === item.material_name)
-          item.unit = flag ? flag.unit : '个'
+          return {
+            checked: false,
+            client_name: item.stock_name,
+            unit: flag ? flag.unit : '个',
+            material_name: item.material_name,
+            price: 0,
+            number: item.number,
+            total_price: 0,
+            order_time: item.created_at,
+            pack_size: item.size,
+            attribute: item.attribute,
+            desc: item.desc,
+            user_name: item.user_name,
+            action_type: item.action_type
+          }
         })
         this.planTb.forEach(itemPlan => {
           itemPlan.planInfo.forEach(itemPack => {
-            let filterLog = res[1].data.data.filter(items => items.pack_plan_id === itemPlan.id && items.material_name === itemPack.pack_name).map(items => Number(items.number || 0))
+            let filterLog = res[1].data.data.concat(stockLog).filter(items => items.pack_plan_id === itemPlan.id && items.material_name === itemPack.pack_name).map(items => Number(items.number || 0))
             if (filterLog.length > 0) {
               itemPack.orderNum = filterLog.reduce((total, value) => {
                 return total + value
@@ -894,7 +911,7 @@ export default {
             }
           })
         })
-        this.orderLog = this.$newSplice(this.$clone(res[1].data.data).map(item => {
+        this.orderLog = this.$newSplice(this.$clone(res[1].data.data).concat(stockLog).map(item => {
           return {
             ...item,
             checked: false
@@ -923,7 +940,7 @@ export default {
       item.total_price = this.$toFixed((item.one_price || 0) * (item.number || 0))
     },
     querySearchPack (queryString, cb) {
-      var restaurants = this.packList.map(item => { return { value: item.name } })
+      var restaurants = this.packList.map(item => { return { value: item.name, unit: item.unit } })
       var results = queryString ? restaurants.filter(item => item.value.indexOf(queryString) !== -1) : restaurants
       // 调用 callback 返回建议列表的数据
       cb(results)
@@ -964,9 +981,10 @@ export default {
           return
         }
         let data = [{
-          stock_id: this.stockInfo.stock_id,
+          pack_plan_id: this.activePlanId,
           material_name: this.stockInfo.material_name,
           size: this.stockInfo.size,
+          stock_id: this.stockInfo.stock_id,
           attribute: this.stockInfo.attribute,
           order_id: this.$route.params.id,
           number: -this.stockInfo.stock_number,
@@ -983,7 +1001,7 @@ export default {
           if (res.data.status !== false) {
             this.$message.success('调取成功')
             this.packOrderEdit = []
-            this.getLog()
+            this.init()
             if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
               this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
               this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装调取信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
@@ -997,6 +1015,9 @@ export default {
       } else {
         this.$message.warning('请勿频繁操作')
       }
+    },
+    handleSelect ($event, item) {
+      item.unit = $event.unit
     }
   },
   created () {

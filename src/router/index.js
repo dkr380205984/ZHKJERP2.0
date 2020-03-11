@@ -125,6 +125,10 @@ const routes = [
       name: '订单列表',
       component: () => import('../views/order/orderList.vue')
     }, {
+      path: '/order/orderStat/:params',
+      name: '订单发货列表',
+      component: () => import('../views/order/orderStat.vue')
+    }, {
       path: '/order/orderDetail/:id',
       name: '订单详情',
       component: () => import('../views/order/orderDetail.vue')
@@ -460,6 +464,7 @@ router.beforeEach((to, from, next) => {
     '工艺单详情': ['织为云', '产品列表', '工艺单详情'],
     '订单添加': ['织为云', '订单添加'],
     '订单列表': ['织为云', '订单列表'],
+    '订单发货列表': ['织为云', '订单发货列表'],
     '订单修改': ['织为云', '订单列表', '订单修改'],
     '订单详情': ['织为云', '订单列表', '订单详情'],
     '配料单添加': ['织为云', '产品列表', '配料单添加'],
