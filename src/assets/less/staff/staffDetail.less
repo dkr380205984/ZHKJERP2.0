@@ -1,0 +1,40 @@
+@import '../common.less';
+.excelTable{
+  border:1px solid #D9D9D9;
+  margin: 32px 64px;
+  .title{
+    display: flex;
+    justify-content: space-between;
+    line-height: 60px;
+    padding: 0 32px;
+    background: #F8F8F8;
+    color: @font65;
+    border-bottom: 1px solid #D9D9D9;
+  }
+  .tabelBody{
+    display: flex;
+    border-bottom: 1px solid #D9D9D9;
+    &:nth-last-child(1){
+      border-bottom: 0;
+    }
+    .box{
+      flex:1;
+      display: flex;
+      line-height: 60px;
+      color: @font85;
+      border-right:1px solid #D9D9D9;
+      &:nth-last-child(1){
+        border-right: 0;
+      }
+      .label{
+        flex:0.4;
+        padding: 0 20px;
+        border-right:1px solid #D9D9D9;
+      }
+      .content{
+        flex:0.6;
+        padding: 0 20px;
+      }
+    }
+  }
+}

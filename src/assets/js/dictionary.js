@@ -48,6 +48,9 @@ const permissions = [{
 }, {
   module: '财务统计',
   id: 16
+}, {
+  module: '员工管理',
+  id: 17
 }]
 const moneyArr = [{
   name: '元',

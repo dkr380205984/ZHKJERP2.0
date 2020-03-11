@@ -63,8 +63,8 @@
       :key="index">
       <div class="titleCtn">
         <span class="title">{{index===0?'大身信息':'配件'+ chinaNum[index - 1]}}</span>
-        <span class="atRight"
-          @click="shortcutOpr(index)">智能同步</span>
+        <!-- <span class="atRight"
+          @click="shortcutOpr(index)">智能同步</span> -->
       </div>
       <div class="editCtn hasBorderTop">
         <div class="titleNum"
@@ -119,12 +119,14 @@
                       <el-autocomplete v-if="item.chooseMaterial===1"
                         v-model="itemMaterial.name"
                         :fetch-suggestions="searchYarn"
+                        @select="selectMaterial($event,itemMaterial)"
                         placeholder="请输入原料名称">
                       </el-autocomplete>
                       <el-autocomplete v-if="item.chooseMaterial===0"
                         v-model="itemMaterial.name"
                         :fetch-suggestions="searchMaterial"
-                        placeholder="请输入辅料名称">
+                        placeholder="请输入辅料名称"
+                        @select="selectMaterial($event,itemMaterial)">
                       </el-autocomplete>
                     </span>
                   </div>
@@ -134,8 +136,7 @@
                         v-model="itemMaterial.attr"></el-input> -->
                       <el-autocomplete v-model="itemMaterial.attr"
                         :fetch-suggestions="querySearch"
-                        :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
-                        :trigger-on-focus="false"></el-autocomplete>
+                        :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"></el-autocomplete>
                     </span>
                   </div>
                   <div class="tcolumn">
@@ -241,13 +242,16 @@ export default {
               value: item.name
             }
           })
-          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : this.colorList
           cb(filterArr)
         })
       } else {
-        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : this.colorList
         cb(filterArr)
       }
+    },
+    selectMaterial (ev, itemMaterial) {
+      itemMaterial.unit = ev.unit
     },
     // 添加原料
     addMaterial (index) {
@@ -442,12 +446,14 @@ export default {
       })
       this.yarnList = res[1].data.data.map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          unit: 'g'
         }
       })
       this.materialList = res[2].data.data.map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          unit: item.unit
         }
       })
       // 导入工艺单数据

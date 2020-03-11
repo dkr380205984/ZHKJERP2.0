@@ -348,6 +348,18 @@ const routes = [
       path: '/tutorialSystem/tutorialSystemCreate',
       name: '添加系统教程',
       component: () => import('../views/tutorialSystem/tutorialSystemCreate.vue')
+    }, {
+      path: '/staff/staffCreate',
+      name: '添加员工',
+      component: () => import('../views/staff/staffCreate.vue')
+    }, {
+      path: '/staff/staffList',
+      name: '员工列表',
+      component: () => import('../views/staff/staffList.vue')
+    }, {
+      path: '/staff/staffDetail/:id',
+      name: '员工详情',
+      component: () => import('../views/staff/staffDetail.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -500,7 +512,10 @@ router.beforeEach((to, from, next) => {
     '物料使用详情': ['织为云', '物料使用统计', '物料使用详情'],
     '合作公司财务统计': ['织为云', '合作公司财务统计'],
     '合作公司财务详情': ['织为云', '合作公司财务统计', '合作公司财务详情'],
-    '合作公司财务操作记录': ['织为云', '合作公司财务统计', '合作公司财务详情', '合作公司财务操作记录']
+    '合作公司财务操作记录': ['织为云', '合作公司财务统计', '合作公司财务详情', '合作公司财务操作记录'],
+    '添加员工': ['织为云', '添加员工'],
+    '员工列表': ['织为云', '员工列表'],
+    '员工详情': ['织为云', '员工列表', '员工详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

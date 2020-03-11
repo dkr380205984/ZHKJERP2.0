@@ -2242,12 +2242,12 @@ export default {
     },
     saveYarns () {
       let data = []
-      // let flag = true
+      let flag = true
       if (this.yarnAddType) {
         this.editYarnInfo.filter(item => item.name).forEach(item => {
-          // if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
-          //   flag = false
-          // }
+          if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
+            flag = false
+          }
           data.push({
             name: item.name,
             price_data: this.layoutData.yarnPriceArr.map(itemInner => {
@@ -2261,9 +2261,9 @@ export default {
         })
       } else {
         this.layoutData.yarnNameList.forEach(item => {
-          // if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
-          //   flag = false
-          // }
+          if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
+            flag = false
+          }
           data.push({
             name: item,
             price_data: this.layoutData.yarnPriceArr.map(itemInner => {
@@ -2276,10 +2276,10 @@ export default {
           })
         })
       }
-      // if (!flag) {
-      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-      //   return
-      // }
+      if (!flag) {
+        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+        return
+      }
       if (data.length !== 0) {
         yarn.create({ data: data }).then((res) => {
           if (res.data.status) {
@@ -2720,7 +2720,7 @@ export default {
       })
     },
     saveColour () {
-      if (this.colour) {
+      if (this.colour && this.colour.indexOf('/') === -1) {
         colour.create({
           name: this.colour,
           color_code: ''
@@ -2734,7 +2734,7 @@ export default {
           }
         })
       } else {
-        this.$message.error('配色名称或色块未填写')
+        this.$message.error('配色名称未填写或名称里包含斜杠，请重新填写')
       }
     },
     deleteColour (id) {
@@ -2776,7 +2776,7 @@ export default {
       this.sizeFLag = true
     },
     saveSize () {
-      if (this.size) {
+      if (this.size && this.size.indexOf('/') === -1) {
         productSize.create({
           name: this.size,
           category_id: this.sizeId
@@ -2790,7 +2790,7 @@ export default {
           }
         })
       } else {
-        this.$message.error('请填写尺码名称')
+        this.$message.error('尺码名称未填写或包含斜杠，请重新填写')
       }
     },
     deleteSize () {
@@ -2998,10 +2998,10 @@ export default {
       })
     },
     saveYarnName () {
-      // if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
-      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-      //   return
-      // }
+      if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
+        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+        return
+      }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
           data: [

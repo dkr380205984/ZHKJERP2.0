@@ -299,6 +299,17 @@ export default {
           name: '合作公司财务统计',
           url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
         }]
+      }, {
+        name: '员工管理',
+        id: 17,
+        icon: require('@/assets/image/index/员工管理.png'),
+        children: [{
+          name: '添加员工',
+          url: '/staff/staffCreate'
+        }, {
+          name: '员工列表',
+          url: '/staff/staffList'
+        }]
       }]
     }
   },
