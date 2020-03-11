@@ -607,6 +607,36 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showRouterPopup">
+      <div class="main">
+        <div class="title">
+          <span style="display:flex;justify-content:center;flex:auto">请选择需要您要跳转的页面</span>
+          <span class="el-icon-close"
+            @click="showRouterPopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + $route.params.id)">产品收发</div>
+            <!-- <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/2/' + $route.params.type )">辅料订购</div> -->
+          </div>
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/inspection/semiFinishedDetail/' + $route.params.id)">半成品检验</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/inspection/finishedDetail/' + $route.params.id)">成品检验</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -647,7 +677,8 @@ export default {
       commonCompany: [],
       commonPrice: [],
       commonDate: [],
-      commonProcess: []
+      commonProcess: [],
+      showRouterPopup: false
     }
   },
   computed: {
@@ -901,6 +932,9 @@ export default {
   },
   mounted () {
     let api = this.$route.params.orderType === '1' ? order : sampleOrder
+    if (this.$route.query.showRouterPopup === 'true') {
+      this.showRouterPopup = true
+    }
     Promise.all([api.detail({
       id: this.$route.params.id
     }), materialPlan.init({

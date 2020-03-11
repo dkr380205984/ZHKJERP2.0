@@ -85,6 +85,7 @@
             </span>
             <span class="content">
               <el-select v-model="client_id"
+                filterable
                 placeholder="请选择订单公司"
                 @change="getContact($event)">
                 <el-option v-for="item in clientArr"

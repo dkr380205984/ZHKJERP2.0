@@ -208,7 +208,7 @@ export default {
           url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state='
         }, {
           name: '订单发货列表',
-          url: '/order/orderStat'
+          url: '/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
         }]
       }, {
         name: '物料计划生产管理',

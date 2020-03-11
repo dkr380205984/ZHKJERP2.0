@@ -148,7 +148,7 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType, { errorCorrectionLevel: 'H' }, (err, url) => {
+    QRCode.toDataURL(window.location.origin + '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
       if (!err) {
         this.qrCodeUrl = url
       }
