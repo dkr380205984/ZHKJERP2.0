@@ -120,12 +120,15 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">产品文件：</span>
-            <span class="imgCtn">
+            <span class="imgCtn"
+              v-if="file_url.length>0">
               <el-image style="width: 100px; height: 100px"
                 :src="file_url[0]"
                 :preview-src-list="file_url">
               </el-image>
             </span>
+            <span class="text"
+              v-else>暂无</span>
           </div>
         </div>
       </div>
