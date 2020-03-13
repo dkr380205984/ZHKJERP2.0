@@ -427,7 +427,9 @@
                       class="editInput"
                       v-model="itemSize.price"
                       type='number'
-                      @input="computedTotalPrice"></zh-input>
+                      @input="computedTotalPrice">
+                      <template slot="append">{{unit}}</template>
+                    </zh-input>
                   </span>
                   <span class="tb_row">
                     <zh-input placeholder="请输入数量"
@@ -482,7 +484,7 @@
               <zh-input placeholder="请输入总价"
                 v-model="total_price"
                 disabled>
-                <template slot="append">元</template>
+                <template slot="append">{{unit}}</template>
               </zh-input>
             </span>
           </div>

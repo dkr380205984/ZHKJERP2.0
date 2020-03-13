@@ -346,7 +346,7 @@
               <el-select v-model="item.sizeColor"
                 multiple
                 placeholder="请选择尺码颜色"
-                @change="getProductPlan(item.id,this.product_type ? 1 : 2,$event)">
+                @change="getProductPlan(item.id,product_type ? 1 : 2,$event)">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -1622,6 +1622,7 @@ export default {
         quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
+      this.lock = false
       price.create({
         id: null,
         client_id: this.client_id,
@@ -1665,6 +1666,7 @@ export default {
             this.$router.push('/price/priceDetail/' + res.data.data.id)
           }
         }
+        this.lock = true
       })
     },
     // 切换辅料单位

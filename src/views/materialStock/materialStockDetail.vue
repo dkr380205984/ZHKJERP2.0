@@ -287,7 +287,7 @@
                         v-for="(itemColor,indexColor) in item.color_info"
                         :key="indexColor">
                         <div class="tcolumn">{{itemColor.attr}}</div>
-                        <span class="tcolumn">{{itemColor.order_weight}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
+                        <span class="tcolumn">{{$toFixed(itemColor.order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
                         <span class="tcolumn green">{{$toFixed(itemColor.goStockNumEnd || 0)}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
                         <span class="tcolumn orange">{{$toFixed(Number(itemColor.order_weight ? itemColor.order_weight : 0) - Number(itemColor.goStockNumEnd ? itemColor.goStockNumEnd : 0))}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
                         <span class="tcolumn">{{$getTime(itemColor.updated_at)}}</span>
@@ -322,7 +322,8 @@
                           default-first-option
                           clearable
                           class="elInput"
-                          placeholder="请选择出入库单位">
+                          placeholder="请选择出入库单位"
+                          :disabled="itemStock.editType === 5">
                           <el-option v-for="item in materialClient"
                             :key="item.client_id"
                             :label="item.client_name"
@@ -336,12 +337,51 @@
                         <span class="text"></span>
                       </div>
                       <div class="content">
-                        <el-radio-group v-model="itemStock.editType"
+                        <!-- <el-radio-group v-model="itemStock.editType"
                           class="elInput">
                           <el-radio label="out">出库</el-radio>
                           <el-radio label="go">入库</el-radio>
                           <el-radio label="end_go">最终入库</el-radio>
-                        </el-radio-group>
+                        </el-radio-group> -->
+                        <el-select v-model="itemStock.editType"
+                          class="elInput"
+                          placeholder="请选择操作类型"
+                          @change="getStockList">
+                          <el-option v-for="item in editTypeArr"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                          </el-option>
+                        </el-select>
+                      </div>
+                    </div>
+                    <div class="colCtn flex3">
+                      <div class="label">
+                        <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span>
+                      </div>
+                      <div class="content">
+                        <template v-if="itemStock.editType !== 5">
+                          <el-select v-model="itemStock.stockId"
+                            class="elInput"
+                            placeholder="请选择出入库仓库">
+                            <el-option v-for="item in [{id:null,name:'订单原料仓库'}]"
+                              :key="item.id"
+                              :label="item.name"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </template>
+                        <template v-else>
+                          <el-select v-model="itemStock.stockId"
+                            class="elInput"
+                            placeholder="请选择结余入库仓库">
+                            <el-option v-for="item in stockArr"
+                              :key="item.id"
+                              :label="item.name"
+                              :value="item.id">
+                            </el-option>
+                          </el-select>
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -1201,29 +1241,52 @@
             <div class="row">
               <div class="label">操作类型：</div>
               <div class="info elInputInfo">
-                <el-radio-group v-model="item.handleType"
+                <!-- <el-radio-group v-model="item.handleType"
                   class="elInput">
                   <el-radio label="out">出库</el-radio>
                   <el-radio label="go">入库</el-radio>
                   <el-radio label="end_go">最终入库</el-radio>
-                </el-radio-group>
+                </el-radio-group> -->
+                <el-select v-model="item.handleType"
+                  class="elInput"
+                  placeholder="请选择操作类型"
+                  @change="getStockList">
+                  <el-option v-for="item in editTypeArr"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
-              <div class="label">出入库单位：</div>
+              <div class="label">{{item.handleType === 5 ? '入库仓库：' : '出入库单位：'}}</div>
               <div class="info">
-                <el-select v-model="item.client_name"
-                  filterable
-                  default-first-option
-                  clearable
-                  class="elInput"
-                  placeholder="请选择出入库单位">
-                  <el-option v-for="item in materialClient"
-                    :key="item.client_id"
-                    :label="item.client_name"
-                    :value="item.client_id">
-                  </el-option>
-                </el-select>
+                <template v-if="item.handleType === 5">
+                  <el-select v-model="item.stockId"
+                    class="elInput"
+                    placeholder="请选择结余入库仓库">
+                    <el-option v-for="items in stockArr"
+                      :key="items.id"
+                      :label="items.name"
+                      :value="items.id">
+                    </el-option>
+                  </el-select>
+                </template>
+                <template v-else>
+                  <el-select v-model="item.client_name"
+                    filterable
+                    default-first-option
+                    clearable
+                    class="elInput"
+                    placeholder="请选择出入库单位">
+                    <el-option v-for="item in materialClient"
+                      :key="item.client_id"
+                      :label="item.client_name"
+                      :value="item.client_id">
+                    </el-option>
+                  </el-select>
+                </template>
               </div>
             </div>
           </div>
@@ -1242,7 +1305,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { materialStock, weave, processing, replenish, materialManage, materialProcess } from '@/assets/js/api.js'
+import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1290,7 +1353,23 @@ export default {
       showFilterClientBox: false,
       filterHandleClient: '',
       handleClientArr: [],
-      cloneStockLog: []
+      cloneStockLog: [],
+      editTypeArr: [
+        {
+          label: '出库',
+          value: 'out'
+        }, {
+          label: '入库',
+          value: 'go'
+        }, {
+          label: '最终入库',
+          value: 'end_go'
+        }, {
+          label: '结余入库',
+          value: 5
+        }
+      ],
+      stockArr: []
     }
   },
   watch: {
@@ -1370,6 +1449,24 @@ export default {
     }
   },
   methods: {
+    getStockList (event) {
+      if (event === 5) {
+        if (this.stockArr.length === 0) {
+          stock.list().then(res => {
+            if (res.data.status !== false) {
+              this.stockArr = res.data.data.filter(item => item.type === 1).map(item => {
+                return {
+                  name: item.name,
+                  id: item.id
+                }
+              })
+            }
+          })
+        }
+      } else {
+
+      }
+    },
     // 原料出入库module点击批量操作时
     batchBtnClick () {
       if (this.materialStockInfo.filter(item => item.checked).length === 0) {
@@ -1412,6 +1509,7 @@ export default {
         if (materialInfo.length !== 0) {
           pushData.push({
             client_name: flag ? flag.client_name : '',
+            stockId: flag ? flag.stockId : '',
             editType: flag ? flag.handleType : 'end_go',
             material_info: materialInfo,
             time: this.$getTime(),
@@ -1798,7 +1896,16 @@ export default {
           })
         ]).then(res => {
           // 初始化原料出入库数据
-          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1)
+          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1).concat(res[3].data.data.filter(item => +item.type === 1).map(item => {
+            return {
+              material_name: item.material_name,
+              material_attribute: item.material_color,
+              updated_at: item.created_at,
+              order_weight: item.order_weight,
+              material_type: item.type,
+              unit: 'g'
+            }
+          }))
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] })
@@ -1809,6 +1916,26 @@ export default {
               client_name: items.client_name,
               client_id: items.client_id,
               material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'material_weight/weight', type: 'add' }, { name: 'material_unit/unit' }, { name: 'material_type/type' }] } })
+            }
+          })
+          // 合并补纱信息
+          res[3].data.data.filter(item => +item.type === 1).forEach(item => {
+            let flag = this.weaveInfo.find(items => items.client_name === item.replenish_name)
+            if (flag) {
+              let innerFlag = flag.material_info.find(items => items.material_name === item.material_name)
+              if (innerFlag) {
+                let innerFlag2 = innerFlag.color_info.find(items => items.attr === item.material_color)
+                if (innerFlag2) {
+                  innerFlag2.weight = this.$toFixed((innerFlag2.weight || 0) + (item.need_weight * 1000 || 0))
+                } else {
+                  innerFlag.color_info.push({
+                    attr: item.material_color,
+                    weight: item.need_weight * 1000 || 0,
+                    unit: 'g',
+                    type: 1
+                  })
+                }
+              }
             }
           })
           // 初始化统计数据

@@ -1541,6 +1541,7 @@ export default {
       })
       quotationCode += this.$route.params.id
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
+      this.lock = false
       price.create({
         id: this.$route.params.id,
         client_id: this.client_id,
@@ -1584,6 +1585,7 @@ export default {
             this.$router.push('/price/priceDetail/' + res.data.data.id)
           }
         }
+        this.lock = true
       })
     },
     // 切换辅料单位

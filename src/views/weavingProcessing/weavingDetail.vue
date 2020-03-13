@@ -761,19 +761,17 @@
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + $route.params.id)">产品收发</div>
-            <!-- <div class="btn btnWhiteBlue"
+              @click="$router.push('/inspection/semiFinishedDetail/' + $route.params.id)">半成品检验</div>
+            <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/material/materialDetail/' + $route.params.id + '/2/' + $route.params.type )">辅料订购</div> -->
+              @click="$router.push('/inspection/finishedDetail/' + $route.params.id)">成品检验</div>
           </div>
           <div class="row"
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/inspection/semiFinishedDetail/' + $route.params.id)">半成品检验</div>
-            <div class="btn btnWhiteBlue"
-              style="width:6em;text-align:center"
-              @click="$router.push('/inspection/finishedDetail/' + $route.params.id)">成品检验</div>
+              @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + $route.params.id)">产品收发</div>
+            <div style="width:6em;height:32px;text-align:center;margin-right:16px;padding: 0 23px;"></div>
           </div>
         </div>
       </div>

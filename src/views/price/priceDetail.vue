@@ -83,12 +83,12 @@
         <span class="title hasBorder">产品信息</span>
       </div>
       <div class="detailCtn">
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn">
             <span class="label">起订数量：</span>
             <span class="text">{{set_num}}件</span>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">起订备注：</span>
@@ -440,7 +440,7 @@ export default {
                 name: item.name ? item.name : '原料',
                 number: item.weight,
                 price: item.price,
-                sunhao: item.sunhao,
+                sunhao: item.prop || item.sunhao,
                 totalPrice: item.total_price,
                 unit: 'g'
               }
@@ -450,7 +450,7 @@ export default {
                 name: item.name ? item.name : '辅料',
                 number: item.weight,
                 price: item.price,
-                sunhao: item.sunhao,
+                sunhao: item.prop || item.sunhao,
                 totalPrice: item.total_price,
                 unit: item.unit
               }

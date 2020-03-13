@@ -199,7 +199,7 @@ export default {
             name: item.name ? item.name : '原料',
             number: item.weight / 1000,
             price: item.price,
-            sunhao: item.sunhao,
+            sunhao: item.prop || item.sunhao,
             totalPrice: item.total_price,
             unit: 'kg'
           }
@@ -209,7 +209,7 @@ export default {
             name: item.name ? item.name : '辅料',
             number: item.weight,
             price: item.price,
-            sunhao: item.sunhao,
+            sunhao: item.prop || item.sunhao,
             totalPrice: item.total_price,
             unit: item.unit || '件'
           }

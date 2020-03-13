@@ -168,75 +168,101 @@
               </div>
             </div>
           </div>
-          <div class="rowCtn"
-            v-for="(itemPro,indexPro) in itemOut.product_info"
-            :key="indexPro">
-            <div class="colCtn flex3">
-              <div class="label">
-                <span class="text">包含产品</span>
-                <span class="explanation">（必填）</span>
+          <template v-for="(itemPro,indexPro) in itemOut.product_info">
+            <div class="rowCtn"
+              :key="indexPro + '-1'">
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">包含产品</span>
+                  <span class="explanation">（必填）</span>
+                </div>
+                <div class="content">
+                  <el-select v-model="itemPro.product_id"
+                    disabled
+                    class="elInput"
+                    placeholder="请选择产品">
+                    <el-option v-for="item in itemOut.product_info"
+                      :key="item.size_color.join('/')"
+                      :label="item.product_code"
+                      :value="item.product_id">
+                    </el-option>
+                  </el-select>
+                </div>
               </div>
-              <div class="content">
-                <el-select v-model="itemPro.product_id"
-                  disabled
-                  class="elInput"
-                  placeholder="请选择产品">
-                  <el-option v-for="item in itemOut.product_info"
-                    :key="item.size_color.join('/')"
-                    :label="item.product_code"
-                    :value="item.product_id">
-                  </el-option>
-                </el-select>
-              </div>
-            </div>
-            <div class="colCtn flex3">
-              <div class="label">
-                <span class="text"></span>
-              </div>
-              <div class="content">
-                <div class="rowCtn noMargin noPadding">
-                  <div class="colCtn noMargin elInput">
-                    <div class="label">
-                      <span class="text">尺码规格</span>
-                      <span class="explanation">（必填）</span>
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text"></span>
+                </div>
+                <div class="content">
+                  <div class="rowCtn noMargin noPadding">
+                    <div class="colCtn noMargin elInput">
+                      <div class="label">
+                        <span class="text">尺码规格</span>
+                        <span class="explanation">（必填）</span>
+                      </div>
+                      <div class="content">
+                        <el-cascader v-model="itemPro.size_color"
+                          :options="itemPro.sizeColor"
+                          disabled
+                          placeholder="请选择尺码颜色"></el-cascader>
+                      </div>
                     </div>
-                    <div class="content">
-                      <el-cascader v-model="itemPro.size_color"
-                        :options="itemPro.sizeColor"
-                        disabled
-                        placeholder="请选择尺码颜色"></el-cascader>
-                    </div>
-                  </div>
-                  <div class="colCtn noMargin elInput">
-                    <div class="label">
-                      <span class="text">计划数量</span>
-                      <span class="explanation">（必填）</span>
-                    </div>
-                    <div class="content">
-                      <zh-input type='number'
-                        placeholder='箱数'
-                        disabled
-                        v-model="itemPro.number">
-                        <template slot="append">条</template>
-                      </zh-input>
+                    <div class="colCtn noMargin elInput">
+                      <div class="label">
+                        <span class="text">计划数量</span>
+                        <span class="explanation">（必填）</span>
+                      </div>
+                      <div class="content">
+                        <zh-input type='number'
+                          placeholder='箱数'
+                          disabled
+                          v-model="itemPro.number">
+                          <template slot="append">条</template>
+                        </zh-input>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="colCtn flex3">
-              <div class="label">
-                <span class="text">实际装箱数</span>
-                <span class="explanation">（必填）</span>
+            <div class="rowCtn"
+              :key="indexPro + '-2'">
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">实际装箱数</span>
+                  <span class="explanation">（必填）</span>
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入实际装箱数量"
+                    class="elInput"
+                    v-model="itemPro.actual_number"
+                    type="number"></zh-input>
+                </div>
               </div>
-              <div class="content">
-                <zh-input placeholder="请输入实际装箱数量"
-                  class="elInput"
-                  v-model="itemPro.actual_number"
-                  type="number"></zh-input>
+              <!-- <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">箱数</span>
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入装箱箱数"
+                    class="elInput"
+                    v-model="itemPro.actual_box"
+                    type="number"></zh-input>
+                </div>
+              </div> -->
+              <div class="colCtn">
+                <div class="label">
+                  <span class="text">备注</span>
+                  <!-- <span class="explanation">（必填）</span> -->
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入备注信息"
+                    class="elInput"
+                    v-model="itemPro.desc"></zh-input>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
         <div class="btnCtn_page marginTop20">
           <div class="btn btnDashed"
@@ -255,7 +281,7 @@
           <div class="btn btnDashed"
             v-show="actualPackingEditInfo.length > 0">
             <div class="btn btnGreen"
-              @click="saveActual(true)">保存</div>
+              @click="saveActual">保存</div>
           </div>
         </div>
       </div>
@@ -298,78 +324,102 @@
           :key="indexOut">
           <span class="closeIcon_page el-icon-circle-close"
             @click="deleteItem(actualPackingEditInfo,indexOut)"></span>
-          <div class="rowCtn"
-            v-for="(itemPro,indexPro) in itemOut.product_info"
-            :key="indexPro">
-            <div class="colCtn flex3">
-              <div class="label"
-                v-if="indexPro === 0">
-                <span class="text">包含产品</span>
-                <span class="explanation">（必填）</span>
+          <template v-for="(itemPro,indexPro) in itemOut.product_info">
+            <div class="rowCtn"
+              :key="indexPro + '-1'">
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">包含产品</span>
+                  <span class="explanation">（必填）</span>
+                </div>
+                <div class="content">
+                  <el-select v-model="itemPro.id"
+                    disabled
+                    class="elInput"
+                    placeholder="请选择产品">
+                    <el-option v-for="item in productInfo"
+                      :key="item.size_color.join('/')"
+                      :label="item.product_code"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
               </div>
-              <div class="content">
-                <el-select v-model="itemPro.id"
-                  disabled
-                  class="elInput"
-                  placeholder="请选择产品">
-                  <el-option v-for="item in productInfo"
-                    :key="item.size_color.join('/')"
-                    :label="item.product_code"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
-              </div>
-            </div>
-            <div class="colCtn flex3">
-              <div class="label"
-                v-if="indexPro === 0">
-                <span class="text"></span>
-              </div>
-              <div class="content">
-                <div class="rowCtn noMargin noPadding">
-                  <div class="colCtn noMargin elInput">
-                    <div class="label"
-                      v-if="indexPro === 0">
-                      <span class="text">尺码规格</span>
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text"></span>
+                </div>
+                <div class="content">
+                  <div class="rowCtn noMargin noPadding">
+                    <div class="colCtn noMargin elInput">
+                      <div class="label"
+                        v-if="indexPro === 0">
+                        <span class="text">尺码规格</span>
+                      </div>
+                      <div class="content">
+                        <el-cascader v-model="itemPro.size_color"
+                          disabled
+                          :options="itemPro.sizeColor"
+                          placeholder="请选择尺码颜色"></el-cascader>
+                      </div>
                     </div>
-                    <div class="content">
-                      <el-cascader v-model="itemPro.size_color"
-                        disabled
-                        :options="itemPro.sizeColor"
-                        placeholder="请选择尺码颜色"></el-cascader>
-                    </div>
-                  </div>
-                  <div class="colCtn noMargin elInput">
-                    <div class="label"
-                      v-if="indexPro === 0">
-                      <span class="text">计划数量</span>
-                    </div>
-                    <div class="content">
-                      <zh-input type='number'
-                        disabled
-                        placeholder='计划数量'
-                        v-model="itemPro.order_number">
-                        <template slot="append">条</template>
-                      </zh-input>
+                    <div class="colCtn noMargin elInput">
+                      <div class="label"
+                        v-if="indexPro === 0">
+                        <span class="text">计划数量</span>
+                      </div>
+                      <div class="content">
+                        <zh-input type='number'
+                          disabled
+                          placeholder='计划数量'
+                          v-model="itemPro.order_number">
+                          <template slot="append">条</template>
+                        </zh-input>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="colCtn flex3">
-              <div class="label"
-                v-if="indexPro === 0">
-                <span class="text">实际装箱数</span>
-                <span class="explanation">（必填）</span>
+            <div class="rowCtn"
+              :key="indexPro + '-2'">
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">实际装箱数</span>
+                  <span class="explanation">（必填）</span>
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入实际装箱数量"
+                    class="elInput"
+                    v-model="itemPro.actual_number"
+                    type="number"></zh-input>
+                </div>
               </div>
-              <div class="content">
-                <zh-input placeholder="请输入实际装箱数量"
-                  class="elInput"
-                  v-model="itemPro.actual_number"
-                  type="number"></zh-input>
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">箱数</span>
+                  <!-- <span class="explanation">（必填）</span> -->
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入装箱箱数"
+                    class="elInput"
+                    v-model="itemPro.actual_box"
+                    type="number"></zh-input>
+                </div>
+              </div>
+              <div class="colCtn flex3">
+                <div class="label">
+                  <span class="text">备注</span>
+                  <!-- <span class="explanation">（必填）</span> -->
+                </div>
+                <div class="content">
+                  <zh-input placeholder="请输入备注信息"
+                    class="elInput"
+                    v-model="itemPro.desc"></zh-input>
+                </div>
               </div>
             </div>
-          </div>
+          </template>
         </div>
         <div class="btnCtn_page marginTop20">
           <div class="btn btnDashed"
@@ -654,6 +704,8 @@
             <span class="tb_row">产品信息</span>
             <span class="tb_row flex08">尺码颜色</span>
             <span class="tb_row flex08">实际装箱数</span>
+            <span class="tb_row flex08">箱数</span>
+            <span class="tb_row flex08">备注</span>
             <span class="tb_row flex08">操作人</span>
             <span class="tb_row middle flex08">操作</span>
           </div>
@@ -667,6 +719,20 @@
             <span class="tb_row">{{itemLog.product_code}}<br />{{itemLog.type.join('/')}}</span>
             <span class="tb_row flex08">{{itemLog.size + '/' + itemLog.color}}</span>
             <span class="tb_row flex08">{{itemLog.pack_number+itemLog.unit}}</span>
+            <span class="tb_row flex08">{{itemLog.total_box || '/'}}</span>
+            <span class="tb_row flex08">
+              <template v-if="itemLog.desc">
+                <el-popover placement="top-start"
+                  title="备注信息"
+                  width="200"
+                  trigger="hover"
+                  :content="itemLog.desc">
+                  <div class="blue"
+                    slot="reference">查看</div>
+                </el-popover>
+              </template>
+              <template v-else>无</template>
+            </span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn red"
@@ -1000,28 +1066,29 @@ export default {
     saveActual (flag) {
       if (this.lock) {
         let data = []
-        if (flag) {
-          this.actualPackingEditInfo.forEach(itemPack => {
-            itemPack.product_info.filter(items => items.actual_number).forEach(itemPro => {
-              data.push({
-                order_id: this.$route.params.id,
-                order_type: 1,
-                pack_plan_id: this.activePlanId,
-                pack_code: itemPack.pack_code,
-                product_id: itemPro.product_id || itemPro.id,
-                size: itemPro.size_color[0],
-                color: itemPro.size_color[1],
-                number: itemPro.number || itemPro.order_number,
-                pack_number: itemPro.actual_number,
-                start_box: itemPack.start_num,
-                end_box: itemPack.end_num,
-                total_box: itemPack.total_box
-              })
+        // if (flag) {
+        this.actualPackingEditInfo.forEach(itemPack => {
+          itemPack.product_info.filter(items => items.actual_number).forEach(itemPro => {
+            data.push({
+              order_id: this.$route.params.id,
+              order_type: 1,
+              pack_plan_id: this.activePlanId || null,
+              pack_code: itemPack.pack_code || null,
+              product_id: itemPro.product_id || itemPro.id,
+              size: itemPro.size_color[0],
+              color: itemPro.size_color[1],
+              number: itemPro.number || itemPro.order_number,
+              pack_number: itemPro.actual_number,
+              start_box: itemPack.start_num || null,
+              end_box: itemPack.end_num || null,
+              total_box: itemPack.total_box || itemPro.actual_box || null,
+              desc: itemPro.desc || ''
             })
           })
-        } else {
+        })
+        // } else {
 
-        }
+        // }
         if (data.length === 0) {
           this.$message.error('检测到没有可提交的数据')
           return
@@ -1225,6 +1292,8 @@ export default {
           this.actualPackingEditInfo.push({
             product_info: this.$clone(this.productInfo).map(item => {
               item.actual_number = ''
+              item.actual_box = ''
+              item.desc = ''
               return item
             })
           })
@@ -1277,7 +1346,8 @@ export default {
         item.product_info = flag.product_info.map(items => {
           return {
             ...items,
-            actual_number: ''
+            actual_number: '',
+            desc: ''
           }
         })
       }

@@ -204,13 +204,14 @@
           </div>
         </div>
       </div>
-      <div class="rightCtn">
+      <div class="rightCtn"
+        @click.stop="$message.warning('该功能模块暂未开放')">
         <div class="title">使用教学
           <span class="btn noBorder"
             style="padding-right:0">查看全部</span>
         </div>
-        <div class="line"
-          @click="$openUrl('/tutorialSystem/tutorialSystemDetail?keyword=怎样添加样品?')">
+        <!-- @click.prevent="$openUrl('/tutorialSystem/tutorialSystemDetail?keyword=怎样添加样品?')" -->
+        <div class="line">
           <div class="number">1</div>
           <div class="text">怎样添加样品?</div>
         </div>

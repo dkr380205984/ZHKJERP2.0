@@ -570,7 +570,6 @@ export default {
         this.$message.warning('请勿频繁点击')
         return
       }
-      this.lock = false
       if (!this.sample_order_title) {
         this.$message.error('请输入样单标题')
         return
@@ -641,6 +640,7 @@ export default {
         deliver_time: this.compiled_time,
         desc: this.remark
       }
+      this.lock = false
       sampleOrder.create(data).then(res => {
         this.lock = true
         if (res.data.status) {
