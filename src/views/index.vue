@@ -308,7 +308,10 @@ export default {
           url: '/staff/staffCreate'
         }, {
           name: '员工列表',
-          url: '/staff/staffList'
+          url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
+        }, {
+          name: '员工工资结算',
+          url: '/staff/staffPay'
         }]
       }]
     }

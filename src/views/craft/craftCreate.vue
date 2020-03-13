@@ -1079,10 +1079,11 @@
               <span class="text">大身克重</span>
             </div>
             <div class="content">
-              <el-input v-model="DSKZ"
+              <zh-input v-model="DSKZ"
+                type="number"
                 placeholder="请输入大身克重">
                 <template slot="append">g</template>
-              </el-input>
+              </zh-input>
             </div>
           </div>
         </div>

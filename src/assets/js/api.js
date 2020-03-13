@@ -389,7 +389,15 @@ const priceLoading = {
   list: (params) => http.get(`${baseUrl}/product/quotation/demo/list`, params),
   delete: (params) => http.post(`${baseUrl}/product/quotation/demo/delete`, params, 'application/json')
 }
+// 员工管理
+const staff = {
+  create: (params) => http.post(`${baseUrl}/company/staff/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/company/staff/list`, params),
+  createPay: (params) => http.post(`${baseUrl}/staff/wage/settle/save`, params, 'application/json'),
+  payList: (params) => http.get(`${baseUrl}/staff/wage/settle/list`, params)
+}
 export {
+  staff,
   priceLoading,
   settle,
   chargebacks,
