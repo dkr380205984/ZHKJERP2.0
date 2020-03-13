@@ -389,7 +389,8 @@
       <div class="listCtn hasBorderTop">
         <div class="btnCtn_page">
           <div class="btn noBorder noMargin"
-            @click="deleteLog('all',orderLog)">批量删除</div>
+            :style="isNoStockInfo ? 'color:rgba(0,0,0,0.3);cursor: not-allowed;' : ''"
+            @click="isNoStockInfo ? $message.warning('暂无法删除仓库调取信息') : deleteLog('all',orderLog)">批量删除</div>
           <div class="btn noBorder noMargin"
             @click="download">批量导出excel</div>
         </div>
@@ -426,8 +427,12 @@
             </span>
             <span class="tb_row">{{item.user_name}}</span>
             <span class="tb_row middle">
+              <span class="tb_handle_btn"
+                v-if="item.action_type === 3"
+                @click="$message.warning('暂无法删除仓库调取信息')">删除</span>
               <span class="tb_handle_btn red"
-                @click="deleteLog('one',item.id)">删除</span>
+                @click="deleteLog('one',item.id)"
+                v-else>删除</span>
             </span>
           </div>
         </div>
@@ -1022,6 +1027,15 @@ export default {
   },
   created () {
     this.init()
+  },
+  computed: {
+    isNoStockInfo () {
+      let data = []
+      this.orderLog.forEach(item => {
+        data.push(...item.filter(items => items.checked && items.action_type === 3))
+      })
+      return data.length
+    }
   }
 }
 </script>

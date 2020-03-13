@@ -355,7 +355,7 @@
                         </el-select>
                       </div>
                     </div>
-                    <!-- <div class="colCtn flex3">
+                    <div class="colCtn flex3">
                       <div class="label">
                         <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span>
                       </div>
@@ -383,7 +383,7 @@
                           </el-select>
                         </template>
                       </div>
-                    </div> -->
+                    </div>
                   </div>
                   <div class="rowCtn"
                     v-for="(itemMa,indexMa) in itemStock.material_info"
@@ -685,10 +685,9 @@
                 effect="dark"
                 :content="checkWhichWeave.length===0?'请选取单位进行批量操作':'批量操作'"
                 placement="top">
-                <a class="btn"
-                  href="#handleWeave"
+                <span class="btn"
                   :class="{'btnGray':checkWhichWeave.length===0,'btnWhiteBlue':checkWhichWeave.length>0}"
-                  @click="batchBtnClickWeave">批量操作</a>
+                  @click="batchBtnClickWeave">批量操作</span>
               </el-tooltip>
             </div>
           </div>
@@ -1294,9 +1293,8 @@
         <div class="opr">
           <div class="btn btnGray"
             @click="stockHandles">直接跳过</div>
-          <a href="#handleMaterial"
-            class="btn btnBlue"
-            @click="stockHandles">确定</a>
+          <span class="btn btnBlue"
+            @click="stockHandles">确定</span>
         </div>
       </div>
     </div>
@@ -1364,9 +1362,9 @@ export default {
         }, {
           label: '最终入库',
           value: 'end_go'
-          // }, {
-          //   label: '结余入库',
-          //   value: 5
+        }, {
+          label: '结余入库',
+          value: 5
         }
       ],
       stockArr: []
@@ -1523,6 +1521,9 @@ export default {
         this.stockEditInfo.push(...pushData)
         this.easyHandleInfo = []
         this.easyHandlePopupFlag = false
+        setTimeout(() => {
+          this.$goElView('handleMaterial')
+        })
       }
     },
     // 织造加工module点击批量操作时
@@ -1564,6 +1565,9 @@ export default {
         return
       }
       this.weaveStockEditInfo.push(...data)
+      setTimeout(() => {
+        this.$goElView('handleWeave')
+      })
     },
     // 批量导出excel
     download () {
@@ -1622,21 +1626,30 @@ export default {
     },
     saveAll (type) {
       let data = []
+      let surplusData = []
+      let exceedMaterialInfo = []
       let flag = {
         client: true,
         editType: true,
         name: true,
         attr: true,
         weight: true,
-        time: true
+        time: true,
+        stockId: true
       }
       if (type === 'material') {
         this.stockEditInfo.forEach(item => {
+          if (+item.editType !== 5 && !item.client_name) {
+            flag.client = false
+          }
           if (!item.editType) {
             flag.editType = false
           }
           if (!item.time) {
             flag.time = false
+          }
+          if ((+item.editType === 5 && !item.stockId)) {
+            flag.stockId = false
           }
           item.material_info.forEach(itemMa => {
             if (!itemMa.material_name) {
@@ -1648,18 +1661,31 @@ export default {
             if (!itemMa.number) {
               flag.weight = false
             }
-            data.push({
-              order_id: this.$route.params.id,
-              client_id: item.client_name,
-              material_name: itemMa.material_name,
-              order_type: this.$route.params.orderType,
-              material_color: itemMa.material_attribute,
-              total_weight: itemMa.number,
-              complete_time: item.time,
-              desc: item.remark,
-              type: item.editType === 'out' ? 1 : item.editType === 'go' ? 2 : 3,
-              material_type: this.$route.params.type
-            })
+            if (+item.editType === 5) {
+              surplusData.push({
+                order_id: this.$route.params.id,
+                type: this.$route.params.type,
+                weight: itemMa.number,
+                company_id: window.sessionStorage.getItem('company_id'),
+                stock_id: item.stockId,
+                color_code: itemMa.material_attribute,
+                material_name: itemMa.material_name,
+                desc: item.remark
+              })
+            } else {
+              data.push({
+                order_id: this.$route.params.id,
+                client_id: item.client_name,
+                material_name: itemMa.material_name,
+                order_type: this.$route.params.orderType,
+                material_color: itemMa.material_attribute,
+                total_weight: itemMa.number,
+                complete_time: item.time,
+                desc: item.remark,
+                type: item.editType === 'out' ? 1 : item.editType === 'go' ? 2 : 3,
+                material_type: this.$route.params.type
+              })
+            }
           })
         })
       } else if (type === 'weave') {
@@ -1694,6 +1720,46 @@ export default {
             })
           })
         })
+        // 检测织造出库数量书否超出订购数量
+        let outStockInfo = []
+        this.weaveInfo.forEach(item => {
+          item.material_info.forEach(itemMa => {
+            itemMa.color_info.forEach(itemColor => {
+              outStockInfo.push({
+                material_name: itemMa.material_name,
+                material_color: itemColor.attr,
+                outStockNum: itemColor.outStockNum || 0
+              })
+            })
+          })
+        })
+        data.forEach(item => {
+          outStockInfo.push({
+            material_name: item.material_name,
+            material_color: item.material_color,
+            outStockNum: item.total_weight || 0
+          })
+        })
+        outStockInfo = this.$mergeData(outStockInfo, { mainRule: ['material_name', 'material_color'], otherRule: [{ name: 'outStockNum', type: 'add' }] })
+        outStockInfo.forEach(item => {
+          let flag = this.materialStockInfo.find(items => items.material_name === item.material_name)
+          if (flag) {
+            let innerFlag = flag.color_info.find(items => items.attr === item.material_color)
+            if (innerFlag) {
+              if (this.$toFixed(innerFlag.order_weight) < this.$toFixed(item.outStockNum)) {
+                exceedMaterialInfo.push('物料:“' + item.material_name + '”，颜色/属性：“' + item.material_color + '”')
+              }
+            }
+          }
+        })
+        console.log(outStockInfo)
+      }
+      if (exceedMaterialInfo.length > 0) {
+        this.$message.error({
+          dangerouslyUseHTMLString: true,
+          message: '检测到您所织造出库的原料大于订购数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
+        })
+        return
       }
       if (!flag.client) {
         this.$message.error('检测到未选择出入库单位，请选择')
@@ -1701,6 +1767,10 @@ export default {
       }
       if (!flag.editType) {
         this.$message.error('检测到未选择操作类型，请选择')
+        return
+      }
+      if (!flag.stockId) {
+        this.$message.error('检测到结余入库未选择入库仓库，请选择')
         return
       }
       if (!flag.name) {
@@ -1719,21 +1789,34 @@ export default {
         this.$message.error('检测到未选择出入库时间，请选择')
         return
       }
-      materialStock.create({ data: data }).then(res => {
-        if (res.data.status !== false) {
-          this.initData(this.$route.params.type)
-          this.stockEditInfo = []
-          this.weaveStockEditInfo = []
-          this.$message.success('保存成功')
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-            this.msgSwitch = true
-          } else {
-            this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+      // 订单物料出入库
+      if (data.length > 0) {
+        materialStock.create({ data: data }).then(res => {
+          if (res.data.status !== false) {
+            this.initData(this.$route.params.type)
+            this.stockEditInfo = []
+            this.weaveStockEditInfo = []
+            this.$message.success('保存成功')
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+            }
           }
-        }
-      })
+        })
+      }
+      // 订单结余入库
+      if (surplusData.length > 0) {
+        console.log(surplusData)
+        materialStock.surplusCreate({ data: surplusData }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('保存成功')
+            this.initData(this.$route.params.type)
+          }
+        })
+      }
     },
     deleteItem (item, index) {
       item.splice(index, 1)
@@ -1743,6 +1826,7 @@ export default {
         let obj = {
           client_name: '',
           editType: 'out',
+          stockId: '',
           material_info: [
             {
               material_name: '',
@@ -1795,6 +1879,9 @@ export default {
       }
       this.changeColorInfo(item.material_name, materialInfo)
       this.stockEditInfo.push(obj)
+      setTimeout(() => {
+        this.$goElView('handleMaterial')
+      })
     },
     // 织造加工module点击表格内操作时
     handleClickProcess (item, itemMa, itemColor) {
@@ -1814,6 +1901,9 @@ export default {
       this.changeMaterialInfo(item.client_id, obj)
       this.changeAttrInfo(itemMa.material_name, obj, materialInfo)
       this.weaveStockEditInfo.push(obj)
+      setTimeout(() => {
+        this.$goElView('handleWeave')
+      })
     },
     // 原料出入库module改变原料时
     changeColorInfo (eve, item) {
