@@ -470,8 +470,8 @@ export default {
             Object.keys(craftMat[item.colour_name]).forEach((keyMat) => {
               Object.keys(craftMat[item.colour_name][keyMat]).forEach((keyColor) => {
                 arr.push({
-                  name: keyMat,
-                  attr: keyColor,
+                  name: keyColor,
+                  attr: keyMat,
                   number: craftMat[item.colour_name][keyMat][keyColor],
                   unit: 'g'
                 })

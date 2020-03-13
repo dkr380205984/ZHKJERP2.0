@@ -34,9 +34,9 @@
               <el-select v-model="staffInfo.sex"
                 placeholder="请选择性别">
                 <el-option label="男"
-                  value="男"></el-option>
+                  value="1"></el-option>
                 <el-option label="女"
-                  value="女"></el-option>
+                  value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -48,8 +48,9 @@
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-input v-model="staffInfo.telephone"
-                placeholder="请输入员工姓名"></el-input>
+              <zh-input v-model="staffInfo.telephone"
+                type="telephone"
+                placeholder="请输入手机号"></zh-input>
             </div>
           </div>
           <div class="colCtn">
@@ -151,9 +152,9 @@
               <el-select v-model="staffInfo.type"
                 placeholder="请选择工种">
                 <el-option label="合同工"
-                  value="合同工"></el-option>
+                  value="1"></el-option>
                 <el-option label="临时工"
-                  value="临时工"></el-option>
+                  value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -190,14 +191,17 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnGray">返回</div>
-          <div class="btn btnBlue">提交</div>
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="submit">添加</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { staff } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -223,6 +227,51 @@ export default {
     }
   },
   methods: {
+    submit () {
+      if (!this.staffInfo.name) {
+        this.$message.warning('请填写姓名')
+        return
+      }
+      if (!this.staffInfo.telephone) {
+        this.$message.warning('请填写手机号')
+        return
+      }
+      // if (!this.staffInfo.department) {
+      //   this.$message.warning('请选择部门')
+      //   return
+      // }
+      if (!this.staffInfo.type) {
+        this.$message.warning('请选择工种')
+        return
+      }
+      if (!this.staffInfo.date) {
+        this.$message.warning('请选择在职时间')
+        return
+      }
+      console.log(this.staffInfo)
+      // 紧急联系人没有上传到接口
+      staff.create({
+        name: this.staffInfo.name,
+        department_id: 1, // 写死先，this.staffInfo.department
+        phone: this.staffInfo.telephone,
+        age: this.staffInfo.age,
+        id_card: this.staffInfo.IDcard,
+        sex: this.staffInfo.sex,
+        bank_card_name: this.staffInfo.bankName,
+        bank_card_code: this.staffInfo.bankCard,
+        station_id: 1, // 写死先，this.staffInfo.station
+        healthy_info: this.staffInfo.health,
+        urgent_phone: this.staffInfo.emergentPhone,
+        type: this.staffInfo.type,
+        work_time: this.staffInfo.date,
+        desc: this.staffInfo.desc
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('添加成功')
+          this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
+        }
+      })
+    }
   }
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
-  <div class="indexMain">
+  <div class="indexMain"
+    v-loading="loading">
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -117,31 +118,33 @@
               <span class="text">操作</span>
             </div>
           </div>
-          <div class="row">
+          <div class="row"
+            v-for="(item,index) in list"
+            :key="index">
             <div class="col">
-              <span class="text">编号</span>
+              <span class="text">暂无</span>
             </div>
             <div class="col">
-              <span class="text">员工姓名</span>
+              <span class="text">{{item.name}}</span>
             </div>
             <div class="col">
-              <span class="text">部门</span>
+              <span class="text">{{item.department_id}}</span>
             </div>
             <div class="col">
-              <span class="text">手机号</span>
+              <span class="text">{{item.phone}}</span>
             </div>
             <div class="col">
-              <span class="text">工种</span>
+              <span class="text">{{item.type}}</span>
             </div>
             <div class="col">
-              <span class="text">在职时间</span>
+              <span class="text">{{item.work_time}}</span>
             </div>
             <div class="col">
               <span class="text">员工状态</span>
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/staff/staffDetail/1')">详情</span>
+                @click="$router.push('/staff/staffDetail/' + item.id)">详情</span>
             </div>
           </div>
         </div>
@@ -159,6 +162,8 @@
   </div>
 </template>
 <script>
+import { staff } from '@/assets/js/api.js'
+import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
@@ -201,7 +206,8 @@ export default {
       typeArr: [],
       keyword: '',
       total: 1,
-      page: 1
+      page: 1,
+      list: []
     }
   },
   watch: {
@@ -216,18 +222,57 @@ export default {
   },
   methods: {
     getList () {
-
+      this.loading = true
+      staff.list({
+        keyword: this.keyword,
+        // state:this.state,
+        // type:this.type,
+        // department:this.department,
+        //  start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        // end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        limit: 10,
+        page: this.page
+      }).then((res) => {
+        console.log(res)
+        this.list = res.data.data.data
+        this.total = res.data.data.total
+        this.loading = false
+      })
     },
     // 更新筛选条件
     getFilters () {
-
+      let params = getHash(this.$route.params.params)
+      this.page = Number(params.page)
+      this.keyword = params.keyword
+      if (params.date !== 'null' && params.date !== '') {
+        this.date = params.date.split(',')
+      } else {
+        this.date = ''
+      }
+      this.type = params.type || ''
+      this.state = params.state || ''
+      this.department = params.department || ''
+      if (this.type) {
+        this.searchType = true
+      }
+      if (this.state) {
+        this.searchState = true
+      }
+      if (this.department) {
+        this.department = true
+      }
     },
     changeRouter (page) {
-
+      let pages = page || 1
+      this.$router.push('/staff/staffList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&department=' + this.department + '&&type=' + this.type + '&&state=' + this.state)
     },
     reset () {
-
+      this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
     }
+  },
+  created () {
+    this.getFilters()
+    this.getList()
   }
 }
 </script>

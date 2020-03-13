@@ -1956,7 +1956,7 @@ export default {
           plan_id: this.replenishFlag ? null : item.id,
           type: this.type,
           vat_code: null,
-          replenish_id: this.replenishFlag ? this.replenishId : null,
+          replenish_id: this.replenishFlag ? item.id : null,
           type_source: 2, // 1调取，2订购
           attribute: null,
           stock_id: null,
