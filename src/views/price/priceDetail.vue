@@ -516,8 +516,8 @@ export default {
       if (item.length === 0) {
         return 0
       } else {
-        return Number(item.reduce((total, val) => {
-          return Number(total.totalPrice ? total.totalPrice : (total || 0)) + Number(val.totalPrice ? val.totalPrice : 0)
+        return Number(item.map(item => +item.totalPrice || 0).reduce((total, val) => {
+          return Number(total) + Number(val)
         })).toFixed(2)
       }
     },

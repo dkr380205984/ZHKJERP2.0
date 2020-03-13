@@ -303,7 +303,8 @@ const materialStock = {
   init: (params) => http.get(`${baseUrl}/order/material/push/init`, params),
   create: (params) => http.post(`${baseUrl}/order/material/push`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/material/push/detail`, params),
-  delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json'),
+  surplusCreate: (params) => http.post(`${baseUrl}/order/material/surplus/push`, params, 'application/json')
 }
 // 装箱计划
 const packPlan = {
