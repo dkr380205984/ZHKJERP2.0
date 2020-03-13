@@ -355,7 +355,7 @@
                         </el-select>
                       </div>
                     </div>
-                    <div class="colCtn flex3">
+                    <!-- <div class="colCtn flex3">
                       <div class="label">
                         <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span>
                       </div>
@@ -383,7 +383,7 @@
                           </el-select>
                         </template>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="rowCtn"
                     v-for="(itemMa,indexMa) in itemStock.material_info"
@@ -1364,9 +1364,9 @@ export default {
         }, {
           label: '最终入库',
           value: 'end_go'
-        }, {
-          label: '结余入库',
-          value: 5
+          // }, {
+          //   label: '结余入库',
+          //   value: 5
         }
       ],
       stockArr: []
