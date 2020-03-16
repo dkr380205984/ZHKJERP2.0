@@ -145,6 +145,21 @@
             <div class="col">
               <span class="opr"
                 @click="$router.push('/staff/staffDetail/' + item.id)">详情</span>
+              <span class="opr">
+                <el-dropdown trigger="click">
+                  <span class="el-dropdown-link">
+                    操作<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item @click.native="$router.push('/staff/staffUpdate/'+ item.id)">
+                      <span class="updated">修改</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="deleteStaff(item.id)">
+                      <span class="delete">删除</span>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </span>
             </div>
           </div>
         </div>
@@ -268,6 +283,30 @@ export default {
     },
     reset () {
       this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
+    },
+    deleteStaff (id) {
+      this.$confirm('是否删除该员工, 删除后相关的结算信息不保留?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        staff.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.$winReload()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   created () {
