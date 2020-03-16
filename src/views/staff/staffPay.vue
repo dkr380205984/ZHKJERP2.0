@@ -19,7 +19,10 @@
                   </el-option>
                 </el-select>
               </div>
-              <div class="selectCtn">
+              <div class="selectCtn"
+                style="width:auto">
+                <span class="label"
+                  style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
                   type="month"
                   value-format="yyyy-MM"
@@ -153,10 +156,10 @@
                     <div class="once">{{itemChild.settle_type}}</div>
                     <div class="once">{{itemChild.price}}</div>
                     <div class="once">{{itemChild.number}}</div>
-                    <div class="once">{{itemChild.total_price}}</div>
+                    <div class="once">{{itemChild.price * itemChild.number}}</div>
                     <div class="once">{{itemChild.desc}}</div>
-                    <div class="once">{{itemChild.user_name}}</div>
-                    <div class="once">{{itemChild.create_time.slice(0,10)}}</div>
+                    <div class="once">{{itemChild.user_name?itemChild.user_name:'-'}}</div>
+                    <div class="once">{{itemChild.create_time?itemChild.create_time.slice(0,10):'-'}}</div>
                     <div class="once"></div>
                   </template>
                 </div>
@@ -262,8 +265,8 @@ export default {
         staff_id: item.staff_id,
         complete_time: item.complete_time,
         work_type: item.work_type,
-        year: item.year,
-        month: item.month,
+        year: this.date.split('-')[0],
+        month: this.date.split('-')[1],
         settle_type: item.settle_type,
         price: item.price,
         number: item.number,

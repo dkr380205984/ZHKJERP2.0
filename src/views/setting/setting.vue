@@ -637,6 +637,39 @@
               </div>
             </div>
           </template>
+          <template v-if="cName==='工厂部门管理'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加部门</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">部门名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in stationArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteStation(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="stationTotal"
+                  :current-page.sync="stationPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
           <template v-if="cName==='工厂信息设置'">
             <div class="companySetting">
               <div class="row">
@@ -1305,6 +1338,30 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='工厂部门管理'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加部门</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">部门名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入部门名称"
+                  v-model="station"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveStation">确定</div>
+          </div>
+        </div>
+      </template>
       <template v-if="cName==='员工帐号管理'">
         <div class="main">
           <div class="title">
@@ -1822,7 +1879,7 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
+import { priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1833,7 +1890,7 @@ export default {
         '工艺单设置': ['边型', '机型', '组织法'],
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
-        '工厂信息设置': ['工厂信息设置', '工厂小组管理'],
+        '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理'],
         '员工管理': ['员工帐号管理'],
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载']
@@ -1952,6 +2009,10 @@ export default {
       group: '',
       groupTotal: 1,
       groupPage: 1,
+      stationList: [],
+      station: '',
+      stationTotal: 1,
+      stationPage: 1,
       companyInfo: {
         logoUrl: '',
         client_name: '',
@@ -2145,6 +2206,8 @@ export default {
         this.getHalfProcess()
       } else if (val === '工厂小组管理') {
         this.getGroup()
+      } else if (val === '工厂部门管理') {
+        this.getStation()
       } else if (val === '工厂信息设置') {
         this.getCompany()
       } else if (val === '员工帐号管理') {
@@ -2209,6 +2272,9 @@ export default {
     },
     groupArr () {
       return this.groupList.slice((this.groupPage - 1) * 5, this.groupPage * 5)
+    },
+    stationArr () {
+      return this.stationList.slice((this.stationPage - 1) * 5, this.stationPage * 5)
     }
   },
   methods: {
@@ -3487,6 +3553,54 @@ export default {
               message: '删除成功!'
             })
             this.getGroup()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getStation () {
+      station.list({
+        type: 2
+      }).then((res) => {
+        this.stationList = res.data.data
+        this.stationTotal = this.stationList.length
+      })
+    },
+    saveStation () {
+      if (this.station) {
+        station.create({
+          name: this.station,
+          type: 2
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('添加成功')
+            this.station = ''
+            this.getStation()
+          }
+        })
+      } else {
+        this.$message.error('请输入部门名称')
+      }
+    },
+    deleteStation (id) {
+      this.$confirm('是否删除该部门?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        station.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getStation()
           }
         })
       }).catch(() => {

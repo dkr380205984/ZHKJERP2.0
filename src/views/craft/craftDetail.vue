@@ -384,7 +384,7 @@
           </div>
           <div class="colCtn">
             <div class="label">纬密：</div>
-            <div class="text">{{((weftInfo.total / (weftInfo.neichang + weftInfo.rangwei))).toFixed(2)}}梭/cm</div>
+            <div class="text">{{((weftInfo.total / (weftInfo.neichang))).toFixed(2)}}梭/cm</div>
           </div>
         </div>
         <div class="rowCtn">

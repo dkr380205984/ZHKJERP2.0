@@ -128,19 +128,19 @@
               <span class="text">{{item.name}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.department_id}}</span>
+              <span class="text">{{item.department_name}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.phone}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.type}}</span>
+              <span class="text">{{item.type === 1?'合同工':'临时工'}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.work_time}}</span>
             </div>
             <div class="col">
-              <span class="text">员工状态</span>
+              <span class="text">还没做</span>
             </div>
             <div class="col">
               <span class="opr"
@@ -177,7 +177,7 @@
   </div>
 </template>
 <script>
-import { staff } from '@/assets/js/api.js'
+import { staff, station } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -291,7 +291,7 @@ export default {
         type: 'warning'
       }).then(() => {
         staff.delete({
-          id: id
+          staff_id: id
         }).then((res) => {
           if (res.data.status) {
             this.$message({
@@ -312,6 +312,11 @@ export default {
   created () {
     this.getFilters()
     this.getList()
+    station.list({
+      type: 2
+    }).then((res) => {
+      this.departmentArr = res.data.data
+    })
   }
 }
 </script>
