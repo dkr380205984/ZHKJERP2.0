@@ -204,68 +204,18 @@
           </div>
         </div>
       </div>
-      <div class="rightCtn"
-        @click.stop="$message.warning('该功能模块暂未开放')">
+      <div class="rightCtn">
         <div class="title">使用教学
           <span class="btn noBorder"
-            style="padding-right:0">查看全部</span>
+            style="padding-right:0"
+            @click="$openUrl('/tutorialSystem/tutorialSystemList')">查看全部</span>
         </div>
-        <!-- @click.prevent="$openUrl('/tutorialSystem/tutorialSystemDetail?keyword=怎样添加样品?')" -->
-        <div class="line">
-          <div class="number">1</div>
-          <div class="text">怎样添加样品?</div>
-        </div>
-        <div class="line">
-          <div class="number">2</div>
-          <div class="text">怎样添加报价单?</div>
-        </div>
-        <div class="line">
-          <div class="number">3</div>
-          <div class="text">怎样添加产品?</div>
-        </div>
-        <div class="line">
-          <div class="number">4</div>
-          <div class="text">怎样添加订单?</div>
-        </div>
-        <div class="line">
-          <div class="number">5</div>
-          <div class="text">怎样预订购物料?</div>
-        </div>
-        <div class="line">
-          <div class="number">6</div>
-          <div class="text">产品怎样进行织造加工分配?</div>
-        </div>
-        <div class="line">
-          <div class="number">7</div>
-          <div class="text">怎样进行产品收发?</div>
-        </div>
-        <div class="line">
-          <div class="number">8</div>
-          <div class="text">怎样进行半成品检验?</div>
-        </div>
-        <div class="line">
-          <div class="number">9</div>
-          <div class="text">怎样进行成品检验?</div>
-        </div>
-        <div class="line">
-          <div class="number">10</div>
-          <div class="text">怎样添加仓库?</div>
-        </div>
-        <div class="line">
-          <div class="number">11</div>
-          <div class="text">怎样添加装箱计划单?</div>
-        </div>
-        <div class="line">
-          <div class="number">12</div>
-          <div class="text">物料怎样进行出入库操作?</div>
-        </div>
-        <div class="line">
-          <div class="number">13</div>
-          <div class="text">怎样添加客户?</div>
-        </div>
-        <div class="line">
-          <div class="number">14</div>
-          <div class="text">系统设置</div>
+        <div class="line"
+          v-for="(item,index) in tutorialSystemArr"
+          :key="index">
+          <div class="number">{{index + 1}}</div>
+          <div class="text"
+            @click.prevent="$openUrl('/tutorialSystem/tutorialSystemDetail/' + item.id)">{{item.title}}</div>
         </div>
       </div>
     </div>
@@ -312,7 +262,7 @@
 </template>
 
 <script>
-import { notify, globleSearch, indexCount } from '@/assets/js/api.js'
+import { notify, globleSearch, indexCount, tutorial } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -429,7 +379,8 @@ export default {
         day: 0,
         week: 0,
         month: 0
-      }
+      },
+      tutorialSystemArr: []
     }
   },
   computed: {
@@ -594,10 +545,12 @@ export default {
         status: null,
         tag: null
       }),
-      indexCount.dispatchCount()
+      indexCount.dispatchCount(),
+      tutorial.list()
     ]).then((res) => {
       this.msgList = res[0].data.data
       this.dispatchCount = res[1].data.data
+      this.tutorialSystemArr = res[2].data.data.splice(0, 10)
     })
   }
 }

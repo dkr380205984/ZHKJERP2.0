@@ -341,7 +341,7 @@ const routes = [
       name: '样单财务统计',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
-      path: '/tutorialSystem/tutorialSystemDetail',
+      path: '/tutorialSystem/tutorialSystemDetail/:id',
       name: '系统教程详情',
       component: () => import('../views/tutorialSystem/tutorialSystemDetail.vue')
     }, {

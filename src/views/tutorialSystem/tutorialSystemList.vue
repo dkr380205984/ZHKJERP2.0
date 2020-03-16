@@ -4,22 +4,29 @@
     id="tutorialSystemList">
     <div class="module">
       <div class="inputCtn_page">
-        <el-input v-model="searchString"
-          placeholder="请输入描述"
-          class="searchInput">
-          <span slot="append"
-            class="btn btnBlue el-icon-search"
-            @click="search">搜索</span>
-        </el-input>
+        <el-autocomplete v-model="searchString"
+          class="searchInput"
+          :fetch-suggestions="querySearch"
+          placeholder="请输入搜索内容"
+          @select="handleSelect"></el-autocomplete>
       </div>
       <div class="tutorialCtn">
         <el-collapse v-model="activeName"
           accordion>
           <el-collapse-item v-for="(item,index) in tutorialModule"
             :key="index"
-            :title="item.module"
             :name="item.id">
-            <div @click="$router.push('/tutorialSystem/tutorialSystemDetail?keyword=与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念')">与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；</div>
+            <template slot="title">{{item.module}}({{item.module_info ? item.module_info.length : 0}}) </template>
+            <div class="collapse__inner_item"
+              v-for="(value,key) in item.module_info || []"
+              :key="key">
+              <span class="text"
+                @click="$router.push('/tutorialSystem/tutorialSystemDetail/' + value.id)">{{value.title}}</span>
+            </div>
+            <div class="collapse__inner_item"
+              v-if="!item.module_info || item.module_info.length === 0">
+              <span class="text orange">该模块暂无教程</span>
+            </div>
           </el-collapse-item>
         </el-collapse>
       </div>
@@ -27,23 +34,62 @@
   </div>
 </template>
 <script>
+import { tutorial } from '@/assets/js/api.js'
 import { permissions } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
       loading: true,
       searchString: '',
-      tutorialModule: permissions,
+      tutorialModule: [
+        ...permissions,
+        {
+          id: 99,
+          module: '常见问题'
+        }
+      ],
       activeName: ''
     }
   },
   methods: {
-    search () {
-
+    querySearch (queryString, cb) {
+      let beforeReturnInfo = this.tutorialModule.map(item => item.module_info || []).reduce((a, b) => {
+        return a.concat(b)
+      }).map(item => {
+        return {
+          value: item.title,
+          id: item.id
+        }
+      })
+      cb(queryString ? beforeReturnInfo.filter(item => item.value.indexOf(queryString) !== -1) : beforeReturnInfo)
+    },
+    handleSelect (event) {
+      this.$router.push('/tutorialSystem/tutorialSystemDetail/' + event.id)
+    },
+    init () {
+      this.tutorialModule.forEach(item => {
+        item.module_info = []
+      })
+      Promise.all([
+        tutorial.list()
+      ]).then(res => {
+        let tutorialDetail = res[0].data.data || []
+        tutorialDetail.forEach(item => {
+          let moduleFlag = this.tutorialModule.find(val => val.id === item.module_id)
+          if (moduleFlag) {
+            if (!moduleFlag.module_info) {
+              moduleFlag.module_info = [item]
+            } else {
+              moduleFlag.module_info.push(item)
+            }
+          }
+        })
+        this.loading = false
+      })
     }
   },
   created () {
-    this.loading = false
+    this.init()
   }
 }
 </script>
