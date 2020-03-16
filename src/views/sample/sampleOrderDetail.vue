@@ -1865,7 +1865,7 @@ export default {
         //   return
         // }
         this.isCommit = 'commit'
-        let title = this.sampleOrderArr[0].title
+        let title = this.sampleOrderArr[this.sampleOrderArr.length - 1].title
         title += '-第' + (this.chinaNum[this.sampleOrderArr.length] || this.sampleOrderArr.length) + '次'
         sampleOrder.create({
           type: this.continueSampleInfo.type,

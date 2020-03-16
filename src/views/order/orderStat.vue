@@ -31,6 +31,9 @@
         </div>
         <div class="list">
           <div class="title">
+            <div class="col">
+              <span class="text">订单类型</span>
+            </div>
             <div class="col flex12">
               <span class="text">订单号</span>
             </div>
@@ -59,13 +62,14 @@
                 </transition>
               </span>
             </div>
-            <div class="col middle">
+            <!-- <div class="col middle">
               <span class="text">产品图片</span>
-            </div>
+            </div> -->
             <div class="col flex08">
-              <span class="text">订单数量(件)</span>
+              <span class="text"
+                style="line-height:1.2em">订单数量<br />下单日期</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">
                 <span class="text"
                   v-show="!searchGroupFlag">负责小组
@@ -88,15 +92,15 @@
                   </div>
                 </transition>
               </span>
-            </div>
+            </div> -->
             <div class="col flex16">
               <span class="text">
                 <span class="text"
                   v-show="!searchStateFlag">流程进度
-                  <i class="el-icon-search iconBtn"
-                    @click="searchStateFlag=true"></i>
+                  <!-- <i class="el-icon-search iconBtn"
+                    @click="searchStateFlag=true"></i> -->
                 </span>
-                <transition name="el-zoom-in-top">
+                <!-- <transition name="el-zoom-in-top">
                   <div v-show="searchStateFlag"
                     class="filterBox">
                     <el-dropdown :hide-on-click="false"
@@ -178,10 +182,13 @@
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
-                </transition>
+                </transition> -->
               </span>
             </div>
             <div class="col">
+              <span class="text">总进度</span>
+            </div>
+            <!-- <div class="col">
               <span class="text">
                 <span class="text"
                   v-show="!searchState2Flag">订单状态
@@ -204,9 +211,12 @@
                   </div>
                 </transition>
               </span>
+            </div> -->
+            <div class="col">
+              <span class="text">交货日期</span>
             </div>
             <div class="col">
-              <span class="text">下单时间</span>
+              <span class="text">当前状态</span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -215,18 +225,18 @@
           <div class="row"
             v-for="(itemOrder,indexOrder) in list"
             :key="indexOrder">
+            <div class="col">订单</div>
+            <!-- <div class="col"> {{itemOrder.order_time}} </div> -->
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle">
+            <!-- <div class="col middle">
               <zh-img-list :list="itemOrder.image"
                 type='open'></zh-img-list>
-            </div>
-            <div class="col flex08">
-              {{itemOrder.number}}
-            </div>
-            <div class="col flex08">
+            </div> -->
+            <div class="col flex08"> {{itemOrder.number}}<br />{{itemOrder.order_time}}</div>
+            <!-- <div class="col flex08">
               {{itemOrder.group_name}}
-            </div>
+            </div> -->
             <div class="col flex16">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_plan>0}">
@@ -264,6 +274,10 @@
                 <span class="name">箱</span>
               </div>
             </div>
+            <div class="col">50%</div>
+            <div class="col">
+              {{itemOrder.order_time}}
+            </div>
             <div class="col">
               <div class="stateCtn rowFlex"
                 :class="{'red':itemOrder.status === 2003,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
@@ -272,12 +286,9 @@
               </div>
             </div>
             <div class="col">
-              {{itemOrder.order_time}}
-            </div>
-            <div class="col">
               <span class="opr"
                 @click="$router.push('/order/orderDetail/' + itemOrder.id)">详情</span>
-              <span class="opr">
+              <!-- <span class="opr">
                 <el-dropdown @command="handleCommand($event,itemOrder.id)">
                   <span class="el-dropdown-link">
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
@@ -291,7 +302,7 @@
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
-              </span>
+              </span> -->
             </div>
           </div>
         </div>

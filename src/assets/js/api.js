@@ -399,7 +399,13 @@ const staff = {
   detail: (params) => http.get(`${baseUrl}/company/staff/detail`, params),
   delete: (params) => http.post(`${baseUrl}/company/staff/delete`, params, 'application/json')
 }
+// 教程
+const tutorial = {
+  detail: (params) => http.get(`${baseUrl}/admin/system/study/one`, params),
+  list: (params) => http.get(`${baseUrl}/admin/system/study/list`, params)
+}
 export {
+  tutorial,
   staff,
   priceLoading,
   settle,
