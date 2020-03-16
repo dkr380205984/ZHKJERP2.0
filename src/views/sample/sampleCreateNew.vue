@@ -368,7 +368,7 @@
         <div class="title">
           <span class="text">快速添加样单</span>
           <span class="el-icon-close"
-            @click="showSampleOrderCreatePopup = false"></span>
+            @click="$router.push('/sample/sampleDetail/' + orderInfo.product_info[0].product_id)"></span>
         </div>
         <div class="content">
           <div class="row">
@@ -466,7 +466,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showSampleOrderCreatePopup = false">取消</div>
+            @click="$router.push('sample/sampleDetail/' + orderInfo.product_info[0].product_id)">取消</div>
           <div class="btn btnBlue"
             @click="createSampleOrder">确定</div>
         </div>
@@ -896,7 +896,6 @@ export default {
           this.$router.push('/sample/sampleDetail/' + this.activeId)
         }
       })
-      console.log('验证完成')
     },
     changeContacts ($event) {
       let flag = this.clientList.find(item => item.id === $event)
