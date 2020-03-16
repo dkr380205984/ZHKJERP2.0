@@ -154,7 +154,7 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+    QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showReplenishPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
       if (!err) {
         this.qrCodeUrl = url
       }

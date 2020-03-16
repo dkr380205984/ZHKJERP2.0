@@ -844,18 +844,6 @@
                       :value="item.id">
                     </el-option>
                   </el-select>
-                  <!-- <el-select v-model="itemMa.productName"
-                    filterable
-                    default-first-option
-                    clearable
-                    placeholder="请选择需要操作的产品"
-                    @change="getProductSizeColorInfo($event,itemMa)">
-                    <el-option v-for="item in productNameList"
-                      :key="item.id"
-                      :label="item.product_code + '(' + item.category_info.product_category + '/' + item.type_name + '/' +item.style_name +')'"
-                      :value="item.id">
-                    </el-option>
-                  </el-select> -->
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -877,38 +865,49 @@
                 <div class="content"></div>
               </div>
             </div>
-            <div class="rowCtn">
+            <div class="rowCtn"
+              v-for="(itemColor,indexColor) in itemMa.color_info"
+              :key="indexColor">
               <div class="colCtn flex3">
-                <div class="label">
+                <div class="label"
+                  v-if="indexColor === 0">
                   <span class="text">尺码颜色</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <el-cascader v-model="itemMa.size_color"
-                    :key="itemMa.productName"
+                  <el-cascader v-model="itemColor.size_color"
+                    :key="itemMa.productName + '' + indexColor"
                     :options="itemMa.sizeColor"></el-cascader>
                 </div>
               </div>
               <div class="colCtn flex3">
-                <div class="label">
+                <div class="label"
+                  v-if="indexColor === 0">
                   <span class="text">操作数量</span>
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
                   <zh-input placeholder="请输入操作数量"
-                    v-model="itemMa.number"
+                    v-model="itemColor.number"
                     type='number'></zh-input>
                 </div>
               </div>
               <div class="colCtn flex3">
-                <div class="label">
+                <div class="label"
+                  v-if="indexColor === 0">
                   <span class="text">备注</span>
                 </div>
                 <div class="content">
-                  <el-autocomplete v-model="itemMa.remark"
+                  <el-autocomplete v-model="itemColor.remark"
                     :fetch-suggestions="querySearchRemark"
                     placeholder="请输入备注"></el-autocomplete>
                 </div>
+                <div class="editBtn addBtn"
+                  v-if="indexColor === 0"
+                  @click="addItem(itemMa.color_info,'product_color')">添加配色</div>
+                <div class="editBtn deleteBtn"
+                  v-else
+                  @click="deleteItem(itemMa.color_info,indexColor)">删除配色</div>
               </div>
             </div>
           </div>
@@ -1526,8 +1525,16 @@ export default {
       } else if (type === 'product') {
         item.push({
           productName: '',
-          size_color: '',
           editType: 'go',
+          color_info: [{
+            size_color: '',
+            number: '',
+            remark: ''
+          }]
+        })
+      } else if (type === 'product_color') {
+        item.push({
+          size_color: '',
           number: '',
           remark: ''
         })
@@ -1621,9 +1628,13 @@ export default {
             {
               productName: '',
               editType: 'go',
-              size_color: '',
-              number: '',
-              remark: ''
+              color_info: [
+                {
+                  size_color: '',
+                  number: '',
+                  remark: ''
+                }
+              ]
             }
           ]
         } else if (type === 'filterProductList') {
@@ -1871,6 +1882,7 @@ export default {
       })
     },
     saveProduct () {
+      let data = []
       let flag = {
         name: true,
         size: true,
@@ -1886,18 +1898,29 @@ export default {
         if (!itemMa.editType) {
           flag.type = false
         }
-        if (!itemMa.size_color[0]) {
-          flag.size = false
-        }
-        if (!itemMa.size_color[1]) {
-          flag.color = false
-        }
-        if (!itemMa.number) {
-          flag.number = false
-        }
-        if (!itemMa.remark) {
-          flag.remark = false
-        }
+        itemMa.color_info.forEach(itemColor => {
+          if (!itemColor.size_color[0]) {
+            flag.size = false
+          }
+          if (!itemColor.size_color[1]) {
+            flag.color = false
+          }
+          if (!itemColor.number) {
+            flag.number = false
+          }
+          if (!itemColor.remark) {
+            flag.remark = false
+          }
+          data.push({
+            remark: itemColor.remark,
+            stock_number: (itemMa.editType === 'go' ? Number(itemColor.number) : -Number(itemColor.number)),
+            color: itemColor.size_color[1],
+            size: itemColor.size_color[0],
+            product_id: itemMa.productName,
+            stock_id: this.$route.params.id
+            // company_id: window.sessionStorage.getItem('company_id')
+          })
+        })
       })
       if (!flag.name) {
         this.$message.error('检测到有未选择的产品，请选择')
@@ -1923,17 +1946,17 @@ export default {
         this.$message.error('请输入备注')
         return
       }
-      let data = this.productEditInfo.map(item => {
-        return {
-          remark: item.remark,
-          stock_number: (item.editType === 'go' ? Number(item.number) : -Number(item.number)),
-          color: item.size_color[1],
-          size: item.size_color[0],
-          product_id: item.productName,
-          stock_id: this.$route.params.id
-          // company_id: window.sessionStorage.getItem('company_id')
-        }
-      })
+      // let data = this.productEditInfo.map(item => {
+      //   return {
+      //     remark: item.remark,
+      //     stock_number: (item.editType === 'go' ? Number(item.number) : -Number(item.number)),
+      //     color: item.size_color[1],
+      //     size: item.size_color[0],
+      //     product_id: item.productName,
+      //     stock_id: this.$route.params.id
+      //     // company_id: window.sessionStorage.getItem('company_id')
+      //   }
+      // })
       stock.productStock({
         data: data
       }).then(res => {

@@ -14,7 +14,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">编号：</span>
-            <span class="text">{{orderInfo.order_code}}</span>
+            <span class="text">{{orderInfo.order_code || orderInfo.title}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">订单公司：</span>
@@ -776,6 +776,27 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showReplenishPopup">
+      <div class="main">
+        <div class="title">
+          <span style="display:flex;justify-content:center;flex:auto">请选择需要您要跳转的页面</span>
+          <span class="el-icon-close"
+            @click="showReplenishPopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料订购</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料出入库</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -837,7 +858,8 @@ export default {
       replenish_log: [],
       printInfo: [],
       printPopup: false,
-      showRouterPopup: false
+      showRouterPopup: false,
+      showReplenishPopup: false
     }
   },
   computed: {
@@ -1258,6 +1280,9 @@ export default {
     let api = this.$route.params.orderType === '1' ? order : sampleOrder
     if (this.$route.query.showRouterPopup === 'true') {
       this.showRouterPopup = true
+    }
+    if (this.$route.query.showReplenishPopup === 'true') {
+      this.showReplenishPopup = true
     }
     Promise.all([api.detail({
       id: this.$route.params.id
