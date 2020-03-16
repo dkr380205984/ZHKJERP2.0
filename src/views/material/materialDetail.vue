@@ -166,6 +166,68 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn"
+          style="margin-top:40px">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn"
+                    style="flex:0.2">选择</div>
+                  <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
+                  <div class="tcolumn noPad"
+                    style="flex:4">
+                    <div class="trow">
+                      <div class="tcolumn">{{type==='1'?'颜色':'属性'}}名称</div>
+                      <div class="tcolumn">计划补纱数量</div>
+                      <div class="tcolumn">实际补纱数量</div>
+                      <div class="tcolumn">操作</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in replenishList"
+                  :key="index">
+                  <div class="tcolumn"
+                    style="flex:0.2">
+                    <el-checkbox v-model="item.checked"></el-checkbox>
+                  </div>
+                  <div class="tcolumn">{{item.material_name}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:4">
+                    <div class="trow"
+                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
+                      :key="indexChild">
+                      <div class="tcolumn">{{itemChild.material_color}}</div>
+                      <div class="tcolumn">{{itemChild.need_weight}}{{type==='1'?'kg':itemChild.unit}}</div>
+                      <div class="tcolumn"><span class="green">{{itemChild.order_weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
+                      <div class="tcolumn"
+                        style="flex-direction:row;line-height:54px;justify-content:start">
+                        <a href="#order"
+                          class="blue"
+                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight,true)">订购</a>
+                        <span class="border"
+                          style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
+                          v-if="type==='1'"></span>
+                        <span class="blue"
+                          @click="supplyStock(item.material_name,item.material_color,item.reality_weight-item.order_weight, item.id)"
+                          v-if="type==='1'">调取</span>
+                        <!-- <span class="border"
+                          style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"></span>
+                        <a href="#process"
+                          class="blue"
+                          @click="normalProcess(itemChild.id,itemChild.order_weight)">加工</a> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="module"
@@ -269,7 +331,7 @@
                       <div class="content">
                         <!-- 补纱的时候用补纱id，不需要订购id -->
                         <el-select v-model="itemMat.id"
-                          v-if="!replenishFlag"
+                          v-if="!item.replenishFlag"
                           @change="selectMaterial($event,itemMat)">
                           <el-option v-for="item in materialArr"
                             :key="item.id"
@@ -279,7 +341,7 @@
                         </el-select>
                         <!-- 补纱的时候显示纱线名称 -->
                         <el-autocomplete v-model="itemMat.name"
-                          v-if="replenishFlag"
+                          v-if="item.replenishFlag"
                           :fetch-suggestions="searchYarn"
                           placeholder="请输入名称">
                         </el-autocomplete>
@@ -373,7 +435,7 @@
         </div>
       </div>
     </div>
-    <div class="module"
+    <!-- <div class="module"
       v-if="replenishList.length>0">
       <div class="titleCtn">
         <span class="title">{{type==='1'?'原':'辅'}}料补充</span>
@@ -418,7 +480,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="module"
       id="process">
       <div class="titleCtn">
@@ -522,13 +584,17 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="itemChild.material_id">
+                      <el-select v-if="!item.replenishFlag"
+                        v-model="itemChild.material_id">
                         <el-option v-for="item in materialArr"
                           :key="item.id"
                           :value="item.id"
                           :label="item.material_name+'/'+item.material_attribute">
                         </el-option>
                       </el-select>
+                      <el-input v-if="item.replenishFlag"
+                        disabled
+                        v-model="itemChild.replenish_material_name"></el-input>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -869,7 +935,7 @@
             <div class="row">
               <div class="label">物料名称：</div>
               <div class="info">
-                <span class="text">{{item.material_name}}</span>
+                <span class="text">{{item.material_name}}{{item.replenishFlag?'(补)':''}}</span>
               </div>
             </div>
             <div class="row">
@@ -925,7 +991,7 @@
             <div class="row">
               <div class="label">物料名称：</div>
               <div class="info">
-                <span class="text">{{item.material_name}}</span>
+                <span class="text">{{item.material_name}}{{item.replenishFlag?'(补)':''}}</span>
               </div>
             </div>
             <div class="row">
@@ -1537,8 +1603,6 @@ export default {
       data.name = finded.material_name
     },
     normalOrder (name, color, id, number, replenishFlag) {
-      this.replenishFlag = replenishFlag // 补纱需要特殊处理
-      this.replenishId = id
       this.order_flag = true
       this.order_data.push({
         material: [{
@@ -1548,6 +1612,7 @@ export default {
           unit: '',
           id: id || null
         }],
+        replenishFlag: replenishFlag,
         price: '',
         company_id: '',
         complete_time: this.$getTime(),
@@ -1577,6 +1642,7 @@ export default {
         })
         if (material.length > 0) {
           this.order_data.push({
+            replenishFlag: item.replenishFlag,
             material: material,
             price: '',
             company_id: '',
@@ -1716,32 +1782,26 @@ export default {
     // 批量调取
     easyStockBatch (whiteYarn) {
       // 调取白胚
-      if (!this.replenishFlag) {
-        this.stock_data = []
-        this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
-          let needNumChild = item.reality_weight - item.order_weight
-          let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
-          if (stockWeight > 0) {
-            this.stock_data.push({
-              material_id: item.id,
-              material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
-              desc: '',
-              stock: [{
-                stock_id: whiteYarn.stock_id,
-                stock_name: whiteYarn.stock_name,
-                weight: stockWeight,
-                color: whiteYarn.material_color,
-                name: this.checkWhichYarn[0].material_name
-              }]
-            })
-          }
-        })
-      } else {
-        this.stock_data[0].stock[0].stock_id = whiteYarn.stock_id
-        this.stock_data[0].stock[0].stock_name = whiteYarn.stock_name
-        this.stock_data[0].stock[0].weight = this.stockMatTotalNum
-        this.stock_data[0].stock[0].color = whiteYarn.material_color
-      }
+      this.stock_data = []
+      this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
+        let needNumChild = item.reality_weight - item.order_weight
+        let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
+        if (stockWeight > 0) {
+          this.stock_data.push({
+            replenishFlag: this.checkWhichYarn[0].replenishFlag,
+            material_id: item.id,
+            material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
+            desc: '',
+            stock: [{
+              stock_id: whiteYarn.stock_id,
+              stock_name: whiteYarn.stock_name,
+              weight: stockWeight,
+              color: whiteYarn.material_color,
+              name: this.checkWhichYarn[0].material_name
+            }]
+          })
+        }
+      })
       this.stockYarnInfo = {
         from: whiteYarn.stock_name,
         material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
@@ -1823,8 +1883,8 @@ export default {
             color_code: this.stockYarnInfo.material_color,
             weight: itemChild.weight,
             vat_code: null,
-            plan_id: this.replenishFlag ? null : item.material_id,
-            replenish_id: this.replenishFlag ? item.material_id : null,
+            plan_id: item.replenishFlag ? null : item.material_id,
+            replenish_id: item.replenishFlag ? item.material_id : null,
             order_id: this.$route.params.id,
             stock_id: itemChild.stock_id,
             attribute: '',
@@ -1839,10 +1899,10 @@ export default {
             total_weight: itemChild.weight,
             color_code: this.stockYarnInfo.material_color,
             material_name: this.stockYarnInfo.material_name,
-            plan_id: this.replenishFlag ? null : item.material_id,
+            plan_id: item.replenishFlag ? null : item.material_id,
             type: this.type,
             vat_code: null,
-            replenish_id: this.replenishFlag ? item.material_id : null,
+            replenish_id: item.replenishFlag ? item.material_id : null,
             type_source: 1, // 1调取，2订购
             attribute: null,
             stock_id: itemChild.stock_id,
@@ -1953,10 +2013,10 @@ export default {
           total_weight: item.number,
           color_code: item.color,
           material_name: item.name,
-          plan_id: this.replenishFlag ? null : item.id,
+          plan_id: item.replenishFlag ? null : item.id,
           type: this.type,
           vat_code: null,
-          replenish_id: this.replenishFlag ? item.id : null,
+          replenish_id: item.replenishFlag ? item.id : null,
           type_source: 2, // 1调取，2订购
           attribute: null,
           stock_id: null,
@@ -2084,16 +2144,19 @@ export default {
         this.$message.warning('请先完成已有的加工信息再继续订购')
         return
       }
+      console.log(this.checkWhichYarn)
       this.checkWhichYarn.forEach((item) => {
         let material = []
         item.childrenMergeInfo.forEach((itemChild) => {
           material.push({
+            replenish_material_name: item.material_name + '/' + itemChild.material_color, // 补纱的时候才会用到，用于现实
             material_id: itemChild.id,
             number: itemChild.order_weight,
             price: ''
           })
         })
         this.process_data.push({
+          replenishFlag: item.replenishFlag,
           company_id: '',
           processList: material,
           complete_time: '',
@@ -2156,7 +2219,8 @@ export default {
             weight: itemChild.number,
             desc: item.desc,
             complete_time: this.$getTime(item.complete_time),
-            plan_id: itemChild.material_id
+            plan_id: item.replenishFlag ? null : itemChild.material_id,
+            replenish_id: item.replenishFlag ? itemChild.material_id : null
           })
         })
       })
@@ -2273,7 +2337,7 @@ export default {
   },
   computed: {
     checkWhichYarn () {
-      return this.statistic_data.filter((item) => item.checked)
+      return this.statistic_data.filter((item) => item.checked).concat(this.replenishList.filter((item) => item.checked))
     },
     stockMatReallyTotalNum () {
       return (this.stock_data.reduce((total, current) => {
@@ -2369,7 +2433,15 @@ export default {
           return total + current.price * current.weight
         }, 0))
       })
-      this.replenishList = res[9].data.data.filter(item => item.type === Number(this.type))
+      this.replenishList = this.$mergeData(res[9].data.data.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
+      // 改造补纱数据跟订购数据一样
+      this.replenishList.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.material_attribute = itemChild.material_color
+          itemChild.reality_weight = itemChild.need_weight
+          item.replenishFlag = true
+        })
+      })
       this.otherYarnStock = res[10].data.data
       this.total = res[10].data.meta.total
       this.loading = false

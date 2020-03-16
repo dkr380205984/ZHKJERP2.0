@@ -228,7 +228,7 @@
               </span>
               <span class="row_item center w100">纬密</span>
               <span class="row_item left unit">
-                {{$toFixed(weft_data.total / (weft_data.neichang + weft_data.rangwei))}}
+                {{$toFixed(weft_data.total / (weft_data.neichang))}}
                 <span class="text">梭/cm</span>
               </span>
               <span class="row_item center w100">齿牙</span>

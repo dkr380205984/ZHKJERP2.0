@@ -510,6 +510,7 @@
                 <div class="trow">
                   <div class="tcolumn"
                     style="flex:0.2"></div>
+                  <div class="tcolumn">补纱工厂</div>
                   <div class="tcolumn">补纱日期</div>
                   <div class="tcolumn">纱线名称</div>
                   <div class="tcolumn">纱线颜色</div>
@@ -527,6 +528,7 @@
                     style="flex:0.2">
                     <el-checkbox v-model="item.checked"></el-checkbox>
                   </span>
+                  <div class="tcolumn">{{item.replenish_name}}</div>
                   <div class="tcolumn">{{item.created_at.slice(0,10)}}</div>
                   <div class="tcolumn">{{item.material_name}}</div>
                   <div class="tcolumn">{{item.material_color}}</div>
@@ -664,26 +666,33 @@
               v-if="index>0"
               @click="deleteReplenish(index)">删除</div>
           </div>
-          <div class="row">
-            <div class="label">承担比例：</div>
-            <div class="info">
-              <zh-input v-model="replenish_data.client_info.partyA.percent"
-                placeholder="请输入比例">
-                <template slot="append">%</template>
-                <template slot="prepend">{{replenish_data.client_info.partyA.name}}</template>
-              </zh-input>
-            </div>
-          </div>
-          <div class="row">
+          <div class="row"
+            v-for="(item,index) in replenish_data.client_info"
+            :key="index +'aaa'">
             <div class="label"
-              style="visibility: hidden;">承担比例：</div>
-            <div class="info">
-              <zh-input v-model="replenish_data.client_info.partyB.percent"
+              :style="{'visibility': (index>0?'hidden':'visible')}">承担比例：</div>
+            <div class="info input-with-select">
+              <el-input v-model="item.percent"
                 placeholder="请输入比例">
                 <template slot="append">%</template>
-                <template slot="prepend">{{replenish_data.client_info.partyB.name}}</template>
-              </zh-input>
+                <template slot="prepend">
+                  <el-select style="width:120px"
+                    placeholder="单位"
+                    v-model="item.id">
+                    <el-option v-for="(item) in replenishClientArr"
+                      :key="item.client_id"
+                      :value="item.client_id"
+                      :label="item.client_name"></el-option>
+                  </el-select>
+                </template>
+              </el-input>
             </div>
+            <div class="editBtn blue"
+              v-if="index===0"
+              @click="addClient">添加</div>
+            <div class="editBtn red"
+              v-if="index>0"
+              @click="deleteClient(index)">删除</div>
           </div>
           <div class="row">
             <div class="label">备注信息：</div>
@@ -809,7 +818,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, weave, replenish, sampleOrder } from '@/assets/js/api.js'
+import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -841,25 +850,23 @@ export default {
       replenish_yarn: [],
       replenish_data: {
         yarn_info: [],
-        client_info: {
-          partyA: {
-            name: '',
-            id: '',
-            percent: ''
-          },
-          partyB: {
-            name: '',
-            id: '',
-            percent: ''
-          }
-        },
+        client_info: [{
+          name: '',
+          id: '',
+          percent: ''
+        }, {
+          name: '',
+          id: '',
+          percent: ''
+        }],
         desc: '补纱'
       },
       replenish_log: [],
       printInfo: [],
       printPopup: false,
       showRouterPopup: false,
-      showReplenishPopup: false
+      showReplenishPopup: false,
+      replenishClientArr: []
     }
   },
   computed: {
@@ -1158,22 +1165,20 @@ export default {
           }
         })
       })
-      this.replenish_data.yarn_info.push({
+      this.replenish_data.yarn_info = [{
         yarn: '',
         weight: ''
-      })
-      this.replenish_data.client_info = {
-        partyA: {
-          name: data.client_name,
-          id: data.client_id,
-          percent: ''
-        },
-        partyB: {
-          name: '本厂',
-          id: null,
-          percent: ''
-        }
-      }
+      }]
+      this.replenish_data.client_info = [{
+        client_name: data.client_name,
+        id: data.client_id,
+        percent: ''
+      }, {
+        client_name: '本厂',
+        id: null,
+        percent: ''
+      }]
+      this.replenish_data.replenishClientId = data.client_id
       this.replenish_flag = true
     },
     addReplenish () {
@@ -1188,10 +1193,23 @@ export default {
     saveReplenish () {
       let errorFlag = false
       let errMsg = ''
-      if (Number(this.replenish_data.client_info.partyA.percent) + Number(this.replenish_data.client_info.partyB.percent) !== 100) {
+      let percent = this.replenish_data.client_info.reduce((total, current) => {
+        return total + Number(current.percent)
+      }, 0)
+      if (percent !== 100) {
         errorFlag = true
         errMsg = '请保证承担比例相加等于100%'
       }
+      this.replenish_data.client_info.forEach((item) => {
+        if (!item.id) {
+          errorFlag = true
+          errMsg = '请选择承担单位'
+        }
+        if (!item.percent) {
+          errorFlag = true
+          errMsg = '请输入承担比例'
+        }
+      })
       this.replenish_data.yarn_info.forEach((item) => {
         if (!item.yarn) {
           errorFlag = true
@@ -1216,17 +1234,9 @@ export default {
             color: item.yarn.split('/')[1]
           }
         }),
-        client_info: [{
-          percent: this.replenish_data.client_info.partyA.percent,
-          client_name: this.replenish_data.client_info.partyA.name,
-          client_id: this.replenish_data.client_info.partyA.id
-        }, {
-          percent: this.replenish_data.client_info.partyB.percent,
-          client_name: this.replenish_data.client_info.partyB.name,
-          client_id: this.replenish_data.client_info.partyB.id
-        }],
+        client_info: this.replenish_data.client_info,
         desc: this.replenish_data.desc,
-        replenish_client: this.replenish_data.client_info.partyA.id
+        replenish_client: this.replenish_data.replenishClientId
       }
       replenish.create(formData).then((res) => {
         if (res.data.status) {
@@ -1274,6 +1284,16 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    addClient () {
+      this.replenish_data.client_info.push({
+        name: '',
+        id: '',
+        percent: ''
+      })
+    },
+    deleteClient (index) {
+      this.replenish_data.client_info.splice(index, 1)
     }
   },
   created () {
@@ -1293,6 +1313,9 @@ export default {
       order_id: this.$route.params.id,
       order_type: this.$route.params.orderType
     }), replenish.list({
+      order_id: this.$route.params.id,
+      order_type: this.$route.params.orderType
+    }), materialStock.init({
       order_id: this.$route.params.id,
       order_type: this.$route.params.orderType
     })]).then((res) => {
@@ -1336,7 +1359,6 @@ export default {
           part_data: mixedData
         })
       })
-      console.log(this.weaving_info, this.productArr)
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
       })
@@ -1361,6 +1383,8 @@ export default {
         item.check = false
         return item
       })
+      this.replenishClientArr = this.$mergeData(res[5].data.data.material_process_client.concat(res[5].data.data.material_order_client).concat(res[5].data.data.order_weave_client).concat(res[5].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
+      console.log(this.replenishClientArr)
       this.loading = false
     })
   }

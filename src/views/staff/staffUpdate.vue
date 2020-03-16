@@ -73,13 +73,8 @@
               <span class="text">岗位</span>
             </div>
             <div class="content">
-              <el-select v-model="staffInfo.station"
-                placeholder="请选择岗位">
-                <el-option v-for="(item,index) in stationArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"></el-option>
-              </el-select>
+              <el-input v-model="staffInfo.station"
+                placeholder="请输入员工岗位"></el-input>
             </div>
           </div>
         </div>
@@ -201,7 +196,7 @@
   </div>
 </template>
 <script>
-import { staff } from '@/assets/js/api.js'
+import { staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -236,10 +231,10 @@ export default {
         this.$message.warning('请填写手机号')
         return
       }
-      // if (!this.staffInfo.department) {
-      //   this.$message.warning('请选择部门')
-      //   return
-      // }
+      if (!this.staffInfo.department) {
+        this.$message.warning('请选择部门')
+        return
+      }
       if (!this.staffInfo.type) {
         this.$message.warning('请选择工种')
         return
@@ -248,19 +243,18 @@ export default {
         this.$message.warning('请选择在职时间')
         return
       }
-      console.log(this.staffInfo)
       // 紧急联系人没有上传到接口
       staff.create({
         id: this.$route.params.id,
         name: this.staffInfo.name,
-        department_id: 1, // 写死先，this.staffInfo.department
+        department_id: this.staffInfo.department,
         phone: this.staffInfo.telephone,
         age: this.staffInfo.age,
         id_card: this.staffInfo.IDcard,
         sex: this.staffInfo.sex,
         bank_card_name: this.staffInfo.bankName,
         bank_card_code: this.staffInfo.bankCard,
-        station_id: 1, // 写死先，this.staffInfo.station
+        station_id: this.staffInfo.station,
         healthy_info: this.staffInfo.health,
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
@@ -293,6 +287,11 @@ export default {
       this.staffInfo.type = data.type
       this.staffInfo.date = data.work_time
       this.staffInfo.desc = data.desc
+    })
+    station.list({
+      type: 2
+    }).then((res) => {
+      this.departmentArr = res.data.data
     })
   }
 }

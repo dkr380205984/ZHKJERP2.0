@@ -136,6 +136,13 @@ const group = {
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
   list: (params) => http.get(`${baseUrl}/user/group/list`, params)
 }
+// 部门 和小组公用的表和接口，type=2 ,前端做一下区分
+const station = {
+  create: (params) => http.post(`${baseUrl}/user/group/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/user/group/delete`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/client/one`, params),
+  list: (params) => http.get(`${baseUrl}/user/group/list`, params)
+}
 // 工序
 const course = {
   create: (params) => http.post(`${baseUrl}/production/flow/save`, params, 'application/json'),
@@ -400,6 +407,7 @@ const staff = {
   delete: (params) => http.post(`${baseUrl}/company/staff/delete`, params, 'application/json')
 }
 export {
+  station,
   staff,
   priceLoading,
   settle,

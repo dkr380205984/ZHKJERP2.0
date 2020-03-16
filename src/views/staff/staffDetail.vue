@@ -25,7 +25,7 @@
             </div>
             <div class="box">
               <div class="label">性别：</div>
-              <div class="content">{{staffInfo.sex}}</div>
+              <div class="content">{{staffInfo.sex === 1?'男':'女'}}</div>
             </div>
           </div>
           <div class="tabelBody">
@@ -39,7 +39,7 @@
             </div>
             <div class="box">
               <div class="label">岗位：</div>
-              <div class="content">{{staffInfo.station_name}}</div>
+              <div class="content">{{staffInfo.station_id}}</div>
             </div>
           </div>
           <div class="tabelBody">
@@ -89,11 +89,13 @@
           <div class="colCtn">
             <div class="block">
               <div class="selectCtn">
-                <el-date-picker v-model="date"
-                  type="month"
-                  value-format="yyyy-MM"
-                  placeholder="选择结算时间">
-                </el-date-picker>
+                <el-tabs v-model="date"
+                  type="card">
+                  <el-tab-pane v-for="(item,index) in yearMonth"
+                    :key="index"
+                    :name="item"
+                    :label="item"></el-tab-pane>
+                </el-tabs>
               </div>
             </div>
           </div>
@@ -187,6 +189,15 @@ export default {
       return this.payList.reduce((total, current) => {
         return Number(current.total_price) + total
       }, 0)
+    },
+    yearMonth () {
+      let arr = []
+      this.payInfo.forEach((itemYear) => {
+        itemYear.childrenMergeInfo.forEach((itemMonth) => {
+          arr.push(itemYear.year + '-' + itemMonth.month)
+        })
+      })
+      return arr
     }
   },
   mounted () {
@@ -195,8 +206,7 @@ export default {
     }).then((res) => {
       this.staffInfo = res.data.data
       this.payInfo = this.$mergeData(this.staffInfo.child_data, { mainRule: 'year', childrenRule: { mainRule: 'month' } })
-      console.log(this.payInfo)
-      this.date = this.$getTime(new Date())
+      this.date = this.$getTime(new Date()).slice(0, 7)
     })
   }
 }
