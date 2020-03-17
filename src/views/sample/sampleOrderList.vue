@@ -7,10 +7,18 @@
         <div class="filterCtn">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
+            <el-select style="width:140px;margin-right:12px"
+              v-model="searchOrderOrProduct"
+              @change="changeRouter(1)">
+              <el-option value="order"
+                label="订单搜索"></el-option>
+              <el-option value="product"
+                label="产品编号搜索"></el-option>
+            </el-select>
             <el-input class="inputs"
               v-model="keyword"
               @change="changeRouter(1)"
-              placeholder="输入标题按回车键查询">
+              :placeholder="'输入' + (searchOrderOrProduct==='order'?'样单号':'产品编号')+'按回车键查询'">
             </el-input>
             <el-date-picker v-model="date"
               style="width:290px"
@@ -262,6 +270,7 @@ import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      searchOrderOrProduct: 'order',
       loading: true,
       list: [],
       keyword: '',
@@ -339,6 +348,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.searchOrderOrProduct = params.searchOrderOrProduct || 'order'
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
@@ -363,17 +373,18 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/sample/sampleOrderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_material=' + this.has_material + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
+      this.$router.push('/sample/sampleOrderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_material=' + this.has_material + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
-      this.$router.push('/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=')
+      this.$router.push('/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
     },
     getOrderList () {
       this.loading = true
       sampleOrder.list({
         limit: 10,
         page: this.pages,
-        keyword: this.keyword,
+        product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
+        keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,

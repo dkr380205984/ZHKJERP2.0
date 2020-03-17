@@ -1201,10 +1201,10 @@ export default {
         errMsg = '请保证承担比例相加等于100%'
       }
       this.replenish_data.client_info.forEach((item) => {
-        if (!item.id) {
-          errorFlag = true
-          errMsg = '请选择承担单位'
-        }
+        // if (!item.id) {
+        //   errorFlag = true
+        //   errMsg = '请选择承担单位'
+        // }
         if (!item.percent) {
           errorFlag = true
           errMsg = '请输入承担比例'

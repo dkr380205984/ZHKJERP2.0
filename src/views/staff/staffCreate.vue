@@ -1,5 +1,6 @@
 <template>
-  <div class="indexMain">
+  <div class="indexMain"
+    id="staffCreate">
     <div class="module">
       <div class="titleCtn">
         <span class="title">员工信息</span>
@@ -158,12 +159,15 @@
               <span class="text">在职时间</span>
               <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <el-date-picker style="width:100%"
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
                 v-model="staffInfo.date"
                 value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择在职时间">
+                type="daterange"
+                range-separator="至"
+                start-placeholder="在职日期"
+                end-placeholder="离职日期">
               </el-date-picker>
             </div>
           </div>
@@ -213,7 +217,7 @@ export default {
         health: '',
         emergentPerson: '',
         emergentPhone: '',
-        date: '',
+        date: [],
         type: '',
         desc: ''
       },
@@ -239,7 +243,7 @@ export default {
         this.$message.warning('请选择工种')
         return
       }
-      if (!this.staffInfo.date) {
+      if (!this.staffInfo.date.length === 0) {
         this.$message.warning('请选择在职时间')
         return
       }
@@ -258,7 +262,8 @@ export default {
         healthy_info: this.staffInfo.health,
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
-        work_time: this.staffInfo.date,
+        start_time: this.staffInfo.date[0],
+        work_time: this.staffInfo.date[1],
         desc: this.staffInfo.desc
       }).then((res) => {
         if (res.data.status) {
@@ -279,4 +284,14 @@ export default {
 </script>
 <style lang="less" scoped>
 @import "~@/assets/less/staff/staffCreate.less";
+</style>
+<style lang="less">
+#staffCreate {
+  .el-date-editor .el-range__icon {
+    line-height: 25px;
+  }
+  .el-date-editor .el-range-separator {
+    line-height: 25px;
+  }
+}
 </style>

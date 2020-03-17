@@ -172,7 +172,7 @@ export default {
           url: '/sample/sampleOrderCreate'
         }, {
           name: '样品订单列表',
-          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state='
+          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
         }]
       }, {
         name: '报价管理',
@@ -205,7 +205,7 @@ export default {
           url: '/order/orderCreate'
         }, {
           name: '订单列表',
-          url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state='
+          url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
         }, {
           name: '订单发货列表',
           url: '/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
@@ -214,7 +214,7 @@ export default {
         name: '物料计划生产管理',
         id: 6,
         icon: require('@/assets/image/index/计划生产管理.png'),
-        url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=/1'
+        url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1'
       }, {
         name: '物料订购管理',
         id: 7,
@@ -227,47 +227,47 @@ export default {
           url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
         }, {
           name: '订单物料列表',
-          url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
+          url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
         }]
       }, {
         name: '物料出入库管理',
         id: 15,
         icon: require('@/assets/image/index/装箱管理.png'),
-        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
+        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
       }, {
         name: '织造加工管理',
         id: 8,
         icon: require('@/assets/image/index/织造加工管理.png'),
         children: [{
           name: '生产织造列表',
-          url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
+          url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
         }, {
           name: '半成品加工列表',
-          url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
+          url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
         }]
       }, {
         name: '产品收发管理',
         id: 9,
         icon: require('@/assets/image/index/收发管理.png'),
-        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
       }, {
         name: '产品检验管理',
         id: 10,
         icon: require('@/assets/image/index/检验管理.png'),
-        url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+        url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
       }, {
         name: '装箱管理',
         id: 11,
         icon: require('@/assets/image/index/装箱管理.png'),
         children: [{
           name: '装箱计划单列表',
-          url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+          url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
         }, {
           name: '包装订购列表',
-          url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+          url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
         }, {
           name: '装箱出库列表',
-          url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+          url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
         }]
       }, {
         name: '库存管理',

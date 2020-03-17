@@ -319,6 +319,10 @@ export default {
       }
     },
     submit () {
+      if (this.loading) {
+        this.$message.error('请勿重复点击')
+        return
+      }
       let formData = []
       this.list.forEach((item, index) => {
         let json = {

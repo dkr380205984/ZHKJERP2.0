@@ -8,7 +8,8 @@
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <el-select style="width:140px;margin-right:12px"
-              v-model="searchOrderOrProduct">
+              v-model="searchOrderOrProduct"
+              @change="changeRouter(1)">
               <el-option value="order"
                 label="订单搜索"></el-option>
               <el-option value="product"
@@ -381,6 +382,7 @@ export default {
       } else {
         this.date = ''
       }
+      this.searchOrderOrProduct = params.searchOrderOrProduct || 'order'
       this.has_materialPlan = params.has_materialPlan
       this.has_materialOrder = params.has_materialOrder
       this.has_materialStock = params.has_materialStock
@@ -403,10 +405,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_materialOrder=' + this.has_materialOrder + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&has_productInOut=' + this.has_productInOut + '&&has_inspection=' + this.has_inspection + '&&has_boxing=' + this.has_boxing + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
+      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_materialOrder=' + this.has_materialOrder + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&has_productInOut=' + this.has_productInOut + '&&has_inspection=' + this.has_inspection + '&&has_boxing=' + this.has_boxing + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
-      this.$router.push('/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=')
+      this.$router.push('/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
     },
     getOrderList () {
       this.loading = true
