@@ -32,7 +32,7 @@
         <div class="list">
           <div class="title">
             <div class="col">
-              <span class="text">订单类型</span>
+              <span class="text">发货日期</span>
             </div>
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -62,14 +62,14 @@
                 </transition>
               </span>
             </div>
-            <!-- <div class="col middle">
+            <div class="col middle">
               <span class="text">产品图片</span>
-            </div> -->
+            </div>
             <div class="col flex08">
               <span class="text"
-                style="line-height:1.2em">订单数量<br />下单日期</span>
+                style="line-height:1.2em">批次<br />订单数量</span>
             </div>
-            <!-- <div class="col flex08">
+            <div class="col flex08">
               <span class="text">
                 <span class="text"
                   v-show="!searchGroupFlag">负责小组
@@ -92,7 +92,7 @@
                   </div>
                 </transition>
               </span>
-            </div> -->
+            </div>
             <div class="col flex16">
               <span class="text">
                 <span class="text"
@@ -186,7 +186,8 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">总进度</span>
+              <span class="text"
+                style="line-height:1.2em">已用工时<br />下单日期</span>
             </div>
             <!-- <div class="col">
               <span class="text">
@@ -212,9 +213,9 @@
                 </transition>
               </span>
             </div> -->
-            <div class="col">
+            <!-- <div class="col">
               <span class="text">交货日期</span>
-            </div>
+            </div> -->
             <div class="col">
               <span class="text">当前状态</span>
             </div>
@@ -225,18 +226,16 @@
           <div class="row"
             v-for="(itemOrder,indexOrder) in list"
             :key="indexOrder">
-            <div class="col">订单</div>
-            <!-- <div class="col"> {{itemOrder.order_time}} </div> -->
+            <!-- <div class="col">订单</div> -->
+            <div class="col"> {{itemOrder.order_time}} </div>
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
-            <!-- <div class="col middle">
+            <div class="col middle">
               <zh-img-list :list="itemOrder.image"
                 type='open'></zh-img-list>
-            </div> -->
-            <div class="col flex08"> {{itemOrder.number}}<br />{{itemOrder.order_time}}</div>
-            <!-- <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div> -->
+            </div>
+            <div class="col flex08"> {{'第一批'}}<br />{{itemOrder.number}}</div>
+            <div class="col flex08"> {{itemOrder.group_name}} </div>
             <div class="col flex16">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_plan>0}">
@@ -274,10 +273,8 @@
                 <span class="name">箱</span>
               </div>
             </div>
-            <div class="col">50%</div>
-            <div class="col">
-              {{itemOrder.order_time}}
-            </div>
+            <!-- <div class="col">50%</div> -->
+            <div class="col"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
             <div class="col">
               <div class="stateCtn rowFlex"
                 :class="{'red':itemOrder.status === 2003,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
@@ -495,6 +492,33 @@ export default {
         return item.type.indexOf(1) !== -1
       })
     })
+  },
+  filters: {
+    filterStatus (item) { // item 参数1:交货时间；参数2：订单状态
+      if (Array.isArray(item)) {
+        let nowTime = new Date().getTime()
+        let compileTime = new Date(item[0]).getTime()
+        let status = item[1]
+        if (status === 2004) {
+          return '已完成'
+        } else if (compileTime > nowTime) {
+          return '进行中'
+        } else if (nowTime >= compileTime) {
+          return '已逾期'
+        }
+      } else {
+        return 'undefined'
+      }
+    },
+    filterTime (item) {
+      let nowTime = new Date()
+      let orderTime = new Date(item)
+      if (orderTime) {
+        return Math.ceil((nowTime.getTime() - orderTime.getTime()) / 1000 / 60 / 60 / 24) + '天'
+      } else {
+        return 'null'
+      }
+    }
   }
 }
 </script>

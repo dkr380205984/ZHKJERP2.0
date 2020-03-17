@@ -346,7 +346,8 @@
                   </span>
                 </span>
               </div>
-              <div class="tb_content">
+              <div class="tb_content"
+                v-if="detail.related_product.length > 0">
                 <span class="tb_row middle">{{detail.sample_product_code}}</span>
                 <span class="tb_col"
                   style="flex:4">
@@ -375,6 +376,8 @@
                   </span>
                 </span>
               </div>
+              <div class="tb_content"
+                style="align-items:center;justify-content: center;">暂无</div>
             </div>
             <!-- </div> -->
           </div>

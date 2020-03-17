@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { orderBatchList, companyInfoDetail } from '@/assets/js/api.js'
+import { company } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -137,7 +137,7 @@ export default {
       end_time: '',
       list: [], // 整理好未分页的数据
       filterList: [],
-      searchList: {}, // 筛选条件
+      // searchList: {}, // 筛选条件
       popColor: [
         { color: '#06B4FF', percentage: 0 },
         { color: '#04BA88', percentage: 100 }
@@ -195,29 +195,6 @@ export default {
         this.year = data.getFullYear()
         this.month = Number(data.getMonth()) > 8 ? Number(data.getMonth()) + 1 : '0' + (Number(data.getMonth()) + 1)
         this.date = Number(data.getDate()) > 9 ? Number(data.getDate()) : '0' + (Number(data.getDate()))
-        // switch (data.getDay()) {
-        //   case 1:
-        //     this.day = '一'
-        //     break
-        //   case 2:
-        //     this.day = '二'
-        //     break
-        //   case 3:
-        //     this.day = '三'
-        //     break
-        //   case 4:
-        //     this.day = '四'
-        //     break
-        //   case 5:
-        //     this.day = '五'
-        //     break
-        //   case 6:
-        //     this.day = '六'
-        //     break
-        //   case 7:
-        //     this.day = '日'
-        //     break
-        // }
         this.hours = Number(data.getHours()) > 9 ? Number(data.getHours()) : '0' + (Number(data.getHours()))
         this.minutes = Number(data.getMinutes()) > 9 ? Number(data.getMinutes()) : '0' + (Number(data.getMinutes()))
         this.seconds = Number(data.getSeconds()) > 9 ? Number(data.getSeconds()) : '0' + (Number(data.getSeconds()))
@@ -234,75 +211,73 @@ export default {
     },
     // 获取数据
     getData (number) {
-      orderBatchList({
-        'company_id': window.sessionStorage.getItem('company_id'),
-        'limit': number,
-        'page': this.total,
-        'category_id': this.searchList.categoryVal,
-        'type_id': this.searchList.typesVal,
-        'style_id': this.searchList.styleVal,
-        'client_id': this.searchList.company,
-        'group_id': this.searchList.group,
-        'start_time': this.searchList.start_time ? new Date(Number(this.searchList.start_time)).toISOString() : this.start_time,
-        'end_time': this.searchList.end_time ? new Date(Number(this.searchList.end_time)).toISOString() : this.end_time
-      }).then(res => {
-        if (res.data.status) {
-          this.count = res.data.data.count
-          let orderInfo = res.data.data
-          for (let prop in orderInfo.data) {
-            let valOrder = orderInfo.data[prop]
-            this.list.push(
-              ...valOrder.map(items => {
-                return {
-                  type: items.type,
-                  complete_time: items.delivery_time,
-                  order_code: items.order_code,
-                  client_name: items.client_name,
-                  order_time: items.create_time,
-                  order_number: items.batch_info.map(vals => {
-                    return vals.size.map(valSize => {
-                      return valSize.numbers
-                    }).reduce((total, item) => {
-                      return Number(total) + Number(item)
-                    })
-                  }).reduce((total, item) => {
-                    return Number(total) + Number(item)
-                  }),
-                  complete_number: items.log.length > 0 ? items.log.map(vals => {
-                    return vals.number
-                  }).reduce((total, val) => {
-                    return Number(total) + Number(val)
-                  }) : 0,
-                  group_name: items.group_name,
-                  status: items.status
-                }
-              })
-            )
-            if (this.list.length === 10) {
-              this.filterList.push({ info: this.list.splice(0, 10) })
-            }
-          }
-          if (Math.ceil(orderInfo.count / number) > this.total) {
-            this.total++
-            setTimeout(() => {
-              this.getData(number)
-            }, 2000)
-          } else if (this.list.length > 0) {
-            this.filterList.push({ info: this.list.splice(0, 10), flag: true })
-            this.list = []
-          }
-        } else {
-          this.$message.error(res.data.message)
-          throw res.data.message
-        }
-        this.loading = false
-      })
+      // orderBatchList({
+      //   'company_id': window.sessionStorage.getItem('company_id'),
+      //   'limit': number,
+      //   'page': this.total,
+      //   'category_id': this.searchList.categoryVal,
+      //   'type_id': this.searchList.typesVal,
+      //   'style_id': this.searchList.styleVal,
+      //   'client_id': this.searchList.company,
+      //   'group_id': this.searchList.group,
+      //   'start_time': this.searchList.start_time ? new Date(Number(this.searchList.start_time)).toISOString() : this.start_time,
+      //   'end_time': this.searchList.end_time ? new Date(Number(this.searchList.end_time)).toISOString() : this.end_time
+      // }).then(res => {
+      //   if (res.data.status) {
+      //     this.count = res.data.data.count
+      //     let orderInfo = res.data.data
+      //     for (let prop in orderInfo.data) {
+      //       let valOrder = orderInfo.data[prop]
+      //       this.list.push(
+      //         ...valOrder.map(items => {
+      //           return {
+      //             type: items.type,
+      //             complete_time: items.delivery_time,
+      //             order_code: items.order_code,
+      //             client_name: items.client_name,
+      //             order_time: items.create_time,
+      //             order_number: items.batch_info.map(vals => {
+      //               return vals.size.map(valSize => {
+      //                 return valSize.numbers
+      //               }).reduce((total, item) => {
+      //                 return Number(total) + Number(item)
+      //               })
+      //             }).reduce((total, item) => {
+      //               return Number(total) + Number(item)
+      //             }),
+      //             complete_number: items.log.length > 0 ? items.log.map(vals => {
+      //               return vals.number
+      //             }).reduce((total, val) => {
+      //               return Number(total) + Number(val)
+      //             }) : 0,
+      //             group_name: items.group_name,
+      //             status: items.status
+      //           }
+      //         })
+      //       )
+      //       if (this.list.length === 10) {
+      //         this.filterList.push({ info: this.list.splice(0, 10) })
+      //       }
+      //     }
+      //     if (Math.ceil(orderInfo.count / number) > this.total) {
+      //       this.total++
+      //       setTimeout(() => {
+      //         this.getData(number)
+      //       }, 2000)
+      //     } else if (this.list.length > 0) {
+      //       this.filterList.push({ info: this.list.splice(0, 10), flag: true })
+      //       this.list = []
+      //     }
+      //   } else {
+      //     this.$message.error(res.data.message)
+      //     throw res.data.message
+      //   }
+      this.loading = false
+      // })
     }
   },
   created () {
-    companyInfoDetail({
-      company_id: window.sessionStorage.getItem('company_id')
-    }).then(res => {
+    company.detail().then(res => {
       if (res.data.status) {
         this.company_name = res.data.data.company_name
       } else {
@@ -312,12 +287,12 @@ export default {
         })
       }
     })
-    if (window.location.search) {
-      let searchList = window.location.search.split('?')[1].split('&')
-      searchList.forEach(item => {
-        this.searchList[item.split('=')[0]] = item.split('=')[1]
-      })
-    }
+    // if (window.location.search) {
+    //   let searchList = window.location.search.split('?')[1].split('&')
+    //   searchList.forEach(item => {
+    //     this.searchList[item.split('=')[0]] = item.split('=')[1]
+    //   })
+    // }
     // 按esc返回订单发货列表
     let html = document.getElementsByTagName('html')[0]
     html.addEventListener('keydown', (e) => {
@@ -349,7 +324,7 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/css/screenShipments.less";
+@import "~@/assets/less/order/screenShipments.less";
 </style>
 <style lang="less" scope>
 #screenShipments {

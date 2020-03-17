@@ -237,6 +237,8 @@
     .line{
       line-height: 32px;
       margin: 12px 24px;
+      display: flex;
+      align-items: flex-start;
       &:nth-of-type(2){
         margin-top: 24px;
         .number{
@@ -266,10 +268,15 @@
         margin-right: 12px;
       }
       .text{
+        flex: 1;
         display: inline-block;
         font-size: @fontMiddle;
         color: @font65;
         cursor: pointer;
+        line-height: 1.5em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:hover{
           color: @blue;
         }
