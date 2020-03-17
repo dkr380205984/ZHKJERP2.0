@@ -433,6 +433,10 @@ const routes = [
     path: '/pricePrintTable/:id',
     name: '报价单',
     component: () => import('../views/price/pricePrintTable.vue')
+  }, {
+    path: '/screenShipmentsList/:params',
+    name: '大屏发货列表',
+    component: () => import('../views/order/screenShipmentsList.vue')
   }
 ]
 

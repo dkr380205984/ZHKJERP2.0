@@ -37,7 +37,7 @@
             </div>
             <div class="block">
               <span class="label">状态</span>
-              <span :class="{'text':true,'orange':orderInfo.status === 2001, 'blue':orderInfo.status === 2002,'red':orderInfo.status === 2003,'green':orderInfo.status === 2004}">{{orderInfo.status|filterStatus}}</span>
+              <span :class="{'text':true,'orange':orderInfo.status === 2001, 'blue':orderInfo.status === 2002,'red':orderInfo.status === 2003 || orderInfo.status === 2005,'green':orderInfo.status === 2004}">{{orderInfo.status|filterStatus}}</span>
             </div>
           </div>
         </div>
@@ -2274,6 +2274,8 @@ export default {
         return '已取消'
       } else if (status === 2004) {
         return '已完成'
+      } else if (status === 2005) {
+        return '已延期'
       }
     },
     filterTitle (value) {

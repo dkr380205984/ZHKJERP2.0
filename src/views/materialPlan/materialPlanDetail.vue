@@ -96,7 +96,7 @@
                   <span class="tb_row">{{itemMa.product_part === itemPro.product_id ? '大身' :itemMa.name}}</span>
                   <span class="tb_row flex12">{{itemMa.material_name}}</span>
                   <span class="tb_row">{{itemMa.color}}</span>
-                  <span class="tb_row flex08">{{itemMa.number ? itemMa.number + '' + itemMa.unit : '-'}}</span>
+                  <span class="tb_row flex08">{{itemMa.plan_number ? itemMa.plan_number + '' + itemMa.unit : (itemMa.number ? $toFixed(itemMa.number/(1 + itemMa.material_loss/100)) + '' + itemMa.unit : '-')}}</span>
                   <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + '' + itemMa.unit : '-'}}</span>
                   <span class="tb_row">{{itemMa.material_loss ? itemMa.material_loss + '%' : '0%'}}</span>
                   <span class="tb_row">{{itemMa.end_num ? itemMa.type === 1 ? $toFixed(itemMa.end_num/1000) + 'kg' : $toFixed(itemMa.end_num) + '' +itemMa.unit : '-'}}</span>
@@ -269,7 +269,7 @@ export default {
           return itemPro
         })
         console.log(planInfo)
-        this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], otherRule: [{ name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+        this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], otherRule: [{ name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
         data.production_data.forEach(itemPro => {
           let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color === itemPro.color_name && valPro.size === itemPro.size_name)
           if (flag) {
