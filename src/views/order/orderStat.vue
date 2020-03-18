@@ -62,7 +62,7 @@
                 </transition>
               </span>
             </div>
-            <div class="col middle">
+            <div class="col middle flex12">
               <span class="text">产品图片</span>
             </div>
             <div class="col flex08">
@@ -141,12 +141,12 @@
             <div class="col"> {{itemOrder.delivery_time}} </div>
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle">
+            <div class="col middle flex12">
               <zh-img-list :list="itemOrder.image"
                 type='open'></zh-img-list>
             </div>
             <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.total_number}}</div>
-            <!-- <div class="col flex08"> {{itemOrder.group_name}} </div>
+            <div class="col flex08"> {{itemOrder.group_name}} </div>
             <div class="col flex16">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_plan>0}">
@@ -154,32 +154,32 @@
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.material_order_progress.y_percent>0,'green':itemOrder.log.material_order_progress.y_percent>=100}">
+                :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.material_push_progress.r_push>0,'green':itemOrder.log.material_push_progress.r_push>=100}">
+                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
                 <div class="state"></div>
                 <span class="name">库</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.product_weave_progress.product>0,'green':itemOrder.log.product_weave_progress.product>=100}">
+                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.product_push_progress>0,'green':itemOrder.log.product_push_progress>=100}">
+                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
                 <div class="state"></div>
                 <span class="name">收</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.product_inspection_progress.r_product>0,'green':itemOrder.log.product_inspection_progress.r_product>=100}">
+                :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
                 <div class="state"></div>
                 <span class="name">检</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.log.pack_real_progress>0,'green':itemOrder.log.pack_real_progress>=100}">
+                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>
                 <span class="name">箱</span>
               </div>
@@ -194,8 +194,8 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/order/orderDetail/' + itemOrder.id)">详情</span>
-            </div> -->
+                @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
+            </div>
           </div>
         </div>
         <div class="pageCtn">
@@ -284,7 +284,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
+      this.$router.push('/order/orderStat/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
     },
     reset () {
       this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=')
@@ -336,13 +336,13 @@ export default {
               total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
                 return a + b
               }),
+              order_time: itemBatch.order_time,
               ...itemBatch.log
 
             }
           })
           )
         }
-        console.log(data)
         this.list = data
         this.total = res.data.data.count
         this.loading = false
