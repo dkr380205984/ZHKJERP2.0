@@ -467,7 +467,7 @@ export default {
           confirmButtonText: '确定'
         })
         // console.log(craft.find((itemFind) => itemFind.is_default === 1).peise_yarn_weight)
-        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_weight : ((craft.find((itemFind) => itemFind.is_default === 1)).peise_yarn_weight)
+        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_weight : ((craft.length === 1 ? craft[0] : craft.find((itemFind) => itemFind.is_default === 1)).peise_yarn_weight)
         this.list[0].colourSizeArr.forEach((item) => {
           if (craftMat[item.colour_name]) {
             let arr = []

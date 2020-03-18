@@ -199,10 +199,10 @@ export default {
   methods: {
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
+      this.$router.push('/financialStatistics/sampleStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
     },
     reset () {
-      this.$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')
+      this.$router.push('/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')
     },
     getList () {
       this.loading = true

@@ -58,4 +58,8 @@ textarea {
 .el-input.is-disabled .el-input__inner {
   color: #000 !important;
 }
+
+.el-autocomplete-suggestion {
+  width: auto !important;
+}
 </style>

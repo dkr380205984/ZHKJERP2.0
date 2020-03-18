@@ -119,10 +119,22 @@
                         placeholder="输入工序"></el-autocomplete>
                     </div>
                     <div class="once">
-                      <el-autocomplete class="inline-input inputs"
+                      <el-autocomplete class="inline-input inputs staffPayElautocomplete"
                         v-model="itemChild.settle_type"
                         :fetch-suggestions="searchSettle"
-                        placeholder="输入结算方式"></el-autocomplete>
+                        placeholder="可搜索订单号">
+                        <template slot-scope="{ item }">
+                          <span v-if="item.normal">{{item.value}}</span>
+                          <div class="staffPayProductCtn"
+                            v-if="!item.normal">
+                            <span class="staffPayOnce">{{item.order_code}}</span>
+                            <span class="staffPayOnce">{{item.product_code}}</span>
+                            <span class="staffPayOnce image">
+                              <img :src="item.image||defaultImage" />
+                            </span>
+                          </div>
+                        </template>
+                      </el-autocomplete>
                     </div>
                     <div class="once">
                       <zh-input class="inputs"
@@ -211,10 +223,12 @@
 </template>
 
 <script>
-import { staff } from '@/assets/js/api.js'
+import { staff, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      defaultImage: require('@/assets/image/index/noPic.jpg'),
+      testValue: '',
       page: 1,
       total: 1,
       department: '',
@@ -222,7 +236,7 @@ export default {
       date: '',
       list: [],
       workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
-      settleList: [{ value: '按日结算' }, { value: '按月结算' }, { value: '按年结算' }]
+      settleList: [{ value: '按日结算', normal: true }, { value: '按月结算', normal: true }, { value: '按年结算', normal: true }]
     }
   },
   methods: {
@@ -296,8 +310,46 @@ export default {
       cb(result)
     },
     searchSettle (queryString, cb) {
-      let result = queryString ? this.settleList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.settleList
-      cb(result)
+      if (!queryString) {
+        cb(this.settleList)
+      } else {
+        order.list({
+          limit: 20,
+          page: 1,
+          product_code: '',
+          keyword: queryString,
+          start_time: '',
+          end_time: '',
+          client_id: null,
+          group_id: null,
+          status: null,
+          status_material_plan: null,
+          status_material_order: null,
+          status_material_push: null,
+          status_weave: null,
+          status_product_push: null,
+          status_product_inspection: null,
+          status_stock_out: null
+        }).then((res) => {
+          let orderArr = res.data.data.map((item) => {
+            item.productArr = this.$mergeData(item.product_info, { mainRule: ['product_code'], otherRule: [{ name: 'image' }] })
+            return item
+          })
+          // 展开数据
+          let proArr = []
+          orderArr.forEach((item) => {
+            item.productArr.forEach((itemPro) => {
+              proArr.push({
+                value: item.order_code + '/' + itemPro.product_code,
+                order_code: item.order_code,
+                product_code: itemPro.product_code,
+                image: itemPro.image[0] ? itemPro.image[0].image_url : ''
+              })
+            })
+          })
+          cb(proArr)
+        })
+      }
     },
     getList () {
       staff.payList({
@@ -323,4 +375,25 @@ export default {
 
 <style lang="less" scoped>
 @import "~@/assets/less/staff/staffPay.less";
+</style>
+<style lang="less">
+.staffPayProductCtn {
+  display: flex;
+  .staffPayOnce {
+    min-width: 110px;
+    flex: 1;
+    height: 40px;
+    padding: 8px;
+    &.image {
+      width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      img {
+        width: 50px;
+        height: 40px;
+      }
+    }
+  }
+}
 </style>
