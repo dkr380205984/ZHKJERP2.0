@@ -94,96 +94,8 @@
               </span>
             </div>
             <div class="col flex16">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchStateFlag">流程进度
-                  <!-- <i class="el-icon-search iconBtn"
-                    @click="searchStateFlag=true"></i> -->
-                </span>
-                <!-- <transition name="el-zoom-in-top">
-                  <div v-show="searchStateFlag"
-                    class="filterBox">
-                    <el-dropdown :hide-on-click="false"
-                      trigger="click"
-                      style="cursor:pointer">
-                      <span class="el-dropdown-link">
-                        筛选流程<i class="el-icon-arrow-down el-icon--right"></i>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>
-                          物料计划：
-                          <el-radio-group v-model="has_materialPlan"
-                            @change="changeRouter(1)">
-                            <el-radio label="">全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          物料订购：
-                          <el-radio-group v-model="has_materialOrder"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          物料入库：
-                          <el-radio-group v-model="has_materialStock"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          织造分配：
-                          <el-radio-group v-model="has_weave"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          产品收发：
-                          <el-radio-group v-model="has_productInOut"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          成品检验：
-                          <el-radio-group v-model="has_inspection"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          装箱出库：
-                          <el-radio-group v-model="has_boxing"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
-                </transition> -->
-              </span>
+              <span class="text"
+                v-show="!searchStateFlag">流程进度</span>
             </div>
             <div class="col">
               <span class="text"
@@ -226,16 +138,15 @@
           <div class="row"
             v-for="(itemOrder,indexOrder) in list"
             :key="indexOrder">
-            <!-- <div class="col">订单</div> -->
-            <div class="col"> {{itemOrder.order_time}} </div>
+            <div class="col"> {{itemOrder.delivery_time}} </div>
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
               <zh-img-list :list="itemOrder.image"
                 type='open'></zh-img-list>
             </div>
-            <div class="col flex08"> {{'第一批'}}<br />{{itemOrder.number}}</div>
-            <div class="col flex08"> {{itemOrder.group_name}} </div>
+            <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.total_number}}</div>
+            <!-- <div class="col flex08"> {{itemOrder.group_name}} </div>
             <div class="col flex16">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_plan>0}">
@@ -243,37 +154,36 @@
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
+                :class="{'orange':itemOrder.log.material_order_progress.y_percent>0,'green':itemOrder.log.material_order_progress.y_percent>=100}">
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
+                :class="{'orange':itemOrder.log.material_push_progress.r_push>0,'green':itemOrder.log.material_push_progress.r_push>=100}">
                 <div class="state"></div>
                 <span class="name">库</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
+                :class="{'orange':itemOrder.log.product_weave_progress.product>0,'green':itemOrder.log.product_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
+                :class="{'orange':itemOrder.log.product_push_progress>0,'green':itemOrder.log.product_push_progress>=100}">
                 <div class="state"></div>
                 <span class="name">收</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
+                :class="{'orange':itemOrder.log.product_inspection_progress.r_product>0,'green':itemOrder.log.product_inspection_progress.r_product>=100}">
                 <div class="state"></div>
                 <span class="name">检</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
+                :class="{'orange':itemOrder.log.pack_real_progress>0,'green':itemOrder.log.pack_real_progress>=100}">
                 <div class="state"></div>
                 <span class="name">箱</span>
               </div>
             </div>
-            <!-- <div class="col">50%</div> -->
             <div class="col"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
             <div class="col">
               <div class="stateCtn rowFlex"
@@ -285,22 +195,7 @@
             <div class="col">
               <span class="opr"
                 @click="$router.push('/order/orderDetail/' + itemOrder.id)">详情</span>
-              <!-- <span class="opr">
-                <el-dropdown @command="handleCommand($event,itemOrder.id)">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'>
-                      <span class="updated">修改</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='delete'>
-                      <span class="delete">删除</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span> -->
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="pageCtn">
@@ -319,7 +214,7 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
-import { order, group, client } from '@/assets/js/api.js'
+import { orderBatch, group, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -334,13 +229,6 @@ export default {
       groupArr: [],
       company_id: '',
       companyArr: [],
-      has_materialPlan: '', // 物料计划
-      has_materialOrder: '', // 物料订购
-      has_materialStock: '', // 物料出入库
-      has_weave: '', // 织造分配
-      has_productInOut: '', // 产品收发
-      has_inspection: '', // 成品检验
-      has_boxing: '', // 装箱出库
       stateArr: [
         {
           name: '已创建',
@@ -381,13 +269,6 @@ export default {
       } else {
         this.date = ''
       }
-      this.has_materialPlan = params.has_materialPlan
-      this.has_materialOrder = params.has_materialOrder
-      this.has_materialStock = params.has_materialStock
-      this.has_weave = params.has_weave
-      this.has_productInOut = params.has_productInOut
-      this.has_inspection = params.has_inspection
-      this.has_boxing = params.has_boxing
       this.group_id = params.group_id ? Number(params.group_id) : ''
       if (this.group_id) {
         this.searchGroupFlag = true
@@ -403,14 +284,14 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_materialOrder=' + this.has_materialOrder + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&has_productInOut=' + this.has_productInOut + '&&has_inspection=' + this.has_inspection + '&&has_boxing=' + this.has_boxing + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
+      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
     },
     reset () {
-      this.$router.push('/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=')
+      this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=')
     },
     getOrderList () {
       this.loading = true
-      order.list({
+      orderBatch.list({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
@@ -418,75 +299,63 @@ export default {
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
         group_id: this.group_id,
-        status: this.state,
-        status_material_plan: this.has_materialPlan,
-        status_material_order: this.has_materialOrder,
-        status_material_push: this.has_materialStock,
-        status_weave: this.has_weave,
-        status_product_push: this.has_productInOut,
-        status_product_inspection: this.has_inspection,
-        status_stock_out: this.has_boxing
+        status: this.state
       }).then(res => {
-        this.list = res.data.data
-        this.list.forEach(item => {
-          item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
-            return item.image.length > 0 ? item.image.map(itemImg => {
+        let data = []
+        let batchData = res.data.data.data
+        for (let prop in batchData) {
+          let item = batchData[prop]
+          data.push(...item.map(itemBatch => {
+            let productInfo = itemBatch.batch_info.map(itemPro => {
               return {
-                ...itemImg,
-                product_id: item.product_id
+                number: itemPro.product_info.map(itemSize => (+itemSize.numbers || 0)).reduce((a, b) => {
+                  return a + b
+                }),
+                product_id: itemPro.category_info.product_id,
+                image: itemPro.category_info.images.length > 0 ? itemPro.category_info.images.map(itemImg => {
+                  itemImg.product_id = itemPro.category_info.product_id
+                  itemImg.product_type = itemPro.category_info.product_type
+                  return itemImg
+                }) : [{
+                  product_id: itemPro.category_info.product_id,
+                  product_type: itemPro.category_info.product_type
+                }]
               }
-            }) : [{
-              image_url: '',
-              thumb: '',
-              product_id: item.product_id
-            }]
-          }).reduce((total, item) => {
-            return total.concat(item)
-          })
-          item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
-            return Number(total) + Number(itemNum)
-          })
-        })
-        this.total = res.data.meta.total
-        this.loading = false
-      })
-    },
-    handleCommand (type, id) {
-      if (type === 'change') {
-        this.$router.push('/order/orderUpdate/' + id)
-      } else if (type === 'delete') {
-        this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          order.delete({
-            id: id
-          }).then(res => {
-            if (res.data.status) {
-              this.$message.success('删除成功')
-              setTimeout(() => {
-                window.location.reload()
-              }, 300)
-            } else {
-              this.$message.error(res.data.message)
+            })
+            return {
+              delivery_time: prop,
+              order_code: itemBatch.order_code,
+              client_name: itemBatch.client_name,
+              image: productInfo.map(itemPro => itemPro.image).reduce((a, b) => {
+                return a.concat(b)
+              }),
+              status: itemBatch.status,
+              order_id: itemBatch.order_id,
+              batch_id: itemBatch.batch_id,
+              group_name: itemBatch.group_name,
+              total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
+                return a + b
+              }),
+              ...itemBatch.log
+
             }
           })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      } else if (type === 'materialStock') {
-        this.$router.push('/materialStock/materialStockDetail/' + id + '/1')
-      }
+          )
+        }
+        console.log(data)
+        this.list = data
+        this.total = res.data.data.count
+        this.loading = false
+      })
     }
   },
   created () {
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
+    Promise.all([
+      group.list(),
+      client.list()
+    ]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
