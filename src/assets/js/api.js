@@ -411,7 +411,11 @@ const tutorial = {
   detail: (params) => http.get(`${baseUrl}/admin/system/study/one`, params),
   list: (params) => http.get(`${baseUrl}/admin/system/study/list`, params)
 }
+const orderBatch = {
+  list: (params) => http.get(`${baseUrl}/order/batch/list`, params)
+}
 export {
+  orderBatch,
   station,
   tutorial,
   staff,

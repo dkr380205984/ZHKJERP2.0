@@ -1639,9 +1639,9 @@ export default {
       }
       if (type === 'material') {
         this.stockEditInfo.forEach(item => {
-          if (+item.editType !== 5 && !item.client_name) {
-            flag.client = false
-          }
+          // if (+item.editType !== 5 && !item.client_name) {
+          //   flag.client = false
+          // }
           if (!item.editType) {
             flag.editType = false
           }
@@ -1720,7 +1720,7 @@ export default {
             })
           })
         })
-        // 检测织造出库数量书否超出订购数量
+        // 检测织造出库数量书否超出已入库数量
         let outStockInfo = []
         this.weaveInfo.forEach(item => {
           item.material_info.forEach(itemMa => {
@@ -1746,7 +1746,7 @@ export default {
           if (flag) {
             let innerFlag = flag.color_info.find(items => items.attr === item.material_color)
             if (innerFlag) {
-              if (this.$toFixed(innerFlag.order_weight) < this.$toFixed(item.outStockNum)) {
+              if (this.$toFixed(innerFlag.goStockNumEnd || 0) < this.$toFixed(item.outStockNum)) {
                 exceedMaterialInfo.push('物料:“' + item.material_name + '”，颜色/属性：“' + item.material_color + '”')
               }
             }
@@ -1757,7 +1757,7 @@ export default {
       if (exceedMaterialInfo.length > 0) {
         this.$message.error({
           dangerouslyUseHTMLString: true,
-          message: '检测到您所织造出库的原料大于订购数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
+          message: '检测到您所织造出库的原料大于已入库数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
         })
         return
       }
@@ -1802,7 +1802,7 @@ export default {
               this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
               this.msgSwitch = true
             } else {
-              this.$router.push('/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
+              this.initData(this.$route.params.type)
             }
           }
         })

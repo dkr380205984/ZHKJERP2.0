@@ -274,9 +274,9 @@
             </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'red':itemOrder.status === 2003,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
+                :class="{'red':itemOrder.status === 2003 || itemOrder.status === 2005,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.status === 2001 ? '已创建' : itemOrder.status=== 2002 ? '进行中': itemOrder.status === 2004 ? '已完成' : '已取消'}}</span>
+                <span class="name">{{itemOrder.status|filterStatus}}</span>
               </div>
             </div>
             <div class="col">
@@ -495,6 +495,21 @@ export default {
         return item.type.indexOf(1) !== -1
       })
     })
+  },
+  filters: {
+    filterStatus (status) {
+      if (status === 2001) {
+        return '已创建'
+      } else if (status === 2002) {
+        return '进行中'
+      } else if (status === 2003) {
+        return '已取消'
+      } else if (status === 2004) {
+        return '已完成'
+      } else if (status === 2005) {
+        return '已延期'
+      }
+    }
   }
 }
 </script>

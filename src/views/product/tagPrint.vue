@@ -77,7 +77,7 @@ export default {
       if (res.data.status !== false) {
         this.detail = res.data.data
         this.size.forEach(itemSize => {
-          let flag = this.detail.size.find(valSize => valSize.measurement === itemSize.size)
+          let flag = this.detail.size.find(valSize => valSize.size_name === itemSize.size)
           if (flag) {
             itemSize.weight = flag.weight
             itemSize.size_info = flag.size_info

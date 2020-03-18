@@ -62,7 +62,7 @@
             <div class="col middle">
               <span class="text">图片</span>
             </div>
-            <div class="col right flex08">
+            <div class="col flex08">
               <span class="text">产品报价</span>
             </div>
             <div class="col flex01"></div>
@@ -135,7 +135,7 @@
             <div class="col middle">
               <zh-img-list :list="item.img"></zh-img-list>
             </div>
-            <div class="col right flex08"><span class="price">{{item.price}}</span>元</div>
+            <div class="col flex08"><span class="price">{{$toFixed(item.price / item.exchange_rate * 100)}}</span>{{item.account_unit}}</div>
             <div class="col flex01"></div>
             <div class="col">{{item.user_name}}</div>
             <div class="col flex08">{{item.create_time}}</div>
@@ -266,6 +266,8 @@ export default {
               img: img,
               price: item.total_price,
               // setNum: item.number,
+              account_unit: item.account_unit,
+              exchange_rate: item.exchange_rate,
               user_name: item.user_name,
               create_time: item.created_at ? item.created_at.split(' ')[0] : '',
               status: item.status,

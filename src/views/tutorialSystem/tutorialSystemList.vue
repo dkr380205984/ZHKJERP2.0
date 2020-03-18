@@ -21,7 +21,7 @@
               v-for="(value,key) in item.module_info || []"
               :key="key">
               <span class="text"
-                @click="$router.push('/tutorialSystem/tutorialSystemDetail/' + value.id)">{{value.title}}</span>
+                @click="$router.push('/tutorialSystem/tutorialSystemDetail/' + value.id)">{{key+1}}<strong>、</strong>{{value.title}}</span>
             </div>
             <div class="collapse__inner_item"
               v-if="!item.module_info || item.module_info.length === 0">
@@ -42,11 +42,11 @@ export default {
       loading: true,
       searchString: '',
       tutorialModule: [
-        ...permissions,
         {
           id: 99,
           module: '常见问题'
-        }
+        },
+        ...permissions
       ],
       activeName: ''
     }
