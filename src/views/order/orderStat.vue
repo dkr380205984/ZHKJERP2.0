@@ -16,17 +16,22 @@
               style="width:290px"
               class="inputs"
               type="daterange"
-              align="right"
+              align="left"
               unlink-panels
               value-format="yyyy-MM-dd"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :picker-options="pickerOptions"
               @change="changeRouter(1)">
             </el-date-picker>
             <div class="btn btnGray"
               @click="reset"
               style="margin-left:0">重置</div>
+          </div>
+          <div class="rightCtn">
+            <div class="btn btnBlue"
+              @click="$router.push('/screenShipmentsList?keyword=' + keyword + '&start_time=' + (date[0] || '') + '&end_time=' + (date[1] || '') + '&group_id=' + group_id + '&company_id=' + company_id)">大屏模式</div>
           </div>
         </div>
         <div class="list">
@@ -94,40 +99,12 @@
               </span>
             </div>
             <div class="col flex16">
-              <span class="text"
-                v-show="!searchStateFlag">流程进度</span>
+              <span class="text">流程进度</span>
             </div>
             <div class="col">
               <span class="text"
                 style="line-height:1.2em">已用工时<br />下单日期</span>
             </div>
-            <!-- <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchState2Flag">订单状态
-                  <i class="el-icon-search iconBtn"
-                    @click="searchState2Flag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchState2Flag"
-                    class="filterBox">
-                    <el-select v-model="state"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选状态">
-                      <el-option v-for="(item,index) in stateArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
-            </div> -->
-            <!-- <div class="col">
-              <span class="text">交货日期</span>
-            </div> -->
             <div class="col">
               <span class="text">当前状态</span>
             </div>
@@ -184,12 +161,13 @@
                 <span class="name">箱</span>
               </div>
             </div>
-            <div class="col"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
+            <div class="col"
+              :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'red':itemOrder.status === 2003,'green':itemOrder.status === 2004,'blue':itemOrder.status === 2002,'orange':itemOrder.status === 2001}">
+                :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.status === 2001 ? '已创建' : itemOrder.status=== 2002 ? '进行中': itemOrder.status === 2004 ? '已完成' : '已取消'}}</span>
+                <span class="name">{{filterStatus([itemOrder.delivery_time,itemOrder.status])[0]}}</span>
               </div>
             </div>
             <div class="col">
@@ -224,29 +202,39 @@ export default {
       date: '',
       pages: 1,
       total: 0,
-      state: '',
       group_id: '',
       groupArr: [],
       company_id: '',
       companyArr: [],
-      stateArr: [
-        {
-          name: '已创建',
-          id: '2001'
-        }, {
-          name: '进行中',
-          id: '2002'
-        }, {
-          name: '已完成',
-          id: '2004'
-        }, {
-          name: '已取消',
-          id: '2003'
-        }],
       searchCompanyFlag: false,
       searchGroupFlag: false,
-      searchStateFlag: false,
-      searchState2Flag: false
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   watch: {
@@ -277,17 +265,13 @@ export default {
       if (this.company_id) {
         this.searchCompanyFlag = true
       }
-      this.state = params.state
-      if (this.state) {
-        this.searchState2Flag = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderStat/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state)
+      this.$router.push('/order/orderStat/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
     },
     reset () {
-      this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=')
+      this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')
     },
     getOrderList () {
       this.loading = true
@@ -298,8 +282,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        group_id: this.group_id,
-        status: this.state
+        group_id: this.group_id
       }).then(res => {
         let data = []
         let batchData = res.data.data.data
@@ -347,6 +330,22 @@ export default {
         this.total = res.data.data.count
         this.loading = false
       })
+    },
+    filterStatus (item) { // item 参数1:交货时间；参数2：订单状态
+      if (Array.isArray(item)) {
+        let nowTime = new Date().getTime()
+        let compileTime = new Date(item[0]).getTime()
+        let status = item[1]
+        if (status === 2004) {
+          return ['已完成', 'green']
+        } else if (compileTime > nowTime) {
+          return ['进行中', 'blue']
+        } else if (nowTime >= compileTime) {
+          return ['已逾期', 'red']
+        }
+      } else {
+        return ['undefined', 'orange']
+      }
     }
   },
   created () {
@@ -363,22 +362,6 @@ export default {
     })
   },
   filters: {
-    filterStatus (item) { // item 参数1:交货时间；参数2：订单状态
-      if (Array.isArray(item)) {
-        let nowTime = new Date().getTime()
-        let compileTime = new Date(item[0]).getTime()
-        let status = item[1]
-        if (status === 2004) {
-          return '已完成'
-        } else if (compileTime > nowTime) {
-          return '进行中'
-        } else if (nowTime >= compileTime) {
-          return '已逾期'
-        }
-      } else {
-        return 'undefined'
-      }
-    },
     filterTime (item) {
       let nowTime = new Date()
       let orderTime = new Date(item)

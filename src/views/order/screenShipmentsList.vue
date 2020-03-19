@@ -1,89 +1,129 @@
 <template>
   <div id="screenShipments"
+    class="indexMain"
     v-loading='loading'>
     <!-- 头部 -->
     <div class="head">
       <h1>订单发货详情表</h1>
-      <!-- <div class="info">
-        <div class="timeBox">
-          <span class="big">{{hours+ ':' + minutes}}</span>
-          <span class="small">{{seconds}}</span>
-          <span class="yearInfo">
-            <span>星期{{day}}</span>
-            <span>{{year}}年{{month}}月{{date}}日</span>
-          </span>
-        </div>
-      </div> -->
     </div>
     <!-- 轮播区域 -->
     <div class="label">
       <div class="title">
-        <span>类型</span>
+        <span class="center">类型</span>
         <span>订单号</span>
         <span class="flex18">订单公司</span>
-        <span>下单日期</span>
-        <span>订单数量</span>
-        <span>完成数量</span>
-        <span class="flex3">进度</span>
+        <span>订单数量<br />下单日期</span>
+        <span class="flex3 center">进度</span>
         <span>负责小组</span>
-        <span>交货日期</span>
+        <span class="center">交货日期</span>
         <span>已用工时</span>
-        <span>当前状态</span>
+        <span class="center">当前状态</span>
       </div>
       <!-- 轮播dom -->
-      <div class="content"
-        @mouseenter="handleMouseenter(loopTime)"
-        @mouseleave="handleMouseleave">
+      <div class="content">
         <el-carousel trigger="click"
           height="100%"
           style="height:100%"
-          :interval='loopTime'
           indicator-position='none'
+          :autoplay='false'
           arrow='never'
-          ref='carousel'
-          @change="getPages">
+          ref='carousel'>
           <el-carousel-item v-for="(items,keys) in filterList"
             :key="keys">
-            <div class="table">
-              <ul class="tablesCtn">
-                <li class="content"
-                  v-for="(item,key) in items.info"
-                  :key="key">
-                  <span class="tableRow">
-                    <div class="iconType sample"
-                      v-if="item.type === 2">{{'样'}}</div>
-                    <div class="iconType"
-                      v-else>{{'订'}}</div>
-                  </span>
-                  <span class="tableRow">{{item.order_code}}</span>
-                  <span class="tableRow flex18">{{item.client_name}}</span>
-                  <span class="tableRow">{{item.order_time}}</span>
-                  <span class="tableRow">{{item.order_number ? item.order_number : 0}}件</span>
-                  <span class="tableRow">{{item.status === 1 ? (item.order_number ? item.order_number : 0) : (item.complete_number ? item.complete_number : 0)}}件</span>
-                  <span class="tableRow flex3">
-                    <el-progress :stroke-width="16"
-                      style="width:80%"
-                      :percentage="(Math.ceil((item.complete_number/item.order_number)*100) > 100 || item.status === 1) ?  100 : Math.ceil((item.complete_number/item.order_number)*100)">{{item.complete_number}}</el-progress>
-                  </span>
-                  <span class="tableRow">{{item.group_name}}</span>
-                  <span class="tableRow"
-                    :style="{'color':isToday(item.complete_time)}">{{item.complete_time}}</span>
-                  <span class="tableRow">
-                    <div style="line-height:1.4rem;">
-                      <span>{{computedTime(item.complete_time,item.order_time)[0]+'天'}}</span>
-                      <span v-if="computedTime(item.complete_time,item.order_time)[1] && setType(item.order_number,item.complete_number,item.complete_time,item.status) === 'overdue'"
-                        style="color:#FF4D4D">{{computedTime(item.complete_time,item.order_time)[1]}}</span>
-                    </div>
-                  </span>
-                  <span class="tableRow">
-                    <div :class="['nowType',setType(item.order_number,item.complete_number,item.complete_time,item.status)]"></div>
-                  </span>
-                </li>
-                <li v-if="items.flag"
-                  class="content"
-                  :style="{color:'#CCC',flex: 10 - items.info.length}">已是最后一页</li>
-              </ul>
-            </div>
+            <ul class="tableCtnLv2">
+              <li class="tb_content"
+                v-for="(item,key) in items"
+                :key="key">
+                <span class="tb_row middle">
+                  <div class="iconType sample"
+                    v-if="item.type === 2">{{'样'}}</div>
+                  <div class="iconType"
+                    v-else>{{'订'}}</div>
+                </span>
+                <span class="tb_row">{{item.order_code}}</span>
+                <span class="tb_row flex18">{{item.client_name}}</span>
+                <span class="tb_row"
+                  style="flex-direction:column;justify-content: center;align-items: flex-start;">
+                  <span>{{item.total_number ? item.total_number : 0}}件</span>
+                  <span style="color:#1A94FF">{{item.order_time}}</span>
+                </span>
+                <span class="tb_row flex3">
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.has_plan > 0 ? 100 : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon order"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.material_order_progress.f_percent ? (item.material_order_progress.f_percent > 100 ? 100 : item.material_order_progress.f_percent) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon orderMaterial"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.material_push_progress.r_pop ? (item.material_push_progress.r_pop > 100 ? 100 : item.material_push_progress.r_pop) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon stock"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.product_weave_progress.product ? (item.product_weave_progress.product > 100 ? 100 : item.product_weave_progress.product) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon weave"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.product_push_progress ? (item.product_push_progress > 100 ? 100 : item.product_push_progress) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon receive_dispatch"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.product_inspection_progress.r_product ? (item.product_inspection_progress.r_product > 100 ? 100 : item.product_inspection_progress.r_product) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon inspection"></span>
+                  </div>
+                  <div class="progress_item">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.pack_real_progress ? (item.pack_real_progress > 100 ? 100 : item.pack_real_progress) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <span class="inner_icon outBound"></span>
+                  </div>
+                </span>
+                <span class="tb_row">{{item.group_name}}</span>
+                <span class="tb_row middle"
+                  :style="{'color':isToday(item.delivery_time)}">{{item.delivery_time}}</span>
+                <span class="tb_row"
+                  style="flex-direction:column;justify-content: center;align-items: flex-start;">
+                  <span>{{computedTime(item.delivery_time,item.order_time)[0]+'天'}}</span>
+                  <span v-if="computedTime(item.delivery_time,item.order_time)[1] && setType(item.delivery_time,item.status) === 'overdue'"
+                    style="color:#FF4D4D">{{computedTime(item.delivery_time,item.order_time)[1]}}</span>
+                </span>
+                <span class="tb_row middle">
+                  <div :class="['nowType',setType(item.delivery_time,item.status)]"></div>
+                </span>
+              </li>
+              <li v-if="pages === Math.ceil(count / 10)"
+                class="tb_content"
+                :style="{color:'#CCC',flex: 10 - items.length}">
+                <span class="tb_row middle">已到最后一页</span>
+              </li>
+            </ul>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -100,7 +140,6 @@
     </div>
     <!-- 时间区域 -->
     <div class="timeInfo">
-
       <span>{{year}}/{{month}}/{{date}}</span><span style="margin-left:32px">{{hours}}:{{minutes}}:{{seconds}}</span>
     </div>
     <!--icon区域-->
@@ -110,7 +149,6 @@
           alt="logo">
         <span>织为云-协同制造云平台</span>
       </div>
-      <!-- <div class="app-name"></div> -->
     </div>
     <!-- 工厂名称 -->
     <div class="company-name">{{company_name}}</div>
@@ -118,14 +156,13 @@
 </template>
 
 <script>
-import { company } from '@/assets/js/api.js'
+import { orderBatch, company } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
       year: '',
       month: '',
-      // day: '',
       date: '',
       hours: '',
       minutes: '',
@@ -137,19 +174,21 @@ export default {
       end_time: '',
       list: [], // 整理好未分页的数据
       filterList: [],
-      // searchList: {}, // 筛选条件
+      searchList: {}, // 筛选条件
       popColor: [
         { color: '#06B4FF', percentage: 0 },
         { color: '#04BA88', percentage: 100 }
       ],
       company_name: '',
       loopTime: 30000,
-      timer: null // 定时器标识
+      timer: null, // 定时器标识
+      getNewDataTimer: null
     }
   },
   methods: {
     // 处理鼠标指针指着走马灯时不滚动的bug
-    handleMouseenter (time) {
+    $setInterval (time) {
+      clearInterval(this.timer)
       this.timer = setInterval(() => {
         this.pages++
         if (this.pages > Math.ceil(this.count / 10)) {
@@ -158,12 +197,9 @@ export default {
         this.$refs.carousel.setActiveItem(this.pages - 1)
       }, time)
     },
-    handleMouseleave () {
-      clearInterval(this.timer)
-    },
     // 判断是否为今日
     isToday (time) {
-      if ((new Date().getTime() - new Date(time).getTime()) / 1000 / 60 / 60 / 24 > 0 && (new Date().getTime() - new Date(time).getTime()) / 1000 / 60 / 60 / 24 < 1) {
+      if (this.$getTime() === this.$getTime(time)) {
         return '#1A94FF'
       } else if (new Date().getTime() > new Date(time).getTime()) {
         return '#E6A23C'
@@ -179,10 +215,10 @@ export default {
       return [useDay, str]
     },
     // 判断是否逾期
-    setType (orderNum, comNum, time, status) {
-      if (comNum >= orderNum || status === 1) {
+    setType (time, status) {
+      if (+status === 2004) {
         return 'complete'
-      } else if (new Date().getTime() > (new Date(time).getTime() + (1000 * 60 * 60 * 24))) {
+      } else if (new Date().getTime() > new Date(time).getTime()) {
         return 'overdue'
       } else {
         return 'running'
@@ -208,72 +244,92 @@ export default {
     },
     setActiveItem (pages) {
       this.$refs.carousel.setActiveItem(pages - 1)
+      this.$setInterval(this.loopTime)
     },
     // 获取数据
-    getData (number) {
-      // orderBatchList({
-      //   'company_id': window.sessionStorage.getItem('company_id'),
-      //   'limit': number,
-      //   'page': this.total,
-      //   'category_id': this.searchList.categoryVal,
-      //   'type_id': this.searchList.typesVal,
-      //   'style_id': this.searchList.styleVal,
-      //   'client_id': this.searchList.company,
-      //   'group_id': this.searchList.group,
-      //   'start_time': this.searchList.start_time ? new Date(Number(this.searchList.start_time)).toISOString() : this.start_time,
-      //   'end_time': this.searchList.end_time ? new Date(Number(this.searchList.end_time)).toISOString() : this.end_time
-      // }).then(res => {
-      //   if (res.data.status) {
-      //     this.count = res.data.data.count
-      //     let orderInfo = res.data.data
-      //     for (let prop in orderInfo.data) {
-      //       let valOrder = orderInfo.data[prop]
-      //       this.list.push(
-      //         ...valOrder.map(items => {
-      //           return {
-      //             type: items.type,
-      //             complete_time: items.delivery_time,
-      //             order_code: items.order_code,
-      //             client_name: items.client_name,
-      //             order_time: items.create_time,
-      //             order_number: items.batch_info.map(vals => {
-      //               return vals.size.map(valSize => {
-      //                 return valSize.numbers
-      //               }).reduce((total, item) => {
-      //                 return Number(total) + Number(item)
-      //               })
-      //             }).reduce((total, item) => {
-      //               return Number(total) + Number(item)
-      //             }),
-      //             complete_number: items.log.length > 0 ? items.log.map(vals => {
-      //               return vals.number
-      //             }).reduce((total, val) => {
-      //               return Number(total) + Number(val)
-      //             }) : 0,
-      //             group_name: items.group_name,
-      //             status: items.status
-      //           }
-      //         })
-      //       )
-      //       if (this.list.length === 10) {
-      //         this.filterList.push({ info: this.list.splice(0, 10) })
-      //       }
-      //     }
-      //     if (Math.ceil(orderInfo.count / number) > this.total) {
-      //       this.total++
-      //       setTimeout(() => {
-      //         this.getData(number)
-      //       }, 2000)
-      //     } else if (this.list.length > 0) {
-      //       this.filterList.push({ info: this.list.splice(0, 10), flag: true })
-      //       this.list = []
-      //     }
-      //   } else {
-      //     this.$message.error(res.data.message)
-      //     throw res.data.message
-      //   }
-      this.loading = false
-      // })
+    getData (item) {
+      item = item || {}
+      let pagesInner = item.page || 1
+      let data = item.data || []
+      if (pagesInner === 1) {
+        this.loading = true
+      }
+      if (pagesInner > Math.ceil(this.count / 20)) {
+        this.filterList.push(data.splice(0, 10))
+        if (data.length > 0) {
+          setTimeout(() => {
+            this.getData({
+              page: pagesInner,
+              data: data
+            })
+          }, 2000)
+        }
+      } else {
+        orderBatch.list({
+          'limit': 20,
+          'page': pagesInner,
+          'keyword': this.searchList.keyword,
+          'client_id': this.searchList.company,
+          'group_id': this.searchList.group,
+          'start_time': this.searchList.start_time || this.start_time,
+          'end_time': this.searchList.end_time || this.end_time
+        }).then(res => {
+          let batchData = res.data.data.data
+          this.count = res.data.data.count
+          for (let prop in batchData) {
+            let item = batchData[prop]
+            data.push(...item.map(itemBatch => {
+              let productInfo = itemBatch.batch_info.map(itemPro => {
+                return {
+                  number: itemPro.product_info.map(itemSize => (+itemSize.numbers || 0)).reduce((a, b) => {
+                    return a + b
+                  }),
+                  product_id: itemPro.category_info.product_id,
+                  image: itemPro.category_info.images.length > 0 ? itemPro.category_info.images.map(itemImg => {
+                    itemImg.product_id = itemPro.category_info.product_id
+                    itemImg.product_type = itemPro.category_info.product_type
+                    return itemImg
+                  }) : [{
+                    product_id: itemPro.category_info.product_id,
+                    product_type: itemPro.category_info.product_type
+                  }]
+                }
+              })
+              return {
+                delivery_time: prop,
+                order_code: itemBatch.order_code,
+                client_name: itemBatch.client_name,
+                image: productInfo.map(itemPro => itemPro.image).reduce((a, b) => {
+                  return a.concat(b)
+                }),
+                status: itemBatch.status,
+                order_id: itemBatch.order_id,
+                batch_id: itemBatch.batch_id,
+                group_name: itemBatch.group_name,
+                total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
+                  return a + b
+                }),
+                order_time: itemBatch.order_time,
+                ...itemBatch.log
+
+              }
+            })
+            )
+          }
+          this.filterList.push(data.splice(0, 10))
+          pagesInner++
+          if (!this.timer) {
+            this.$setInterval(this.loopTime)
+          }
+          this.loading = false
+          setTimeout(() => {
+            this.getData({
+              page: pagesInner,
+              data: data
+            })
+          }, 2000)
+        })
+      }
     }
   },
   created () {
@@ -287,12 +343,9 @@ export default {
         })
       }
     })
-    // if (window.location.search) {
-    //   let searchList = window.location.search.split('?')[1].split('&')
-    //   searchList.forEach(item => {
-    //     this.searchList[item.split('=')[0]] = item.split('=')[1]
-    //   })
-    // }
+    if (this.$route.query) {
+      this.searchList = this.$route.query
+    }
     // 按esc返回订单发货列表
     let html = document.getElementsByTagName('html')[0]
     html.addEventListener('keydown', (e) => {
@@ -305,17 +358,17 @@ export default {
     this.start_time = new Date(new Date().getTime() - (3 * 24 * 60 * 60 * 1000)).toISOString()
     this.end_time = new Date(new Date().getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString()
     this.getTime()
-    this.getData(10)
+    this.getData()
   },
   watch: {
     pages (newVal) {
-      console.log(newVal)
+      clearInterval(this.getNewDataTimer)
       if (newVal === Math.ceil(this.count / 10)) {
-        setTimeout(() => {
+        this.getNewDataTimer = setTimeout(() => {
           this.list = []
           this.filterList = []
           this.total = 1
-          this.getData(10)
+          this.getData()
         }, this.loopTime - 1000)
       }
     }
@@ -329,28 +382,21 @@ export default {
 <style lang="less" scope>
 #screenShipments {
   .el-progress {
-    width: 100%;
-    .el-progress-bar__outer {
-      background-color: #0a4d72;
+    position: relative;
+    width: 50px;
+    height: 50px;
+    margin: 0 6px;
+    .el-progress-circle {
+      width: inherit !important;
+      height: inherit !important;
+      .el-progress-circle__track {
+        stroke: #324376;
+      }
     }
     .el-progress__text {
       font-size: 16px !important;
       color: #53c5ca;
     }
-  }
-  .imgBox {
-    & > img {
-      height: 70px;
-      cursor: pointer;
-    }
-  }
-  .textOverflow {
-    display: block;
-    font-style: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
   }
 }
 </style>

@@ -56,12 +56,15 @@ ul {
       box-sizing: border-box;
       display: flex;
       background-color: #0D264A;
+      padding: 0 22px;
       &>span{
         flex: 1;
         display: flex;
         height: 100%;
-        justify-content: center;
         align-items: center;
+        &.center{
+          justify-content: center;
+        }
       }
       .warp{
         flex-direction: column;
@@ -73,89 +76,87 @@ ul {
     }
     &>.content{
       flex: 10;
-      .table{
-        height: inherit;
-        .tablesCtn{
-          width: 100%;
-          height: inherit;
-          border: none;
-          box-sizing: border-box !important;
-          display: flex;
-          flex-direction: column;
-          .content {
-            flex: 1;
-            border: none;
-            border-bottom: 1px solid #144180;
-            box-sizing: border-box !important;            
-            &:nth-child(2n){
-              background: #12224F;
-            }
-            .tableColumn {
-              border: none;
-            }
-            .tableRow {
-              border: none;
-              &>em{
-                flex:1;
-                font-style: normal;
-                padding: 0 5%;
-                text-align: left;
-              }
-              .iconType{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 50px;
-                width: 50px;
-                background: url('../../image/bigScreenBg/bg-order.png') 0 0 no-repeat;
-                background-size: 100% 100%;
-                &.sample{
-                  background-image:url('../../image/bigScreenBg/bg-sample.png');
-                }
-              }
-              .nowType {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 30px;
-                width: 100px;
-                background-size: 100% 100%;
-                background-repeat: no-repeat;
-                background-position: 0 0;
-                &.running{
-                  background-image:url('../../image/bigScreenBg/running.png');
-                }
-                &.overdue{
-                  background-image:url('../../image/bigScreenBg/overdue.png');
-                }
-                &.complete{
-                  background-image:url('../../image/bigScreenBg/complete.png');
-                }
-              }
-            }
+      .tableCtnLv2{
+        height: 100%;
+        color: #FFF;
+        display: flex;
+        flex-direction: column;
+        .tb_content{
+          flex: 1;
+          color: #FFF;
+          border-color: #144180;            
+          &:nth-child(2n){
+            background: #12224F;
+          }
+          .tb_row{
+            word-break: break-all;
           }
         }
-        .sizeWrap{
+        .iconType{
           display: flex;
           justify-content: center;
           align-items: center;
-          width: 50%;
-          font-style: normal;
-          border-right: 1px solid #DDD;
-          box-sizing: border-box;
-          border-bottom: 1px solid #DDD;
-          &:nth-child(2n){
-            border-right: none;
-          }
-          &:nth-last-child(1),
-          &:nth-last-child(2){
-            border-bottom: none;
+          height: 50px;
+          width: 50px;
+          background: url('../../image/bigScreenBg/bg-order.png') 0 0 no-repeat;
+          background-size: 100% 100%;
+          &.sample{
+            background-image:url('../../image/bigScreenBg/bg-sample.png');
           }
         }
-        em{
-          &.rateOfProgress{
+        .nowType {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 30px;
+          width: 100px;
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          background-position: 0 0;
+          &.running{
+            background-image:url('../../image/bigScreenBg/running.png');
+          }
+          &.overdue{
+            background-image:url('../../image/bigScreenBg/overdue.png');
+          }
+          &.complete{
+            background-image:url('../../image/bigScreenBg/complete.png');
+          }
+        }
+        .progress_item{
           position: relative;
-          margin: 0 10px;
+          .inner_icon{
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-size: 100%;
+            background-repeat: no-repeat;
+            &.order{
+              background-image: url(../../image/bigScreenBg/icon-order.png);
+            }
+            &.orderMaterial{
+              background-image: url(../../image/bigScreenBg/icon-material.png);
+            }
+            &.stock{
+              background-image: url(../../image/bigScreenBg/icon-stock.png);
+            }
+            &.weave{
+              background-image: url(../../image/bigScreenBg/icon-weave.png);
+            }
+            &.receive_dispatch{
+              background-image: url(../../image/bigScreenBg/icon-receive-dispatch.png);
+            }
+            &.inspection{
+              background-image: url(../../image/bigScreenBg/icon-inspection.png);
+            }
+            &.outBound{
+              width: 25px;
+              height: 25px;
+              background-image: url(../../image/bigScreenBg/icon-outbound.png);
+            }
           }
         }
       }

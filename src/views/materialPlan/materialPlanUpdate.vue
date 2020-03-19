@@ -426,6 +426,7 @@ export default {
         type: 'warning'
       }).then(() => {
         item.splice(index, 1)
+        this.computedTotal()
         this.$message({
           type: 'success',
           message: '删除成功!'

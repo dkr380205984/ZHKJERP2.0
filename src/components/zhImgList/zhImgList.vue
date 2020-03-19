@@ -123,9 +123,9 @@ export default {
         this.showBig()
         return
       }
-      if (this.order_type === 'sample') {
+      if (this.order_type === 'sample' || +this.list[this.index].product_type === 2) {
         this.$openUrl('/sample/sampleDetail/' + this.list[this.index].product_id)
-      } else {
+      } else if (this.order_type === 'product' || +this.list[this.index].product_type === 1) {
         this.$openUrl('/product/productDetail/' + this.list[this.index].product_id)
       }
     }
