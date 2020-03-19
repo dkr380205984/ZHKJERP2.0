@@ -550,7 +550,7 @@ export default {
     ]).then((res) => {
       this.msgList = res[0].data.data
       this.dispatchCount = res[1].data.data
-      this.tutorialSystemArr = res[2].data.data.splice(0, 10)
+      this.tutorialSystemArr = res[2].data.data.splice(0, 16)
     })
   }
 }

@@ -312,6 +312,9 @@ export default {
         }, {
           name: '员工工资结算',
           url: '/staff/staffPay'
+        }, {
+          name: '合计工资结算单',
+          url: '/staff/staffSettle'
         }]
       }]
     }

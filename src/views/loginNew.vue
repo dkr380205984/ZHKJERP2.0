@@ -43,6 +43,12 @@
       <div class="subBtn"
         @click="goLogin">登录</div>
     </div>
+    <!-- 备案信息 -->
+    <div class="bottomInfo">
+      <div class="line">©zwyknit.com/版权所有 数据应用服务：浙ICP备 <a target="_blank"
+          href="http://www.miit.gov.cn/">19041626号</a></div>
+      <!-- <div class="line">浙公网安备 33010602009975号</div> -->
+    </div>
   </div>
 </template>
 

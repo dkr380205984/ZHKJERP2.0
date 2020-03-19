@@ -1254,7 +1254,7 @@ export default {
       }).then(() => {
         if (id === 'all') {
           replenish.delete({
-            id: this.replenish_log.filter((item) => item.check).map((item) => item.id)
+            id: this.replenish_log.filter((item) => item.checked).map((item) => item.id)
           }).then((res) => {
             if (res.data.status) {
               this.$message({

@@ -236,7 +236,7 @@ export default {
       date: '',
       list: [],
       workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
-      settleList: [{ value: '按日结算', normal: true }, { value: '按月结算', normal: true }, { value: '按年结算', normal: true }]
+      settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }]
     }
   },
   methods: {

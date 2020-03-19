@@ -1,0 +1,197 @@
+@import '../common.less';
+#staffSettle{
+  .excelTable{
+    border:1px solid #D9D9D9;
+    margin: 32px 64px;
+    .title{
+      display: flex;
+      justify-content: space-between;
+      line-height: 60px;
+      padding: 0 32px;
+      background: #F8F8F8;
+      color: @font65;
+      border-bottom: 1px solid #D9D9D9;
+    }
+    .tabelBodyCtn{
+      .tabelBodyMain{
+        display: flex;
+        &.hasBorder{
+          border-bottom: 1px solid #D9D9D9;
+        }
+        .box{
+          flex:1;
+          display: flex;
+          line-height: 60px;
+          color: @font85;
+          border-right:1px solid #D9D9D9;
+          &:nth-last-child(1){
+            border-right: 0;
+          }
+          .label{
+            flex:1;
+            padding: 0 20px;
+          }
+        }
+        .opr{
+          color: @blue;
+          cursor: pointer;
+        }
+      }
+      .tableBodyList{
+        background: #F8F8F8;
+        font-size: @fontMiddle;
+        overflow: hidden;
+        position: relative;
+        border-bottom: 1px solid #D9D9D9;
+        .once{
+          flex: 1;
+          padding: 0 15px;
+          height: 46px;
+          min-width: 176px;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          word-break: break-all;
+          .inputs{
+            width: 100%;
+            height: 34px;
+            line-height: 32px;
+          }
+          .opr{
+            cursor: pointer;
+            margin-right: 12px;
+            &.blue{
+              color: @blue;
+            }
+            &.orange{
+              color: @orange;
+            }
+            &.red{
+              color: @red;
+            }
+          }
+        }
+        .titleLine{
+          font-weight: bold;
+          font-size: @fontMiddle;
+          color: @font85;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 44px;
+          font-size: @fontMiddle;
+        }
+        .normalLine{
+          color: @font65;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 44px;
+          font-size: @fontMiddle;
+        }
+        .addLine{
+          color: @font65;
+          display: flex;
+          justify-content: space-between;
+          padding: 12px 44px;
+          font-size: @fontMiddle;
+        }
+        .middleCtn{
+          margin-right: 24px;
+          flex:1;
+          overflow: hidden;
+        }
+        .inputs{
+          width: 120px;
+          height: 34px;
+          margin-right: 24px;
+        }
+        .text{
+          margin-right: 24px;
+          display: inline-flex;
+          &.oprCtn{
+            width: 104px;
+            justify-content: space-evenly;
+          }
+          .opr{
+            cursor: pointer;
+            &.blue{
+              color: @blue;
+            }
+            &.orange{
+              color: @orange;
+            }
+            &.red{
+              color: @red;
+            }
+          }
+          .addIcon{
+            .el-icon-circle-plus{
+              font-size: 18px;
+              margin-left: 8px;
+              color: @font65;
+              &:hover{
+                color: @blue;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+    .selectCtn{
+      height: 38px;
+      width: 180px;
+      display: inline-block;
+      margin-right: 12px;
+    }
+    .el-icon-caret-right{
+      cursor: pointer;
+      &:hover{
+        color: @blue;
+      }
+    }
+    .el-icon-caret-bottom{
+      cursor: pointer;
+      &:hover{
+        color: @blue;
+      }
+    }
+    .searchCtn{
+      width: 100%;
+      height:34px;
+      display: flex;
+      position: relative;
+      .searchInput{
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.15);
+        border-radius: 4px;
+        height: 100%;
+        box-sizing: border-box;
+        font-size: inherit;    
+        padding: 0px 15px;
+        &:focus{
+          outline: none;
+          border-color: #1A95FF;
+        }
+        &:disabled{
+          background-color: #f5f7fa;
+          border-color: #e4e7ed;
+          color: #c0c4cc;
+          cursor: not-allowed;
+        }
+      }
+      .searchBox{
+        position: absolute;
+        top: 100%;
+        background: #fff;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        z-index: 2012;
+      }
+    }
+  }
+  .pageCtn{
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 64px;
+  }
+}

@@ -372,6 +372,10 @@ const routes = [
       path: '/staff/staffUpdate/:id',
       name: '修改员工',
       component: () => import('../views/staff/staffUpdate.vue')
+    }, {
+      path: '/staff/staffSettle',
+      name: '合计工资结算单',
+      component: () => import('../views/staff/staffSettle.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -534,7 +538,8 @@ router.beforeEach((to, from, next) => {
     '员工列表': ['织为云', '员工列表'],
     '员工详情': ['织为云', '员工列表', '员工详情'],
     '员工工资结算': ['织为云', '员工列表', '员工工资结算'],
-    '修改员工': ['织为云', '员工列表', '修改员工']
+    '修改员工': ['织为云', '员工列表', '修改员工'],
+    '合计工资结算单': ['织为云', '合计工资结算单']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
