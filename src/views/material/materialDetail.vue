@@ -167,6 +167,7 @@
           </div>
         </div>
         <div class="rowCtn"
+          v-show="replenishList.length>0"
           style="margin-top:40px">
           <div class="colCtn"
             style="margin-right:0">
@@ -182,6 +183,7 @@
                       <div class="tcolumn">{{type==='1'?'颜色':'属性'}}名称</div>
                       <div class="tcolumn">计划补纱数量</div>
                       <div class="tcolumn">实际补纱数量</div>
+                      <div class="tcolumn">已加工数量</div>
                       <div class="tcolumn">操作</div>
                     </div>
                   </div>
@@ -204,6 +206,7 @@
                       <div class="tcolumn">{{itemChild.material_color}}</div>
                       <div class="tcolumn">{{itemChild.need_weight}}{{type==='1'?'kg':itemChild.unit}}</div>
                       <div class="tcolumn"><span class="green">{{itemChild.order_weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
+                      <div class="tcolumn"><span class="blue">{{itemChild.process_weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
                       <div class="tcolumn"
                         style="flex-direction:row;line-height:54px;justify-content:start">
                         <a href="#order"
