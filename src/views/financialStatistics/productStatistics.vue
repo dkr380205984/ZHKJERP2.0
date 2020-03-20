@@ -56,19 +56,62 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">下单总数</span>
+              <span class="text">产品图片</span>
             </div>
             <div class="col">
-              <span class="text">平均价格</span>
+              <span class="text">下单总数
+                <span class="iconCtn"
+                  @click="sortFn('XDZS')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':XDZS==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':XDZS==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">合计产值</span>
+              <span class="text">平均价格
+                <span class="iconCtn"
+                  @click="sortFn('PJJG')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':PJJG==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':PJJG==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">次品率</span>
+              <span class="text">合计产值
+                <span class="iconCtn"
+                  @click="sortFn('HJCZ')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':HJCZ==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':HJCZ==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">库存数量</span>
+              <span class="text">次品率
+                <span class="iconCtn"
+                  @click="sortFn('CPL')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':CPL==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':CPL==='2'}"></i>
+                </span>
+              </span>
+            </div>
+            <div class="col">
+              <span class="text">库存数量
+                <span class="iconCtn"
+                  @click="sortFn('KCSL')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':KCSL==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':KCSL==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -135,7 +178,12 @@ export default {
       type: [],
       category_id: '',
       type_id: '',
-      style_id: ''
+      style_id: '',
+      XDZS: null, // 1是升序，2是降序,null是默认
+      PJJG: null,
+      HJCZ: null,
+      CPL: null,
+      KCSL: null
     }
   },
   watch: {
@@ -151,10 +199,10 @@ export default {
   methods: {
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/productStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id)
+      this.$router.push('/financialStatistics/productStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&XDZS=' + this.XDZS + '&&PJJG=' + this.PJJG + '&&HJCZ=' + this.HJCZ + '&&CPL=' + this.CPL + '&&KCSL=' + this.KCSL)
     },
     reset () {
-      this.$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=')
+      this.$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')
     },
     getType (type) {
       if (type.length === 3) {
@@ -189,6 +237,11 @@ export default {
       let params = getHash(this.$route.params.params)
       this.page = Number(params.page)
       this.keyword = params.keyword
+      this.XDZS = params.XDZS
+      this.PJJG = params.PJJG
+      this.HJCZ = params.HJCZ
+      this.CPL = params.CPL
+      this.KCSL = params.KCSL
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
@@ -201,6 +254,10 @@ export default {
         this.type = [this.category_id, this.type_id, this.style_id]
         this.searchTypeFlag = true
       }
+    },
+    sortFn (item) {
+      this[item] = this[item] ? (this[item] === '1' ? '2' : '1') : '1'
+      this.changeRouter(1)
     }
   },
   mounted () {
