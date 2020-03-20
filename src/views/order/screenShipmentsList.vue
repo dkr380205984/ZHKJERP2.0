@@ -59,7 +59,7 @@
                   <div class="progress_item">
                     <el-progress type="circle"
                       color="#1A94FF"
-                      :percentage="item.material_order_progress.f_percent ? (item.material_order_progress.f_percent > 100 ? 100 : item.material_order_progress.f_percent) : 0"
+                      :percentage="item.material_order_progress.y_percent ? (item.material_order_progress.y_percent > 100 ? 100 : item.material_order_progress.y_percent) : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
                     <span class="inner_icon orderMaterial"></span>
@@ -118,7 +118,7 @@
                   <div :class="['nowType',setType(item.delivery_time,item.status)]"></div>
                 </span>
               </li>
-              <li v-if="pages === Math.ceil(count / 10)"
+              <li v-if="keys === Math.ceil(count / 10) - 1 && items.length < 10"
                 class="tb_content"
                 :style="{color:'#CCC',flex: 10 - items.length}">
                 <span class="tb_row middle">已到最后一页</span>
@@ -218,7 +218,7 @@ export default {
     setType (time, status) {
       if (+status === 2004) {
         return 'complete'
-      } else if (new Date().getTime() > new Date(time).getTime()) {
+      } else if (new Date(this.$getTime()).getTime() > new Date(this.$getTime(time)).getTime()) {
         return 'overdue'
       } else {
         return 'running'
@@ -235,7 +235,7 @@ export default {
         this.minutes = Number(data.getMinutes()) > 9 ? Number(data.getMinutes()) : '0' + (Number(data.getMinutes()))
         this.seconds = Number(data.getSeconds()) > 9 ? Number(data.getSeconds()) : '0' + (Number(data.getSeconds()))
         this.getTime()
-        this.end_time = new Date(new Date().getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString()
+        this.end_time = new Date(new Date().getTime() + (20 * 24 * 60 * 60 * 1000)).toISOString()
       })
     },
     // 更新pages
@@ -243,8 +243,12 @@ export default {
       this.pages = key + 1
     },
     setActiveItem (pages) {
-      this.$refs.carousel.setActiveItem(pages - 1)
-      this.$setInterval(this.loopTime)
+      if (this.filterList.length < pages) {
+        this.$message('正在加载。。。')
+      } else {
+        this.$refs.carousel.setActiveItem(pages - 1)
+        this.$setInterval(this.loopTime)
+      }
     },
     // 获取数据
     getData (item) {
@@ -355,8 +359,8 @@ export default {
         }, 800)
       }
     }, false)
-    this.start_time = new Date(new Date().getTime() - (3 * 24 * 60 * 60 * 1000)).toISOString()
-    this.end_time = new Date(new Date().getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString()
+    this.start_time = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)).toISOString()
+    this.end_time = new Date(new Date().getTime() + (20 * 24 * 60 * 60 * 1000)).toISOString()
     this.getTime()
     this.getData()
   },

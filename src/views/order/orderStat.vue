@@ -214,7 +214,7 @@ export default {
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            end.setTime(end.getTime() + 3600 * 1000 * 24 * 7)
             picker.$emit('pick', [start, end])
           }
         }, {
@@ -222,7 +222,7 @@ export default {
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            end.setTime(end.getTime() + 3600 * 1000 * 24 * 30)
             picker.$emit('pick', [start, end])
           }
         }, {
@@ -230,7 +230,7 @@ export default {
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            end.setTime(end.getTime() + 3600 * 1000 * 24 * 90)
             picker.$emit('pick', [start, end])
           }
         }]
@@ -333,14 +333,14 @@ export default {
     },
     filterStatus (item) { // item 参数1:交货时间；参数2：订单状态
       if (Array.isArray(item)) {
-        let nowTime = new Date().getTime()
-        let compileTime = new Date(item[0]).getTime()
-        let status = item[1]
+        let nowTime = new Date(this.$getTime()).getTime()
+        let compileTime = new Date(this.$getTime(item[0])).getTime()
+        let status = +item[1]
         if (status === 2004) {
           return ['已完成', 'green']
-        } else if (compileTime > nowTime) {
+        } else if (compileTime >= nowTime) {
           return ['进行中', 'blue']
-        } else if (nowTime >= compileTime) {
+        } else if (nowTime > compileTime) {
           return ['已逾期', 'red']
         }
       } else {
