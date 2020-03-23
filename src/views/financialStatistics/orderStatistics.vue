@@ -40,6 +40,64 @@
           </div>
         </div>
       </div>
+      <div class="listHead">
+        <div class="box small">
+          <div class="boxTop">原料采购</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.material_order)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">原料加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.material_process)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">辅料采购</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.assist_material_order)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">辅料加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.assist_material_process)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">生产织造</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">半成品加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.semi_product)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">包装辅料订购</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.pack_order)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">出库运输</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.stock_out)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="module"
       v-loading="loading">
@@ -190,7 +248,17 @@ export default {
         XDSL: '', // 下单数量
         CKSL: '', // 出库数量
         SJZZ: '', // 实际总值
-        GCCB: ''// 工厂成本
+        GCCB: '', // 工厂成本
+        company_cost_detail: {
+          material_order: '',
+          material_process: '',
+          assist_material_order: '',
+          assist_material_process: '',
+          product_weave: '',
+          semi_product: '',
+          pack_order: '',
+          stock_out: ''
+        }
       }
     }
   },
@@ -221,6 +289,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
+        is_search: false,
         group_id: this.group_id
       }).then((res) => {
         this.loading = false
@@ -250,7 +319,7 @@ export default {
   mounted () {
     this.getFilters()
     this.getList()
-    Promise.all([group.list(), client.list(), statistics.orderStatistics()]).then((res) => {
+    Promise.all([group.list(), client.list(), statistics.orderStatistics({ is_search: false })]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
@@ -261,7 +330,17 @@ export default {
         XDSL: orderStatistics.order_total_number / 10000, // 下单数量
         CKSL: orderStatistics.order_total_pack_real / 10000, // 出库数量
         SJZZ: orderStatistics.order_total_reality / 10000, // 实际总值
-        GCCB: orderStatistics.company_cost / 10000// 工厂成本
+        GCCB: orderStatistics.company_cost / 10000, // 工厂成本
+        company_cost_detail: {
+          material_order: orderStatistics.company_cost_detail.material_order / 10000,
+          material_process: orderStatistics.company_cost_detail.material_process / 10000,
+          assist_material_order: orderStatistics.company_cost_detail.assist_material_order / 10000,
+          assist_material_process: orderStatistics.company_cost_detail.assist_material_process / 10000,
+          product_weave: orderStatistics.company_cost_detail.product_weave / 10000,
+          semi_product: orderStatistics.company_cost_detail.semi_product / 10000,
+          pack_order: orderStatistics.company_cost_detail.pack_order / 10000,
+          stock_out: orderStatistics.company_cost_detail.stock_out / 10000
+        }
       }
       this.loadingTop = false
     })

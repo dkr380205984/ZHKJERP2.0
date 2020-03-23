@@ -10,6 +10,25 @@
         flex-direction: column;
         justify-content: center;
         position: relative;
+        &.small{
+          .boxBottom{
+            .num{
+              font-size: @fontMiddle;
+              font-weight: 400;
+            }
+          }
+          &::after{
+            content:'';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            width:1px;
+            height:42px;
+            background: #E8E8E8;
+          }
+        }
         .boxTop{
           line-height: 40px;
           font-size: @fontMiddle;

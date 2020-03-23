@@ -21,7 +21,7 @@
             @click="cName=item">{{item}}</div>
         </div>
         <div class="mainCtn">
-          <template v-if="cName==='产品分类'">
+          <!-- <template v-if="cName==='产品分类'">
             <div class="productTypeCtn">
               <div class="treeMain">
                 <el-tree ref="tree"
@@ -35,7 +35,7 @@
                 </el-tree>
               </div>
             </div>
-          </template>
+          </template> -->
           <template v-if="cName==='产品花型'">
             <div class="flowerCtn">
               <div class="addBtn"
@@ -1886,7 +1886,7 @@ export default {
       showPopup: false,
       yarn_handle_type: '',
       nav: {
-        '产品设置': ['产品分类', '产品花型', '产品成分', '产品配色', '产品尺码'],
+        '产品设置': ['产品花型', '产品成分', '产品配色', '产品尺码'],
         '工艺单设置': ['边型', '机型', '组织法'],
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
@@ -3851,7 +3851,7 @@ export default {
   },
   created () {
     this.pName = '产品设置'
-    this.cName = '产品分类'
+    this.cName = '产品花型'
   }
 }
 </script>
