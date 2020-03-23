@@ -888,7 +888,7 @@ export default {
           created_at: this.$getTime(item.created_at),
           need_weight: item.need_weight,
           percent_info: item.client_info.map(value => {
-            return value.client_name + '(' + value.percent + '%)'
+            return (+value.client_id === 0 ? '本厂' : value.client_name) + '(' + value.percent + '%)'
           })
         }
       })

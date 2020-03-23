@@ -104,11 +104,12 @@ export default {
             return {
               client_name: item.client_name,
               replenish_info: this.$mergeData(item.other_info.map(value => {
+                let clientPercentInfo = value.client_info.find(val => val.client_name === item.client_name)
                 return {
                   material_name: value.material_name,
                   color: value.material_color,
                   weight: value.need_weight,
-                  percent: value.client_info.find(val => val.client_name === item.client_name).percent
+                  percent: clientPercentInfo ? clientPercentInfo.percent : 0
                 }
               }), { mainRule: 'percent', childrenName: 'material_info' })
             }
@@ -129,15 +130,16 @@ export default {
         ]).then(res => {
           this.orderInfo = res[0].data.data
           let printLogId = this.$route.query.id.split(',')
-          this.replenishInfo = this.$mergeData(res[1].data.data.filter(item => printLogId.indexOf((item.id).toString()) !== -1), { mainRule: 'replenish_name/client_name', childrenName: 'other_info' }).map(item => {
+          this.replenishInfo = this.$mergeData(res[1].data.data.filter(item => printLogId.indexOf(+item.id) !== -1), { mainRule: 'replenish_name/client_name', childrenName: 'other_info' }).map(item => {
             return {
               client_name: item.client_name,
               replenish_info: this.$mergeData(item.other_info.map(value => {
+                let clientPercentInfo = value.client_info.find(val => val.client_name === item.client_name)
                 return {
                   material_name: value.material_name,
                   color: value.material_color,
                   weight: value.need_weight,
-                  percent: value.client_info.find(val => val.client_name === item.client_name).percent
+                  percent: clientPercentInfo ? clientPercentInfo.percent : 0
                 }
               }), { mainRule: 'percent', childrenName: 'material_info' })
             }

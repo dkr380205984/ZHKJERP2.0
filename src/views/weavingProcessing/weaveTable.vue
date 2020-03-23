@@ -41,7 +41,7 @@
         </div>
         <div class="print_row has_marginBottom">
           <div class="row_item center w180">生产单位</div>
-          <div class="row_item left">{{weaveInfo[0] ? weaveInfo[0].client_name : ''}}</div>
+          <div class="row_item left">{{filterClientTel(weaveInfo[0] ? weaveInfo[0].client_name : '')}}</div>
           <div class="row_item center w180">总价</div>
           <div class="row_item left flex08">{{weaveInfo|filterialTotal}}元</div>
         </div>
@@ -147,32 +147,6 @@
           <div class="row_item center w180">总重</div>
           <div class="row_item left flex08">{{materialInfo|filterialWeight}}{{$route.query.type === '1' ? 'kg' : '个'}}</div>
         </div>
-        <!-- <div class="print_row bgGray">
-          <div class="row_item center w180">产品信息</div>
-          <div class="row_item center w180">尺码颜色</div>
-          <div class="row_item center">图片</div>
-          <div class="row_item center">类型/单价</div>
-          <div class="row_item center">数量</div>
-          <div class="row_item center">完成日期</div>
-        </div> -->
-        <!-- <div v-for="(itemPro,indexPro) in weaveInfo"
-          :key="indexPro"
-          :class="['print_row',indexPro === weaveInfo.length -1 ?  'has_marginBottom' : '']">
-          <div class="row_item w180 center">{{itemPro.product_code}}<br />{{itemPro|filterType}}</div>
-          <div class="row_item col">
-            <span class="print_row noBorder"
-              v-for="(itemColor,indexColor) in itemPro.color_info"
-              :key="indexColor">
-              <span class="row_item center w180">{{itemColor.size + '/' + itemColor.color}}<br />{{itemColor.sizeInfo.size_info}}cm<br />{{itemColor.sizeInfo.weight}}g</span>
-              <span class="row_item center">
-                <zh-img-list :list='itemColor.img'></zh-img-list>
-              </span>
-              <span class="row_item center">{{itemColor.process_type}}<br />{{itemColor.price}}元/{{itemPro.category_info.unit || '件'}}</span>
-              <span class="row_item center">{{itemColor.number}}{{itemPro.category_info.unit || '件'}}</span>
-              <span class="row_item center">{{itemColor.compiled_time}}</span>
-            </span>
-          </div>
-        </div> -->
         <div class="print_row bgGray">
           <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料信息</div>
           <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料颜色</div>
@@ -208,7 +182,7 @@
 </template>
 
 <script>
-import { print, order, weave, processing, sampleOrder } from '@/assets/js/api.js'
+import { print, order, weave, processing, sampleOrder, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -222,7 +196,8 @@ export default {
       qrCodeUrl2: '',
       orderInfo: {},
       weaveInfo: [],
-      materialInfo: []
+      materialInfo: [],
+      clientList: []
     }
   },
   methods: {
@@ -464,10 +439,23 @@ export default {
           })
         }
       }
+    },
+    filterClientTel (name) {
+      let flag = this.clientList.find(item => item.name === name)
+      if (flag) {
+        return name + '(' + flag.phone + ')'
+      } else {
+        return name
+      }
     }
   },
   created () {
     this.init(this.$route.query.type, this.$route.params.orderType)
+    client.list().then(res => {
+      if (res.data.status !== false) {
+        this.clientList = res.data.data
+      }
+    })
   },
   mounted () {
     const QRCode = require('qrcode')

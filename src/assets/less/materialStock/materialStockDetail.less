@@ -167,4 +167,28 @@
   .orange{
     color: @orange;
   }
+  .order{
+    &::before{
+      content: '订购';
+      font-size: 14px;
+      margin-right: 8px;
+      color: @green;
+    }
+  }
+  .replenish{
+    &::before{
+      content: '补纱';
+      font-size: 14px;
+      margin-right: 8px;
+      color: @orange;
+    }
+  }
+  .distribution{
+    &::before{
+      content: '分配';
+      font-size: 14px;
+      margin-right: 8px;
+      color: @green;
+    }
+  }
 }

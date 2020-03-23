@@ -33,7 +33,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">金额</span>
-              <span class="text">￥{{orderInfo.total_price}}</span>
+              <span class="text">{{orderInfo.account_unit|filterUnitIcon}}{{orderInfo.total_price}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
@@ -164,8 +164,8 @@
                   </span>
                   <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
                   <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tb_row">{{$toFixed(itemPro.unit_price) + '元'}}</span>
-                  <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}元</span>
+                  <span class="tb_row">{{$toFixed(itemPro.unit_price) + orderInfo.account_unit}}</span>
+                  <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}{{orderInfo.account_unit}}</span>
                 </span>
               </span>
             </span>
@@ -461,8 +461,8 @@
                       :key="indexPrice">
                       <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
                       <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
-                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + '元' : '/'}}</span>
-                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + '元/' + item.unit: '/'}}</span>
+                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + orderInfo.account_unit : '/'}}</span>
+                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + orderInfo.account_unit + '/' + item.unit: '/'}}</span>
                     </span>
                   </span>
                 </span>
@@ -1059,6 +1059,7 @@
 </template>
 
 <script>
+import { moneyArr } from '@/assets/js/dictionary.js'
 import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock } from '@/assets/js/api.js'
 export default {
   data () {
@@ -1134,7 +1135,8 @@ export default {
       yarnStockId: '',
       materialStockId: '',
       packStockId: '',
-      productStockId: ''
+      productStockId: '',
+      unitArr: moneyArr
     }
   },
   methods: {
@@ -2287,6 +2289,15 @@ export default {
         return '-包装结余入库'
       } else if (value === 4) {
         return '-产品结余入库'
+      }
+    },
+    filterUnitIcon (unit) {
+      let unitArr = moneyArr
+      let flag = unitArr.find(item => item.name === unit)
+      if (flag) {
+        return flag.sign
+      } else {
+        return '￥'
       }
     }
   }
