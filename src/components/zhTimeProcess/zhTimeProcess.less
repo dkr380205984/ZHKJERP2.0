@@ -1,0 +1,75 @@
+.zhTimeProcess{
+  display: block;
+  height: 20px;
+  padding: 25px 0;
+  .processCtn{
+    height:100%;
+    background: #4989D3;
+    position: relative;
+    .processLine{
+      text-align: center;
+      display: inline-block;
+      height: 100%;
+      line-height: 20px;
+      font-size: 14px;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .timeNode{
+      position: absolute;
+      width: 2px;
+      top: 0;
+      bottom: 0;
+      background: #fff;
+      cursor: pointer;
+      &.unEdit{
+        background:rgba(0,0,0,0);
+        &::after{
+          border:0;
+        }
+        &::before{
+          border:0;
+        }
+      }
+      &::after{
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border:6px solid transparent;
+        border-top-color: #4989D3;
+        top: -9px;
+        left: -5px;
+      }
+      &::before{
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border:6px solid transparent;
+        border-bottom-color: #4989D3;
+        bottom: -9px;
+        left: -5px;
+      }
+      .time{
+        position: absolute;
+        white-space: nowrap;
+        font-size: 12px;
+        left: 1px;
+        top: -28px;
+        transform: translate(-50%);
+        color: rgba(0,0,0,0.85);
+      }
+      .name{
+        position: absolute;
+        white-space: nowrap;
+        font-size: 12px;
+        left: 1px;
+        bottom: -28px;
+        transform: translate(-50%);
+        color: rgba(0,0,0,0.85);
+      }
+    }
+  }
+}

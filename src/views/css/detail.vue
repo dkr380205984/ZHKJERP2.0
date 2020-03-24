@@ -7,7 +7,8 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <div class="btn btnBlue">右侧悬浮框按钮</div>
+            <div class="btn btnBlue"
+              @click="test">右侧悬浮框按钮</div>
           </div>
           <div class="otherInfo">
             <div class="block">
@@ -306,14 +307,44 @@
         </div>
       </div>
     </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">组件测试</span>
+      </div>
+      <div class="detailCtn">
+        <div style="padding:0 40px">
+          <zh-time-process :processData="testData"
+            v-model="arr"></zh-time-process>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 export default {
   data () {
     return {
+      arr: [],
+      testData: [{
+        name: '物料计划',
+        percent: 0.2
+      }, {
+        name: '物料入库',
+        percent: 0.3
+      }, {
+        name: '半成品入库',
+        percent: 0.4
+      }, {
+        name: '成品装箱',
+        percent: 0.1
+      }],
       translate: 0,
       translateFlag: false
+    }
+  },
+  methods: {
+    test () {
+      console.log(this.arr)
     }
   },
   mounted () {
