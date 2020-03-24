@@ -124,6 +124,11 @@
               @click="reset"
               style="margin-left:0">重置</div>
           </div>
+          <div class="rightCtn"
+            style="color:#1a95ff;font-size:14px"
+            v-if="orderStatistics.update_time.date!=='0000-00-00'">
+            更新日期：{{orderStatistics.update_time.date.slice(0,16)}}
+          </div>
         </div>
         <div class="list">
           <div class="title">
@@ -258,6 +263,9 @@ export default {
           semi_product: '',
           pack_order: '',
           stock_out: ''
+        },
+        update_time: {
+          date: '0000-00-00'
         }
       }
     }
@@ -282,6 +290,7 @@ export default {
     },
     getList () {
       this.loading = true
+      this.loadingTop = true
       statistics.orderList({
         limit: 10,
         page: this.pages,
@@ -289,12 +298,42 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        is_search: false,
         group_id: this.group_id
       }).then((res) => {
         this.loading = false
         this.total = res.data.meta.total
         this.list = res.data.data
+      })
+      statistics.orderStatistics({
+        is_search: !!((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id),
+        order_code: this.keyword,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+        client_id: this.company_id,
+        group_id: this.group_id
+      }).then((res) => {
+        let orderStatistics = res.data.data
+        this.orderStatistics = {
+          DDZE: orderStatistics.order_total_price / 10000, // 订单总额
+          XDSL: orderStatistics.order_total_number / 10000, // 下单数量
+          CKSL: orderStatistics.order_total_pack_real / 10000, // 出库数量
+          SJZZ: orderStatistics.order_total_reality / 10000, // 实际总值
+          GCCB: orderStatistics.company_cost / 10000, // 工厂成本
+          update_time: {
+            date: orderStatistics.update_time.date
+          },
+          company_cost_detail: {
+            material_order: orderStatistics.company_cost_detail.material_order / 10000,
+            material_process: orderStatistics.company_cost_detail.material_process / 10000,
+            assist_material_order: orderStatistics.company_cost_detail.assist_material_order / 10000,
+            assist_material_process: orderStatistics.company_cost_detail.assist_material_process / 10000,
+            product_weave: orderStatistics.company_cost_detail.product_weave / 10000,
+            semi_product: orderStatistics.company_cost_detail.semi_product / 10000,
+            pack_order: orderStatistics.company_cost_detail.pack_order / 10000,
+            stock_out: orderStatistics.company_cost_detail.stock_out / 10000
+          }
+        }
+        this.loadingTop = false
       })
     },
     getFilters () {
@@ -319,30 +358,11 @@ export default {
   mounted () {
     this.getFilters()
     this.getList()
-    Promise.all([group.list(), client.list(), statistics.orderStatistics({ is_search: false })]).then((res) => {
+    Promise.all([group.list(), client.list()]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
-      let orderStatistics = res[2].data.data
-      this.orderStatistics = {
-        DDZE: orderStatistics.order_total_price / 10000, // 订单总额
-        XDSL: orderStatistics.order_total_number / 10000, // 下单数量
-        CKSL: orderStatistics.order_total_pack_real / 10000, // 出库数量
-        SJZZ: orderStatistics.order_total_reality / 10000, // 实际总值
-        GCCB: orderStatistics.company_cost / 10000, // 工厂成本
-        company_cost_detail: {
-          material_order: orderStatistics.company_cost_detail.material_order / 10000,
-          material_process: orderStatistics.company_cost_detail.material_process / 10000,
-          assist_material_order: orderStatistics.company_cost_detail.assist_material_order / 10000,
-          assist_material_process: orderStatistics.company_cost_detail.assist_material_process / 10000,
-          product_weave: orderStatistics.company_cost_detail.product_weave / 10000,
-          semi_product: orderStatistics.company_cost_detail.semi_product / 10000,
-          pack_order: orderStatistics.company_cost_detail.pack_order / 10000,
-          stock_out: orderStatistics.company_cost_detail.stock_out / 10000
-        }
-      }
-      this.loadingTop = false
     })
   }
 }

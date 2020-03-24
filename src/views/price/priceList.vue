@@ -93,10 +93,6 @@
             </div>
             <div class="col flex08">
               <span class="text">创建时间
-                <span class="iconCtn">
-                  <i class="el-icon-caret-top active"></i>
-                  <i class="el-icon-caret-bottom"></i>
-                </span>
               </span>
             </div>
             <div class="col">
