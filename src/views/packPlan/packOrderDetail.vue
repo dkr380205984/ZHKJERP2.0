@@ -887,7 +887,6 @@ export default {
           order_type: 1
         })
       ]).then(res => {
-        console.log(res)
         let stockLog = res[0].data.map(item => {
           let flag = this.packList.find(items => items.name === item.material_name)
           return {
@@ -903,7 +902,8 @@ export default {
             attribute: item.attribute,
             desc: item.desc,
             user_name: item.user_name,
-            action_type: item.action_type
+            action_type: item.action_type,
+            pack_plan_id: item.pack_plan_id
           }
         })
         this.planTb.forEach(itemPlan => {
@@ -1007,6 +1007,7 @@ export default {
             this.$message.success('调取成功')
             this.packOrderEdit = []
             this.init()
+            this.stockPopupFlag = false
             if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
               this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
               this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装调取信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'

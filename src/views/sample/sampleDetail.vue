@@ -20,6 +20,10 @@
                   <div class="contents">{{detail.category_name + ' / ' + detail.type_name + ' / ' + detail.style_name}}</div>
                 </div>
                 <div class="items">
+                  <span class="labels">花型:</span>
+                  <div class="contents">{{detail.flower_name}}</div>
+                </div>
+                <div class="items">
                   <span class="labels">成分:</span>
                   <div class="contents">{{detail.component|filterMaterials}}</div>
                 </div>
@@ -27,22 +31,22 @@
                   <span class="labels">规格:</span>
                   <div class="contents col"
                     style="align-items:flex-start">
-                    <span style="white-space:nowrap;"></span>
-                    <span style="word-break: break-word;"></span>
+                    <span style="white-space:nowrap;">{{detail.size[0].size_name}}</span>
+                    <span style="word-break: break-word;">{{detail.size[0].size_info}}cm</span>
                   </div>
                 </div>
                 <div class="items">
                   <span class="labels">克重:</span>
-                  <div class="contents"></div>
+                  <div class="contents">{{detail.size[0].weight}}g</div>
                 </div>
                 <div class="items">
                   <span class="labels">颜色:</span>
-                  <div class="contents"></div>
+                  <div class="contents">{{detail.color[0].color_name}}</div>
                 </div>
                 <div class="items">
                   <span class="labels">描述:</span>
                   <div class="contents">
-                    <span>{{detail.description ? detail.description : '无'}}</span>
+                    <span>{{detail.description || '无'}}</span>
                   </div>
                 </div>
                 <div class="items"
@@ -51,7 +55,7 @@
                     <img :src="qrCodeUrl"
                       class="qrCode"
                       alt="">
-                    <span class="littleBlack">扫码查看更多</span>
+                    <span class="littleBlack">{{$getTime()}}</span>
                   </div>
                 </div>
               </div>
