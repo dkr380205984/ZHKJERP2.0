@@ -11,7 +11,8 @@
             <div class="block">
               <div class="selectCtn">
                 <el-select v-model="department"
-                  placeholder="请选择部门">
+                  placeholder="选择部门筛选人员"
+                  @change="getList">
                   <el-option v-for="(item,index) in departmentArr"
                     :key="index"
                     :label="item.name"
@@ -25,12 +26,13 @@
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
                   type="month"
+                  :clearable="false"
                   value-format="yyyy-MM"
                   placeholder="选择结算月份">
                 </el-date-picker>
               </div>
             </div>
-            <div class="block">合计</div>
+            <!-- <div class="block">合计</div> -->
           </div>
           <div class="tabelBodyCtn">
             <div class="tabelBodyMain hasBorder">
@@ -122,6 +124,7 @@
                       <el-autocomplete class="inline-input inputs staffPayElautocomplete"
                         v-model="itemChild.settle_type"
                         :fetch-suggestions="searchSettle"
+                        @select="selectSettle($event,itemChild)"
                         placeholder="可搜索订单号">
                         <template slot-scope="{ item }">
                           <span v-if="item.normal">{{item.value}}</span>
@@ -145,11 +148,14 @@
                       </zh-input>
                     </div>
                     <div class="once">
-                      <zh-input class="inputs"
+                      <zh-input class="inputs haveUnit"
                         type="number"
                         placeholder="输入数量"
                         v-model="itemChild.number">
                       </zh-input>
+                      <zh-input class="unit"
+                        placeholder="单位"
+                        v-model="itemChild.unit"></zh-input>
                     </div>
                     <div class="once">{{itemChild.price * itemChild.number}}</div>
                     <div class="once">
@@ -167,8 +173,8 @@
                     <div class="once">{{itemChild.work_type}}</div>
                     <div class="once">{{itemChild.settle_type}}</div>
                     <div class="once">{{itemChild.price}}</div>
-                    <div class="once">{{itemChild.number}}</div>
-                    <div class="once">{{itemChild.price * itemChild.number}}</div>
+                    <div class="once">{{itemChild.number}}{{itemChild.unit}}</div>
+                    <div class="once">{{Math.round(itemChild.price * itemChild.number)}}</div>
                     <div class="once">{{itemChild.desc}}</div>
                     <div class="once">{{itemChild.user_name?itemChild.user_name:'-'}}</div>
                     <div class="once">{{itemChild.create_time?itemChild.create_time.slice(0,10):'-'}}</div>
@@ -184,7 +190,7 @@
                   :key="indexChild">
                   <span v-if="itemChild.addFlag"
                     class="opr blue"
-                    @click="savePay(itemChild)">{{itemChild.updateFlag?'完成编辑':'完成'}}</span>
+                    @click="savePay(itemChild,item)">{{itemChild.updateFlag?'完成编辑':'完成'}}</span>
                   <span v-if="itemChild.addFlag && !itemChild.updateFlag"
                     class="opr blue"
                     @click="deletePay(index,indexChild)">取消</span>
@@ -223,7 +229,7 @@
 </template>
 
 <script>
-import { staff, order } from '@/assets/js/api.js'
+import { staff, order, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -254,10 +260,11 @@ export default {
         price: '',
         number: '',
         total_price: '',
+        unit: '个',
         desc: ''
       })
     },
-    savePay (item) {
+    savePay (item, itemFather) {
       if (!item.price) {
         this.$message.warning('请输入价格')
         return
@@ -274,6 +281,10 @@ export default {
         this.$message.warning('请输入结算方式')
         return
       }
+      if (!item.unit) {
+        this.$message.warning('请输入数量单位')
+        return
+      }
       staff.createPay({
         id: item.id,
         staff_id: item.staff_id,
@@ -284,12 +295,14 @@ export default {
         settle_type: item.settle_type,
         price: item.price,
         number: item.number,
+        unit: item.unit,
         total_price: item.price * item.number,
         desc: item.desc
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('操作成功')
           item.addFlag = false
+          itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
           this.$forceUpdate()
         }
       })
@@ -351,12 +364,27 @@ export default {
         })
       }
     },
+    selectSettle (ev, item) {
+      if (ev.value === '按时结算') {
+        item.unit = '小时'
+      }
+      if (ev.value === '按日结算') {
+        item.unit = '天'
+      }
+      if (ev.value === '按月结算') {
+        item.unit = '月'
+      }
+    },
     getList () {
       staff.payList({
         page: this.page,
-        limit: 10
+        limit: 10,
+        department_id: this.department
       }).then((res) => {
         this.list = res.data.data.map((item) => {
+          item.total_price = item.child_data.reduce((total, current) => {
+            return total + Math.round(current.total_price)
+          }, 0)
           item.checked = false
           return item
         })
@@ -369,6 +397,11 @@ export default {
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
     this.getList()
+    station.list({
+      type: 2
+    }).then((res) => {
+      this.departmentArr = res.data.data
+    })
   }
 }
 </script>
@@ -393,6 +426,22 @@ export default {
         width: 50px;
         height: 40px;
       }
+    }
+  }
+}
+#staffPay {
+  .haveUnit {
+    .zhInput {
+      border-right-color: transparent;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  .unit {
+    .zhInput {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      padding: 0 4px;
     }
   }
 }

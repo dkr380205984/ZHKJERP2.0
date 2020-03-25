@@ -1,13 +1,12 @@
 let TARGET
 if (process.env.NODE_ENV === 'development') {
-  // https://api.tlkrzf.com
   // https://beta.zwyknit.com
-  TARGET = 'https://api.tlkrzf.com'
+  TARGET = 'http://beta.zwyknit.com'
 } else {
   // 正式环境
   // TARGET = 'https://api.zwyknit.com'
   // 测试环境
-  TARGET = 'https://api.tlkrzf.com'
+  TARGET = 'http://beta.zwyknit.com'
 }
 module.exports = {
   devServer: {

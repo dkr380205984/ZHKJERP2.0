@@ -122,13 +122,13 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">
-              <span class="text">暂无</span>
+              <span class="text">{{item.staff_code}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.name}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.department_name}}</span>
+              <span class="text">{{item.department_id}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.phone}}</span>
@@ -140,7 +140,7 @@
               <span class="text">{{item.work_time}}</span>
             </div>
             <div class="col">
-              <span class="text">还没做</span>
+              <span class="text">{{item.status}}</span>
             </div>
             <div class="col">
               <span class="opr"
@@ -218,7 +218,13 @@ export default {
       department: '',
       departmentArr: [],
       type: '',
-      typeArr: [],
+      typeArr: [{
+        value: '1',
+        name: '合同工'
+      }, {
+        value: '2',
+        name: '临时工'
+      }],
       keyword: '',
       total: 1,
       page: 1,
@@ -240,11 +246,11 @@ export default {
       this.loading = true
       staff.list({
         keyword: this.keyword,
-        // state:this.state,
-        // type:this.type,
-        // department:this.department,
-        //  start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-        // end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+        state: this.state,
+        type: this.type,
+        department_id: this.department,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         limit: 10,
         page: this.page
       }).then((res) => {
@@ -266,7 +272,7 @@ export default {
       }
       this.type = params.type || ''
       this.state = params.state || ''
-      this.department = params.department || ''
+      this.department = Number(params.department) || ''
       if (this.type) {
         this.searchType = true
       }
@@ -274,7 +280,7 @@ export default {
         this.searchState = true
       }
       if (this.department) {
-        this.department = true
+        this.searchDepartment = true
       }
     },
     changeRouter (page) {
