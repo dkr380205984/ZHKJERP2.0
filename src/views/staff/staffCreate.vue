@@ -156,18 +156,27 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">
-              <span class="text">在职时间</span>
-              <span class="explanation">(必填)</span>
+              <span class="text">入职时间</span>
             </div>
             <div class="content"
               style="height:32px">
               <el-date-picker style="width:100%;height:100%;line-height:30px"
-                v-model="staffInfo.date"
+                v-model="staffInfo.start_time"
                 value-format="yyyy-MM-dd"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="在职日期"
-                end-placeholder="离职日期">
+                placeholder="入职时间">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">离职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.end_time"
+                value-format="yyyy-MM-dd"
+                placeholder="离职时间">
               </el-date-picker>
             </div>
           </div>
@@ -217,7 +226,8 @@ export default {
         health: '',
         emergentPerson: '',
         emergentPhone: '',
-        date: [],
+        start_time: '',
+        end_time: '',
         type: '',
         desc: ''
       },
@@ -243,11 +253,6 @@ export default {
         this.$message.warning('请选择工种')
         return
       }
-      if (!this.staffInfo.date.length === 0) {
-        this.$message.warning('请选择在职时间')
-        return
-      }
-      console.log(this.staffInfo)
       // 紧急联系人没有上传到接口
       staff.create({
         name: this.staffInfo.name,
@@ -262,8 +267,8 @@ export default {
         healthy_info: this.staffInfo.health,
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
-        start_time: this.staffInfo.date[0],
-        work_time: this.staffInfo.date[1],
+        start_time: this.staffInfo.start_time,
+        work_time: this.staffInfo.end_time,
         desc: this.staffInfo.desc
       }).then((res) => {
         if (res.data.status) {

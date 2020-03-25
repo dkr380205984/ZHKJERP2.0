@@ -366,7 +366,7 @@ const routes = [
       component: () => import('../views/staff/staffDetail.vue')
     }, {
       path: '/staff/staffPay',
-      name: '员工工资结算',
+      name: '日常工资结算表',
       component: () => import('../views/staff/staffPay.vue')
     }, {
       path: '/staff/staffUpdate/:id',
@@ -537,7 +537,7 @@ router.beforeEach((to, from, next) => {
     '添加员工': ['织为云', '添加员工'],
     '员工列表': ['织为云', '员工列表'],
     '员工详情': ['织为云', '员工列表', '员工详情'],
-    '员工工资结算': ['织为云', '员工列表', '员工工资结算'],
+    '日常工资结算表': ['织为云', '员工列表', '日常工资结算表'],
     '修改员工': ['织为云', '员工列表', '修改员工'],
     '合计工资结算单': ['织为云', '合计工资结算单']
   }

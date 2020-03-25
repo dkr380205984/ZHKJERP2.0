@@ -1146,7 +1146,8 @@ export default {
         let warpWidth = 600 / this.warpCanvas.length * 4
         let weftWidth = this.canvasHeight / this.weftCanvas.length
         this.warpCanvas.reduce((totalWarp, itemWarp) => {
-          this.weftCanvas.reduce((totalWeft, itemWeft) => {
+          let reverseWeft = [...this.weftCanvas].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
+          reverseWeft.reduce((totalWeft, itemWeft) => {
             canvasMatrix.push({
               x: totalWarp,
               y: totalWeft,
@@ -1159,7 +1160,8 @@ export default {
           return totalWarp + warpWidth
         }, 0)
         this.warpCanvasBack.reduce((totalWarp, itemWarp) => {
-          this.weftCanvasBack.reduce((totalWeft, itemWeft) => {
+          let reverseWeftBack = [...this.weftCanvasBack].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
+          reverseWeftBack.reverse().reduce((totalWeft, itemWeft) => {
             canvasMatrixBack.push({
               x: totalWarp,
               y: totalWeft,

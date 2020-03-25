@@ -13,6 +13,7 @@
                 <el-select v-model="department"
                   placeholder="请选择部门">
                   <el-option v-for="(item,index) in departmentArr"
+                    @change="getList"
                     :key="index"
                     :label="item.name"
                     :value="item.id">
@@ -24,13 +25,14 @@
                 <span class="label"
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
+                  :clearable="false"
                   type="month"
                   value-format="yyyy-MM"
                   placeholder="选择结算月份">
                 </el-date-picker>
               </div>
             </div>
-            <div class="block">合计</div>
+            <!-- <div class="block">合计</div> -->
           </div>
           <div class="tabelBodyCtn">
             <div class="tabelBodyMain hasBorder">
@@ -115,7 +117,8 @@
                 <div class="rightCtn">
                   <span class="text">{{itemChild.total_price}}</span>
                   <span class="text oprCtn">
-                    <span class="opr blue">详情</span>
+                    <span class="opr blue"
+                      @click="$router.push('/staff/staffDetail/'+ item.id)">详情</span>
                   </span>
                 </div>
               </div>
@@ -153,7 +156,8 @@
                   <span v-if="!itemExtra.edit"
                     class="text">{{itemExtra.total_price}}</span>
                   <span class="text oprCtn">
-                    <span class="opr blue">完成</span>
+                    <span class="opr blue"
+                      @click="saveExtra(itemExtra)">完成</span>
                     <span class="opr red"
                       @click="deleteExtra(item,indexExtra)">删除</span>
                   </span>
@@ -193,7 +197,8 @@
                   <span v-if="!itemDeduct.edit"
                     class="text">{{itemDeduct.total_price}}</span>
                   <span class="text oprCtn">
-                    <span class="opr blue">完成</span>
+                    <span class="opr blue"
+                      @click="saveDeduct(itemDeduct)">完成</span>
                     <span class="opr red"
                       @click="deleteDeduct(item,indexDeduct)">删除</span>
                   </span>
@@ -243,7 +248,7 @@
 </template>
 
 <script>
-import { staff } from '@/assets/js/api.js'
+import { staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -278,6 +283,28 @@ export default {
       item.deduct.splice(index, 1)
       this.cmpTotal(item)
     },
+    saveExtra (item) {
+      if (!item.settle_type) {
+        this.$message.error('请输入费用名称')
+        return
+      }
+      if (!item.total_price) {
+        this.$messsage.error('请输入费用金额')
+        return
+      }
+      console.log(item)
+    },
+    saveDeduct (item) {
+      if (!item.settle_type) {
+        this.$message.error('请输入扣款名称')
+        return
+      }
+      if (!item.total_price) {
+        this.$messsage.error('请输入扣款金额')
+        return
+      }
+      console.log(item)
+    },
     cmpTotal (item) {
       item.realityTotal = item.total.reduce((total, current) => {
         return current.total_price + total
@@ -290,7 +317,8 @@ export default {
     getList () {
       staff.payList({
         page: this.page,
-        limit: 10
+        limit: 10,
+        department_id: this.department
       }).then((res) => {
         this.list = res.data.data.map((item) => {
           item.checked = false
@@ -333,6 +361,11 @@ export default {
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
     this.getList()
+    station.list({
+      type: 2
+    }).then((res) => {
+      this.departmentArr = res.data.data
+    })
   }
 }
 </script>

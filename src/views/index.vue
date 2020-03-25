@@ -310,7 +310,7 @@ export default {
           name: '员工列表',
           url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
         }, {
-          name: '员工工资结算',
+          name: '日常工资结算表',
           url: '/staff/staffPay'
         }, {
           name: '合计工资结算单',
