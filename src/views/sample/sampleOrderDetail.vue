@@ -127,7 +127,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
-            <span class="text">{{sampleOrderInfo.deliver_time}}</span>
+            <span class="text">{{sampleOrderInfo.order_time}}</span>
           </div>
           <div class="colCtn">
             <span class="label">客户付费：</span>
