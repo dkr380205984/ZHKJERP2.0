@@ -30,19 +30,59 @@
               <span class="text">物料名称</span>
             </div>
             <div class="col">
-              <span class="text">合计使用</span>
+              <span class="text">合计使用
+                <span class="iconCtn"
+                  @click="sortFn('HJSY')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':HJSY==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':HJSY==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">订购数量</span>
+              <span class="text">订购数量
+                <span class="iconCtn"
+                  @click="sortFn('DGSL')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':DGSL==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':DGSL==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">平均价格</span>
+              <span class="text">平均价格
+                <span class="iconCtn"
+                  @click="sortFn('PJJG')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':PJJG==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':PJJG==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">合计价格</span>
+              <span class="text">合计价格
+                <span class="iconCtn"
+                  @click="sortFn('HJJG')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':HJJG==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':HJJG==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
-              <span class="text">库存剩余</span>
+              <span class="text">库存剩余
+                <span class="iconCtn"
+                  @click="sortFn('KCSY')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':KCSY==='1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':KCSY==='2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -88,7 +128,12 @@ export default {
       pages: 1,
       total: 0,
       list: [],
-      type: 1
+      type: 1,
+      HJSY: null,
+      DGSL: null,
+      PJJG: null,
+      HJJG: null,
+      KCSY: null
     }
   },
   watch: {
@@ -107,10 +152,10 @@ export default {
   methods: {
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&type=' + this.type)
+      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&type=' + this.type + '&&HJSY=' + this.HJSY + '&&DGSL=' + this.DGSL + '&&PJJG=' + this.PJJG + '&&HJJG=' + this.HJJG + '&&KCSY=' + this.KCSY)
     },
     reset () {
-      this.$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1')
+      this.$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')
     },
     getList () {
       this.loading = true
@@ -130,6 +175,11 @@ export default {
       this.pages = Number(params.page)
       this.keyword = params.keyword
       this.type = Number(params.type)
+    },
+    sortFn (item) {
+      console.log(item)
+      this[item] = this[item] ? (this[item] === '1' ? '2' : '1') : '1'
+      this.changeRouter(1)
     }
   },
   created () {

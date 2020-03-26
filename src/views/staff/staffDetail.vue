@@ -82,7 +82,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">员工结算单信息</span>
+        <span class="title hasBorder">日常工资结算表</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -145,6 +145,51 @@
         </div>
       </div>
     </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title hasBorder">合计工资结算单</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="block">
+              <div class="selectCtn">
+                <el-tabs v-model="otherDate"
+                  type="card">
+                  <el-tab-pane v-for="(item,index) in payOtherInfo"
+                    :key="index"
+                    :name="item.year+'-'+item.month"
+                    :label="item.year+'-'+item.month"></el-tab-pane>
+                </el-tabs>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">结算工资</div>
+                  <div class="tcolumn">额外工资</div>
+                  <div class="tcolumn">扣除工资</div>
+                  <div class="tcolumn">实发工资</div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow">
+                  <div class="tcolumn">{{otherpayJSON.total_price}}</div>
+                  <div class="tcolumn">{{otherpayJSON.extra_price}}</div>
+                  <div class="tcolumn">{{otherpayJSON.deduct_price}}</div>
+                  <div class="tcolumn">{{otherpayJSON.total_price + otherpayJSON.extra_price - otherpayJSON.deduct_price}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -171,7 +216,9 @@ export default {
         child_data: []
       },
       payInfo: [],
-      date: ''
+      payOtherInfo: [],
+      date: '',
+      otherDate: ''
     }
   },
   computed: {
@@ -184,6 +231,16 @@ export default {
       }
       let findMonth = findYear.childrenMergeInfo.find((item) => item.month === month)
       return findMonth ? findMonth.childrenMergeInfo : []
+    },
+    otherpayJSON () {
+      let year = this.date.split('-')[0]
+      let month = this.date.split('-')[1]
+      let finded = this.payOtherInfo.find((item) => item.month === month && item.year === year)
+      return finded || {
+        total_price: 0,
+        deduct_price: 0,
+        extra_price: 0
+      }
     },
     payTotal () {
       return this.payList.reduce((total, current) => {
@@ -206,7 +263,26 @@ export default {
     }).then((res) => {
       this.staffInfo = res.data.data
       this.payInfo = this.$mergeData(this.staffInfo.child_data, { mainRule: 'year', childrenRule: { mainRule: 'month' } })
+      let otherPay = this.$mergeData(this.staffInfo.deduct_data, { mainRule: 'year', childrenRule: { mainRule: 'month' } })
+      otherPay.forEach((itemYear) => {
+        itemYear.childrenMergeInfo.forEach((itemMonth) => {
+          this.payOtherInfo.push({
+            year: itemYear.year,
+            month: itemMonth.month < 10 ? '0' + itemMonth.month : itemMonth.month,
+            total_price: this.staffInfo.child_data.filter((item) => Number(item.year) === Number(itemYear.year) && Number(item.month) === Number(itemMonth.month)).reduce((total, current) => {
+              return total + Number(current.total_price)
+            }, 0),
+            deduct_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 1).reduce((total, current) => {
+              return total + Number(current.price)
+            }, 0),
+            extra_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 2).reduce((total, current) => {
+              return total + Number(current.price)
+            }, 0)
+          })
+        })
+      })
       this.date = this.$getTime(new Date()).slice(0, 7)
+      this.otherDate = this.$getTime(new Date()).slice(0, 7)
     })
   }
 }

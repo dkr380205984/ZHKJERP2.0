@@ -294,7 +294,7 @@ export default {
           url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id='
         }, {
           name: '物料使用统计',
-          url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1'
+          url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY='
         }, {
           name: '合作公司财务统计',
           url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='

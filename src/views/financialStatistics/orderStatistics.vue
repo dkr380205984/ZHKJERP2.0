@@ -259,6 +259,12 @@ export default {
           material_process: '',
           assist_material_order: '',
           assist_material_process: '',
+          is_search: ((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id) ? 1 : 0,
+          order_code: this.keyword,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          client_id: this.company_id,
+          group_id: this.group_id,
           product_weave: '',
           semi_product: '',
           pack_order: '',
@@ -305,7 +311,7 @@ export default {
         this.list = res.data.data
       })
       statistics.orderStatistics({
-        is_search: !!((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id),
+        is_search: ((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id) ? 1 : 0,
         order_code: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',

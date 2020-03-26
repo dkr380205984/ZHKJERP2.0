@@ -56,7 +56,7 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">产品图片</span>
+              <span class="text middle">产品图片</span>
             </div>
             <div class="col">
               <span class="text">下单总数
@@ -128,6 +128,9 @@
               <span class="text">{{item.category_info.category_name}}/{{item.category_info.type_name}}/{{item.category_info.style_name}}</span>
             </div>
             <div class="col">
+              <zh-img-list :list="item.image"></zh-img-list>
+            </div>
+            <div class="col">
               <span class="text">{{item.order_number}}</span>
             </div>
             <div class="col">
@@ -153,7 +156,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
+            :current-page.sync="page"
             @current-change="changeRouter"></el-pagination>
         </div>
       </div>
@@ -170,7 +173,7 @@ export default {
       loading: true,
       date: '',
       keyword: '',
-      pages: 1,
+      page: 1,
       total: 0,
       list: [],
       searchTypeFlag: false,
@@ -220,7 +223,7 @@ export default {
       this.loading = true
       statistics.productList({
         limit: 10,
-        page: this.pages,
+        page: this.page,
         keyword: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
@@ -260,7 +263,7 @@ export default {
       this.changeRouter(1)
     }
   },
-  mounted () {
+  created () {
     this.getFilters()
     this.getList()
     productType.list().then((res) => {

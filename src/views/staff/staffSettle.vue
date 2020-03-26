@@ -25,6 +25,7 @@
                 <span class="label"
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
+                  @change="getList"
                   :clearable="false"
                   type="month"
                   value-format="yyyy-MM"
@@ -43,7 +44,7 @@
                 <div class="label">员工编号</div>
               </div>
               <div class="box">
-                <div class="label">合计工资</div>
+                <div class="label">结算工资</div>
               </div>
               <div class="box">
                 <div class="label">额外部分</div>
@@ -79,16 +80,16 @@
                 <div class="label">{{item.staff_code}}</div>
               </div>
               <div class="box">
-                <div class="label">合计工资</div>
+                <div class="label">{{item.price}}</div>
               </div>
               <div class="box">
-                <div class="label">额外部分</div>
+                <div class="label">{{item.extra_price}}</div>
               </div>
               <div class="box">
-                <div class="label">扣除部分</div>
+                <div class="label">{{item.deduct_price}}</div>
               </div>
               <div class="box">
-                <div class="label">实发工资</div>
+                <div class="label">{{item.realityTotal}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.updated_at}}</div>
@@ -109,13 +110,13 @@
                 v-for="(itemChild,indexChild) in item.total"
                 :key="indexChild + '结算工资'">
                 <div class="leftCtn">
-                  <span class="text">{{itemChild.settle_type}}</span>
+                  <span class="text">{{itemChild.reason}}</span>
                 </div>
                 <div class="middleCtn">
                   ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
                 </div>
                 <div class="rightCtn">
-                  <span class="text">{{itemChild.total_price}}</span>
+                  <span class="text">{{itemChild.price}}</span>
                   <span class="text oprCtn">
                     <span class="opr blue"
                       @click="$router.push('/staff/staffDetail/'+ item.id)">详情</span>
@@ -139,9 +140,9 @@
                   <el-input class="inputs"
                     placeholder="费用名称"
                     v-if="itemExtra.edit"
-                    v-model="itemExtra.settle_type"></el-input>
+                    v-model="itemExtra.reason"></el-input>
                   <span v-if="!itemExtra.edit"
-                    class="text">{{itemExtra.settle_type}}</span>
+                    class="text">{{itemExtra.reason}}</span>
                 </div>
                 <div class="middleCtn">
                   ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
@@ -152,12 +153,16 @@
                     placeholder="费用金额"
                     type="number"
                     v-if="itemExtra.edit"
-                    v-model="itemExtra.total_price"></zh-input>
+                    v-model="itemExtra.price"></zh-input>
                   <span v-if="!itemExtra.edit"
-                    class="text">{{itemExtra.total_price}}</span>
+                    class="text">{{itemExtra.price}}</span>
                   <span class="text oprCtn">
+                    <span class="opr orange"
+                      v-if="!itemExtra.edit"
+                      @click="updateExtra(itemExtra)">修改</span>
                     <span class="opr blue"
-                      @click="saveExtra(itemExtra)">完成</span>
+                      v-if="itemExtra.edit"
+                      @click="saveExtra(itemExtra,item)">完成</span>
                     <span class="opr red"
                       @click="deleteExtra(item,indexExtra)">删除</span>
                   </span>
@@ -180,9 +185,9 @@
                   <el-input class="inputs"
                     placeholder="费用名称"
                     v-if="itemDeduct.edit"
-                    v-model="itemDeduct.settle_type"></el-input>
+                    v-model="itemDeduct.reason"></el-input>
                   <span v-if="!itemDeduct.edit"
-                    class="text">{{itemDeduct.settle_type}}</span>
+                    class="text">{{itemDeduct.reason}}</span>
                 </div>
                 <div class="middleCtn">
                   ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
@@ -193,12 +198,16 @@
                     placeholder="费用金额"
                     type="number"
                     v-if="itemDeduct.edit"
-                    v-model="itemDeduct.total_price"></zh-input>
+                    v-model="itemDeduct.price"></zh-input>
                   <span v-if="!itemDeduct.edit"
-                    class="text">{{itemDeduct.total_price}}</span>
+                    class="text">{{itemDeduct.price}}</span>
                   <span class="text oprCtn">
+                    <span class="opr orange"
+                      v-if="!itemDeduct.edit"
+                      @click="updateDeduct(itemDeduct)">修改</span>
                     <span class="opr blue"
-                      @click="saveDeduct(itemDeduct)">完成</span>
+                      @click="saveDeduct(itemDeduct,item)"
+                      v-if="itemDeduct.edit">完成</span>
                     <span class="opr red"
                       @click="deleteDeduct(item,indexDeduct)">删除</span>
                   </span>
@@ -240,7 +249,6 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <div class="btn btnBlue">提交</div>
         </div>
       </div>
     </div>
@@ -264,67 +272,149 @@ export default {
     addExtra (item) {
       item.extra.push({
         edit: true,
-        settle_type: '',
-        total_price: ''
+        reason: '',
+        price: ''
       })
     },
     addDeduct (item) {
       item.deduct.push({
         edit: true,
-        settle_type: '',
-        total_price: ''
+        reason: '',
+        price: ''
       })
     },
     deleteExtra (item, index) {
-      item.extra.splice(index, 1)
-      this.cmpTotal(item)
+      this.$confirm('是否删除该工资结算信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        staff.deleteOtherPay({
+          id: item.id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('删除成功')
+            item.extra.splice(index, 1)
+            this.cmpTotal(item)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     deleteDeduct (item, index) {
-      item.deduct.splice(index, 1)
-      this.cmpTotal(item)
+      this.$confirm('是否删除该工资结算信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        staff.deleteOtherPay({
+          id: item.id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('删除成功')
+            item.extra.splice(index, 1)
+            this.cmpTotal(item)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
-    saveExtra (item) {
-      if (!item.settle_type) {
+    saveExtra (item, itemFather) {
+      if (!item.reason) {
         this.$message.error('请输入费用名称')
         return
       }
-      if (!item.total_price) {
+      if (!item.price) {
         this.$messsage.error('请输入费用金额')
         return
       }
-      console.log(item)
+      staff.createOtherPay({
+        id: item.id, // 修改的时候id不为空
+        staff_id: itemFather.id,
+        type: 1,
+        reason: item.reason,
+        price: item.price,
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
+      }).then((res) => {
+        if (res.data.status) {
+          if (!item.id) {
+            this.$message.success('添加成功')
+            itemFather.extra_price = itemFather.extra_price + Number(item.price)
+            itemFather.price = itemFather.price + Number(item.price)
+          } else {
+            this.$message.success('修改成功')
+          }
+          item.edit = false
+        }
+      })
     },
-    saveDeduct (item) {
-      if (!item.settle_type) {
+    saveDeduct (item, itemFather) {
+      if (!item.reason) {
         this.$message.error('请输入扣款名称')
         return
       }
-      if (!item.total_price) {
+      if (!item.price) {
         this.$messsage.error('请输入扣款金额')
         return
       }
-      console.log(item)
+      staff.createOtherPay({
+        id: item.id, // 修改的时候id不为空
+        staff_id: itemFather.id,
+        type: 2,
+        reason: item.reason,
+        price: item.price,
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('扣除成功')
+          itemFather.deduct_price = itemFather.deduct_price + Number(item.price)
+          itemFather.price = itemFather.price - item.price
+        } else {
+          this.$message.success('修改成功')
+        }
+        item.edit = false
+      })
+    },
+    updateExtra (item) {
+      item.edit = true
+      this.$forceUpdate()
+    },
+    updateDeduct (item) {
+      item.edit = true
+      this.$forceUpdate()
     },
     cmpTotal (item) {
       item.realityTotal = item.total.reduce((total, current) => {
-        return current.total_price + total
+        return current.price + total
       }, 0) + item.extra.reduce((total, current) => {
-        return Number(current.total_price) + total
+        return Number(current.price) + total
       }, 0) - item.deduct.reduce((total, current) => {
-        return Number(current.total_price) + total
+        return Number(current.price) + total
       }, 0)
     },
     getList () {
       staff.payList({
         page: this.page,
         limit: 10,
-        department_id: this.department
+        department_id: this.department,
+        year: this.date.split('-')[0],
+        month: Math.round(this.date.split('-')[1])
       }).then((res) => {
         this.list = res.data.data.map((item) => {
           item.checked = false
-          item.total = item.total || [{
-            settle_type: '按时结算总计',
-            total_price: item.child_data.reduce((total, current) => {
+          item.total = [{
+            reason: '按时结算总计',
+            price: item.child_data.reduce((total, current) => {
               if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
                 return Number(current.total_price) + total
               } else {
@@ -332,8 +422,8 @@ export default {
               }
             }, 0)
           }, {
-            settle_type: '订单/其他方式结算',
-            total_price: item.child_data.reduce((total, current) => {
+            reason: '订单/其他方式结算',
+            price: item.child_data.reduce((total, current) => {
               if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
                 return Number(current.total_price) + total
               } else {
@@ -341,14 +431,37 @@ export default {
               }
             }, 0)
           }]
-          item.extra = item.extra || []
-          item.deduct = item.deduct || []
+          item.price = item.total.reduce((total, current) => {
+            return total + current.price
+          }, 0)
+          item.extra = item.deduct_data.filter((item) => item.type === 1)
+          if (item.deduct_data.length === 0) {
+            item.extra = [{
+              edit: true,
+              reason: '加班工资',
+              price: 0
+            }]
+          }
+          item.extra_price = item.extra.reduce((total, current) => {
+            return total + current.price
+          }, 0)
+          item.deduct = item.deduct_data.filter((item) => item.type === 2)
+          if (item.deduct_data.length === 0) {
+            item.deduct = [{
+              edit: true,
+              reason: '五险一金',
+              price: 0
+            }]
+          }
+          item.deduct_price = item.deduct.reduce((total, current) => {
+            return total + current.price
+          }, 0)
           item.realityTotal = item.total.reduce((total, current) => {
-            return current.total_price + total
+            return current.price + total
           }, 0) + item.extra.reduce((total, current) => {
-            return current.total_price + total
-          }, 0) + item.deduct.reduce((total, current) => {
-            return current.total_price + total
+            return current.price + total
+          }, 0) - item.deduct.reduce((total, current) => {
+            return current.price + total
           }, 0)
           return item
         })

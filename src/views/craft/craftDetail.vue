@@ -1140,7 +1140,7 @@ export default {
       window.scrollTo(0, 9999)
       setTimeout(() => {
         let warpColor = this.warpInfo.color_data[index].color_scheme
-        let weftColor = this.warpInfo.color_data[index].color_scheme
+        let weftColor = this.weftInfo.color_data[index].color_scheme
         let canvasMatrix = []
         let canvasMatrixBack = []
         let warpWidth = 600 / this.warpCanvas.length * 4

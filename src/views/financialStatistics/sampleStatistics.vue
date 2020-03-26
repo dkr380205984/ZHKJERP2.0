@@ -33,6 +33,50 @@
           </div>
         </div>
       </div>
+      <div class="listHead">
+        <div class="box small">
+          <div class="boxTop">原料采购</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.material_order)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">原料加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.material_process)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">辅料采购</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.assist_material_order)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">辅料加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.assist_material_process)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">生产织造</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">半成品加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.semi_product)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="module"
       v-loading="loading">
@@ -58,6 +102,11 @@
             <div class="btn btnGray"
               @click="reset"
               style="margin-left:0">重置</div>
+          </div>
+          <div class="rightCtn"
+            style="color:#1a95ff;font-size:14px"
+            v-if="orderStatistics.update_time.date!=='0000-00-00'">
+            更新日期：{{orderStatistics.update_time.date.slice(0,16)}}
           </div>
         </div>
         <div class="list">
@@ -182,7 +231,18 @@ export default {
         DYSL: '', // 打样数量
         QRSL: '', // 确认数量
         KHFF: '', // 客户付费
-        GCCB: ''// 工厂成本
+        GCCB: '', // 工厂成本
+        company_cost_detail: {
+          material_order: '',
+          material_process: '',
+          assist_material_order: '',
+          assist_material_process: '',
+          product_weave: '',
+          semi_product: ''
+        },
+        update_time: {
+          date: '0000-00-00'
+        }
       }
     }
   },
@@ -206,6 +266,7 @@ export default {
     },
     getList () {
       this.loading = true
+      this.loadingTop = true
       statistics.sampleList({
         limit: 10,
         page: this.pages,
@@ -218,6 +279,34 @@ export default {
         this.loading = false
         this.total = res.data.meta.total
         this.list = res.data.data
+      })
+      statistics.sampleStatistics({
+        is_search: ((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id) ? 1 : 0,
+        order_code: this.keyword,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+        client_id: this.company_id,
+        group_id: this.group_id
+      }).then((res) => {
+        let orderStatistics = res.data.data
+        this.orderStatistics = {
+          DYSL: orderStatistics.order_total_number / 10000, // 打样数量
+          QRSL: orderStatistics.order_total_reality / 10000, // 确认数量
+          KHFF: orderStatistics.client_pay / 10000, // 客户付费
+          GCCB: orderStatistics.company_cost / 10000, // 工厂成本
+          update_time: {
+            date: orderStatistics.update_time.date
+          },
+          company_cost_detail: {
+            material_order: orderStatistics.company_cost_detail.material_order / 10000,
+            material_process: orderStatistics.company_cost_detail.material_process / 10000,
+            assist_material_order: orderStatistics.company_cost_detail.assist_material_order / 10000,
+            assist_material_process: orderStatistics.company_cost_detail.assist_material_process / 10000,
+            product_weave: orderStatistics.company_cost_detail.product_weave / 10000,
+            semi_product: orderStatistics.company_cost_detail.semi_product / 10000
+          }
+        }
+        this.loadingTop = false
       })
     },
     getFilters () {
@@ -242,19 +331,11 @@ export default {
   mounted () {
     this.getFilters()
     this.getList()
-    Promise.all([group.list(), client.list(), statistics.sampleStatistics()]).then((res) => {
+    Promise.all([group.list(), client.list()]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
-      let orderStatistics = res[2].data.data
-      this.orderStatistics = {
-        DYSL: orderStatistics.order_total_number / 10000, // 打样数量
-        QRSL: orderStatistics.order_total_reality / 10000, // 确认数量
-        KHFF: orderStatistics.client_pay / 10000, // 客户付费
-        GCCB: orderStatistics.company_cost / 10000// 工厂成本
-      }
-      this.loadingTop = false
     })
   }
 }
