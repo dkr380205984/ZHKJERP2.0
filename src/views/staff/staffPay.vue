@@ -25,6 +25,7 @@
                 <span class="label"
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
+                  @change="getList"
                   type="month"
                   :clearable="false"
                   value-format="yyyy-MM"
@@ -199,7 +200,7 @@
                     @click="updatePay(itemChild)">修改</span>
                   <span v-if="!itemChild.addFlag"
                     class="opr red"
-                    @click="deletePayLog(index,indexChild)">删除</span>
+                    @click="deletePayLog(itemChild.id,index,indexChild)">删除</span>
                 </div>
               </div>
             </div>
@@ -291,7 +292,7 @@ export default {
         complete_time: item.complete_time,
         work_type: item.work_type,
         year: this.date.split('-')[0],
-        month: this.date.split('-')[1],
+        month: Number(this.date.split('-')[1]),
         settle_type: item.settle_type,
         price: item.price,
         number: item.number,
@@ -312,8 +313,27 @@ export default {
       item.addFlag = true
       this.$forceUpdate()
     },
-    deletePayLog (index, indexChild) {
-
+    deletePayLog (id, index, indexChild) {
+      this.$confirm('是否删除该工资结算信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        staff.deletePay({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('删除成功')
+            this.list[index].total_price = this.list[index].total_price - Math.round(this.list[index].child_data[indexChild].price * this.list[index].child_data[indexChild].number)
+            this.list[index].child_data.splice(indexChild, 1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     deletePay (index, indexChild) {
       this.list[index].child_data.splice(indexChild, 1)
@@ -379,6 +399,8 @@ export default {
       staff.payList({
         page: this.page,
         limit: 10,
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1]),
         department_id: this.department
       }).then((res) => {
         this.list = res.data.data.map((item) => {

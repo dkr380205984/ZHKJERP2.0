@@ -8,21 +8,21 @@
           <div class="boxTop">已结算</div>
           <div class="boxBottom">
             <span class="num">{{$toFixed(clientStatistics.YJS)}}</span>
-            <span class="em">元</span>
+            <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">待结算</div>
           <div class="boxBottom">
             <span class="num">{{$toFixed(clientStatistics.DJS)}}</span>
-            <span class="em">元</span>
+            <span class="em">万元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop">已扣款</div>
           <div class="boxBottom">
             <span class="num">{{$toFixed(clientStatistics.YKK)}}</span>
-            <span class="em">元</span>
+            <span class="em">万元</span>
           </div>
         </div>
       </div>
@@ -188,9 +188,9 @@ export default {
       statistics.clientStatistics().then((res) => {
         let data = res.data
         this.clientStatistics = {
-          YJS: data.settle_price, // 已结算
-          DJS: data.wait_settle_price, // 待结算
-          YKK: data.deduct_price // 已扣款
+          YJS: data.settle_price / 10000, // 已结算
+          DJS: data.wait_settle_price / 10000, // 待结算
+          YKK: data.deduct_price / 10000 // 已扣款
         }
         this.loadingTop = false
       })
