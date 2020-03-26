@@ -110,7 +110,8 @@
                         <!-- {{$toFixed(itemColor.order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}} -->
                         <span class="tcolumn">
                           <span class="order">{{$toFixed(itemColor.order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
-                          <span class="replenish">{{$toFixed(itemColor.replenish_order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
+                          <span class="replenish"
+                            v-if="+itemColor.replenish_order_weight > 0">{{$toFixed(itemColor.replenish_order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
                         </span>
                         <span class="tcolumn green">{{$toFixed(itemColor.goStockNumEnd || 0)}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
                         <span class="tcolumn orange">{{$toFixed(Number(itemColor.order_weight || 0) + Number(itemColor.replenish_order_weight || 0) - Number(itemColor.goStockNumEnd || 0))}}{{itemColor.type === 1 ? 'kg' : (itemColor.unit ? itemColor.unit : '个')}}</span>
@@ -388,10 +389,11 @@
                             <span class="tcolumn">{{itemColor.attr}}</span>
                             <span class="tcolumn">
                               <span class="distribution">{{itemColor.unit === 'g' ? $toFixed(itemColor.weight/1000 || 0) : $toFixed(itemColor.weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
-                              <span class="replenish">{{itemColor.unit === 'g' ? $toFixed(itemColor.replenish_weight/1000 || 0) : $toFixed(itemColor.replenish_weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                              <span class="replenish"
+                                v-if="+itemColor.replenish_weight > 0">{{itemColor.unit === 'g' ? $toFixed(itemColor.replenish_weight/1000 || 0) : $toFixed(itemColor.replenish_weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                             </span>
                             <span class="tcolumn green">{{itemColor.unit === 'g' ? $toFixed((itemColor.outStockNum || 0)) : $toFixed((itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
-                            <span class="tcolumn orange">{{itemColor.unit === 'g' ? $toFixed((+itemColor.weight + +itemColor.replenish_weight)/1000 - (+itemColor.outStockNum || 0)) : $toFixed((+itemColor.weight + +itemColor.replenish_weight) - (+itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                            <span class="tcolumn orange">{{itemColor.unit === 'g' ? $toFixed((+itemColor.weight + (+itemColor.replenish_weight || 0))/1000 - (+itemColor.outStockNum || 0)) : $toFixed((+itemColor.weight + (+itemColor.replenish_weight || 0)) - (+itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                             <span class="tcolumn center">
                               <span class="btn noBorder noMargin"
                                 @click="handleClickProcess(item,itemMa,itemColor)">出库</span>
