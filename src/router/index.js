@@ -79,7 +79,7 @@ const routes = [
     }, {
       path: '/product/productCreate',
       name: '产品添加',
-      component: () => import('../views/product/productCreateNew.vue')
+      component: () => import('../views/product/productCreate.vue')
     }, {
       path: '/product/productList/:params',
       name: '产品列表',

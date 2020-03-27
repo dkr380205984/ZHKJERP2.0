@@ -188,6 +188,12 @@
               </span>
             </div>
             <div class="col">
+              <span class="text">下单数量</span>
+            </div>
+            <div class="col">
+              <span class="text">下单总额</span>
+            </div>
+            <div class="col">
               <span class="text">出库数量</span>
             </div>
             <div class="col">
@@ -207,6 +213,8 @@
             <div class="col">{{item.order_time}}</div>
             <div class="col">{{item.client_name}}</div>
             <div class="col">{{item.group_name}}</div>
+            <div class="col">{{item.order_number}}</div>
+            <div class="col">{{item.total_price}}</div>
             <div class="col">{{item.pack_number}}</div>
             <div class="col">{{item.reality_number}}</div>
             <div class="col">{{item.company_cost}}</div>

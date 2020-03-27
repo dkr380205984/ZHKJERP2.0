@@ -1,14 +1,23 @@
 <template>
-  <div id="productCreate"
+  <div id="productUpdate"
     class="indexMain"
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <span class="productCode">{{productCode}}</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display:flex;align-items:center;justify-content: space-between;">
+        <span class="title">
+          基本信息
+          <span class="productCode">{{productCode}}</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <el-autocomplete v-model="importKeyword"
+          style="width:200px;height:32px"
+          :fetch-suggestions="querySearchProduct"
+          placeholder="输入产品编号导入产品"
+          :trigger-on-focus="false"
+          @select="importPorduct"></el-autocomplete>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -43,6 +52,8 @@
             </div>
             <div class="content">
               <el-select placeholder="请选择产品花型"
+                filterable
+                id="fuck"
                 v-model="flower">
                 <el-option v-for="(item,index) in flowerArr"
                   :key="index"
@@ -186,7 +197,7 @@
         :key="index">
         <div class="titleNum">配件{{chinaNum[index]}}</div>
         <div class="deleteIcon el-icon-close"
-          @click="deleteFitting(index)"></div>
+          @click="deleteFitting(index,item.part_id)"></div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
@@ -351,7 +362,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="submit">提交</div>
+            @click="submit">添加</div>
         </div>
       </div>
     </div>
@@ -359,13 +370,14 @@
 </template>
 
 <script>
-import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
+import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
 import { productType, flower, ingredient, colour, getToken, material, product, deleteFile } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
       msgSwitch: false,
+      letterArr: letterArr,
       msgUrl: '',
       msgContent: '',
       product_code: ['C', '00', 'X', 'X', 'X', '00'],
@@ -373,7 +385,6 @@ export default {
       name: '',
       type: [],
       typeArr: [],
-      needleType: '',
       flower: '',
       flowerArr: [],
       ingredientArr: [],
@@ -395,8 +406,6 @@ export default {
       hasFitting: false,
       fittingInfo: [{
         fitting_name: '',
-        type: [],
-        fitting_number: '',
         ingredient: [{
           ingredient_name: '',
           ingredient_value: ''
@@ -404,7 +413,9 @@ export default {
         size: [{ size: '', weight: '', desc: '', number: '' }]
       }],
       // 配件类型从辅料里面选
-      materialArr: []
+      materialArr: [],
+      needleType: '',
+      importKeyword: ''
     }
   },
   methods: {
@@ -427,20 +438,30 @@ export default {
       })
     },
     deleteFitting (index, id) {
-      if (this.fittingInfo.length === 1) {
-        this.$message.error('配件数量不能小于1,如不需要配件可以直接关闭配件选项')
-        return
-      }
       this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.fittingInfo.splice(index)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
+        if (id) {
+          product.delete({
+            id: id
+          }).then((res) => {
+            if (res.data.status) {
+              this.fittingInfo.splice(index)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+            }
+          })
+        } else {
+          this.fittingInfo.splice(index)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -577,23 +598,23 @@ export default {
       error = this.colour.some((item) => !item.colour)
       if (error) {
         this.$message.error('请将产品配色信息填写完整')
-        return
       }
       error = this.colour.some((item) => item.colour.search('/') !== -1)
       if (error) {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
-      // error = this.colour.some((item) => item.colour.length > 20)
-      // if (error) {
-      //   this.$message.error('配色信息长度不得超过20个字符')
-      //   return
-      // }
+      error = this.colour.some((item) => item.colour.length > 8)
+      if (error) {
+        this.$message.error('配色信息长度不得超过8个字符')
+        return
+      }
       if (this.hasFitting) {
         error = this.fittingInfo.some((item) => !item.fitting_name)
       }
       if (error) {
         this.$message.error('请输入配件名称')
+        return
       }
       let partData = this.fittingInfo.map((item) => {
         return {
@@ -618,7 +639,7 @@ export default {
           })
         }
       })
-      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         product_code: this.product_code.join(''),
         name: this.name,
@@ -648,14 +669,89 @@ export default {
       }
       product.create(formData).then((res) => {
         if (res.data.status) {
-          this.$message.success('保存成功')
+          this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/product/productDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个产品<span style="color:#1A95FF">' + res.data.data.product_code + '</span>(' + res.data.data.category_info.product_category + '/' + res.data.data.type_name + '/' + res.data.data.style_name + '/' + res.data.data.flower_id + ')'
             this.msgSwitch = true
           } else {
             this.$router.push('/product/productDetail/' + res.data.data.id)
           }
+        }
+      })
+    },
+    querySearchProduct (queryString, cb) {
+      product.list({
+        product_code: queryString,
+        page: 1,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          cb(res.data.data.map(item => {
+            return {
+              value: item.product_code,
+              id: item.id
+            }
+          }))
+        }
+      })
+    },
+    importPorduct (eve) {
+      product.detail({
+        id: eve.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let productInfo = res.data.data
+          this.name = productInfo.name
+          this.fileArr = productInfo.image.map(item => {
+            return {
+              id: item.id,
+              url: item.image_url
+            }
+          })
+          this.size = productInfo.size.map(item => {
+            return {
+              size: item.size_name,
+              desc: item.size_info,
+              weight: item.weight
+            }
+          })
+          // this.product_code = productInfo.product_code.slice(0, 8)
+          this.colour = productInfo.color.map(item => {
+            return {
+              colour: item.color_name
+            }
+          })
+          this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
+          this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
+          this.flower = productInfo.flower_id_new
+          this.ingredient = productInfo.component.map((item) => {
+            return {
+              ingredient_name: item.component_name,
+              ingredient_value: item.number
+            }
+          })
+          this.hasFitting = productInfo.part_data.length > 0
+          this.fittingInfo = productInfo.part_data.map((item) => {
+            return {
+              fitting_name: item.part_title,
+              ingredient: item.part_component.map((item) => {
+                return {
+                  ingredient_name: item.component_name,
+                  ingredient_value: item.number
+                }
+              }),
+              size: item.size.map((itemSize) => {
+                return {
+                  size: itemSize.size_name,
+                  weight: itemSize.weight,
+                  desc: itemSize.size_info,
+                  number: itemSize.number
+                }
+              })
+            }
+          })
+          this.needleType = productInfo.needle_type
         }
       })
     }
@@ -705,24 +801,20 @@ export default {
       deep: true,
       handler: function (newVal) {
         this.fittingInfo.forEach((item) => {
-          item.size = newVal.map((itemPro) => {
+          item.size = newVal.map((itemPro, indexPro) => {
             return {
               size: itemPro.size,
-              weight: '',
-              desc: '',
-              number: ''
+              weight: item.size[indexPro].weight,
+              desc: item.size[indexPro].desc,
+              number: item.size[indexPro].number
             }
           })
         })
       }
     }
   },
-  computed: {
-    productCode () {
-      return this.product_code.join('')
-    }
-  },
   mounted () {
+    // document.getElementById('fuck').removeAttribute('readOnly')
     this.product_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),
@@ -730,48 +822,53 @@ export default {
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list()])
-      .then((res) => {
-        this.typeArr = res[0].data.data.map((item) => {
-          return {
-            value: item.id,
-            label: item.name,
-            sizeArr: item.sizeArr,
-            child_size: item.child_size,
-            children: item.child.length === 0 ? null : item.child.map((item) => {
-              return {
-                value: item.id,
-                label: item.name,
-                children: item.child.length === 0 ? null : item.child.map((item) => {
-                  return {
-                    value: item.id,
-                    label: item.name
-                  }
-                })
-              }
-            })
-          }
-        })
-        this.flowerArr = res[1].data.data
-        this.ingredientArr = res[2].data.data
-        this.ingredientArr.forEach((item) => {
-          item.value = item.name
-        })
-        this.colourArr = res[3].data.data
-        this.colourArr.forEach((item) => {
-          item.value = item.name
-        })
-        this.postData.token = res[4].data.data
-        this.materialArr = res[5].data.data
-        this.materialArr.forEach((item) => {
-          item.value = item.name
-        })
-        this.loading = false
+      material.list()
+    ]).then((res) => {
+      this.typeArr = res[0].data.data.map((item) => {
+        return {
+          value: item.id,
+          label: item.name,
+          sizeArr: item.sizeArr,
+          child_size: item.child_size,
+          children: item.child.length === 0 ? null : item.child.map((item) => {
+            return {
+              value: item.id,
+              label: item.name,
+              children: item.child.length === 0 ? null : item.child.map((item) => {
+                return {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }
+          })
+        }
       })
+      this.flowerArr = res[1].data.data
+      this.ingredientArr = res[2].data.data
+      this.ingredientArr.forEach((item) => {
+        item.value = item.name
+      })
+      this.colourArr = res[3].data.data
+      this.colourArr.forEach((item) => {
+        item.value = item.name
+      })
+      this.postData.token = res[4].data.data
+      this.materialArr = res[5].data.data
+      this.materialArr.forEach((item) => {
+        item.value = item.name
+      })
+      this.loading = false
+    })
+  },
+  computed: {
+    productCode () {
+      return this.product_code.join('')
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/product/productCreate.less";
+@import "~@/assets/less/product/productUpdate.less";
 </style>
