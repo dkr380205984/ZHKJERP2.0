@@ -53,7 +53,6 @@
             <div class="content">
               <el-select placeholder="请选择产品花型"
                 filterable
-                id="fuck"
                 v-model="flower">
                 <el-option v-for="(item,index) in flowerArr"
                   :key="index"
@@ -814,7 +813,6 @@ export default {
     }
   },
   mounted () {
-    // document.getElementById('fuck').removeAttribute('readOnly')
     this.product_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),

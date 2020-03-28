@@ -1056,6 +1056,21 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
+              <span class="text">选择纬向克重机算公式</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content"
+              style="line-height:32px">
+              <el-radio v-model="weftCmp"
+                label="1">根数*筘幅</el-radio>
+              <el-radio v-model="weftCmp"
+                label="2">根数*机上坯幅</el-radio>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
               <span class="text">工艺单名称</span>
             </div>
             <div class="content">
@@ -1450,6 +1465,7 @@ export default {
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
+      weftCmp: '1', //机算公式
       productInfo: {
         product_code: '',
         type_name: '',
@@ -3472,6 +3488,7 @@ export default {
           }
         }),
         warp_data: {
+          weight_calculate_formula: this.weftCmp,
           color_data: this.colour.map((item) => {
             return {
               product_color: item.value,

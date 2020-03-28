@@ -43,6 +43,7 @@
             </div>
             <div class="content">
               <el-select placeholder="请选择样品花型"
+                filterable
                 v-model="flower">
                 <el-option v-for="(item,index) in flowerArr"
                   :key="index"
