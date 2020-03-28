@@ -9,7 +9,16 @@
     <!-- 轮播区域 -->
     <div class="label">
       <div class="title">
-        <span class="center">类型</span>
+        <span class="center">
+          类型
+          <span class="title_cut_icon"
+            @click="cutOrderType">
+            <i class="el-icon-sort-down"
+              :class="{'active':orderType}"></i>
+            <i class="el-icon-sort-up"
+              :class="{'active':!orderType}"></i>
+          </span>
+        </span>
         <span>订单号</span>
         <span class="flex18">订单公司</span>
         <span>订单数量<br />下单日期</span>
@@ -28,7 +37,7 @@
           :autoplay='false'
           arrow='never'
           ref='carousel'>
-          <el-carousel-item v-for="(items,keys) in filterList"
+          <el-carousel-item v-for="(items,keys) in filterList[orderType ? 'order' : 'sample']"
             :key="keys">
             <ul class="tableCtnLv2">
               <li class="tb_content"
@@ -36,7 +45,7 @@
                 :key="key">
                 <span class="tb_row middle">
                   <div class="iconType sample"
-                    v-if="item.type === 2">{{'样'}}</div>
+                    v-if="item.order_type === 2">{{'样'}}</div>
                   <div class="iconType"
                     v-else>{{'订'}}</div>
                 </span>
@@ -88,7 +97,8 @@
                       :show-text='false'></el-progress>
                     <span class="inner_icon receive_dispatch"></span>
                   </div>
-                  <div class="progress_item">
+                  <div class="progress_item"
+                    v-if="item.order_type !== 2">
                     <el-progress type="circle"
                       color="#1A94FF"
                       :percentage="item.product_inspection_progress.r_product ? (item.product_inspection_progress.r_product > 100 ? 100 : item.product_inspection_progress.r_product) : 0"
@@ -96,7 +106,8 @@
                       :show-text='false'></el-progress>
                     <span class="inner_icon inspection"></span>
                   </div>
-                  <div class="progress_item">
+                  <div class="progress_item"
+                    v-if="item.order_type !== 2">
                     <el-progress type="circle"
                       color="#1A94FF"
                       :percentage="item.pack_real_progress ? (item.pack_real_progress > 100 ? 100 : item.pack_real_progress) : 0"
@@ -118,7 +129,7 @@
                   <div :class="['nowType',setType(item.delivery_time,item.status)]"></div>
                 </span>
               </li>
-              <li v-if="keys === Math.ceil(count / 10) - 1 && items.length < 10"
+              <li v-if="keys === Math.ceil(filterList[orderType ? 'orderCount' : 'sampleCount'] / 10) - 1 && items.length < 10"
                 class="tb_content"
                 :style="{color:'#CCC',flex: 10 - items.length}">
                 <span class="tb_row middle">已到最后一页</span>
@@ -135,7 +146,7 @@
         :page-size="10"
         :current-page.sync="pages"
         @current-change='setActiveItem(pages)'
-        :total="count">
+        :total="filterList[orderType ? 'orderCount' : 'sampleCount']">
       </el-pagination>
     </div>
     <!-- 时间区域 -->
@@ -156,11 +167,14 @@
 </template>
 
 <script>
-import { orderBatch, company } from '@/assets/js/api.js'
+import { orderBatch, sampleOrder, company } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
+      orderLoading: true,
+      sampleLoading: true,
+      orderType: true, // true:订；false:样
       year: '',
       month: '',
       date: '',
@@ -168,33 +182,43 @@ export default {
       minutes: '',
       seconds: '',
       pages: 1,
-      total: 1,
       count: 1,
       start_time: '',
       end_time: '',
-      list: [], // 整理好未分页的数据
-      filterList: [],
+      filterList: {
+        order: [],
+        orderCount: 1,
+        sample: [],
+        sampleCount: 1
+      },
       searchList: {}, // 筛选条件
-      popColor: [
-        { color: '#06B4FF', percentage: 0 },
-        { color: '#04BA88', percentage: 100 }
-      ],
       company_name: '',
-      loopTime: 30000,
+      loopTime: 10000,
       timer: null, // 定时器标识
       getNewDataTimer: null
+
     }
   },
   methods: {
-    // 处理鼠标指针指着走马灯时不滚动的bug
+    // 定时滚动任务
     $setInterval (time) {
+      if (this.loading) {
+        requestAnimationFrame(() => {
+          this.$setInterval(time)
+        })
+        return
+      }
       clearInterval(this.timer)
       this.timer = setInterval(() => {
-        this.pages++
-        if (this.pages > Math.ceil(this.count / 10)) {
-          this.pages = 1
+        if (this.filterList[this.orderType ? 'order' : 'sample'].length >= this.pages + 1) {
+          if (this.pages < Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10)) {
+            this.pages++
+          }
         }
-        this.$refs.carousel.setActiveItem(this.pages - 1)
+        // if (this.pages > Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10)) {
+        //   this.pages = 1
+        // }
+        // console.log(this.pages)
       }, time)
     },
     // 判断是否为今日
@@ -216,7 +240,7 @@ export default {
     },
     // 判断是否逾期
     setType (time, status) {
-      if (+status === 2004) {
+      if (+status === 2004 || +status === 3004) {
         return 'complete'
       } else if (new Date(this.$getTime()).getTime() > new Date(this.$getTime(time)).getTime()) {
         return 'overdue'
@@ -238,31 +262,25 @@ export default {
         this.end_time = new Date(new Date().getTime() + (20 * 24 * 60 * 60 * 1000)).toISOString()
       })
     },
-    // 更新pages
-    getPages (key) {
-      this.pages = key + 1
-    },
+    // 优化页面还未加载完成时,页码就跳转
     setActiveItem (pages) {
-      if (this.filterList.length < pages) {
+      if (this.filterList[this.orderType ? 'order' : 'sample'].length < pages) {
         this.$message('正在加载。。。')
       } else {
         this.$refs.carousel.setActiveItem(pages - 1)
         this.$setInterval(this.loopTime)
       }
     },
-    // 获取数据
-    getData (item) {
+    getOrderData (item) {
+      console.log('order')
       item = item || {}
       let pagesInner = item.page || 1
       let data = item.data || []
-      if (pagesInner === 1) {
-        this.loading = true
-      }
-      if (pagesInner > Math.ceil(this.count / 20)) {
-        this.filterList.push(data.splice(0, 10))
+      if (pagesInner > Math.ceil(this.filterList.orderCount / 20)) {
+        this.filterList.order.push(data.splice(0, 10))
         if (data.length > 0) {
           setTimeout(() => {
-            this.getData({
+            this.getOrderData({
               page: pagesInner,
               data: data
             })
@@ -279,7 +297,7 @@ export default {
           'end_time': this.searchList.end_time || this.end_time
         }).then(res => {
           let batchData = res.data.data.data
-          this.count = res.data.data.count
+          this.filterList.orderCount = res.data.data.count
           for (let prop in batchData) {
             let item = batchData[prop]
             data.push(...item.map(itemBatch => {
@@ -320,20 +338,84 @@ export default {
             })
             )
           }
-          this.filterList.push(data.splice(0, 10))
+          this.filterList.order.push(data.splice(0, 10))
           pagesInner++
-          if (!this.timer) {
-            this.$setInterval(this.loopTime)
+          if (this.orderType) {
+            this.loading = false
           }
-          this.loading = false
           setTimeout(() => {
-            this.getData({
+            this.getOrderData({
               page: pagesInner,
               data: data
             })
           }, 2000)
         })
       }
+    },
+    getSampleData (item) {
+      console.log('sample')
+      item = item || {}
+      let pagesInner = item.page || 1
+      let data = item.data || []
+      if (pagesInner > Math.ceil(this.filterList.sampleCount / 20)) {
+        this.filterList.sample.push(data.splice(0, 10))
+        if (data.length > 0) {
+          setTimeout(() => {
+            this.getSampleData({
+              page: pagesInner,
+              data: data
+            })
+          }, 2000)
+        }
+      } else {
+        sampleOrder.list({
+          'limit': 20,
+          'page': pagesInner,
+          'keyword': this.searchList.keyword,
+          'client_id': this.searchList.company,
+          'group_id': this.searchList.group,
+          'start_time': this.searchList.start_time || this.start_time,
+          'end_time': this.searchList.end_time || this.end_time
+        }).then(res => {
+          let batchData = res.data.data.sort((a, b) => {
+            return new Date(a.deliver_time).getTime() - new Date(b.deliver_time).getTime()
+          })
+          this.filterList.sampleCount = res.data.meta.total
+          data.push(...batchData.map(item => {
+            return {
+              order_type: 2,
+              order_code: item.title,
+              client_name: item.client_name,
+              total_number: item.total_number.map(itemNum => (Number(itemNum.numbers) || 0)).reduce((a, b) => {
+                return a + b
+              }),
+              order_time: item.order_time,
+              group_name: item.group_name,
+              delivery_time: item.deliver_time,
+              status: item.status,
+              has_plan: item.has_plan,
+              material_order_progress: item.material_order_progress,
+              material_push_progress: item.material_push_progress,
+              product_weave_progress: item.product_weave_progress,
+              product_push_progress: item.product_push_progress
+            }
+          }))
+          this.filterList.sample.push(data.splice(0, 10))
+          pagesInner++
+          if (!this.orderType) {
+            this.loading = false
+          }
+          setTimeout(() => {
+            this.getSampleData({
+              page: pagesInner,
+              data: data
+            })
+          }, 2000)
+        })
+      }
+    },
+    cutOrderType () {
+      this.orderType = !this.orderType
     }
   },
   created () {
@@ -362,19 +444,35 @@ export default {
     this.start_time = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)).toISOString()
     this.end_time = new Date(new Date().getTime() + (20 * 24 * 60 * 60 * 1000)).toISOString()
     this.getTime()
-    this.getData()
+    this.getOrderData()
+    this.getSampleData()
+    this.$setInterval(this.loopTime)
   },
   watch: {
     pages (newVal) {
       clearInterval(this.getNewDataTimer)
-      if (newVal === Math.ceil(this.count / 10)) {
-        this.getNewDataTimer = setTimeout(() => {
-          this.list = []
-          this.filterList = []
-          this.total = 1
-          this.getData()
-        }, this.loopTime - 1000)
+      if (newVal === 1) {
+        this.$setInterval(this.loopTime)
       }
+      this.$refs.carousel.setActiveItem(this.pages - 1) // 页码改变时改变走马灯展示视图
+      if (newVal === Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10)) { // 当页面为最后一页时添加定时任务，重新拉取最新数据
+        this.getNewDataTimer = setTimeout(() => {
+          clearInterval(this.timer) // 优化，清除页面在拉取最新数据时 页码一直在改变
+          this.timer = null
+          this.pages = 1 // 重置页码
+          this.orderType = !this.orderType
+          this.filterList[this.orderType ? 'sample' : 'order'] = [] // 清空旧数据
+          this.orderType ? this.getSampleData() : this.getOrderData()
+        }, this.loopTime)
+      }
+    },
+    orderType (newVal) {
+      clearInterval(this.getNewDataTimer)
+      if (this.filterList[newVal ? 'order' : 'sample'].length === 0) {
+        this.loading = true
+      }
+      this.pages = 1
+      this.$setInterval(this.loopTime)
     }
   }
 }

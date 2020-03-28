@@ -447,7 +447,6 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('修改密码成功，请重新登录')
-            // this.commondHandler('logout')
             this.$router.push('/login')
           }
         })

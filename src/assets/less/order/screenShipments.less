@@ -5,7 +5,6 @@
 @timeRight:26/1920*100%;
 @clientInfoTop:93.5%;
 @clientInfoRight:(1920 - 1875)/1920/2 * 100%;
-// calc(100% * (1875/1920))
 ul {
   margin: 0;
   padding: 0;
@@ -64,6 +63,30 @@ ul {
         align-items: center;
         &.center{
           justify-content: center;
+        }
+        position: relative;
+        .title_cut_icon{
+          position: absolute;
+          top: 50%;
+          left: 0px;
+          width: 1em;
+          height: 1em;
+          transform: rotateZ(90deg) translateX(-50%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-left: 16px;
+          &>i{
+            width: 0.5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(2,229,255,0.6);
+            cursor: pointer;
+            &.active{
+              color: rgba(2,229,255,1);
+            }
+          }
         }
       }
       .warp{
