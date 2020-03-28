@@ -1002,6 +1002,21 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
+              <span class="text">选择纬向克重机算公式</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content"
+              style="line-height:32px">
+              <el-radio v-model="weftCmp"
+                label="1">根数*筘幅</el-radio>
+              <el-radio v-model="weftCmp"
+                label="2">根数*机上坯幅</el-radio>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
               <span class="text">工艺单名称</span>
             </div>
             <div class="content">
@@ -1089,6 +1104,7 @@ export default {
   },
   data () {
     return {
+      weftCmp: '1',
       loading: true,
       ZDYMC: '',
       DSGG: '',
@@ -2317,6 +2333,7 @@ export default {
           }
         }),
         warp_data: {
+          weight_calculate_formula: this.weftCmp,
           color_data: this.colour.map((item) => {
             return {
               product_color: item.value,
@@ -2569,6 +2586,7 @@ export default {
           })
         }
       })
+      this.weftCmp = data.warp_data.weight_calculate_formula.toString()
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1).material_name
       this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1).material_name
       this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2).map((item) => {

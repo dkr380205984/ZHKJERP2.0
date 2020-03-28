@@ -653,6 +653,7 @@ export default {
   },
   data () {
     return {
+      weftCmp: '1',
       loading: true,
       data: [], // 有多张工艺单的时候保存原始数据
       craftIndex: 0, // 样单有多张工艺单
@@ -1216,6 +1217,8 @@ export default {
       }
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
+      this.weftCmp = this.warpInfo.weight_calculate_formula
+      console.log(this.weftCmp)
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)
       this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1)
       this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2)
@@ -1313,7 +1316,7 @@ export default {
       })
       this.weftInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
-          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
       })
       this.material.materialWarp.forEach((item) => {
@@ -1328,7 +1331,7 @@ export default {
         item.apply = item.apply.map((index) => {
           return {
             number: index,
-            weight: item.number * (this.colorNumber.weft[index] * this.warpInfo.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+            weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
           }
         })
       })
@@ -1351,7 +1354,7 @@ export default {
       })
       this.weight = this.weight.toFixed(1)
 
-      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / this.warpInfo.reed_width * 600 * 4
+      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
         if (!item.GLorPM) {

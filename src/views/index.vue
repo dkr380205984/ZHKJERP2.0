@@ -454,6 +454,15 @@ export default {
     }
   },
   mounted () {
+    Array.from(document.getElementsByClassName('el-select')).forEach((item) => {
+      item.children[0].children[0].removeAttribute('readOnly')
+      item.children[0].children[0].onblur = function () {
+        let _this = this
+        setTimeout(() => {
+          _this.removeAttribute('readOnly')
+        }, 200)
+      }
+    })
     let vue = this
     let pusher = new Pusher('117b8da677e144ce8212', {
       cluster: 'ap1',
