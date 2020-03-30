@@ -140,7 +140,7 @@
               <span class="text">{{item.total_price}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.shoddy_goods}}</span>
+              <span class="text">{{item.shoddy_goods*100 + '%'}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.stock_number}}</span>
@@ -222,8 +222,7 @@ export default {
     getList () {
       this.loading = true
       statistics.productList({
-        limit: 10,
-        page: this.page,
+        is_search: this.keyword || this.date.length > 0 || this.category_id || this.type_id || this.style_id,
         keyword: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
@@ -231,8 +230,34 @@ export default {
         type_id: this.type_id,
         style_id: this.style_id
       }).then((res) => {
-        this.list = res.data.data
-        this.total = res.data.meta.total
+        let data = res.data.data.data
+        let sortWhich = null
+        let arr = ['XDZS', 'PJJG', 'HJCZ', 'CPL', 'KCSL']
+        let json = {
+          'XDZS': 'order_number',
+          'PJJG': 'pre_price',
+          'HJCZ': 'total_price',
+          'CPL': 'shoddy_goods',
+          'KCSL': 'stock_number'
+        }
+        arr.forEach((item) => {
+          if (Number(this[item])) {
+            sortWhich = item
+          }
+        })
+        if (sortWhich) {
+          data = data.sort((a, b) => {
+            if (Number(this[sortWhich]) === 2) {
+              return a[json[sortWhich]] - b[json[sortWhich]]
+            } else {
+              return b[json[sortWhich]] - a[json[sortWhich]]
+            }
+          })
+        }
+        this.list = data.filter((item, index) => {
+          return index >= (this.page - 1) * 10 && index < this.page * 10
+        })
+        this.total = res.data.data.data.length
         this.loading = false
       })
     },
@@ -259,6 +284,12 @@ export default {
       }
     },
     sortFn (item) {
+      // 保证同时只会出现一种排序方式
+      ['XDZS', 'PJJG', 'HJCZ', 'CPL', 'KCSL'].forEach((itemEach) => {
+        if (item !== itemEach) {
+          this[itemEach] = null
+        }
+      })
       this[item] = this[item] ? (this[item] === '1' ? '2' : '1') : '1'
       this.changeRouter(1)
     }

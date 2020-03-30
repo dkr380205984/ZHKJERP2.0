@@ -160,13 +160,37 @@ export default {
     getList () {
       this.loading = true
       statistics.materialList({
-        limit: 10,
-        page: this.pages,
         keyword: this.keyword,
         type: this.type
       }).then((res) => {
-        this.list = res.data.data
-        this.total = res.data.meta.total
+        let data = res.data.data.data
+        let sortWhich = null
+        let arr = ['HJSY', 'DGSL', 'PJJG', 'HJJG', 'KCSY']
+        let json = {
+          'HJSY': 'use_total',
+          'DGSL': 'order_total',
+          'PJJG': 'pre_price',
+          'HJJG': 'total_price',
+          'KCSY': 'stock_number'
+        }
+        arr.forEach((item) => {
+          if (Number(this[item])) {
+            sortWhich = item
+          }
+        })
+        if (sortWhich) {
+          data = data.sort((a, b) => {
+            if (Number(this[sortWhich]) === 2) {
+              return a[json[sortWhich]] - b[json[sortWhich]]
+            } else {
+              return b[json[sortWhich]] - a[json[sortWhich]]
+            }
+          })
+        }
+        this.list = data.filter((item, index) => {
+          return index >= (this.pages - 1) * 10 && index < this.pages * 10
+        })
+        this.total = res.data.data.data.length
         this.loading = false
       })
     },
@@ -174,10 +198,20 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.HJSY = params.HJSY
+      this.DGSL = params.DGSL
+      this.PJJG = params.PJJG
+      this.HJJG = params.HJJG
+      this.KCSY = params.KCSY
       this.type = Number(params.type)
     },
     sortFn (item) {
-      console.log(item)
+      // 保证同时只会出现一种排序方式
+      ['HJSY', 'DGSL', 'PJJG', 'HJJG', 'KCSY'].forEach((itemEach) => {
+        if (item !== itemEach) {
+          this[itemEach] = null
+        }
+      })
       this[item] = this[item] ? (this[item] === '1' ? '2' : '1') : '1'
       this.changeRouter(1)
     }

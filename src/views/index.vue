@@ -291,7 +291,7 @@ export default {
           url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
         }, {
           name: '产品产量统计',
-          url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id='
+          url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL='
         }, {
           name: '物料使用统计',
           url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY='

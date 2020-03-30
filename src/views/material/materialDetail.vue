@@ -706,6 +706,7 @@
             <span class="tb_row flex08">总价(元)</span>
             <span class="tb_row">备注</span>
             <span class="tb_row">操作人</span>
+            <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -729,6 +730,7 @@
             <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
             <span class="tb_row">{{item.desc}}</span>
             <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteOrderLog(item.id,index)">删除</span>
@@ -762,6 +764,7 @@
             <span class="tb_row flex08">总价(元)</span>
             <span class="tb_row">备注</span>
             <span class="tb_row">操作人</span>
+            <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -780,6 +783,7 @@
             <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
             <span class="tb_row">{{item.desc}}</span>
             <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteProcessLog(item.id,index)">删除</span>
