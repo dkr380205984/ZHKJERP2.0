@@ -573,7 +573,7 @@ export default {
         }) : [],
         product_info: [{
           colorSize: colorSize || '',
-          number: number || '',
+          number: Number(number) || '',
           count: '',
           substandard: [{
             number: 0,
@@ -773,6 +773,13 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
+      })
+    }
+  },
+  watch: {
+    inspection_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
       })
     }
   },

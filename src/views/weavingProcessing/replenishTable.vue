@@ -130,7 +130,7 @@ export default {
         ]).then(res => {
           this.orderInfo = res[0].data.data
           let printLogId = this.$route.query.id.split(',')
-          this.replenishInfo = this.$mergeData(res[1].data.data.filter(item => printLogId.indexOf(+item.id) !== -1), { mainRule: 'replenish_name/client_name', childrenName: 'other_info' }).map(item => {
+          this.replenishInfo = this.$mergeData(res[1].data.data.filter(item => printLogId.indexOf((item.id).toString()) !== -1), { mainRule: 'replenish_name/client_name', childrenName: 'other_info' }).map(item => {
             return {
               client_name: item.client_name,
               replenish_info: this.$mergeData(item.other_info.map(value => {

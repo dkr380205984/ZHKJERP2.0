@@ -56,7 +56,7 @@
             </span>
           </div>
           <div class="box">
-            <span class="boxTop">合计数量</span>
+            <span class="boxTop">合计金额</span>
             <span class="boxBottom">
               <span class="num">{{$formatNum(WLDGStat.totalPrice)}}</span>
               <span class="em">元</span>
@@ -103,7 +103,7 @@
             <div class="trow"
               v-for="(item,index) in  WLDGRender"
               :key="index">
-              <div class="tcolumn">{{item.order_client}}</div>
+              <div class="tcolumn">{{item.client_name}}</div>
               <div class="tcolumn">{{item.complete_time}}</div>
               <div class="tcolumn">{{item.weight}}</div>
               <div class="tcolumn">{{item.price}}</div>
@@ -305,6 +305,11 @@ export default {
           totalPrice: 0
         })
         numPrice.prePrice = (numPrice.totalPrice / numPrice.totalNum).toFixed(2)
+        numPrice = {
+          totalNum: Math.round(numPrice.totalNum),
+          prePrice: Math.round(numPrice.prePrice),
+          totalPrice: Math.round(numPrice.totalPrice)
+        }
         return numPrice
       }
     },
@@ -329,6 +334,11 @@ export default {
           totalPrice: 0
         })
         numPrice.prePrice = (numPrice.totalPrice / numPrice.totalNum).toFixed(2)
+        numPrice = {
+          totalNum: Math.round(numPrice.totalNum),
+          prePrice: Math.round(numPrice.prePrice),
+          totalPrice: Math.round(numPrice.totalPrice)
+        }
         return numPrice
       }
     },

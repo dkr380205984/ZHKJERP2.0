@@ -454,6 +454,13 @@ export default {
       rejects_flag: false
     }
   },
+  watch: {
+    inspection_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
+    }
+  },
   methods: {
     // 批量导出excel
     download () {

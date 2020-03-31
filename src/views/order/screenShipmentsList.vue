@@ -193,7 +193,7 @@ export default {
       },
       searchList: {}, // 筛选条件
       company_name: '',
-      loopTime: 10000,
+      loopTime: 30000,
       timer: null, // 定时器标识
       getNewDataTimer: null
 

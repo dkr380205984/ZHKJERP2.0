@@ -2151,7 +2151,6 @@ export default {
         this.$message.warning('请先完成已有的加工信息再继续订购')
         return
       }
-      console.log(this.checkWhichYarn)
       this.checkWhichYarn.forEach((item) => {
         let material = []
         item.childrenMergeInfo.forEach((itemChild) => {
@@ -2350,6 +2349,24 @@ export default {
       return (this.stock_data.reduce((total, current) => {
         return total + Number(current.stock[0].weight)
       }, 0)).toFixed(2)
+    }
+  },
+  watch: {
+    order_data: {
+      handler (val) {
+        this.$nextTick(() => {
+          this.$fuckSelect()
+        })
+      },
+      deep: true
+    },
+    process_data: {
+      handler (val) {
+        this.$nextTick(() => {
+          this.$fuckSelect()
+        })
+      },
+      deep: true
     }
   },
   created () {

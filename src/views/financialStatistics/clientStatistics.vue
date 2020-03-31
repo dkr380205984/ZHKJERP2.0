@@ -167,7 +167,7 @@ export default {
     }
   },
   watch: {
-    page (newVal) {
+    pages (newVal) {
       this.changeRouter(newVal)
     },
     $route (newVal) {
@@ -211,14 +211,14 @@ export default {
     },
     getFilters () {
       let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.pages = Number(params.page)
       this.company_id = params.company_id
       this.company_type = params.company_type ? Number(params.company_type) : ''
       this.searchCompanyFlag = Boolean(params.company_id)
       this.searcTypeFlag = Boolean(params.company_type)
     }
   },
-  mounted () {
+  created () {
     this.getFilters()
     this.getList()
     this.getStatistics()

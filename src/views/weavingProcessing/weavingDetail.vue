@@ -874,6 +874,13 @@ export default {
       return this.weaving_info.filter((item) => item.checked)
     }
   },
+  watch: {
+    weaving_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
+    }
+  },
   methods: {
     // 补纱打印
     printReplenish (client) {

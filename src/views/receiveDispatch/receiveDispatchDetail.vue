@@ -591,6 +591,18 @@ export default {
       log: []
     }
   },
+  watch: {
+    process_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
+    },
+    weave_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
+    }
+  },
   methods: {
     // 批量导出excel
     download () {

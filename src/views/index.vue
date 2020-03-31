@@ -340,6 +340,17 @@ export default {
       }
     }
   },
+  watch: {
+    $route: {
+      handler (val) {
+        // 首次进入页面触发
+        this.$nextTick(() => {
+          this.$fuckSelect()
+        })
+      },
+      deep: true
+    }
+  },
   methods: {
     commondHandler (cmd) {
       if (cmd === 'sendMsg') {
@@ -454,15 +465,8 @@ export default {
     }
   },
   mounted () {
-    Array.from(document.getElementsByClassName('el-select')).forEach((item) => {
-      item.children[0].children[0].removeAttribute('readOnly')
-      item.children[0].children[0].onblur = function () {
-        let _this = this
-        setTimeout(() => {
-          _this.removeAttribute('readOnly')
-        }, 200)
-      }
-    })
+    // 页面刷新后触发
+    this.$fuckSelect()
     let vue = this
     let pusher = new Pusher('117b8da677e144ce8212', {
       cluster: 'ap1',

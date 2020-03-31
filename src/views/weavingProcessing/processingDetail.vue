@@ -681,6 +681,13 @@ export default {
       showRouterPopup: false
     }
   },
+  watch: {
+    process_data (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
+    }
+  },
   computed: {
     checkProcessList () {
       return this.process_info.filter((item) => item.checked)

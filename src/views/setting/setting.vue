@@ -587,8 +587,8 @@
                     <div class="tcolumn flexRow">
                       <span class="blue"
                         @click="changeAuth(item)">修改</span>
-                      <span class="border"></span>
-                      <span class="red">禁用</span>
+                      <!-- <span class="border"></span>
+                      <span class="red">禁用</span> -->
                     </div>
                   </div>
                 </div>

@@ -1039,6 +1039,11 @@ export default {
       }
       this.stockLogPages = 1
       this.stockLogTotal = this.stockLog.length
+    },
+    stockEditInfo (val) {
+      this.$nextTick(() => {
+        this.$fuckSelect()
+      })
     }
   },
   methods: {

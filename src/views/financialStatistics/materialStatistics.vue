@@ -23,6 +23,11 @@
               @click="reset"
               style="margin-left:0">重置</div>
           </div>
+          <div class="rightCtn"
+            style="color:#1a95ff;font-size:14px"
+            v-if="update_time.date!=='0000-00-00'">
+            更新日期：{{update_time.date.slice(0,16)}}
+          </div>
         </div>
         <div class="list">
           <div class="title">
@@ -133,7 +138,10 @@ export default {
       DGSL: null,
       PJJG: null,
       HJJG: null,
-      KCSY: null
+      KCSY: null,
+      update_time: {
+        date: '0000-00-00'
+      }
     }
   },
   watch: {
@@ -163,6 +171,7 @@ export default {
         keyword: this.keyword,
         type: this.type
       }).then((res) => {
+        this.update_time = res.data.data.update_time
         let data = res.data.data.data
         let sortWhich = null
         let arr = ['HJSY', 'DGSL', 'PJJG', 'HJJG', 'KCSY']
