@@ -208,6 +208,21 @@
         </div>
       </div>
     </div>
+    <div class="module"
+      v-if="warnData.isOpenWarn">
+      <div class="titleCtn">
+        <span class="title hasBorder">预警详情</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <zh-time-process :processData="warnData.warnArr"
+            :handleFlag="false"
+            :startTime="warnData.startTime"
+            :endTime='warnData.endTime'
+            style="width:100%"></zh-time-process>
+        </div>
+      </div>
+    </div>
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">流程进度</span>
@@ -1235,7 +1250,13 @@ export default {
           materialOrder: [],
           materialProcess: [],
           weave: [],
-          process: []
+          process: [],
+          warnData: {
+            isOpenWarn: false,
+            startTime: this.$getTime(),
+            endTime: this.$getTime(),
+            warnArr: []
+          }
         }
       },
       activeDetailTitle: '',
@@ -1283,7 +1304,13 @@ export default {
       changeSampleForProductPopup: false, // 样品转为产品窗口
       sampleForProductId: [],
       isOkStatus: false,
-      customerPayPopupFlag: false // 客户付费窗口flag
+      customerPayPopupFlag: false, // 客户付费窗口flag
+      warnData: {
+        isOpenWarn: false,
+        startTime: this.$getTime(),
+        endTime: this.$getTime(),
+        warnArr: []
+      }
     }
   },
   methods: {
@@ -1417,6 +1444,28 @@ export default {
         time: nowDate,
         prog: prog
       })
+      if (this.sampleOrderInfo.time_progress) {
+        this.warnData = {
+          isOpenWarn: true,
+          startTime: this.sampleOrderInfo.time_progress.order_time,
+          endTime: this.sampleOrderInfo.time_progress.end_time,
+          warnArr: [
+            {
+              percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.material_plan / 100),
+              name: '物料计划'
+            }, {
+              percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.material_push / 100),
+              name: '物料入库'
+            }, {
+              percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.semi_product_push / 100),
+              name: '半成品入库'
+            }, {
+              percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.product_push / 100),
+              name: '成品入库'
+            }
+          ]
+        }
+      }
       // 处理流程进度
       this.productProgInfo = []
       let sampleOrderData = item

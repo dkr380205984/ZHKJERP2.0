@@ -815,7 +815,8 @@
               :page-size="5"
               layout="prev, pager, next"
               :total="productTotal"
-              :current-page.sync="productPages">
+              :current-page.sync="productPages"
+              @current-change='getProductList'>
             </el-pagination>
           </div>
           <div class="editCtn bgGary_page"
@@ -835,10 +836,10 @@
                     remote
                     reserve-keyword
                     placeholder="请选择需要操作的产品"
-                    :remote-method="getProductListSelect"
+                    :remote-method="getProductListSelect(itemMa)"
                     :loading="selectLoading"
                     @change="getProductSizeColorInfo($event,itemMa)">
-                    <el-option v-for="item in productNameList"
+                    <el-option v-for="item in itemMa.productNameList"
                       :key="item.id"
                       :label="item.product_code + '(' + item.category_info.product_category + '/' + item.type_name + '/' +item.style_name +')'"
                       :value="item.id">
@@ -1162,22 +1163,24 @@ export default {
         this.getProductLog(1)
       }
     },
-    getProductListSelect (keyword) {
-      if (keyword !== '') {
-        this.selectLoading = true
-        product.list({
-          page: 1,
-          limit: 9999,
-          product_code: keyword,
-          type: 1
-        }).then(res => {
-          if (res.data.status !== false) {
-            this.selectLoading = false
-            this.productNameList = res.data.data
-          }
-        })
-      } else {
-        this.productNameList = []
+    getProductListSelect (item) {
+      return (keyword) => {
+        if (keyword !== '') {
+          this.selectLoading = true
+          product.list({
+            page: 1,
+            limit: 9999,
+            product_code: keyword,
+            type: 1
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.selectLoading = false
+              item.productNameList = res.data.data
+            }
+          })
+        } else {
+          item.productNameList = []
+        }
       }
     },
     getYarnList (page) {
@@ -1473,7 +1476,7 @@ export default {
     },
     getProductSizeColorInfo (event, itemPro) {
       itemPro.size_color = ''
-      let flag = this.productNameList.find(item => item.id === event)
+      let flag = itemPro.productNameList.find(item => item.id === event)
       if (flag) {
         itemPro.sizeColor = flag.size.map(itemSize => {
           return {
@@ -1997,12 +2000,21 @@ export default {
           number: ''
         })
       } else if (type === 'product') {
+        let cloneItem = this.$clone(item)
+        cloneItem.id = cloneItem.product_id.toString()
+        cloneItem.category_info.product_category = cloneItem.category_info.category_name
+        cloneItem.type_name = cloneItem.category_info.type_name
+        cloneItem.style_name = cloneItem.category_info.style_name
         this.productEditInfo.push({
           productName: item.product_id.toString(),
-          size_color: [item.size, item.color],
-          number: '',
           editType: editType,
-          remark: '',
+          color_info: [
+            {
+              size_color: [item.size, item.color],
+              number: '',
+              remark: ''
+            }
+          ],
           sizeColor: item.category_info.size_measurement.map(itemSize => {
             return {
               value: itemSize.size_name,
@@ -2014,7 +2026,8 @@ export default {
                 }
               })
             }
-          })
+          }),
+          productNameList: [cloneItem]
         })
       }
     },

@@ -172,7 +172,11 @@ export default {
     },
     // 输入触发父组件value更新
     handleInput (ev) {
-      this.$emit('input', ev.target.value)
+      if (this.type === 'number') {
+        this.$emit('input', ev.target.value ? +ev.target.value : '')
+      } else {
+        this.$emit('input', ev.target.value)
+      }
       if (ev.target.value.length >= Number(this.minLength) && ev.target.value.length <= Number(this.maxLength)) {
         this.errorMessageInit()
         this.errorRegExp(ev.target.value)
