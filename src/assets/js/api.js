@@ -417,7 +417,14 @@ const tutorial = {
 const orderBatch = {
   list: (params) => http.get(`${baseUrl}/order/batch/list`, params)
 }
+const warnSetting = {
+  create: (params) => http.post(`${baseUrl}/order/progress/time/set`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/order/progress/time/detail`, params),
+  list: (params) => http.get(`${baseUrl}/order/progress/time/list`, params),
+  delete: (params) => http.post(`${baseUrl}/order/progress/time/delete`, params, 'application/json')
+}
 export {
+  warnSetting,
   orderBatch,
   station,
   tutorial,

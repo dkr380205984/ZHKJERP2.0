@@ -855,6 +855,80 @@
               </div>
             </div>
           </template>
+          <template v-if="cName==='订单预警'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup = true">添加预警</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">类型名称</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in orderWarnList[orderWarnPages - 1]"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40"
+                      style="flex-direction: row;align-items:center;">
+                      <span class="blue"
+                        @click="changeOrderWarn(item)">修改</span>
+                      <span class="red"
+                        style="margin-left:16px"
+                        @click="deleteOrderSampleWarn(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="orderWarnList.length"
+                  :current-page.sync="orderWarnPages">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='样单预警'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup = true">添加预警</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">类型名称</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in sampleWarnList[sampleWarnPages - 1]"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40"
+                      style="flex-direction: row;align-items:center;">
+                      <span class="blue"
+                        @click="changeSampleWarn(item)">修改</span>
+                      <span class="red"
+                        style="margin-left:16px"
+                        @click="deleteOrderSampleWarn(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="priceTotal"
+                  :current-page.sync="pricePages">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -1614,6 +1688,153 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='订单预警'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加订单预警设置</div>
+            <i class="el-icon-close"
+              @click="closeProup"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">类型名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入预警名称"
+                  v-model="orderWarningEditInfo.name"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>订单下单-物料计划：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="orderWarningEditInfo.materialPlan"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>物料计划-物料入库：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="orderWarningEditInfo.materialStock"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>生产织造-半成品加工：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="orderWarningEditInfo.process"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>半成品加工-成品入库：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="orderWarningEditInfo.productStock"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>成品检验-成品装箱：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="orderWarningEditInfo.pack"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="closeProup">取消</div>
+            <div class="btn btnBlue"
+              @click="saveOrderWarn">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='样单预警'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加样单预警设置</div>
+            <i class="el-icon-close"
+              @click="closeProup"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">类型名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入预警名称"
+                  v-model="sampleWarningEditInfo.name"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>订单下单-物料计划：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="sampleWarningEditInfo.materialPlan"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>物料计划-物料入库：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="sampleWarningEditInfo.materialStock"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>生产织造-半成品加工：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="sampleWarningEditInfo.process"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label"
+                style='width:11em;'>半成品加工-成品入库：</div>
+              <div class="info">
+                <zh-input type='number'
+                  v-model="sampleWarningEditInfo.productStock"
+                  placeholder='时间比例'>
+                  <template slot="append">%</template>
+                </zh-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="closeProup">取消</div>
+            <div class="btn btnBlue"
+              @click="saveSampleWarn">确定</div>
+          </div>
+        </div>
+      </template>
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -1879,7 +2100,7 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
+import { warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1893,7 +2114,8 @@ export default {
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理'],
         '员工管理': ['员工帐号管理'],
         '打印设置': ['打印设置'],
-        '报价单设置': ['报价预加载']
+        '报价单设置': ['报价预加载'],
+        '预警设置': ['订单预警', '样单预警']
       },
       pName: '',
       cName: '',
@@ -2169,7 +2391,29 @@ export default {
           { company: '', price: '', desc: '' }
         ]
       },
-      editYarnInfo: [{ name: '' }]
+      editYarnInfo: [{ name: '' }],
+      // 预警设置
+      orderWarnList: [],
+      orderWarnPages: 1,
+      orderWarningEditInfo: {
+        id: '',
+        name: '',
+        materialPlan: '',
+        materialStock: '',
+        process: '',
+        productStock: '',
+        pack: ''
+      },
+      sampleWarnList: [],
+      sampleWarnPages: 1,
+      sampleWarningEditInfo: {
+        id: '',
+        name: '',
+        materialPlan: '',
+        materialStock: '',
+        process: '',
+        productStock: ''
+      }
     }
   },
   watch: {
@@ -2216,6 +2460,8 @@ export default {
         this.getPrintList()
       } else if (val === '报价预加载') {
         this.getPriceLoading()
+      } else if (val === '订单预警') {
+        this.getOrderSampleWarn()
       }
     },
     filterYarnKeyword (val) {
@@ -3847,11 +4093,120 @@ export default {
     },
     deleteItem (data, index) {
       data.splice(index, 1)
+    },
+    getOrderSampleWarn () { // 订单样单预警都是这个函数
+      warnSetting.list().then(res => {
+        if (res.data.status !== false) {
+          this.orderWarnList = this.$newSplice(res.data.data.filter(item => item.order_type === 1), 5)
+          this.sampleWarnList = this.$newSplice(res.data.data.filter(item => item.order_type === 2), 5)
+        }
+      })
+    },
+    changeOrderWarn (item) {
+      this.orderWarningEditInfo = {
+        id: item.id,
+        materialPlan: item.material_plan,
+        materialStock: item.material_push,
+        process: item.semi_product_push,
+        productStock: item.product_push,
+        pack: item.product_pack,
+        name: item.title
+      }
+      this.showPopup = true
+    },
+    saveOrderWarn () {
+      if (!this.orderWarningEditInfo.materialPlan || !this.orderWarningEditInfo.name || !this.orderWarningEditInfo.materialStock || !this.orderWarningEditInfo.process || !this.orderWarningEditInfo.productStock || !this.orderWarningEditInfo.pack) {
+        this.$message.error('检测到有未填项，请检查信息是否填写完整')
+        return
+      }
+      if ((this.orderWarningEditInfo.materialPlan + this.orderWarningEditInfo.materialStock + this.orderWarningEditInfo.process + this.orderWarningEditInfo.productStock + this.orderWarningEditInfo.pack) !== 100) {
+        this.$message.warning('合计比例不等于100')
+        return
+      }
+      warnSetting.create({
+        id: this.orderWarningEditInfo.id,
+        order_type: 1,
+        material_plan: this.orderWarningEditInfo.materialPlan,
+        material_push: this.orderWarningEditInfo.materialStock,
+        semi_product_push: this.orderWarningEditInfo.process,
+        product_push: this.orderWarningEditInfo.productStock,
+        product_pack: this.orderWarningEditInfo.pack,
+        title: this.orderWarningEditInfo.name
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.closeProup()
+          this.getOrderSampleWarn()
+        }
+      })
+    },
+    deleteOrderSampleWarn (id) {
+      warnSetting.delete({
+        id: id
+      }).then(res => {
+
+      })
+    },
+    changeSampleWarn (item) {
+      this.sampleWarningEditInfo = {
+        id: item.id,
+        materialPlan: item.material_plan,
+        materialStock: item.material_push,
+        process: item.semi_product_push,
+        productStock: item.product_push,
+        name: item.title
+      }
+      this.showPopup = true
+    },
+    saveSampleWarn () {
+      if (!this.sampleWarningEditInfo.name || !this.sampleWarningEditInfo.materialPlan || !this.sampleWarningEditInfo.materialStock || !this.sampleWarningEditInfo.process || !this.sampleWarningEditInfo.productStock) {
+        this.$message.error('检测到有未填项，请检查信息是否填写完整')
+        return
+      }
+      if ((this.sampleWarningEditInfo.materialPlan + this.sampleWarningEditInfo.materialStock + this.sampleWarningEditInfo.process + this.sampleWarningEditInfo.productStock) !== 100) {
+        this.$message.warning('合计比例不等于100')
+        return
+      }
+      warnSetting.create({
+        id: this.sampleWarningEditInfo.id,
+        order_type: 2,
+        material_plan: this.sampleWarningEditInfo.materialPlan,
+        material_push: this.sampleWarningEditInfo.materialStock,
+        semi_product_push: this.sampleWarningEditInfo.process,
+        product_push: this.sampleWarningEditInfo.productStock,
+        title: this.sampleWarningEditInfo.name
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.closeProup()
+          this.getOrderSampleWarn()
+        }
+      })
+    },
+    closeProup () {
+      this.orderWarningEditInfo = {
+        id: '',
+        name: '',
+        materialPlan: '',
+        materialStock: '',
+        process: '',
+        productStock: '',
+        pack: ''
+      }
+      this.sampleWarningEditInfo = {
+        id: '',
+        name: '',
+        materialPlan: '',
+        materialStock: '',
+        process: '',
+        productStock: ''
+      }
+      this.showPopup = false
     }
   },
   created () {
-    this.pName = '产品设置'
-    this.cName = '产品花型'
+    this.pName = '预警设置'
+    this.cName = '订单预警'
   }
 }
 </script>

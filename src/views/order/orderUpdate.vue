@@ -179,7 +179,8 @@
           </div>
         </div>
         <div class="list"
-          style="min-height:330px">
+          style="min-height:330px"
+          v-loading='loading ? false : listLoading'>
           <div class="title">
             <div class="col">
               <span class="text">编号</span>
@@ -470,6 +471,55 @@
       </div>
     </div>
     <div class="module">
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between">
+        <span class="title">预警设置
+          <el-tooltip class="item"
+            effect="dark"
+            content="设置订单流程到期预警"
+            placement="top-start">
+            <em class="el-icon-question"></em>
+          </el-tooltip>
+        </span>
+        <span class="right"
+          style="display:flex;align-items:center">
+          <div class="btn noBorder"
+            :style="{'color': isOpenWarn ? '' : '#BBB'}">流程预警</div>
+          <el-switch v-model="isOpenWarn" />
+        </span>
+      </div>
+      <div class="detailCtn"
+        v-if="isOpenWarn">
+        <div class="rowCtn">
+          <div class="warn_setting">
+            <div class="warn_setting_top">
+              <div class="warn_setting_top_left">
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    {{warnType || '选择类型'}}<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item v-for="(item,index) in warnList"
+                      :key="index">
+                      <div @click="checkedWarn(item)">{{item.title}}</div>
+                    </el-dropdown-item>
+                    <el-dropdown-item disabled
+                      v-if="warnList.length===1">暂无数据 </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </div>
+            <div class="warn_setting_bottom">
+              <zh-time-process :processData="timeData"
+                :startTime="order_time"
+                :endTime='getWarnEndTime()'
+                style="width:100%"></zh-time-process>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
       <div class="titleCtn">
         <span class="title">其他信息</span>
       </div>
@@ -615,11 +665,12 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken } from '@/assets/js/api.js'
+import { product, client, group, order, getToken, warnSetting } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
+      listLoading: true,
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
@@ -675,10 +726,40 @@ export default {
       order_file_arr: [],
       packag_file_arr: [],
       box_file_arr: [],
-      other_file_arr: []
+      other_file_arr: [],
+      // 预警数据
+      isOpenWarn: false,
+      warnType: '',
+      warnList: [],
+      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }]
     }
   },
   methods: {
+    checkedWarn (item) {
+      this.warnType = item.title
+      this.timeData = [
+        {
+          percent: this.$toFixed(item.material_plan / 100),
+          name: '物料计划'
+        }, {
+          percent: this.$toFixed(item.material_push / 100),
+          name: '物料入库'
+        }, {
+          percent: this.$toFixed(item.semi_product_push / 100),
+          name: '半成品入库'
+        }, {
+          percent: this.$toFixed(item.product_push / 100),
+          name: '成品入库'
+        }, {
+          percent: this.$toFixed(item.product_pack / 100),
+          name: '成品装箱'
+        }
+      ]
+    },
+    getWarnEndTime () {
+      let data = this.batchDate[0].time
+      return data || this.$getTime()
+    },
     addItem (item, type) {
       if (type === 'code') {
         item.push({ code: '' })
@@ -738,7 +819,7 @@ export default {
       }
     },
     getList () {
-      this.loading = true
+      this.listLoading = true
       product.list({
         limit: 5,
         page: this.pages,
@@ -769,7 +850,7 @@ export default {
           })
           this.total = res.data.meta.total
         }
-        this.loading = false
+        this.listLoading = false
       })
     },
     searchCodeChange (newVal) {
@@ -982,6 +1063,22 @@ export default {
       const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
+      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      let warnData = this.isOpenWarn ? {
+        order_time: this.order_time,
+        end_time: this.getWarnEndTime(),
+        progress_data: {
+          material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+          material_push: this.$toFixed(materialPushFlag.percent * 100),
+          semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+          product_push: this.$toFixed(productPushFlag.percent * 100),
+          product_pack: this.$toFixed(productPackFlag.percent * 100)
+        }
+      } : null
       let data = {
         id: this.$route.params.id,
         order_code: this.order_code.map(item => {
@@ -1019,7 +1116,8 @@ export default {
         order_contract: JSON.stringify(orderContract),
         pack_means: JSON.stringify(packMeans),
         store_means: JSON.stringify(storeMeans),
-        others_info: JSON.stringify(otherInfo)
+        others_info: JSON.stringify(otherInfo),
+        time_progress: warnData
       }
       order.create(data).then(res => {
         if (res.data.status) {
@@ -1050,12 +1148,14 @@ export default {
       getToken(),
       order.editDetail({
         id: this.$route.params.id
-      })
+      }),
+      warnSetting.list()
     ]).then(res => {
       this.loading = true
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
+      this.warnList = res[4].data.data.filter(item => item.order_type === 1)
       // 初始化修改订单数据
       let orderInfo = res[3].data.data
       this.order_code = orderInfo.order_code.split(';').map(item => {
@@ -1173,6 +1273,27 @@ export default {
       }) : []
       this.total_price = orderInfo.total_price
       this.remark = orderInfo.remark
+      if (orderInfo.time_progress) {
+        this.isOpenWarn = true
+        this.timeData = [
+          {
+            percent: this.$toFixed(orderInfo.time_progress.progress_data.material_plan / 100),
+            name: '物料计划'
+          }, {
+            percent: this.$toFixed(orderInfo.time_progress.progress_data.material_push / 100),
+            name: '物料入库'
+          }, {
+            percent: this.$toFixed(orderInfo.time_progress.progress_data.semi_product_push / 100),
+            name: '半成品入库'
+          }, {
+            percent: this.$toFixed(orderInfo.time_progress.progress_data.product_push / 100),
+            name: '成品入库'
+          }, {
+            percent: this.$toFixed(orderInfo.time_progress.progress_data.product_pack / 100),
+            name: '成品装箱'
+          }
+        ]
+      }
       this.loading = false
     })
   },

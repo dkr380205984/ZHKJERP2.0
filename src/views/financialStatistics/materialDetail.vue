@@ -211,6 +211,92 @@
     </div>
     <div class="module">
       <div class="titleCtn">
+        <span class="title">物料出入库</span>
+      </div>
+      <div class="listCtn">
+        <div class="flexBox">
+          <div class="box">
+            <span class="boxTop">计划数量</span>
+            <span class="boxBottom">
+              <span class="num">{{$formatNum(WLYDGStat.totalNum)}}</span>
+              <span class="em">千克</span>
+            </span>
+          </div>
+          <div class="box">
+            <span class="boxTop">入库数量</span>
+            <span class="boxBottom">
+              <span class="num">{{WLYDGStat.prePrice}}</span>
+              <span class="em">千克</span>
+            </span>
+          </div>
+          <div class="box">
+            <span class="boxTop">出库数量</span>
+            <span class="boxBottom">
+              <span class="num">{{$formatNum(WLYDGStat.totalPrice)}}</span>
+              <span class="em">千克</span>
+            </span>
+          </div>
+        </div>
+        <div class="flexTb">
+          <div class="thead">
+            <div class="trow">
+              <div class="tcolumn">
+                <span class="text">
+                  <span class="text"
+                    v-show="!WLYDGCMPFlag">出入库单位
+                    <i class="el-icon-search iconBtn"
+                      @click="WLYDGCMPFlag=true"></i>
+                  </span>
+                  <transition name="el-zoom-in-top">
+                    <div v-show="WLYDGCMPFlag"
+                      class="filterBox">
+                      <el-select v-model="WLYDGCMP"
+                        @change="getWLYDGList"
+                        clearable
+                        filterable
+                        placeholder="筛选公司">
+                        <el-option v-for="(item,index) in companyArr"
+                          :key="index"
+                          :label="item.name"
+                          :value="item.id">
+                        </el-option>
+                      </el-select>
+                    </div>
+                  </transition>
+                </span>
+              </div>
+              <div class="tcolumn">出入库时间</div>
+              <div class="tcolumn">出入库数量</div>
+              <div class="tcolumn">出入库类型</div>
+              <div class="tcolumn">操作人</div>
+              <div class="tcolumn">关联订单号</div>
+            </div>
+          </div>
+          <div class="tbody">
+            <div class="trow"
+              v-for="(item,index) in  WLYDGRender"
+              :key="index">
+              <div class="tcolumn">{{item.client_name}}</div>
+              <div class="tcolumn">{{item.order_time}}</div>
+              <div class="tcolumn">{{item.stock_number}}</div>
+              <div class="tcolumn">{{item.price}}</div>
+              <div class="tcolumn">{{item.price*item.stock_number}}</div>
+              <div class="tcolumn">{{item.user_name}}</div>
+              <div class="tcolumn">{{item.order_code}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="WLYDGTotal"
+            :current-page.sync="WLYDGPage"></el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
         <span class="title">库存记录</span>
       </div>
       <div class="listCtn">
