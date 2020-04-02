@@ -10,7 +10,8 @@
           <span class="productCode">{{productCode}}</span>
           <zh-message :msgSwitch="msgSwitch"
             :url="msgUrl"
-            :content="msgContent"></zh-message>
+            :content="msgContent">
+          </zh-message>
         </span>
         <el-autocomplete v-model="importKeyword"
           style="width:200px;height:32px"

@@ -359,9 +359,9 @@ export default {
       })
       let error = null
       formData.forEach((item) => {
-        if (item.material_info.length === 0) {
-          error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
-        }
+        // if (item.material_info.length === 0) {
+        //   error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
+        // }
         item.material_info.forEach((item) => {
           if (!item.material_name) {
             error = '检测到有未填写物料名称，请填写'

@@ -18,32 +18,6 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">员工年龄</span>
-            </div>
-            <div class="content">
-              <zh-input v-model="staffInfo.age"
-                type="positiveNumber"
-                placeholder="请输入员工年龄"></zh-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
-              <span class="text">员工性别</span>
-            </div>
-            <div class="content">
-              <el-select v-model="staffInfo.sex"
-                placeholder="请选择性别">
-                <el-option label="男"
-                  value="1"></el-option>
-                <el-option label="女"
-                  value="2"></el-option>
-              </el-select>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <div class="label">
               <span class="text">手机号</span>
               <span class="explanation">(必填)</span>
             </div>
@@ -65,6 +39,61 @@
                   :key="index"
                   :label="item.name"
                   :value="item.id"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">民族</span>
+            </div>
+            <div class="content">
+              <zh-input v-model="staffInfo.mingzu"
+                placeholder="请输入民族"></zh-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">地址</span>
+            </div>
+            <div class="content">
+              <el-input v-model="staffInfo.dizhi"
+                placeholder="请输入地址"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">学历</span>
+            </div>
+            <div class="content">
+              <el-input v-model="staffInfo.xueli"
+                placeholder="请输入学历"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">员工年龄</span>
+            </div>
+            <div class="content">
+              <zh-input v-model="staffInfo.age"
+                type="positiveNumber"
+                placeholder="请输入员工年龄"></zh-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">员工性别</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.sex"
+                placeholder="请选择性别">
+                <el-option label="男"
+                  value="1"></el-option>
+                <el-option label="女"
+                  value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -155,15 +184,27 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">
-              <span class="text">在职时间</span>
-              <span class="explanation">(必填)</span>
+              <span class="text">入职时间</span>
             </div>
-            <div class="content">
-              <el-date-picker style="width:100%"
-                v-model="staffInfo.date"
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.start_time"
                 value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择在职时间">
+                placeholder="入职时间">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">离职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.end_time"
+                value-format="yyyy-MM-dd"
+                placeholder="离职时间">
               </el-date-picker>
             </div>
           </div>
@@ -215,7 +256,10 @@ export default {
         emergentPhone: '',
         date: '',
         type: '',
-        desc: ''
+        desc: '',
+        mingzu: '',
+        dizhi: '',
+        xueli: ''
       },
       departmentArr: [],
       stationArr: []
@@ -259,6 +303,9 @@ export default {
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
         work_time: this.staffInfo.date,
+        nation: this.staffInfo.mingzu,
+        address: this.staffInfo.dizhi,
+        academic: this.staffInfo.xueli,
         desc: this.staffInfo.desc
       }).then((res) => {
         if (res.data.status) {
@@ -274,7 +321,7 @@ export default {
     }).then((res) => {
       let data = res.data.data
       this.staffInfo.name = data.name
-      this.staffInfo.telephone = data.telephone
+      this.staffInfo.telephone = data.phone
       this.staffInfo.sex = data.sex
       this.staffInfo.department_id = data.department_id
       this.staffInfo.age = data.age
@@ -287,6 +334,9 @@ export default {
       this.staffInfo.type = data.type
       this.staffInfo.date = data.work_time
       this.staffInfo.desc = data.desc
+      this.staffInfo.dizhi = data.address
+      this.staffInfo.xueli = data.academic
+      this.staffInfo.mingzu = data.nation
     })
     station.list({
       type: 2

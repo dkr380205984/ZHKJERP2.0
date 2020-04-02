@@ -30,6 +30,20 @@
           </div>
           <div class="tabelBody">
             <div class="box">
+              <div class="label">民族：</div>
+              <div class="content">{{staffInfo.nation}}</div>
+            </div>
+            <div class="box">
+              <div class="label">地址：</div>
+              <div class="content">{{staffInfo.address}}</div>
+            </div>
+            <div class="box">
+              <div class="label">学历：</div>
+              <div class="content">{{staffInfo.academic}}</div>
+            </div>
+          </div>
+          <div class="tabelBody">
+            <div class="box">
               <div class="label">联系电话：</div>
               <div class="content">{{staffInfo.phone}}</div>
             </div>
@@ -213,7 +227,10 @@ export default {
         work_time: '',
         desc: '',
         staff_code: '',
-        child_data: []
+        child_data: [],
+        nation: '',
+        address: '',
+        academic: ''
       },
       payInfo: [],
       payOtherInfo: [],

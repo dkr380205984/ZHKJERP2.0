@@ -881,6 +881,7 @@
 </template>
 
 <script>
+import { materialManage } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -916,8 +917,23 @@ export default {
       this.$router.push('/product/productList/page=' + pages + '&&type=' + this.type)
     },
     getList () {
+      if (this.type === '物料订购/调取') {
+        materialManage.detail({
+          order_type: null,
+          order_id: null,
+          limit: 10,
+          page: 1
+        }).then((res) => {
+          console.log(res)
+        })
+      } else if (this.type === '物料加工') {
 
+      }
     }
+  },
+  created () {
+    this.getList()
+    console.log(this.list)
   }
 }
 </script>
