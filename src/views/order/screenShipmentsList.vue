@@ -375,7 +375,8 @@ export default {
           'client_id': this.searchList.company,
           'group_id': this.searchList.group,
           'start_time': this.searchList.start_time || this.start_time,
-          'end_time': this.searchList.end_time || this.end_time
+          'end_time': this.searchList.end_time || this.end_time,
+          'is_dispatch': 1
         }).then(res => {
           let batchData = res.data.data.sort((a, b) => {
             return new Date(a.deliver_time).getTime() - new Date(b.deliver_time).getTime()
