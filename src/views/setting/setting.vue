@@ -4205,8 +4205,8 @@ export default {
     }
   },
   created () {
-    this.pName = '预警设置'
-    this.cName = '订单预警'
+    this.pName = '产品设置'
+    this.cName = '产品花型'
   }
 }
 </script>
