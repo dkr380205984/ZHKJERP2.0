@@ -174,12 +174,14 @@
                         </el-select>
                       </div>
                     </div>
-                    <div class="colCtn flex3">
+                    <div class="colCtn flex3"
+                      v-if="itemStock.editType === 5">
                       <div class="label">
-                        <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span>
+                        <span class="text">结余入库仓库</span>
+                        <!-- <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span> -->
                       </div>
                       <div class="content">
-                        <template v-if="itemStock.editType !== 5">
+                        <!-- <template v-if="itemStock.editType !== 5">
                           <el-select v-model="itemStock.stockId"
                             class="elInput"
                             placeholder="请选择出入库仓库">
@@ -189,18 +191,18 @@
                               :value="item.id">
                             </el-option>
                           </el-select>
-                        </template>
-                        <template v-else>
-                          <el-select v-model="itemStock.stockId"
-                            class="elInput"
-                            placeholder="请选择结余入库仓库">
-                            <el-option v-for="item in stockArr"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.id">
-                            </el-option>
-                          </el-select>
-                        </template>
+                        </template> -->
+                        <!-- <template v-else> -->
+                        <el-select v-model="itemStock.stockId"
+                          class="elInput"
+                          placeholder="请选择结余入库仓库">
+                          <el-option v-for="item in stockArr"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                          </el-option>
+                        </el-select>
+                        <!-- </template> -->
                       </div>
                     </div>
                   </div>

@@ -394,7 +394,7 @@
         </div>
       </div>
     </div>
-    <div class="module"
+    <!-- <div class="module"
       :style="{'margin-bottom': isOpenWarn ? '0px' : '120px'}">
       <div class="titleCtn"
         style="display:flex;justify-content: space-between">
@@ -443,7 +443,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -458,7 +458,8 @@
 </template>
 
 <script>
-import { sample, client, group, sampleOrder, warnSetting } from '@/assets/js/api.js'
+// , warnSetting
+import { sample, client, group, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -514,33 +515,33 @@ export default {
       remark: '',
       isResouceShow: 0, // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
       lock: true,
-      importKeyword: '',
+      importKeyword: ''
       // 预警数据
-      isOpenWarn: false,
-      warnType: '',
-      warnList: [],
-      timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '半成品入库' }, { percent: 0.25, name: '成品入库' }]
+      // isOpenWarn: false,
+      // warnType: '',
+      // warnList: [],
+      // timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '半成品入库' }, { percent: 0.25, name: '成品入库' }]
     }
   },
   methods: {
-    checkedWarn (item) {
-      this.warnType = item.title
-      this.timeData = [
-        {
-          percent: this.$toFixed(item.material_plan / 100),
-          name: '物料计划'
-        }, {
-          percent: this.$toFixed(item.material_push / 100),
-          name: '物料入库'
-        }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
-        }, {
-          percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
-        }
-      ]
-    },
+    // checkedWarn (item) {
+    //   this.warnType = item.title
+    //   this.timeData = [
+    //     {
+    //       percent: this.$toFixed(item.material_plan / 100),
+    //       name: '物料计划'
+    //     }, {
+    //       percent: this.$toFixed(item.material_push / 100),
+    //       name: '物料入库'
+    //     }, {
+    //       percent: this.$toFixed(item.semi_product_push / 100),
+    //       name: '半成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_push / 100),
+    //       name: '成品入库'
+    //     }
+    //   ]
+    // },
     querySearchOrder (querystring, cb) {
       sampleOrder.list({
         page: 1,
@@ -717,20 +718,20 @@ export default {
         this.$message.error('请选择交货时间')
         return
       }
-      let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
-      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
-      let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
-      let warnData = this.isOpenWarn ? {
-        order_time: this.order_time,
-        end_time: this.compiled_time,
-        progress_data: {
-          material_plan: this.$toFixed(materialPlanFlag.percent * 100),
-          material_push: this.$toFixed(materialPushFlag.percent * 100),
-          semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
-          product_push: this.$toFixed(productPushFlag.percent * 100)
-        }
-      } : null
+      // let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      // let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      // let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      // let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      // let warnData = this.isOpenWarn ? {
+      //   order_time: this.order_time,
+      //   end_time: this.compiled_time,
+      //   progress_data: {
+      //     material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+      //     material_push: this.$toFixed(materialPushFlag.percent * 100),
+      //     semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+      //     product_push: this.$toFixed(productPushFlag.percent * 100)
+      //   }
+      // } : null
       let data = {
         title: this.sample_order_title,
         type: this.sample_type,
@@ -751,8 +752,8 @@ export default {
           }
         }),
         deliver_time: this.compiled_time,
-        desc: this.remark,
-        time_progress: warnData
+        desc: this.remark
+        // time_progress: warnData
       }
       this.lock = false
       sampleOrder.create(data).then(res => {
@@ -826,12 +827,12 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list(),
-      warnSetting.list()
+      group.list()
+      // warnSetting.list()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
-      this.warnList = res[2].data.data.filter(item => item.order_type === 2)
+      // this.warnList = res[2].data.data.filter(item => item.order_type === 2)
       this.loading = false
     })
   },
