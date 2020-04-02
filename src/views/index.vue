@@ -298,6 +298,9 @@ export default {
         }, {
           name: '合作公司财务统计',
           url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
+        }, {
+          name: '操作记录统计',
+          url: '/financialStatistics/logStatistics/page=1'
         }]
       }, {
         name: '员工管理',

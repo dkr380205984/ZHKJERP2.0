@@ -137,7 +137,7 @@ export default {
       })
     },
     readMsg (item) {
-      if (item.tag === '公司') {
+      if (item.tag === '公司' || item.tag === '系统') {
         this.$alert('通知详情：' + item.content, item.title, {
           confirmButtonText: '确定',
           dangerouslyUseHTMLString: true
