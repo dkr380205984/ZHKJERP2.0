@@ -314,8 +314,8 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.category_info.product_code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.category_info.product_title}}</span>
+                        <span>{{itemChild.product_info.code}}</span>
+                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
@@ -384,7 +384,7 @@
                     style="flex:1.5">{{item.client_name}}</div>
                   <div class="tcolumn"
                     style="flex:1.5">
-                    <span>{{item.category_info.product_code}}</span>
+                    <span>{{item.product_info.code}}</span>
                     <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
                   </div>
                   <div class="tcolumn"
