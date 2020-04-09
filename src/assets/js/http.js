@@ -25,12 +25,12 @@ axios.interceptors.response.use(
     if (res.data.code === 200) {
 
     } else if (res.data.code === 1001) {
-      Message.Message.error('登录信息过期，请重新登录')
-      router.push({ path: '/login' })
+      Message.Message.error(res.data.message)
     } else if (res.data.code === 1002) {
       Message.Message.error(res.data.message)
     } else if (res.data.code === 1003) {
-      Message.Message.error(res.data.message)
+      Message.Message.error('登录信息过期，请重新登录')
+      router.push({ path: '/login' })
     } else if (res.data.code === 1004) {
       Message.Message.error(res.data.message)
     } else if (res.data.code === 1005) {

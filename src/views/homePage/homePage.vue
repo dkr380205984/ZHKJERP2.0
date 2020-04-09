@@ -103,7 +103,7 @@
                 :key="item.id">
                 <span class="text"
                   v-html="item.order_code"
-                  @click="$router.push('/sample/sampleOrderDetail/' + item.id)"></span>
+                  @click="$router.push('/sample/sampleOrderDetail/' + (item.pid!==0?item.pid:item.id))"></span>
                 <span class="text">{{item.client_name}}</span>
                 <span class="text">{{item.total_number}}</span>
                 <span class="text">{{item.group_name}}</span>

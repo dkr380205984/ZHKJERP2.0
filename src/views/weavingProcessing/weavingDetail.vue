@@ -462,7 +462,7 @@
                           :key="indexMat">
                           <div class="tcolumn">{{itemMat.material_name}}</div>
                           <div class="tcolumn">{{itemMat.material_attribute}}</div>
-                          <div class="tcolumn">{{parseInt(itemMat.material_weight/1000)}}kg</div>
+                          <div class="tcolumn">{{itemMat.material_type===1?parseInt(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
                         </div>
                         <div class="trow"
                           v-if="itemChild.material_assign.length===0">
@@ -1374,6 +1374,7 @@ export default {
         return item
       })
       this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      console.log(this.weaving_detail)
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {

@@ -57,7 +57,7 @@ const downloadExcel = (data, titles, orderInfo, excelName) => {
               </head>
               <body>
                 ${Object.keys(orderInfo).length > 0 ? orderElement : ''}
-                <table>${excelHeader}${excelContent}</table>
+                <table>${excelHeader}${excelContent.join('')}</table>
               </body>
             </html>`
   let url = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html)

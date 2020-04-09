@@ -423,7 +423,11 @@ const warnSetting = {
   list: (params) => http.get(`${baseUrl}/order/progress/time/list`, params),
   delete: (params) => http.post(`${baseUrl}/order/progress/time/delete`, params, 'application/json')
 }
+let logStatistics = {
+  detail: (params) => http.get(`${baseUrl}/financial/operate/note/count`, params)
+}
 export {
+  logStatistics,
   warnSetting,
   orderBatch,
   station,

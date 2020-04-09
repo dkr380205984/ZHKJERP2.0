@@ -300,7 +300,7 @@ export default {
           url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
         }, {
           name: '操作记录统计',
-          url: '/financialStatistics/logStatistics/page=1'
+          url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取'
         }]
       }, {
         name: '员工管理',
