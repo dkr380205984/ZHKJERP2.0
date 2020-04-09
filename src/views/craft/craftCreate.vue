@@ -97,7 +97,7 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn"
           v-for="(item,index) in colour"
-          :key="'colour'+index">
+          :key="'colour'+ index + new Date()">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -814,7 +814,7 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn"
           v-for="(item,index) in colour"
-          :key="index">
+          :key="index + new Date()">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -2576,6 +2576,7 @@ export default {
     deleteColour (index) {
       if (this.colour.length > 1) {
         this.colour.splice(index, 1)
+        this.$forceUpdate()
       } else {
         this.$message.error({
           message: '至少有一种配色方案'

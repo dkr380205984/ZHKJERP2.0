@@ -16,8 +16,7 @@
           @click="noOpr">注册</div>
       </div>
       <div class="userName">
-        <zh-input type="telephone"
-          placeholder="请输入手机号"
+        <zh-input placeholder="请输入用户名"
           v-model="telephone"
           @keydown.enter="goLogin">
           <template slot="prepend">

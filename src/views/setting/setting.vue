@@ -570,9 +570,11 @@
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn">姓名</div>
+                    <div class="tcolumn">登录账号</div>
                     <div class="tcolumn">手机号</div>
                     <div class="tcolumn">分组</div>
                     <div class="tcolumn">岗位</div>
+                    <div class="tcolumn">状态</div>
                     <div class="tcolumn">操作</div>
                   </div>
                 </div>
@@ -581,14 +583,18 @@
                     v-for="item in authList"
                     :key="item.id">
                     <div class="tcolumn">{{item.name}}</div>
+                    <div class="tcolumn">{{item.user_name}}</div>
                     <div class="tcolumn">{{item.telephone}}</div>
                     <div class="tcolumn">{{item.group}}</div>
                     <div class="tcolumn">{{item.station_name}}</div>
+                    <div class="tcolumn"
+                      :class="{'green':item.status===1,'red':item.status!==1}">{{item.status===1?'已启用':'已禁用'}}</div>
                     <div class="tcolumn flexRow">
                       <span class="blue"
                         @click="changeAuth(item)">修改</span>
-                      <!-- <span class="border"></span>
-                      <span class="red">禁用</span> -->
+                      <span class="border"></span>
+                      <span @click="banAuth(item)"
+                        :class="{'red':item.status===1,'green':item.status!==1}">{{item.status===1?'禁用':'启用'}}</span>
                     </div>
                   </div>
                 </div>
@@ -1460,6 +1466,13 @@
               </div>
             </div>
             <div class="row">
+              <div class="label">登录帐号：</div>
+              <div class="info">
+                <zh-input placeholder="请输入自定义帐号"
+                  v-model="authInfo.user_name"></zh-input>
+              </div>
+            </div>
+            <div class="row">
               <div class="label">隶属小组：</div>
               <div class="info">
                 <el-select v-model="authInfo.group_id"
@@ -2236,6 +2249,7 @@ export default {
       stationTotal: 1,
       stationPage: 1,
       companyInfo: {
+        alias: '',
         logoUrl: '',
         client_name: '',
         client_about: '',
@@ -2249,6 +2263,7 @@ export default {
       authList: [],
       authInfo: {
         id: null,
+        user_name: '',
         status: 1,
         telephone: '',
         group_id: '',
@@ -2767,6 +2782,36 @@ export default {
       if (typeof (this.authInfo.module_id) !== 'object' || this.authInfo.module_id === null) {
         this.authInfo.module_id = []
       }
+    },
+    banAuth (item) {
+      let msg = ''
+      if (item.status === 1) {
+        msg = '禁用该员工后该帐号将不能登录系统，请确认'
+      } else {
+        msg = '是否启用该员工'
+      }
+      this.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        auth.ban({
+          id: item.id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            })
+            item.status = (item.status === 1 ? 0 : 1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     getProductType () {
       productType.list().then((res) => {
@@ -3912,26 +3957,26 @@ export default {
         this.$message.error('请填写公司名称')
         return
       }
-      if (!this.companyInfo.client_about) {
-        this.$message.error('请填写公司简介')
-        return
-      }
-      if (imageUrl.length === 0 || !imageUrl) {
-        this.$message.error('请上传公司图片')
-        return
-      }
-      if (!this.companyInfo.client_tel) {
-        this.$message.error('请填写公司电话')
-        return
-      }
-      if (!this.companyInfo.client_email) {
-        this.$message.error('请填写公司邮箱')
-        return
-      }
-      if (!this.companyInfo.client_address) {
-        this.$message.error('请填写公司地址')
-        return
-      }
+      // if (!this.companyInfo.client_about) {
+      //   this.$message.error('请填写公司简介')
+      //   return
+      // }
+      // if (imageUrl.length === 0 || !imageUrl) {
+      //   this.$message.error('请上传公司图片')
+      //   return
+      // }
+      // if (!this.companyInfo.client_tel) {
+      //   this.$message.error('请填写公司电话')
+      //   return
+      // }
+      // if (!this.companyInfo.client_email) {
+      //   this.$message.error('请填写公司邮箱')
+      //   return
+      // }
+      // if (!this.companyInfo.client_address) {
+      //   this.$message.error('请填写公司地址')
+      //   return
+      // }
       company.create({
         address: this.companyInfo.client_address,
         phone: this.companyInfo.client_tel,
@@ -3953,6 +3998,7 @@ export default {
     resetAuth () {
       this.authInfo = {
         id: null,
+        user_name: '',
         status: 1,
         telephone: '',
         group_id: '',
@@ -3982,6 +4028,11 @@ export default {
           type: 'error',
           message: '手机号码不能为空'
         })
+      } else if (this.authInfo.user_name === '') {
+        this.$message({
+          type: 'error',
+          message: '登录帐号不能为空'
+        })
       } else if (this.authInfo.name === '') {
         this.$message({
           type: 'error',
@@ -4003,6 +4054,7 @@ export default {
             this.$message.success('添加成功')
             this.authInfo = {
               id: null,
+              user_name: '',
               status: 1,
               telephone: '',
               group_id: '',
@@ -4271,6 +4323,12 @@ export default {
       height: 100% !important;
       border: none;
     }
+  }
+  .green {
+    color: #01b48c;
+  }
+  .red {
+    color: #f5222d;
   }
 }
 </style>

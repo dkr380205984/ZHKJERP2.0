@@ -479,7 +479,7 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module">
+    <div class="module">
       <div class="titleCtn"
         style="display:flex;justify-content: space-between">
         <span class="title">预警设置
@@ -527,7 +527,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="module">
       <div class="titleCtn">
         <span class="title">其他信息</span>
@@ -673,9 +673,8 @@
 </template>
 
 <script>
-// , warnSetting
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken } from '@/assets/js/api.js'
+import { product, client, group, order, getToken, warnSetting } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -736,40 +735,40 @@ export default {
       packag_file_arr: [],
       box_file_arr: [],
       other_file_arr: [],
-      importKeyword: ''
+      importKeyword: '',
       // 预警数据
-      // isOpenWarn: false,
-      // warnType: '',
-      // warnList: [],
-      // timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }]
+      isOpenWarn: false,
+      warnType: '',
+      warnList: [],
+      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }]
     }
   },
   methods: {
-    // checkedWarn (item) {
-    //   this.warnType = item.title
-    //   this.timeData = [
-    //     {
-    //       percent: this.$toFixed(item.material_plan / 100),
-    //       name: '物料计划'
-    //     }, {
-    //       percent: this.$toFixed(item.material_push / 100),
-    //       name: '物料入库'
-    //     }, {
-    //       percent: this.$toFixed(item.semi_product_push / 100),
-    //       name: '半成品入库'
-    //     }, {
-    //       percent: this.$toFixed(item.product_push / 100),
-    //       name: '成品入库'
-    //     }, {
-    //       percent: this.$toFixed(item.product_pack / 100),
-    //       name: '成品装箱'
-    //     }
-    //   ]
-    // },
-    // getWarnEndTime () {
-    //   let data = this.batchDate[0].time
-    //   return data || this.$getTime()
-    // },
+    checkedWarn (item) {
+      this.warnType = item.title
+      this.timeData = [
+        {
+          percent: this.$toFixed(item.material_plan / 100),
+          name: '物料计划'
+        }, {
+          percent: this.$toFixed(item.material_push / 100),
+          name: '物料入库'
+        }, {
+          percent: this.$toFixed(item.semi_product_push / 100),
+          name: '半成品入库'
+        }, {
+          percent: this.$toFixed(item.product_push / 100),
+          name: '成品入库'
+        }, {
+          percent: this.$toFixed(item.product_pack / 100),
+          name: '成品装箱'
+        }
+      ]
+    },
+    getWarnEndTime () {
+      let data = this.batchDate[0].time
+      return data || this.$getTime()
+    },
     querySearchOrder (querystring, cb) {
       order.list({
         page: 1,
@@ -1088,22 +1087,22 @@ export default {
       const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      // let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
-      // let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
-      // let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      // let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
-      // let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
-      // let warnData = this.isOpenWarn ? {
-      //   order_time: this.order_time,
-      //   end_time: this.getWarnEndTime(),
-      //   progress_data: {
-      //     material_plan: this.$toFixed(materialPlanFlag.percent * 100),
-      //     material_push: this.$toFixed(materialPushFlag.percent * 100),
-      //     semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
-      //     product_push: this.$toFixed(productPushFlag.percent * 100),
-      //     product_pack: this.$toFixed(productPackFlag.percent * 100)
-      //   }
-      // } : null
+      let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
+      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      let warnData = this.isOpenWarn ? {
+        order_time: this.order_time,
+        end_time: this.getWarnEndTime(),
+        progress_data: {
+          material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+          material_push: this.$toFixed(materialPushFlag.percent * 100),
+          semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+          product_push: this.$toFixed(productPushFlag.percent * 100),
+          product_pack: this.$toFixed(productPackFlag.percent * 100)
+        }
+      } : null
       let data = {
         order_code: this.order_code.map(item => {
           return item.code
@@ -1140,8 +1139,8 @@ export default {
         order_contract: JSON.stringify(orderContract),
         pack_means: JSON.stringify(packMeans),
         store_means: JSON.stringify(storeMeans),
-        others_info: JSON.stringify(otherInfo)
-        // time_progress: warnData
+        others_info: JSON.stringify(otherInfo),
+        time_progress: warnData
       }
       order.create(data).then(res => {
         if (res.data.status) {
@@ -1297,14 +1296,14 @@ export default {
     Promise.all([
       client.list(),
       group.list(),
-      getToken()
-      // warnSetting.list()
+      getToken(),
+      warnSetting.list()
     ]).then(res => {
       this.loading = true
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
-      // this.warnList = res[3].data.data.filter(item => item.order_type === 1)
+      this.warnList = res[3].data.data.filter(item => item.order_type === 1)
       this.loading = false
     })
   },
@@ -1332,7 +1331,6 @@ export default {
       }
     },
     flower_id (newVal) {
-      console.log(newVal)
       this.pages = 1
       this.getList()
     },

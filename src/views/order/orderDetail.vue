@@ -192,7 +192,6 @@
       <div class="titleCtn">
         <span class="title hasBorder">流程进度</span>
         <!-- <span class="right"
-        style="display:flex;justify-content: space-between"
           style="display:flex;align-items:center">
           <div class="btn noBorder"
             :style="{'color': isOpenWarn ? '' : '#BBB'}">流程预警</div>
@@ -1085,7 +1084,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1164,10 +1163,10 @@ export default {
       productStockId: '',
       unitArr: moneyArr,
       // 预警数据
-      // timeData: [{ percent: 0.25, name: '织造' }, { percent: 0.15, name: '织造' }, { percent: 0.6, name: '织造' }],
-      // isOpenWarn: false,
-      // warnType: '',
-      // warnList: [],
+      timeData: [{ percent: 0.25, name: '织造' }, { percent: 0.15, name: '织造' }, { percent: 0.6, name: '织造' }],
+      isOpenWarn: false,
+      warnType: '',
+      warnList: [],
       warnData: {
         isOpenWarn: false,
         startTime: this.$getTime(),
@@ -1178,37 +1177,37 @@ export default {
   },
   methods: {
     // 获取预警列表
-    // getWarnList () {
-    //   warnSetting.list().then(res => {
-    //     if (res.data.status !== false) {
-    //       this.warnList = res.data.data.filter(item => item.order_type === 1)
-    //     }
-    //   })
-    // },
-    // checkedWarn (item) {
-    //   this.warnType = item.title
-    //   this.timeData = [
-    //     {
-    //       percent: this.$toFixed(item.material_plan / 100),
-    //       name: '物料计划'
-    //     }, {
-    //       percent: this.$toFixed(item.material_push / 100),
-    //       name: '物料入库'
-    //     }, {
-    //       percent: this.$toFixed(item.semi_product_push / 100),
-    //       name: '半成品入库'
-    //     }, {
-    //       percent: this.$toFixed(item.product_push / 100),
-    //       name: '成品入库'
-    //     }, {
-    //       percent: this.$toFixed(item.product_pack / 100),
-    //       name: '成品装箱'
-    //     }
-    //   ]
-    // },
-    // saveWarning () {
+    getWarnList () {
+      warnSetting.list().then(res => {
+        if (res.data.status !== false) {
+          this.warnList = res.data.data.filter(item => item.order_type === 1)
+        }
+      })
+    },
+    checkedWarn (item) {
+      this.warnType = item.title
+      this.timeData = [
+        {
+          percent: this.$toFixed(item.material_plan / 100),
+          name: '物料计划'
+        }, {
+          percent: this.$toFixed(item.material_push / 100),
+          name: '物料入库'
+        }, {
+          percent: this.$toFixed(item.semi_product_push / 100),
+          name: '半成品入库'
+        }, {
+          percent: this.$toFixed(item.product_push / 100),
+          name: '成品入库'
+        }, {
+          percent: this.$toFixed(item.product_pack / 100),
+          name: '成品装箱'
+        }
+      ]
+    },
+    saveWarning () {
 
-    // },
+    },
     // 取消订单时跳过结余操作
     jumpGoStock () {
       this.showCanclePopup = 5
@@ -2312,7 +2311,7 @@ export default {
   },
   created () {
     this.init()
-    // this.getWarnList()
+    this.getWarnList()
   },
   watch: {
     activeDetailTitle (newVal) {

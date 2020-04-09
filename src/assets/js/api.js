@@ -126,7 +126,7 @@ const client = {
 const auth = {
   create: (params) => http.post(`${baseUrl}/user/save`, params, 'application/json'),
   update: (params) => http.post(`${baseUrl}/user/save`, params, 'application/json'),
-  ban: (params) => http.post(`${baseUrl}/user/check_status`, params, 'application/json'),
+  ban: (params) => http.post(`${baseUrl}/user/status/check`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/user/list`, params)
 }
 // 小组

@@ -135,6 +135,44 @@
                   <span class="text">{{item.complete_time}}</span>
                 </div>
               </div>
+              <!-- <div class="title">
+                <div class="col"
+                  style="flex:0.7">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                  平均价格
+                  <br />
+                  {{statistics.material_order.avg_price}}元
+                </div>
+                <div class="col">
+                  数量
+                  <br />
+                  {{$formatNum(statistics.material_order.total_weight)}}kg
+                </div>
+                <div class="col">
+                  总价
+                  <br />
+                  {{$formatNum(statistics.material_order.total_price)}}元
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                </div>
+              </div> -->
             </div>
             <div class="statistics"
               v-if="type==='物料订购调取'">
