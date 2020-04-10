@@ -38,7 +38,9 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
-            <span class="text">{{orderInfo.order_time}}</span>
+            <span class="text">{{orderInfo.order_time}}
+              <order-warning :progress="orderInfo.time_progress"></order-warning>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
