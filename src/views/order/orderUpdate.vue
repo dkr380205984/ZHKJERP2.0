@@ -105,7 +105,15 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">
-              <span class="text">汇率</span>
+              <span class="text">汇率
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="点击查看实时汇率"
+                  placement="top-start">
+                  <em class="el-icon-question"
+                    @click="$openUrl('http://forex.hexun.com/rmbhl/#zkRate')"></em>
+                </el-tooltip>
+              </span>
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">

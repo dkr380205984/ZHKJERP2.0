@@ -632,6 +632,7 @@ export default {
       }
     },
     cancleChecked (item) {
+      console.log(item)
       item.checked = false
       this.checkedProList = this.checkedProList.filter(items => items.checked)
       let cancleProFlag = this.productList.find(items => items.id === item.id)
@@ -797,6 +798,7 @@ export default {
           }
         })
         itemPro.unit = itemPro.product_info.unit
+        itemPro.checked = true
         return itemPro
       })
       this.compiled_time = sampleOrderInfo.deliver_time
