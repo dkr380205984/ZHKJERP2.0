@@ -3817,6 +3817,7 @@ export default {
     saveGroup () {
       if (this.group) {
         group.create({
+          type: 1,
           name: this.group
         }).then((res) => {
           if (res.data.status) {

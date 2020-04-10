@@ -984,15 +984,16 @@ export default {
     size: {
       deep: true,
       handler (newVal) {
-        this.fittingInfo.forEach(items => {
-          items.size = newVal.map((item, key) => {
+        this.fittingInfo.forEach((item) => {
+          let size = this.size.map((itemPro, indexPro) => {
             return {
-              size: item.size,
-              weight: items.size[key] ? items.size[key].weight : '',
-              fitting_number: items.size[key] ? items.size[key].fitting_number : 1,
-              desc: items.size[key] ? items.size[key].desc : ''
+              size: itemPro.size,
+              weight: item.size[indexPro] ? item.size[indexPro].weight : '',
+              desc: item.size[indexPro] ? item.size[indexPro].desc : '',
+              number: item.size[indexPro] ? item.size[indexPro].number : ''
             }
           })
+          item.size = size
         })
       }
     },

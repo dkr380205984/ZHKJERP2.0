@@ -801,14 +801,15 @@ export default {
       deep: true,
       handler: function (newVal) {
         this.fittingInfo.forEach((item) => {
-          item.size = newVal.map((itemPro, indexPro) => {
+          let size = this.size.map((itemPro, indexPro) => {
             return {
               size: itemPro.size,
-              weight: item.size[indexPro].weight,
-              desc: item.size[indexPro].desc,
-              number: item.size[indexPro].number
+              weight: item.size[indexPro] ? item.size[indexPro].weight : '',
+              desc: item.size[indexPro] ? item.size[indexPro].desc : '',
+              number: item.size[indexPro] ? item.size[indexPro].number : ''
             }
           })
+          item.size = size
         })
       }
     }

@@ -19,10 +19,9 @@
         :key="'timeNode' + index"
         :class="{'unEdit':index===renderData.length-1}"
         :style="{'left':item.left + 'px','z-index':99-index}">
-        <span class="time"
-          style="background-color:#FFF">{{cmpDate(item.percent,index)}}</span>
+        <span class="time">{{cmpDate(item.percent,index)}}</span>
         <span class="name"
-          style="background-color:#FFF;min-width:5em;text-align:center">{{item.name}}</span>
+          style="min-width:5em;text-align:center">{{item.name}}</span>
         <!-- <span class="name">{{item.name}}</span> -->
       </div>
     </div>

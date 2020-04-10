@@ -90,6 +90,10 @@
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
+              <div v-if="index===0"
+                class="editBtn deleteBtn"
+                style="margin-bottom:16px;margin-right:16p;margin-left:0"
+                @click="deleteColour(index)">删除配色</div>
               <color-picker style="margin-bottom:16px"
                 v-for="(itemColor,indexColor) in item.colorWarp"
                 :key="'color' + indexColor"
@@ -791,6 +795,10 @@
                 @click="index===0?addColour():deleteColour(index)">
                 {{index===0?'添加配色':'删除配色'}}
               </div>
+              <div v-if="index===0"
+                class="editBtn deleteBtn"
+                style="margin-bottom:16px;margin-right:16p;margin-left:0"
+                @click="deleteColour(index)">删除配色</div>
               <color-picker style="margin-bottom:16px"
                 v-for="(itemColor,indexColor) in item.colorWeft"
                 :key="indexColor + (itemColor.color?itemColor.color:0)"

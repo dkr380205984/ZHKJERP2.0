@@ -38,7 +38,9 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
-            <span class="text">{{orderInfo.order_time}}</span>
+            <span class="text">{{orderInfo.order_time}}
+              <order-warning :progress="orderInfo.time_progress"></order-warning>
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -1327,6 +1329,7 @@ export default {
       order_type: this.$route.params.orderType
     })]).then((res) => {
       this.orderInfo = res[0].data.data
+      console.log(this.orderInfo)
       let productInfo = []
       res[1].data.data.product_info.forEach((item) => {
         let finded = productInfo.find((itemFind) => {
@@ -1374,7 +1377,6 @@ export default {
         return item
       })
       this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
-      console.log(this.weaving_detail)
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
@@ -1392,7 +1394,6 @@ export default {
         return item
       })
       this.replenishClientArr = this.$mergeData(res[5].data.data.material_process_client.concat(res[5].data.data.material_order_client).concat(res[5].data.data.order_weave_client).concat(res[5].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
-      console.log(this.replenishClientArr)
       this.loading = false
     })
   }
