@@ -1379,7 +1379,7 @@ export default {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.part_data.forEach((itemPart) => {
             itemPart.weavingNum = this.weaving_log.filter((item) => {
-              return item.product_id === itemPart.id && item.size === itemPart.size && item.color === itemPart.color
+              return item.category_info.product_id === itemPart.id && item.size === itemPart.size && item.color === itemPart.color
             }).reduce((total, current) => {
               return total + current.number
             }, 0)

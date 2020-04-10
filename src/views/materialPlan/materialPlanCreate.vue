@@ -151,7 +151,7 @@
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchMaterial"
                       style="width:210px"
-                      @select="computedTotal"
+                      @select="selectMaterial($event,itemMa)"
                       placeholder="请输入辅料名称">
                     </el-autocomplete>
                   </span>
@@ -263,6 +263,10 @@ export default {
     }
   },
   methods: {
+    selectMaterial (e, item) {
+      item.unit = e.unit || '个'
+      this.computedTotal()
+    },
     querySearch (queryString, cb) {
       this.computedTotal()
       if (this.colorList.length === 0) {
@@ -624,7 +628,8 @@ export default {
       })
       this.materialList = res[2].data.data.map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          unit: item.unit
         }
       })
       this.loading = false

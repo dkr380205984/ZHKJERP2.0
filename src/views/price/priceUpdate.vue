@@ -90,7 +90,15 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
-              <span class="text">汇率</span>
+              <span class="text">汇率
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="点击查看实时汇率"
+                  placement="top-start">
+                  <em class="el-icon-question"
+                    @click="$openUrl('http://forex.hexun.com/rmbhl/#zkRate')"></em>
+                </el-tooltip>
+              </span>
               <span class="explanation">(必填,例：100人民币=600美元,填入"600"。)</span>
             </span>
             <span class="content">
@@ -560,7 +568,12 @@
                 placeholder="克重"
                 v-model="item.weight"
                 @input="computedPrice(item)">
-                <template slot="append">{{item.unit ? item.unit : '个'}}</template>
+                <template slot="append">
+                  <input type="text"
+                    v-model="item.unit"
+                    @change="changeOtherMaterialUnit($event,item)"
+                    style="border: none;background: transparent;outline: none;width: 1em;">
+                </template>
               </zh-input>
               <zh-input type="number"
                 class="hasMarginLeft"
@@ -615,7 +628,7 @@
               </zh-input>
               <div class="editBtn addBtn"
                 v-if="index === 0"
-                @click="addInfo(priceInfo.other_material,'material')">添加</div>
+                @click="addInfo(priceInfo.other_material,'other_material')">添加</div>
               <div class="editBtn deleteBtn"
                 v-else
                 @click="deleteInfo(priceInfo.other_material,index)">删除</div>
@@ -1038,7 +1051,7 @@ export default {
       exchangeRate: '',
       priceInfo: {
         raw_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
-        other_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
+        other_material: [{ name: '', weight: '', price: '', prop: '', total_price: '', unit: '个' }],
         weave: [{ name: '', number: '', total_price: '' }],
         semi_process: [{ name: '', total_price: '' }],
         finished_process: [{ name: '', total_price: '' }],
@@ -1105,6 +1118,11 @@ export default {
     }
   },
   methods: {
+    changeOtherMaterialUnit (e, item) {
+      if (!e.target.value) {
+        item.unit = '个'
+      }
+    },
     getPriceList () {
       price.list({
         code: this.priceCode,
@@ -1144,7 +1162,8 @@ export default {
               weight: vals.weight,
               price: vals.price,
               prop: vals.sunhao || vals.prop,
-              total_price: vals.total_price
+              total_price: vals.total_price,
+              unit: vals.unit || '个'
             }
           }),
           weave: JSON.parse(data.weave_info).map(vals => {
@@ -1235,6 +1254,8 @@ export default {
     addInfo (item, type) {
       if (type === 'material') {
         item.push({ name: '', weight: '', price: '', prop: '', total_price: '' })
+      } else if (type === 'other_material') {
+        item.push({ name: '', weight: '', price: '', prop: '', total_price: '', unit: '个' })
       } else if (type === 'weave') {
         item.push({ name: '', number: '', total_price: '' })
       } else if (type === 'other') {
