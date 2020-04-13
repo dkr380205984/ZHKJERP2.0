@@ -595,9 +595,21 @@ export default {
         this.$message.error('请将产品规格信息填写完整')
         return
       }
+      this.size.forEach((item, index) => {
+        this.size.forEach((itemFind, indexFind) => {
+          if (indexFind !== index && item.size === itemFind.size) {
+            error = true
+          }
+        })
+      })
+      if (error) {
+        this.$message.error('请不要选择重复的尺码信息')
+        return
+      }
       error = this.colour.some((item) => !item.colour)
       if (error) {
         this.$message.error('请将产品配色信息填写完整')
+        return
       }
       error = this.colour.some((item) => item.colour.search('/') !== -1)
       if (error) {
