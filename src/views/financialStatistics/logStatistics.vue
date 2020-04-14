@@ -11,11 +11,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -83,7 +88,7 @@
                   <span class="text">类型</span>
                 </div>
                 <div class="col">
-                  <span class="text">公司名称</span>
+                  <span class="text">公司/仓库</span>
                 </div>
                 <div class="col">
                   <span class="text">单价</span>
@@ -129,7 +134,7 @@
                     :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.client_name}}</span>
+                  <span class="text">{{item.client_name||item.stock_name}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.price}}元</span>
@@ -172,11 +177,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -289,7 +299,7 @@
                   <span class="text">{{item.process_type}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.order_company}}</span>
+                  <span class="text">{{item.client_name}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.price}}元</span>
@@ -332,11 +342,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -467,11 +482,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -626,11 +646,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -767,11 +792,16 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="order_code"
+                <el-select v-model="order_type"
                   @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input>
+                  class="inputs">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -832,6 +862,9 @@
                 <div class="col">
                   <span class="text">加工单位</span>
                 </div>
+                <div class="col">
+                  <span class="text">加工类型</span>
+                </div>
                 <div class="col"
                   style="flex:1.5">
                   <span class="text">产品信息</span>
@@ -877,6 +910,9 @@
                 </div>
                 <div class="col">
                   <span class="text">{{item.client_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.type}}</span>
                 </div>
                 <div class="col"
                   style="flex:1.5">
@@ -933,12 +969,12 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   style="width:160px"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   style="width:160px"
                   v-model="product_code"
@@ -1095,12 +1131,12 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   style="width:160px"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   style="width:160px"
                   v-model="product_code"
@@ -1257,11 +1293,11 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1322,7 +1358,8 @@
                 <div class="col">
                   <span class="text">织造单位</span>
                 </div>
-                <div class="col">
+                <div class="col"
+                  style="flex:1.5">
                   <span class="text">产品信息</span>
                 </div>
                 <div class="col">
@@ -1358,8 +1395,11 @@
                 <div class="col">
                   <span class="text">{{item.client_name}}</span>
                 </div>
-                <div class="col">
-                  <span class="text">{{item.product_name}}</span>
+                <div class="col"
+                  style="flex:1.5">
+                  {{item.product_info.product_code}}
+                  <br />
+                  {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
                 </div>
                 <div class="col">
                   {{item.size}}
@@ -1402,11 +1442,11 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1453,7 +1493,8 @@
                 <div class="col">
                   <span class="text">关联单号</span>
                 </div>
-                <div class="col">
+                <div class="col"
+                  style="flex:1.5">
                   <span class="text">产品信息</span>
                 </div>
                 <div class="col">
@@ -1486,8 +1527,11 @@
                 <div class="col">
                   <span class="text">{{item.order_code}}</span>
                 </div>
-                <div class="col">
-                  <span class="text">{{item.product_name}}</span>
+                <div class="col"
+                  style="flex:1.5">
+                  {{item.product_info.product_code}}
+                  <br />
+                  {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
                 </div>
                 <div class="col">
                   <div class="col">
@@ -1532,11 +1576,11 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -1680,11 +1724,11 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-input class="inputs"
+                <!-- <el-input class="inputs"
                   v-model="order_code"
                   @change="changeRouter(1)"
                   placeholder="输入关联单号查询">
-                </el-input>
+                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1701,7 +1745,7 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
+                <!-- <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
                   placeholder="搜索公司名称"
@@ -1711,7 +1755,7 @@
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
-                </el-select>
+                </el-select> -->
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -1812,6 +1856,160 @@
               </div>
             </div>
           </el-tab-pane>
+          <el-tab-pane label="装箱出库"
+            name="装箱出库">
+            <div class="filterCtn">
+              <div class="leftCtn">
+                <span class="label">筛选条件：</span>
+                <el-input class="inputs"
+                  v-model="product_code"
+                  @change="changeRouter(1)"
+                  placeholder="输入产品编号查询">
+                </el-input>
+                <el-select class="inputs"
+                  v-model="operate_user"
+                  @change="changeRouter(1)"
+                  placeholder="搜索人名"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in authList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-date-picker v-model="date"
+                  style="width:290px"
+                  class="inputs"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeRouter(1)">
+                </el-date-picker>
+                <div class="btn btnGray"
+                  style="margin-left:0"
+                  @click="reset">重置</div>
+              </div>
+            </div>
+            <div class="list"
+              v-if="type==='装箱出库'">
+              <div class="title">
+                <div class="col"
+                  style="flex:0.7">
+                  <el-checkbox v-model="checkAll">全选</el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">创建日期</span>
+                </div>
+                <div class="col">
+                  <span class="text">关联单号</span>
+                </div>
+                <div class="col">
+                  <span class="text">运输单位</span>
+                </div>
+                <div class="col">
+                  <span class="text">运输箱数</span>
+                </div>
+                <div class="col">
+                  <span class="text">立方数(m³)</span>
+                </div>
+                <div class="col">
+                  <span class="text">单价(m³/元)</span>
+                </div>
+                <div class="col">
+                  <span class="text">总价(元)</span>
+                </div>
+                <div class="col">
+                  <span class="text">出口国家</span>
+                </div>
+                <div class="col">
+                  <span class="text">运输地址</span>
+                </div>
+                <div class="col">
+                  <span class="text">港口</span>
+                </div>
+                <div class="col">
+                  <span class="text">完成日期</span>
+                </div>
+                <div class="col">
+                  <span class="text">备注</span>
+                </div>
+                <div class="col">
+                  <span class="text">创建人</span>
+                </div>
+              </div>
+              <div class="row"
+                v-for="(item,index) in list"
+                :key="index">
+                <div class="col"
+                  style="flex:0.7">
+                  <el-checkbox v-model="item.checked"
+                    @change="$forceUpdate()"></el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.created_at.slice(0,10)}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.order_code}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.client_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.number}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.cubic_number}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.price}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.total_price}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.country}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.address}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.port}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.complete_time.slice(0,10)}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.desc}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.user_name}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="statistics"
+              v-if="type==='装箱出库'">
+              <div class="oneBox">
+                <div class="label">运输箱数:</div>
+                <div class="content">{{$formatNum(statistics.stock_out.total_number)}}箱</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">立方数:</div>
+                <div class="content">{{$formatNum(statistics.stock_out.total_cubic_number)}}立方</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">平均单价:</div>
+                <div class="content">{{statistics.stock_out.avg_price}}元</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">总价:</div>
+                <div class="content">{{$formatNum(statistics.stock_out.total_price)}}元</div>
+              </div>
+            </div>
+          </el-tab-pane>
         </el-tabs>
         <div class="pageCtn">
           <el-pagination background
@@ -1819,7 +2017,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -1878,6 +2076,7 @@ export default {
       pages: 1,
       total: 0,
       order_code: '',
+      order_type: 1,
       name: '',
       client_id: '',
       product_code: '',
@@ -1954,6 +2153,12 @@ export default {
         pack_real: {
           total_number: 0,
           total_box: 0
+        },
+        stock_out: {
+          total_number: 0,
+          total_cubic_number: 0,
+          total_price: 0,
+          avg_price: 0
         }
       }
     }
@@ -1972,8 +2177,8 @@ export default {
     type (newVal) {
       this.client_id = ''
       this.product_code = ''
-      this.order_code = ''
       this.product_type = ''
+      this.order_type = 0
       this.operate_user = ''
       this.material_name = ''
       this.changeRouter(1)
@@ -2239,6 +2444,22 @@ export default {
           { title: '备注', key: 'desc' },
           { title: '操作人', key: 'user_name' }
         ])
+      } else if (this.type === '装箱出库') {
+        let data = this.checkList
+        downloadExcel(data, [
+          { title: '创建日期', key: 'created_at' },
+          { title: '关联单号', key: 'order_code' },
+          { title: '运输单位', key: 'client_name' },
+          { title: '运输箱数', key: 'number' },
+          { title: '立方数(m³)', key: 'cubic_number' },
+          { title: '单价(m³/元)', key: 'price' },
+          { title: '总价(元)', key: 'total_price' },
+          { title: '出口国家', key: 'country' },
+          { title: '运输地址', key: 'address' },
+          { title: '港口', key: 'port' },
+          { title: '备注', key: 'desc' },
+          { title: '操作人', key: 'user_name' }
+        ])
       }
     },
     // 更新筛选条件
@@ -2252,7 +2473,7 @@ export default {
       }
       this.client_id = params.client_id
       this.product_code = params.product_code
-      this.order_code = params.order_code
+      this.order_type = Number(params.order_type)
       this.product_type = params.product_type
       this.operate_user = params.operate_user
       this.material_name = params.material_name
@@ -2260,14 +2481,14 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_code=' + this.order_code + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
       this.rejects_flag = true
     },
     reset () {
-      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_code=&&production_type=&&operate_user=&&material_name=')
+      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')
     },
     getList () {
       this.checkAll = false
@@ -2276,11 +2497,10 @@ export default {
       this.list = []
       if (this.type === '物料订购调取') {
         materialManage.detail({
-          order_type: null,
           order_id: null,
           limit: 10,
           page: this.pages,
-          order_code: this.order_code,
+          order_type: this.order_type,
           material_name: this.material_name,
           client_id: this.client_id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
@@ -2293,7 +2513,7 @@ export default {
         })
       } else if (this.type === '物料加工') {
         materialProcess.detail({
-          order_type: null,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2310,7 +2530,7 @@ export default {
         })
       } else if (this.type === '物料出入库') {
         materialStock.detail({
-          order_type: null,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2327,7 +2547,7 @@ export default {
         })
       } else if (this.type === '织造分配') {
         weave.detail({
-          order_type: null,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2344,7 +2564,7 @@ export default {
         })
       } else if (this.type === '补纱日志') {
         replenish.list({
-          order_type: null,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2361,7 +2581,7 @@ export default {
         })
       } else if (this.type === '半成品加工') {
         processing.detail({
-          order_type: null,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2507,13 +2727,29 @@ export default {
           this.total = res.data.meta.total
           this.loading = false
         })
+      } else if (this.type === '装箱出库') {
+        packPlan.packOutLog({
+          order_type: null,
+          order_id: null,
+          limit: 10,
+          page: this.pages,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        })
       }
       logStatistics.detail({
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.client_id,
         product_code: this.product_code,
-        order_code: this.order_code,
+        order_type: this.order_type,
         production_type: this.production_type,
         operate_user: this.operate_user,
         material_name: this.material_name
@@ -2575,7 +2811,7 @@ export default {
 <style lang="less">
 #logStatistics {
   .el-tabs__item {
-    font-size: 16px;
+    font-size: 14px;
     color: rgba(0, 0, 0, 0.65);
     &:hover {
       color: #1a95ff;

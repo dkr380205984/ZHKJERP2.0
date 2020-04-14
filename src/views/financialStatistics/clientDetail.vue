@@ -50,14 +50,20 @@
                 :class="{'active':item===type}"
                 @click="type=item">{{item|filterType}}</span>
             </div>
-            <el-date-picker class="inputs"
+            <!-- <el-date-picker class="inputs"
               v-model="date"
               type="date"
               placeholder="选择日期">
-            </el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
+            </el-date-picker> -->
+            <el-switch v-if="type===1||type===2||type===3||type===4||type===5"
+              class="inputs"
+              style="height: 32px;"
+              v-model="order_type"
+              :active-value="1"
+              :inactive-value="2"
+              active-text="订单"
+              inactive-text="样单">
+            </el-switch>
           </div>
           <div class="rightCtn">
             <span class="opr blue"
@@ -76,7 +82,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -106,7 +112,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -143,7 +149,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -173,7 +179,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -203,7 +209,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -233,7 +239,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -265,7 +271,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -295,7 +301,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -330,7 +336,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -360,7 +366,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -397,7 +403,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -427,7 +433,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -459,7 +465,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -489,7 +495,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -521,7 +527,7 @@
                 style="flex:0.2">
                 <el-checkbox v-model="checkAll"></el-checkbox>
               </span>
-              <span class="tb_row">订单号</span>
+              <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
               <span class="tb_row">负责小组</span>
               <span class="tb_row">合计金额</span>
@@ -551,7 +557,7 @@
                     style="line-height:30px"
                     @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
                   <span class="tb_row blue"
-                    @click="$router.push('/order/orderDetail/' + item.order_id)">详情</span>
+                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
                 </div>
                 <div class="tableCtnLv2">
                   <div class="tb_header noBgColor bigPadding">
@@ -891,10 +897,14 @@ export default {
       orderOprFlag: false,
       orderOprType: '',
       orderOprList: [],
-      oprOrderId: ''
+      oprOrderId: '',
+      order_type: 1 // 订单 或 样单
     }
   },
   watch: {
+    order_type (val) {
+      this.init()
+    },
     type (val) {
       this.init()
     },
@@ -930,9 +940,6 @@ export default {
     }
   },
   methods: {
-    reset () {
-
-    },
     addInvoice () {
       this.settle.invoiceDetail.push({
         invoiceNum: '',
@@ -960,6 +967,7 @@ export default {
         is_invoice: this.settle.ifInvoice,
         invoice_info: JSON.stringify(this.settle.invoiceDetail),
         desc: this.settle.desc,
+        order_type: this.order_type,
         type: this.type
       }).then((res) => {
         if (res.data.status) {
@@ -984,6 +992,7 @@ export default {
         complete_time: this.chargebacks.date,
         deduct_price: this.chargebacks.price,
         desc: this.chargebacks.desc,
+        order_type: this.order_type,
         type: this.type
       }).then((res) => {
         if (res.data.status) {
@@ -998,16 +1007,19 @@ export default {
       this.list = []
       Promise.all([statistics.clientDetailList({
         client_id: this.$route.params.id,
-        client_type: this.type
+        client_type: this.type,
+        order_type: this.order_type
       }), statistics.clientDetailStatistics({
         client_id: this.$route.params.id,
         client_type: this.type
       }), chargebacks.log({
         client_id: this.$route.params.id,
-        client_type: this.type
+        client_type: this.type,
+        order_type: this.order_type
       }), settle.log({
         client_id: this.$route.params.id,
-        client_type: this.type
+        client_type: this.type,
+        order_type: this.order_type
       })]).then((res) => {
         this.loading = false
         this.statistics = res[1].data
@@ -1035,6 +1047,7 @@ export default {
           chargebacks.log({
             client_id: this.$route.params.id,
             client_type: this.type,
+            order_type: this.order_type,
             order_id: orderId
           }).then((res) => {
             this.orderOprFlag = true
@@ -1048,6 +1061,7 @@ export default {
           settle.log({
             client_id: this.$route.params.id,
             client_type: this.type,
+            order_type: this.order_type,
             order_id: orderId
           }).then((res) => {
             this.orderOprFlag = true
