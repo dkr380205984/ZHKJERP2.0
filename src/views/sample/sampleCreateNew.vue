@@ -717,23 +717,6 @@ export default {
         this.$message.error('请选择样品花型')
         return
       }
-      error = this.ingredient.some((item) => {
-        return !item.ingredient_name || !item.ingredient_value
-      })
-      if (error) {
-        this.$message.error('请将样品成分信息填写完整')
-        return
-      }
-      let arr = this.ingredient.map(item => {
-        return item.ingredient_value
-      })
-      let total = arr.reduce((total, item) => {
-        return Number(total) + Number(item)
-      })
-      if (Number(total) !== 100) {
-        this.$message.error('样品成分比例总和不等于100%，请检查比例')
-        return
-      }
       error = this.size.some((item) => {
         return !item.size || !item.weight || !item.desc
       })
