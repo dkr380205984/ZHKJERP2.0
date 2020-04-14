@@ -31,17 +31,17 @@
                   <span class="labels">规格:</span>
                   <div class="contents col"
                     style="align-items:flex-start">
-                    <span style="white-space:nowrap;">{{detail.size[0].size_name}}</span>
-                    <span style="word-break: break-word;">{{detail.size[0].size_info}}cm</span>
+                    <span style="white-space:nowrap;">{{detail.size.length>0?detail.size[0].size_name:''}}</span>
+                    <span style="word-break: break-word;">{{detail.size.length>0?detail.size[0].size_info:''}}cm</span>
                   </div>
                 </div>
                 <div class="items">
                   <span class="labels">克重:</span>
-                  <div class="contents">{{detail.size[0].weight}}g</div>
+                  <div class="contents">{{detail.size.length>0?detail.size[0].weight:''}}g</div>
                 </div>
                 <div class="items">
                   <span class="labels">颜色:</span>
-                  <div class="contents">{{detail.color[0].color_name}}</div>
+                  <div class="contents">{{detail.color.length>0?detail.color[0].color_name:''}}</div>
                 </div>
                 <div class="items">
                   <span class="labels">描述:</span>
@@ -499,6 +499,7 @@ export default {
           product_category: '',
           name: ''
         },
+        related_product: [],
         part_info: [],
         style_name: '',
         type_name: '',
