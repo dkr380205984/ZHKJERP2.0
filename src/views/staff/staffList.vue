@@ -140,7 +140,7 @@
               <span class="text">{{item.work_time}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.status}}</span>
+              <span class="text">{{item.status===1?'在职':'离职'}}</span>
             </div>
             <div class="col">
               <span class="opr"
@@ -255,8 +255,8 @@ export default {
         page: this.page
       }).then((res) => {
         console.log(res)
-        this.list = res.data.data.data
-        this.total = res.data.data.total
+        this.list = res.data.data
+        this.total = res.data.meta.total
         this.loading = false
       })
     },
