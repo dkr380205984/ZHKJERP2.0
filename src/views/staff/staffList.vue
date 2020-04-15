@@ -128,7 +128,7 @@
               <span class="text">{{item.name}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.department_id}}</span>
+              <span class="text">{{item.department_name}}</span>
             </div>
             <div class="col">
               <span class="text">{{item.phone}}</span>
