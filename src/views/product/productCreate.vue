@@ -85,7 +85,6 @@
             <div class="label"
               v-show="index===0">
               <span class="text">产品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
@@ -415,7 +414,11 @@ export default {
       // 配件类型从辅料里面选
       materialArr: [],
       needleType: '',
-      importKeyword: ''
+      importKeyword: '',
+      sizePartArr: [{
+        type: '',
+        size: [{ number: '' }]
+      }]
     }
   },
   methods: {

@@ -170,8 +170,8 @@
               <el-pagination background
                 :page-size="5"
                 layout="prev, pager, next"
-                :total="colourTotal"
-                :current-page.sync="colourPage">
+                :total="sizeTotal"
+                :current-page.sync="sizePage">
               </el-pagination>
             </div>
           </template>
@@ -3122,6 +3122,7 @@ export default {
       productType.list().then((res) => {
         this.sizeList = res.data.data
         this.sizeTotal = this.sizeList.length
+        console.log(this.sizeTotal)
       })
     },
     addSize (id) {

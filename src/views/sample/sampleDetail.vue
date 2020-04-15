@@ -147,10 +147,31 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">样品规格：</span>
-            <div class="lineCtn">
+            <div class="tableCtn">
+              <div class="line">
+                <div class="once">
+                  <div class="biaotou rightTop">规格</div>
+                  <div class="xiexian"></div>
+                  <div class="biaotou leftBottom">部位</div>
+                </div>
+                <div class="once"
+                  v-for="(item,index) in detail.size"
+                  :key="index">
+                  {{item.size_name}}
+                </div>
+              </div>
               <div class="line"
-                v-for="(item,index) in detail.size"
-                :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                v-for="(item,index) in detail.sizePart"
+                :key="index">
+                <div class="once">
+                  {{item.part}}
+                </div>
+                <div class="once"
+                  v-for="(itemNum,indexNum) in item.size"
+                  :key="indexNum">
+                  {{itemNum}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -516,6 +537,7 @@ export default {
         product_code: '',
         sample_title: '',
         size: [],
+        sizePart: [],
         description: '',
         needle_type: ''
       },
@@ -620,10 +642,21 @@ export default {
     }).then((res) => {
       if (res.data.status) {
         this.detail = res.data.data
+        this.detail.sizePart = []
         this.detail.size.forEach((itemSize, indexSize) => {
           if (indexSize === 0) {
             this.checkedSize.push(itemSize.size_name)
           }
+          JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+            if (!this.detail.sizePart[indexPart]) {
+              this.detail.sizePart[indexPart] = {
+                part: '',
+                size: []
+              }
+            }
+            this.detail.sizePart[indexPart].part = itemPart.part
+            this.detail.sizePart[indexPart].size.push(itemPart.size)
+          })
         })
         this.detail.color.forEach((itemColor, indexColor) => {
           if (indexColor === 0) {
@@ -638,7 +671,6 @@ export default {
         if (!this.detail.quotation_info) {
           this.detail.quotation_info = []
         }
-        // this.detail.related_product = this.$mergeData(this.detail.related_product, { mainRule: 'product_code', childrenName: 'other_info' })
         this.loading = false
       }
     })
