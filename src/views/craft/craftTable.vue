@@ -48,10 +48,10 @@
           <span class="row_item w100 center">工艺单名称</span>
           <!-- <span class="row_item left"></span> -->
           <span class="row_item left">{{craftDetail.title || ''}}</span>
-          <span class="row_item w100 center">大身规格</span>
+          <span class="row_item w100 center">成衣规格</span>
           <!-- <span class="row_item left"></span> -->
           <span class="row_item left">{{craftDetail.size ? craftDetail.size + 'cm' : ''}}</span>
-          <span class="row_item w100 center">大身克重</span>
+          <span class="row_item w100 center">成衣克重</span>
           <span class="row_item left">{{craftDetail.weight ? craftDetail.weight + 'g' : ''}}</span>
         </div>
         <!-- 经向 -->

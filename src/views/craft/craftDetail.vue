@@ -519,11 +519,11 @@
             <div class="text">{{ZDYMC}}</div>
           </div>
           <div class="colCtn">
-            <div class="label">大身规格：</div>
+            <div class="label">成衣规格：</div>
             <div class="text">{{DSGG}}cm</div>
           </div>
           <div class="colCtn">
-            <div class="label">大身克重：</div>
+            <div class="label">成衣克重：</div>
             <div class="text">{{DSKZ}}g</div>
           </div>
         </div>

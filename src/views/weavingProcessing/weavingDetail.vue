@@ -966,7 +966,7 @@ export default {
       //   }
       // })
       // if (this.weaving_data.length === 0) {
-      //   this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
+      //   this.$message.warning('所有成衣信息已分配完毕，如需分配其他部件，请手动分配')
       // } else {
       //   this.weaving_flag = true
       //   this.easyWeaving_flag = true
@@ -1031,7 +1031,7 @@ export default {
       this.weaving_data.forEach((item) => {
         item.mixedData.forEach((itemChild) => {
           let partColorSize = itemChild.partColorSize.split('/')
-          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '大身' // 判断是否为大身
+          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '成衣' // 判断是否为成衣
           formData.push({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
@@ -1348,7 +1348,7 @@ export default {
           itemChild.size = item.size
         })
         item.part_data.unshift({
-          name: '大身',
+          name: '成衣',
           number: item.production_number,
           id: item.product_id,
           color: item.color,

@@ -1080,23 +1080,23 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">大身规格</span>
+              <span class="text">成衣规格</span>
             </div>
             <div class="content">
               <el-input v-model="DSGG"
-                placeholder="请输入大身规格">
+                placeholder="请输入成衣规格">
                 <template slot="append">cm</template>
               </el-input>
             </div>
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">大身克重</span>
+              <span class="text">成衣克重</span>
             </div>
             <div class="content">
               <zh-input v-model="DSKZ"
                 type="number"
-                placeholder="请输入大身克重">
+                placeholder="请输入成衣克重">
                 <template slot="append">g</template>
               </zh-input>
             </div>
@@ -1457,8 +1457,8 @@ export default {
   data () {
     return {
       ZDYMC: '',//新增字段，自定义名称
-      DSGG: '',//新增字段，大身规格
-      DSKZ: '',//新增值字段，大身克重
+      DSGG: '',//新增字段，成衣规格
+      DSKZ: '',//新增值字段，成衣克重
       selectSearchWhich: '搜产品编号',
       loading: true,
       loadingS: false,

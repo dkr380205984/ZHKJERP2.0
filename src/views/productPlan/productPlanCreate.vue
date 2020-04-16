@@ -83,7 +83,7 @@
       v-for="(item,index) in list"
       :key="index">
       <div class="titleCtn">
-        <span class="title">{{index===0?'大身信息':'配件'+ chinaNum[index - 1]}}</span>
+        <span class="title">{{index===0?'成衣信息':'配件'+ chinaNum[index - 1]}}</span>
         <!-- <span class="atRight"
           @click="shortcutOpr(index)">智能同步</span> -->
       </div>
@@ -228,7 +228,7 @@ export default {
         name: ''
       },
       list: [{
-        name: '大身信息',
+        name: '成衣信息',
         product_id: '',
         chooseMaterial: 1,
         colourSizeArr: [],
@@ -382,7 +382,7 @@ export default {
       let error = null
       formData.forEach((item) => {
         // if (item.material_info.length === 0) {
-        //   error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
+        //   error = '检测到有未填写物料的成衣/配件，请添加至少一种物料'
         // }
         item.material_info.forEach((item) => {
           if (!item.material_name) {
@@ -409,7 +409,7 @@ export default {
           this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_name + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
             this.msgSwitch = true
           } else {
             this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)

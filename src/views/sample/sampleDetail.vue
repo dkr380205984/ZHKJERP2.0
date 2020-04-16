@@ -112,7 +112,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">大身信息</span>
+        <span class="title hasBorder">成衣信息</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">

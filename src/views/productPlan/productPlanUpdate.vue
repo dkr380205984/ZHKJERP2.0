@@ -83,7 +83,7 @@
       v-for="(item,index) in list"
       :key="index">
       <div class="titleCtn">
-        <span class="title">{{index===0?'大身信息':'配件'+ chinaNum[index - 1]}}</span>
+        <span class="title">{{index===0?'成衣信息':'配件'+ chinaNum[index - 1]}}</span>
         <span class="atRight"
           @click="shortcutOpr(index)">智能同步</span>
       </div>
@@ -224,7 +224,7 @@ export default {
         name: ''
       },
       list: [{
-        name: '大身信息',
+        name: '成衣信息',
         product_id: '',
         chooseMaterial: 1,
         colourSizeArr: [],
@@ -436,7 +436,7 @@ export default {
       }].concat(data.part_info).map((item) => {
         let json = {
           colourSizeIndex: 0,
-          name: item.part_type === 1 ? '大身信息' : item.product_info.product_title,
+          name: item.part_type === 1 ? '成衣信息' : item.product_info.product_title,
           chooseMaterial: item.material_info.length > 0 ? item.material_info[0].type === 1 ? 1 : 0 : 1,
           colourSizeArr: [],
           product_id: item.product_info.product_id,

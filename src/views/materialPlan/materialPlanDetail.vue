@@ -93,7 +93,7 @@
                 <div class="tb_collapse tb_content bigPadding smallHeight"
                   v-for="(itemMa,indexMa) in itemPro.material_info"
                   :key="indexMa">
-                  <span class="tb_row">{{itemMa.product_part === itemPro.product_id ? '大身' :itemMa.name}}</span>
+                  <span class="tb_row">{{itemMa.product_part === itemPro.product_id ? '成衣' :itemMa.name}}</span>
                   <span class="tb_row flex12">{{itemMa.material_name}}</span>
                   <span class="tb_row">{{itemMa.color}}</span>
                   <span class="tb_row flex08">{{itemMa.plan_number ? itemMa.plan_number + '' + itemMa.unit : (itemMa.number ? $toFixed(itemMa.number/(1 + itemMa.material_loss/100)) + '' + itemMa.unit : '-')}}</span>
