@@ -4,4 +4,53 @@
     display: flex;
     flex-direction: column;
   }
+  .tableCtn{
+    margin: 20px 0;
+    .line{
+      line-height: 32px;
+      .once{
+        font-size: @fontMiddle;
+        color: @font65;
+        height: 32px;
+        padding: 6px;
+        display: inline-block;
+        text-align: center;
+        width: 7em;
+        border: 1px solid #E9E9E9;
+        border-bottom: 0;
+        border-right: 0;
+        vertical-align: middle;
+        position: relative;
+        &:nth-last-child(1){
+          border-right: 1px solid #E9E9E9;
+        }
+        .biaotou{
+          position: absolute;
+          &.leftBottom{
+            left:12px;
+            bottom: -2px;
+          }
+          &.rightTop{
+            right: 12px;
+            top: -2px;
+          }
+        }
+        .xiexian{
+          width: 122px;
+          height: 1px;
+          position: absolute;
+          background: #E9E9E9;
+          left: 0;
+          top: 0;
+          transform-origin: left;
+          transform: rotate(21.3deg);
+        }
+      }
+      &:nth-last-child(1){
+        .once{
+          border-bottom: 1px solid #E9E9E9;
+        }
+      }
+    }
+  }
 }

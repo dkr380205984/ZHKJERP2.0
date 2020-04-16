@@ -35,10 +35,31 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">产品规格：</span>
-            <div class="lineCtn">
+            <div class="tableCtn">
+              <div class="line">
+                <div class="once">
+                  <div class="biaotou rightTop">规格</div>
+                  <div class="xiexian"></div>
+                  <div class="biaotou leftBottom">部位</div>
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size_measurement"
+                  :key="index">
+                  {{item.size_name}}
+                </div>
+              </div>
               <div class="line"
-                v-for="(item,index) in productInfo.size_measurement"
-                :key="index">{{item.size_name + ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                v-for="(item,index) in productInfo.sizePart"
+                :key="index">
+                <div class="once">
+                  {{item.part}}
+                </div>
+                <div class="once"
+                  v-for="(itemNum,indexNum) in item.size"
+                  :key="indexNum">
+                  {{itemNum}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -79,6 +100,7 @@
                   <div class="tcolumn">物料名称</div>
                   <div class="tcolumn">物料属性</div>
                   <div class="tcolumn">物料数量</div>
+                  <div class="tcolumn">物料比例</div>
                 </div>
               </div>
             </div>
@@ -98,6 +120,7 @@
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
                   <div class="tcolumn">{{$toFixed(itemMat.number)}}{{itemMat.unit}}</div>
+                  <div class="tcolumn">{{$toFixed(itemMat.number/itemCS.material_total*100) + '%'}}</div>
                 </div>
               </div>
             </div>
@@ -174,7 +197,8 @@ export default {
         create_time: '',
         user_name: '',
         size_measurement: [],
-        name: ''
+        name: '',
+        sizePart: []
       },
       list: [{
         data: [],
@@ -290,6 +314,19 @@ export default {
     }).then((res) => {
       let data = res.data.data
       this.productInfo = data[0].product_info
+      this.productInfo.sizePart = []
+      this.productInfo.size_measurement.forEach((itemSize, indexSize) => {
+        JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+          if (!this.productInfo.sizePart[indexPart]) {
+            this.productInfo.sizePart[indexPart] = {
+              part: '',
+              size: []
+            }
+          }
+          this.productInfo.sizePart[indexPart].part = itemPart.part
+          this.productInfo.sizePart[indexPart].size.push(itemPart.size)
+        })
+      })
       this.list = data.map((item, index) => {
         if (item.is_default === 1) {
           this.listIndex = index
@@ -358,6 +395,14 @@ export default {
           data: mainArr.concat(partArr),
           id: item.id
         }
+      })
+      // 大身新增物料比例字段，把物料总数加一加
+      this.list.forEach((itemList) => {
+        itemList.data[0].colourSizeArr.forEach((item) => {
+          item.material_total = item.materials.reduce((total, current) => {
+            return total + Number(current.number)
+          }, 0)
+        })
       })
       this.plan_id = this.list[0].id
       this.loading = false

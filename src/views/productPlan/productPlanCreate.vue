@@ -41,11 +41,32 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
-            <div class="lineCtn">
+            <span class="label">产品规格：</span>
+            <div class="tableCtn">
+              <div class="line">
+                <div class="once">
+                  <div class="biaotou rightTop">规格</div>
+                  <div class="xiexian"></div>
+                  <div class="biaotou leftBottom">部位</div>
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size"
+                  :key="index">
+                  {{item.size_name}}
+                </div>
+              </div>
               <div class="line"
-                v-for="(item,index) in productInfo.size"
-                :key="index">{{(item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                v-for="(item,index) in productInfo.sizePart"
+                :key="index">
+                <div class="once">
+                  {{item.part}}
+                </div>
+                <div class="once"
+                  v-for="(itemNum,indexNum) in item.size"
+                  :key="indexNum">
+                  {{itemNum}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -203,6 +224,7 @@ export default {
         create_time: '',
         user_name: '',
         size: [],
+        sizePart: [],
         name: ''
       },
       list: [{
@@ -423,6 +445,19 @@ export default {
             colour_id: itemColour.id,
             materials: []
           })
+        })
+      })
+      this.productInfo.sizePart = []
+      this.productInfo.size.forEach((itemSize, indexSize) => {
+        JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+          if (!this.productInfo.sizePart[indexPart]) {
+            this.productInfo.sizePart[indexPart] = {
+              part: '',
+              size: []
+            }
+          }
+          this.productInfo.sizePart[indexPart].part = itemPart.part
+          this.productInfo.sizePart[indexPart].size.push(itemPart.size)
         })
       })
       let part = this.productInfo.part_info || this.productInfo.part_data

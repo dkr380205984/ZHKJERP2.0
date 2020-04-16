@@ -217,8 +217,7 @@
                     <el-dropdown-item @click.native="deleteSample(item.id)">
                       <span class="delete">删除样品</span>
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="item.size.length===1"
-                      @click.native="$router.push('/craft/craftCreate/'+ item.id + '/' + 2)">
+                    <el-dropdown-item @click.native="$router.push('/craft/craftCreate/'+ item.id + '/' + 2)">
                       <span class="create">添加工艺单</span>
                     </el-dropdown-item>
                     <el-dropdown-item v-if="item.has_craft"

@@ -112,7 +112,10 @@ const craft = {
   detail: (params) => http.get(`${baseUrl}/product/craft/one`, params),
   getByProduct: (params) => http.get(`${baseUrl}/craft/product/one`, params),
   setDefault: (params) => http.post(`${baseUrl}/product/craft/default`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/product/craft/list`, params)
+  list: (params) => http.get(`${baseUrl}/product/craft/list`, params),
+  createCloth: (params) => http.post(`${baseUrl}/dress/craft/save`, params, 'application/json'),
+  detailCloth: (params) => http.get(`${baseUrl}/dress/craft/detail`, params),
+  deleteCloth: (params) => http.post(`${baseUrl}/dress/craft/delete`, params, 'application/json')
 }
 // 客户管理
 const client = {

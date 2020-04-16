@@ -111,15 +111,15 @@ const routes = [
     }, {
       path: '/craft/craftCreate/:id/:type',
       name: '工艺单添加',
-      component: () => import('../views/craft/craftCreate.vue')
+      component: () => import('../views/craft/craftCreateForCloth.vue')
     }, {
       path: '/craft/craftUpdate/:id/:type',
       name: '工艺单修改',
-      component: () => import('../views/craft/craftUpdate.vue')
+      component: () => import('../views/craft/craftUpdateForCloth.vue')
     }, {
       path: '/craft/craftDetail/:id/:type',
       name: '工艺单详情',
-      component: () => import('../views/craft/craftDetail.vue')
+      component: () => import('../views/craft/craftDetailForCloth.vue')
     }, {
       path: '/order/orderList/:params',
       name: '订单列表',
