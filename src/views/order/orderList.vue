@@ -355,7 +355,11 @@ export default {
         }, {
           name: '已取消',
           id: '2003'
-        }],
+        }, {
+          name: '已延期',
+          id: '2005'
+        }
+      ],
       searchCompanyFlag: false,
       searchGroupFlag: false,
       searchStateFlag: false,

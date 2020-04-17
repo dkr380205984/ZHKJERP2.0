@@ -915,7 +915,7 @@
             @click="closePopup">取消</div>
           <div class="btn btnBlue"
             v-show="showChangeSampleOrderPopup === 1"
-            @click="$openUrl('/sample/sampleUpdate/' + changeSampleId)">去修改</div>
+            @click="changeSampleId ? $openUrl('/sample/sampleUpdate/' + changeSampleId) : $message.warning('请选择需要修改的样品')">去修改</div>
           <div class="btn btnGray"
             v-show="showChangeSampleOrderPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
             @click="showChangeSampleOrderPopup--">上一步</div>
