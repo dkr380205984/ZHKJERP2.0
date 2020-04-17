@@ -44,6 +44,12 @@ const measurement = {
   create: (params) => http.post(`${baseUrl}/product/measurement/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/product/measurement/delete`, params, 'application/json')
 }
+// 产品 成衣类型 设置
+const productPart = {
+  create: (params) => http.post(`${baseUrl}/dress/part/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/dress/part/list`, params),
+  delete: (params) => http.post(`${baseUrl}/dress/part/delete`, params, 'application/json')
+}
 // 花型
 const flower = {
   create: (params) => http.post(`${baseUrl}/product/flower/save`, params, 'application/json'),
@@ -430,6 +436,7 @@ let logStatistics = {
   detail: (params) => http.get(`${baseUrl}/financial/operate/note/count`, params)
 }
 export {
+  productPart,
   logStatistics,
   warnSetting,
   orderBatch,

@@ -36,6 +36,74 @@
               </div>
             </div>
           </template> -->
+          <template v-if="cName==='成衣类型'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加类型</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">类型名称</div>
+                    <div class="tcolumn padding40">包含部位</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in partArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn padding40">{{JSON.parse(item.part_info).map(item=>item.value).join(',')}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deletePart(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="partTotal"
+                  :current-page.sync="partPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='组织结构'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加组织结构</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">组织结构名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in ZZJGArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteZZJG(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="ZZJGTotal"
+                  :current-page.sync="ZZJGPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
           <template v-if="cName==='产品花型'">
             <div class="flowerCtn">
               <div class="addBtn"
@@ -961,6 +1029,69 @@
               @click="showPopup=false">取消</div>
             <div class="btn btnBlue"
               @click="saveFlower">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='组织结构'">
+        <div class="main">
+          <div class="title">
+            <div class="text">组织结构</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">组织结构：</div>
+              <div class="info">
+                <el-input placeholder="请输入组织结构"
+                  v-model="ZZJG"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveZZJG">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='成衣类型'">
+        <div class="main">
+          <div class="title">
+            <div class="text">新增类型</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">类型名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入类型名称"
+                  v-model="partName"></el-input>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in partValue"
+              :key="index">
+              <div class="label">{{index===0?'包含部位：':''}}</div>
+              <div class="info">
+                <el-input placeholder="请输入部位名称"
+                  v-model="item.value"></el-input>
+              </div>
+              <div class="editBtn blue"
+                @click="addPart"
+                v-if="index===0">添加</div>
+              <div class="editBtn red"
+                @click="splicePart(index)"
+                v-if="index>0">删除</div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="savePart">确定</div>
           </div>
         </div>
       </template>
@@ -2113,15 +2244,15 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
+import { productPart, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       showPopup: false,
       yarn_handle_type: '',
       nav: {
-        '产品设置': ['产品花型', '产品成分', '产品配色', '产品尺码'],
-        '工艺单设置': ['边型', '机型', '组织法'],
+        '产品设置': ['成衣类型', '组织结构', '产品花型', '产品成分', '产品配色', '产品尺码'],
+        // '工艺单设置': ['边型', '机型', '组织法'],
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理'],
@@ -2428,13 +2559,26 @@ export default {
         materialStock: '',
         process: '',
         productStock: ''
-      }
+      },
+      partName: '',
+      partValue: [{ value: '' }],
+      partList: [],
+      partPage: 1,
+      partTotal: 1,
+      ZZJG: '',
+      ZZJGList: [],
+      ZZJGPage: 1,
+      ZZJGTotal: 1
     }
   },
   watch: {
     cName (val) {
       if (val === '产品分类') {
         this.getProductType()
+      } else if (val === '成衣类型') {
+        this.getPart()
+      } else if (val === '组织结构') {
+        this.getZZJG()
       } else if (val === '产品花型') {
         this.getFlower()
       } else if (val === '产品成分') {
@@ -2490,6 +2634,12 @@ export default {
   computed: {
     flowerArr () {
       return this.flowerList.slice((this.flowerPage - 1) * 5, this.flowerPage * 5)
+    },
+    partArr () {
+      return this.partList.slice((this.partPage - 1) * 5, this.partPage * 5)
+    },
+    ZZJGArr () {
+      return this.ZZJGList.slice((this.ZZJGPage - 1) * 5, this.ZZJGPage * 5)
     },
     ingredientArr () {
       return this.ingredientList.slice((this.ingredientPage - 1) * 5, this.ingredientPage * 5)
@@ -2603,10 +2753,11 @@ export default {
           })
         })
       }
-      if (!flag) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      console.log(flag)
+      // if (!flag) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (data.length !== 0) {
         yarn.create({ data: data }).then((res) => {
           if (res.data.status) {
@@ -2967,6 +3118,115 @@ export default {
           }
         })
       }
+    },
+    addPart () {
+      this.partValue.push({
+        value: ''
+      })
+    },
+    splicePart (index) {
+      this.partValue.splice(index, 1)
+    },
+    getPart () {
+      productPart.list().then((res) => {
+        this.partList = res.data.data
+        this.partTotal = res.data.data.length
+      })
+    },
+    savePart () {
+      if (!this.partName) {
+        this.$message.error('请输入名称')
+        return
+      }
+      productPart.create({
+        name: this.partName,
+        part_info: JSON.stringify(this.partValue)
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success({
+            message: '添加成衣类型成功'
+          })
+          this.partName = ''
+          this.getPart()
+        }
+      })
+    },
+    deletePart (id) {
+      this.$confirm('是否删除该类型?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        productPart.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getPart()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getZZJG () {
+      flower.list({
+        type: 2
+      }).then((res) => {
+        this.ZZJGList = res.data.data
+        this.ZZJGTotal = this.ZZJGArr.length
+      })
+    },
+    saveZZJG () {
+      if (this.ZZJG) {
+        flower.create({
+          name: this.ZZJG,
+          type: 2
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success({
+              message: '添加组织结构成功'
+            })
+            this.ZZJG = ''
+            this.getZZJG()
+          }
+        })
+      } else {
+        this.$message.error({
+          message: '组织结构名称不能为空'
+        })
+      }
+    },
+    deleteZZJG (id) {
+      this.$confirm('是否删除该组织结构?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        flower.delete({
+          id: id,
+          type: 2
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getZZJG()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     getFlower () {
       flower.list().then((res) => {
@@ -3356,10 +3616,10 @@ export default {
       })
     },
     saveYarnName () {
-      if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      // if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
           data: [
@@ -4260,7 +4520,7 @@ export default {
   },
   created () {
     this.pName = '产品设置'
-    this.cName = '产品花型'
+    this.cName = '成衣类型'
   }
 }
 </script>

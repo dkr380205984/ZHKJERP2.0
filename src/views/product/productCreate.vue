@@ -116,6 +116,19 @@
               <span class="text">产品规格</span>
               <span class="explanation">(必填)</span>
             </div>
+            <div class="content">
+              <el-select style="width:360px"
+                placeholder="可选择常用衣服类型"
+                filterable
+                v-model="part"
+                @change="getPart">
+                <el-option v-for="(item,index) in partArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.part_info">
+                </el-option>
+              </el-select>
+            </div>
             <div class="content"
               style="height:auto">
               <div class="tableCtn">
@@ -401,7 +414,7 @@
 
 <script>
 import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, product, deleteFile } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, product, deleteFile, productPart } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -449,7 +462,9 @@ export default {
       sizePartArr: [{
         type: '',
         size: [{ number: '' }]
-      }]
+      }],
+      partArr: [],
+      part: ''
     }
   },
   methods: {
@@ -831,6 +846,44 @@ export default {
           this.loading = false
         }
       })
+    },
+    getPart (part) {
+      if (this.sizePartArr.length > 1) {
+        this.$confirm('此操作将重置已填写的信息?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.sizePartArr = []
+          JSON.parse(part).forEach((item) => {
+            this.sizePartArr.push({
+              part: item.value,
+              size: this.size.map((item) => {
+                return {
+                  number: ''
+                }
+              })
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.sizePartArr = []
+        JSON.parse(part).forEach((item) => {
+          this.sizePartArr.push({
+            part: item.value,
+            size: this.size.map((item) => {
+              return {
+                number: ''
+              }
+            })
+          })
+        })
+      }
     }
   },
   watch: {
@@ -899,7 +952,8 @@ export default {
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list()
+      material.list(),
+      productPart.list()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -935,6 +989,7 @@ export default {
       this.materialArr.forEach((item) => {
         item.value = item.name
       })
+      this.partArr = res[6].data.data
       this.loading = false
     })
   },

@@ -67,6 +67,16 @@
                   {{itemNum}}
                 </div>
               </div>
+              <div class="line">
+                <div class="once">
+                  克重
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size"
+                  :key="index">
+                  {{item.weight}}
+                </div>
+              </div>
             </div>
           </div>
         </div>

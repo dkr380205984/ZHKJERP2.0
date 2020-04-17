@@ -64,6 +64,16 @@
                   {{itemNum}}
                 </div>
               </div>
+              <div class="line">
+                <div class="once">
+                  克重
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size_measurement"
+                  :key="index">
+                  {{item.weight}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -176,7 +186,7 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">成衣工序：</span>
-            <span class="text">{{craftInfo.process}}</span>
+            <span class="text">{{craftInfo.process.join(',')}}</span>
           </div>
         </div>
         <div class="rowCtn">

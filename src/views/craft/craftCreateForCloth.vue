@@ -97,6 +97,16 @@
                   {{itemNum}}
                 </div>
               </div>
+              <div class="line">
+                <div class="once">
+                  克重
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size"
+                  :key="index">
+                  {{item.weight}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -114,6 +124,26 @@
         <span class="title">添加工艺</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <!-- <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">选择常用类型</span>
+            </div>
+            <div class="content">
+              <el-select style="width:360px"
+                placeholder="可选择常用衣服类型"
+                filterable
+                v-model="part"
+                @change="getPart">
+                <el-option v-for="(item,index) in partArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.part_info">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+        </div> -->
         <div class="addTableCtn">
           <div class="line">
             <div class="once flex3 bgGray">规格</div>
@@ -169,11 +199,10 @@
                 <div class="once"
                   v-for="(itemSize,indexSize) in item.size"
                   :key="indexSize">
-                  <el-input class="inputs"
+                  <el-autocomplete class="inline-input inputs"
                     v-model="itemSize.value"
-                    placeholder="组织结构">
-                  </el-input>
-
+                    :fetch-suggestions="querySearch"
+                    placeholder="组织结构"></el-autocomplete>
                 </div>
               </div>
             </div>
@@ -258,7 +287,8 @@
               <span class="text">特殊织法</span>
             </div>
             <div class="content">
-              <el-input v-model="craftInfo.special_way"
+              <el-input style="width:360px"
+                v-model="craftInfo.special_way"
                 placeholder="请输入特殊织法"></el-input>
             </div>
           </div>
@@ -269,8 +299,16 @@
               <span class="text">成衣所含工序</span>
             </div>
             <div class="content">
-              <el-input v-model="craftInfo.process"
-                placeholder="请输入成衣所含工序"></el-input>
+              <el-select style="width:360px"
+                v-model="craftInfo.process"
+                multiple
+                placeholder="请选择成衣所含工序">
+                <el-option v-for="item in processArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -290,7 +328,7 @@
 </template>
 
 <script>
-import { product, sample, craft } from '@/assets/js/api.js'
+import { product, sample, craft, productPart, flower, process } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -325,8 +363,12 @@ export default {
           lengthwise_density: []
         },
         special_way: '',
-        process: ''
-      }
+        process: []
+      },
+      part: '',
+      partArr: [],
+      processArr: [],
+      ZZJGArr: []
     }
   },
   filters: {
@@ -361,6 +403,45 @@ export default {
         obj.splice(index, 1)
       }
     },
+    getPart (part) {
+      this.craftInfo.organization = []
+      this.craftInfo.density.crosswise_density = []
+      this.craftInfo.density.lengthwise_density = []
+      JSON.parse(part).forEach((item) => {
+        this.craftInfo.organization.push({
+          name: item.value,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
+        })
+        this.craftInfo.density.crosswise_density.push({
+          name: item.value,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
+        })
+        this.craftInfo.density.lengthwise_density.push({
+          name: item.value,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
+        })
+      })
+    },
+    querySearch (queryString, cb) {
+      var results = queryString ? this.ZZJGArr.filter((item) => item.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.ZZJGArr
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
     submit () {
       craft.createCloth({
         product_id: this.$route.params.id,
@@ -384,7 +465,11 @@ export default {
     let sampleOrProduct = this.$route.params.type === '1' ? product : sample
     Promise.all([sampleOrProduct.detail({
       id: this.$route.params.id
-    })
+    }), productPart.list(),
+    flower.list({
+      type: 2
+    }),
+    process.list()
     ]).then((res) => {
       this.productInfo = res[0].data.data
       this.productInfo.sizePart = []
@@ -416,33 +501,43 @@ export default {
           value: ''
         })
       })
-      this.craftInfo.organization = [{
-        name: '',
-        size: this.size.map((item) => {
-          return {
-            size: item.size_name,
-            value: ''
-          }
+      JSON.parse(this.productInfo.size[0].part_info).forEach((item) => {
+        this.craftInfo.organization.push({
+          name: item.part,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
         })
-      }]
-      this.craftInfo.density.crosswise_density = [{
-        name: '',
-        size: this.size.map((item) => {
-          return {
-            size: item.size_name,
-            value: ''
-          }
+        this.craftInfo.density.crosswise_density.push({
+          name: item.part,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
         })
-      }]
-      this.craftInfo.density.lengthwise_density = [{
-        name: '',
-        size: this.size.map((item) => {
-          return {
-            size: item.size_name,
-            value: ''
-          }
+        this.craftInfo.density.lengthwise_density.push({
+          name: item.part,
+          size: this.size.map((item) => {
+            return {
+              size: item.size_name,
+              value: ''
+            }
+          })
         })
-      }]
+      })
+      this.partArr = res[1].data.data
+      this.ZZJGArr = res[2].data.data.map((item) => {
+        return {
+          name: item.name,
+          value: item.name
+        }
+      })
+      this.processArr = res[3].data.data
       this.loading = false
     })
   }

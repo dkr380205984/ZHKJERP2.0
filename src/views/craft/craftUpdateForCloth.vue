@@ -97,6 +97,16 @@
                   {{itemNum}}
                 </div>
               </div>
+              <div class="line">
+                <div class="once">
+                  克重
+                </div>
+                <div class="once"
+                  v-for="(item,index) in productInfo.size_measurement"
+                  :key="index">
+                  {{item.weight}}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -269,8 +279,15 @@
               <span class="text">成衣所含工序</span>
             </div>
             <div class="content">
-              <el-input v-model="craftInfo.process"
-                placeholder="请输入成衣所含工序"></el-input>
+              <el-select v-model="craftInfo.process"
+                multiple
+                placeholder="请选择成衣所含工序">
+                <el-option v-for="item in processArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -325,8 +342,9 @@ export default {
           lengthwise_density: []
         },
         special_way: '',
-        process: ''
-      }
+        process: []
+      },
+      processArr: []
     }
   },
   filters: {
@@ -411,6 +429,9 @@ export default {
       this.create_time = res.data.data.create_time
       this.craftId = res.data.data.id
       this.loading = false
+    })
+    process.list().then((res) => {
+      this.processArr = res.data.data
     })
   }
 }

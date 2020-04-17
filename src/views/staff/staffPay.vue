@@ -1,6 +1,7 @@
 <template>
   <div id='staffPay'
-    class='indexMain'>
+    class='indexMain'
+    v-loading="loading">
     <div class="module">
       <div class="titleCtn">
         <span class="title">结算单信息</span>
@@ -12,6 +13,7 @@
               <div class="selectCtn">
                 <el-select v-model="department"
                   placeholder="选择部门筛选人员"
+                  clearable
                   @change="getList">
                   <el-option v-for="(item,index) in departmentArr"
                     :key="index"
@@ -212,17 +214,8 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="page"
-            @change="getList">
+            @current-change="getList">
           </el-pagination>
-        </div>
-      </div>
-    </div>
-    <div class="bottomFixBar">
-      <div class="main">
-        <div class="btnCtn">
-          <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
-          <div class="btn btnBlue">提交</div>
         </div>
       </div>
     </div>
@@ -234,6 +227,7 @@ import { staff, order, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
       defaultImage: require('@/assets/image/index/noPic.jpg'),
       testValue: '',
       page: 1,
@@ -253,7 +247,7 @@ export default {
         addFlag: true,
         id: null,
         staff_id: item.id,
-        complete_time: this.date + '-' + ((new Date()).getDay() < 10 ? ('0' + (new Date()).getDay()) : (new Date()).getDay()),
+        complete_time: this.date + '-' + ((new Date()).getDate() < 10 ? ('0' + (new Date()).getDate()) : (new Date()).getDate()),
         work_type: '',
         year: this.date.split('-')[0],
         month: this.date.split('-')[1],
@@ -266,6 +260,7 @@ export default {
       })
     },
     savePay (item, itemFather) {
+      this.loading = true
       if (!item.price) {
         this.$message.warning('请输入价格')
         return
@@ -304,6 +299,7 @@ export default {
           this.$message.success('操作成功')
           item.addFlag = false
           itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
+          this.loading = false
           this.$forceUpdate()
         }
       })
@@ -319,6 +315,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.loading = true
         staff.deletePay({
           id: id
         }).then((res) => {
@@ -326,6 +323,7 @@ export default {
             this.$message.success('删除成功')
             this.list[index].total_price = this.list[index].total_price - Math.round(this.list[index].child_data[indexChild].price * this.list[index].child_data[indexChild].number)
             this.list[index].child_data.splice(indexChild, 1)
+            this.loading = false
           }
         })
       }).catch(() => {
@@ -396,6 +394,7 @@ export default {
       }
     },
     getList () {
+      this.loading = true
       staff.payList({
         page: this.page,
         limit: 10,
@@ -411,6 +410,7 @@ export default {
           return item
         })
         this.total = res.data.meta.total
+        this.loading = false
       })
     }
   },

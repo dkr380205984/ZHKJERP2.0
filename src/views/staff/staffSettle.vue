@@ -1,6 +1,7 @@
 <template>
   <div id='staffSettle'
-    class='indexMain'>
+    class='indexMain'
+    v-loading="loading">
     <div class="module">
       <div class="titleCtn">
         <span class="title">合计工资结算单</span>
@@ -10,10 +11,11 @@
           <div class="title">
             <div class="block">
               <div class="selectCtn">
-                <el-select v-model="department"
+                <el-select @change="getList"
+                  v-model="department"
+                  clearable
                   placeholder="请选择部门">
                   <el-option v-for="(item,index) in departmentArr"
-                    @change="getList"
                     :key="index"
                     :label="item.name"
                     :value="item.id">
@@ -239,7 +241,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="page"
-            @change="getList">
+            @current-change="getList">
           </el-pagination>
         </div>
       </div>
@@ -260,6 +262,7 @@ import { staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
       department: '',
       departmentArr: [],
       date: '',
@@ -289,6 +292,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.loading = true
         staff.deleteOtherPay({
           id: item.id
         }).then((res) => {
@@ -296,6 +300,7 @@ export default {
             this.$message.success('删除成功')
             item.extra.splice(index, 1)
             this.cmpTotal(item)
+            this.loading = false
           }
         })
       }).catch(() => {
@@ -311,6 +316,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.loading = true
         staff.deleteOtherPay({
           id: item.id
         }).then((res) => {
@@ -318,6 +324,7 @@ export default {
             this.$message.success('删除成功')
             item.extra.splice(index, 1)
             this.cmpTotal(item)
+            this.loading = false
           }
         })
       }).catch(() => {
@@ -336,6 +343,7 @@ export default {
         this.$messsage.error('请输入费用金额')
         return
       }
+      this.loading = true
       staff.createOtherPay({
         id: item.id, // 修改的时候id不为空
         staff_id: itemFather.id,
@@ -354,6 +362,7 @@ export default {
             this.$message.success('修改成功')
           }
           item.edit = false
+          this.loading = false
         }
       })
     },
@@ -366,6 +375,7 @@ export default {
         this.$messsage.error('请输入扣款金额')
         return
       }
+      this.loading = true
       staff.createOtherPay({
         id: item.id, // 修改的时候id不为空
         staff_id: itemFather.id,
@@ -383,6 +393,7 @@ export default {
           this.$message.success('修改成功')
         }
         item.edit = false
+        this.loading = false
       })
     },
     updateExtra (item) {
@@ -403,6 +414,7 @@ export default {
       }, 0)
     },
     getList () {
+      this.loading = true
       staff.payList({
         page: this.page,
         limit: 10,
@@ -466,6 +478,7 @@ export default {
           return item
         })
         this.total = res.data.meta.total
+        this.loading = false
       })
     }
   },
