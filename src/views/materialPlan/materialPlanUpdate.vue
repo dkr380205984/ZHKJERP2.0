@@ -255,7 +255,8 @@ export default {
       orderInfo: {},
       materialPlanInfo: [],
       materialTotalInfo: [],
-      cloneData: []
+      cloneData: [],
+      colorList: []
     }
   },
   methods: {
