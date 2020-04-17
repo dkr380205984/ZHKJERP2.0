@@ -1978,7 +1978,7 @@ export default {
         return
       }
       errorFlag = flattenData.some((item) => {
-        return !item.price
+        return item.price === ''
       })
       if (errorFlag) {
         this.$message.error('请输入单价信息')
@@ -2204,7 +2204,7 @@ export default {
             errorMsg = '请输入数量'
             return
           }
-          if (!itemChild.price) {
+          if (itemChild.price === '') {
             errorFlag = true
             errorMsg = '请输入单价'
           }
