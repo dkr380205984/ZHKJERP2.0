@@ -79,6 +79,7 @@
                   <div class="tcolumn">物料名称</div>
                   <div class="tcolumn">物料属性</div>
                   <div class="tcolumn">物料数量</div>
+                  <div class="tcolumn">物料比例</div>
                 </div>
               </div>
             </div>
@@ -98,6 +99,7 @@
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
                   <div class="tcolumn">{{$toFixed(itemMat.number)}}{{itemMat.unit}}</div>
+                  <div class="tcolumn">{{$toFixed(itemMat.number/itemCS.material_total*100) + '%'}}</div>
                 </div>
               </div>
             </div>
@@ -358,6 +360,15 @@ export default {
           data: mainArr.concat(partArr),
           id: item.id
         }
+      })
+
+      // 大身新增物料比例字段，把物料总数加一加
+      this.list.forEach((itemList) => {
+        itemList.data[0].colourSizeArr.forEach((item) => {
+          item.material_total = item.materials.reduce((total, current) => {
+            return total + Number(current.number)
+          }, 0)
+        })
       })
       this.plan_id = this.list[0].id
       this.loading = false

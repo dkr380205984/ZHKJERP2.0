@@ -812,7 +812,7 @@ export default {
           if (!itemChild.number) {
             errorFlag = true
             errMsg = '请输入分配数量'
-          } else if (!itemChild.price) {
+          } else if (itemChild.price === '') {
             errorFlag = true
             errMsg = '请输入单价信息'
           } else if (!itemChild.colorSize) {
