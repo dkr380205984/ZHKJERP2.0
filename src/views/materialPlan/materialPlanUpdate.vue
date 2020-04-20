@@ -135,7 +135,7 @@
                       v-model="itemMa.material_name"
                       :fetch-suggestions="searchMaterial"
                       style="width:210px"
-                      @select="selectMaterial($event,item)"
+                      @select="selectMaterial($event,itemMa)"
                       placeholder="请输入辅料名称">
                     </el-autocomplete>
                   </span>
@@ -170,8 +170,15 @@
                       style="width:130px"
                       @input="changeLossInner(itemMa,'end_num')"
                       type="number">
-                      <template slot="append"
-                        v-if="itemMa.unit">{{(itemMa.unit === 'g' || itemMa.unit === '克') ? 'kg' : itemMa.unit}}</template>
+                      <template slot="append">
+                        <template v-if="itemMa.type === 1">kg</template>
+                        <template v-else>
+                          <input type="text"
+                            v-model="itemMa.unit"
+                            @change="changeOtherMaterialUnit($event,itemMa)"
+                            style="border: none;background: transparent;outline: none;width: 1em;">
+                        </template>
+                      </template>
                     </zh-input>
                   </span>
                   <span class="tb_row middle flex08">
@@ -248,13 +255,21 @@ export default {
       orderInfo: {},
       materialPlanInfo: [],
       materialTotalInfo: [],
-      cloneData: []
+      cloneData: [],
+      colorList: []
     }
   },
   methods: {
     selectMaterial (e, item) {
+      console.log(e)
       item.unit = e.unit || '个'
       this.computedTotal()
+    },
+    changeOtherMaterialUnit (e, item) {
+      console.log(e, item)
+      if (!e.target.value) {
+        item.unit = '个'
+      }
     },
     querySearch (queryString, cb) {
       this.computedTotal()
@@ -667,7 +682,8 @@ export default {
       })
       this.materialList = res[2].data.data.map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          unit: item.unit
         }
       })
       this.loading = false

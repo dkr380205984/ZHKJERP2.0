@@ -3905,7 +3905,7 @@ export default {
           id: '',
           materialName: '',
           materialUnit: '',
-          materialNamePrice: [{
+          materialNameArr: [{
             company: '',
             price: ''
           }]

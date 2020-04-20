@@ -1293,7 +1293,7 @@ export default {
             url: items
           }
         }) : []
-        this.total_price = orderInfo.total_price
+        this.computedTotalPrice()
         this.remark = orderInfo.remark
         this.loading = false
       })
