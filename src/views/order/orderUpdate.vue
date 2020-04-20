@@ -1279,8 +1279,8 @@ export default {
           url: items
         }
       }) : []
-      this.total_price = orderInfo.total_price
       this.remark = orderInfo.remark
+      this.computedTotalPrice()
       if (orderInfo.time_progress) {
         this.isOpenWarn = true
         this.timeData = [

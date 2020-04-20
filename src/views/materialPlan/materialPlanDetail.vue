@@ -85,7 +85,15 @@
                   <span class="tb_row">产品部位</span>
                   <span class="tb_row flex12">物料名称</span>
                   <span class="tb_row">物料颜色</span>
-                  <span class="tb_row flex08">单件数量</span>
+                  <span class="tb_row flex08">单个数量
+                    <el-tooltip class="item"
+                      effect="dark"
+                      content="单个部位所需数量"
+                      placement="top-start">
+                      <span class="el-icon-question"></span>
+                    </el-tooltip>
+                  </span>
+                  <span class="tb_row flex08">所需个数</span>
                   <span class="tb_row flex08">合计数量</span>
                   <span class="tb_row">原料损耗</span>
                   <span class="tb_row">最终数量</span>
@@ -93,11 +101,20 @@
                 <div class="tb_collapse tb_content bigPadding smallHeight"
                   v-for="(itemMa,indexMa) in itemPro.material_info"
                   :key="indexMa">
-                  <span class="tb_row">{{itemMa.product_part === itemPro.product_id ? '大身' :itemMa.name}}</span>
+                  <span class="tb_row">
+                    {{itemMa.product_part === itemPro.product_id ? '大身' :itemMa.name}}
+                  </span>
                   <span class="tb_row flex12">{{itemMa.material_name}}</span>
                   <span class="tb_row">{{itemMa.color}}</span>
-                  <span class="tb_row flex08">{{itemMa.plan_number ? itemMa.plan_number + '' + itemMa.unit : (itemMa.number ? $toFixed(itemMa.number/(1 + itemMa.material_loss/100)) + '' + itemMa.unit : '-')}}</span>
-                  <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + '' + itemMa.unit : '-'}}</span>
+                  <span class="tb_row flex08">
+                    {{itemMa.plan_number ? itemMa.plan_number + '' + itemMa.unit : (itemMa.number ? $toFixed(itemMa.number/(1 + itemMa.material_loss/100)) + '' + itemMa.unit : '-')}}
+                    <!-- <span style="margin:0 4px">x</span>
+                    {{itemMa.need_part_number || 1}} -->
+                  </span>
+                  <span class="tb_row flex08">{{itemMa.need_part_number || 1}}</span>
+                  <span class="tb_row flex08">
+                    {{itemMa.total_number ? itemMa.total_number + '' + itemMa.unit : '-'}}
+                  </span>
                   <span class="tb_row">{{itemMa.material_loss ? itemMa.material_loss + '%' : '0%'}}</span>
                   <span class="tb_row">{{itemMa.end_num ? itemMa.type === 1 ? $toFixed(itemMa.end_num/1000) + 'kg' : $toFixed(itemMa.end_num) + '' +itemMa.unit : '-'}}</span>
                 </div>
@@ -268,7 +285,6 @@ export default {
           }
           return itemPro
         })
-        console.log(planInfo)
         this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], otherRule: [{ name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
         data.production_data.forEach(itemPro => {
           let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color === itemPro.color_name && valPro.size === itemPro.size_name)
@@ -279,6 +295,15 @@ export default {
             flag.order_num = itemPro.order_number
             flag.stock_num = ''
           }
+        })
+        // 插入产品所需部位数量
+        this.materialPlanInfo.forEach(itemPro => {
+          itemPro.material_info.forEach(itemPart => {
+            let flag = this.$clone(res.data.data.production_data).find(value => +value.product_id === +itemPart.product_part)
+            if (flag) {
+              itemPart.need_part_number = flag.product_number / itemPro.production_num
+            }
+          })
         })
         // 处理所需物料
         let productMaterialTotal = this.$mergeData(planInfo, { mainRule: ['pid/product_id'], otherRule: [{ name: 'product_code' }], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'material_attribute/color', 'size_name/size', 'material_type/type'], otherRule: [{ name: 'reality_weight/number', type: 'add' }, { name: 'unit' }] } })

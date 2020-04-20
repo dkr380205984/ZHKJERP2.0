@@ -181,8 +181,15 @@
                       style="width:130px"
                       @input="changeLossInner(itemMa,'end_num')"
                       type="number">
-                      <template slot="append"
-                        v-if="itemMa.unit">{{(itemMa.unit === 'g' || itemMa.unit === '克') ? 'kg' : itemMa.unit}}</template>
+                      <template slot="append">
+                        <template v-if="itemMa.type === 1">kg</template>
+                        <template v-else>
+                          <input type="text"
+                            v-model="itemMa.unit"
+                            @change="changeOtherMaterialUnit($event,itemMa)"
+                            style="border: none;background: transparent;outline: none;width: 1em;">
+                        </template>
+                      </template>
                     </zh-input>
                   </span>
                   <span class="tb_row middle flex08">
@@ -266,6 +273,12 @@ export default {
     selectMaterial (e, item) {
       item.unit = e.unit || '个'
       this.computedTotal()
+    },
+    changeOtherMaterialUnit (e, item) {
+      console.log(e, item)
+      if (!e.target.value) {
+        item.unit = '个'
+      }
     },
     querySearch (queryString, cb) {
       this.computedTotal()
@@ -561,7 +574,6 @@ export default {
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
       let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size', 'color'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
-      console.log(materialPlanInfo)
       this.materialPlanInfo = materialPlanInfo.map(itemPro => {
         return {
           product_code: itemPro.product_code,

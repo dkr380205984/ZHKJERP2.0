@@ -33,7 +33,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">金额</span>
-              <span class="text">{{orderInfo.account_unit|filterUnitIcon}}{{orderInfo.total_price}}</span>
+              <span class="text">￥{{orderInfo.total_price}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
