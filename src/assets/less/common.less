@@ -908,6 +908,11 @@
             line-height: 32px;
             color: @font85;
             font-size: @fontMiddle;
+            &.isMust::before{
+              content: '*';
+              color: red;
+              margin-right: 4px;
+            }
           }
           .info{
             flex: 1;

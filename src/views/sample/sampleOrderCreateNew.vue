@@ -690,10 +690,10 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.contact_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
+      // if (!this.contact_id) {
+      //   this.$message.error('请选择联系人')
+      //   return
+      // }
       if (this.checkedProList.length === 0) {
         this.$message.error('检测到未选中打样样品，请选择')
         return

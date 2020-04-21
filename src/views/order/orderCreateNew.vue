@@ -1027,10 +1027,10 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.contact_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
+      // if (!this.contact_id) {
+      //   this.$message.error('请选择联系人')
+      //   return
+      // }
       if (!this.group_id) {
         this.$message.error('请选择负责小组')
         return
