@@ -88,7 +88,7 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">在职时间</span>
+              <span class="text">入职时间</span>
             </div>
             <div class="col">
               <span class="text">
@@ -140,7 +140,8 @@
               <span class="text">{{item.work_time}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.status===1?'在职':'离职'}}</span>
+              <span class="text"
+                :style="{'color':item.status===1?'#1a95ff':'#E6A23C'}">{{item.status===1?'在职':'离职'}}</span>
             </div>
             <div class="col">
               <span class="opr"
@@ -153,6 +154,9 @@
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item @click.native="$router.push('/staff/staffUpdate/'+ item.id)">
                       <span class="updated">修改</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="showBan(item.id)">
+                      <span class="create">离职</span>
                     </el-dropdown-item>
                     <el-dropdown-item @click.native="deleteStaff(item.id)">
                       <span class="delete">删除</span>
@@ -171,6 +175,42 @@
             :current-page.sync="page"
             @current-change="getList">
           </el-pagination>
+        </div>
+      </div>
+      <div class="popup"
+        v-show="banFlag">
+        <div class="main">
+          <div class="title">
+            <div class="text">填写离职信息</div>
+            <i class="el-icon-close"
+              @click="banFlag=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">离职时间：</div>
+              <div class="info">
+                <el-date-picker v-model="banDate"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  format="yyyy-MM-dd"
+                  placeholder="选择离职时间">
+                </el-date-picker>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">离职原因：</div>
+              <div class="info">
+                <el-input placeholder="请输入离职原因"
+                  v-model="banReason"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="banFlag = false">取消</div>
+            <div class="btn btnBlue"
+              @click="banStaff">确定</div>
+          </div>
         </div>
       </div>
     </div>
@@ -228,7 +268,11 @@ export default {
       keyword: '',
       total: 1,
       page: 1,
-      list: []
+      list: [],
+      staffId: '',
+      banReason: '',
+      banDate: '',
+      banFlag: false
     }
   },
   watch: {
@@ -312,6 +356,22 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
+      })
+    },
+    showBan (id) {
+      this.staffId = id
+      this.banFlag = true
+    },
+    banStaff () {
+      console.log(this.banDate)
+      staff.ban({
+        id: this.staffId,
+        leave_reason: this.banReason,
+        leave_time: this.banDate
+      }).then((res) => {
+        this.banFlag = false
+        this.$message.success('修改成功')
+        this.getList()
       })
     }
   },

@@ -63,8 +63,14 @@
       :key="index">
       <div class="titleCtn">
         <span class="title">{{index===0?'大身信息':'配件'+ chinaNum[index - 1]}}</span>
-        <span class="atRight"
-          @click="shortcutOpr(index)">智能同步</span>
+        <el-tooltip class="item"
+          effect="dark"
+          content="智能同步可以同步原料信息,相同配色的物料属性信息,以及相同尺码物料数量信息,请在有多个尺码和配色的时候使用该功能"
+          placement="top">
+          <span class="btn btnBlue"
+            style="height:32px;float:right;margin-top:11px"
+            @click="shortcutOpr(index)">智能同步</span>
+        </el-tooltip>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="titleNum"
@@ -76,10 +82,10 @@
               <div class="btnList">
                 <div class="button"
                   :class="{'active':item.chooseMaterial===1}"
-                  @click="item.chooseMaterial=1">原料</div>
+                  @click="changeMaterialType(item,1)">原料</div>
                 <div class="button"
                   :class="{'active':item.chooseMaterial===0}"
-                  @click="item.chooseMaterial=0">辅料</div>
+                  @click="changeMaterialType(item,0)">辅料</div>
               </div>
             </div>
           </div>
@@ -95,6 +101,8 @@
                   :class="{'selected':item.colourSizeIndex===indexColorSize,'success':item.colourSizeIndex!==indexColorSize&&itemColorSize.materials.length>0,'error':item.colourSizeIndex!==indexColorSize&&itemColorSize.materials.length===0}"
                   @click="item.colourSizeIndex=indexColorSize">{{itemColorSize.size_name}}/{{itemColorSize.colour_name}}</div>
               </div>
+              <div v-if="index>0"
+                style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div>
             </div>
           </div>
         </div>
@@ -227,6 +235,23 @@ export default {
     }
   },
   methods: {
+    changeMaterialType (item, type) {
+      this.$confirm('切换物料类型会清空已填写的' + (type === 1 ? '辅料' : '原料') + '信息,是否切换?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        item.chooseMaterial = type
+        item.colourSizeArr.forEach((itemChild) => {
+          itemChild.materials = []
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消切换'
+        })
+      })
+    },
     querySearch (queryString, cb) {
       if (this.colorList.length === 0) {
         Promise.all([

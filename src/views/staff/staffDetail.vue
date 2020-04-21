@@ -10,9 +10,9 @@
           <div class="title">
             <div class="block">
               <span class="username">{{staffInfo.name}}</span>
-              <span class="state">在职</span>
+              <span class="state">入职</span>
             </div>
-            <div class="block">在职时间：{{staffInfo.work_time}}</div>
+            <div class="block">入职时间：{{staffInfo.work_time}}</div>
           </div>
           <div class="tabelBody">
             <div class="box">
@@ -81,7 +81,7 @@
             </div>
             <div class="box">
               <div class="label">工种：</div>
-              <div class="content">{{staffInfo.type}}</div>
+              <div class="content">{{staffInfo.type=== 1?'合同工':'临时工'}}</div>
             </div>
           </div>
           <div class="tabelBody">
@@ -107,8 +107,8 @@
                   type="card">
                   <el-tab-pane v-for="(item,index) in yearMonth"
                     :key="index"
-                    :name="item"
-                    :label="item"></el-tab-pane>
+                    :name="item.date"
+                    :label="item.name"></el-tab-pane>
                 </el-tabs>
               </div>
             </div>
@@ -123,9 +123,9 @@
                   <div class="tcolumn">日期</div>
                   <div class="tcolumn">工序</div>
                   <div class="tcolumn">结算方式</div>
-                  <div class="tcolumn">单价</div>
+                  <div class="tcolumn">单价(元)</div>
                   <div class="tcolumn">数量</div>
-                  <div class="tcolumn">合计金额</div>
+                  <div class="tcolumn">合计金额(元)</div>
                   <div class="tcolumn">备注信息</div>
                   <div class="tcolumn">操作</div>
                 </div>
@@ -173,7 +173,7 @@
                   <el-tab-pane v-for="(item,index) in payOtherInfo"
                     :key="index"
                     :name="item.year+'-'+item.month"
-                    :label="item.year+'-'+item.month"></el-tab-pane>
+                    :label="item.year + '年' + Number(item.month) + '月份结算单'"></el-tab-pane>
                 </el-tabs>
               </div>
             </div>
@@ -185,10 +185,10 @@
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
-                  <div class="tcolumn">结算工资</div>
-                  <div class="tcolumn">额外工资</div>
-                  <div class="tcolumn">扣除工资</div>
-                  <div class="tcolumn">实发工资</div>
+                  <div class="tcolumn">结算工资(元)</div>
+                  <div class="tcolumn">额外工资(元)</div>
+                  <div class="tcolumn">扣除工资(元)</div>
+                  <div class="tcolumn">实发工资(元)</div>
                 </div>
               </div>
               <div class="tbody">
@@ -246,7 +246,7 @@ export default {
       if (!findYear) {
         return []
       }
-      let findMonth = findYear.childrenMergeInfo.find((item) => item.month === month)
+      let findMonth = findYear.childrenMergeInfo.find((item) => Number(item.month) === Number(month))
       return findMonth ? findMonth.childrenMergeInfo : []
     },
     otherpayJSON () {
@@ -268,7 +268,10 @@ export default {
       let arr = []
       this.payInfo.forEach((itemYear) => {
         itemYear.childrenMergeInfo.forEach((itemMonth) => {
-          arr.push(itemYear.year + '-' + itemMonth.month)
+          arr.push({
+            date: itemYear.year + '-' + (Number(itemMonth.month) < 10 ? '0' + Number(itemMonth.month) : Number(itemMonth.month)),
+            name: itemYear.year + '年' + Number(itemMonth.month) + '月份结算表'
+          })
         })
       })
       return arr
@@ -283,9 +286,10 @@ export default {
       let otherPay = this.$mergeData(this.staffInfo.deduct_data, { mainRule: 'year', childrenRule: { mainRule: 'month' } })
       otherPay.forEach((itemYear) => {
         itemYear.childrenMergeInfo.forEach((itemMonth) => {
+          itemMonth.month = Number(itemMonth.month) < 10 ? '0' + Number(itemMonth.month) : Number(itemMonth.month)
           this.payOtherInfo.push({
             year: itemYear.year,
-            month: itemMonth.month < 10 ? '0' + itemMonth.month : itemMonth.month,
+            month: itemMonth.month,
             total_price: this.staffInfo.child_data.filter((item) => Number(item.year) === Number(itemYear.year) && Number(item.month) === Number(itemMonth.month)).reduce((total, current) => {
               return total + Number(current.total_price)
             }, 0),
@@ -298,6 +302,7 @@ export default {
           })
         })
       })
+      console.log(this.payInfo)
       this.date = this.$getTime(new Date()).slice(0, 7)
       this.otherDate = this.$getTime(new Date()).slice(0, 7)
     })

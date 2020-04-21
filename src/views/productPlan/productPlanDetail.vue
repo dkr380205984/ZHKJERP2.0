@@ -78,7 +78,27 @@
                 <div class="trow">
                   <div class="tcolumn">物料名称</div>
                   <div class="tcolumn">物料属性</div>
-                  <div class="tcolumn">物料数量</div>
+                  <div class="tcolumn">
+                    <span>物料数量
+                      <el-tooltip class="item"
+                        effect="dark"
+                        content="以下信息为单个配件物料数量"
+                        placement="top">
+                        <i class="el-icon-question"></i>
+                      </el-tooltip>
+                    </span>
+                  </div>
+                  <div class="tcolumn"
+                    v-if="index>0">
+                    <span>合计物料数量
+                      <el-tooltip class="item"
+                        effect="dark"
+                        content="以下信息为整件产品配件所需物料数量"
+                        placement="top">
+                        <i class="el-icon-question"></i>
+                      </el-tooltip>
+                    </span>
+                  </div>
                   <div class="tcolumn">物料比例</div>
                 </div>
               </div>
@@ -99,6 +119,9 @@
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
                   <div class="tcolumn">{{$toFixed(itemMat.number)}}{{itemMat.unit}}</div>
+                  <div class="tcolumn"
+                    v-if="index>0">{{$toFixed(itemMat.allNum)}}{{itemMat.unit}}
+                  </div>
                   <div class="tcolumn">{{$toFixed(itemMat.number/itemCS.material_total*100) + '%'}}</div>
                 </div>
               </div>
@@ -333,11 +356,14 @@ export default {
           })
           itemPart.material_info.forEach((itemMat) => {
             let finded = partArr[indexPart].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
+            let allProNeedNum = itemPart.product_info.size_measurement.find((itemFind) => itemFind.size_name === itemMat.product_size).number // 找到该配件在整个产品中所需的数量,用于展示整个产品所需的该配件的物料数量
+            console.log(allProNeedNum)
             if (finded) {
               finded.materials.push({
                 name: itemMat.material_name,
                 attr: itemMat.material_attribute,
                 number: itemMat.weight,
+                allNum: itemMat.weight * allProNeedNum,
                 type: itemMat.type,
                 unit: itemMat.unit
               })
@@ -349,6 +375,7 @@ export default {
                   name: itemMat.material_name,
                   attr: itemMat.material_attribute,
                   number: itemMat.weight,
+                  allNum: itemMat.weight * allProNeedNum,
                   type: itemMat.type,
                   unit: itemMat.unit
                 }]
@@ -364,12 +391,15 @@ export default {
 
       // 大身新增物料比例字段，把物料总数加一加
       this.list.forEach((itemList) => {
-        itemList.data[0].colourSizeArr.forEach((item) => {
-          item.material_total = item.materials.reduce((total, current) => {
-            return total + Number(current.number)
-          }, 0)
+        itemList.data.forEach((itemData) => {
+          itemData.colourSizeArr.forEach((item) => {
+            item.material_total = item.materials.reduce((total, current) => {
+              return total + Number(current.number)
+            }, 0)
+          })
         })
       })
+      console.log(this.list)
       this.plan_id = this.list[0].id
       this.loading = false
     })

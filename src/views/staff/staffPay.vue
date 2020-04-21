@@ -49,7 +49,7 @@
                 <div class="label">更新日期</div>
               </div>
               <div class="box">
-                <div class="label">合计</div>
+                <div class="label">合计(元)</div>
               </div>
               <div class="box">
                 <div class="label">操作</div>
@@ -95,9 +95,9 @@
                   <div class="once">结算日期</div>
                   <div class="once">工序</div>
                   <div class="once">结算方式</div>
-                  <div class="once">单价</div>
+                  <div class="once">单价(元)</div>
                   <div class="once">数量</div>
-                  <div class="once">合计金额</div>
+                  <div class="once">合计金额(元)</div>
                   <div class="once">备注</div>
                   <div class="once">结算人</div>
                   <div class="once">结算时间</div>

@@ -75,7 +75,7 @@
             <div class="label"
               v-show="index===0">
               <span class="text">样品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
+              <!-- <span class="explanation">(必填,成分比例相加为100%)</span> -->
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
@@ -198,8 +198,20 @@
               <el-autocomplete class="inline-input"
                 v-model="item.fitting_name"
                 :fetch-suggestions="searchMaterial"
+                @select="getUnit($event,item)"
                 placeholder="请输入配件名称">
               </el-autocomplete>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">配件单位</span>
+              <span class="explanation">(必填,默认是个)</span>
+            </span>
+            <span class="content">
+              <el-input class="inline-input"
+                v-model="item.unit"
+                placeholder="请输入单位"></el-input>
             </span>
           </div>
         </div>
@@ -210,7 +222,7 @@
             <div class="label"
               v-show="indexIngredient===0">
               <span class="text">样品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
+              <!-- <span class="explanation">(必填,成分比例相加为100%)</span> -->
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
@@ -289,9 +301,9 @@
             </div>
             <div class="content">
               <zh-input v-model="itemSize.number"
-                placeholder="请输入个数信息">
+                placeholder="请输入数量信息">
                 <template slot="append">
-                  <span>个</span>
+                  <span>{{item.unit}}</span>
                 </template>
               </zh-input>
             </div>
@@ -513,7 +525,8 @@ export default {
           ingredient_name: '',
           ingredient_value: ''
         }],
-        size: [{ size: '', weight: '', desc: '', number: '' }]
+        size: [{ size: '', weight: '', desc: '', number: '' }],
+        unit: '个'
       }],
       // 配件类型从辅料里面选
       materialArr: [],
@@ -574,7 +587,8 @@ export default {
             desc: '',
             number: ''
           }
-        })
+        }),
+        unit: '个'
       })
     },
     deleteFitting (index) {
@@ -701,23 +715,23 @@ export default {
         this.$message.error('请选择样品花型')
         return
       }
-      error = this.ingredient.some((item) => {
-        return !item.ingredient_name || !item.ingredient_value
-      })
-      if (error) {
-        this.$message.error('请将样品成分信息填写完整')
-        return
-      }
-      let arr = this.ingredient.map(item => {
-        return item.ingredient_value
-      })
-      let total = arr.reduce((total, item) => {
-        return Number(total) + Number(item)
-      })
-      if (Number(total) !== 100) {
-        this.$message.error('样品成分比例总和不等于100%，请检查比例')
-        return
-      }
+      // error = this.ingredient.some((item) => {
+      //   return !item.ingredient_name || !item.ingredient_value
+      // })
+      // if (error) {
+      //   this.$message.error('请将样品成分信息填写完整')
+      //   return
+      // }
+      // let arr = this.ingredient.map(item => {
+      //   return item.ingredient_value
+      // })
+      // let total = arr.reduce((total, item) => {
+      //   return Number(total) + Number(item)
+      // })
+      // if (Number(total) !== 100) {
+      //   this.$message.error('样品成分比例总和不等于100%，请检查比例')
+      //   return
+      // }
       error = this.size.some((item) => {
         return !item.size || !item.weight || !item.desc
       })
@@ -761,6 +775,7 @@ export default {
               number: itemSize.number
             }
           }),
+          unit: item.unit,
           data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
@@ -809,7 +824,6 @@ export default {
     },
     initCreateOrder (info) {
       this.showSampleOrderCreatePopup = true
-      console.log(info)
       this.loading = true
       let sizeInfo = []
       info.size.forEach(itemSize => {
