@@ -219,7 +219,7 @@
                           placeholder='箱数'
                           disabled
                           v-model="itemPro.number">
-                          <template slot="append">条</template>
+                          <template slot="append">{{itemPro.unit || '条'}}</template>
                         </zh-input>
                       </div>
                     </div>
@@ -375,7 +375,7 @@
                           disabled
                           placeholder='计划数量'
                           v-model="itemPro.order_number">
-                          <template slot="append">条</template>
+                          <template slot="append">{{itemPro.unit || '条'}}</template>
                         </zh-input>
                       </div>
                     </div>
@@ -1293,6 +1293,7 @@ export default {
         } else {
           this.actualPackingEditInfo.push({
             product_info: this.$clone(this.productInfo).map(item => {
+              console.log(item)
               item.actual_number = ''
               item.actual_box = ''
               item.desc = ''

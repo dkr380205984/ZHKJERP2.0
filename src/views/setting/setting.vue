@@ -1142,7 +1142,7 @@
           </div>
           <div class="content">
             <div class="row">
-              <div class="label">纱线名称：</div>
+              <div class="label isMust">纱线名称：</div>
               <div class="info">
                 <el-input placeholder="请输入纱线名称"
                   v-model="changeYarnInfo.yarnName"></el-input>
@@ -1977,7 +1977,7 @@
         </div>
         <div class="content">
           <div class="row">
-            <span class="label">添加方式：</span>
+            <span class="label isMust">添加方式：</span>
             <div class="info"
               style="display:flex;align-items:center">
               <el-radio-group v-model="yarnAddType">
@@ -1990,7 +1990,7 @@
             <div class="row"
               v-for="(itemYarn,indexYarn) in editYarnInfo"
               :key="indexYarn + 'yarn'">
-              <span class="label">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
+              <span class="label isMust">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
               <div class="info">
                 <!-- <el-input placeholder="请输入纱线名称"
                   v-model="itemYarn.name"></el-input> -->
@@ -2010,7 +2010,7 @@
           </template>
           <template v-else>
             <div class="row">
-              <span class="label">格式添加：</span>
+              <span class="label isMust">格式添加：</span>
               <div class="info">
                 <el-input placeholder="取值阈值"
                   v-model="layoutData.thresholdValues"
@@ -2055,7 +2055,7 @@
               </div>
             </div>
             <div class="row">
-              <span class="label">名称预览：</span>
+              <span class="label isMust">名称预览：</span>
               <div class="info tagCtn">
                 <span class="yarnNameTag"
                   v-for="(itemYarn,indexYarn) in layoutData.yarnNameList"
@@ -2577,10 +2577,10 @@ export default {
           }
           data.push({
             name: item.name,
-            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+            price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
               return {
                 client_id: itemInner.company,
-                price: itemInner.price,
+                price: itemInner.price || 0,
                 desc: itemInner.desc
               }
             })
@@ -2593,10 +2593,10 @@ export default {
           }
           data.push({
             name: item,
-            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+            price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
               return {
                 client_id: itemInner.company,
-                price: itemInner.price,
+                price: itemInner.price || 0,
                 desc: itemInner.desc
               }
             })
@@ -3368,7 +3368,7 @@ export default {
               price_data: this.changeYarnInfo.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
                 return {
                   client_id: itemPrice.company,
-                  price: itemPrice.price,
+                  price: itemPrice.price || 0,
                   desc: itemPrice.desc || ''
                 }
               })
