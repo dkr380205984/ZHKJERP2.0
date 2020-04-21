@@ -71,7 +71,8 @@
             <el-tooltip class="item"
               effect="dark"
               :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购白胚'"
-              placement="top">
+              placement="top"
+              v-if="type==='1'">
               <div class="btn"
                 :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
                 @click="easyOrder(1)">订购白胚</div>
@@ -79,7 +80,8 @@
             <el-tooltip class="item"
               effect="dark"
               :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购色纱'"
-              placement="top">
+              placement="top"
+              v-if="type==='1'">
               <div class="btn"
                 :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
                 @click="easyOrder(2)">订购色纱</div>

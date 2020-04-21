@@ -89,7 +89,6 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">联系人</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="contact_id"

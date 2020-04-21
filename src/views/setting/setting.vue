@@ -2569,12 +2569,12 @@ export default {
     },
     saveYarns () {
       let data = []
-      let flag = true
+      // let flag = true
       if (this.yarnAddType) {
         this.editYarnInfo.filter(item => item.name).forEach(item => {
-          if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item.name,
             price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
@@ -2588,9 +2588,9 @@ export default {
         })
       } else {
         this.layoutData.yarnNameList.forEach(item => {
-          if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item,
             price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
@@ -2603,10 +2603,10 @@ export default {
           })
         })
       }
-      if (!flag) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      // if (!flag) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (data.length !== 0) {
         yarn.create({ data: data }).then((res) => {
           if (res.data.status) {
@@ -3355,10 +3355,10 @@ export default {
       })
     },
     saveYarnName () {
-      if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
-        this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-        return
-      }
+      // if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
+      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
+      //   return
+      // }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
           data: [

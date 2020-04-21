@@ -396,7 +396,7 @@
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">{{item.price*item.number}}</div>
+                  <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn">
@@ -464,7 +464,7 @@
                           :key="indexMat">
                           <div class="tcolumn">{{itemMat.material_name}}</div>
                           <div class="tcolumn">{{itemMat.material_attribute}}</div>
-                          <div class="tcolumn">{{itemMat.material_type===1?parseInt(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
+                          <div class="tcolumn">{{itemMat.material_type===1?$toFixed(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
                         </div>
                         <div class="trow"
                           v-if="itemChild.material_assign.length===0">

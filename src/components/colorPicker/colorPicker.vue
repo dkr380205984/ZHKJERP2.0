@@ -36,6 +36,7 @@
     <div class="editTextCtn">
       <input class="editInput"
         v-model="tips"
+        @change="getName"
         placeholder="颜色" />
     </div>
   </div>
@@ -73,12 +74,6 @@ export default {
           }).concat(res.data.data)
         })
       }
-    },
-    tips (newVal) {
-      this.$emit('input', {
-        color: this.color,
-        name: newVal
-      })
     }
   },
   methods: {
@@ -102,6 +97,12 @@ export default {
       this.$emit('colorChange', {
         color: color,
         name: name
+      })
+    },
+    getName () {
+      this.$emit('input', {
+        color: this.color,
+        name: this.tips
       })
     }
   }

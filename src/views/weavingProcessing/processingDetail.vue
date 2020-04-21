@@ -361,7 +361,7 @@
                       </div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
                       <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
                     </div>
                   </div>

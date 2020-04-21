@@ -89,7 +89,6 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">联系人</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="contact_id"
@@ -590,10 +589,10 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.contact_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
+      // if (!this.contact_id) {
+      //   this.$message.error('请选择联系人')
+      //   return
+      // }
       if (this.checkedProList.length === 0) {
         this.$message.error('检测到未选中打样样品，请选择')
         return

@@ -407,7 +407,8 @@ const staff = {
   deleteOtherPay: (params) => http.post(`${baseUrl}/staff/wage/settle/deduct/delete`, params, 'application/json'),
   payList: (params) => http.get(`${baseUrl}/staff/wage/settle/list`, params),
   detail: (params) => http.get(`${baseUrl}/company/staff/detail`, params),
-  delete: (params) => http.post(`${baseUrl}/company/staff/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/company/staff/delete`, params, 'application/json'),
+  ban: (params) => http.post(`${baseUrl}/company/staff/status/check`, params, 'application/json')
 }
 // 教程
 const tutorial = {
