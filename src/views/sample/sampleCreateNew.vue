@@ -255,9 +255,21 @@
             <span class="content">
               <el-autocomplete class="inline-input"
                 v-model="item.fitting_name"
+                @select="getUnit($event,item)"
                 :fetch-suggestions="searchMaterial"
                 placeholder="请输入配件名称">
               </el-autocomplete>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">单位名称</span>
+              <span class="explanation">(必填，默认为个)</span>
+            </span>
+            <span class="content">
+              <el-input class="inline-input"
+                v-model="item.unit"
+                placeholder="请输入单位"></el-input>
             </span>
           </div>
         </div>
@@ -349,7 +361,7 @@
               <zh-input v-model="itemSize.number"
                 placeholder="请输入个数信息">
                 <template slot="append">
-                  <span>个</span>
+                  <span>{{item.unit}}</span>
                 </template>
               </zh-input>
             </div>
@@ -567,7 +579,8 @@ export default {
           ingredient_name: '',
           ingredient_value: ''
         }],
-        size: [{ size: '', weight: '', desc: '', number: '' }]
+        size: [{ size: '', weight: '', desc: '', number: '1' }],
+        unit: '个'
       }],
       // 配件类型从辅料里面选
       materialArr: [],
@@ -620,6 +633,9 @@ export default {
     }
   },
   methods: {
+    getUnit (ev, item) {
+      item.unit = ev.unit
+    },
     addFitting () {
       this.fittingInfo.push({
         fitting_name: '',
@@ -628,12 +644,13 @@ export default {
           ingredient_name: '',
           ingredient_value: ''
         }],
+        unit: '个',
         size: this.size.map((itemPro) => {
           return {
             size: itemPro.size,
             weight: '',
             desc: '',
-            number: ''
+            number: '1'
           }
         })
       })
@@ -832,6 +849,7 @@ export default {
       }
       let partData = this.fittingInfo.map((item) => {
         return {
+          unit: item.unit,
           name: item.fitting_name,
           data_size: item.size.map((itemSize) => {
             return {
@@ -1111,7 +1129,7 @@ export default {
               size: itemPro.size,
               weight: item.size[indexPro] ? item.size[indexPro].weight : '',
               desc: item.size[indexPro] ? item.size[indexPro].desc : '',
-              number: item.size[indexPro] ? item.size[indexPro].number : ''
+              number: item.size[indexPro] ? item.size[indexPro].number : '1'
             }
           })
           item.size = size

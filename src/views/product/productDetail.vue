@@ -366,12 +366,12 @@
             <span class="label">配件规格：</span>
             <div class="lineCtn">
               <div class="line"
-                v-for="(item,index) in item.size"
+                v-for="(itemChild,index) in item.size"
                 :key="index">
-                <span style="margin-right:8px">{{item.size_name}}</span>
-                <span style="margin-right:8px">{{item.size_info}}cm</span>
-                <span style="margin-right:8px">{{item.weight}}g</span>
-                <span style="color:#1A95FF">{{item.number}}个</span>
+                <span style="margin-right:8px">{{itemChild.size_name}}</span>
+                <span style="margin-right:8px">{{itemChild.size_info}}cm</span>
+                <span style="margin-right:8px">{{itemChild.weight}}g</span>
+                <span style="color:#1A95FF">{{itemChild.number}}{{item.unit}}</span>
               </div>
             </div>
           </div>

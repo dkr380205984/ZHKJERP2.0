@@ -227,8 +227,20 @@
               <el-autocomplete class="inline-input"
                 v-model="item.fitting_name"
                 :fetch-suggestions="searchMaterial"
+                @select="getUnit($event,item)"
                 placeholder="请输入配件名称">
               </el-autocomplete>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">单位名称</span>
+              <span class="explanation">(必填，默认为个)</span>
+            </span>
+            <span class="content">
+              <el-input class="inline-input"
+                v-model="item.unit"
+                placeholder="请输入单位"></el-input>
             </span>
           </div>
         </div>
@@ -320,16 +332,17 @@
               <zh-input v-model="itemSize.number"
                 placeholder="请输入个数信息">
                 <template slot="append">
-                  <span>个</span>
+                  <span>{{item.unit}}</span>
                 </template>
               </zh-input>
             </div>
           </div>
         </div>
+        <div v-show="hasFitting"
+          class="btn btnWhiteBlue add_fitting_btn"
+          style="width:4em;margin-left:32px"
+          @click="addFitting">添加配件</div>
       </div>
-      <div v-show="hasFitting"
-        class="btn btnWhiteBlue add_fitting_btn"
-        @click="addFitting">添加配件</div>
     </div>
     <div class="module">
       <div class="titleCtn">
@@ -424,12 +437,13 @@ export default {
       fileArr: [],
       hasFitting: false,
       fittingInfo: [{
+        unit: '个',
         fitting_name: '',
         ingredient: [{
           ingredient_name: '',
           ingredient_value: ''
         }],
-        size: [{ size: '', weight: '', desc: '', number: '' }]
+        size: [{ size: '', weight: '', desc: '', number: '1' }]
       }],
       // 配件类型从辅料里面选
       materialArr: [],
@@ -438,6 +452,9 @@ export default {
     }
   },
   methods: {
+    getUnit (ev, item) {
+      item.unit = ev.unit
+    },
     addFitting () {
       this.fittingInfo.push({
         fitting_name: '',
@@ -451,9 +468,10 @@ export default {
             size: itemPro.size,
             weight: '',
             desc: '',
-            number: ''
+            number: '1'
           }
-        })
+        }),
+        unit: '个'
       })
     },
     deleteFitting (index, id) {
@@ -661,6 +679,7 @@ export default {
 
       let partData = this.fittingInfo.map((item) => {
         return {
+          unit: item.unit,
           part_id: item.part_id ? item.part_id : '',
           name: item.fitting_name,
           part_category: '',
@@ -728,7 +747,7 @@ export default {
               size: itemPro.size,
               weight: item.size[indexPro] ? item.size[indexPro].weight : '',
               desc: item.size[indexPro] ? item.size[indexPro].desc : '',
-              number: item.size[indexPro] ? item.size[indexPro].number : ''
+              number: item.size[indexPro] ? item.size[indexPro].number : '1'
             }
           })
           item.size = size
@@ -827,6 +846,7 @@ export default {
       this.hasFitting = productInfo.part_data.length > 0
       this.fittingInfo = productInfo.part_data.map((item) => {
         return {
+          unit: item.unit,
           part_id: item.id,
           fitting_name: item.name,
           ingredient: item.component.map((item) => {

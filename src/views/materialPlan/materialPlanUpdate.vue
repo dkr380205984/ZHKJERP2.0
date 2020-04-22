@@ -103,7 +103,15 @@
                   <span class="tb_row">产品部位</span>
                   <span class="tb_row flex15">物料名称</span>
                   <span class="tb_row">物料颜色</span>
-                  <span class="tb_row flex08">单件数量</span>
+                  <span class="tb_row flex08">
+                    单个数量
+                    <el-tooltip class="item"
+                      effect="dark"
+                      content="单个部位所需数量"
+                      placement="top-start">
+                      <span class="el-icon-question"></span>
+                    </el-tooltip>
+                  </span>
                   <span class="tb_row flex08">合计数量</span>
                   <span class="tb_row">原料损耗</span>
                   <span class="tb_row">最终数量</span>
@@ -595,7 +603,7 @@ export default {
           production_num: itemPro.numbers,
           unit: itemPro.unit,
           part_arr: this.$clone([{
-            name: '成衣',
+            name: '大身',
             id: itemPro.product_id
           }].concat(itemPro.part_data.map(itemPart => {
             return {

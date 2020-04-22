@@ -46,16 +46,16 @@
                 <div class="label">员工编号</div>
               </div>
               <div class="box">
-                <div class="label">结算工资</div>
+                <div class="label">结算工资(元)</div>
               </div>
               <div class="box">
-                <div class="label">额外部分</div>
+                <div class="label">额外部分(元)</div>
               </div>
               <div class="box">
-                <div class="label">扣除部分</div>
+                <div class="label">扣除部分(元)</div>
               </div>
               <div class="box">
-                <div class="label">实发工资</div>
+                <div class="label">实发工资(元)</div>
               </div>
               <div class="box">
                 <div class="label">更新日期</div>
@@ -104,7 +104,7 @@
                   <span class="text">结算工资</span>
                 </div>
                 <div class="rightCtn">
-                  <span class="text">金额</span>
+                  <span class="text">金额(元)</span>
                   <span class="text oprCtn">操作</span>
                 </div>
               </div>

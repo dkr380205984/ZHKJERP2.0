@@ -226,9 +226,21 @@
             <span class="content">
               <el-autocomplete class="inline-input"
                 v-model="item.fitting_name"
+                @select="getUnit($event,item)"
                 :fetch-suggestions="searchMaterial"
                 placeholder="请输入配件名称">
               </el-autocomplete>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">单位名称</span>
+              <span class="explanation">(必填，默认为个)</span>
+            </span>
+            <span class="content">
+              <el-input class="inline-input"
+                v-model="item.unit"
+                placeholder="请输入单位"></el-input>
             </span>
           </div>
         </div>
@@ -319,7 +331,7 @@
               <zh-input v-model="itemSize.number"
                 placeholder="请输入个数信息">
                 <template slot="append">
-                  <span>个</span>
+                  <span>{{item.unit}}</span>
                 </template>
               </zh-input>
             </div>
@@ -428,7 +440,8 @@ export default {
           ingredient_name: '',
           ingredient_value: ''
         }],
-        size: [{ size: '', weight: '', desc: '', number: '' }]
+        size: [{ size: '', weight: '', desc: '', number: '1' }],
+        unit: '个'
       }],
       // 配件类型从辅料里面选
       materialArr: [],
@@ -445,12 +458,13 @@ export default {
           ingredient_name: '',
           ingredient_value: ''
         }],
+        unit: '个',
         size: this.size.map((itemPro) => {
           return {
             size: itemPro.size,
             weight: '',
             desc: '',
-            number: ''
+            number: '1'
           }
         })
       })
@@ -608,6 +622,9 @@ export default {
       // return false 禁用自带的删除功能
       return false
     },
+    getUnit (ev, item) {
+      item.unit = ev.unit
+    },
     submit () {
       let error = false
       if (this.type.length <= 0) {
@@ -659,6 +676,7 @@ export default {
       }
       let partData = this.fittingInfo.map((item) => {
         return {
+          unit: item.unit,
           part_id: item.part_id ? item.part_id : '',
           part_title: item.fitting_name,
           part_category: '',
@@ -838,6 +856,7 @@ export default {
         this.hasFitting = productInfo.part_data.length > 0
         this.fittingInfo = productInfo.part_data.map((item) => {
           return {
+            unit: item.unit,
             part_id: item.id,
             fitting_name: item.part_title,
             ingredient: item.part_component.map((item) => {

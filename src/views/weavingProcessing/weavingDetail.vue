@@ -396,7 +396,7 @@
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">{{item.price*item.number}}</div>
+                  <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn">
@@ -464,7 +464,7 @@
                           :key="indexMat">
                           <div class="tcolumn">{{itemMat.material_name}}</div>
                           <div class="tcolumn">{{itemMat.material_attribute}}</div>
-                          <div class="tcolumn">{{itemMat.material_type===1?parseInt(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
+                          <div class="tcolumn">{{itemMat.material_type===1?$toFixed(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
                         </div>
                         <div class="trow"
                           v-if="itemChild.material_assign.length===0">
@@ -966,7 +966,7 @@ export default {
       //   }
       // })
       // if (this.weaving_data.length === 0) {
-      //   this.$message.warning('所有成衣信息已分配完毕，如需分配其他部件，请手动分配')
+      //   this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
       // } else {
       //   this.weaving_flag = true
       //   this.easyWeaving_flag = true
@@ -1031,7 +1031,7 @@ export default {
       this.weaving_data.forEach((item) => {
         item.mixedData.forEach((itemChild) => {
           let partColorSize = itemChild.partColorSize.split('/')
-          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '成衣' // 判断是否为成衣
+          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '大身' // 判断是否为大身
           formData.push({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
@@ -1348,7 +1348,7 @@ export default {
           itemChild.size = item.size
         })
         item.part_data.unshift({
-          name: '成衣',
+          name: '大身',
           number: item.production_number,
           id: item.product_id,
           color: item.color,

@@ -1273,7 +1273,7 @@
           </div>
           <div class="content">
             <div class="row">
-              <div class="label">纱线名称：</div>
+              <div class="label isMust">纱线名称：</div>
               <div class="info">
                 <el-input placeholder="请输入纱线名称"
                   v-model="changeYarnInfo.yarnName"></el-input>
@@ -2108,7 +2108,7 @@
         </div>
         <div class="content">
           <div class="row">
-            <span class="label">添加方式：</span>
+            <span class="label isMust">添加方式：</span>
             <div class="info"
               style="display:flex;align-items:center">
               <el-radio-group v-model="yarnAddType">
@@ -2121,10 +2121,8 @@
             <div class="row"
               v-for="(itemYarn,indexYarn) in editYarnInfo"
               :key="indexYarn + 'yarn'">
-              <span class="label">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
+              <span class="label isMust">{{indexYarn === 0 ? '名称添加：' : ''}}</span>
               <div class="info">
-                <!-- <el-input placeholder="请输入纱线名称"
-                  v-model="itemYarn.name"></el-input> -->
                 <el-autocomplete v-model="itemYarn.name"
                   :fetch-suggestions="querySearchYarn"
                   :trigger-on-focus="false"
@@ -2141,7 +2139,7 @@
           </template>
           <template v-else>
             <div class="row">
-              <span class="label">格式添加：</span>
+              <span class="label isMust">格式添加：</span>
               <div class="info">
                 <el-input placeholder="取值阈值"
                   v-model="layoutData.thresholdValues"
@@ -2186,7 +2184,7 @@
               </div>
             </div>
             <div class="row">
-              <span class="label">名称预览：</span>
+              <span class="label isMust">名称预览：</span>
               <div class="info tagCtn">
                 <span class="yarnNameTag"
                   v-for="(itemYarn,indexYarn) in layoutData.yarnNameList"
@@ -2719,18 +2717,18 @@ export default {
     },
     saveYarns () {
       let data = []
-      let flag = true
+      // let flag = true
       if (this.yarnAddType) {
         this.editYarnInfo.filter(item => item.name).forEach(item => {
-          if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.name.indexOf('/') !== -1 || item.name.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item.name,
-            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+            price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
               return {
                 client_id: itemInner.company,
-                price: itemInner.price,
+                price: itemInner.price || 0,
                 desc: itemInner.desc
               }
             })
@@ -2738,22 +2736,22 @@ export default {
         })
       } else {
         this.layoutData.yarnNameList.forEach(item => {
-          if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
-            flag = false
-          }
+          // if (item.indexOf('/') !== -1 || item.indexOf('%') !== -1) {
+          //   flag = false
+          // }
           data.push({
             name: item,
-            price_data: this.layoutData.yarnPriceArr.map(itemInner => {
+            price_data: this.layoutData.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemInner => {
               return {
                 client_id: itemInner.company,
-                price: itemInner.price,
+                price: itemInner.price || 0,
                 desc: itemInner.desc
               }
             })
           })
         })
       }
-      console.log(flag)
+      // console.log(flag)
       // if (!flag) {
       //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
       //   return
@@ -3629,7 +3627,7 @@ export default {
               price_data: this.changeYarnInfo.yarnPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
                 return {
                   client_id: itemPrice.company,
-                  price: itemPrice.price,
+                  price: itemPrice.price || 0,
                   desc: itemPrice.desc || ''
                 }
               })

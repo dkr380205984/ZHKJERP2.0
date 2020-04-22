@@ -66,7 +66,6 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">联系人</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="contact_id"
@@ -1027,10 +1026,10 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.contact_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
+      // if (!this.contact_id) {
+      //   this.$message.error('请选择联系人')
+      //   return
+      // }
       if (!this.group_id) {
         this.$message.error('请选择负责小组')
         return
@@ -1293,7 +1292,7 @@ export default {
             url: items
           }
         }) : []
-        this.computedTotalPrice()
+        this.total_price = orderInfo.total_price
         this.remark = orderInfo.remark
         this.loading = false
       })

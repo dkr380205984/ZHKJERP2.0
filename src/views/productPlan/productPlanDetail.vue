@@ -35,41 +35,10 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">产品规格：</span>
-            <div class="tableCtn">
-              <div class="line">
-                <div class="once">
-                  <div class="biaotou rightTop">规格</div>
-                  <div class="xiexian"></div>
-                  <div class="biaotou leftBottom">部位</div>
-                </div>
-                <div class="once"
-                  v-for="(item,index) in productInfo.size_measurement"
-                  :key="index">
-                  {{item.size_name}}
-                </div>
-              </div>
+            <div class="lineCtn">
               <div class="line"
-                v-for="(item,index) in productInfo.sizePart"
-                :key="index">
-                <div class="once">
-                  {{item.part}}
-                </div>
-                <div class="once"
-                  v-for="(itemNum,indexNum) in item.size"
-                  :key="indexNum">
-                  {{itemNum}}
-                </div>
-              </div>
-              <div class="line">
-                <div class="once">
-                  克重
-                </div>
-                <div class="once"
-                  v-for="(item,index) in productInfo.size_measurement"
-                  :key="index">
-                  {{item.weight}}
-                </div>
-              </div>
+                v-for="(item,index) in productInfo.size_measurement"
+                :key="index">{{item.size_name + ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -109,7 +78,27 @@
                 <div class="trow">
                   <div class="tcolumn">物料名称</div>
                   <div class="tcolumn">物料属性</div>
-                  <div class="tcolumn">物料数量</div>
+                  <div class="tcolumn">
+                    <span>物料数量
+                      <el-tooltip class="item"
+                        effect="dark"
+                        content="以下信息为单个配件物料数量"
+                        placement="top">
+                        <i class="el-icon-question"></i>
+                      </el-tooltip>
+                    </span>
+                  </div>
+                  <div class="tcolumn"
+                    v-if="index>0">
+                    <span>合计物料数量
+                      <el-tooltip class="item"
+                        effect="dark"
+                        content="以下信息为整件产品配件所需物料数量"
+                        placement="top">
+                        <i class="el-icon-question"></i>
+                      </el-tooltip>
+                    </span>
+                  </div>
                   <div class="tcolumn">物料比例</div>
                 </div>
               </div>
@@ -130,6 +119,9 @@
                   <div class="tcolumn">{{itemMat.name}}</div>
                   <div class="tcolumn">{{itemMat.attr}}</div>
                   <div class="tcolumn">{{$toFixed(itemMat.number)}}{{itemMat.unit}}</div>
+                  <div class="tcolumn"
+                    v-if="index>0">{{$toFixed(itemMat.allNum)}}{{itemMat.unit}}
+                  </div>
                   <div class="tcolumn">{{$toFixed(itemMat.number/itemCS.material_total*100) + '%'}}</div>
                 </div>
               </div>
@@ -207,8 +199,7 @@ export default {
         create_time: '',
         user_name: '',
         size_measurement: [],
-        name: '',
-        sizePart: []
+        name: ''
       },
       list: [{
         data: [],
@@ -324,28 +315,15 @@ export default {
     }).then((res) => {
       let data = res.data.data
       this.productInfo = data[0].product_info
-      this.productInfo.sizePart = []
-      this.productInfo.size_measurement.forEach((itemSize, indexSize) => {
-        JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-          if (!this.productInfo.sizePart[indexPart]) {
-            this.productInfo.sizePart[indexPart] = {
-              part: '',
-              size: []
-            }
-          }
-          this.productInfo.sizePart[indexPart].part = itemPart.part
-          this.productInfo.sizePart[indexPart].size.push(itemPart.size)
-        })
-      })
       this.list = data.map((item, index) => {
         if (item.is_default === 1) {
           this.listIndex = index
           this.defaultIndex = index
         }
         let mainArr = [{
-          name: '成衣信息',
+          name: '大身信息',
           colourSizeArr: []
-        }] // 成衣
+        }] // 大身
         let partArr = [] // 配件
         item.material_info.forEach((itemMat) => {
           let finded = mainArr[0].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
@@ -378,11 +356,14 @@ export default {
           })
           itemPart.material_info.forEach((itemMat) => {
             let finded = partArr[indexPart].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
+            let allProNeedNum = itemPart.product_info.size_measurement.find((itemFind) => itemFind.size_name === itemMat.product_size).number // 找到该配件在整个产品中所需的数量,用于展示整个产品所需的该配件的物料数量
+            console.log(allProNeedNum)
             if (finded) {
               finded.materials.push({
                 name: itemMat.material_name,
                 attr: itemMat.material_attribute,
                 number: itemMat.weight,
+                allNum: itemMat.weight * allProNeedNum,
                 type: itemMat.type,
                 unit: itemMat.unit
               })
@@ -394,6 +375,7 @@ export default {
                   name: itemMat.material_name,
                   attr: itemMat.material_attribute,
                   number: itemMat.weight,
+                  allNum: itemMat.weight * allProNeedNum,
                   type: itemMat.type,
                   unit: itemMat.unit
                 }]
@@ -406,14 +388,18 @@ export default {
           id: item.id
         }
       })
-      // 成衣新增物料比例字段，把物料总数加一加
+
+      // 大身新增物料比例字段，把物料总数加一加
       this.list.forEach((itemList) => {
-        itemList.data[0].colourSizeArr.forEach((item) => {
-          item.material_total = item.materials.reduce((total, current) => {
-            return total + Number(current.number)
-          }, 0)
+        itemList.data.forEach((itemData) => {
+          itemData.colourSizeArr.forEach((item) => {
+            item.material_total = item.materials.reduce((total, current) => {
+              return total + Number(current.number)
+            }, 0)
+          })
         })
       })
+      console.log(this.list)
       this.plan_id = this.list[0].id
       this.loading = false
     })

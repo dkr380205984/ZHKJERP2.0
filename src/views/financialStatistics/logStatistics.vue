@@ -11,7 +11,8 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-select v-model="order_type"
+                <el-select style="width:120px"
+                  v-model="order_type"
                   @change="changeRouter(1)"
                   class="inputs">
                   <el-option label="所有日志"
@@ -22,14 +23,16 @@
                     :value="2"></el-option>
                 </el-select>
                 <el-input class="inputs"
+                  style="width:170px"
                   v-model="material_name"
                   @change="changeRouter(1)"
                   placeholder="输入物料名称查询">
                 </el-input>
                 <el-select class="inputs"
+                  style="width:170px"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -38,9 +41,10 @@
                     :value="item.id"></el-option>
                 </el-select>
                 <el-select class="inputs"
+                  style="width:170px"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索公司名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.matOrder"
@@ -48,8 +52,20 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
+                <el-select class="inputs"
+                  style="width:170px"
+                  v-model="stock_id"
+                  @change="changeRouter(1)"
+                  placeholder="搜索仓库名称查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in stockList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
                 <el-date-picker v-model="date"
-                  style="width:290px"
+                  style="width:250px"
                   class="inputs"
                   type="daterange"
                   align="right"
@@ -195,7 +211,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -206,7 +222,7 @@
                 <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索加工单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.matProcess"
@@ -342,7 +358,8 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <el-select v-model="order_type"
+                <el-select style="width:120px"
+                  v-model="order_type"
                   @change="changeRouter(1)"
                   class="inputs">
                   <el-option label="所有日志"
@@ -352,15 +369,32 @@
                   <el-option label="样单"
                     :value="2"></el-option>
                 </el-select>
-                <el-input class="inputs"
+                <el-input style="width:170px"
+                  class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
                   placeholder="输入物料名称查询">
                 </el-input>
-                <el-select class="inputs"
+                <el-select style="width:170px"
+                  class="inputs"
+                  v-model="operate_type"
+                  @change="changeRouter(1)"
+                  placeholder="操作类型查询"
+                  clearable>
+                  <el-option label="出库"
+                    value="1"></el-option>
+                  <el-option label="入库"
+                    value="2"></el-option>
+                  <el-option label="最终入库"
+                    value="3"></el-option>
+                  <el-option label="织造出库"
+                    value="4"></el-option>
+                </el-select>
+                <el-select style="width:170px"
+                  class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -368,10 +402,11 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
+                <el-select style="width:170px"
+                  class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索出入库单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.matStock"
@@ -380,7 +415,7 @@
                     :value="item.id"></el-option>
                 </el-select>
                 <el-date-picker v-model="date"
-                  style="width:290px"
+                  style="width:250px"
                   class="inputs"
                   type="daterange"
                   align="right"
@@ -500,7 +535,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -511,7 +546,7 @@
                 <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索织造单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.proWeave"
@@ -664,7 +699,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -675,7 +710,7 @@
                 <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索补纱单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.proWeave"
@@ -810,7 +845,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -879,7 +914,7 @@
                   <span class="text">单价(元)</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">数量(件)</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -977,15 +1012,15 @@
                 </el-input> -->
                 <el-input class="inputs"
                   style="width:160px"
-                  v-model="product_code"
+                  v-model="order_code"
                   @change="changeRouter(1)"
-                  placeholder="输入产品编号查询">
+                  placeholder="输入关联单号查询">
                 </el-input>
                 <el-select class="inputs"
                   v-model="operate_user"
                   style="width:160px"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -997,7 +1032,7 @@
                   style="width:160px"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索织造单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientList"
@@ -1061,7 +1096,7 @@
                   <span class="text">入库类型</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">数量(件)</span>
                 </div>
                 <div class="col">
                   <span class="text">备注</span>
@@ -1147,7 +1182,7 @@
                   v-model="operate_user"
                   style="width:160px"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1159,7 +1194,7 @@
                   style="width:160px"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索半成品加工单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientList"
@@ -1306,7 +1341,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1317,7 +1352,7 @@
                 <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索织造单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientList"
@@ -1455,7 +1490,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1589,7 +1624,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1600,7 +1635,7 @@
                 <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                  placeholder="搜索包装辅料单位名称查询"
                   clearable
                   filterable>
                   <el-option v-for="item in clientFilter.matOther"
@@ -1737,7 +1772,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1869,7 +1904,7 @@
                 <el-select class="inputs"
                   v-model="operate_user"
                   @change="changeRouter(1)"
-                  placeholder="搜索人名"
+                  placeholder="搜索创建人查询"
                   clearable
                   filterable>
                   <el-option v-for="item in authList"
@@ -1932,9 +1967,6 @@
                   <span class="text">港口</span>
                 </div>
                 <div class="col">
-                  <span class="text">完成日期</span>
-                </div>
-                <div class="col">
                   <span class="text">备注</span>
                 </div>
                 <div class="col">
@@ -1978,9 +2010,6 @@
                 </div>
                 <div class="col">
                   <span class="text">{{item.port}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.complete_time.slice(0,10)}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc}}</span>
@@ -2065,7 +2094,7 @@
 
 <script>
 import { downloadExcel, getHash } from '@/assets/js/common.js'
-import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, logStatistics, client, auth, process } from '@/assets/js/api.js'
+import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, logStatistics, client, auth, process, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2100,6 +2129,8 @@ export default {
         proSemi: [],
         matOther: []
       },
+      stockList: [],
+      stock_id: '',
       clientList: [],
       authList: [],
       processList: [],
@@ -2160,7 +2191,8 @@ export default {
           total_price: 0,
           avg_price: 0
         }
-      }
+      },
+      operate_type: ''
     }
   },
   computed: {
@@ -2477,18 +2509,19 @@ export default {
       this.product_type = params.product_type
       this.operate_user = params.operate_user
       this.material_name = params.material_name
+      this.stock_id = Number(params.stock_id) || ''
       this.type = params.type
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name + '&&stock_id=' + this.stock_id)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
       this.rejects_flag = true
     },
     reset () {
-      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')
+      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id=')
     },
     getList () {
       this.checkAll = false
@@ -2500,6 +2533,7 @@ export default {
           order_id: null,
           limit: 10,
           page: this.pages,
+          stock_id: this.stock_id,
           order_type: this.order_type,
           material_name: this.material_name,
           client_id: this.client_id,
@@ -2783,12 +2817,14 @@ export default {
         matRep: this.clientList.filter((item) => {
           return item.type.indexOf(4) !== -1
         }),
-        proStock: this.clientList,
+        proStock: this.clientList.filter((item) => {
+          return item.type.indexOf(5) !== -1
+        }),
         proSemi: this.clientList.filter((item) => {
           return item.type.indexOf(4) !== -1
         }),
         matOther: this.clientList.filter((item) => {
-          return item.type.indexOf(10) !== -1
+          return item.type.indexOf(7) !== -1
         })
       }
     })
@@ -2800,6 +2836,9 @@ export default {
       this.processList.unshift({
         name: '织造'
       })
+    })
+    stock.list().then((res) => {
+      this.stockList = res.data.data
     })
   }
 }
