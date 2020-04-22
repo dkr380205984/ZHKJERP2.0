@@ -2508,13 +2508,13 @@ export default {
       this.order_type = Number(params.order_type)
       this.product_type = params.product_type
       this.operate_user = params.operate_user
-      this.material_name = params.material_name
+      this.material_name = this.$strToAscII(params.material_name, true)
       this.stock_id = Number(params.stock_id) || ''
       this.type = params.type
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name + '&&stock_id=' + this.stock_id)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
