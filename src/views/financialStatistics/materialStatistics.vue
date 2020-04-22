@@ -146,7 +146,7 @@ export default {
   },
   watch: {
     type (newVal) {
-      this.changeRouter()
+      this.changeRouter(1)
     },
     page (newVal) {
       this.changeRouter(newVal)

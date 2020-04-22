@@ -300,7 +300,7 @@ const plugin = {
     return str.replace(reg, '$1,')
   },
   strToAscII (string, flag) {
-    let strSpecialCharacters = ['%', '/'] // 转化特殊字符'['与']'不可使用
+    let strSpecialCharacters = ['%', '/', '#', '&', '+'] // 转化特殊字符'['与']'不可使用
     if (!flag) {
       strSpecialCharacters.forEach(item => {
         string = string.split(item).join('<!--' + item.charCodeAt() + '-->')
