@@ -4,7 +4,7 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
-        <el-tabs style="width:100%;"
+        <el-tabs style="width:100%;font-size:16px"
           v-model="type">
           <el-tab-pane label="物料订购调取"
             name="物料订购调取">
@@ -188,8 +188,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <!-- <el-tab-pane label="物料预订购"
-            name="物料预订购"></el-tab-pane> -->
           <el-tab-pane label="物料加工"
             name="物料加工">
             <div class="filterCtn">
@@ -221,8 +219,7 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select style="width:170px"
-                  class="inputs"
+                <el-select class="inputs"
                   v-model="client_id"
                   @change="changeRouter(1)"
                   placeholder="搜索加工单位名称查询"
@@ -234,7 +231,7 @@
                     :value="item.id"></el-option>
                 </el-select>
                 <el-date-picker v-model="date"
-                  style="width:250px"
+                  style="width:290px"
                   class="inputs"
                   type="daterange"
                   align="right"
@@ -831,7 +828,6 @@
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
                 <el-select v-model="order_type"
-                  style="width:120px"
                   @change="changeRouter(1)"
                   class="inputs">
                   <el-option label="所有日志"
@@ -842,26 +838,11 @@
                     :value="2"></el-option>
                 </el-select>
                 <el-input class="inputs"
-                  style="width:170px"
                   v-model="product_code"
                   @change="changeRouter(1)"
                   placeholder="输入产品编号查询">
                 </el-input>
                 <el-select class="inputs"
-                  style="width:170px"
-                  v-model="process_type"
-                  @change="changeRouter(1)"
-                  filterable
-                  multiple
-                  placeholder="请选择加工工序">
-                  <el-option v-for="item in processArr"
-                    :key="item.name"
-                    :value="item.name"
-                    :label="item.name">
-                  </el-option>
-                </el-select>
-                <el-select class="inputs"
-                  style="width:170px"
                   v-model="operate_user"
                   @change="changeRouter(1)"
                   placeholder="搜索创建人查询"
@@ -873,7 +854,6 @@
                     :value="item.id"></el-option>
                 </el-select>
                 <el-select class="inputs"
-                  style="width:170px"
                   v-model="client_id"
                   @change="changeRouter(1)"
                   placeholder="搜索公司名称"
@@ -885,7 +865,7 @@
                     :value="item.id"></el-option>
                 </el-select>
                 <el-date-picker v-model="date"
-                  style="width:250px"
+                  style="width:290px"
                   class="inputs"
                   type="daterange"
                   align="right"
@@ -2154,8 +2134,6 @@ export default {
       clientList: [],
       authList: [],
       processList: [],
-      processArr: [],
-      process_type: '',
       type: '物料订购调取',
       statistics: {
         material_order: {
@@ -2182,7 +2160,7 @@ export default {
         semi_product: {
           avg_price: 0,
           total_price: 0,
-          total_number: 0
+          total_weight: 0
         },
         product_pop: {
           total_number: 0
@@ -2235,9 +2213,6 @@ export default {
       this.order_type = 0
       this.operate_user = ''
       this.material_name = ''
-      this.process_type = []
-      this.operate_type = ''
-      this.stock_id = ''
       this.changeRouter(1)
     },
     page (newVal) {
@@ -2533,22 +2508,20 @@ export default {
       this.order_type = Number(params.order_type)
       this.product_type = params.product_type
       this.operate_user = params.operate_user
-      this.material_name = params.material_name
-      this.operate_type = params.operate_type || ''
+      this.material_name = this.$strToAscII(params.material_name, true)
       this.stock_id = Number(params.stock_id) || ''
-      this.product_type = params.product_type || ''
       this.type = params.type
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.material_name + '&&stock_id=' + this.stock_id + '&&operate_type=' + this.operate_type + '&&process_type=' + this.process_type)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
       this.rejects_flag = true
     },
     reset () {
-      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id=&&operate_type=&&process_type=')
+      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id=')
     },
     getList () {
       this.checkAll = false
@@ -2591,7 +2564,7 @@ export default {
         })
       } else if (this.type === '物料出入库') {
         materialStock.detail({
-          type: this.operate_type,
+          order_type: this.order_type,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2649,7 +2622,6 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id,
-          type: Array.from(this.process_type).join('/'),
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2812,8 +2784,6 @@ export default {
         client_id: this.client_id,
         product_code: this.product_code,
         order_type: this.order_type,
-        type: Array.from(this.process_type).join('/') || this.operate_type,
-        stock_id: this.stock_id,
         production_type: this.production_type,
         operate_user: this.operate_user,
         material_name: this.material_name
@@ -2869,9 +2839,6 @@ export default {
     })
     stock.list().then((res) => {
       this.stockList = res.data.data
-    })
-    process.list().then((res) => {
-      this.processArr = res.data.data.filter(item => item.type === 2)
     })
   }
 }

@@ -501,35 +501,38 @@ export default {
           value: ''
         })
       })
-      JSON.parse(this.productInfo.size[0].part_info).forEach((item) => {
-        this.craftInfo.organization.push({
-          name: item.part,
-          size: this.size.map((item) => {
-            return {
-              size: item.size_name,
-              value: ''
-            }
-          })
-        })
-        this.craftInfo.density.crosswise_density.push({
-          name: item.part,
-          size: this.size.map((item) => {
-            return {
-              size: item.size_name,
-              value: ''
-            }
-          })
-        })
-        this.craftInfo.density.lengthwise_density.push({
-          name: item.part,
-          size: this.size.map((item) => {
-            return {
-              size: item.size_name,
-              value: ''
-            }
-          })
-        })
-      })
+      this.addPart(this.craftInfo.organization)
+      this.addPart(this.craftInfo.density.crosswise_density)
+      this.addPart(this.craftInfo.density.lengthwise_density)
+      // JSON.parse(this.productInfo.size[0].part_info).forEach((item) => {
+      //   this.craftInfo.organization.push({
+      //     name: item.part,
+      //     size: this.size.map((item) => {
+      //       return {
+      //         size: item.size_name,
+      //         value: ''
+      //       }
+      //     })
+      //   })
+      //   this.craftInfo.density.crosswise_density.push({
+      //     name: item.part,
+      //     size: this.size.map((item) => {
+      //       return {
+      //         size: item.size_name,
+      //         value: ''
+      //       }
+      //     })
+      //   })
+      //   this.craftInfo.density.lengthwise_density.push({
+      //     name: item.part,
+      //     size: this.size.map((item) => {
+      //       return {
+      //         size: item.size_name,
+      //         value: ''
+      //       }
+      //     })
+      //   })
+      // })
       this.partArr = res[1].data.data
       this.ZZJGArr = res[2].data.data.map((item) => {
         return {

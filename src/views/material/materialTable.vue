@@ -49,8 +49,8 @@
               :key="indexColor + 'content' + index">
               <span class="row_item w180 center">颜色{{indexColor+1}}</span>
               <span class="row_item noBorder left">{{itemColor.color}}</span>
-              <span class="row_item noBorder left">{{$toFixed(itemColor.price) || 0}}元/kg</span>
-              <span class="row_item noBorder left">{{$toFixed(itemColor.number) || 0}}kg</span>
+              <span class="row_item noBorder left">{{$toFixed(itemColor.price) || 0}}元/{{itemColor.unit!=='g'?itemColor.unit:'kg'}}</span>
+              <span class="row_item noBorder left">{{$toFixed(itemColor.number) || 0}}{{itemColor.unit!=='g'?itemColor.unit:'kg'}}</span>
               <span class="row_item noBorder left">{{itemColor.complete_time}}</span>
             </div>
           </template>

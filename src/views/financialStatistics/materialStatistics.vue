@@ -146,7 +146,7 @@ export default {
   },
   watch: {
     type (newVal) {
-      this.changeRouter(1)
+      this.changeRouter()
     },
     page (newVal) {
       this.changeRouter(newVal)
@@ -160,7 +160,7 @@ export default {
   methods: {
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&type=' + this.type + '&&HJSY=' + this.HJSY + '&&DGSL=' + this.DGSL + '&&PJJG=' + this.PJJG + '&&HJJG=' + this.HJJG + '&&KCSY=' + this.KCSY)
+      this.$router.push('/financialStatistics/materialStatistics/page=' + pages + '&&keyword=' + this.$strToAscII(this.keyword) + '&&type=' + this.type + '&&HJSY=' + this.HJSY + '&&DGSL=' + this.DGSL + '&&PJJG=' + this.PJJG + '&&HJJG=' + this.HJJG + '&&KCSY=' + this.KCSY)
     },
     reset () {
       this.$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')
@@ -169,7 +169,8 @@ export default {
       this.loading = true
       statistics.materialList({
         keyword: this.keyword,
-        type: this.type
+        type: this.type,
+        is_search: (this.keyword ? 1 : 0)
       }).then((res) => {
         this.update_time = res.data.data.update_time
         let data = res.data.data.data
@@ -206,7 +207,7 @@ export default {
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
-      this.keyword = params.keyword
+      this.keyword = this.$strToAscII(params.keyword, true)
       this.HJSY = params.HJSY
       this.DGSL = params.DGSL
       this.PJJG = params.PJJG

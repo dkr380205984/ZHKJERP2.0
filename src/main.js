@@ -8,7 +8,12 @@ import 'element-ui/lib/theme-chalk/index.css'
 // 粒子特效 文档地址：https://www.jianshu.com/p/53199b842d25
 import VueParticles from 'vue-particles'
 import MyPlugin from './assets/js/plugin.js'
+import ECharts from 'vue-echarts'
+import 'echarts-gl'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/component/polar'
 
+Vue.component('v-chart', ECharts)
 Vue.use(MyPlugin)
 Vue.config.productionTip = false
 Vue.use(VueParticles)

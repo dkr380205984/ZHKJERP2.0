@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">结算单信息</span>
+        <div class="btn btnBlue"
+          style="float:right;margin:13px 32px 0 0"
+          @click="showPopup=true">自定义结算人员</div>
       </div>
       <div class="detailCtn">
         <div class="excelTable">
@@ -76,7 +79,7 @@
                 <div class="label">{{item.staff_code}}</div>
               </div>
               <div class="box">
-                <div class="label">{{item.updated_at}}</div>
+                <div class="label">{{item.child_data.length>0?item.child_data[0].create_time.date.slice(0,10):'-'}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.total_price}}</div>
@@ -180,7 +183,7 @@
                     <div class="once">{{Math.round(itemChild.price * itemChild.number)}}</div>
                     <div class="once">{{itemChild.desc}}</div>
                     <div class="once">{{itemChild.user_name?itemChild.user_name:'-'}}</div>
-                    <div class="once">{{itemChild.create_time?itemChild.create_time.slice(0,10):'-'}}</div>
+                    <div class="once">{{itemChild.create_time?itemChild.create_time.date.slice(0,10):'-'}}</div>
                     <div class="once"></div>
                   </template>
                 </div>
@@ -208,7 +211,8 @@
             </div>
           </div>
         </div>
-        <div class="pageCtn">
+        <div class="pageCtn"
+          v-if="!noPage">
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -216,6 +220,48 @@
             :current-page.sync="page"
             @current-change="getList">
           </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-show="showPopup">
+      <div class="main">
+        <div class="title">
+          <div class="text">自定义结算人员</div>
+          <i class="el-icon-close"
+            @click="showPopup=false"></i>
+        </div>
+        <div class="content"
+          style="padding:16px 30px">
+          <div class="row">
+            <div class="info">
+              <el-select style="width:240px"
+                v-model="departmentPopup"
+                placeholder="选择部门筛选人员"
+                clearable>
+                <el-option v-for="(item,index) in departmentArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="info">
+              <el-checkbox style="margin-bottom:12px"
+                v-for="item in staffAllArr"
+                :key="item.id"
+                :label="item.name"
+                v-model="item.checked"></el-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showPopup=false">取消</div>
+          <div class="btn btnBlue"
+            @click="checkStaff">确定</div>
         </div>
       </div>
     </div>
@@ -228,14 +274,18 @@ export default {
   data () {
     return {
       loading: true,
+      showPopup: false,
       defaultImage: require('@/assets/image/index/noPic.jpg'),
       testValue: '',
       page: 1,
       total: 1,
       department: '',
+      departmentPopup: '',
       departmentArr: [],
       date: '',
       list: [],
+      staffAllList: [],
+      noPage: false,
       workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
       settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }]
     }
@@ -395,6 +445,10 @@ export default {
     },
     getList () {
       this.loading = true
+      this.noPage = false
+      if (this.department) {
+        this.departmentPopup = this.department
+      }
       staff.payList({
         page: this.page,
         limit: 10,
@@ -412,6 +466,34 @@ export default {
         this.total = res.data.meta.total
         this.loading = false
       })
+    },
+    checkStaff () {
+      this.loading = true
+      this.showPopup = false
+      this.noPage = true
+      staff.payList({
+        staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
+      }).then((res) => {
+        this.list = res.data.map((item) => {
+          item.total_price = item.child_data.reduce((total, current) => {
+            return total + Math.round(current.total_price)
+          }, 0)
+          item.checked = false
+          return item
+        })
+        this.loading = false
+      })
+    }
+  },
+  computed: {
+    staffAllArr () {
+      if (this.departmentPopup) {
+        return this.staffAllList.filter((item) => {
+          return Number(item.department_id) === Number(this.departmentPopup)
+        })
+      } else {
+        return this.staffAllList
+      }
     }
   },
   mounted () {
@@ -423,6 +505,9 @@ export default {
       type: 2
     }).then((res) => {
       this.departmentArr = res.data.data
+    })
+    staff.list().then((res) => {
+      this.staffAllList = res.data.data
     })
   }
 }

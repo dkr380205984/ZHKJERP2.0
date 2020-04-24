@@ -3178,7 +3178,7 @@ export default {
         type: 2
       }).then((res) => {
         this.ZZJGList = res.data.data
-        this.ZZJGTotal = this.ZZJGArr.length
+        this.ZZJGTotal = this.ZZJGList.length
       })
     },
     saveZZJG () {
@@ -3903,7 +3903,7 @@ export default {
           id: '',
           materialName: '',
           materialUnit: '',
-          materialNameArr: [{
+          materialPriceArr: [{
             company: '',
             price: ''
           }]
