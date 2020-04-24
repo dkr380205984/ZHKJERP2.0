@@ -44,6 +44,12 @@ const measurement = {
   create: (params) => http.post(`${baseUrl}/product/measurement/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/product/measurement/delete`, params, 'application/json')
 }
+// 产品 成衣类型 设置
+const productPart = {
+  create: (params) => http.post(`${baseUrl}/dress/part/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/dress/part/list`, params),
+  delete: (params) => http.post(`${baseUrl}/dress/part/delete`, params, 'application/json')
+}
 // 花型
 const flower = {
   create: (params) => http.post(`${baseUrl}/product/flower/save`, params, 'application/json'),
@@ -112,7 +118,10 @@ const craft = {
   detail: (params) => http.get(`${baseUrl}/product/craft/one`, params),
   getByProduct: (params) => http.get(`${baseUrl}/craft/product/one`, params),
   setDefault: (params) => http.post(`${baseUrl}/product/craft/default`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/product/craft/list`, params)
+  list: (params) => http.get(`${baseUrl}/product/craft/list`, params),
+  createCloth: (params) => http.post(`${baseUrl}/dress/craft/save`, params, 'application/json'),
+  detailCloth: (params) => http.get(`${baseUrl}/dress/craft/detail`, params),
+  deleteCloth: (params) => http.post(`${baseUrl}/dress/craft/delete`, params, 'application/json')
 }
 // 客户管理
 const client = {
@@ -427,7 +436,12 @@ const warnSetting = {
 let logStatistics = {
   detail: (params) => http.get(`${baseUrl}/financial/operate/note/count`, params)
 }
+let chartsAPI = {
+  sampleOrder: (params) => http.get(`${baseUrl}/index/sample/order/dispatch`, params)
+}
 export {
+  chartsAPI,
+  productPart,
   logStatistics,
   warnSetting,
   orderBatch,

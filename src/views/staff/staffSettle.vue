@@ -5,6 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">合计工资结算单</span>
+        <div class="btn btnBlue"
+          style="float:right;margin:13px 32px 0 0"
+          @click="showPopup=true">自定义结算人员</div>
       </div>
       <div class="detailCtn">
         <div class="excelTable">
@@ -94,7 +97,7 @@
                 <div class="label">{{item.realityTotal}}</div>
               </div>
               <div class="box">
-                <div class="label">{{item.updated_at}}</div>
+                <div class="label">{{item.child_data.length>0?item.child_data[0].complete_time:"-"}}</div>
               </div>
             </div>
             <div class="tableBodyList"
@@ -235,7 +238,8 @@
             </div>
           </div>
         </div>
-        <div class="pageCtn">
+        <div class="pageCtn"
+          v-if="!noPage">
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -254,6 +258,48 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showPopup">
+      <div class="main">
+        <div class="title">
+          <div class="text">自定义结算人员</div>
+          <i class="el-icon-close"
+            @click="showPopup=false"></i>
+        </div>
+        <div class="content"
+          style="padding:16px 30px">
+          <div class="row">
+            <div class="info">
+              <el-select style="width:240px"
+                v-model="departmentPopup"
+                placeholder="选择部门筛选人员"
+                clearable>
+                <el-option v-for="(item,index) in departmentArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="info">
+              <el-checkbox style="margin-bottom:12px"
+                v-for="item in staffAllArr"
+                :key="item.id"
+                :label="item.name"
+                v-model="item.checked"></el-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showPopup=false">取消</div>
+          <div class="btn btnBlue"
+            @click="checkStaff">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -262,13 +308,17 @@ import { staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      showPopup: false,
       loading: true,
       department: '',
+      departmentPopup: '',
       departmentArr: [],
       date: '',
       list: [],
       page: 1,
-      total: 1
+      total: 1,
+      noPage: false,
+      staffAllList: []
     }
   },
   methods: {
@@ -415,6 +465,10 @@ export default {
     },
     getList () {
       this.loading = true
+      this.noPage = false
+      if (this.department) {
+        this.departmentPopup = this.department
+      }
       staff.payList({
         page: this.page,
         limit: 10,
@@ -480,6 +534,82 @@ export default {
         this.total = res.data.meta.total
         this.loading = false
       })
+    },
+    checkStaff () {
+      this.loading = true
+      this.showPopup = false
+      this.noPage = true
+      staff.payList({
+        staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
+      }).then((res) => {
+        this.list = res.data.map((item) => {
+          item.checked = false
+          item.total = [{
+            reason: '按时结算总计',
+            price: item.child_data.reduce((total, current) => {
+              if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
+                return Number(current.total_price) + total
+              } else {
+                return total
+              }
+            }, 0)
+          }, {
+            reason: '订单/其他方式结算',
+            price: item.child_data.reduce((total, current) => {
+              if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
+                return Number(current.total_price) + total
+              } else {
+                return total
+              }
+            }, 0)
+          }]
+          item.price = item.total.reduce((total, current) => {
+            return total + current.price
+          }, 0)
+          item.extra = item.deduct_data.filter((item) => item.type === 1)
+          if (item.deduct_data.length === 0) {
+            item.extra = [{
+              edit: true,
+              reason: '加班工资',
+              price: 0
+            }]
+          }
+          item.extra_price = item.extra.reduce((total, current) => {
+            return total + current.price
+          }, 0)
+          item.deduct = item.deduct_data.filter((item) => item.type === 2)
+          if (item.deduct_data.length === 0) {
+            item.deduct = [{
+              edit: true,
+              reason: '五险一金',
+              price: 0
+            }]
+          }
+          item.deduct_price = item.deduct.reduce((total, current) => {
+            return total + current.price
+          }, 0)
+          item.realityTotal = item.total.reduce((total, current) => {
+            return current.price + total
+          }, 0) + item.extra.reduce((total, current) => {
+            return current.price + total
+          }, 0) - item.deduct.reduce((total, current) => {
+            return current.price + total
+          }, 0)
+          return item
+        })
+        this.loading = false
+      })
+    }
+  },
+  computed: {
+    staffAllArr () {
+      if (this.departmentPopup) {
+        return this.staffAllList.filter((item) => {
+          return Number(item.department_id) === Number(this.departmentPopup)
+        })
+      } else {
+        return this.staffAllList
+      }
     }
   },
   mounted () {
@@ -491,6 +621,9 @@ export default {
       type: 2
     }).then((res) => {
       this.departmentArr = res.data.data
+    })
+    staff.list().then((res) => {
+      this.staffAllList = res.data.data
     })
   }
 }

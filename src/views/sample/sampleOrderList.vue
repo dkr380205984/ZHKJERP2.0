@@ -2,6 +2,68 @@
   <div id='sampleOrderList'
     class='indexMain'
     v-loading='loading'>
+    <div class="chartsCtn">
+      <div class="charts">
+        <div class="title">
+          <span>本月样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：当月需完成的样单单数"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
+        </div>
+        <div class="number">{{monthAll}}</div>
+        <v-chart style="width:320px;height:120px"
+          :options="monthData" />
+      </div>
+      <div class="charts">
+        <div class="title">
+          <span>进行中样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：未来14天内需要完成，且状态为进行中的样单"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
+        </div>
+        <div class="number">{{processAll}}</div>
+        <v-chart style="width:320px;height:120px"
+          :options="processData" />
+      </div>
+      <div class="charts">
+        <div class="title">
+          <span>逾期样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：已逾期14天内的样单"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
+        </div>
+        <div class="number">{{delayAll}}</div>
+        <v-chart style="width:320px;height:120px"
+          :options="delayData" />
+      </div>
+      <div class="charts">
+        <div class="title">
+          <span>已完成样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：当月已完成样单的客户确认比例"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
+        </div>
+        <div class="number">{{completeAll}}</div>
+        <v-chart style="width:320px;height:120px"
+          :options="completeData" />
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -265,12 +327,150 @@
 </template>
 
 <script>
-import { sampleOrder, group, client } from '@/assets/js/api.js'
+import { sampleOrder, group, client, chartsAPI } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      processData: {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid: {
+          x: 24, // 左
+          y: 20, // 上
+          x2: 24, // 右
+          y2: 10 // 下
+        },
+        xAxis: {
+          data: [],
+          show: false
+        },
+        yAxis: {
+          show: false
+        },
+        series: [{
+          name: '样单数量',
+          data: [],
+          type: 'bar',
+          barMinHeight: 2,
+          itemStyle: {
+            color: '#1a95ff'
+          }
+        }]
+      },
+      processAll: 0,
+      delayData: {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid: {
+          x: 24, // 左
+          y: 20, // 上
+          x2: 24, // 右
+          y2: 10 // 下
+        },
+        xAxis: {
+          data: [],
+          show: false
+        },
+        yAxis: {
+          show: false
+        },
+        series: [{
+          name: '样单数量',
+          data: [],
+          type: 'bar',
+          barMinHeight: 2,
+          itemStyle: {
+            color: '#FA9036'
+          }
+        }]
+      },
+      delayAll: 0,
+      completeData: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 24,
+          top: 20,
+          data: ['待确认', '已确认', '其他']
+        },
+        color: ['#1A95FF', '#E6A23C', '#01B48C'],
+        series: [
+          {
+            name: '已完成样单',
+            type: 'pie',
+            radius: '55%',
+            center: ['65%', '50%'],
+            data: [
+              { value: 0, name: '待确认' },
+              { value: 0, name: '已确认' },
+              { value: 0, name: '其他' }
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            minAngle: [10]
+          }
+        ]
+      },
+      completeAll: 0,
+      monthData: {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { // 坐标轴指示器，坐标轴触发有效
+            type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
+        grid: {
+          x: 24, // 左
+          y: 20, // 上
+          x2: 24, // 右
+          y2: 10 // 下
+        },
+        xAxis: {
+          data: [],
+          show: false
+        },
+        yAxis: {
+          show: false
+        },
+        series: [{
+          name: '样单数量',
+          data: [],
+          type: 'line',
+          symbol: 'none',
+          smooth: true,
+          areaStyle: {
+            color: '#1a95ff'
+          },
+          itemStyle: {
+            color: '#1a95ff'
+          },
+          lineStyle: {
+            width: 2
+          },
+          minHeight: 10,
+          smoothMonotone: 'x'
+        }]
+      },
+      monthAll: 0,
       searchOrderOrProduct: 'order',
+      chartsLoading: true,
       loading: true,
       list: [],
       keyword: '',
@@ -460,6 +660,16 @@ export default {
       } else {
         this.$message.warning('未知命令')
       }
+    },
+    createMonthDay () {
+      let daysOfMonth = []
+      let fullYear = new Date().getFullYear()
+      let month = new Date().getMonth() + 1
+      let lastDayOfMonth = new Date(fullYear, month, 0).getDate()
+      for (var i = 1; i <= lastDayOfMonth; i++) {
+        daysOfMonth.push(fullYear + '-' + (month < 10 ? '0' + month : month) + '-' + (i < 10 ? '0' + i : i))
+      }
+      return daysOfMonth
     }
   },
   created () {
@@ -470,6 +680,43 @@ export default {
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
+    })
+    let today = new Date()
+    let todayMore14 = [this.$getTime(today)]
+    let todayLess14 = [this.$getTime(today)]
+    let monthArr = this.createMonthDay()
+    for (let i = 1; i < 14; i++) {
+      todayLess14.push(this.$getTime(today.getTime() - 24 * 60 * 60 * 1000 * i))
+      todayMore14.push(this.$getTime(today.getTime() + 24 * 60 * 60 * 1000 * i))
+    }
+    todayLess14 = todayLess14.reverse()
+    console.log(todayLess14, monthArr)
+    chartsAPI.sampleOrder().then((res) => {
+      let data = res.data.data
+      console.log(data)
+      this.processData.xAxis.data = todayMore14
+      todayMore14.forEach((item) => {
+        this.processData.series[0].data.push(data.proceed.day_number[item] || 0)
+      })
+      this.delayData.xAxis.data = todayLess14
+      todayLess14.forEach((item) => {
+        this.delayData.series[0].data.push(data.delay.day_number[item] || 0)
+      })
+
+      this.monthData.xAxis.data = monthArr
+      monthArr.forEach((item) => {
+        this.monthData.series[0].data.push(data.month.day_number[item] || 0)
+      })
+      this.completeData.series[0].data = [
+        { value: data.complete.wait_client_confirm, name: '待确认' },
+        { value: data.complete.client_confirm, name: '已确认' },
+        { value: data.complete.total_number - data.complete.wait_client_confirm - data.complete.client_confirm, name: '其他' }
+      ]
+      this.completeAll = data.complete.total_number
+      this.processAll = data.proceed.total_number
+      this.delayAll = data.delay.total_number
+      this.monthAll = data.month.total_number
+      this.chartsLoading = false
     })
   }
 }

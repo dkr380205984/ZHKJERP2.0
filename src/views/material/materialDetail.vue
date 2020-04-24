@@ -220,7 +220,7 @@
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                           v-if="type==='1'"></span>
                         <span class="blue"
-                          @click="supplyStock(item.material_name,item.material_color,item.reality_weight-item.order_weight, item.id)"
+                          @click="supplyStock(item.material_name,itemChild.material_color,itemChild.need_weight-itemChild.order_weight, item.id)"
                           v-if="type==='1'">调取</span>
                         <!-- <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"></span>
@@ -1730,6 +1730,7 @@ export default {
     },
     // 补纱调取
     supplyStock (name, color, number, id) {
+      console.log(number)
       if (parseInt(number) > 0) {
         this.stock_data = [{
           material_id: id,
