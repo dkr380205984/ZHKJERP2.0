@@ -88,7 +88,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">添加工艺</span>
+        <span class="title">工艺详情</span>
       </div>
       <div class="detailCtn hasBorderTop">
         <div class="addTableCtn">
@@ -107,11 +107,20 @@
             </div>
           </div>
           <div class="line">
-            <div class="once flex3 bgGray">机织时间</div>
-            <div class="once"
-              v-for="(item,index) in craftInfo.machine_time"
-              :key="index">
-              {{item.value}}
+            <div class="once flex2 bgGray middle">工序耗时</div>
+            <div class="lineChildCtn">
+              <div class="lineChild"
+                v-for="(item,index) in craftInfo.machine_time"
+                :key="index">
+                <div class="once">
+                  {{item.name}}
+                </div>
+                <div class="once"
+                  v-for="(itemSize,indexSize) in item.size"
+                  :key="indexSize">
+                  {{itemSize.value}}
+                </div>
+              </div>
             </div>
           </div>
           <div class="line">
@@ -256,7 +265,7 @@ export default {
           lengthwise_density: []
         },
         special_way: '',
-        process: ''
+        process: []
       },
       user_name: '',
       create_time: ''

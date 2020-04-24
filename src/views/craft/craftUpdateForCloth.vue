@@ -143,14 +143,37 @@
             </div>
           </div>
           <div class="line">
-            <div class="once flex3 bgGray">机织时间</div>
-            <div class="once"
-              v-for="(item,index) in craftInfo.machine_time"
-              :key="index">
-              <el-input class="inputs"
-                v-model="item.value"
-                placeholder="输入时间">
-              </el-input>
+            <div class="once flex2 bgGray middle">
+              <div>工序耗时</div>
+              <div style="color:#1595ff;cursor:pointer;"
+                @click="addPart(craftInfo.machine_time)">添加工序</div>
+              <div style="position:absolute;color:#F5222D;cursor:pointer;right:8px;padding:6px;line-height:38px;font-size:12px"
+                v-for="(item,index) in craftInfo.machine_time"
+                :key="index"
+                :style="{'top':index*51+'px'}"
+                @click="deletePart(craftInfo.machine_time,index)">删除
+                <i class="el-icon-right"></i>
+              </div>
+            </div>
+            <div class="lineChildCtn">
+              <div class="lineChild"
+                v-for="(item,index) in craftInfo.machine_time"
+                :key="index">
+                <div class="once">
+                  <el-autocomplete class="inline-input inputs"
+                    v-model="item.name"
+                    :fetch-suggestions="searchGX"
+                    placeholder="输入工序"></el-autocomplete>
+                </div>
+                <div class="once"
+                  v-for="(itemSize,indexSize) in item.size"
+                  :key="indexSize">
+                  <el-input class="inputs"
+                    v-model="itemSize.value"
+                    placeholder="输入时间">
+                  </el-input>
+                </div>
+              </div>
             </div>
           </div>
           <div class="line">
@@ -307,7 +330,7 @@
 </template>
 
 <script>
-import { craft } from '@/assets/js/api.js'
+import { craft, process } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -372,6 +395,11 @@ export default {
         })
       })
     },
+    searchGX (queryString, cb) {
+      var results = queryString ? this.processArr.filter((item) => item.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.processArr
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
     deletePart (obj, index) {
       if (obj.length === 1) {
         this.$message.error('至少有一个部位')
@@ -432,6 +460,9 @@ export default {
     })
     process.list().then((res) => {
       this.processArr = res.data.data
+      this.processArr.forEach((item) => {
+        item.value = item.name
+      })
     })
   }
 }
