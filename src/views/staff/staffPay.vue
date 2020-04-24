@@ -306,7 +306,10 @@ export default {
         number: '',
         total_price: '',
         unit: '个',
-        desc: ''
+        desc: '',
+        create_time: {
+          date: this.date + '-' + ((new Date()).getDate() < 10 ? ('0' + (new Date()).getDate()) : (new Date()).getDate())
+        }
       })
     },
     savePay (item, itemFather) {

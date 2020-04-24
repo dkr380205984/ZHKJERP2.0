@@ -163,14 +163,37 @@
             </div>
           </div>
           <div class="line">
-            <div class="once flex3 bgGray">机织时间</div>
-            <div class="once"
-              v-for="(item,index) in craftInfo.machine_time"
-              :key="index">
-              <el-input class="inputs"
-                v-model="item.value"
-                placeholder="输入时间">
-              </el-input>
+            <div class="once flex2 bgGray middle">
+              <div>工序耗时</div>
+              <div style="color:#1595ff;cursor:pointer;"
+                @click="addPart(craftInfo.machine_time)">添加工序</div>
+              <div style="position:absolute;color:#F5222D;cursor:pointer;right:8px;padding:6px;line-height:38px;font-size:12px"
+                v-for="(item,index) in craftInfo.machine_time"
+                :key="index"
+                :style="{'top':index*51+'px'}"
+                @click="deletePart(craftInfo.machine_time,index)">删除
+                <i class="el-icon-right"></i>
+              </div>
+            </div>
+            <div class="lineChildCtn">
+              <div class="lineChild"
+                v-for="(item,index) in craftInfo.machine_time"
+                :key="index">
+                <div class="once">
+                  <el-autocomplete class="inline-input inputs"
+                    v-model="item.name"
+                    :fetch-suggestions="searchGX"
+                    placeholder="输入工序"></el-autocomplete>
+                </div>
+                <div class="once"
+                  v-for="(itemSize,indexSize) in item.size"
+                  :key="indexSize">
+                  <el-input class="inputs"
+                    v-model="itemSize.value"
+                    placeholder="输入时间">
+                  </el-input>
+                </div>
+              </div>
             </div>
           </div>
           <div class="line">
@@ -442,6 +465,11 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
+    searchGX (queryString, cb) {
+      var results = queryString ? this.processArr.filter((item) => item.toLowerCase().indexOf(queryString.toLowerCase()) === 0) : this.processArr
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
     submit () {
       craft.createCloth({
         product_id: this.$route.params.id,
@@ -496,11 +524,8 @@ export default {
           size: item.size_name,
           value: ''
         })
-        this.craftInfo.machine_time.push({
-          size: item.size_name,
-          value: ''
-        })
       })
+      this.addPart(this.craftInfo.machine_time)
       this.addPart(this.craftInfo.organization)
       this.addPart(this.craftInfo.density.crosswise_density)
       this.addPart(this.craftInfo.density.lengthwise_density)
@@ -541,6 +566,9 @@ export default {
         }
       })
       this.processArr = res[3].data.data
+      this.processArr.forEach((item) => {
+        item.value = item.name
+      })
       this.loading = false
     })
   }
