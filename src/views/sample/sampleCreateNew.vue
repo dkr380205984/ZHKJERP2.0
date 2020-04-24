@@ -894,10 +894,10 @@ export default {
         this.$message.error('请选择订单公司')
         return
       }
-      if (!orderInfo.contacts_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
+      // if (!orderInfo.contacts_id) {
+      //   this.$message.error('请选择联系人')
+      //   return
+      // }
       if (!orderInfo.type && orderInfo.type !== 0) {
         this.$message.error('请选择打样类型')
         return

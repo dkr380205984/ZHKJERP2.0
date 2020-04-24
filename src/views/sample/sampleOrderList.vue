@@ -23,7 +23,7 @@
           <span>进行中样单</span>
           <el-tooltip class="item"
             effect="dark"
-            content="图表显示：未来14天内需要完成，且状态为进行中的样单"
+            content="图表显示：未来14天内，样单需要完成，且状态为进行中"
             placement="top">
             <i class="el-icon-info"
               style="float:right;line-height:42px;font-size:16px"></i>
@@ -38,7 +38,7 @@
           <span>逾期样单</span>
           <el-tooltip class="item"
             effect="dark"
-            content="图表显示：已逾期14天内的样单"
+            content="图表显示：过去14天内，样单暂未完成，且状态为逾期中"
             placement="top">
             <i class="el-icon-info"
               style="float:right;line-height:42px;font-size:16px"></i>
@@ -464,7 +464,6 @@ export default {
           lineStyle: {
             width: 2
           },
-          minHeight: 10,
           smoothMonotone: 'x'
         }]
       },
@@ -690,10 +689,8 @@ export default {
       todayMore14.push(this.$getTime(today.getTime() + 24 * 60 * 60 * 1000 * i))
     }
     todayLess14 = todayLess14.reverse()
-    console.log(todayLess14, monthArr)
     chartsAPI.sampleOrder().then((res) => {
       let data = res.data.data
-      console.log(data)
       this.processData.xAxis.data = todayMore14
       todayMore14.forEach((item) => {
         this.processData.series[0].data.push(data.proceed.day_number[item] || 0)
