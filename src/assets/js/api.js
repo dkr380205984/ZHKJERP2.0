@@ -437,7 +437,8 @@ let logStatistics = {
   detail: (params) => http.get(`${baseUrl}/financial/operate/note/count`, params)
 }
 let chartsAPI = {
-  sampleOrder: (params) => http.get(`${baseUrl}/index/sample/order/dispatch`, params)
+  sampleOrder: (params) => http.get(`${baseUrl}/index/sample/order/dispatch`, params),
+  order: (params) => http.get(`${baseUrl}/index/order/dispatch`, params)
 }
 export {
   chartsAPI,

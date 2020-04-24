@@ -27,9 +27,7 @@
               <span class="text">产品名称</span>
             </div>
             <div class="content">
-              <zh-input errorMsg="产品名称不能超过10个字"
-                placeholder="请输入产品名称"
-                maxLength="10"
+              <zh-input placeholder="请输入产品名称"
                 v-model="name">
               </zh-input>
             </div>

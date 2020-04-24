@@ -6,6 +6,13 @@
       <div class="charts">
         <div class="title">
           <span>本月样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：当月需完成的样单单数"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
         </div>
         <div class="number">{{monthAll}}</div>
         <v-chart style="width:320px;height:120px"
@@ -14,6 +21,13 @@
       <div class="charts">
         <div class="title">
           <span>进行中样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：未来14天内，样单需要完成，且状态为进行中"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
         </div>
         <div class="number">{{processAll}}</div>
         <v-chart style="width:320px;height:120px"
@@ -22,6 +36,13 @@
       <div class="charts">
         <div class="title">
           <span>逾期样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：过去14天内，样单暂未完成，且状态为逾期中"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
         </div>
         <div class="number">{{delayAll}}</div>
         <v-chart style="width:320px;height:120px"
@@ -30,6 +51,13 @@
       <div class="charts">
         <div class="title">
           <span>已完成样单</span>
+          <el-tooltip class="item"
+            effect="dark"
+            content="图表显示：当月已完成样单的客户确认比例"
+            placement="top">
+            <i class="el-icon-info"
+              style="float:right;line-height:42px;font-size:16px"></i>
+          </el-tooltip>
         </div>
         <div class="number">{{completeAll}}</div>
         <v-chart style="width:320px;height:120px"
@@ -383,7 +411,7 @@ export default {
             name: '已完成样单',
             type: 'pie',
             radius: '55%',
-            center: ['65%', '40%'],
+            center: ['65%', '50%'],
             data: [
               { value: 0, name: '待确认' },
               { value: 0, name: '已确认' },
@@ -436,7 +464,6 @@ export default {
           lineStyle: {
             width: 2
           },
-          minHeight: 10,
           smoothMonotone: 'x'
         }]
       },
@@ -662,10 +689,8 @@ export default {
       todayMore14.push(this.$getTime(today.getTime() + 24 * 60 * 60 * 1000 * i))
     }
     todayLess14 = todayLess14.reverse()
-    console.log(todayLess14, monthArr)
     chartsAPI.sampleOrder().then((res) => {
       let data = res.data.data
-      console.log(data)
       this.processData.xAxis.data = todayMore14
       todayMore14.forEach((item) => {
         this.processData.series[0].data.push(data.proceed.day_number[item] || 0)
@@ -674,7 +699,6 @@ export default {
       todayLess14.forEach((item) => {
         this.delayData.series[0].data.push(data.delay.day_number[item] || 0)
       })
-
       this.monthData.xAxis.data = monthArr
       monthArr.forEach((item) => {
         this.monthData.series[0].data.push(data.month.day_number[item] || 0)
