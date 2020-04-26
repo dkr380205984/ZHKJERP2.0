@@ -415,7 +415,8 @@
             <div class="tb_content"
               v-for="(itemPro,indexPro) in itemBatch.batch_info"
               :key="indexPro">
-              <span class="tb_row">
+              <span class="tb_row"
+                style="position:relative">
                 <el-select v-model="itemPro.id"
                   class="editInput"
                   placeholder="请选择产品"
@@ -426,6 +427,16 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
+                <span v-if="itemPro.product_info&&itemPro.product_info.length>1"
+                  class="oprText"
+                  @click="syncPirce(itemPro)">同步单价信息
+                  <el-tooltip class="item"
+                    effect="dark"
+                    content="点击按钮可以将本款产品的其他尺码配色组同步第一组尺码配色的单价"
+                    placement="bottom">
+                    <i class="el-icon-question"></i>
+                  </el-tooltip>
+                </span>
               </span>
               <span class="flex40 tb_row tb_col">
                 <span class="tb_col_item"
@@ -751,6 +762,13 @@ export default {
     }
   },
   methods: {
+    // 同步单价信息
+    syncPirce (pro) {
+      let price = this.$clone(pro.product_info[0]).price
+      pro.product_info.forEach((item) => {
+        item.price = price
+      })
+    },
     checkedWarn (item) {
       this.warnType = item.title
       this.timeData = [
@@ -1377,6 +1395,17 @@ export default {
   }
   .el-input__inner {
     height: 32px !important;
+  }
+  .oprText {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+    position: absolute;
+    top: 40px;
+    left: 4px;
+    cursor: pointer;
+    &:hover {
+      color: #1a95ff;
+    }
   }
 }
 </style>

@@ -826,11 +826,13 @@ export default {
     Promise.all([
       client.list(),
       group.list(),
-      warnSetting.list()
+      warnSetting.list(),
+      sampleOrder.typeList()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.warnList = res[2].data.data.filter(item => item.order_type === 2)
+      this.sampleTypeArr = res[3].data.data
       this.loading = false
     })
   },

@@ -246,8 +246,12 @@ const sampleOrder = {
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params),
   changeStatus: (params) => http.post(`${baseUrl}/sample/status/check`, params, 'application/json'),
-  clientPay: (params) => http.post(`${baseUrl}/order/client/pay`, params, 'application/json')
+  clientPay: (params) => http.post(`${baseUrl}/order/client/pay`, params, 'application/json'),
+  typeList: (params) => http.get(`${baseUrl}/sample/order/type/list`, params),
+  saveType: (params) => http.post(`${baseUrl}/sample/order/type/save`, params, 'application/json'),
+  deleteType: (params) => http.post(`${baseUrl}/sample/order/type/delete`, params, 'application/json')
 }
+
 // 物料预定购
 const materialOrder = {
   create: (params) => http.post(`${baseUrl}/material/reserve/save`, params, 'application/json'),

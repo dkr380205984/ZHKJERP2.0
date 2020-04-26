@@ -121,7 +121,7 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">样单类型：</span>
-            <span class="text">{{sampleOrderInfo.type|filterOrderType}}</span>
+            <span class="text">{{sampleOrderInfo.type}}</span>
           </div>
         </div>
         <div class="rowCtn">

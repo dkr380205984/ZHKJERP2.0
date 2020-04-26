@@ -74,7 +74,8 @@
           <template v-if="cName==='组织结构'">
             <div class="flowerCtn">
               <div class="addBtn"
-                @click="showPopup=true">添加组织结构</div>
+                @click="showPopup=true"
+                style="width:8em">添加组织结构</div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -100,6 +101,39 @@
                   layout="prev, pager, next"
                   :total="ZZJGTotal"
                   :current-page.sync="ZZJGPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='样单类型'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加类型</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">样单类型名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in sampleOrderTypeArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteSampleOrderType(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="sampleOrderTypeTotal"
+                  :current-page.sync="sampleOrderTypePage">
                 </el-pagination>
               </div>
             </div>
@@ -1053,6 +1087,30 @@
               @click="showPopup=false">取消</div>
             <div class="btn btnBlue"
               @click="saveZZJG">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='样单类型'">
+        <div class="main">
+          <div class="title">
+            <div class="text">样单类型</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">样单类型：</div>
+              <div class="info">
+                <el-input placeholder="请输入样单类型"
+                  v-model="sampleOrderType"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveSampleOrderType">确定</div>
           </div>
         </div>
       </template>
@@ -2242,14 +2300,14 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { productPart, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
+import { sampleOrder, productPart, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       showPopup: false,
       yarn_handle_type: '',
       nav: {
-        '产品设置': ['成衣类型', '组织结构', '产品花型', '产品成分', '产品配色', '产品尺码'],
+        '产品设置': ['成衣类型', '组织结构', '样单类型', '产品花型', '产品成分', '产品配色', '产品尺码'],
         // '工艺单设置': ['边型', '机型', '组织法'],
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
@@ -2566,7 +2624,11 @@ export default {
       ZZJG: '',
       ZZJGList: [],
       ZZJGPage: 1,
-      ZZJGTotal: 1
+      ZZJGTotal: 1,
+      sampleOrderType: '',
+      sampleOrderTypeList: [],
+      sampleOrderTypePage: 1,
+      sampleOrderTypeTotal: 1
     }
   },
   watch: {
@@ -2619,6 +2681,8 @@ export default {
         this.getPriceLoading()
       } else if (val === '订单预警') {
         this.getOrderSampleWarn()
+      } else if (val === '样单类型') {
+        this.getSampleOrderType()
       }
     },
     filterYarnKeyword (val) {
@@ -2638,6 +2702,9 @@ export default {
     },
     ZZJGArr () {
       return this.ZZJGList.slice((this.ZZJGPage - 1) * 5, this.ZZJGPage * 5)
+    },
+    sampleOrderTypeArr () {
+      return this.sampleOrderTypeList.slice((this.sampleOrderTypePage - 1) * 5, this.sampleOrderTypePage * 5)
     },
     ingredientArr () {
       return this.ingredientList.slice((this.ingredientPage - 1) * 5, this.ingredientPage * 5)
@@ -3217,6 +3284,55 @@ export default {
               message: '删除成功!'
             })
             this.getZZJG()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getSampleOrderType () {
+      sampleOrder.typeList().then((res) => {
+        this.sampleOrderTypeList = res.data.data
+        this.sampleOrderTypeTotal = this.sampleOrderTypeList.length
+      })
+    },
+    saveSampleOrderType () {
+      if (this.sampleOrderType) {
+        sampleOrder.saveType({
+          name: this.sampleOrderType
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success({
+              message: '添加样单类型成功'
+            })
+            this.sampleOrderType = ''
+            this.getSampleOrderType()
+          }
+        })
+      } else {
+        this.$message.error({
+          message: '样单类型名称不能为空'
+        })
+      }
+    },
+    deleteSampleOrderType (id) {
+      this.$confirm('是否删除该样单类型?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        sampleOrder.typeDelete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getSampleOrderType()
           }
         })
       }).catch(() => {
