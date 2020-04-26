@@ -761,7 +761,8 @@ export default {
       sampleOrder.editDetail({
         id: this.$route.params.id
       }),
-      warnSetting.list()
+      warnSetting.list(),
+      sampleOrder.typeList()
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
@@ -821,6 +822,7 @@ export default {
           }
         ]
       }
+      this.sampleTypeArr = res[4].data.data
       this.loading = false
     })
   },
