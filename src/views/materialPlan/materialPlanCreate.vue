@@ -312,11 +312,13 @@ export default {
         this.$message.warning('请勿频繁点击')
         return
       }
+      let isAllComplete = true
       for (let indexPro in this.materialPlanInfo) {
         let itemPro = this.materialPlanInfo[indexPro]
         if (itemPro.material_info.length === 0) {
-          this.$message.error('检测到产品"' + itemPro.product_code + '"没有计划信息，请填写')
-          return
+          // this.$message.error('检测到产品"' + itemPro.product_code + '"没有计划信息，请填写')
+          // return
+          isAllComplete = false
         }
         for (let indexMa in itemPro.material_info) {
           let itemMa = itemPro.material_info[indexMa]
@@ -417,25 +419,59 @@ export default {
         })
       })
       this.lock = false
-      materialPlan.create({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type,
-        detail_data: detailData,
-        total_data: totalData,
-        production_data: productionData
-      }).then(res => {
-        if (res.data.status) {
-          this.$message.success('添加成功')
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-            this.msgSwitch = true
-          } else {
-            this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+      if (!isAllComplete) {
+        this.$confirm('该物料计划仍有部分产品物料信息没有计划, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          materialPlan.create({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type,
+            detail_data: detailData,
+            total_data: totalData,
+            production_data: productionData
+          }).then(res => {
+            if (res.data.status) {
+              this.$message.success('添加成功')
+              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+                this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                this.msgSwitch = true
+              } else {
+                this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+              }
+            }
+            this.lock = true
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+          this.lock = true
+        })
+      } else {
+        materialPlan.create({
+          order_id: this.$route.params.id,
+          order_type: this.$route.params.type,
+          detail_data: detailData,
+          total_data: totalData,
+          production_data: productionData
+        }).then(res => {
+          if (res.data.status) {
+            this.$message.success('添加成功')
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+            }
           }
-        }
-        this.lock = true
-      })
+          this.lock = true
+        })
+      }
     },
     deleteItem (item, index) {
       this.$confirm('此操作将删除该列数据, 是否继续?', '提示', {

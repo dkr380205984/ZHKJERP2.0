@@ -161,10 +161,6 @@
         <span class="title hasBorder">物料统计</span>
         <div class="positionBtn">
           <div class="btn btnWhiteBlue"
-            @click="$openUrl('/material/materialDetail/' + $route.params.id + '/1' + '/' + $route.params.type + '/easy')">去订原料</div>
-          <div class="btn btnWhiteBlue"
-            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type + '/easy')">去订辅料</div>
-          <div class="btn btnWhiteBlue"
             @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
           <div class="btn btnWhiteBlue"
             @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2')">打印辅料单</div>
@@ -212,6 +208,10 @@
             @click="deleteMaterialPlan($route.params.id,$route.params.type)">删除</div>
           <div class="btn btnBlue"
             @click="$router.push('/materialPlan/materialPlanUpdate/' + $route.params.id + '/' + $route.params.type)">修改</div>
+          <div class="btn btnBlue"
+            @click="$openUrl('/material/materialDetail/' + $route.params.id + '/1' + '/' + $route.params.type + '/easy')">去订原料</div>
+          <div class="btn btnBlue"
+            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type + '/easy')">去订辅料</div>
         </div>
       </div>
     </div>
@@ -297,7 +297,7 @@ export default {
         // 插入产品所需部位数量
         this.materialPlanInfo.forEach(itemPro => {
           itemPro.material_info.forEach(itemPart => {
-            let flag = this.$clone(res.data.data.production_data).find(value => +value.product_id === +itemPart.product_part)
+            let flag = this.$clone(res.data.data.production_data).find(value => +value.product_id === +itemPart.product_part && value.size_name === itemPro.size && value.color_name === itemPro.color)
             if (flag) {
               itemPart.need_part_number = flag.product_number / itemPro.production_num
             }
