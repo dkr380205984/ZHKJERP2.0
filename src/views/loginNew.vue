@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { login } from '@/assets/js/api.js'
+import { login, getAuthorization } from '@/assets/js/api.js'
 export default {
   name: 'home',
   data () {
@@ -70,38 +70,36 @@ export default {
     goLogin () {
       let _this = this
       login({
-        telephone: _this.telephone,
+        user_name: _this.telephone,
         password: _this.password
       }).then((res) => {
         if (res.data.code === 200) {
-          this.$message.success({
-            message: '登录成功',
-            duration: 1000
+          window.sessionStorage.setItem('token', res.data.data.access_token)
+          window.sessionStorage.setItem('token_type', res.data.data.token_type)
+          getAuthorization.get().then((res) => {
+            this.$message.success({
+              message: '登录成功',
+              duration: 1000
+            })
+            window.sessionStorage.setItem('user_name', res.data.data.user_name)
+            window.sessionStorage.setItem('company_name', res.data.data.company_name)
+            window.sessionStorage.setItem('module_id', res.data.data.module_id)
+            window.sessionStorage.setItem('logo', res.data.data.company_logo)
+            window.sessionStorage.setItem('has_check', res.data.data.has_check)
+            window.sessionStorage.setItem('group_name', res.data.data.group_name)
+            window.localStorage.setItem('zhUsername', _this.telephone)
+            if (_this.remPsd) {
+              window.localStorage.setItem('zhPassword', _this.password)
+            } else {
+              window.localStorage.setItem('zhPassword', '')
+            }
+            if (_this.$route.query.nextUrl) {
+              _this.$router.push(_this.$route.query.nextUrl)
+            } else {
+              _this.$router.push('/homePage/homePage')
+            }
           })
-          window.sessionStorage.setItem('token', res.data.data.token)
-          window.sessionStorage.setItem('user_id', res.data.data.user_id)
-          window.sessionStorage.setItem('user_name', res.data.data.user_name)
-          window.sessionStorage.setItem('company_id', res.data.data.company_id)
-          window.sessionStorage.setItem('company_name', res.data.data.company_name)
-          window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))
-          window.sessionStorage.setItem('logo', res.data.data.company_logo)
-          window.sessionStorage.setItem('has_check', res.data.data.has_check)
-          window.sessionStorage.setItem('group_name', res.data.data.group_name)
-          window.localStorage.setItem('zhUsername', _this.telephone)
-          if (_this.remPsd) {
-            window.localStorage.setItem('zhPassword', _this.password)
-          } else {
-            window.localStorage.setItem('zhPassword', '')
-          }
-          if (_this.$route.query.nextUrl) {
-            _this.$router.push(_this.$route.query.nextUrl)
-          } else {
-            _this.$router.push('/homePage/homePage')
-          }
         } else {
-          this.$message.error({
-            message: res.data.message
-          })
           _this.password = ''
         }
       })

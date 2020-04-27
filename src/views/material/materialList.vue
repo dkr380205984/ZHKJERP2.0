@@ -160,10 +160,10 @@
                     {{itemOrder.material_order_progress.y_percent>=100&&itemOrder.material_order_progress.f_percent>=100?'查看详情':'订购物料'}}<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2'))">
+                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2') + '/normal')">
                       <span class="detail">原料</span>
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/2' + '/' + (orderType ? '1' : '2'))">
+                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/2' + '/' + (orderType ? '1' : '2') + '/normal')">
                       <span class="detail">辅料</span>
                     </el-dropdown-item>
                   </el-dropdown-menu>

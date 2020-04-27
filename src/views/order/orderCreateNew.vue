@@ -103,6 +103,7 @@
             </span>
             <span class="content">
               <el-select v-model="unit"
+                @change="getUnit"
                 placeholder="请选择结算单位">
                 <el-option v-for="item in unitArr"
                   :key="item.name"
@@ -762,6 +763,10 @@ export default {
     }
   },
   methods: {
+    // 获取汇率
+    getUnit (ev) {
+      this.exchange_rate = moneyArr.find((item) => item.name === ev).default
+    },
     // 同步单价信息
     syncPirce (pro) {
       let price = this.$clone(pro.product_info[0]).price
@@ -1056,10 +1061,10 @@ export default {
         this.$message.error('请选择结算单位')
         return
       }
-      if (!this.exchange_rate) {
-        this.$message.error('请输入汇率')
-        return
-      }
+      // if (!this.exchange_rate) {
+      //   this.$message.error('请输入汇率')
+      //   return
+      // }
       if (!this.tax_prop) {
         this.$message.error('请输入税率')
         return
@@ -1136,7 +1141,7 @@ export default {
         contacts: this.contact_id,
         account_unit: this.unit,
         group_id: this.group_id,
-        exchange_rate: this.exchange_rate,
+        exchange_rate: this.exchange_rate || moneyArr.find((item) => item.name === this.unit).default,
         tax_rate: this.tax_prop,
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {

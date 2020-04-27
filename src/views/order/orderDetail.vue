@@ -265,11 +265,11 @@
               <div class="routerBtn"
                 @click="$router.push('/materialPlan/materialPlanDetail/'+ $route.params.id +'/1')">物料计划</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/1')">原料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/1/normal')">原料订购加工</div>
               <div class="routerBtn"
                 @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/1/1')">原料出入库</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/1')">辅料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/1/normal')">辅料订购加工</div>
               <div class="routerBtn"
                 @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/1')">辅料出入库</div>
             </div>

@@ -49,12 +49,6 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">物料计划</span>
-        <div class="positionBtn">
-          <div class="btn btnWhiteBlue"
-            @click="$openUrl('/material/materialDetail/' + $route.params.id + '/1' + '/' + $route.params.type)">去订原料</div>
-          <div class="btn btnWhiteBlue"
-            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type)">去订辅料</div>
-        </div>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="tableCtnLv2">
@@ -166,6 +160,10 @@
       <div class="titleCtn">
         <span class="title hasBorder">物料统计</span>
         <div class="positionBtn">
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/material/materialDetail/' + $route.params.id + '/1' + '/' + $route.params.type  + '/easy')">去订原料</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type  + '/easy')">去订辅料</div>
           <div class="btn btnWhiteBlue"
             @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
           <div class="btn btnWhiteBlue"

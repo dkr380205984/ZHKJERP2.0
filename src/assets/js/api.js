@@ -444,7 +444,11 @@ let chartsAPI = {
   sampleOrder: (params) => http.get(`${baseUrl}/index/sample/order/dispatch`, params),
   order: (params) => http.get(`${baseUrl}/index/order/dispatch`, params)
 }
+let getAuthorization = {
+  get: (params) => http.post(`${baseUrl}/auth/user`, params, 'application/json')
+}
 export {
+  getAuthorization,
   chartsAPI,
   productPart,
   logStatistics,

@@ -287,11 +287,11 @@
               <div class="routerBtn"
                 @click="$router.push('/materialPlan/materialPlanDetail/'+ activeSampleOrderId +'/2')">物料计划</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/1/2')">原料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/1/2/normal')">原料订购加工</div>
               <div class="routerBtn"
                 @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/1/2')">原料出入库</div>
               <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/2/2')">辅料订购加工</div>
+                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/2/2/normal')">辅料订购加工</div>
               <div class="routerBtn"
                 @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/2/2')">辅料出入库</div>
             </div>
