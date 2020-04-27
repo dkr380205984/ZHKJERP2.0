@@ -8,7 +8,7 @@
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"
-          :afterSend="$winReload"></zh-message>
+          :afterSend="afterSend"></zh-message>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -80,11 +80,10 @@
             <el-tooltip class="item"
               effect="dark"
               :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购色纱'"
-              placement="top"
-              v-if="type==='1'">
+              placement="top">
               <div class="btn"
                 :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
-                @click="easyOrder(2)">订购色纱</div>
+                @click="easyOrder(2)">{{type==='1'?'订购色纱':'批量订购'}}</div>
             </el-tooltip>
             <el-tooltip class="item"
               effect="dark"
@@ -1467,6 +1466,14 @@ export default {
     }
   },
   methods: {
+    afterSend () {
+      if (this.$route.params.easyOrder === 'easy') {
+        this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal')
+        this.$winReload()
+      } else {
+        this.$winReload()
+      }
+    },
     // 结余入库事件
     handleGoStock () {
       this.goStockInfo = this.$flatten(this.$clone(this.statistic_data).map(itemMa => {
@@ -1933,7 +1940,12 @@ export default {
           this.$message.success('调取成功，请刷新页面后查看采购数量')
           this.easyStockFlag = false
           this.replenishFlag = false
-          this.$winReload()
+          if (this.$route.params.easyOrder === 'easy') {
+            this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal')
+            this.$winReload()
+          } else {
+            this.$winReload()
+          }
         }
       })
     },
@@ -2046,12 +2058,16 @@ export default {
           this.cancleOrder()
           this.$message.success('订购成功，请刷新页面后查看采购数量')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
+            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal'
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料订购信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
             this.msgSwitch = true
           } else {
-            this.$router.push('/material/materialDetail/' + +this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
-            this.$winReload()
+            if (this.$route.params.easyOrder === 'easy') {
+              this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal')
+              this.$winReload()
+            } else {
+              this.$winReload()
+            }
           }
           this.replenishFlag = false
         }
@@ -2242,12 +2258,16 @@ export default {
           this.cancleProcess()
           this.$message.success('加工成功，请刷新页面后查看加工日志')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
+            this.msgUrl = '/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal'
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料加工信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
             this.msgSwitch = true
           } else {
-            this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType)
-            this.$winReload()
+            if (this.$route.params.easyOrder === 'easy') {
+              this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal')
+              this.$winReload()
+            } else {
+              this.$winReload()
+            }
           }
         }
       })
@@ -2473,6 +2493,17 @@ export default {
       })
       this.otherYarnStock = res[10].data.data
       this.total = res[10].data.meta.total
+      // 新增快捷操作，从物料计划单直接进订购页面可以快捷批量订购白胚/辅料
+      if (this.$route.params.easyOrder === 'easy') {
+        this.statistic_data.forEach((item) => {
+          item.checked = true
+        })
+        if (this.$route.params.type === '1') {
+          this.easyOrder(1)
+        } else {
+          this.easyOrder(2)
+        }
+      }
       this.loading = false
     })
     if (this.$route.query.showRouterPopup === 'true') {

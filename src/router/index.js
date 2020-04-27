@@ -185,7 +185,7 @@ const routes = [
       name: '物料预订购列表',
       component: () => import('../views/materialOrder/materialOrderList.vue')
     }, {
-      path: '/material/materialDetail/:id/:type/:orderType',
+      path: '/material/materialDetail/:id/:type/:orderType/:easyOrder',
       name: '物料订购',
       component: () => import('../views/material/materialDetail.vue')
     }, {
@@ -280,6 +280,10 @@ const routes = [
       path: '/equipment',
       name: '设备管理',
       component: () => import('../views/equipment/equipment.vue')
+    }, {
+      path: '/other/chartIndex',
+      name: '数据可视化',
+      component: () => import('../views/other/chartIndex.vue')
     }, {
       path: '/client/clientList/:params',
       name: '客户列表',
@@ -544,7 +548,8 @@ router.beforeEach((to, from, next) => {
     '日常工资结算表': ['织为云', '员工列表', '日常工资结算表'],
     '修改员工': ['织为云', '员工列表', '修改员工'],
     '合计工资结算单': ['织为云', '合计工资结算单'],
-    '操作记录统计': ['织为云', '操作记录统计']
+    '操作记录统计': ['织为云', '操作记录统计'],
+    '数据可视化': ['织为云', '数据可视化']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

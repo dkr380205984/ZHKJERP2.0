@@ -800,7 +800,7 @@
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
-              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料订购</div>
+              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.orderType + '/normal')">原料订购</div>
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
               @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料出入库</div>

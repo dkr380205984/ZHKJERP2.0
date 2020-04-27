@@ -12,7 +12,7 @@ axios.defaults.timeout = 30000
 
 // 在请求拦截器中 设置token,更新token
 axios.interceptors.request.use(config => {
-  config.headers.token = window.sessionStorage.getItem('token')
+  config.headers.Authorization = window.sessionStorage.getItem('token_type') + ' ' + window.sessionStorage.getItem('token')
   return config
 }, error => {
   return Promise.reject(error)
@@ -47,8 +47,6 @@ axios.interceptors.response.use(
 
 function get (url, params) {
   params = typeof (params) === 'object' ? params : {}
-  params.user_id = window.sessionStorage.getItem('user_id')
-  params.company_id = window.sessionStorage.getItem('company_id')
   let response = axios({
     method: 'get',
     url: url,
@@ -59,8 +57,6 @@ function get (url, params) {
 
 function post (url, params, contentType, responseType) {
   params = typeof (params) === 'object' ? params : {}
-  params.user_id = window.sessionStorage.getItem('user_id')
-  params.company_id = window.sessionStorage.getItem('company_id')
   // 设置请求头
   let headers = {}
   if (contentType && contentType === 'application/json') {

@@ -1,0 +1,88 @@
+@import '../common.less';
+#chartIndex{
+  .chartCtn{
+    padding: 20px 24px;
+    position: relative;
+    border-top: 1px solid #E9E9E9;
+    display: flex;
+    .leftCtn{
+      flex:7;
+      .infoLine{
+        height: 32px;
+        line-height: 32px;
+        margin-bottom: 20px;
+        .textInfo{
+          display: inline-block;
+          margin-left: 24px;
+          .label{
+            color: @font45;
+            font-size: @fontMiddle;
+          }
+          .text{
+            color: @font85;
+            font-size: @fontBig;
+          }
+          .unit{
+            color: @font45;
+            font-size: @fontMiddle;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+    .rightCtn{
+      flex:3;
+      margin-left: 32px;
+      .title{
+        color: @font85;
+        font-size: @fontBig;
+        height: 32px;
+        line-height: 32px;
+        font-weight: bold;
+      }
+      .inputs{
+        height:32px;
+        margin: 12px 0;
+      }
+      .list{
+        .once{
+          height: 32px;
+          align-items: center;
+          display: flex;
+          position: relative;
+          .circle{
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            color: #ffffff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: @fontMiddle;
+            &.blue{
+              background: @blue;
+            }
+            &.gray{
+              background: @font45;
+            }
+          }
+          .name{
+            margin-left: 12px;
+            font-size: @fontMiddle;
+            color: @font65;
+            cursor: pointer;
+            &:hover{
+              color: @blue;
+            }
+          }
+          .number{
+            position: absolute;
+            right: 0;
+            font-size: @fontMiddle;
+            color: @font65
+          }
+        }
+      }
+    }
+  }
+}
