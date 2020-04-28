@@ -1080,7 +1080,8 @@ export default {
       ingredient.list(),
       colour.list(),
       getToken(),
-      material.list()
+      material.list(),
+      sampleOrder.typeList()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -1116,6 +1117,7 @@ export default {
       this.materialArr.forEach((item) => {
         item.value = item.name
       })
+      this.sampleTypeArr = res[7].data.data
       this.loading = false
     })
   }

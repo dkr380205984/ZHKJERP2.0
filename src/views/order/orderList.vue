@@ -406,7 +406,7 @@ export default {
           show: false
         },
         series: [{
-          name: '样单数量',
+          name: '订单数量',
           data: [],
           type: 'bar',
           barMinHeight: 2,
@@ -437,7 +437,7 @@ export default {
           show: false
         },
         series: [{
-          name: '样单数量',
+          name: '订单数量',
           data: [],
           type: 'bar',
           barMinHeight: 2,

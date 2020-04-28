@@ -766,6 +766,7 @@ export default {
     // 获取汇率
     getUnit (ev) {
       this.exchange_rate = moneyArr.find((item) => item.name === ev).default
+      this.tax_prop = moneyArr.find((item) => item.name === ev).tax_prop
     },
     // 同步单价信息
     syncPirce (pro) {
@@ -1065,7 +1066,7 @@ export default {
       //   this.$message.error('请输入汇率')
       //   return
       // }
-      if (!this.tax_prop) {
+      if (Number(this.tax_prop) !== 0 && !this.tax_prop) {
         this.$message.error('请输入税率')
         return
       }
