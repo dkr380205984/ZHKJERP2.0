@@ -42,9 +42,11 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module rightCtn">
       <div class="titleCtn">
         <span class="title">物料计划</span>
+        <span class="btn noBorder"
+          @click="importPlanData">同步配料单数据</span>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="tableCtnLv2">
@@ -304,11 +306,13 @@ export default {
         this.$message.warning('请勿频繁点击')
         return
       }
+      let isAllComplete = true
       for (let indexPro in this.materialPlanInfo) {
         let itemPro = this.materialPlanInfo[indexPro]
         if (itemPro.material_info.length === 0) {
-          this.$message.error('检测到产品"' + itemPro.product_code + '"没有计划信息，请填写')
-          return
+          // this.$message.error('检测到产品"' + itemPro.product_code + '"没有计划信息，请填写')
+          // return
+          isAllComplete = false
         }
         for (let indexMa in itemPro.material_info) {
           let itemMa = itemPro.material_info[indexMa]
@@ -424,27 +428,63 @@ export default {
         }
       })
       this.lock = false
-      materialPlan.create({
-        is_update: true,
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type,
-        detail_data: detailData,
-        total_data: totalData,
-        production_data: productionData
-      }).then(res => {
-        if (res.data.status) {
-          this.$message.success('修改成功')
-          this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
-            this.msgContent = '<span style="color:#E6A23C">修改</span>了一张物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-            this.msgSwitch = true
-          } else {
+      if (!isAllComplete) {
+        this.$confirm('该物料计划仍有部分产品物料信息没有计划, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          materialPlan.create({
+            is_update: true,
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type,
+            detail_data: detailData,
+            total_data: totalData,
+            production_data: productionData
+          }).then(res => {
+            if (res.data.status) {
+              this.$message.success('修改成功')
+              this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+                this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+                this.msgContent = '<span style="color:#E6A23C">修改</span>了一张物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+                this.msgSwitch = true
+              } else {
+                this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+              }
+            }
+            this.lock = true
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+          this.lock = true
+        })
+      } else {
+        materialPlan.create({
+          is_update: true,
+          order_id: this.$route.params.id,
+          order_type: this.$route.params.type,
+          detail_data: detailData,
+          total_data: totalData,
+          production_data: productionData
+        }).then(res => {
+          if (res.data.status) {
+            this.$message.success('修改成功')
             this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+              this.msgContent = '<span style="color:#E6A23C">修改</span>了一张物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+            }
           }
-        }
+        })
         this.lock = true
-      })
+      }
     },
     deleteItem (item, index) {
       this.$confirm('此操作将删除该列数据, 是否继续?', '提示', {
@@ -569,6 +609,86 @@ export default {
     copyItem (data, item) {
       data.push(this.$clone(item))
       this.computedTotal()
+    },
+    // 导入配料单数据
+    importPlanData () {
+      this.$confirm('同步配料信息将会覆盖现有的物料信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        materialPlan.init({
+          order_id: this.$route.params.id,
+          order_type: this.$route.params.type
+        }).then(res => {
+          let materialPlanInfo = res.data.data.product_info
+          this.materialPlanInfo = materialPlanInfo.map(itemPro => {
+            return {
+              product_code: itemPro.product_code,
+              product_id: itemPro.product_id,
+              category_name: itemPro.category_name,
+              style_name: itemPro.style_name,
+              type_name: itemPro.type_name,
+              size: itemPro.size,
+              color: itemPro.color,
+              order_num: itemPro.numbers,
+              stock_num: itemPro.stock_number,
+              stock_num_use: 0,
+              material_loss: '',
+              other_loss: '',
+              production_num: itemPro.numbers,
+              unit: itemPro.unit,
+              part_arr: this.$clone([{
+                name: '大身',
+                id: itemPro.product_id
+              }].concat(itemPro.part_data.map(itemPart => {
+                return {
+                  name: itemPart.name,
+                  id: itemPart.id
+                }
+              }))),
+              part_data: itemPro.part_data,
+              material_info: itemPro.material_info.map(itemMa => {
+                return {
+                  product_part: itemMa.product_id,
+                  material_name: itemMa.material_name,
+                  type: itemMa.type,
+                  color: itemMa.material_attribute,
+                  number: itemMa.weight,
+                  total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
+                  material_loss: '',
+                  end_num: '',
+                  unit: itemMa.unit
+                }
+              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+                let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
+                let sizeFlag = ''
+                if (partName) {
+                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+                }
+                return {
+                  product_part: itemMa.product_id,
+                  material_name: itemMa.material_name,
+                  type: itemMa.type,
+                  color: itemMa.material_attribute,
+                  number: itemMa.weight,
+                  total_number: this.$toFixed(itemMa.weight * itemPro.numbers * (sizeFlag ? sizeFlag.number : 1)),
+                  material_loss: '',
+                  end_num: '',
+                  unit: itemMa.unit
+                }
+              }))
+            }
+          })
+          this.loading = false
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     }
   },
   created () {

@@ -211,14 +211,21 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">单价</span>
+                      <span class="text">单价/机动数</span>
                       <span class="explanation">(必填)</span>
                     </div>
-                    <div class="content">
+                    <div class="content"
+                      style="display:flex">
                       <zh-input type="number"
+                        style="margin-right:12px"
                         v-model="itemChild.price"
                         placeholder="请输入单价">
                         <template slot="append">元</template>
+                      </zh-input>
+                      <zh-input type="number"
+                        v-model="itemChild.loss"
+                        placeholder="请输入机动数">
+                        <template slot="append">%</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -292,12 +299,13 @@
                 <div class="trow">
                   <div class="tcolumn">织造单位</div>
                   <div class="tcolumn noPad"
-                    style="flex:6">
+                    style="flex:7">
                     <div class="trow">
                       <div class="tcolumn">产品信息</div>
                       <div class="tcolumn">尺码颜色</div>
                       <div class="tcolumn">单价(元)</div>
                       <div class="tcolumn">数量</div>
+                      <div class="tcolumn">机动数</div>
                       <div class="tcolumn">总价</div>
                       <div class="tcolumn">完成时间</div>
                     </div>
@@ -311,7 +319,7 @@
                   :key="index">
                   <div class="tcolumn">{{item.client_name}}</div>
                   <div class="tcolumn noPad"
-                    style="flex:6">
+                    style="flex:7">
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
@@ -322,7 +330,8 @@
                       <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
+                      <div class="tcolumn">+{{parseInt(itemChild.motorise_number *itemChild.number/100)}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
                       <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
@@ -366,6 +375,7 @@
                     style="flex:1.2">尺码颜色</div>
                   <div class="tcolumn">单价(元)</div>
                   <div class="tcolumn">数量</div>
+                  <div class="tcolumn">机动数</div>
                   <div class="tcolumn">总价(元)</div>
                   <div class="tcolumn">备注</div>
                   <div class="tcolumn">操作人</div>
@@ -396,6 +406,7 @@
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.number}}</div>
+                  <div class="tcolumn">+{{parseInt(item.motorise_number *item.number/100)}}</div>
                   <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
@@ -604,6 +615,15 @@
                 <zh-input v-model="commonPrice[index]"
                   placeholder="请输入单价">
                   <template slot="append">元</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">机动数：</div>
+              <div class="info">
+                <zh-input v-model="commonLoss[index]"
+                  placeholder="请输入机动数">
+                  <template slot="append">%</template>
                 </zh-input>
               </div>
             </div>
@@ -846,6 +866,7 @@ export default {
       weaving_flag: false,
       easyWeaving_flag: false,
       commonCompany: [],
+      commonLoss: [],
       commonPrice: [],
       commonDate: [],
       replenish_flag: false,
@@ -922,7 +943,8 @@ export default {
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           price: '',
-          number: ''
+          number: '',
+          loss: ''
         }],
         complete_time: '',
         part_data: [],
@@ -942,7 +964,6 @@ export default {
         return
       }
       this.easyWeaving_flag = true
-      console.log(this.checkWeaveList)
       // this.checkWeaveList.forEach((item) => {
       //   let mixedData = []
       //   item.childrenMergeInfo.forEach((itemChild) => {
@@ -979,7 +1000,8 @@ export default {
         mixedData: [{
           partColorSize: '',
           price: '',
-          number: ''
+          number: '',
+          loss: ''
         }],
         complete_time: '',
         part_data: [],
@@ -1040,6 +1062,7 @@ export default {
             complete_time: this.$getTime(item.complete_time),
             desc: item.desc,
             price: itemChild.price,
+            motorise_number: itemChild.loss || 3,
             number: itemChild.number,
             size: partColorSize[1],
             color: partColorSize[2],
@@ -1072,6 +1095,7 @@ export default {
       this.weaving_data[index].mixedData.push({
         partColorSize: '',
         price: '',
+        loss: '',
         number: ''
       })
     },
@@ -1082,18 +1106,18 @@ export default {
     commonFn () {
       this.checkWeaveList.forEach((item) => {
         if (!item.checkPart) {
-          item.checkPart = item.childrenMergeInfo.part_data[0].id
+          item.checkPart = item.childrenMergeInfo[0].part_data[0].id
         }
       })
       this.checkWeaveList.forEach((item) => {
         let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
           let part = itemChild.part_data.find((itemFind) => { return Number(itemFind.id) === Number(item.checkPart) })
-          console.log(part)
           if (part.number - part.weavingNum > 0) {
             mixedData.push({
               partColorSize: part.id + '/' + itemChild.size + '/' + itemChild.color,
               price: '',
+              loss: '',
               number: part.number - part.weavingNum
             })
           }
@@ -1119,6 +1143,7 @@ export default {
         item.company_id = this.commonCompany[index]
         item.mixedData.forEach((itemChild) => {
           itemChild.price = this.commonPrice[index]
+          itemChild.loss = this.commonLoss[index]
         })
         item.complete_time = this.commonDate[index]
         this.easyWeaving_flag = false

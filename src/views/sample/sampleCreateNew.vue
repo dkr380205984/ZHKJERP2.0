@@ -1189,7 +1189,8 @@ export default {
       colour.list(),
       getToken(),
       material.list(),
-      productPart.list()
+      productPart.list(),
+      sampleOrder.typeList()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -1226,6 +1227,7 @@ export default {
         item.value = item.name
       })
       this.partArr = res[6].data.data
+      this.sampleTypeArr = res[7].data.data
       this.loading = false
     })
   }

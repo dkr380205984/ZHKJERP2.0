@@ -1278,7 +1278,7 @@ export default {
           url: items
         }
       }) : []
-      this.total_price = orderInfo.total_price
+      // this.total_price = orderInfo.total_price
       this.remark = orderInfo.remark
       if (orderInfo.time_progress) {
         this.isOpenWarn = true
@@ -1301,6 +1301,7 @@ export default {
           }
         ]
       }
+      this.computedTotalPrice()
       this.loading = false
     })
   },
