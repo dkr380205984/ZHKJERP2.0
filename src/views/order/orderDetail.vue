@@ -1249,10 +1249,10 @@ export default {
           id: this.$route.params.id
         })
       ]).then(res => {
+        console.log(res)
         this.orderInfo = res[0].data.data
         this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
-          console.log(splitArr)
           return {
             url: item,
             name: splitArr[splitArr.length - 1]

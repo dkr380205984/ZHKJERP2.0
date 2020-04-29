@@ -384,6 +384,16 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">添加订单</span>
+        <span style="float:right;font-size:26px">
+          <i class="el-icon-s-fold"
+            style="cursor:pointer;margin-right:12px"
+            @click="changeTableType"
+            :style="{'color':tableType==='normal'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+          <i class="el-icon-menu"
+            style="cursor:pointer"
+            @click="changeTableType"
+            :style="{'color':tableType==='table'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+        </span>
       </div>
       <div class="editCtn hasBorderTop"
         v-for="(itemBatch,indexBatch) in batchDate"
@@ -401,9 +411,130 @@
                 placeholder="请选择交货日期">
               </el-date-picker>
             </span>
+            <span style="position: absolute;right: -5em;font-size: 14px;color: #1a95ff;top: 0;line-height: 32px;cursor: pointer;"
+              v-if="tableType==='table'"
+              @click="addItem(itemBatch,'product')">新增产品</span>
           </div>
         </div>
-        <div class="rowCtn">
+        <template v-if="tableType==='table'">
+          <div class="tableCtnNew"
+            v-for="(itemPro,indexPro) in itemBatch.batch_info_new"
+            :key="indexPro">
+            <div class="line">
+              <div class="once gray bigWidth">产品</div>
+              <div class="once gray">
+                <div class="biaotou rightTop">尺码</div>
+                <div class="xiexian"></div>
+                <div class="biaotou leftBottom">配色</div>
+              </div>
+              <div class="once gray"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <el-select v-model="itemSize.size"
+                  placeholder="选择尺码"
+                  @change="selectTableSize($event,itemPro.product_info,indexSize)">
+                  <el-option v-for="item in itemPro.size"
+                    :key="item.id"
+                    :value="item.size_name"
+                    :label="item.size_name"></el-option>
+                </el-select>
+              </div>
+              <div class="once gray blue">
+                <span class="opr"
+                  @click="addItem(itemPro,'size')">新增尺码</span>
+              </div>
+            </div>
+            <div class="line">
+              <div class="once gray middle bigWidth">
+                <div class="inputs">
+                  <el-select v-model="itemPro.id"
+                    placeholder="请选择产品"
+                    @change="selectPro($event,itemBatch.batch_info_new,indexPro)">
+                    <el-option v-for="item in checkedProList"
+                      :key="item.id"
+                      :label="item.product_code"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="inputs"
+                  style="margin-top:12px">
+                  <zh-input type='number'
+                    v-model="itemPro.price"
+                    placeholder="输入单价"
+                    @input="computedTotalPrice">
+                    <template slot="append">{{unit}}</template>
+                  </zh-input>
+                </div>
+              </div>
+              <div class="lineChildCtn">
+                <div class="lineChild"
+                  v-for="(itemColor,indexColor) in itemPro.product_info[0].color"
+                  :key="indexColor">
+                  <div class="once middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <div class="inputs">
+                      <el-select v-model="itemColor.color"
+                        @change="selectTableColor($event, itemPro,indexColor)"
+                        placeholder="选择配色">
+                        <el-option v-for="item in itemPro.color"
+                          :key="item.id"
+                          :value="item.color_name"
+                          :label="item.color_name"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lineChildCtn"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <div class="lineChild"
+                  v-for="(itemColor,indexColor) in itemSize.color"
+                  :key="indexColor + '/' + indexSize">
+                  <div class="once middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <div class="inputs">
+                      <zh-input placeholder="输入数量"
+                        v-model="itemColor.number"
+                        @input="computedTotalPrice"></zh-input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lineChildCtn">
+                <div class="lineChild"
+                  v-for="(valueColor,keyColor) in itemPro.product_info[0].color"
+                  :key="keyColor">
+                  <div class="once gray red middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <span class="opr"
+                      @click="deleteTableColor(itemPro,keyColor)">删除配色</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="line">
+              <div class="once gray bigWidth red">
+                <span class="opr"
+                  @click="deleteItem(itemBatch.batch_info_new,indexPro)">删除产品</span>
+              </div>
+              <div class="once gray blue"><span class="opr"
+                  @click="addItem(itemPro,'color')">新增配色</span></div>
+              <div class="once gray red"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <span class="opr"
+                  @click="deleteItem(itemPro.product_info,indexSize)">删除尺码</span>
+              </div>
+              <div class="once gray">
+                <div class="xiexian"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <div class="rowCtn"
+          v-if="tableType==='normal'">
           <div class="tableCtnLv2">
             <div class="tb_header">
               <span class="tb_row">产品</span>
@@ -697,6 +828,7 @@ import { product, client, group, order, getToken, warnSetting } from '@/assets/j
 export default {
   data () {
     return {
+      tableType: 'normal',
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -743,7 +875,8 @@ export default {
                 number: ''
               }
             ]
-          }]
+          }],
+          batch_info_new: []
         }
       ],
       postData: { token: '' },
@@ -763,6 +896,42 @@ export default {
     }
   },
   methods: {
+    // 切换订单批次填写类型
+    changeTableType () {
+      this.$confirm('切换输入模式会导致已填写的数据被清除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.batchDate = [
+          {
+            time: '',
+            batch_info: [{
+              id: '',
+              unit: '个',
+              product_info: [
+                {
+                  size_color: '',
+                  price: '',
+                  number: ''
+                }
+              ]
+            }],
+            batch_info_new: []
+          }
+        ]
+        if (this.tableType === 'normal') {
+          this.tableType = 'table'
+        } else {
+          this.tableType = 'normal'
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
     // 获取汇率
     getUnit (ev) {
       this.exchange_rate = moneyArr.find((item) => item.name === ev).default
@@ -832,7 +1001,8 @@ export default {
                 number: ''
               }
             ]
-          }]
+          }],
+          batch_info_new: []
         })
       } else if (type === 'batch_pro') {
         item.push({
@@ -852,6 +1022,38 @@ export default {
           price: '',
           number: ''
         })
+      } else if (type === 'size') {
+        item.product_info.push({
+          size: '',
+          color: item.product_info[0].color.map((itemColor) => {
+            return {
+              color: itemColor.color,
+              number: ''
+            }
+          })
+        })
+      } else if (type === 'color') {
+        item.product_info.forEach((itemColor) => {
+          itemColor.color.push({
+            color: '',
+            number: ''
+          })
+        })
+      } else if (type === 'product') {
+        item.batch_info_new.push({
+          id: '',
+          unit: '',
+          price: '',
+          size: [],
+          color: [],
+          product_info: [{
+            size: '',
+            color: [{
+              color: '',
+              number: ''
+            }]
+          }]
+        })
       }
     },
     deleteItem (item, index) {
@@ -862,6 +1064,16 @@ export default {
       item.splice(index, 1)
       this.isResouceShow++
       this.computedTotalPrice()
+    },
+    // 表格形式删除配色
+    deleteTableColor (item, index) {
+      if (item.product_info[0].color.length === 1) {
+        this.$message.warning('至少存在一项')
+        return
+      }
+      item.product_info.forEach((itemPro) => {
+        itemPro.color.splice(index, 1)
+      })
     },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
@@ -931,45 +1143,80 @@ export default {
           }
         })
         this.checkedProList.push(item)
-        this.batchDate.forEach(itemBatch => {
-          this.checkedProList.forEach((itemPro, indexPro) => {
-            let arr = []
-            itemPro.size.forEach(itemSize => {
-              itemPro.color.forEach(itemColor => {
-                arr.push({
-                  size_color: [itemSize.size_name, itemColor.color_name],
-                  price: '',
-                  number: ''
+        // 旧代码
+        if (this.tableType === 'normal') {
+          this.batchDate.forEach(itemBatch => {
+            this.checkedProList.forEach((itemPro, indexPro) => {
+              let arr = []
+              itemPro.size.forEach(itemSize => {
+                itemPro.color.forEach(itemColor => {
+                  arr.push({
+                    size_color: [itemSize.size_name, itemColor.color_name],
+                    price: '',
+                    number: ''
+                  })
                 })
               })
-            })
-            if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
-              if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
-                itemBatch.batch_info[0].id = itemPro.id
-                itemBatch.batch_info[0].unit = itemPro.category_info.name
-                itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
-                itemBatch.batch_info[0].product_info = arr
-              } else {
-                itemBatch.batch_info.push({
-                  id: itemPro.id,
-                  unit: itemPro.category_info.name,
-                  sizeColor: itemPro.sizeColor,
-                  product_info: arr
-                })
+              if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
+                if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
+                  itemBatch.batch_info[0].id = itemPro.id
+                  itemBatch.batch_info[0].unit = itemPro.category_info.name
+                  itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
+                  itemBatch.batch_info[0].product_info = arr
+                } else {
+                  itemBatch.batch_info.push({
+                    id: itemPro.id,
+                    unit: itemPro.category_info.name,
+                    sizeColor: itemPro.sizeColor,
+                    product_info: arr
+                  })
+                }
               }
-            }
-            this.isResouceShow++
+              this.isResouceShow++
+            })
           })
-        })
-        this.batchDate = this.$clone(this.batchDate)
+          this.batchDate = this.$clone(this.batchDate)
+        } else {
+          let productInfo = []
+          let colorInfo = []
+          item.color.forEach((itemColor) => {
+            colorInfo.push({
+              color: itemColor.color_name,
+              number: ''
+            })
+          })
+          item.size.forEach((itemSize) => {
+            productInfo.push({
+              size: itemSize.size_name,
+              color: this.$clone(colorInfo)
+            })
+          })
+          this.batchDate[0].batch_info_new.push({
+            id: item.id,
+            unit: item.category_info.name,
+            price: '',
+            size: item.size,
+            color: item.color,
+            product_info: productInfo
+          })
+        }
       } else {
         // 产品取消选中时，批次内删除该产品
-        this.batchDate.forEach(itemBatch => {
-          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-          if (index !== -1) {
-            itemBatch.batch_info.splice(index, 1)
-          }
-        })
+        if (this.tableType === 'normal') {
+          this.batchDate.forEach(itemBatch => {
+            let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+            if (index !== -1) {
+              itemBatch.batch_info.splice(index, 1)
+            }
+          })
+        } else {
+          this.batchDate.forEach(itemBatch => {
+            let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+            if (index !== -1) {
+              itemBatch.batch_info_new.splice(index, 1)
+            }
+          })
+        }
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
         if (cancleProFlag) {
           cancleProFlag.checked = false
@@ -1001,7 +1248,7 @@ export default {
         return
       }
       let selectFlag = this.checkedProList.find(val => val.id === event)
-      if (selectFlag) {
+      if (selectFlag && this.tableType === 'normal') {
         itemPro.sizeColor = selectFlag.sizeColor
         this.isResouceShow++
         itemPro.product_info = []
@@ -1016,6 +1263,27 @@ export default {
           })
         })
       }
+      if (selectFlag && this.tableType === 'table') {
+        itemPro.size = selectFlag.size
+        itemPro.color = selectFlag.color
+        itemPro.product_info = []
+        itemPro.unit = selectFlag.category_info.name || '个'
+        let productInfo = []
+        let colorInfo = []
+        itemPro.color.forEach((itemColor) => {
+          colorInfo.push({
+            color: itemColor.color_name,
+            number: ''
+          })
+        })
+        itemPro.size.forEach((itemSize) => {
+          productInfo.push({
+            size: itemSize.size_name,
+            color: this.$clone(colorInfo)
+          })
+        })
+        itemPro.product_info = productInfo
+      }
     },
     selectSize (event, item, index) {
       if (item.filter(itemSize => (itemSize.size_color[0] === event[0] && itemSize.size_color[1] === event[1])).length > 1) {
@@ -1023,19 +1291,50 @@ export default {
         item[index].size_color = ''
       }
     },
+    selectTableColor (event, item, index) {
+      if (item.product_info[0].color.filter((itemFind) => itemFind.color === event).length > 1) {
+        this.$message.warning('检测到该批次中该产品已选中该配色，不可重复选择')
+        item.product_info[0].color[index].color = ''
+      } else {
+        item.product_info.forEach((itemPro) => {
+          itemPro.color[index].color = event
+        })
+      }
+    },
+    selectTableSize (event, item, index) {
+      if (item.filter((itemFind) => itemFind.size === event).length > 1) {
+        this.$message.warning('检测到该批次中该产品已选中该尺码，不可重复选择')
+        item[index].size = ''
+      }
+    },
     computedTotalPrice () { // 计算总价
       this.total_price = 0
-      this.batchDate.forEach(itemBtach => {
-        itemBtach.batch_info.forEach(itemPro => {
-          itemPro.product_info.forEach(itemSize => {
-            if (itemSize.price && itemSize.number) {
-              this.total_price += (itemSize.price * itemSize.number)
-            }
+      if (this.tableType === 'normal') {
+        this.batchDate.forEach(itemBtach => {
+          itemBtach.batch_info.forEach(itemPro => {
+            itemPro.product_info.forEach(itemSize => {
+              if (itemSize.price && itemSize.number) {
+                this.total_price += (itemSize.price * itemSize.number)
+              }
+            })
           })
         })
-      })
+      } else {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info_new.forEach((itemPro) => {
+            itemPro.product_info.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                if (itemPro.price && itemColor.number) {
+                  this.total_price += (itemPro.price * itemColor.number)
+                }
+              })
+            })
+          })
+        })
+      }
     },
     saveAll () {
+      console.log(this.batchDate)
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1079,39 +1378,37 @@ export default {
         this.$message.error('检测到没有批次数据，请添加')
         return
       }
-      this.batchDate.forEach(item => {
-        if (!item.time) {
-          timeFlag = false
-        }
-        if (item.batch_info.length < 1) {
-          this.$message.error('检测到批次内没有产品信息，请添加')
-          flag = false
-        }
-        item.batch_info.forEach(itemBtach => {
-          if (!itemBtach.id) {
+      if (this.tableType === 'normal') {
+        this.batchDate.forEach(item => {
+          if (!item.time) {
+            timeFlag = false
+          }
+          if (item.batch_info.length < 1) {
+            this.$message.error('检测到批次内没有产品信息，请添加')
             flag = false
           }
-          if (itemBtach.product_info.length < 1) {
-            this.$message.error('检测到产品内没有尺码颜色信息，请添加')
-            flag = false
-          }
-          itemBtach.product_info.forEach(itemPro => {
-            if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+          item.batch_info.forEach(itemBtach => {
+            if (!itemBtach.id) {
               flag = false
             }
+            if (itemBtach.product_info.length < 1) {
+              this.$message.error('检测到产品内没有尺码颜色信息，请添加')
+              flag = false
+            }
+            itemBtach.product_info.forEach(itemPro => {
+              if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+                flag = false
+              }
+            })
           })
         })
-      })
+      }
       if (!timeFlag) {
         this.$message.error('请选择交货日期')
         return
       }
       if (!flag) {
         this.$message.error('检测到批次信息内有还未填写项，请检查批次内是否填写完成')
-        return
-      }
-      if (!this.total_price) {
-        this.$message.error('请输入总价')
         return
       }
       const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
@@ -1134,18 +1431,9 @@ export default {
           product_pack: this.$toFixed(productPackFlag.percent * 100)
         }
       } : null
-      let data = {
-        order_code: this.order_code.map(item => {
-          return item.code
-        }).join(';'),
-        client_id: this.client_id,
-        contacts: this.contact_id,
-        account_unit: this.unit,
-        group_id: this.group_id,
-        exchange_rate: this.exchange_rate || moneyArr.find((item) => item.name === this.unit).default,
-        tax_rate: this.tax_prop,
-        order_time: this.order_time,
-        order_info: this.batchDate.map((item, index) => {
+      let orderInfo = []
+      if (this.tableType === 'normal') {
+        orderInfo = this.batchDate.map((item, index) => {
           return {
             batch_info: item.batch_info.map(itemPro => {
               return {
@@ -1163,7 +1451,44 @@ export default {
             delivery_time: item.time,
             batch_id: parseInt(index + 1)
           }
-        }),
+        })
+      } else {
+        orderInfo = this.batchDate.map((item, index) => {
+          return {
+            batch_info: item.batch_info_new.map((itemPro) => {
+              let productInfo = []
+              itemPro.product_info.forEach((itemSize) => {
+                itemSize.color.forEach((itemColor) => {
+                  productInfo.push({
+                    size_name: itemSize.size,
+                    color_name: itemColor.color,
+                    numbers: itemColor.number,
+                    unit_price: itemPro.price
+                  })
+                })
+              })
+              return {
+                product_id: itemPro.id,
+                product_info: productInfo
+              }
+            }),
+            delivery_time: item.time,
+            batch_id: parseInt(index + 1)
+          }
+        })
+      }
+      let data = {
+        order_code: this.order_code.map(item => {
+          return item.code
+        }).join(';'),
+        client_id: this.client_id,
+        contacts: this.contact_id,
+        account_unit: this.unit,
+        group_id: this.group_id,
+        exchange_rate: this.exchange_rate || moneyArr.find((item) => item.name === this.unit).default,
+        tax_rate: this.tax_prop,
+        order_time: this.order_time,
+        order_info: orderInfo,
         total_price: this.total_price,
         remark: this.remark,
         total_price_RMB: this.total_price * this.exchange_rate / 100,
@@ -1412,6 +1737,9 @@ export default {
     &:hover {
       color: #1a95ff;
     }
+  }
+  .el-input__icon {
+    height: auto !important;
   }
 }
 </style>

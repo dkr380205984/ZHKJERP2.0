@@ -425,6 +425,13 @@
         </div>
         <div class="content">
           <div class="row">
+            <span class="label">样单标题：</span>
+            <span class="info">
+              <zh-input v-model="orderInfo.title"
+                placeholder="请输入样单标题"></zh-input>
+            </span>
+          </div>
+          <div class="row">
             <span class="label">订单公司：</span>
             <span class="info">
               <el-select v-model="orderInfo.client_id"
@@ -456,6 +463,7 @@
             <span class="label">打样类型：</span>
             <span class="info">
               <el-select v-model="orderInfo.type"
+                filterable
                 placeholder="请选择打样类型">
                 <el-option v-for="item in sampleTypeArr"
                   :key="item.id"
@@ -519,7 +527,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="$router.push('sample/sampleDetail/' + orderInfo.product_info[0].product_id)">取消</div>
+            @click="$router.push('/sample/sampleDetail/' + orderInfo.product_info[0].product_id)">取消</div>
           <div class="btn btnBlue"
             @click="createSampleOrder">确定</div>
         </div>
@@ -586,7 +594,7 @@ export default {
       showSampleOrderCreatePopup: false,
       orderInfo: {
         client_id: '',
-        type: 0,
+        type: '',
         title: '',
         order_time: this.$getTime(),
         group_id: '',
@@ -938,7 +946,7 @@ export default {
         auth.list()
       ]).then(res => {
         this.clientList = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
-        let flag = res[1].data.data.find(item => item.id === window.sessionStorage.getItem('user_id'))
+        let flag = res[1].data.data.find(item => item.name === window.sessionStorage.getItem('user_name'))
         if (flag) {
           this.orderInfo.group_id = flag.group_id
         }

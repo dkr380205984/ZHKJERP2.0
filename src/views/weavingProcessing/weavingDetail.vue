@@ -205,6 +205,7 @@
                       <zh-input type="number"
                         v-model="itemChild.number"
                         placeholder="请输入分配数量">
+                        <template slot="append">机动数：{{'+'+parseInt(itemChild.number*itemChild.loss/100)}}</template>
                       </zh-input>
                     </div>
                   </div>
@@ -331,7 +332,7 @@
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">+{{parseInt(itemChild.motorise_number *itemChild.number/100)}}</div>
-                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number + parseInt(itemChild.motorise_number *itemChild.number/100)*itemChild.price)}}</div>
                       <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
