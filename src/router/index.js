@@ -402,7 +402,7 @@ const routes = [
     name: '配料单打印',
     component: () => import('../views/productPlan/productPlanTable.vue')
   }, {
-    path: '/materialPlanTable/:id/:type/:params',
+    path: '/materialPlanTable/:id/:type',
     name: '物料计划单',
     component: () => import('../views/materialPlan/materialPlanTable.vue')
   }, {
@@ -445,6 +445,14 @@ const routes = [
     path: '/pricePrintTable/:id',
     name: '报价单',
     component: () => import('../views/price/pricePrintTable.vue')
+  }, {
+    path: '/staffAnnualTable',
+    name: '合计结算单',
+    component: () => import('../views/staff/staffAnnualTable.vue')
+  }, {
+    path: '/staffDayTable',
+    name: '日常结算单',
+    component: () => import('../views/staff/staffDayTable.vue')
   }, {
     path: '/screenShipmentsList',
     name: '大屏发货列表',

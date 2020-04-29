@@ -106,18 +106,32 @@ export default {
   methods: {
   },
   created () {
-    this.$route.params.params.split('&').forEach(item => {
-      let data = item.split('=')
-      this.params[data[0]] = data[1]
-    })
+    // this.$route.params.params.split('&').forEach(item => {
+    //   let data = item.split('=')
+    //   this.params[data[0]] = data[1]
+    // })
     materialPlan.detail({
       order_id: this.$route.params.id,
       order_type: this.$route.params.type
     }).then(res => {
       let data = res.data.data
       this.orderInfo = data.order_info
-      if (this.params.proId) {
-        this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
+      // if (this.params.proId) {
+      //   this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
+      // } else
+      if (this.$route.query.proInfo) {
+        let proInfo = this.$route.query.proInfo.split(',').map(item => {
+          return item.split('-').map(itemI => {
+            return this.$strToAscII(itemI, true)
+          })
+        })
+        let filterData = data.production_data.filter(item => {
+          let flag = proInfo.find(itemF => {
+            return +itemF[0] === +item.product_id
+          })
+          return flag
+        })
+        this.productInfo = this.$mergeData(filterData, { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
       } else {
         this.productInfo = this.$mergeData(data.production_data, { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
       }
@@ -127,10 +141,24 @@ export default {
           itemPro.pid = itemPro.product_id
         }
       })
-      if (this.params.proId) {
-        this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.pid) === Number(this.params.proId) && Number(item.material_type) === Number(this.params.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
+      // if (this.params.proId) {
+      //   this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.pid) === Number(this.params.proId) && Number(item.material_type) === Number(this.$route.query.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
+      // } else
+      if (this.$route.query.proInfo) {
+        let proInfo = this.$route.query.proInfo.split(',').map(item => {
+          return item.split('-').map(itemI => {
+            return this.$strToAscII(itemI, true)
+          })
+        })
+        let filterData = materialDetail.filter(item => {
+          let flag = proInfo.find(itemF => {
+            return +itemF[0] === +item.pid && itemF[1] === item.size_name && itemF[2] === item.color_name && Number(item.material_type) === Number(this.$route.query.type)
+          })
+          return flag
+        })
+        this.materialInfo = this.$mergeData(filterData, { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
       } else {
-        this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.material_type) === Number(this.params.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
+        this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.material_type) === Number(this.$route.query.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
       }
       this.materialInfo.forEach(itemMa => {
         itemMa.color_info.forEach(itemColor => {

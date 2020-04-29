@@ -267,7 +267,8 @@ const plugin = {
     if (!arr) {
       arr = []
     }
-    arr.push(data.splice(0, 5))
+    index = index || 5
+    arr.push(data.splice(0, index))
     if (data.length > 0) {
       _this.newSplice(data, index, arr)
     }
@@ -299,8 +300,8 @@ const plugin = {
     var reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
     return str.replace(reg, '$1,')
   },
-  strToAscII (string, flag) {
-    let strSpecialCharacters = ['%', '/'] // 转化特殊字符'['与']'不可使用
+  strToAscII (string, flag, specialStr) {
+    let strSpecialCharacters = specialStr || ['%', '/', '&', '?'] // 转化特殊字符'['与']'不可使用
     if (!flag) {
       strSpecialCharacters.forEach(item => {
         string = string.split(item).join('<!--' + item.charCodeAt() + '-->')

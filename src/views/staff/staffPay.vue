@@ -3,11 +3,14 @@
     class='indexMain'
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">结算单信息</span>
-        <div class="btn btnBlue"
-          style="float:right;margin:13px 32px 0 0"
-          @click="showPopup=true">自定义结算人员</div>
+        <div class="titleBtnCtn">
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/staffDayTable?year=' + date.split('-')[0] + '&month=' + date.split('-')[1] + '&departmentId=' + department)">打印</div>
+          <div class="btn btnWhiteBlue"
+            @click="showPopup=true">添加结算人员</div>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="excelTable">
@@ -30,7 +33,7 @@
                 <span class="label"
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
-                  @change="getList"
+                  @change="init"
                   type="month"
                   :clearable="false"
                   value-format="yyyy-MM"
@@ -43,10 +46,13 @@
           <div class="tabelBodyCtn">
             <div class="tabelBodyMain hasBorder">
               <div class="box">
+                <div class="label">员工编号</div>
+              </div>
+              <div class="box">
                 <div class="label">员工姓名</div>
               </div>
               <div class="box">
-                <div class="label">员工编号</div>
+                <div class="label">员工部门</div>
               </div>
               <div class="box">
                 <div class="label">更新日期</div>
@@ -65,21 +71,24 @@
             <div class="tabelBodyMain"
               :class="{'hasBorder':index<list.length-1}">
               <div class="box">
-                <div class="label">
+                <div class="label noWarp">
                   <i class="el-icon-caret-right"
                     v-if="!item.checked"
                     @click="item.checked=true"></i>
                   <i class="el-icon-caret-bottom"
                     v-if="item.checked"
                     @click="item.checked=false"></i>
-                  {{item.name}}
+                  {{item.staff_code}}
                 </div>
               </div>
               <div class="box">
-                <div class="label">{{item.staff_code}}</div>
+                <div class="label">{{item.name}}</div>
               </div>
               <div class="box">
-                <div class="label">{{item.child_data.length>0?item.child_data[0].create_time.date.slice(0,10):'-'}}</div>
+                <div class="label">{{item.department_name}}</div>
+              </div>
+              <div class="box">
+                <div class="label">{{item.child_data.length>0?item.child_data[0].complete_time.slice(0,10):'-'}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.total_price}}</div>
@@ -211,8 +220,7 @@
             </div>
           </div>
         </div>
-        <div class="pageCtn"
-          v-if="!noPage">
+        <div class="pageCtn">
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -227,7 +235,7 @@
       v-show="showPopup">
       <div class="main">
         <div class="title">
-          <div class="text">自定义结算人员</div>
+          <div class="text">添加结算人员</div>
           <i class="el-icon-close"
             @click="showPopup=false"></i>
         </div>
@@ -249,6 +257,9 @@
           </div>
           <div class="row">
             <div class="info">
+              <el-checkbox style="margin-bottom:12px"
+                label="全选"
+                v-model="isCheckedAll"></el-checkbox>
               <el-checkbox style="margin-bottom:12px"
                 v-for="item in staffAllArr"
                 :key="item.id"
@@ -285,12 +296,44 @@ export default {
       date: '',
       list: [],
       staffAllList: [],
-      noPage: false,
       workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
-      settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }]
+      settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }],
+      isCheckedAll: false
+    }
+  },
+  watch: {
+    isCheckedAll (newVal) {
+      this.staffAllList.forEach(item => {
+        if (this.departmentPopup && item.department_id === this.departmentPopup) {
+          item.checked = newVal
+          this.$forceUpdate()
+        } else if (!this.departmentPopup) {
+          item.checked = newVal
+        }
+      })
     }
   },
   methods: {
+    init () {
+      this.loading = true
+      staff.getMonthStaffUser({
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
+      }).then(res => {
+        if (res.data.status !== false && res.data.data) {
+          let filterUser = res.data.data.staff_data ? JSON.parse(res.data.data.staff_data) : []
+          this.staffAllList.forEach(item => {
+            if (filterUser.indexOf(item.id) !== -1) {
+              item.checked = true
+            }
+          })
+          this.getList()
+        } else {
+          this.list = []
+          this.loading = false
+        }
+      })
+    },
     addPay (item) {
       item.checked = true
       item.child_data.unshift({
@@ -448,7 +491,6 @@ export default {
     },
     getList () {
       this.loading = true
-      this.noPage = false
       if (this.department) {
         this.departmentPopup = this.department
       }
@@ -473,18 +515,17 @@ export default {
     checkStaff () {
       this.loading = true
       this.showPopup = false
-      this.noPage = true
-      staff.payList({
-        staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
+      staff.settingMonthStaffUser({
+        staff_data: this.staffAllList.filter((item) => item.checked).map((item) => item.id),
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
       }).then((res) => {
-        this.list = res.data.map((item) => {
-          item.total_price = item.child_data.reduce((total, current) => {
-            return total + Math.round(current.total_price)
-          }, 0)
-          item.checked = false
-          return item
-        })
-        this.loading = false
+        if (res.data.stauts !== false) {
+          this.$message.success('已成功为您更新' + this.date + '的人员结算信息')
+          this.init()
+        } else {
+          this.loading = false
+        }
       })
     }
   },
@@ -503,14 +544,15 @@ export default {
     // 设置默认日期
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
-    this.getList()
-    station.list({
-      type: 2
-    }).then((res) => {
-      this.departmentArr = res.data.data
-    })
-    staff.list().then((res) => {
-      this.staffAllList = res.data.data
+    Promise.all([
+      station.list({
+        type: 2
+      }),
+      staff.list()
+    ]).then((res) => {
+      this.departmentArr = res[0].data.data
+      this.staffAllList = res[1].data.data
+      this.init()
     })
   }
 }

@@ -420,7 +420,9 @@ const staff = {
   payList: (params) => http.get(`${baseUrl}/staff/wage/settle/list`, params),
   detail: (params) => http.get(`${baseUrl}/company/staff/detail`, params),
   delete: (params) => http.post(`${baseUrl}/company/staff/delete`, params, 'application/json'),
-  ban: (params) => http.post(`${baseUrl}/company/staff/status/check`, params, 'application/json')
+  ban: (params) => http.post(`${baseUrl}/company/staff/status/check`, params, 'application/json'),
+  settingMonthStaffUser: (params) => http.post(`${baseUrl}/wage/settle/staff/demo/save`, params, 'application/json'),
+  getMonthStaffUser: (params) => http.get(`${baseUrl}/wage/settle/staff/demo/detail`, params)
 }
 // 教程
 const tutorial = {
