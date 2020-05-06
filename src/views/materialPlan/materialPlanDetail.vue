@@ -171,9 +171,9 @@
         <span class="title hasBorder">物料统计</span>
         <div class="positionBtn">
           <div class="btn btnWhiteBlue"
-            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=1')">打印原料单</div>
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '?type=1')">打印原料单</div>
           <div class="btn btnWhiteBlue"
-            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '/type=2')">打印辅料单</div>
+            @click="$openUrl('/materialPlanTable/' + $route.params.id + '/' + $route.params.type + '?type=2')">打印辅料单</div>
         </div>
       </div>
       <div class="detailCtn paddingTop60">

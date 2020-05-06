@@ -299,7 +299,8 @@
                 v-for="item in staffAllArr"
                 :key="item.id"
                 :label="item.name"
-                v-model="item.checked"></el-checkbox>
+                v-model="item.checked"
+                @change="$forceUpdate()"></el-checkbox>
             </div>
           </div>
         </div>
