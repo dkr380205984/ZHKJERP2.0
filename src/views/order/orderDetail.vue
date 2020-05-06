@@ -131,45 +131,120 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">发货信息</span>
+        <span style="float:right;font-size:26px">
+          <i class="el-icon-s-fold"
+            style="cursor:pointer;margin-right:12px"
+            @click="tableType='normal'"
+            :style="{'color':tableType==='normal'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+          <i class="el-icon-menu"
+            style="cursor:pointer"
+            @click="tableType='table'"
+            :style="{'color':tableType==='table'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+        </span>
       </div>
       <div class="detailCtn">
-        <div class="rowCtn">
-          <div class="tableCtnLv2">
-            <span class="tb_header">
-              <span class="tb_row">发货日期</span>
-              <span class="tb_row tb_col flex6">
-                <span class="tb_col_item">
-                  <span class="tb_row">产品信息</span>
-                  <span class="tb_row middle">产品图片</span>
-                  <span class="tb_row">尺码/颜色</span>
-                  <span class="tb_row">发货数量</span>
-                  <span class="tb_row">单价</span>
-                  <span class="tb_row">总价</span>
-                </span>
-              </span>
-            </span>
-            <span class="tb_content"
-              v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
-              :key="indexBatch">
-              <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
-              <span class="tb_row tb_col flex6">
-                <span class="tb_col_item"
-                  v-for="(itemPro,indexPro) in itemBatch.product_info"
-                  :key="indexPro">
-                  <span class="tb_row"
-                    style="cursor: pointer;color:#1A95FF"
-                    @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
-                  <span class="tb_row middle">
-                    <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
+        <div class="rowCtn"
+          style="flex-wrap:wrap">
+          <template v-if="tableType==='normal'">
+            <div class="tableCtnLv2">
+              <span class="tb_header">
+                <span class="tb_row">发货日期</span>
+                <span class="tb_row tb_col flex6">
+                  <span class="tb_col_item">
+                    <span class="tb_row">产品信息</span>
+                    <span class="tb_row middle">产品图片</span>
+                    <span class="tb_row">尺码/颜色</span>
+                    <span class="tb_row">发货数量</span>
+                    <span class="tb_row">单价</span>
+                    <span class="tb_row">总价</span>
                   </span>
-                  <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
-                  <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tb_row">{{$toFixed(itemPro.unit_price) + orderInfo.account_unit}}</span>
-                  <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}{{orderInfo.account_unit}}</span>
                 </span>
               </span>
-            </span>
-          </div>
+              <span class="tb_content"
+                v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
+                :key="indexBatch">
+                <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
+                <span class="tb_row tb_col flex6">
+                  <span class="tb_col_item"
+                    v-for="(itemPro,indexPro) in itemBatch.product_info"
+                    :key="indexPro">
+                    <span class="tb_row"
+                      style="cursor: pointer;color:#1A95FF"
+                      @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                    <span class="tb_row middle">
+                      <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
+                    </span>
+                    <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
+                    <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
+                    <span class="tb_row">{{$toFixed(itemPro.unit_price) + orderInfo.account_unit}}</span>
+                    <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}{{orderInfo.account_unit}}</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </template>
+          <template v-if="tableType==='table'">
+            <div class="timeCtn"
+              v-for="(itemBatch,indexBatch) in  orderInfo.batch_info_new"
+              :key="indexBatch">
+              <span class="tb_row"
+                style="padding-left:32px">第{{itemBatch.batch_id}}批：{{itemBatch.delivery_time}}</span>
+              <div class="tableCtnNew"
+                v-for="(itemPro,indexPro) in itemBatch.product_info"
+                :key="indexPro">
+                <div class="line">
+                  <div class="once gray bigWidth">产品/单价</div>
+                  <div class="once gray">
+                    <div class="biaotou rightTop">尺码</div>
+                    <div class="xiexian"></div>
+                    <div class="biaotou leftBottom">配色</div>
+                  </div>
+                  <div class="once gray"
+                    v-for="(itemSize,indexSize) in itemPro.product_info"
+                    :key="indexSize">
+                    {{itemSize.size}}
+                  </div>
+                </div>
+                <div class="line">
+                  <div class="once gray middle bigWidth">
+                    <div class="inputs"
+                      style="cursor: pointer;color:#1A95FF"
+                      @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">
+                      {{itemPro.product_code}}
+                    </div>
+                    <div class="inputs"
+                      style="margin-top:12px">
+                      单价：{{itemPro.price}}元
+                    </div>
+                  </div>
+                  <div class="lineChildCtn">
+                    <div class="lineChild"
+                      v-for="(itemColor,indexColor) in itemPro.product_info[0].color"
+                      :key="indexColor">
+                      <div class="once middle"
+                        :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                        <div class="inputs">
+                          {{itemColor.color}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="lineChildCtn"
+                    v-for="(itemSize,indexSize) in itemPro.product_info"
+                    :key="indexSize">
+                    <div class="lineChild"
+                      v-for="(itemColor,indexColor) in itemSize.color"
+                      :key="indexColor + '/' + indexSize">
+                      <div class="once middle"
+                        :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                        {{itemColor.number}}{{itemPro.unit}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -1089,9 +1164,11 @@ export default {
   data () {
     return {
       loading: true,
+      tableType: 'table',
       orderInfo: {
         order_code: '',
         batch_info: [],
+        batch_info_new: [],
         order_time: ''
       },
       productList: [],
@@ -1277,6 +1354,44 @@ export default {
           return {
             url: item,
             name: splitArr[splitArr.length - 1]
+          }
+        })
+        this.orderInfo.batch_info_new = this.orderInfo.batch_info.map((itemBatch) => {
+          // 把产品编号相同的先合并一下
+          let mergePro = this.$mergeData(itemBatch.product_info, { mainRule: 'product_code', otherRule: [{ name: 'product_info' }, { name: 'unit_price' }] })
+          let productInfo = mergePro.map((itemPro) => {
+            let colorInfo = []
+            let productInfo = []
+            itemPro.product_info.color.forEach((itemColor) => {
+              colorInfo.push({
+                color: itemColor.color_name,
+                number: ''
+              })
+            })
+            itemPro.product_info.size_measurement.forEach((itemSize) => {
+              productInfo.push({
+                size: itemSize.size_name,
+                color: this.$clone(colorInfo)
+              })
+            })
+            console.log(itemPro.childrenMergeInfo)
+            productInfo.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                let find = itemPro.childrenMergeInfo.find((itemFind) => itemFind.size_name === itemSize.size && itemFind.color_name === itemColor.color)
+                itemColor.number = !find ? '' : find.numbers
+              })
+            })
+            return {
+              product_code: itemPro.product_code,
+              unit: itemPro.product_info.unit,
+              price: itemPro.unit_price,
+              product_info: productInfo
+            }
+          })
+          return {
+            batch_id: itemBatch.batch_id,
+            delivery_time: itemBatch.delivery_time,
+            product_info: productInfo
           }
         })
         let productList = []
