@@ -1,10 +1,13 @@
 <template>
   <div id='weaveTable'
     class='printHtml'>
-    <div class="printTable">
-      <div class="print_head">
+    <div class="printTable crosswise"
+      v-for="(itemWeave,indexWeave) in weaveInfo"
+      :key="indexWeave">
+      <div class="print_head leftRight">
         <div class="left">
           <span class="title">{{title}}</span>
+          <!-- <span class="content"> -->
           <span class="item">
             <span class="label">联系人：</span>
             {{user_name}}
@@ -17,9 +20,14 @@
             <span class="label">创建日期：</span>
             {{$getTime()}}
           </span>
+          <!-- </span> -->
         </div>
         <div class="right">
-          <span class="text">扫一扫<br />更新生产进度</span>
+          <span class="qrCode_box"
+            style="margin-right:8px">
+            <img :src="itemWeave.category_info.images[0] ? itemWeave.category_info.images[0].image_url : errorImg"
+              alt="">
+          </span>
           <span class="qrCode_box">
             <img :src="qrCodeUrl"
               alt="二维码">
@@ -30,68 +38,183 @@
         <div class="print_row">
           <div class="row_item center w180">{{$route.params.orderType === '1' ? '订' : '样'}}单号</div>
           <div class="row_item left">{{orderInfo.order_code || orderInfo.title}}</div>
-          <div class="row_item center w180">下单日期</div>
-          <div class="row_item left flex08">{{orderInfo.order_time}}</div>
-        </div>
-        <div class="print_row has_marginBottom">
           <div class="row_item center w180">订单公司</div>
           <div class="row_item left">{{orderInfo.client_name}}</div>
+          <div class="row_item center w180">下单日期</div>
+          <div class="row_item left">{{orderInfo.order_time}}</div>
           <div class="row_item center w180">负责小组</div>
-          <div class="row_item left flex08">{{orderInfo.group_name}}</div>
+          <div class="row_item left">{{orderInfo.group_name}}</div>
+        </div>
+        <div class="print_row">
+          <div class="row_item center w180">生产单位</div>
+          <div class="row_item left">{{itemWeave.client_name || ''}}</div>
+          <div class="row_item center w180">工序</div>
+          <div class="row_item left">{{itemWeave.process_type || ''}}</div>
+          <div class="row_item center w180">均价</div>
+          <div class="row_item left">{{$toFixed(itemWeave.totalPrice/itemWeave.orderInfo.total_number)}}元</div>
+          <div class="row_item center w180">总价</div>
+          <div class="row_item left">{{itemWeave.totalPrice || 0}}元</div>
         </div>
         <div class="print_row has_marginBottom">
-          <div class="row_item center w180">生产单位</div>
-          <div class="row_item left">{{filterClientTel(weaveInfo[0] ? weaveInfo[0].client_name : '')}}</div>
-          <div class="row_item center w180">总价</div>
-          <div class="row_item left flex08">{{weaveInfo|filterialTotal}}元</div>
+          <div class="row_item center w180">产品品类</div>
+          <div class="row_item left">{{itemWeave.product_code}}<br />{{itemWeave|filterType}}</div>
+          <div class="row_item center w180">产品名称</div>
+          <div class="row_item left">{{itemWeave.name || ''}}</div>
+          <div class="row_item center w180">均重</div>
+          <div class="row_item left">{{itemWeave.weight || ''}}</div>
+          <div class="row_item center w180">下机时间</div>
+          <div class="row_item left">{{itemWeave.complete_time || ''}}</div>
         </div>
-        <div class="print_row bgGray">
-          <div class="row_item center w180">产品信息</div>
-          <div class="row_item center w180">尺码颜色</div>
-          <div class="row_item center">图片</div>
-          <div class="row_item center">类型/单价</div>
-          <div class="row_item center">数量</div>
-          <div class="row_item center">完成日期</div>
-        </div>
-        <div v-for="(itemPro,indexPro) in weaveInfo"
-          :key="indexPro"
-          :class="['print_row',indexPro === weaveInfo.length -1 ?  'has_marginBottom' : '']">
-          <div class="row_item w180 center">{{itemPro.product_code}}<br />{{itemPro|filterType}}</div>
-          <div class="row_item col">
-            <span v-for="(itemColor,indexColor) in itemPro.color_info"
-              :key="indexColor"
-              :class="['print_row', indexColor === 0 ? 'noBorder':'']">
-              <span class="row_item center w180">{{itemColor.size + '/' + itemColor.color}}<br />{{itemColor.sizeInfo.size_info}}cm<br />{{itemColor.sizeInfo.weight}}g</span>
-              <span class="row_item center">
-                <zh-img-list :list='itemColor.img'></zh-img-list>
+        <template v-for="(itemOrder,indexOrder) in itemWeave.orderInfo.sizeArr">
+          <div class="print_row bgGray"
+            :key="'orderTitle' + indexOrder">
+            <div class="row_item mergeTitle w180">
+              <span class="top">数量</span>
+              <span class="line"></span>
+              <span class="bottom">色组</span>
+            </div>
+            <div class="row_item col"
+              v-for="(itemSize,indexSize) in itemOrder"
+              :key="indexSize">
+              <span class="print_row noBorder">
+                <span class="row_item center">{{itemSize.size_name}}</span>
               </span>
-              <span class="row_item center">{{itemColor.process_type}}<br />{{itemColor.price}}元/{{itemPro.category_info.unit || '件'}}</span>
-              <span class="row_item center">{{itemColor.number}}{{itemPro.category_info.unit || '件'}}</span>
-              <span class="row_item center">{{itemColor.compiled_time}}</span>
-            </span>
+              <span class="print_row">
+                <span class="row_item center">分配数</span>
+                <span class="row_item center"
+                  v-if="$route.query.type === '1'">机动数</span>
+              </span>
+            </div>
+            <div class="row_item col"
+              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              :key="'buchong' + indexB">
+              <span class="print_row noBorder">
+                <span class="row_item center"></span>
+              </span>
+              <span class="print_row">
+                <span class="row_item center"></span>
+                <span class="row_item center"
+                  v-if="$route.query.type === '1'"></span>
+              </span>
+            </div>
+            <div class="row_item center w180"
+              v-if="indexOrder === itemWeave.orderInfo.sizeArr.length - 1">合计</div>
           </div>
-        </div>
-        <div class="print_row bgGray">
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料信息</div>
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料颜色</div>
-          <div class="row_item center">{{$route.query.type === '1' ? '原' : '辅'}}料数量</div>
-        </div>
-        <div v-for="(itemMa,indexMa) in materialInfo"
-          :key="indexMa + 'material'"
-          class="print_row">
-          <div class="row_item w180 center">{{itemMa.material_name}}</div>
-          <div class="row_item col">
-            <span v-for="(itemColor,indexColor) in itemMa.color_info"
-              :key="indexColor"
-              :class="['print_row', indexColor === 0 ? 'noBorder':'']">
-              <span class="row_item w180 center">{{itemColor.material_attribute}}</span>
-              <span class="row_item center">{{itemMa.material_type === 1 ? ($toFixed(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
-            </span>
+          <div class="print_row"
+            v-for="(itemColor,indexColor) in itemWeave.orderInfo.colorArr"
+            :key="'color' + indexOrder + '-' + indexColor">
+            <div class="row_item w180 center">{{itemColor.color_name}}</div>
+            <div class="row_item col"
+              v-for="(itemSize,indexSize) in itemOrder"
+              :key="indexSize">
+              <div class="print_row noBorder">
+                <div class="row_item center">{{itemColor[itemSize.size_name].number}}</div>
+                <div class="row_item center"
+                  v-if="$route.query.type === '1'">{{itemColor[itemSize.size_name].motorise_number}}</div>
+              </div>
+            </div>
+            <div class="row_item col"
+              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              :key="'buchong' + indexB">
+              <span class="print_row noBorder">
+                <span class="row_item center"></span>
+                <span class="row_item center"
+                  v-if="$route.query.type === '1'"></span>
+              </span>
+            </div>
+            <div class="row_item center w180"
+              v-if="indexOrder === itemWeave.orderInfo.sizeArr.length - 1">{{itemColor.totalNumber_color}}</div>
           </div>
+          <div class="print_row has_marginBottom"
+            :key="'total' + indexOrder">
+            <div class="row_item w180 center">合计</div>
+            <div class="row_item col"
+              v-for="(itemSize,indexSize) in itemOrder"
+              :key="indexSize">{{itemSize.totalNumber_size}}</div>
+            <div class="row_item"
+              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              :key="'buchong' + indexB">
+            </div>
+            <div class="row_item center w180"
+              v-if="indexOrder === itemWeave.orderInfo.sizeArr.length - 1">{{itemWeave.orderInfo.total_number}}</div>
+          </div>
+        </template>
+        <div class="print_row">
+          <div class="row_item bgGray center">{{$route.query.type === '1' ? '原' : '辅'}}料信息</div>
         </div>
+        <template v-for="(itemMaI,indexMaI) in itemWeave.materialInfo.material_data">
+          <div class="print_row bgGray"
+            :key="'title' + indexMaI">
+            <div class="row_item mergeTitle w180">
+              <span class="top">原料</span>
+              <span class="line"></span>
+              <span class="bottom">颜色</span>
+            </div>
+            <div class="row_item col"
+              v-for="(itemMa,indexMa) in itemMaI"
+              :key="indexMa"
+              :style="'flex:' + itemMa.rowNum">
+              <div class="print_row noBorder">
+                <span class="row_item center"
+                  :style="'font-size:' + returnSize(itemMa.material_name) + 'px'">{{itemMa.material_name}}</span>
+              </div>
+            </div>
+            <div class="row_item col"
+              v-for="(itemB,indexB) in (5 - itemMaI.map(val=>val.rowNum).reduce((a,b)=>a+b))"
+              :key="'buchong'+indexB">
+              <div class="print_row noBorder">
+                <span class="row_item"></span>
+              </div>
+            </div>
+          </div>
+          <div class="print_row has_marginBottom"
+            :key="'content' + indexMaI">
+            <div class="row_item col w180">
+              <div class="print_row"
+                v-for="(itemColor,indexColor) in itemWeave.materialInfo.colorArr"
+                :key="indexColor"
+                :class="{'noBorder':indexColor === 0}">
+                <div class="row_item center">{{itemColor}}</div>
+              </div>
+            </div>
+            <div class="row_item col"
+              v-for="(itemMa,indexMa) in itemMaI"
+              :key="indexMa"
+              :style="'flex:' + itemMa.rowNum">
+              <div class="print_row"
+                v-for="(itemColor,indexColor) in itemWeave.materialInfo.colorArr"
+                :key="indexColor"
+                :class="{'noBorder':indexColor === 0}">
+                <template v-for="(itemIC,indexIC) in itemMa.color_info[itemColor]">
+                  <div class="row_item center"
+                    :key="'color' + indexIC">{{itemIC.material_attribute}}</div>
+                  <div class="row_item center"
+                    :key="'number' + indexIC">{{itemIC.number + itemIC.material_unit}}</div>
+                </template>
+                <template v-for="(itemB,indexB) in itemMa.rowNum - (itemMa.color_info[itemColor] ? itemMa.color_info[itemColor].length : 0)">
+                  <div class="row_item center"
+                    :key="'color_buchong' + indexB"></div>
+                  <div class="row_item center"
+                    :key="'number_buchong' + indexB"></div>
+                </template>
+              </div>
+            </div>
+            <div class="row_item col"
+              v-for="(itemB,indexB) in (5 - itemMaI.map(val=>val.rowNum).reduce((a,b)=>a+b))"
+              :key="'buchong'+indexB">
+              <div class="print_row"
+                v-for="(itemColor,indexColor) in itemWeave.materialInfo.colorArr"
+                :key="indexColor"
+                :class="{'noBorder':indexColor === 0}">
+                <div class="row_item center"></div>
+                <div class="row_item center"></div>
+              </div>
+            </div>
+          </div>
+        </template>
         <div class="print_row"
-          v-if="materialInfo.length === 0">
-          <span class="row_item center">暂无{{$route.query.type === '1' ? '原' : '辅'}}料</span>
+          v-if="itemWeave.materialInfo.material_data.length === 0">
+          <span class="row_item center">暂无{{$route.query.type === '1' ? '原' : '辅'}}料数据</span>
         </div>
       </div>
       <div class="print_remark">
@@ -99,82 +222,6 @@
           <div class="row_item center w180">备注</div>
           <div class="row_item left remark_span"
             v-html="remark"></div>
-        </div>
-      </div>
-    </div>
-    <div class="printTable"
-      v-if="!(materialInfo.length === 0 && $route.query.type === '2')">
-      <div class="print_head">
-        <div class="left">
-          <span class="title">{{titles}}</span>
-          <span class="item">
-            <span class="label">联系人：</span>
-            {{user_name}}
-          </span>
-          <span class="item">
-            <span class="label">联系人电话：</span>
-            {{user_tel}}
-          </span>
-          <span class="item">
-            <span class="label">创建日期：</span>
-            {{$getTime()}}
-          </span>
-        </div>
-        <div class="right">
-          <span class="text">扫一扫<br />更新生产进度</span>
-          <span class="qrCode_box">
-            <img :src="qrCodeUrl2"
-              alt="二维码">
-          </span>
-        </div>
-      </div>
-      <div class="print_body">
-        <div class="print_row">
-          <div class="row_item center w180">{{$route.params.orderType === '1' ? '订' : '样'}}单号</div>
-          <div class="row_item left">{{orderInfo.order_code || orderInfo.title}}</div>
-          <div class="row_item center w180">下单日期</div>
-          <div class="row_item left flex08">{{orderInfo.order_time}}</div>
-        </div>
-        <div class="print_row has_marginBottom">
-          <div class="row_item center w180">订单公司</div>
-          <div class="row_item left">{{orderInfo.client_name}}</div>
-          <div class="row_item center w180">负责小组</div>
-          <div class="row_item left flex08">{{orderInfo.group_name}}</div>
-        </div>
-        <div class="print_row has_marginBottom">
-          <div class="row_item center w180">生产单位</div>
-          <div class="row_item left">{{weaveInfo[0] ? weaveInfo[0].client_name : ''}}</div>
-          <div class="row_item center w180">总重</div>
-          <div class="row_item left flex08">{{materialInfo|filterialWeight}}{{$route.query.type === '1' ? 'kg' : '个'}}</div>
-        </div>
-        <div class="print_row bgGray">
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料信息</div>
-          <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料颜色</div>
-          <div class="row_item center">{{$route.query.type === '1' ? '原' : '辅'}}料数量</div>
-        </div>
-        <div v-for="(itemMa,indexMa) in materialInfo"
-          :key="indexMa + 'material'"
-          class="print_row">
-          <div class="row_item w180 center">{{itemMa.material_name}}</div>
-          <div class="row_item col">
-            <span v-for="(itemColor,indexColor) in itemMa.color_info"
-              :key="indexColor"
-              :class="['print_row', indexColor === 0 ? 'noBorder':'']">
-              <span class="row_item w180 center">{{itemColor.material_attribute}}</span>
-              <span class="row_item center">{{itemMa.material_type === 1 ? ($toFixed(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
-            </span>
-          </div>
-        </div>
-        <div class="print_row"
-          v-if="materialInfo.length === 0">
-          <span class="row_item center">暂无{{$route.query.type === '1' ? '原' : '辅'}}料</span>
-        </div>
-      </div>
-      <div class="print_remark">
-        <div class="print_row noBorder">
-          <div class="row_item center w180">备注</div>
-          <div class="row_item left remark_span"
-            v-html="remarks"></div>
         </div>
       </div>
     </div>
@@ -192,6 +239,7 @@ export default {
       remarks: '',
       user_name: window.sessionStorage.getItem('user_name'),
       user_tel: window.localStorage.getItem('zhUsername'),
+      errorImg: require('@/assets/image/index/noPic.jpg'),
       qrCodeUrl: '',
       qrCodeUrl2: '',
       orderInfo: {},
@@ -225,15 +273,6 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            // let productList = []
-            // res[2].data.data.batch_info.forEach(itemBatch => {
-            //   itemBatch.product_info.forEach(itemPro => {
-            //     let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-            //     if (!flag) {
-            //       productList.push(itemPro.product_info)
-            //     }
-            //   })
-            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
               let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
@@ -246,19 +285,121 @@ export default {
                 size: item.size,
                 color: item.color,
                 price: item.price,
-                number: item.number,
+                number: +item.number || 0,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
                 img: item.category_info.images,
                 sizeInfo: sizeInfo,
-                material_info: item.material_assign
+                material_info: item.material_assign,
+                motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
-            // console.log(materialInfo)
-            this.materialInfo = materialInfo
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo.forEach(itemPro => {
+              let sizeArr = []
+              let colorArr = []
+              itemPro.data_info.forEach(itemInfo => {
+                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                if (!flagSize) {
+                  sizeArr.push({
+                    size_name: itemInfo.size,
+                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  })
+                } else {
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                }
+                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                if (!flagColor) {
+                  colorArr.push({
+                    color_name: itemInfo.color,
+                    [itemInfo.size]: {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    },
+                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  })
+                } else {
+                  if (flagColor[itemInfo.size]) {
+                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
+                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                  } else {
+                    flagColor[itemInfo.size] = {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    }
+                  }
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                }
+              })
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+                return a + b
+              })
+              itemPro.orderInfo = {
+                sizeArr: this.$newSplice(this.$clone(sizeArr), 6),
+                colorArr: colorArr,
+                total_number: sizeArr.map(itemSize => (+itemSize.totalNumber_size || 0)).reduce((a, b) => {
+                  return a + b
+                })
+              }
+              let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
+                return {
+                  color_name: itemMa.color,
+                  material_data: itemMa.material_info
+                }
+              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              materialInfo = this.$flatten(materialInfo.map(itemColor => {
+                return itemColor.material_data.map(itemMa => {
+                  return {
+                    ...itemMa,
+                    product_color: itemColor.color_name
+                  }
+                })
+              })).filter(itemType => itemType.material_type === 1) // 完全展开原料数据，筛选物料类型（原辅料）
+              materialInfo = this.$mergeData(materialInfo, { mainRule: ['material_name'], otherRule: [{ name: 'material_type' }], childrenName: 'color_info', childrenRule: { mainRule: 'product_color', childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute', otherRule: [{ name: 'material_weight/number', type: 'add' }, { name: 'material_unit' }] } } }).map(itemMa => {
+                let colorInfo = {}
+                itemMa.color_info.forEach(itemColor => {
+                  colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
+                    return {
+                      material_attribute: itemAttr.material_attribute,
+                      number: this.$toFixed(itemAttr.number / 1000),
+                      material_unit: 'kg'
+                    }
+                  })
+                })
+                let maxNum = 1
+                for (let prop in colorInfo) {
+                  if (colorInfo[prop].length > maxNum) {
+                    maxNum = colorInfo[prop].length
+                  }
+                }
+                return {
+                  material_name: itemMa.material_name,
+                  material_type: itemMa.material_type,
+                  color_info: colorInfo,
+                  rowNum: maxNum
+                }
+              }).sort((a, b) => {
+                return a.material_name.localeCompare(b.material_name)
+              })
+              itemPro.materialInfo = {
+                material_data: this.newSplitLine(materialInfo, 5),
+                colorArr: colorArr.map(itemColor => itemColor.color_name)
+              }
+            })
             setTimeout(() => {
+              let lineArr = document.getElementsByClassName('line')
+              for (let index in lineArr) {
+                let item = lineArr[index]
+                let lineParent = item.parentNode
+                if (lineParent) {
+                  let W = lineParent.offsetWidth
+                  let H = lineParent.offsetHeight
+                  let lineW = Math.sqrt(Math.pow(W, 2) + Math.pow(H, 2))
+                  let jiaodu = Math.atan(H / W) * 180 / Math.PI
+                  item.style.width = lineW + 'px'
+                  item.style.transform = 'translateX(-50%) rotateZ(' + jiaodu + 'deg)'
+                }
+              }
               window.print()
             }, 1000)
           })
@@ -284,15 +425,6 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            // let productList = []
-            // res[2].data.data.batch_info.forEach(itemBatch => {
-            //   itemBatch.product_info.forEach(itemPro => {
-            //     let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-            //     if (!flag) {
-            //       productList.push(itemPro.product_info)
-            //     }
-            //   })
-            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
               let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
@@ -310,14 +442,116 @@ export default {
                 process_type: item.type,
                 img: item.category_info.images,
                 sizeInfo: sizeInfo,
-                material_info: item.part_assign
+                material_info: item.part_assign,
+                motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
-            // console.log(materialInfo)
-            this.materialInfo = materialInfo
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo.forEach(itemPro => {
+              let sizeArr = []
+              let colorArr = []
+              itemPro.data_info.forEach(itemInfo => {
+                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                if (!flagSize) {
+                  sizeArr.push({
+                    size_name: itemInfo.size,
+                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  })
+                } else {
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                }
+                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                if (!flagColor) {
+                  colorArr.push({
+                    color_name: itemInfo.color,
+                    [itemInfo.size]: {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    },
+                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  })
+                } else {
+                  if (flagColor[itemInfo.size]) {
+                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
+                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                  } else {
+                    flagColor[itemInfo.size] = {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    }
+                  }
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                }
+              })
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+                return a + b
+              })
+              itemPro.orderInfo = {
+                sizeArr: this.$newSplice(this.$clone(sizeArr), 6),
+                colorArr: colorArr,
+                total_number: sizeArr.map(itemSize => (+itemSize.totalNumber_size || 0)).reduce((a, b) => {
+                  return a + b
+                })
+              }
+              let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
+                return {
+                  color_name: itemMa.color,
+                  material_data: itemMa.material_info
+                }
+              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              materialInfo = this.$flatten(materialInfo.map(itemColor => {
+                return itemColor.material_data.map(itemMa => {
+                  return {
+                    ...itemMa,
+                    product_color: itemColor.color_name
+                  }
+                })
+              })).filter(itemType => itemType.material_type === 1) // 完全展开原料数据，筛选物料类型（原辅料）
+              materialInfo = this.$mergeData(materialInfo, { mainRule: ['material_name'], otherRule: [{ name: 'material_type' }], childrenName: 'color_info', childrenRule: { mainRule: 'product_color', childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute', otherRule: [{ name: 'material_weight/number', type: 'add' }, { name: 'material_unit' }] } } }).map(itemMa => {
+                let colorInfo = {}
+                itemMa.color_info.forEach(itemColor => {
+                  colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
+                    return {
+                      material_attribute: itemAttr.material_attribute,
+                      number: this.$toFixed(itemAttr.number),
+                      material_unit: itemAttr.material_unit
+                    }
+                  })
+                })
+                let maxNum = 1
+                for (let prop in colorInfo) {
+                  if (colorInfo[prop].length > maxNum) {
+                    maxNum = colorInfo[prop].length
+                  }
+                }
+                return {
+                  material_name: itemMa.material_name,
+                  material_type: itemMa.material_type,
+                  color_info: colorInfo,
+                  rowNum: maxNum
+                }
+              }).sort((a, b) => {
+                return a.material_name.localeCompare(b.material_name)
+              })
+              itemPro.materialInfo = {
+                material_data: this.newSplitLine(materialInfo, 5),
+                colorArr: colorArr.map(itemColor => itemColor.color_name)
+              }
+            })
             setTimeout(() => {
+              let lineArr = document.getElementsByClassName('line')
+              for (let index in lineArr) {
+                let item = lineArr[index]
+                let lineParent = item.parentNode
+                if (lineParent) {
+                  let W = lineParent.offsetWidth
+                  let H = lineParent.offsetHeight
+                  let lineW = Math.sqrt(Math.pow(W, 2) + Math.pow(H, 2))
+                  let jiaodu = Math.atan(H / W) * 180 / Math.PI
+                  item.style.width = lineW + 'px'
+                  item.style.transform = 'translateX(-50%) rotateZ(' + jiaodu + 'deg)'
+                }
+              }
               window.print()
             }, 1000)
           })
@@ -345,13 +579,6 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            // let productList = []
-            // res[2].data.data.product_info.forEach(itemPro => {
-            //   let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-            //   if (!flag) {
-            //     productList.push(itemPro.product_info)
-            //   }
-            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
               let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
@@ -372,11 +599,112 @@ export default {
                 material_info: item.material_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
-            // console.log(materialInfo)
-            this.materialInfo = materialInfo
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo.forEach(itemPro => {
+              let sizeArr = []
+              let colorArr = []
+              itemPro.data_info.forEach(itemInfo => {
+                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                if (!flagSize) {
+                  sizeArr.push({
+                    size_name: itemInfo.size,
+                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  })
+                } else {
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                }
+                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                if (!flagColor) {
+                  colorArr.push({
+                    color_name: itemInfo.color,
+                    [itemInfo.size]: {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    },
+                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  })
+                } else {
+                  if (flagColor[itemInfo.size]) {
+                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
+                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                  } else {
+                    flagColor[itemInfo.size] = {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    }
+                  }
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                }
+              })
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+                return a + b
+              })
+              itemPro.orderInfo = {
+                sizeArr: this.$newSplice(this.$clone(sizeArr), 6),
+                colorArr: colorArr,
+                total_number: sizeArr.map(itemSize => (+itemSize.totalNumber_size || 0)).reduce((a, b) => {
+                  return a + b
+                })
+              }
+              let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
+                return {
+                  color_name: itemMa.color,
+                  material_data: itemMa.material_info
+                }
+              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              materialInfo = this.$flatten(materialInfo.map(itemColor => {
+                return itemColor.material_data.map(itemMa => {
+                  return {
+                    ...itemMa,
+                    product_color: itemColor.color_name
+                  }
+                })
+              })).filter(itemType => itemType.material_type === 1) // 完全展开原料数据，筛选物料类型（原辅料）
+              materialInfo = this.$mergeData(materialInfo, { mainRule: ['material_name'], otherRule: [{ name: 'material_type' }], childrenName: 'color_info', childrenRule: { mainRule: 'product_color', childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute', otherRule: [{ name: 'material_weight/number', type: 'add' }, { name: 'material_unit' }] } } }).map(itemMa => {
+                let colorInfo = {}
+                itemMa.color_info.forEach(itemColor => {
+                  colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
+                    return {
+                      material_attribute: itemAttr.material_attribute,
+                      number: this.$toFixed(itemAttr.number / 1000),
+                      material_unit: 'kg'
+                    }
+                  })
+                })
+                let maxNum = 1
+                for (let prop in colorInfo) {
+                  if (colorInfo[prop].length > maxNum) {
+                    maxNum = colorInfo[prop].length
+                  }
+                }
+                return {
+                  material_name: itemMa.material_name,
+                  material_type: itemMa.material_type,
+                  color_info: colorInfo,
+                  rowNum: maxNum
+                }
+              }).sort((a, b) => {
+                return a.material_name.localeCompare(b.material_name)
+              })
+              itemPro.materialInfo = {
+                material_data: this.newSplitLine(materialInfo, 5),
+                colorArr: colorArr.map(itemColor => itemColor.color_name)
+              }
+            })
             setTimeout(() => {
+              let lineArr = document.getElementsByClassName('line')
+              for (let index in lineArr) {
+                let item = lineArr[index]
+                let lineParent = item.parentNode
+                if (lineParent) {
+                  let W = lineParent.offsetWidth
+                  let H = lineParent.offsetHeight
+                  let lineW = Math.sqrt(Math.pow(W, 2) + Math.pow(H, 2))
+                  let jiaodu = Math.atan(H / W) * 180 / Math.PI
+                  item.style.width = lineW + 'px'
+                  item.style.transform = 'translateX(-50%) rotateZ(' + jiaodu + 'deg)'
+                }
+              }
               window.print()
             }, 1000)
           })
@@ -402,13 +730,6 @@ export default {
             this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[2].data.data
-            // let productList = []
-            // res[2].data.data.product_info.forEach(itemPro => {
-            //   let flag = productList.find(item => item.product_id === itemPro.product_info.product_id)
-            //   if (!flag) {
-            //     productList.push(itemPro.product_info)
-            //   }
-            // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
               let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
@@ -429,11 +750,112 @@ export default {
                 material_info: item.part_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
-            let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
-            // console.log(materialInfo)
-            this.materialInfo = materialInfo
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo.forEach(itemPro => {
+              let sizeArr = []
+              let colorArr = []
+              itemPro.data_info.forEach(itemInfo => {
+                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                if (!flagSize) {
+                  sizeArr.push({
+                    size_name: itemInfo.size,
+                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  })
+                } else {
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                }
+                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                if (!flagColor) {
+                  colorArr.push({
+                    color_name: itemInfo.color,
+                    [itemInfo.size]: {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    },
+                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  })
+                } else {
+                  if (flagColor[itemInfo.size]) {
+                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
+                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                  } else {
+                    flagColor[itemInfo.size] = {
+                      number: itemInfo.number,
+                      motorise_number: itemInfo.motorise_number
+                    }
+                  }
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                }
+              })
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+                return a + b
+              })
+              itemPro.orderInfo = {
+                sizeArr: this.$newSplice(this.$clone(sizeArr), 6),
+                colorArr: colorArr,
+                total_number: sizeArr.map(itemSize => (+itemSize.totalNumber_size || 0)).reduce((a, b) => {
+                  return a + b
+                })
+              }
+              let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
+                return {
+                  color_name: itemMa.color,
+                  material_data: itemMa.material_info
+                }
+              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              materialInfo = this.$flatten(materialInfo.map(itemColor => {
+                return itemColor.material_data.map(itemMa => {
+                  return {
+                    ...itemMa,
+                    product_color: itemColor.color_name
+                  }
+                })
+              })).filter(itemType => itemType.material_type === 1) // 完全展开原料数据，筛选物料类型（原辅料）
+              materialInfo = this.$mergeData(materialInfo, { mainRule: ['material_name'], otherRule: [{ name: 'material_type' }], childrenName: 'color_info', childrenRule: { mainRule: 'product_color', childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute', otherRule: [{ name: 'material_weight/number', type: 'add' }, { name: 'material_unit' }] } } }).map(itemMa => {
+                let colorInfo = {}
+                itemMa.color_info.forEach(itemColor => {
+                  colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
+                    return {
+                      material_attribute: itemAttr.material_attribute,
+                      number: this.$toFixed(itemAttr.number),
+                      material_unit: itemAttr.material_unit
+                    }
+                  })
+                })
+                let maxNum = 1
+                for (let prop in colorInfo) {
+                  if (colorInfo[prop].length > maxNum) {
+                    maxNum = colorInfo[prop].length
+                  }
+                }
+                return {
+                  material_name: itemMa.material_name,
+                  material_type: itemMa.material_type,
+                  color_info: colorInfo,
+                  rowNum: maxNum
+                }
+              }).sort((a, b) => {
+                return a.material_name.localeCompare(b.material_name)
+              })
+              itemPro.materialInfo = {
+                material_data: this.newSplitLine(materialInfo, 5),
+                colorArr: colorArr.map(itemColor => itemColor.color_name)
+              }
+            })
             setTimeout(() => {
+              let lineArr = document.getElementsByClassName('line')
+              for (let index in lineArr) {
+                let item = lineArr[index]
+                let lineParent = item.parentNode
+                if (lineParent) {
+                  let W = lineParent.offsetWidth
+                  let H = lineParent.offsetHeight
+                  let lineW = Math.sqrt(Math.pow(W, 2) + Math.pow(H, 2))
+                  let jiaodu = Math.atan(H / W) * 180 / Math.PI
+                  item.style.width = lineW + 'px'
+                  item.style.transform = 'translateX(-50%) rotateZ(' + jiaodu + 'deg)'
+                }
+              }
               window.print()
             }, 1000)
           })
@@ -446,6 +868,82 @@ export default {
         return name + '(' + flag.phone + ')'
       } else {
         return name
+      }
+    },
+    returnSize (str) {
+      let num = 0
+      for (let i = 0; i < str.length; i++) {
+        let leg = str.charCodeAt(i)
+        if (leg > 255) {
+          num += 2
+        } else {
+          num++
+        }
+      }
+      if (num < 23) {
+        return 20
+      } else if (num > 23 && num < 50) {
+        return 18
+      } else {
+        return 14
+      }
+    },
+    newSplitLine (data, length, newArr, arr) {
+      data = data || [] // 切割的数据
+      length = length || 5// 切割单个数组的长度
+      newArr = newArr || []// 用于存储切割后的数组
+      arr = arr || [] // 单个数组存储数据
+      for (let index in data) {
+        let item = data[index]
+        let arrLengthArr = arr.map(val => val.rowNum)
+        let arrLength = arrLengthArr.length > 0 ? arrLengthArr.reduce((a, b) => {
+          return a + b
+        }) : 0
+        if (arrLength + item.rowNum < length) {
+          arr.push(...data.splice(0, 1))
+          if (data.length > 0) {
+            this.newSplitLine(data, length, newArr, arr)
+          } else {
+            newArr.push(arr)
+          }
+          break
+        } else if (arrLength + item.rowNum === length) {
+          arr.push(...data.splice(0, 1))
+          newArr.push(arr)
+          if (data.length > 0) {
+            this.newSplitLine(data, length, newArr)
+          }
+          break
+        } else if (arrLength < length && arrLength + item.rowNum > length) {
+          let spliceLength = length - arrLength
+          let obj = {
+            material_name: item.material_name,
+            material_type: item.material_type,
+            rowNum: 0,
+            color_info: {}
+          }
+          item.rowNum = 0
+          for (let prop in item.color_info) {
+            let itemColor = item.color_info[prop]
+            obj.color_info[prop] = itemColor.splice(0, spliceLength)
+            if (itemColor.length > item.rowNum) {
+              item.rowNum = itemColor.length
+            }
+          }
+          for (let prop in obj.color_info) {
+            if (obj.color_info[prop].length > obj.rowNum) {
+              obj.rowNum = obj.color_info[prop].length
+            }
+          }
+          arr.push(obj)
+          newArr.push(arr)
+          break
+        }
+      }
+      if (data.length > 0) {
+        this.newSplitLine(data, length, newArr)
+      } else {
+        return newArr
       }
     }
   },
@@ -508,6 +1006,13 @@ export default {
         })
       })
       return weight
+    },
+    filterMaColorNum (item) {
+      if (item) {
+        return item.number + item.material_unit
+      } else {
+        return ''
+      }
     }
   }
 }

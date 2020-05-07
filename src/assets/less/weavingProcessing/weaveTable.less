@@ -3,4 +3,29 @@
   .flex08{
     flex: 0.8;
   }
+  .mergeTitle{
+    position: relative;
+    .top{
+      position: absolute;
+      top: 50%;
+      left: 60%;
+      transform: translateY(-100%);
+    }
+    .line{
+      display: block;
+      width: 206px;
+      border-bottom: 1px solid #999;
+      height: 1px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) rotateZ(29deg);
+    }
+    .bottom{
+      position: absolute;
+      top: 50%;
+      left: 40%;
+      transform: translateX(-100%);
+    }
+  }
 }
