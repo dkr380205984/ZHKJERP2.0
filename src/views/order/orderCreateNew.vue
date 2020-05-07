@@ -898,39 +898,92 @@ export default {
   methods: {
     // 切换订单批次填写类型
     changeTableType () {
-      this.$confirm('切换输入模式会导致已填写的数据被清除, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.batchDate = [
-          {
-            time: '',
-            batch_info: [{
-              id: '',
-              unit: '个',
-              product_info: [
-                {
-                  size_color: '',
-                  price: '',
-                  number: ''
-                }
-              ]
-            }],
-            batch_info_new: []
-          }
-        ]
-        if (this.tableType === 'normal') {
-          this.tableType = 'table'
-        } else {
-          this.tableType = 'normal'
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
+      if (this.tableType === 'normal') {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info_new = []
+          itemBatch.batch_info.forEach((itemPro) => {
+            if (!itemPro.id) {
+              return
+            }
+            // 展开数据
+            let flatData = []
+            itemPro.product_info.forEach((itemChild) => {
+              flatData.push({
+                id: itemPro.id,
+                unit: itemPro.unit,
+                color: itemChild.size_color[1],
+                size: itemChild.size_color[0],
+                number: itemChild.number
+              })
+            })
+            let productInfo = []
+            let colorInfo = []
+            let findPro = this.checkedProList.find((itemFind) => itemFind.id === itemPro.id)
+            findPro.color.forEach((itemColor) => {
+              colorInfo.push({
+                color: itemColor.color_name,
+                number: ''
+              })
+            })
+            findPro.size.forEach((itemSize) => {
+              productInfo.push({
+                size: itemSize.size_name,
+                color: this.$clone(colorInfo)
+              })
+            })
+            productInfo.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                let find = flatData.find((itemFind) => itemFind.size === itemSize.size && itemFind.color === itemColor.color)
+                itemColor.number = !find ? '' : find.number
+              })
+            })
+            itemBatch.batch_info_new.push({
+              id: itemPro.id,
+              unit: itemPro.unit,
+              price: '',
+              size: findPro.size,
+              color: findPro.color,
+              product_info: productInfo
+            })
+          })
         })
-      })
+        this.tableType = 'table'
+      } else {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info = []
+          itemBatch.batch_info_new.forEach((itemPro) => {
+            let productInfo = []
+            itemPro.product_info.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                productInfo.push({
+                  size_color: [itemSize.size, itemColor.color],
+                  price: itemPro.price,
+                  number: itemColor.number
+                })
+              })
+            })
+            itemBatch.batch_info.push({
+              id: itemPro.id,
+              unit: itemPro.unit,
+              sizeColor: itemPro.size.map((itemSize) => {
+                return {
+                  value: itemSize.size_name,
+                  label: itemSize.size_name,
+                  children: itemPro.color.map((itemColor) => {
+                    return {
+                      value: itemColor.color_name,
+                      label: itemColor.color_name
+                    }
+                  })
+                }
+              }),
+              product_info: productInfo
+            })
+          })
+        })
+
+        this.tableType = 'normal'
+      }
     },
     // 获取汇率
     getUnit (ev) {
@@ -1055,6 +1108,7 @@ export default {
           }]
         })
       }
+      this.$forceUpdate()
     },
     deleteItem (item, index) {
       if (item.length === 1) {
@@ -1064,6 +1118,7 @@ export default {
       item.splice(index, 1)
       this.isResouceShow++
       this.computedTotalPrice()
+      this.$forceUpdate()
     },
     // 表格形式删除配色
     deleteTableColor (item, index) {
@@ -1074,6 +1129,7 @@ export default {
       item.product_info.forEach((itemPro) => {
         itemPro.color.splice(index, 1)
       })
+      this.$forceUpdate()
     },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
@@ -1126,6 +1182,7 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
+      console.log(item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
@@ -1143,80 +1200,45 @@ export default {
           }
         })
         this.checkedProList.push(item)
-        // 旧代码
-        if (this.tableType === 'normal') {
-          this.batchDate.forEach(itemBatch => {
-            this.checkedProList.forEach((itemPro, indexPro) => {
-              let arr = []
-              itemPro.size.forEach(itemSize => {
-                itemPro.color.forEach(itemColor => {
-                  arr.push({
-                    size_color: [itemSize.size_name, itemColor.color_name],
-                    price: '',
-                    number: ''
-                  })
+        this.batchDate.forEach(itemBatch => {
+          this.checkedProList.forEach((itemPro, indexPro) => {
+            let arr = []
+            itemPro.size.forEach(itemSize => {
+              itemPro.color.forEach(itemColor => {
+                arr.push({
+                  size_color: [itemSize.size_name, itemColor.color_name],
+                  price: '',
+                  number: ''
                 })
               })
-              if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
-                if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
-                  itemBatch.batch_info[0].id = itemPro.id
-                  itemBatch.batch_info[0].unit = itemPro.category_info.name
-                  itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
-                  itemBatch.batch_info[0].product_info = arr
-                } else {
-                  itemBatch.batch_info.push({
-                    id: itemPro.id,
-                    unit: itemPro.category_info.name,
-                    sizeColor: itemPro.sizeColor,
-                    product_info: arr
-                  })
-                }
+            })
+            if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
+              if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
+                itemBatch.batch_info[0].id = itemPro.id
+                itemBatch.batch_info[0].unit = itemPro.category_info.name
+                itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
+                itemBatch.batch_info[0].product_info = arr
+              } else {
+                itemBatch.batch_info.push({
+                  id: itemPro.id,
+                  unit: itemPro.category_info.name,
+                  sizeColor: itemPro.sizeColor,
+                  product_info: arr
+                })
               }
-              this.isResouceShow++
-            })
+            }
+            this.isResouceShow++
           })
-          this.batchDate = this.$clone(this.batchDate)
-        } else {
-          let productInfo = []
-          let colorInfo = []
-          item.color.forEach((itemColor) => {
-            colorInfo.push({
-              color: itemColor.color_name,
-              number: ''
-            })
-          })
-          item.size.forEach((itemSize) => {
-            productInfo.push({
-              size: itemSize.size_name,
-              color: this.$clone(colorInfo)
-            })
-          })
-          this.batchDate[0].batch_info_new.push({
-            id: item.id,
-            unit: item.category_info.name,
-            price: '',
-            size: item.size,
-            color: item.color,
-            product_info: productInfo
-          })
-        }
+        })
+        this.batchDate = this.$clone(this.batchDate)
       } else {
         // 产品取消选中时，批次内删除该产品
-        if (this.tableType === 'normal') {
-          this.batchDate.forEach(itemBatch => {
-            let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-            if (index !== -1) {
-              itemBatch.batch_info.splice(index, 1)
-            }
-          })
-        } else {
-          this.batchDate.forEach(itemBatch => {
-            let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
-            if (index !== -1) {
-              itemBatch.batch_info_new.splice(index, 1)
-            }
-          })
-        }
+        this.batchDate.forEach(itemBatch => {
+          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info.splice(index, 1)
+          }
+        })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
         if (cancleProFlag) {
           cancleProFlag.checked = false
