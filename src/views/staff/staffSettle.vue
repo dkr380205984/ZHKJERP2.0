@@ -3,11 +3,14 @@
     class='indexMain'
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">合计工资结算单</span>
-        <div class="btn btnBlue"
-          style="float:right;margin:13px 32px 0 0"
-          @click="showPopup=true">自定义结算人员</div>
+        <div class="titleBtnCtn">
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl('/staffAnnualTable?year=' + date.split('-')[0] + '&month=' + date.split('-')[1] + '&departmentId=' + department)">打印</div>
+          <div class="btn btnWhiteBlue"
+            @click="showPopup=true">添加结算人员</div>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="excelTable">
@@ -30,7 +33,7 @@
                 <span class="label"
                   style="margin-left:15px">请选择结算月份：</span>
                 <el-date-picker v-model="date"
-                  @change="getList"
+                  @change="init"
                   :clearable="false"
                   type="month"
                   value-format="yyyy-MM"
@@ -43,10 +46,13 @@
           <div class="tabelBodyCtn">
             <div class="tabelBodyMain hasBorder">
               <div class="box">
+                <div class="label">员工编号</div>
+              </div>
+              <div class="box">
                 <div class="label">员工姓名</div>
               </div>
               <div class="box">
-                <div class="label">员工编号</div>
+                <div class="label">员工部门</div>
               </div>
               <div class="box">
                 <div class="label">结算工资(元)</div>
@@ -71,18 +77,21 @@
             <div class="tabelBodyMain"
               :class="{'hasBorder':index<list.length-1}">
               <div class="box">
-                <div class="label">
+                <div class="label noWarp">
                   <i class="el-icon-caret-right"
                     v-if="!item.checked"
                     @click="item.checked=true"></i>
                   <i class="el-icon-caret-bottom"
                     v-if="item.checked"
                     @click="item.checked=false"></i>
-                  {{item.name}}
+                  {{item.staff_code}}
                 </div>
               </div>
               <div class="box">
-                <div class="label">{{item.staff_code}}</div>
+                <div class="label">{{item.name}}</div>
+              </div>
+              <div class="box">
+                <div class="label">{{item.department_name}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.price}}</div>
@@ -131,10 +140,10 @@
               <div class="titleLine">
                 <div class="leftCtn">
                   <span class="text">额外部分
-                    <span class="addIcon"
+                    <!-- <span class="addIcon"
                       @click="addExtra(item)">
                       <i class="el-icon-circle-plus"></i>
-                    </span>
+                    </span> -->
                   </span>
                 </div>
               </div>
@@ -142,12 +151,12 @@
                 v-for="(itemExtra,indexExtra) in item.extra"
                 :key="indexExtra+'额外部分'">
                 <div class="leftCtn">
-                  <el-input class="inputs"
+                  <!-- <el-input class="inputs"
                     placeholder="费用名称"
                     v-if="itemExtra.edit"
                     v-model="itemExtra.reason"></el-input>
-                  <span v-if="!itemExtra.edit"
-                    class="text">{{itemExtra.reason}}</span>
+                     v-if="!itemExtra.edit" -->
+                  <span class="text">{{itemExtra.reason}}</span>
                 </div>
                 <div class="middleCtn">
                   ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
@@ -168,18 +177,18 @@
                     <span class="opr blue"
                       v-if="itemExtra.edit"
                       @click="saveExtra(itemExtra,item)">完成</span>
-                    <span class="opr red"
-                      @click="deleteExtra(item,indexExtra)">删除</span>
+                    <!-- <span class="opr red"
+                      @click="deleteExtra(item,indexExtra)">删除</span> -->
                   </span>
                 </div>
               </div>
               <div class="titleLine">
                 <div class="leftCtn">
                   <span class="text">扣除部分
-                    <span class="addIcon"
+                    <!-- <span class="addIcon"
                       @click="addDeduct(item)">
                       <i class="el-icon-circle-plus"></i>
-                    </span>
+                    </span> -->
                   </span>
                 </div>
               </div>
@@ -187,12 +196,12 @@
                 v-for="(itemDeduct,indexDeduct) in item.deduct"
                 :key="indexDeduct+'扣除部分'">
                 <div class="leftCtn">
-                  <el-input class="inputs"
+                  <!-- <el-input class="inputs"
                     placeholder="费用名称"
                     v-if="itemDeduct.edit"
                     v-model="itemDeduct.reason"></el-input>
-                  <span v-if="!itemDeduct.edit"
-                    class="text">{{itemDeduct.reason}}</span>
+                     v-if="!itemDeduct.edit" -->
+                  <span class="text">{{itemDeduct.reason}}</span>
                 </div>
                 <div class="middleCtn">
                   ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
@@ -213,8 +222,8 @@
                     <span class="opr blue"
                       @click="saveDeduct(itemDeduct,item)"
                       v-if="itemDeduct.edit">完成</span>
-                    <span class="opr red"
-                      @click="deleteDeduct(item,indexDeduct)">删除</span>
+                    <!-- <span class="opr red"
+                      @click="deleteDeduct(item,indexDeduct)">删除</span> -->
                   </span>
                 </div>
               </div>
@@ -238,8 +247,7 @@
             </div>
           </div>
         </div>
-        <div class="pageCtn"
-          v-if="!noPage">
+        <div class="pageCtn">
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -285,10 +293,14 @@
           <div class="row">
             <div class="info">
               <el-checkbox style="margin-bottom:12px"
+                label="全选"
+                v-model="isCheckedAll"></el-checkbox>
+              <el-checkbox style="margin-bottom:12px"
                 v-for="item in staffAllArr"
                 :key="item.id"
                 :label="item.name"
-                v-model="item.checked"></el-checkbox>
+                v-model="item.checked"
+                @change="$forceUpdate()"></el-checkbox>
             </div>
           </div>
         </div>
@@ -317,11 +329,31 @@ export default {
       list: [],
       page: 1,
       total: 1,
-      noPage: false,
-      staffAllList: []
+      staffAllList: [],
+      isCheckedAll: false
     }
   },
   methods: {
+    init () {
+      this.loading = true
+      staff.getMonthStaffUser({
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
+      }).then(res => {
+        if (res.data.status !== false && res.data.data) {
+          let filterUser = res.data.data.staff_data ? JSON.parse(res.data.data.staff_data) : []
+          this.staffAllList.forEach(item => {
+            if (filterUser.indexOf(item.id) !== -1) {
+              item.checked = true
+            }
+          })
+          this.getList()
+        } else {
+          this.list = []
+          this.loading = false
+        }
+      })
+    },
     addExtra (item) {
       item.extra.push({
         edit: true,
@@ -500,25 +532,67 @@ export default {
           item.price = item.total.reduce((total, current) => {
             return total + current.price
           }, 0)
-          item.extra = item.deduct_data.filter((item) => item.type === 1)
-          if (item.deduct_data.length === 0) {
-            item.extra = [{
+          item.extra = [
+            {
+              edit: true,
+              reason: '基本工资',
+              price: 0
+            }, {
               edit: true,
               reason: '加班工资',
               price: 0
-            }]
-          }
+            }, {
+              edit: true,
+              reason: '劳务工资',
+              price: 0
+            }, {
+              edit: true,
+              reason: '生活补贴',
+              price: 0
+            }, {
+              edit: true,
+              reason: '其他',
+              price: 0
+            }
+          ]
+          item.deduct = [
+            {
+              edit: true,
+              reason: '养老金',
+              price: 0
+            },
+            {
+              edit: true,
+              reason: '个税',
+              price: 0
+            },
+            {
+              edit: true,
+              reason: '其他',
+              price: 0
+            }
+          ]
+          item.deduct_data.forEach(itemInner => {
+            if (itemInner.type === 1) {
+              let flag1 = item.extra.find(val => val.reason === itemInner.reason)
+              if (flag1) {
+                flag1.price = itemInner.price
+                flag1.edit = false
+              }
+            } else {
+              let flag2 = item.deduct.find(val => val.reason === itemInner.reason)
+              if (flag2) {
+                flag2.price = itemInner.price
+                flag2.edit = false
+              }
+            }
+          })
+          // item.extra = item.deduct_data.filter((item) => item.type === 1)
+          // if (item.deduct_data.length === 0) {
+          // }
           item.extra_price = item.extra.reduce((total, current) => {
             return total + current.price
           }, 0)
-          item.deduct = item.deduct_data.filter((item) => item.type === 2)
-          if (item.deduct_data.length === 0) {
-            item.deduct = [{
-              edit: true,
-              reason: '五险一金',
-              price: 0
-            }]
-          }
           item.deduct_price = item.deduct.reduce((total, current) => {
             return total + current.price
           }, 0)
@@ -538,67 +612,78 @@ export default {
     checkStaff () {
       this.loading = true
       this.showPopup = false
-      this.noPage = true
-      staff.payList({
-        staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
+      staff.settingMonthStaffUser({
+        staff_data: this.staffAllList.filter((item) => item.checked).map((item) => item.id),
+        year: this.date.split('-')[0],
+        month: Number(this.date.split('-')[1])
       }).then((res) => {
-        this.list = res.data.map((item) => {
-          item.checked = false
-          item.total = [{
-            reason: '按时结算总计',
-            price: item.child_data.reduce((total, current) => {
-              if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
-                return Number(current.total_price) + total
-              } else {
-                return total
-              }
-            }, 0)
-          }, {
-            reason: '订单/其他方式结算',
-            price: item.child_data.reduce((total, current) => {
-              if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
-                return Number(current.total_price) + total
-              } else {
-                return total
-              }
-            }, 0)
-          }]
-          item.price = item.total.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.extra = item.deduct_data.filter((item) => item.type === 1)
-          if (item.deduct_data.length === 0) {
-            item.extra = [{
-              edit: true,
-              reason: '加班工资',
-              price: 0
-            }]
-          }
-          item.extra_price = item.extra.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.deduct = item.deduct_data.filter((item) => item.type === 2)
-          if (item.deduct_data.length === 0) {
-            item.deduct = [{
-              edit: true,
-              reason: '五险一金',
-              price: 0
-            }]
-          }
-          item.deduct_price = item.deduct.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.realityTotal = item.total.reduce((total, current) => {
-            return current.price + total
-          }, 0) + item.extra.reduce((total, current) => {
-            return current.price + total
-          }, 0) - item.deduct.reduce((total, current) => {
-            return current.price + total
-          }, 0)
-          return item
-        })
-        this.loading = false
+        if (res.data.stauts !== false) {
+          this.$message.success('已成功为您更新' + this.date + '的人员结算信息')
+          this.init()
+        } else {
+          this.loading = false
+        }
       })
+      // staff.payList({
+      //   staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
+      // }).then((res) => {
+      //   this.list = res.data.data.map((item) => {
+      //     item.checked = false
+      //     item.total = [{
+      //       reason: '按时结算总计',
+      //       price: item.child_data.reduce((total, current) => {
+      //         if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
+      //           return Number(current.total_price) + total
+      //         } else {
+      //           return total
+      //         }
+      //       }, 0)
+      //     }, {
+      //       reason: '订单/其他方式结算',
+      //       price: item.child_data.reduce((total, current) => {
+      //         if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
+      //           return Number(current.total_price) + total
+      //         } else {
+      //           return total
+      //         }
+      //       }, 0)
+      //     }]
+      //     item.price = item.total.reduce((total, current) => {
+      //       return total + current.price
+      //     }, 0)
+      //     item.extra = item.deduct_data.filter((item) => item.type === 1)
+      //     if (item.deduct_data.length === 0) {
+      //       item.extra = [{
+      //         edit: true,
+      //         reason: '加班工资',
+      //         price: 0
+      //       }]
+      //     }
+      //     item.extra_price = item.extra.reduce((total, current) => {
+      //       return total + current.price
+      //     }, 0)
+      //     item.deduct = item.deduct_data.filter((item) => item.type === 2)
+      //     if (item.deduct_data.length === 0) {
+      //       item.deduct = [{
+      //         edit: true,
+      //         reason: '五险一金',
+      //         price: 0
+      //       }]
+      //     }
+      //     item.deduct_price = item.deduct.reduce((total, current) => {
+      //       return total + current.price
+      //     }, 0)
+      //     item.realityTotal = item.total.reduce((total, current) => {
+      //       return current.price + total
+      //     }, 0) + item.extra.reduce((total, current) => {
+      //       return current.price + total
+      //     }, 0) - item.deduct.reduce((total, current) => {
+      //       return current.price + total
+      //     }, 0)
+      //     return item
+      //   })
+      //   this.loading = false
+      // })
     }
   },
   computed: {
@@ -616,7 +701,7 @@ export default {
     // 设置默认日期
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
-    this.getList()
+    this.init()
     station.list({
       type: 2
     }).then((res) => {
@@ -625,6 +710,18 @@ export default {
     staff.list().then((res) => {
       this.staffAllList = res.data.data
     })
+  },
+  watch: {
+    isCheckedAll (newVal) {
+      this.staffAllList.forEach(item => {
+        if (this.departmentPopup && item.department_id === this.departmentPopup) {
+          item.checked = newVal
+          this.$forceUpdate()
+        } else if (!this.departmentPopup) {
+          item.checked = newVal
+        }
+      })
+    }
   }
 }
 </script>

@@ -1182,7 +1182,6 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
-      console.log(item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
@@ -1212,18 +1211,71 @@ export default {
                 })
               })
             })
+            let productInfo = []
+            let colorInfo = []
+            itemPro.color.forEach((itemColor) => {
+              colorInfo.push({
+                color: itemColor.color_name,
+                number: ''
+              })
+            })
+            itemPro.size.forEach((itemSize) => {
+              productInfo.push({
+                size: itemSize.size_name,
+                color: this.$clone(colorInfo)
+              })
+            })
             if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
               if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
                 itemBatch.batch_info[0].id = itemPro.id
                 itemBatch.batch_info[0].unit = itemPro.category_info.name
                 itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
                 itemBatch.batch_info[0].product_info = arr
+                itemBatch.batch_info_new[0] = {
+                  id: '',
+                  unit: '',
+                  size: [],
+                  color: [],
+                  product_info: []
+                }
+                itemBatch.batch_info_new[0].id = itemPro.id
+                itemBatch.batch_info_new[0].unit = itemPro.category_info.name
+                itemBatch.batch_info_new[0].size = itemPro.size.map((item) => {
+                  return {
+                    name: item.size_name,
+                    label: item.size_name
+                  }
+                })
+                itemBatch.batch_info_new[0].color = itemPro.color.map((item) => {
+                  return {
+                    name: item.color_name,
+                    label: item.color_name
+                  }
+                })
+                itemBatch.batch_info_new[0].product_info = productInfo
               } else {
                 itemBatch.batch_info.push({
                   id: itemPro.id,
                   unit: itemPro.category_info.name,
                   sizeColor: itemPro.sizeColor,
                   product_info: arr
+                })
+                itemBatch.batch_info_new.push({
+                  id: itemPro.id,
+                  unit: itemPro.category_info.name,
+                  size: itemPro.size.map((item) => {
+                    return {
+                      name: item.color_name,
+                      label: item.color_name
+                    }
+                  }),
+                  color: itemPro.color.map((item) => {
+                    return {
+                      name: item.color_name,
+                      label: item.color_name
+                    }
+                  }),
+                  product_info: productInfo
                 })
               }
             }

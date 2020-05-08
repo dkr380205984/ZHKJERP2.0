@@ -198,14 +198,14 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">
-              <span class="text">合同到期时间</span>
+              <span class="text">离职时间</span>
             </div>
             <div class="content"
               style="height:32px">
               <el-date-picker style="width:100%;height:100%;line-height:30px"
                 v-model="staffInfo.end_time"
                 value-format="yyyy-MM-dd"
-                placeholder="合同到期时间">
+                placeholder="离职时间">
               </el-date-picker>
             </div>
           </div>
