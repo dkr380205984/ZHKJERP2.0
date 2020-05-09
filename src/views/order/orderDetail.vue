@@ -214,7 +214,7 @@
                     </div>
                     <div class="inputs"
                       style="margin-top:12px">
-                      单价：{{itemPro.price}}元
+                      单价：{{itemPro.price}}{{orderInfo.account_unit}}
                     </div>
                   </div>
                   <div class="lineChildCtn">
@@ -237,7 +237,7 @@
                       :key="indexColor + '/' + indexSize">
                       <div class="once middle"
                         :class="{'justOne': itemPro.product_info[0].color.length===1}">
-                        {{itemColor.number}}{{itemPro.unit}}
+                        {{itemColor.number?itemColor.number + itemPro.unit : 0}}
                       </div>
                     </div>
                   </div>
@@ -560,8 +560,8 @@
                       :key="indexPrice">
                       <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
                       <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
-                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + orderInfo.account_unit : '/'}}</span>
-                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + orderInfo.account_unit + '/' + item.unit: '/'}}</span>
+                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + (index===0?orderInfo.account_unit:'元') : '/'}}</span>
+                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price +  (index===0?orderInfo.account_unit:'元') + '/' + item.unit: '/'}}</span>
                     </span>
                   </span>
                 </span>
