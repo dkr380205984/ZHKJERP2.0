@@ -643,6 +643,42 @@
               </div>
             </div>
           </template>
+          <template v-if="cName==='员工标签管理'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup = true">添加标签</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn">标签名</div>
+                    <div class="tcolumn">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="item in authTagList[authTagPage-1]"
+                    :key="item.id">
+                    <div class="tcolumn">{{item.name}}</div>
+                    <div class="tcolumn flexRow">
+                      <span class="blue"
+                        @click="changeAuthTag(item)">修改</span>
+                      <span class="border"></span>
+                      <span @click="deleteAuthTag(item.id)"
+                        class="red">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="1"
+                  layout="prev, pager, next"
+                  :total="authTagTotal"
+                  :current-page.sync="authTagPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
           <template v-if="cName==='工厂小组管理'">
             <div class="flowerCtn">
               <div class="addBtn"
@@ -1579,6 +1615,30 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='员工标签管理'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{authTagInfo.id ? '修改' :'添加'}}员工标签</div>
+            <i class="el-icon-close"
+              @click="resetAuthTag"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">标签名：</div>
+              <div class="info">
+                <el-input placeholder="请输入标签名"
+                  v-model="authTagInfo.name"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="resetAuthTag">取消</div>
+            <div class="btn btnBlue"
+              @click="saveAuthTag">确定</div>
+          </div>
+        </div>
+      </template>
       <template v-if="cName==='打印设置'">
         <div class="main"
           style="width:600px;">
@@ -2170,7 +2230,7 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { sampleOrder, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course } from '@/assets/js/api.js'
+import { sampleOrder, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course, staffTag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2182,7 +2242,7 @@ export default {
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '加工工序设置': ['原料工序', '半成品加工'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理'],
-        '员工管理': ['员工帐号管理'],
+        '员工管理': ['员工帐号管理', '员工标签管理'],
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载'],
         '预警设置': ['订单预警', '样单预警']
@@ -2317,6 +2377,7 @@ export default {
         file_image: []
       },
       postData: { token: '' },
+      // 员工账号
       authList: [],
       authInfo: {
         id: null,
@@ -2333,6 +2394,14 @@ export default {
       permissions: permissions,
       authPage: 1,
       authTotal: 1,
+      // 员工标签
+      authTagList: [],
+      authTagInfo: {
+        name: '',
+        id: ''
+      },
+      authTagPage: 1,
+      authTagTotal: 1,
       // 打印设置
       printEditArr: [
         {
@@ -2534,6 +2603,8 @@ export default {
         this.getCompany()
       } else if (val === '员工帐号管理') {
         this.getAuth()
+      } else if (val === '员工标签管理') {
+        this.getAuthTagList()
       } else if (val === '打印设置') {
         this.getPrintList()
       } else if (val === '报价预加载') {
@@ -2926,6 +2997,70 @@ export default {
           type: 'info',
           message: '已取消删除'
         })
+      })
+    },
+    // 员工标签
+    resetAuthTag () {
+      this.showPopup = false
+      this.authTagInfo = {
+        name: '',
+        id: ''
+      }
+    },
+    saveAuthTag () {
+      if (!this.authTagInfo.name) {
+        this.$message.error('请输入标签名')
+        return
+      }
+      staffTag.create({
+        id: this.authTagInfo.id,
+        name: this.authTagInfo.name
+      }).then(res => {
+        if (res.data.status !== false) {
+          if (this.authTagInfo.id) {
+            this.$message.success('修改成功')
+            this.resetAuthTag()
+            this.getAuthTagList()
+          } else {
+            this.$message.success('添加成功')
+            this.resetAuthTag()
+            this.getAuthTagList()
+          }
+        }
+      })
+    },
+    changeAuthTag (item) {
+      this.authTagInfo.name = item.name
+      this.authTagInfo.id = item.id
+      this.showPopup = true
+    },
+    deleteAuthTag (id) {
+      this.$confirm('此操作将永久该标签, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        staffTag.delete({
+          id: id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            this.getAuthTagList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getAuthTagList () {
+      staffTag.list().then(res => {
+        if (res.data.status !== false) {
+          this.authTagList = this.$newSplice(res.data.data, 5)
+          this.authTagTotal = this.authTagList.length
+        }
       })
     },
     getProductType () {
@@ -4373,8 +4508,8 @@ export default {
     }
   },
   created () {
-    this.pName = '产品设置'
-    this.cName = '产品花型'
+    this.pName = '员工管理'
+    this.cName = '员工标签管理'
   }
 }
 </script>

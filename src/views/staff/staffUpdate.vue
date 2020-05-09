@@ -55,20 +55,20 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">地址</span>
-            </div>
-            <div class="content">
-              <el-input v-model="staffInfo.dizhi"
-                placeholder="请输入地址"></el-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
               <span class="text">学历</span>
             </div>
             <div class="content">
               <el-input v-model="staffInfo.xueli"
                 placeholder="请输入学历"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">健康状况</span>
+            </div>
+            <div class="content">
+              <zh-input v-model="staffInfo.health"
+                placeholder="请输入健康状况"></zh-input>
             </div>
           </div>
         </div>
@@ -140,15 +140,6 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">健康状况</span>
-            </div>
-            <div class="content">
-              <zh-input v-model="staffInfo.health"
-                placeholder="请输入健康状况"></zh-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
               <span class="text">紧急联系人</span>
             </div>
             <div class="content">
@@ -163,6 +154,24 @@
             <div class="content">
               <el-input v-model="staffInfo.emergentPhone"
                 placeholder="请输入联系人电话"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">员工标签</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.tag"
+                filterable
+                multiple
+                collapse-tags
+                placeholder="请选择员工标签">
+                <el-option v-for="item in staffTagList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -211,6 +220,17 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">
+              <span class="text">地址</span>
+            </div>
+            <div class="content">
+              <el-input v-model="staffInfo.dizhi"
+                placeholder="请输入地址"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <span class="label">
               <span class="text">备注</span>
             </span>
@@ -237,7 +257,7 @@
   </div>
 </template>
 <script>
-import { staff, station } from '@/assets/js/api.js'
+import { staff, station, staffTag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -259,10 +279,12 @@ export default {
         desc: '',
         mingzu: '',
         dizhi: '',
-        xueli: ''
+        xueli: '',
+        tag: ''
       },
       departmentArr: [],
-      stationArr: []
+      stationArr: [],
+      staffTagList: []
     }
   },
   methods: {
@@ -306,7 +328,8 @@ export default {
         nation: this.staffInfo.mingzu,
         address: this.staffInfo.dizhi,
         academic: this.staffInfo.xueli,
-        desc: this.staffInfo.desc
+        desc: this.staffInfo.desc,
+        tag_data: this.staffInfo.tag
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
@@ -316,10 +339,16 @@ export default {
     }
   },
   mounted () {
-    staff.detail({
-      id: this.$route.params.id
-    }).then((res) => {
-      let data = res.data.data
+    Promise.all([
+      staff.detail({
+        id: this.$route.params.id
+      }),
+      station.list({
+        type: 2
+      }),
+      staffTag.list()
+    ]).then((res) => {
+      let data = res[0].data.data
       this.staffInfo.name = data.name
       this.staffInfo.telephone = data.phone
       this.staffInfo.sex = data.sex
@@ -337,11 +366,9 @@ export default {
       this.staffInfo.dizhi = data.address
       this.staffInfo.xueli = data.academic
       this.staffInfo.mingzu = data.nation
-    })
-    station.list({
-      type: 2
-    }).then((res) => {
-      this.departmentArr = res.data.data
+      this.staffInfo.tag = data.tag_data
+      this.departmentArr = res[1].data.data
+      this.staffTagList = res[2].data.data
     })
   }
 }

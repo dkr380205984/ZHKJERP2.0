@@ -34,12 +34,12 @@
               <div class="content">{{staffInfo.nation}}</div>
             </div>
             <div class="box">
-              <div class="label">地址：</div>
-              <div class="content">{{staffInfo.address}}</div>
-            </div>
-            <div class="box">
               <div class="label">学历：</div>
               <div class="content">{{staffInfo.academic}}</div>
+            </div>
+            <div class="box">
+              <div class="label">健康状态：</div>
+              <div class="content">{{staffInfo.healthy_info}}</div>
             </div>
           </div>
           <div class="tabelBody">
@@ -72,8 +72,8 @@
           </div>
           <div class="tabelBody">
             <div class="box">
-              <div class="label">健康状态：</div>
-              <div class="content">{{staffInfo.healthy_info}}</div>
+              <div class="label">员工标签：</div>
+              <div class="content">{{staffInfo.staff_tag.join(',')}}</div>
             </div>
             <div class="box">
               <div class="label">紧急电话：</div>
@@ -82,6 +82,13 @@
             <div class="box">
               <div class="label">工种：</div>
               <div class="content">{{staffInfo.type=== 1?'合同工':'临时工'}}</div>
+            </div>
+          </div>
+          <div class="tabelBody">
+            <div class="box">
+              <div class="label"
+                style="max-width:132px">地址：</div>
+              <div class="content">{{staffInfo.address}}</div>
             </div>
           </div>
           <div class="tabelBody">

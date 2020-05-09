@@ -574,8 +574,8 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="orderUpload"
@@ -599,7 +599,7 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
+                multiple
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="packagUpload"
@@ -623,7 +623,7 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
+                multiple
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="boxUpload"
@@ -647,7 +647,7 @@
             <span class="content autoHeight">
               <el-upload class="upload"
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
+                multiple
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="otherUpload"
@@ -864,10 +864,10 @@ export default {
       this.computedTotalPrice()
     },
     beforeAvatarUpload (file) {
-      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
-      let fileNameLength = file.name.length// 取到文件名长度
-      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
-      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      // let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      // let fileNameLength = file.name.length// 取到文件名长度
+      // let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = file.name
       const isLt2M = file.size / 1024 / 1024 < 10
       if (!isLt2M) {
         this.$message.error('文件大小不能超过 10MB!')

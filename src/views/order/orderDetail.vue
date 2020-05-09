@@ -485,8 +485,8 @@
                       :key="indexPrice">
                       <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
                       <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
-                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + orderInfo.account_unit : '/'}}</span>
-                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + orderInfo.account_unit + '/' + item.unit: '/'}}</span>
+                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + (item.priceUnit ? item.priceUnit : '元') : '/'}}</span>
+                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + (item.priceUnit ? item.priceUnit : '元') + '/' + item.unit: '/'}}</span>
                     </span>
                   </span>
                 </span>
@@ -1671,6 +1671,7 @@ export default {
             {
               name: '订单产值',
               unit: '件',
+              priceUnit: this.orderInfo.account_unit,
               price_info: [{
                 number: data.order.total_number,
                 total_price: data.order.order_total_value,

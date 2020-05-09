@@ -135,6 +135,7 @@
             </div>
             <div class="content">
               <el-autocomplete class="inline-input element"
+                clearable
                 v-model="yarn.yarnOtherWarp[index].value"
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入次要原料">
@@ -172,6 +173,7 @@
             </div>
             <div class="content">
               <el-input class="element"
+                clearable
                 style="width:172px"
                 v-model="material.materialWarp[index].value"
                 placeholder="请输入辅助原料"></el-input>
@@ -840,6 +842,7 @@
             </div>
             <div class="content">
               <el-autocomplete class="inline-input element"
+                clearable
                 v-model="yarn.yarnOtherWeft[index].value"
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入次要原料">
@@ -877,6 +880,7 @@
             </div>
             <div class="content">
               <el-input class="element"
+                clearable
                 style="width:172px"
                 v-model="material.materialWeft[index].value"
                 placeholder="请输入辅助原料"></el-input>

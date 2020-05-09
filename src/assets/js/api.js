@@ -424,6 +424,12 @@ const staff = {
   settingMonthStaffUser: (params) => http.post(`${baseUrl}/wage/settle/staff/demo/save`, params, 'application/json'),
   getMonthStaffUser: (params) => http.get(`${baseUrl}/wage/settle/staff/demo/detail`, params)
 }
+// 员工标签设置
+const staffTag = {
+  create: (params) => http.post(`${baseUrl}/staff/tag/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/staff/tag/list`, params),
+  delete: (params) => http.post(`${baseUrl}/staff/tag/delete`, params, 'application/json')
+}
 // 教程
 const tutorial = {
   detail: (params) => http.get(`${baseUrl}/admin/system/study/one`, params),
@@ -449,6 +455,7 @@ let getAuthorization = {
   get: (params) => http.post(`${baseUrl}/auth/user`, params, 'application/json')
 }
 export {
+  staffTag,
   getAuthorization,
   chartsAPI,
   productPart,

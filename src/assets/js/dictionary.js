@@ -94,6 +94,9 @@ const companyType = [
   }, {
     value: 10,
     name: '装饰辅料单位'
+  }, {
+    value: 11,
+    name: '销售客户'
   }
 ]
 export {
