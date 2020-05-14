@@ -797,7 +797,7 @@
               <span class="tb_row two_line">
                 <zh-img-list :list="itemMa.category_info.images"></zh-img-list>
               </span>
-              <span class="tb_row">{{itemMa.size + '/' + itemMa.color}}</span>
+              <span class="tb_row">{{itemMa.size_name + '/' + itemMa.color_name}}</span>
               <span class="tb_row">{{itemMa.total_number + itemMa.category_info.unit}}</span>
               <span class="tb_row">{{itemMa.update_time}}</span>
               <span class="tb_row middle">
@@ -1480,11 +1480,11 @@ export default {
       if (flag) {
         itemPro.sizeColor = flag.size.map(itemSize => {
           return {
-            value: itemSize.size_name,
+            value: itemSize.size_id,
             label: itemSize.size_name,
             children: flag.color.map(itemColor => {
               return {
-                value: itemColor.color_name,
+                value: itemColor.color_id,
                 label: itemColor.color_name
               }
             })
@@ -1917,8 +1917,8 @@ export default {
           data.push({
             remark: itemColor.remark,
             stock_number: (itemMa.editType === 'go' ? Number(itemColor.number) : -Number(itemColor.number)),
-            color: itemColor.size_color[1],
-            size: itemColor.size_color[0],
+            color_id: itemColor.size_color[1],
+            size_id: itemColor.size_color[0],
             product_id: itemMa.productName,
             stock_id: this.$route.params.id
             // company_id: window.sessionStorage.getItem('company_id')
@@ -1963,9 +1963,7 @@ export default {
       stock.productStock({
         data: data
       }).then(res => {
-        if (res.data.status === false) {
-          this.$message.error('保存失败，' + res.data.message)
-        } else {
+        if (res.data.status !== false) {
           this.$message.success('保存成功')
           this.getProductList(1)
           this.getProductLog()
@@ -2010,18 +2008,18 @@ export default {
           editType: editType,
           color_info: [
             {
-              size_color: [item.size, item.color],
+              size_color: [item.size_id, item.color_id],
               number: '',
               remark: ''
             }
           ],
           sizeColor: item.category_info.size_measurement.map(itemSize => {
             return {
-              value: itemSize.size_name,
+              value: itemSize.size_id,
               label: itemSize.size_name,
               children: item.category_info.color.map(itemColor => {
                 return {
-                  value: itemColor.color_name,
+                  value: itemColor.color_id,
                   label: itemColor.color_name
                 }
               })

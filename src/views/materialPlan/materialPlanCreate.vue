@@ -350,20 +350,20 @@ export default {
       this.materialPlanInfo.forEach(itemPro => {
         productionData.push({
           product_id: itemPro.product_id,
-          color_name: itemPro.color,
-          size_name: itemPro.size,
+          color_id: itemPro.color_id,
+          size_id: itemPro.size_id,
           order_number: itemPro.order_num,
           loss_y: itemPro.material_loss,
           loss_f: itemPro.other_loss,
           product_number: itemPro.production_num
         })
         itemPro.part_data.forEach(itemPart => {
-          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
           if (flag) {
             productionData.push({
               product_id: itemPart.id,
-              color_name: itemPro.color,
-              size_name: flag.size_name,
+              color_id: itemPro.color_id,
+              size_id: flag.size_id,
               order_number: Math.ceil(itemPro.order_num * flag.number),
               loss_y: itemPro.material_loss,
               loss_f: itemPro.other_loss,
@@ -374,7 +374,7 @@ export default {
         itemPro.material_info.forEach(itemMa => {
           let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_part)
           if (partName) {
-            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
             detailData.push({
               product_id: itemMa.product_part,
               material_name: itemMa.material_name,
@@ -385,8 +385,8 @@ export default {
               single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num / (sizeFlag ? sizeFlag.number : 1),
               reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
               total_weight: itemMa.total_number,
-              size_name: itemPro.size,
-              color_name: itemPro.color,
+              size_id: itemPro.size_id,
+              color_id: itemPro.color_id,
               unit: itemMa.unit
             })
           } else {
@@ -400,8 +400,8 @@ export default {
               single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
               reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
               total_weight: itemMa.total_number,
-              size_name: itemPro.size,
-              color_name: itemPro.color,
+              size_id: itemPro.size_id,
+              color_id: itemPro.color_id,
               unit: itemMa.unit
             })
           }
@@ -616,7 +616,7 @@ export default {
       material.list()
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
-      let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size', 'color'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
+      let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size_id', 'color_id'], otherRule: [{ name: 'size_name' }, { name: 'color_name' }, { name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
       this.materialPlanInfo = materialPlanInfo.map(itemPro => {
         return {
           product_code: itemPro.product_code,
@@ -624,8 +624,10 @@ export default {
           category_name: itemPro.category_name,
           style_name: itemPro.style_name,
           type_name: itemPro.type_name,
-          size: itemPro.size,
-          color: itemPro.color,
+          size: itemPro.size_name,
+          color: itemPro.color_name,
+          size_id: itemPro.size_id,
+          color_id: itemPro.color_id,
           order_num: itemPro.numbers,
           stock_num: itemPro.stock_number,
           stock_num_use: 0,
@@ -654,11 +656,11 @@ export default {
               end_num: '',
               unit: itemMa.unit
             }
-          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
             let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
             let sizeFlag = ''
             if (partName) {
-              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
             }
             return {
               product_part: itemMa.product_id,

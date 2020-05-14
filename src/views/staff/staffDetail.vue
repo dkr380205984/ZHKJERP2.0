@@ -211,6 +211,16 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/staff/staffUpdate/'+ $route.params.id)">修改</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -237,7 +247,8 @@ export default {
         child_data: [],
         nation: '',
         address: '',
-        academic: ''
+        academic: '',
+        staff_tag: []
       },
       payInfo: [],
       payOtherInfo: [],

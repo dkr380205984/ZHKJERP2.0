@@ -636,9 +636,9 @@
                   <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
                 </div>
                 <div class="col">
-                  <span>{{item.size}}</span>
+                  <span>{{item.size_name}}</span>
                   <br />
-                  <span>{{item.color}}</span>
+                  <span>{{item.color_name}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.price}}元</span>
@@ -955,9 +955,9 @@
                   <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
                 </div>
                 <div class="col">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </div>
                 <div class="col">
                   <span v-for="(itemIng,indexIng) in item.part_assign"
@@ -1132,9 +1132,9 @@
                   {{item.category_info.category_name?(item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name):item.product_code.name}}
                 </div>
                 <div class="col">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </div>
                 <div class="col">
                   <span class="text">{{item.production_type}}</span>
@@ -1294,9 +1294,9 @@
                   {{item.category_info.category_name?(item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name):item.product_code.name}}
                 </div>
                 <div class="col">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </div>
                 <div class="col">
                   <span class="text">{{item.production_type}}</span>
@@ -1437,9 +1437,9 @@
                   {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
                 </div>
                 <div class="col">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </div>
                 <div class="col">
                   <span class="text">{{item.number}}</span>
@@ -1570,9 +1570,9 @@
                 </div>
                 <div class="col">
                   <div class="col">
-                    {{item.size}}
+                    {{item.size_name}}
                     <br />
-                    {{item.color}}
+                    {{item.color_name}}
                   </div>
                 </div>
                 <div class="col">
@@ -1861,9 +1861,9 @@
                   </span>
                 </div>
                 <div class="col">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </div>
                 <div class="col">
                   <span class="text">{{item.pack_number}}</span>
@@ -2028,6 +2028,149 @@
               <div class="oneBox">
                 <div class="label">立方数:</div>
                 <div class="content">{{$formatNum(statistics.stock_out.total_cubic_number)}}立方</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">平均单价:</div>
+                <div class="content">{{statistics.stock_out.avg_price}}元</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">总价:</div>
+                <div class="content">{{$formatNum(statistics.stock_out.total_price)}}元</div>
+              </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="销售出库"
+            name="销售出库">
+            <div class="filterCtn">
+              <div class="leftCtn">
+                <span class="label">筛选条件：</span>
+                <el-input class="inputs"
+                  v-model="product_code"
+                  @change="changeRouter(1)"
+                  placeholder="输入产品编号查询">
+                </el-input>
+                <!-- <el-select class="inputs"
+                  v-model="operate_user"
+                  @change="changeRouter(1)"
+                  placeholder="搜索创建人查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in authList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select> -->
+                <el-date-picker v-model="date"
+                  style="width:290px"
+                  class="inputs"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeRouter(1)">
+                </el-date-picker>
+                <div class="btn btnGray"
+                  style="margin-left:0"
+                  @click="reset">重置</div>
+              </div>
+            </div>
+            <div class="list"
+              v-if="type==='销售出库'">
+              <div class="title">
+                <div class="col"
+                  style="flex:0.7">
+                  <el-checkbox v-model="checkAll">全选</el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">出库日期</span>
+                </div>
+                <div class="col">
+                  <span class="text">销售单位</span>
+                </div>
+                <div class="col">
+                  <span class="text">销售产品</span>
+                </div>
+                <div class="col">
+                  <span class="text">尺码/颜色</span>
+                </div>
+                <div class="col right">
+                  <span class="text">销售数量</span>
+                </div>
+                <div class="col center">
+                  <span class="text">出库时间</span>
+                </div>
+                <div class="col right">
+                  <span class="text">销售单价</span>
+                </div>
+                <div class="col">
+                  <span class="text">价格说明</span>
+                </div>
+                <div class="col right">
+                  <span class="text">总价(元)</span>
+                </div>
+                <div class="col">
+                  <span class="text">备注</span>
+                </div>
+                <!-- <div class="col">
+                  <span class="text">创建人</span>
+                </div> -->
+              </div>
+              <div class="row"
+                v-for="(item,index) in list"
+                :key="index">
+                <div class="col"
+                  style="flex:0.7">
+                  <el-checkbox v-model="item.checked"
+                    @change="$forceUpdate()"></el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">{{$getTime(item.complete_time)}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.client_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">
+                    {{item.product_code}}
+                    <br />
+                    {{item.category_info.category_name}}/{{item.category_info.type_name}}/{{item.category_info.style_name}}
+                  </span>
+                </div>
+                <div class="col">
+                  <span class="text">
+                    {{item.size_name}}
+                    <br />
+                    {{item.color_name}}
+                  </span>
+                </div>
+                <div class="col right">
+                  <span class="text">{{item.number}}{{item.category_info.unit}}</span>
+                </div>
+                <div class="col center">
+                  <span class="text">{{item.complete_time}}</span>
+                </div>
+                <div class="col right">
+                  <span class="text">{{item.price}}{{'元/' + item.category_info.unit}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.price_remakr}}</span>
+                </div>
+                <div class="col right">
+                  <span class="text">{{item.total_price}}元</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.desc}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="statistics"
+              v-if="type==='销售出库'">
+              <div class="oneBox">
+                <div class="label">销售数量:</div>
+                <div class="content">{{$formatNum(statistics.stock_out.total_cubic_number)}}件</div>
               </div>
               <div class="oneBox">
                 <div class="label">平均单价:</div>
@@ -2288,7 +2431,7 @@ export default {
       } else if (this.type === '织造分配') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
-          item.sizeColor = item.size + '/' + item.color
+          item.sizeColor = item.size_name + '/' + item.color_name
           item.total_price = this.$toFixed(item.price * item.number)
           return item
         })
@@ -2321,7 +2464,7 @@ export default {
       } else if (this.type === '半成品加工') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
-          item.sizeColor = item.size + '/' + item.color
+          item.sizeColor = item.size_name + '/' + item.color_name
           item.total_price = this.$toFixed(item.price * item.number)
           item.part = item.part_assign.map((item) => item.name).join('/')
           return item
@@ -2343,7 +2486,7 @@ export default {
       } else if (this.type === '产品入库') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_code.code
-          item.sizeColor = item.size + '/' + item.color
+          item.sizeColor = item.size_name + '/' + item.color_name
           return item
         })
         downloadExcel(data, [
@@ -2360,7 +2503,7 @@ export default {
       } else if (this.type === '产品出库') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_code.code
-          item.sizeColor = item.size + '/' + item.color
+          item.sizeColor = item.size_name + '/' + item.color_name
           return item
         })
         downloadExcel(data, [
@@ -2398,8 +2541,8 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '织造单位', key: 'client_name' },
           { title: '产品名称', key: 'product_name' },
-          { title: '尺码', key: 'size' },
-          { title: '颜色', key: 'color' },
+          { title: '尺码', key: 'size_name' },
+          { title: '颜色', key: 'color_name' },
           { title: '检验数量', key: 'number' },
           { title: '次品数量', key: 'rejects_number' },
           { title: '次品原因', key: 'rejects_infos' },
@@ -2430,8 +2573,8 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '产品编号', key: 'product_code' },
           { title: '产品品类', key: 'product_types' },
-          { title: '尺码', key: 'size' },
-          { title: '颜色', key: 'color' },
+          { title: '尺码', key: 'size_name' },
+          { title: '颜色', key: 'color_name' },
           { title: '检验数量', key: 'number' },
           { title: '次品数量', key: 'rejects_number' },
           { title: '次品原因', key: 'rejects_infos' },
@@ -2459,7 +2602,7 @@ export default {
         ])
       } else if (this.type === '实际装箱') {
         let data = this.checkList.map(item => {
-          item.product_type = item.type.join('/')
+          // item.product_type = item.type.join('/')
           item.product_code = item.product_info.product_code
           item.product_type = item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name
           return item
@@ -2469,8 +2612,8 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '产品编号', key: 'product_code' },
           { title: '产品品类', key: 'product_type' },
-          { title: '尺码', key: 'size' },
-          { title: '颜色', key: 'color' },
+          { title: '尺码', key: 'size_name' },
+          { title: '颜色', key: 'color_name' },
           { title: '实际装箱数', key: 'number' },
           { title: '箱数', key: 'total_box' },
           { title: '备注', key: 'desc' },
@@ -2491,6 +2634,24 @@ export default {
           { title: '港口', key: 'port' },
           { title: '备注', key: 'desc' },
           { title: '操作人', key: 'user_name' }
+        ])
+      } else if (this.type === '销售出库') {
+        let data = this.checkList.map(item => {
+          item.category_type = [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/')
+          return item
+        })
+        downloadExcel(data, [
+          { title: '出库日期', key: 'complete_time' },
+          { title: '销售单位', key: 'client_name' },
+          { title: '销售产品', key: 'product_code' },
+          { title: '产品类型', key: 'category_type' },
+          { title: '尺码', key: 'size_name' },
+          { title: '颜色', key: 'color_name' },
+          { title: '销售数量', key: 'number' },
+          { title: '销售单价', key: 'price' },
+          { title: '价格说明', key: 'price_remark' },
+          { title: '总价', key: 'total_price' },
+          { title: '备注', key: 'desc' }
         ])
       }
     },
@@ -2763,6 +2924,22 @@ export default {
         })
       } else if (this.type === '装箱出库') {
         packPlan.packOutLog({
+          order_type: null,
+          order_id: null,
+          limit: 10,
+          page: this.pages,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        })
+      } else if (this.type === '销售出库') {
+        packPlan.outMarketLog({
           order_type: null,
           order_id: null,
           limit: 10,

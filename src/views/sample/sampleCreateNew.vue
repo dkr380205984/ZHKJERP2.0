@@ -445,7 +445,7 @@
                     <el-option v-for="item in sizeInfo"
                       :key="item.id"
                       :label="item.size_name"
-                      :value="item.size_name">
+                      :value="item.size_id">
                     </el-option>
                   </el-select>
                   <el-select v-model="itemSize.color"
@@ -455,7 +455,7 @@
                     <el-option v-for="item in colorInfo"
                       :key="item.id"
                       :label="item.color_name"
-                      :value="item.color_name">
+                      :value="item.color_id">
                     </el-option>
                   </el-select>
                 </span>
@@ -862,14 +862,13 @@ export default {
     },
     initCreateOrder (info) {
       this.showSampleOrderCreatePopup = true
-      console.log(info)
       this.loading = true
       let sizeInfo = []
       info.size.forEach(itemSize => {
         info.color.forEach(itemColor => {
           sizeInfo.push({
-            size: itemSize.size_name,
-            color: itemColor.color_name,
+            size: itemSize.size_id,
+            color: itemColor.color_id,
             numbers: ''
           })
         })
@@ -976,7 +975,6 @@ export default {
               weight: item.weight
             }
           })
-          // this.product_code = productInfo.product_code
           this.colour = productInfo.color.map(item => {
             return {
               colour: item.color_name

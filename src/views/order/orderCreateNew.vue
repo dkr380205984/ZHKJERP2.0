@@ -320,7 +320,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col">
-              <zh-img-list :list="item.images"></zh-img-list>
+              <zh-img-list :list="item.image"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -920,11 +920,11 @@ export default {
         }
         item.sizeColor = item.size.map(valSize => {
           return {
-            value: valSize.size_name,
+            value: valSize.size_id,
             label: valSize.size_name,
             children: item.color.map(valColor => {
               return {
-                value: valColor.color_name,
+                value: valColor.color_id,
                 label: valColor.color_name
               }
             })
@@ -937,7 +937,7 @@ export default {
             itemPro.size.forEach(itemSize => {
               itemPro.color.forEach(itemColor => {
                 arr.push({
-                  size_color: [itemSize.size_name, itemColor.color_name],
+                  size_color: [itemSize.size_id, itemColor.color_id],
                   price: '',
                   number: ''
                 })
@@ -1009,7 +1009,7 @@ export default {
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
-              size_color: [itemSize.size_name, itemColor.color_name],
+              size_color: [itemSize.size_id, itemColor.color_id],
               price: '',
               number: ''
             })
@@ -1152,8 +1152,8 @@ export default {
                 product_id: itemPro.id,
                 product_info: itemPro.product_info.map(itemSize => {
                   return {
-                    size_name: itemSize.size_color[0],
-                    color_name: itemSize.size_color[1],
+                    size_id: itemSize.size_color[0],
+                    color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
                     unit_price: itemSize.price
                   }
@@ -1224,11 +1224,11 @@ export default {
             items.unit = items.product_info.unit
             items.sizeColor = items.product_info.size_measurement.map(valSize => {
               return {
-                value: valSize.size_name,
+                value: valSize.size_id,
                 label: valSize.size_name,
                 children: items.product_info.color.map(valColor => {
                   return {
-                    value: valColor.color_name,
+                    value: valColor.color_id,
                     label: valColor.color_name
                   }
                 })
@@ -1237,7 +1237,7 @@ export default {
             delete items.product_info
             delete items.image
             return items
-          }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_name/size', 'color_name/color', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+          }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
           orderBatch.push({
             time: itemBatch.delivery_time,
             batch_info: productInfo
@@ -1257,11 +1257,11 @@ export default {
                 product_code: itemPro.product_info.product_code,
                 sizeColor: itemPro.product_info.size_measurement.map(valSize => {
                   return {
-                    value: valSize.size_name,
+                    value: valSize.size_id,
                     label: valSize.size_name,
                     children: itemPro.product_info.color.map(valColor => {
                       return {
-                        value: valColor.color_name,
+                        value: valColor.color_id,
                         label: valColor.color_name
                       }
                     })
@@ -1281,7 +1281,7 @@ export default {
                 id: itemPro.id,
                 product_info: itemPro.product_info.map(itemSize => {
                   return {
-                    size_color: [itemSize.size, itemSize.color],
+                    size_color: [itemSize.size_id, itemSize.color_id],
                     number: itemSize.number,
                     price: itemSize.price
                   }

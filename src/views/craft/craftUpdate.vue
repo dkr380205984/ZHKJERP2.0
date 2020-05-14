@@ -81,7 +81,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -788,7 +788,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -2348,7 +2348,7 @@ export default {
           weight_calculate_formula: this.weftCmp,
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWarp.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -2428,7 +2428,7 @@ export default {
         weft_data: {
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWeft.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -2583,7 +2583,7 @@ export default {
       this.weftInfo = data.weft_data
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
-          value: item.product_color,
+          value: item.color_id,
           colorWarp: item.color_scheme.map((item) => {
             return {
               name: item.name,

@@ -145,6 +145,7 @@
                     v-if="indexPlan === 0"
                     placeholder="尺码颜色"
                     class="width169"
+                    @change="setSizeColorName($event,itemPackInner)"
                     :options="itemPackInner.sizeColor"></el-cascader>
                   <zh-input v-model="itemPackInner.number"
                     :class="indexPlan === 0 ? 'width139' : ''"
@@ -606,16 +607,13 @@ export default {
           })
         })
       })
-      console.log(this.$clone(packPlanTotal))
       packPlanTotal = this.$mergeData(packPlanTotal, { mainRule: 'pack_name', otherRule: [{ name: 'size_info' }, { name: 'attr' }, { name: 'number', type: 'add' }], childrenName: 'item_id' })
-      console.log(this.$clone(packPlanTotal))
       this.packPlanTotal = packPlanTotal.map(item => {
         item.item_id = item.item_id.map(value => value.item_id)
         return item
       })
       // 自动计算包装数量
       let data = this.$clone(this.packPlanInfo).reverse()
-      console.log(this.$clone(data))
       let packNumArr = [] // 数据存放
       data.forEach((item, key) => {
         item.forEach(value => {
@@ -638,7 +636,6 @@ export default {
           })
         })
       })
-      console.log(this.$clone(packNumArr))
       // 将计算结果合并至统计数据中
       packNumArr.forEach(item => {
         let flag = this.packPlanTotal.find(value => value.item_id.indexOf(item.pack_id) !== -1)
@@ -750,7 +747,7 @@ export default {
         let data = {
           id: this.activePlanId,
           order_id: this.$route.params.id,
-          order_type: 1,
+          // order_type: 1,
           pack_info: JSON.stringify(this.packPlanInfo),
           material_info: JSON.stringify(this.packPlanTotal),
           desc: ''
@@ -862,6 +859,15 @@ export default {
         }
       })
       this.planPackInfo = data
+    },
+    setSizeColorName (ev, item) {
+      let sizeFlag = item.sizeColor.find(val => val.value === ev[0])
+      if (sizeFlag) {
+        let colorFlag = sizeFlag.children.find(val => val.value === ev[1])
+        if (colorFlag) {
+          item.size_color_name = [sizeFlag.label, colorFlag.label]
+        }
+      }
     }
   },
   created () {
@@ -884,11 +890,11 @@ export default {
         let sizeColor = itemPro.size_measurement.map(itemSize => {
           return {
             label: itemSize.size_name,
-            value: itemSize.size_name,
+            value: itemSize.size_id,
             children: itemPro.color.map(itemColor => {
               return {
                 label: itemColor.color_name,
-                value: itemColor.color_name
+                value: itemColor.color_id
               }
             })
           }

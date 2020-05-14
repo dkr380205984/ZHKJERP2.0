@@ -88,14 +88,14 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn"
                         :class="{'green':itemChild.inspectionNum>=itemChild.number,'orange':itemChild.inspectionNum<itemChild.number}">{{itemChild.inspectionNum}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalInspection(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number - itemChild.inspectionNum)">检验</span>
+                          @click="normalInspection(item.client_id,itemChild.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.number - itemChild.inspectionNum)">检验</span>
                       </div>
                     </div>
                   </div>
@@ -159,7 +159,7 @@
                         v-model="itemChild.colorSize">
                         <el-option v-for="(item,index) in item.colorSizeArr"
                           :key="index"
-                          :value="item.name"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -423,7 +423,7 @@
             <span class="tb_row">{{item.complete_time}}</span>
             <span class="tb_row">{{item.client_name}}</span>
             <span class="tb_row flex12">{{item.product_name}}</span>
-            <span class="tb_row">{{item.size}}/{{item.color}}</span>
+            <span class="tb_row">{{item.size_name}}/{{item.color_name}}</span>
             <span class="tb_row flex08">{{item.number}}</span>
             <span class="tb_row flex12">
               <span class="green"
@@ -547,8 +547,8 @@ export default {
         { title: '检验日期', key: 'complete_time' },
         { title: '织造单位', key: 'client_name' },
         { title: '产品名称', key: 'product_name' },
-        { title: '尺码', key: 'size' },
-        { title: '颜色', key: 'color' },
+        { title: '尺码', key: 'size_name' },
+        { title: '颜色', key: 'color_name' },
         { title: '检验数量', key: 'number' },
         { title: '次品数量', key: 'rejects_number' },
         { title: '次品原因', key: 'rejects_infos' },
@@ -568,7 +568,8 @@ export default {
           return item.product_id === product
         }).childrenMergeInfo.map((item) => {
           return {
-            name: item.size + '/' + item.color
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
           }
         }) : [],
         product_info: [{
@@ -595,11 +596,12 @@ export default {
                 return item.product_id === itemChild.product_id
               }).childrenMergeInfo.map((item) => {
                 return {
-                  name: item.size + '/' + item.color
+                  name: item.size_name + '/' + item.color_name,
+                  id: item.size_id + '/' + item.color_id
                 }
               }),
               product_info: [{
-                colorSize: itemChild.size + '/' + itemChild.color,
+                colorSize: itemChild.size_id + '/' + itemChild.color_id,
                 number: itemChild.number - itemChild.inspectionNum,
                 count: '',
                 substandard: [{
@@ -673,11 +675,11 @@ export default {
       this.inspection_data.forEach((item) => {
         item.product_info.forEach((itemChild) => {
           formData.push({
-            order_type: 1,
+            // order_type: 1,
             order_id: this.$route.params.id,
             product_id: item.product_id,
-            size: itemChild.colorSize.split('/')[0],
-            color: itemChild.colorSize.split('/')[1],
+            size_id: itemChild.colorSize.split('/')[0],
+            color_id: itemChild.colorSize.split('/')[1],
             client_id: item.client_id,
             count: itemChild.count,
             number: itemChild.number,
@@ -723,7 +725,8 @@ export default {
         return item.product_id === id
       }).childrenMergeInfo.map((item) => {
         return {
-          name: item.size + '/' + item.color
+          name: item.size_name + '/' + item.color_name,
+          id: item.size_id + '/' + item.color_id
         }
       })
     },
@@ -796,7 +799,7 @@ export default {
       this.orderInfo = res[0].data.data
       let mergeData = []
       res[1].data.data.forEach((item) => {
-        let finded = mergeData.find((itemFind) => itemFind.size === item.size && itemFind.color === item.color && itemFind.product_info.code === item.product_info.code && itemFind.client_id === item.client_id)
+        let finded = mergeData.find((itemFind) => itemFind.size_id === item.size_id && itemFind.color_id === item.color_id && itemFind.product_info.code === item.product_info.code && itemFind.client_id === item.client_id)
         if (finded) {
           finded.number += item.number
         } else {
@@ -827,7 +830,7 @@ export default {
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inspectionNum = this.inspection_log.filter((itemFilter) => {
-            return itemFilter.product_id === itemChild.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_id === item.client_id
+            return itemFilter.product_id === itemChild.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_id === item.client_id
           }).reduce((total, current) => {
             return total + current.number
           }, 0)

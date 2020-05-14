@@ -238,23 +238,23 @@ export default {
                 product_id: null
               }
             }).concat(...(item.product_info.map(vals => {
-              vals.product_info.images.forEach(valImg => {
+              vals.product_info.image.forEach(valImg => {
                 valImg.product_id = vals.product_info.product_id
               })
-              return vals.product_info.images.length === 0 ? {
+              return vals.product_info.image.length === 0 ? {
                 image_url: '',
                 thumb: '',
                 product_id: vals.product_info.product_id
-              } : vals.product_info.images
+              } : vals.product_info.image
             }))) : [].concat(...(item.product_info.map(vals => {
-              vals.product_info.images.forEach(valImg => {
+              vals.product_info.image.forEach(valImg => {
                 valImg.product_id = vals.product_info.product_id
               })
-              return vals.product_info.images.length === 0 ? {
+              return vals.product_info.image.length === 0 ? {
                 image_url: '',
                 thumb: '',
                 product_id: vals.product_info.product_id
-              } : vals.product_info.images
+              } : vals.product_info.image
             })))
             return {
               code: item.quotation_code,

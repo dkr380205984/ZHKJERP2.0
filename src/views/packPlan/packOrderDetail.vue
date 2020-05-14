@@ -823,7 +823,7 @@ export default {
             number: item.number,
             client_id: item.order_client,
             material_name: item.pack_name,
-            order_type: 1,
+            // order_type: 1,
             order_id: this.$route.params.id,
             unit: item.unit || '个'
           }

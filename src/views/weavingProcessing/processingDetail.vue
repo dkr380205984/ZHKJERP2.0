@@ -107,13 +107,13 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.processNum}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalProcess(item.product_id,itemChild.size,itemChild.color,((itemChild.production_number - itemChild.processNum)>0?(itemChild.production_number - itemChild.processNum):itemChild.production_number))">半成品加工分配</span>
+                          @click="normalProcess(item.product_id,itemChild.size_id,itemChild.color_id,((itemChild.production_number - itemChild.processNum)>0?(itemChild.production_number - itemChild.processNum):itemChild.production_number))">半成品加工分配</span>
                       </div>
                     </div>
                   </div>
@@ -193,7 +193,7 @@
                         no-data-text="请先选择产品">
                         <el-option v-for="(items,indexs) in item.colorSizeArr"
                           :key="indexs"
-                          :value="items.name"
+                          :value="items.id"
                           :label="items.name"></el-option>
                       </el-select>
                     </div>
@@ -353,7 +353,7 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.type}}</div>
                       <div class="tcolumn">
                         <span v-for="(itemIng,indexIng) in itemChild.part_assign"
@@ -437,8 +437,8 @@
                     <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
                   </div>
                   <div class="tcolumn">
-                    <span>{{item.size}}</span>
-                    <span>{{item.color}}</span>
+                    <span>{{item.size_name}}</span>
+                    <span>{{item.color_name}}</span>
                   </div>
                   <div class="tcolumn">
                     <span v-for="(itemIng,indexIng) in item.part_assign"
@@ -505,7 +505,7 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn noPad"
                         style="flex:3">
@@ -715,7 +715,10 @@ export default {
         company_id: '',
         process_type: [],
         colorSizeArr: id ? this.process_info.find((item) => item.product_id === id).childrenMergeInfo.map((item) => {
-          return { name: item.size + '/' + item.color }
+          return {
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
+          }
         }) : [],
         partDataArr: id ? this.process_info.find((item) => item.product_id === id).childrenMergeInfo[0].part_data : [],
         product_info: [{
@@ -743,12 +746,15 @@ export default {
           company_id: '',
           process_type: [],
           colorSizeArr: item.childrenMergeInfo.map((itemChild) => {
-            return { name: itemChild.size + '/' + itemChild.color }
+            return {
+              name: itemChild.size_name + '/' + itemChild.color_name,
+              id: itemChild.size_id + '/' + itemChild.color_id
+            }
           }),
           partDataArr: item.childrenMergeInfo[0].part_data,
           product_info: item.childrenMergeInfo.map((itemChild) => {
             return {
-              colorSize: itemChild.size + '/' + itemChild.color,
+              colorSize: itemChild.size_id + '/' + itemChild.color_id,
               price: '',
               number: itemChild.production_number
             }
@@ -832,8 +838,8 @@ export default {
             order_type: this.$route.params.orderType,
             order_id: this.$route.params.id,
             product_id: item.product_id,
-            size: itemChild.colorSize.split('/')[0],
-            color: itemChild.colorSize.split('/')[1],
+            size_id: itemChild.colorSize.split('/')[0],
+            color_id: itemChild.colorSize.split('/')[1],
             client_id: item.company_id,
             price: itemChild.price,
             number: itemChild.number,
@@ -864,7 +870,7 @@ export default {
       let finded = this.process_info.find((item) => item.product_id === id)
       this.process_data[index].partDataArr = finded.childrenMergeInfo[0].part_data
       this.process_data[index].colorSizeArr = finded.childrenMergeInfo.map((item) => {
-        return { name: item.size + '/' + item.color }
+        return { name: item.size_name + '/' + item.color_name }
       })
     },
     addColorSize (index) {
@@ -970,7 +976,7 @@ export default {
       this.process_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.processNum = this.process_log.filter((itemFilter) => {
-            return item.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color
+            return item.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id
           }).reduce((total, current) => {
             return total + current.number
           }, 0)

@@ -236,15 +236,17 @@ export default {
             // })
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -254,7 +256,7 @@ export default {
                 material_info: item.material_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size_id', 'color_id', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'size' }, { name: 'color' }, { name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
             let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
             // console.log(materialInfo)
             this.materialInfo = materialInfo
@@ -302,8 +304,10 @@ export default {
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -313,7 +317,7 @@ export default {
                 material_info: item.part_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size_id', 'color_id', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'size' }, { name: 'color' }, { name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
             let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
             // console.log(materialInfo)
             this.materialInfo = materialInfo
@@ -361,8 +365,10 @@ export default {
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -372,7 +378,7 @@ export default {
                 material_info: item.material_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size_id', 'color_id', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'size' }, { name: 'color' }, { name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
             let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['material_name', 'material_type'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'material_weight', type: 'add' }, { name: 'material_unit/unit' }] } })
             // console.log(materialInfo)
             this.materialInfo = materialInfo
@@ -418,8 +424,10 @@ export default {
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
+                size: item.size_name,
+                size_id: item.size_id,
                 color: item.color,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -429,7 +437,7 @@ export default {
                 material_info: item.part_assign
               }
             })
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }], childrenName: 'color_info', childrenRule: { mainRule: ['size_id', 'color_id', 'price', 'compiled_time', 'process_type'], otherRule: [{ name: 'size' }, { name: 'color' }, { name: 'number', type: 'add' }, { name: 'img' }, { name: 'sizeInfo' }] } })
             let materialInfo = this.$mergeData(this.$flatten(weaveInfo.map(itemMa => itemMa.material_info)), { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: ['material_attribute'], otherRule: [{ name: 'number/material_weight', type: 'add' }] } })
             // console.log(materialInfo)
             this.materialInfo = materialInfo

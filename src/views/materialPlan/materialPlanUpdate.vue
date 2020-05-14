@@ -344,20 +344,20 @@ export default {
       this.materialPlanInfo.forEach(itemPro => {
         productionData.push({
           product_id: itemPro.product_id,
-          color_name: itemPro.color,
-          size_name: itemPro.size,
+          color_id: itemPro.color_id,
+          size_id: itemPro.size_id,
           order_number: itemPro.order_num,
           loss_y: itemPro.material_loss,
           loss_f: itemPro.other_loss,
           product_number: itemPro.production_num
         })
         itemPro.part_data.forEach(itemPart => {
-          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+          let flag = itemPart.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
           if (flag) {
             productionData.push({
               product_id: itemPart.id,
-              color_name: itemPro.color,
-              size_name: flag.size_name,
+              color_id: itemPro.color_id,
+              size_id: flag.size_id,
               order_number: Math.ceil(itemPro.order_num * flag.number),
               loss_y: itemPro.material_loss,
               loss_f: itemPro.other_loss,
@@ -368,7 +368,7 @@ export default {
         itemPro.material_info.forEach(itemMa => {
           let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_part)
           if (partName) {
-            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
             detailData.push({
               product_id: itemMa.product_part,
               material_name: itemMa.material_name,
@@ -378,8 +378,8 @@ export default {
               single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num / (sizeFlag ? sizeFlag.number : 1),
               reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
               total_weight: itemMa.total_number,
-              size_name: itemPro.size,
-              color_name: itemPro.color,
+              size_id: itemPro.size_id,
+              color_id: itemPro.color_id,
               unit: itemMa.unit
             })
           } else {
@@ -392,8 +392,8 @@ export default {
               single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
               reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
               total_weight: itemMa.total_number,
-              size_name: itemPro.size,
-              color_name: itemPro.color,
+              size_id: itemPro.size_id,
+              color_id: itemPro.color_id,
               unit: itemMa.unit
             })
           }
@@ -630,8 +630,10 @@ export default {
               category_name: itemPro.category_name,
               style_name: itemPro.style_name,
               type_name: itemPro.type_name,
-              size: itemPro.size,
-              color: itemPro.color,
+              size: itemPro.size_name,
+              color: itemPro.color_name,
+              size_id: itemPro.size_id,
+              color_id: itemPro.color_id,
               order_num: itemPro.numbers,
               stock_num: itemPro.stock_number,
               stock_num_use: 0,
@@ -713,8 +715,10 @@ export default {
           category_name: itemPro.category_name,
           style_name: itemPro.style_name,
           type_name: itemPro.type_name,
-          size: itemPro.size,
-          color: itemPro.color,
+          size: itemPro.size_name,
+          color: itemPro.color_name,
+          size_id: itemPro.size_id,
+          color_id: itemPro.color_id,
           order_num: itemPro.numbers,
           stock_num: itemPro.stock_number,
           stock_num_use: 0,
@@ -768,7 +772,7 @@ export default {
       let data = res[3].data.data
       this.cloneData = this.$clone(data.total_data) // 保留一份修改前的物料总计数据
       data.production_data.forEach(itemPro => {
-        let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.size === itemPro.size_name && valPro.color === itemPro.color_name)
+        let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.size_id === itemPro.size_id && valPro.color_id === itemPro.color_id)
         if (flag) {
           flag.material_loss = itemPro.loss_y
           flag.other_loss = itemPro.loss_f
@@ -782,9 +786,9 @@ export default {
         }
         return itemPro
       })
-      planInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/material_color' }, { name: 'single_weight/number' }, { name: 'single_weight_loss/number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+      planInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/material_color' }, { name: 'single_weight/number' }, { name: 'single_weight_loss/number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
       this.materialPlanInfo.forEach(itemPro => {
-        let planFlag = planInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color === itemPro.color && valPro.size === itemPro.size)
+        let planFlag = planInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
         if (planFlag) {
           itemPro.material_info = planFlag.material_info.map(itemMa => {
             return {

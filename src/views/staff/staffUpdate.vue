@@ -91,9 +91,9 @@
               <el-select v-model="staffInfo.sex"
                 placeholder="请选择性别">
                 <el-option label="男"
-                  value="1"></el-option>
+                  :value="1"></el-option>
                 <el-option label="女"
-                  value="2"></el-option>
+                  :value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -185,9 +185,9 @@
               <el-select v-model="staffInfo.type"
                 placeholder="请选择工种">
                 <el-option label="合同工"
-                  value="1"></el-option>
+                  :value="1"></el-option>
                 <el-option label="临时工"
-                  value="2"></el-option>
+                  :value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -274,7 +274,7 @@ export default {
         health: '',
         emergentPerson: '',
         emergentPhone: '',
-        date: '',
+        start_time: '',
         type: '',
         desc: '',
         mingzu: '',
@@ -305,10 +305,6 @@ export default {
         this.$message.warning('请选择工种')
         return
       }
-      if (!this.staffInfo.date) {
-        this.$message.warning('请选择在职时间')
-        return
-      }
       // 紧急联系人没有上传到接口
       staff.create({
         id: this.$route.params.id,
@@ -324,7 +320,7 @@ export default {
         healthy_info: this.staffInfo.health,
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
-        work_time: this.staffInfo.date,
+        work_time: this.staffInfo.start_time,
         nation: this.staffInfo.mingzu,
         address: this.staffInfo.dizhi,
         academic: this.staffInfo.xueli,
@@ -352,21 +348,26 @@ export default {
       this.staffInfo.name = data.name
       this.staffInfo.telephone = data.phone
       this.staffInfo.sex = data.sex
-      this.staffInfo.department_id = data.department_id
+      this.staffInfo.department = data.department_id
       this.staffInfo.age = data.age
       this.staffInfo.IDcard = data.id_card
       this.staffInfo.bankName = data.bank_card_name
       this.staffInfo.bankCard = data.bank_card_code
-      this.staffInfo.station_id = data.station_id
+      this.staffInfo.station = data.station_id
       this.staffInfo.health = data.healthy_info
       this.staffInfo.emergentPhone = data.urgent_phone
       this.staffInfo.type = data.type
-      this.staffInfo.date = data.work_time
+      this.staffInfo.start_time = data.work_time
       this.staffInfo.desc = data.desc
       this.staffInfo.dizhi = data.address
       this.staffInfo.xueli = data.academic
       this.staffInfo.mingzu = data.nation
-      this.staffInfo.tag = data.tag_data
+      this.staffInfo.tag = data.staff_tag.map(item => {
+        let flag = res[2].data.data.find(itemTag => itemTag.name === item)
+        if (flag) {
+          return flag.id
+        }
+      })
       this.departmentArr = res[1].data.data
       this.staffTagList = res[2].data.data
     })

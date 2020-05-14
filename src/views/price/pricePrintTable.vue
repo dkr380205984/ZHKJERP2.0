@@ -54,7 +54,7 @@
               <span class="row_item noBorder left">{{item.product_info.product_code}}</span>
               <span class="row_item noBorder left">{{item.product_info|filterType}}</span>
               <span class="row_item noBorder left">
-                <zh-img-list :list='item.product_info.images'></zh-img-list>
+                <zh-img-list :list='item.product_info.image'></zh-img-list>
               </span>
             </div>
           </span>

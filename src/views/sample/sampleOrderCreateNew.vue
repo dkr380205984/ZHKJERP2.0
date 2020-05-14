@@ -612,17 +612,18 @@ export default {
       this.getList()
     },
     checkedPro (ev, item) {
+      console.log(ev, item)
       if (ev) {
         if (!item.sizeColor) {
           item.sizeColor = []
         }
         item.sizeColor = item.size.map(valSize => {
           return {
-            value: valSize.size_name,
+            value: valSize.size_id,
             label: valSize.size_name,
             children: item.color.map(valColor => {
               return {
-                value: valColor.color_name,
+                value: valColor.color_id,
                 label: valColor.color_name
               }
             })
@@ -633,7 +634,7 @@ export default {
         newItem.size.forEach(valSize => {
           newItem.color.forEach(valColor => {
             newItem.sizeInfo.push({
-              size_color: [valSize.size_name, valColor.color_name],
+              size_color: [valSize.size_id, valColor.color_id],
               number: ''
             })
             this.isResouceShow++
@@ -642,12 +643,12 @@ export default {
         this.checkedProList.push(newItem)
       } else {
         // 产品取消选中时，批次内删除该产品
-        this.batchDate.forEach(itemBatch => {
-          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-          if (index !== -1) {
-            itemBatch.batch_info.splice(index, 1)
-          }
-        })
+        // this.batchDate.forEach(itemBatch => {
+        //   let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+        //   if (index !== -1) {
+        //     itemBatch.batch_info.splice(index, 1)
+        //   }
+        // })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
         if (cancleProFlag) {
           cancleProFlag.checked = false
@@ -742,8 +743,8 @@ export default {
             product_id: itemPro.id,
             size_info: itemPro.sizeInfo.map(itemSize => {
               return {
-                size: itemSize.size_color[0],
-                color: itemSize.size_color[1],
+                size_id: itemSize.size_color[0],
+                color_id: itemSize.size_color[1],
                 numbers: itemSize.number
               }
             })
@@ -790,16 +791,16 @@ export default {
           this.client_id = sampleOrderInfo.client_id.toString()
           this.getContact(this.client_id)
           this.contact_id = sampleOrderInfo.contacts_id
-          this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_name/size', 'color_name/color'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+          this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/size' }, { name: 'color_name/color' }] } })
           this.checkedProList = this.checkedProList.map(itemPro => {
             itemPro.sample_product_code = itemPro.product_info.product_code
             itemPro.sizeColor = itemPro.product_info.size_measurement.map(itemSize => {
               return {
-                value: itemSize.size_name,
+                value: itemSize.size_id,
                 label: itemSize.size_name,
                 children: itemPro.product_info.color.map(itemColor => {
                   return {
-                    value: itemColor.color_name,
+                    value: itemColor.color_id,
                     label: itemColor.color_name
                   }
                 })
@@ -807,7 +808,7 @@ export default {
             })
             itemPro.sizeInfo = itemPro.sizeInfo.map(items => {
               return {
-                size_color: [items.size, items.color],
+                size_color: [items.size_id, items.color_id],
                 number: items.number
               }
             })

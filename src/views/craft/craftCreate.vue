@@ -30,7 +30,7 @@
             placeholder="输入编号导入工艺单">
             <el-option v-for="item in gydArr"
               :key="item.id"
-              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
+              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code.code:item.craft_code"
               :value="item.id">
               <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
               <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
@@ -113,7 +113,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -832,7 +832,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -3496,7 +3496,7 @@ export default {
           weight_calculate_formula: this.weftCmp,
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWarp.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -3576,7 +3576,7 @@ export default {
         weft_data: {
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWeft.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
