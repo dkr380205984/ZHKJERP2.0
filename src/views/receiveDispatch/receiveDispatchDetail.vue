@@ -89,14 +89,14 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">{{itemChild.inNum}}</div>
                       <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
                       <div class="tcolumn">
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="normalWeave(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.inNum)">入库</span>
+                          @click="normalWeave(item.client_id,itemChild.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.number-itemChild.inNum)">入库</span>
                       </div>
                     </div>
                   </div>
@@ -118,7 +118,7 @@
                     <div class="content">
                       <el-select v-model="item.product_id"
                         placeholder="请选择入库产品"
-                        @change="selectProduct($event,index,'weave_data')">
+                        @change="selectProduct($event,index,'weave_data','weave_product')">
                         <el-option v-for="item in weave_product"
                           :key="item.product_id"
                           :value="item.product_id"
@@ -160,7 +160,7 @@
                         v-model="itemChild.colorSize">
                         <el-option v-for="(item,index) in item.colorSizeArr"
                           :key="index"
-                          :value="item.name"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -290,7 +290,7 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.type}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">{{itemChild.outNum}}</div>
@@ -300,10 +300,10 @@
                         style="flex-direction:row;align-items:center;justify-content:start">
                         <span class="btn noBorder"
                           style="padding:0;margin:0 16px 0 0"
-                          @click="processIn(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.inNum,itemChild.type)">入库</span>
+                          @click="processIn(item.client_id,itemChild.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.number-itemChild.inNum,itemChild.type)">入库</span>
                         <span class="btn noBorder"
                           style="padding:0;margin:0"
-                          @click="processOut(item.client_id,itemChild.product_id,itemChild.size + '/' + itemChild.color,itemChild.number-itemChild.outNum,itemChild.type)">出库</span>
+                          @click="processOut(item.client_id,itemChild.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.number-itemChild.outNum,itemChild.type)">出库</span>
                       </div>
                     </div>
                   </div>
@@ -325,7 +325,7 @@
                     <div class="content">
                       <el-select v-model="item.product_id"
                         :placeholder="'请选择'+process_type+'产品'"
-                        @change="selectProduct($event,index,'process_data')">
+                        @change="selectProduct($event,index,'process_data','process_product')">
                         <el-option v-for="item in process_product"
                           :key="item.product_id"
                           :value="item.product_id"
@@ -381,7 +381,7 @@
                         v-model="itemChild.colorSize">
                         <el-option v-for="(item,index) in item.colorSizeArr"
                           :key="index"
-                          :value="item.name"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -528,9 +528,9 @@
                   {{item.category_info.category_name?(item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name):item.product_code.name}}
                 </span>
                 <span class="tb_row">
-                  {{item.size}}
+                  {{item.size_name}}
                   <br />
-                  {{item.color}}
+                  {{item.color_name}}
                 </span>
                 <span class="tb_row">{{item.count}}</span>
                 <span class="tb_row">{{item.number}}</span>
@@ -622,8 +622,8 @@ export default {
         { title: '收发类型', key: 'flag' },
         { title: '产品编号', key: 'product_code' },
         { title: '产品品类', key: 'product_types' },
-        { title: '尺码', key: 'size' },
-        { title: '颜色', key: 'color' },
+        { title: '尺码', key: 'size_name' },
+        { title: '颜色', key: 'color_name' },
         { title: '件数', key: 'count' },
         { title: '数量', key: 'number' },
         { title: '备注', key: 'desc' },
@@ -652,7 +652,8 @@ export default {
           return item.product_id === product
         }).childrenMergeInfo.map((item) => {
           return {
-            name: item.size + '/' + item.color
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
           }
         }) : [],
         product_info: [{
@@ -674,11 +675,12 @@ export default {
               return item.product_id === itemChild.product_id
             }).childrenMergeInfo.map((item) => {
               return {
-                name: item.size + '/' + item.color
+                name: item.size_name + '/' + item.color_name,
+                id: item.size_id + '/' + item.color_id
               }
             }),
             product_info: [{
-              colorSize: itemChild.size + '/' + itemChild.color,
+              colorSize: itemChild.size_id + '/' + itemChild.color_id,
               number: itemChild.number - itemChild.inNum,
               count: ''
             }],
@@ -758,12 +760,12 @@ export default {
             item.product_info.forEach((itemChild) => {
               formData.push({
                 order_id: this.$route.params.id,
-                order_type: 1,
+                // order_type: 1,
                 product_id: item.product_id,
                 type: 1, // 类型，1 织造 2 加工
                 client_id: item.client_id,
-                size: itemChild.colorSize.split('/')[0],
-                color: itemChild.colorSize.split('/')[1],
+                size_id: itemChild.colorSize.split('/')[0],
+                color_id: itemChild.colorSize.split('/')[1],
                 count: itemChild.count,
                 number: itemChild.number,
                 complete_time: item.date,
@@ -799,12 +801,12 @@ export default {
           item.product_info.forEach((itemChild) => {
             formData.push({
               order_id: this.$route.params.id,
-              order_type: 1,
+              // order_type: 1,
               product_id: item.product_id,
               type: 1, // 类型，1 织造 2 加工
               client_id: item.client_id,
-              size: itemChild.colorSize.split('/')[0],
-              color: itemChild.colorSize.split('/')[1],
+              size_id: itemChild.colorSize.split('/')[0],
+              color_id: itemChild.colorSize.split('/')[1],
               count: itemChild.count,
               number: itemChild.number,
               complete_time: item.date,
@@ -840,12 +842,13 @@ export default {
     deleteColorSize (data, index, indexChild) {
       this[data][index].product_info.splice(index, 1)
     },
-    selectProduct (id, index, data) {
-      this[data][index].colorSizeArr = this.weave_product.find((item) => {
+    selectProduct (id, index, data, fromData) {
+      this[data][index].colorSizeArr = this[fromData].find((item) => {
         return item.product_id === id
       }).childrenMergeInfo.map((item) => {
         return {
-          name: item.size + '/' + item.color
+          name: item.size_name + '/' + item.color_name,
+          id: item.size_id + '/' + item.color_id
         }
       })
     },
@@ -858,7 +861,8 @@ export default {
           return item.product_id === product
         }).childrenMergeInfo.map((item) => {
           return {
-            name: item.size + '/' + item.color
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
           }
         }) : [],
         product_info: [{
@@ -881,7 +885,8 @@ export default {
           return item.product_id === product
         }).childrenMergeInfo.map((item) => {
           return {
-            name: item.size + '/' + item.color
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
           }
         }) : [],
         product_info: [{
@@ -905,11 +910,12 @@ export default {
                 return itemFind.product_id === itemChild.product_id
               }).childrenMergeInfo.map((item) => {
                 return {
-                  name: item.size + '/' + item.color
+                  name: item.size_name + '/' + item.color_name,
+                  id: item.size_id + '/' + item.color_id
                 }
               }),
               product_info: [{
-                colorSize: itemChild.size + '/' + itemChild.color || '',
+                colorSize: itemChild.size_id + '/' + itemChild.color_id || '',
                 number: itemChild.number - itemChild.inNum,
                 count: ''
               }],
@@ -938,11 +944,12 @@ export default {
                 return itemFind.product_id === itemChild.product_id
               }).childrenMergeInfo.map((item) => {
                 return {
-                  name: item.size + '/' + item.color
+                  name: item.size_name + '/' + item.color_name,
+                  id: item.size_id + '/' + item.color_id
                 }
               }),
               product_info: [{
-                colorSize: itemChild.size + '/' + itemChild.color || '',
+                colorSize: itemChild.size_id + '/' + itemChild.color_id || '',
                 number: itemChild.number - itemChild.outNum,
                 count: ''
               }],
@@ -1030,12 +1037,12 @@ export default {
             item.product_info.forEach((itemChild) => {
               formData.push({
                 order_id: this.$route.params.id,
-                order_type: 1,
+                // order_type: 1,
                 product_id: item.product_id,
                 type: 2, // 类型，1 织造 2 加工
                 client_id: item.client_id,
-                size: itemChild.colorSize.split('/')[0],
-                color: itemChild.colorSize.split('/')[1],
+                size_id: itemChild.colorSize.split('/')[0],
+                color_id: itemChild.colorSize.split('/')[1],
                 count: itemChild.count,
                 number: itemChild.number,
                 complete_time: item.date,
@@ -1089,12 +1096,12 @@ export default {
           item.product_info.forEach((itemChild) => {
             formData.push({
               order_id: this.$route.params.id,
-              order_type: 1,
+              // order_type: 1,
               product_id: item.product_id,
               type: 2, // 类型，1 织造 2 加工
               client_id: item.client_id,
-              size: itemChild.colorSize.split('/')[0],
-              color: itemChild.colorSize.split('/')[1],
+              size_id: itemChild.colorSize.split('/')[0],
+              color_id: itemChild.colorSize.split('/')[1],
               count: itemChild.count,
               number: itemChild.number,
               complete_time: item.date,
@@ -1228,7 +1235,7 @@ export default {
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type === '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type === '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1237,7 +1244,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1246,7 +1253,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.outNum = res[5].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1275,7 +1282,7 @@ export default {
             }],
             production_type: flag.production_type
           })
-          this.selectProduct(flag.product_id, 0, 'process_data')
+          this.selectProduct(flag.product_id, 0, 'process_data', 'process_product')
         }
       } else if (this.$route.query.logId && this.$route.query.type === '2') {
         let flag = res[5].data.data.find(item => Number(item.id) === Number(this.$route.query.logId))
@@ -1295,7 +1302,7 @@ export default {
             }],
             production_type: flag.production_type
           })
-          this.selectProduct(flag.product_id, 0, 'process_data')
+          this.selectProduct(flag.product_id, 0, 'process_data', 'process_product')
         }
       }
       console.log(this.log)

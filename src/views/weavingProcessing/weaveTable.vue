@@ -275,15 +275,17 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: +item.number || 0,
                 compiled_time: this.$getTime(item.complete_time),
@@ -299,19 +301,21 @@ export default {
               let sizeArr = []
               let colorArr = []
               itemPro.data_info.forEach(itemInfo => {
-                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                let flagSize = sizeArr.find(itemSize => itemSize.size_id === itemInfo.size_id)
                 if (!flagSize) {
                   sizeArr.push({
                     size_name: itemInfo.size,
+                    size_id: itemInfo.size_id,
                     totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                   })
                 } else {
                   flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                 }
-                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
                   colorArr.push({
                     color_name: itemInfo.color,
+                    color_id: itemInfo.color_id,
                     [itemInfo.size]: {
                       number: itemInfo.number,
                       motorise_number: itemInfo.motorise_number
@@ -344,9 +348,10 @@ export default {
               let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
                 return {
                   color_name: itemMa.color,
+                  color_id: itemMa.color_id,
                   material_data: itemMa.material_info
                 }
-              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              }), { mainRule: 'color_id', otherRule: [{ name: 'color_name' }, { name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
               materialInfo = this.$flatten(materialInfo.map(itemColor => {
                 return itemColor.material_data.map(itemMa => {
                   return {
@@ -427,15 +432,17 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -451,19 +458,21 @@ export default {
               let sizeArr = []
               let colorArr = []
               itemPro.data_info.forEach(itemInfo => {
-                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                let flagSize = sizeArr.find(itemSize => itemSize.size_id === itemInfo.size_id)
                 if (!flagSize) {
                   sizeArr.push({
                     size_name: itemInfo.size,
+                    size_id: itemInfo.size_id,
                     totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                   })
                 } else {
                   flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                 }
-                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
                   colorArr.push({
                     color_name: itemInfo.color,
+                    color_id: itemInfo.color_id,
                     [itemInfo.size]: {
                       number: itemInfo.number,
                       motorise_number: itemInfo.motorise_number
@@ -496,9 +505,10 @@ export default {
               let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
                 return {
                   color_name: itemMa.color,
+                  color_id: itemMa.color_id,
                   material_data: itemMa.material_info
                 }
-              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              }), { mainRule: 'color_id', otherRule: [{ name: 'color_name' }, { name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
               materialInfo = this.$flatten(materialInfo.map(itemColor => {
                 return itemColor.material_data.map(itemMa => {
                   return {
@@ -581,15 +591,17 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -604,19 +616,21 @@ export default {
               let sizeArr = []
               let colorArr = []
               itemPro.data_info.forEach(itemInfo => {
-                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                let flagSize = sizeArr.find(itemSize => itemSize.size_id === itemInfo.size_id)
                 if (!flagSize) {
                   sizeArr.push({
                     size_name: itemInfo.size,
+                    size_id: itemInfo.size_id,
                     totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                   })
                 } else {
                   flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                 }
-                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
                   colorArr.push({
                     color_name: itemInfo.color,
+                    color_id: itemInfo.color_id,
                     [itemInfo.size]: {
                       number: itemInfo.number,
                       motorise_number: itemInfo.motorise_number
@@ -649,9 +663,10 @@ export default {
               let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
                 return {
                   color_name: itemMa.color,
+                  color_id: itemMa.color_id,
                   material_data: itemMa.material_info
                 }
-              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              }), { mainRule: 'color_id', otherRule: [{ name: 'color_name' }, { name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
               materialInfo = this.$flatten(materialInfo.map(itemColor => {
                 return itemColor.material_data.map(itemMa => {
                   return {
@@ -732,15 +747,17 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
                 category_info: item.category_info,
                 client_name: item.client_name,
-                size: item.size,
-                color: item.color,
+                size: item.size_name,
+                size_id: item.size_id,
+                color: item.color_name,
+                color_id: item.color_id,
                 price: item.price,
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
@@ -755,19 +772,21 @@ export default {
               let sizeArr = []
               let colorArr = []
               itemPro.data_info.forEach(itemInfo => {
-                let flagSize = sizeArr.find(itemSize => itemSize.size_name === itemInfo.size)
+                let flagSize = sizeArr.find(itemSize => itemSize.size_id === itemInfo.size_id)
                 if (!flagSize) {
                   sizeArr.push({
                     size_name: itemInfo.size,
+                    size_id: itemInfo.size_id,
                     totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                   })
                 } else {
                   flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
                 }
-                let flagColor = colorArr.find(itemColor => itemColor.color_name === itemInfo.color)
+                let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
                   colorArr.push({
                     color_name: itemInfo.color,
+                    color_id: itemInfo.color_id,
                     [itemInfo.size]: {
                       number: itemInfo.number,
                       motorise_number: itemInfo.motorise_number
@@ -800,9 +819,10 @@ export default {
               let materialInfo = this.$mergeData(itemPro.data_info.map(itemMa => {
                 return {
                   color_name: itemMa.color,
+                  color_id: itemMa.color_id,
                   material_data: itemMa.material_info
                 }
-              }), { mainRule: 'color_name', otherRule: [{ name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
+              }), { mainRule: 'color_id', otherRule: [{ name: 'color_name' }, { name: 'material_data', type: 'concat' }] }) // 合并色组的原料数据
               materialInfo = this.$flatten(materialInfo.map(itemColor => {
                 return itemColor.material_data.map(itemMa => {
                   return {

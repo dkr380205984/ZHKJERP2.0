@@ -181,7 +181,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.name?item.name:'无'}}</div>
             <div class="col">
-              <zh-img-list :list="item.images"></zh-img-list>
+              <zh-img-list :list="item.image"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time.slice(0,10)}}</div>

@@ -113,7 +113,7 @@
                     <div class="trow"
                       v-for="(itemSize,indexSize) in item.childrenMergeInfo"
                       :key="indexSize">
-                      <div class="tcolumn">{{itemSize.size}}/{{itemSize.color}}</div>
+                      <div class="tcolumn">{{itemSize.size_name}}/{{itemSize.color_name}}</div>
                       <div class="tcolumn noPad"
                         style="flex:4">
                         <div class="trow"
@@ -125,7 +125,7 @@
                           <div class="tcolumn">
                             <span class="btn noBorder"
                               style="padding:0;margin:0"
-                              @click="normalWeaving(item.product_code,itemSize.size,itemSize.color,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
+                              @click="normalWeaving(item.product_code,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
                           </div>
                         </div>
                       </div>
@@ -189,8 +189,8 @@
                         no-data-text="请先选择产品"
                         placeholder="请选择配件/尺码/颜色">
                         <el-option v-for="item in item.part_data"
-                          :key="item.name + '/' +item.size + '/' + item.color"
-                          :value="item.id + '/' +item.size + '/' + item.color"
+                          :key="item.id + '/' +item.size_id + '/' + item.color_id"
+                          :value="item.id + '/' +item.size_id + '/' + item.color_id"
                           :label="item.name + '/' +item.size + '/' + item.color"></el-option>
                       </el-select>
                     </div>
@@ -328,7 +328,7 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">+{{parseInt(itemChild.motorise_number *itemChild.number/100)}}</div>
@@ -402,8 +402,8 @@
                   </div>
                   <div class="tcolumn"
                     style="flex:1.2">
-                    <span>{{item.size}}</span>
-                    <span>{{item.color}}</span>
+                    <span>{{item.size_name}}</span>
+                    <span>{{item.color_name}}</span>
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.number}}</div>
@@ -1065,8 +1065,8 @@ export default {
             price: itemChild.price,
             motorise_number: itemChild.loss || 3,
             number: itemChild.number,
-            size: partColorSize[1],
-            color: partColorSize[2],
+            size_id: partColorSize[1],
+            color_id: partColorSize[2],
             is_part: partFlag ? 1 : 2
           })
         })
@@ -1116,7 +1116,7 @@ export default {
           let part = itemChild.part_data.find((itemFind) => { return Number(itemFind.id) === Number(item.checkPart) })
           if (part.number - part.weavingNum > 0) {
             mixedData.push({
-              partColorSize: part.id + '/' + itemChild.size + '/' + itemChild.color,
+              partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
               price: '',
               loss: '',
               number: part.number - part.weavingNum
@@ -1339,27 +1339,33 @@ export default {
     if (this.$route.query.showReplenishPopup === 'true') {
       this.showReplenishPopup = true
     }
-    Promise.all([api.detail({
-      id: this.$route.params.id
-    }), materialPlan.init({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.orderType
-    }), client.list(), weave.detail({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.orderType
-    }), replenish.list({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.orderType
-    }), materialStock.init({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.orderType
-    })]).then((res) => {
+    Promise.all([
+      api.detail({
+        id: this.$route.params.id
+      }),
+      materialPlan.init({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      }),
+      client.list(),
+      weave.detail({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      }),
+      replenish.list({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      }),
+      materialStock.init({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      })
+    ]).then((res) => {
       this.orderInfo = res[0].data.data
-      console.log(this.orderInfo)
       let productInfo = []
       res[1].data.data.product_info.forEach((item) => {
         let finded = productInfo.find((itemFind) => {
-          return itemFind.size === item.size && itemFind.color === item.color && itemFind.product_code === item.product_code
+          return itemFind.size_id === item.size_id && itemFind.color_id === item.color_id && itemFind.product_id === item.product_id
         })
         if (finded) {
           finded.production_number += Number(item.production_number)
@@ -1369,16 +1375,20 @@ export default {
       })
       productInfo.forEach((item) => {
         item.part_data.forEach((itemChild) => {
-          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.measurement === item.size || itemFind.size_name === item.size).number * item.production_number
-          itemChild.color = item.color
-          itemChild.size = item.size
+          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.size_id === item.size_id).number * item.production_number
+          itemChild.color = item.color_name
+          itemChild.color_id = item.color_id
+          itemChild.size = item.size_name
+          itemChild.size_id = item.size_id
         })
         item.part_data.unshift({
           name: '大身',
           number: item.production_number,
           id: item.product_id,
-          color: item.color,
-          size: item.size
+          color: item.color_name,
+          color_id: item.color_id,
+          size: item.size_name,
+          size_id: item.size_id
         })
       })
       this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }] })
@@ -1408,7 +1418,7 @@ export default {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.part_data.forEach((itemPart) => {
             itemPart.weavingNum = this.weaving_log.filter((item) => {
-              return item.category_info.product_id === itemPart.id && item.size === itemPart.size && item.color === itemPart.color
+              return item.category_info.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
             }).reduce((total, current) => {
               return total + current.number
             }, 0)

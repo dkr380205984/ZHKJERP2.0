@@ -310,7 +310,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col">
-              <zh-img-list :list="item.images"></zh-img-list>
+              <zh-img-list :list="item.image"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -424,8 +424,8 @@
                   placeholder="选择尺码"
                   @change="selectTableSize($event,itemPro.product_info,indexSize)">
                   <el-option v-for="item in itemPro.size"
-                    :key="item.id"
-                    :value="item.size_name"
+                    :key="item.size_id"
+                    :value="item.size_id"
                     :label="item.size_name"></el-option>
                 </el-select>
               </div>
@@ -468,8 +468,8 @@
                         @change="selectTableColor($event, itemPro,indexColor)"
                         placeholder="选择配色">
                         <el-option v-for="item in itemPro.color"
-                          :key="item.id"
-                          :value="item.color_name"
+                          :key="item.color_id"
+                          :value="item.color_id"
                           :label="item.color_name"></el-option>
                       </el-select>
                     </div>
@@ -695,8 +695,8 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="orderUpload"
@@ -719,8 +719,8 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="packagUpload"
@@ -743,8 +743,8 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="boxUpload"
@@ -767,8 +767,8 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
-                accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
                 ref="otherUpload"
@@ -911,13 +911,13 @@ export default {
             let findPro = this.checkedProList.find((itemFind) => itemFind.id === itemPro.id)
             findPro.color.forEach((itemColor) => {
               colorInfo.push({
-                color: itemColor.color_name,
+                color: itemColor.color_id,
                 number: ''
               })
             })
             findPro.size.forEach((itemSize) => {
               productInfo.push({
-                size: itemSize.size_name,
+                size: itemSize.size_id,
                 color: this.$clone(colorInfo)
               })
             })
@@ -946,7 +946,7 @@ export default {
             itemPro.product_info.forEach((itemSize) => {
               itemSize.color.forEach((itemColor) => {
                 productInfo.push({
-                  size_color: [itemSize.size, itemColor.color],
+                  size_color: [itemSize.size_id, itemColor.color_id],
                   price: itemPro.price,
                   number: itemColor.number
                 })
@@ -957,11 +957,11 @@ export default {
               unit: itemPro.unit,
               sizeColor: itemPro.size.map((itemSize) => {
                 return {
-                  value: itemSize.size_name,
+                  value: itemSize.size_id,
                   label: itemSize.size_name,
                   children: itemPro.color.map((itemColor) => {
                     return {
-                      value: itemColor.color_name,
+                      value: itemColor.color_id,
                       label: itemColor.color_name
                     }
                   })
@@ -1110,10 +1110,10 @@ export default {
       this.$forceUpdate()
     },
     beforeAvatarUpload (file) {
-      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
-      let fileNameLength = file.name.length// 取到文件名长度
-      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
-      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      // let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      // let fileNameLength = file.name.length// 取到文件名长度
+      // let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = file.name
       const isLt2M = file.size / 1024 / 1024 < 10
       if (!isLt2M) {
         this.$message.error('文件大小不能超过 10MB!')
@@ -1166,11 +1166,11 @@ export default {
         }
         item.sizeColor = item.size.map(valSize => {
           return {
-            value: valSize.size_name,
+            value: valSize.size_id,
             label: valSize.size_name,
             children: item.color.map(valColor => {
               return {
-                value: valColor.color_name,
+                value: valColor.color_id,
                 label: valColor.color_name
               }
             })
@@ -1183,7 +1183,7 @@ export default {
             itemPro.size.forEach(itemSize => {
               itemPro.color.forEach(itemColor => {
                 arr.push({
-                  size_color: [itemSize.size_name, itemColor.color_name],
+                  size_color: [itemSize.size_id, itemColor.color_id],
                   price: '',
                   number: ''
                 })
@@ -1220,13 +1220,13 @@ export default {
                 itemBatch.batch_info_new[0].unit = itemPro.category_info.name
                 itemBatch.batch_info_new[0].size = itemPro.size.map((item) => {
                   return {
-                    name: item.size_name,
+                    name: item.size_id,
                     label: item.size_name
                   }
                 })
                 itemBatch.batch_info_new[0].color = itemPro.color.map((item) => {
                   return {
-                    name: item.color_name,
+                    name: item.color_id,
                     label: item.color_name
                   }
                 })
@@ -1243,13 +1243,13 @@ export default {
                   unit: itemPro.category_info.name,
                   size: itemPro.size.map((item) => {
                     return {
-                      name: item.color_name,
+                      name: item.color_id,
                       label: item.color_name
                     }
                   }),
                   color: itemPro.color.map((item) => {
                     return {
-                      name: item.color_name,
+                      name: item.color_id,
                       label: item.color_name
                     }
                   }),
@@ -1308,7 +1308,7 @@ export default {
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
-              size_color: [itemSize.size_name, itemColor.color_name],
+              size_color: [itemSize.size_id, itemColor.color_id],
               price: '',
               number: ''
             })
@@ -1324,13 +1324,13 @@ export default {
         let colorInfo = []
         itemPro.color.forEach((itemColor) => {
           colorInfo.push({
-            color: itemColor.color_name,
+            color: itemColor.color_id,
             number: ''
           })
         })
         itemPro.size.forEach((itemSize) => {
           productInfo.push({
-            size: itemSize.size_name,
+            size: itemSize.size_id,
             color: this.$clone(colorInfo)
           })
         })
@@ -1386,7 +1386,6 @@ export default {
       }
     },
     saveAll () {
-      console.log(this.batchDate)
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1492,8 +1491,8 @@ export default {
                 product_id: itemPro.id,
                 product_info: itemPro.product_info.map(itemSize => {
                   return {
-                    size_name: itemSize.size_color[0],
-                    color_name: itemSize.size_color[1],
+                    size_id: itemSize.size_color[0],
+                    color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
                     unit_price: itemSize.price
                   }
@@ -1611,11 +1610,11 @@ export default {
           items.unit = items.product_info.unit
           items.sizeColor = items.product_info.size_measurement.map(valSize => {
             return {
-              value: valSize.size_name,
+              value: valSize.size_id,
               label: valSize.size_name,
               children: items.product_info.color.map(valColor => {
                 return {
-                  value: valColor.color_name,
+                  value: valColor.color_id,
                   label: valColor.color_name
                 }
               })
@@ -1624,7 +1623,7 @@ export default {
           delete items.product_info
           delete items.image
           return items
-        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_name/size', 'color_name/color', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }] } })
+        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
         orderBatch.push({
           time: itemBatch.delivery_time,
           batch_info: productInfo
@@ -1644,11 +1643,11 @@ export default {
               product_code: itemPro.product_info.product_code,
               sizeColor: itemPro.product_info.size_measurement.map(valSize => {
                 return {
-                  value: valSize.size_name,
+                  value: valSize.size_id,
                   label: valSize.size_name,
                   children: itemPro.product_info.color.map(valColor => {
                     return {
-                      value: valColor.color_name,
+                      value: valColor.color_id,
                       label: valColor.color_name
                     }
                   })
@@ -1668,7 +1667,7 @@ export default {
               id: itemPro.id,
               product_info: itemPro.product_info.map(itemSize => {
                 return {
-                  size_color: [itemSize.size, itemSize.color],
+                  size_color: [itemSize.size_id, itemSize.color_id],
                   number: itemSize.number,
                   price: itemSize.price
                 }

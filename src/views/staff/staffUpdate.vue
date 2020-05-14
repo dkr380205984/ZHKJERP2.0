@@ -55,20 +55,20 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">地址</span>
-            </div>
-            <div class="content">
-              <el-input v-model="staffInfo.dizhi"
-                placeholder="请输入地址"></el-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
               <span class="text">学历</span>
             </div>
             <div class="content">
               <el-input v-model="staffInfo.xueli"
                 placeholder="请输入学历"></el-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">健康状况</span>
+            </div>
+            <div class="content">
+              <zh-input v-model="staffInfo.health"
+                placeholder="请输入健康状况"></zh-input>
             </div>
           </div>
         </div>
@@ -91,9 +91,9 @@
               <el-select v-model="staffInfo.sex"
                 placeholder="请选择性别">
                 <el-option label="男"
-                  value="1"></el-option>
+                  :value="1"></el-option>
                 <el-option label="女"
-                  value="2"></el-option>
+                  :value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -140,15 +140,6 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">健康状况</span>
-            </div>
-            <div class="content">
-              <zh-input v-model="staffInfo.health"
-                placeholder="请输入健康状况"></zh-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
               <span class="text">紧急联系人</span>
             </div>
             <div class="content">
@@ -165,6 +156,24 @@
                 placeholder="请输入联系人电话"></el-input>
             </div>
           </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">员工标签</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.tag"
+                filterable
+                multiple
+                collapse-tags
+                placeholder="请选择员工标签">
+                <el-option v-for="item in staffTagList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -176,9 +185,9 @@
               <el-select v-model="staffInfo.type"
                 placeholder="请选择工种">
                 <el-option label="合同工"
-                  value="1"></el-option>
+                  :value="1"></el-option>
                 <el-option label="临时工"
-                  value="2"></el-option>
+                  :value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -211,6 +220,17 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">
+              <span class="text">地址</span>
+            </div>
+            <div class="content">
+              <el-input v-model="staffInfo.dizhi"
+                placeholder="请输入地址"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <span class="label">
               <span class="text">备注</span>
             </span>
@@ -237,7 +257,7 @@
   </div>
 </template>
 <script>
-import { staff, station } from '@/assets/js/api.js'
+import { staff, station, staffTag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -254,15 +274,17 @@ export default {
         health: '',
         emergentPerson: '',
         emergentPhone: '',
-        date: '',
+        start_time: '',
         type: '',
         desc: '',
         mingzu: '',
         dizhi: '',
-        xueli: ''
+        xueli: '',
+        tag: ''
       },
       departmentArr: [],
-      stationArr: []
+      stationArr: [],
+      staffTagList: []
     }
   },
   methods: {
@@ -283,10 +305,6 @@ export default {
         this.$message.warning('请选择工种')
         return
       }
-      if (!this.staffInfo.date) {
-        this.$message.warning('请选择在职时间')
-        return
-      }
       // 紧急联系人没有上传到接口
       staff.create({
         id: this.$route.params.id,
@@ -302,11 +320,12 @@ export default {
         healthy_info: this.staffInfo.health,
         urgent_phone: this.staffInfo.emergentPhone,
         type: this.staffInfo.type,
-        work_time: this.staffInfo.date,
+        work_time: this.staffInfo.start_time,
         nation: this.staffInfo.mingzu,
         address: this.staffInfo.dizhi,
         academic: this.staffInfo.xueli,
-        desc: this.staffInfo.desc
+        desc: this.staffInfo.desc,
+        tag_data: this.staffInfo.tag
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')
@@ -316,32 +335,41 @@ export default {
     }
   },
   mounted () {
-    staff.detail({
-      id: this.$route.params.id
-    }).then((res) => {
-      let data = res.data.data
+    Promise.all([
+      staff.detail({
+        id: this.$route.params.id
+      }),
+      station.list({
+        type: 2
+      }),
+      staffTag.list()
+    ]).then((res) => {
+      let data = res[0].data.data
       this.staffInfo.name = data.name
       this.staffInfo.telephone = data.phone
       this.staffInfo.sex = data.sex
-      this.staffInfo.department_id = data.department_id
+      this.staffInfo.department = data.department_id
       this.staffInfo.age = data.age
       this.staffInfo.IDcard = data.id_card
       this.staffInfo.bankName = data.bank_card_name
       this.staffInfo.bankCard = data.bank_card_code
-      this.staffInfo.station_id = data.station_id
+      this.staffInfo.station = data.station_id
       this.staffInfo.health = data.healthy_info
       this.staffInfo.emergentPhone = data.urgent_phone
       this.staffInfo.type = data.type
-      this.staffInfo.date = data.work_time
+      this.staffInfo.start_time = data.work_time
       this.staffInfo.desc = data.desc
       this.staffInfo.dizhi = data.address
       this.staffInfo.xueli = data.academic
       this.staffInfo.mingzu = data.nation
-    })
-    station.list({
-      type: 2
-    }).then((res) => {
-      this.departmentArr = res.data.data
+      this.staffInfo.tag = data.staff_tag.map(item => {
+        let flag = res[2].data.data.find(itemTag => itemTag.name === item)
+        if (flag) {
+          return flag.id
+        }
+      })
+      this.departmentArr = res[1].data.data
+      this.staffTagList = res[2].data.data
     })
   }
 }

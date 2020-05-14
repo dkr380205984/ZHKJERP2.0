@@ -303,11 +303,15 @@ const plugin = {
   strToAscII (string, flag, specialStr) {
     let strSpecialCharacters = specialStr || ['%', '/', '&', '?'] // 转化特殊字符'['与']'不可使用
     if (!flag) {
-      strSpecialCharacters.forEach(item => {
-        string = string.split(item).join('<!--' + item.charCodeAt() + '-->')
-      })
+      let strArr = string.split('')
+      string = strArr.map(itemStr => {
+        if (strSpecialCharacters.indexOf(itemStr) !== -1) {
+          itemStr = '<--' + itemStr.charCodeAt() + '-->'
+        }
+        return itemStr
+      }).join('')
     } else {
-      let stringArr = string.split('<!--').map(item => {
+      let stringArr = string.split('<--').map(item => {
         if (item.indexOf('-->') === -1) {
           return item
         } else {

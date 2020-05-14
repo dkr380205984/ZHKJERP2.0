@@ -390,6 +390,7 @@ export default {
         size: this.size.map((item) => {
           return {
             size: item.size_name,
+            size_id: item.id,
             value: ''
           }
         })
@@ -449,7 +450,7 @@ export default {
       this.size = this.productInfo.size_measurement.map((item) => {
         return {
           size_name: item.size_name,
-          id: item.id
+          id: item.size_id
         }
       })
       this.craftInfo = JSON.parse(res.data.data.complete_data)

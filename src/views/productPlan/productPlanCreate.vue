@@ -371,8 +371,8 @@ export default {
           itemCS.materials.forEach((itemMat) => {
             json.material_info.push({
               type: item.chooseMaterial === 1 ? 1 : 2,
-              product_color: itemCS.colour_name,
-              product_size: itemCS.size_name,
+              color_id: itemCS.colour_id,
+              size_id: itemCS.size_id,
               material_name: itemMat.name,
               material_attribute: itemMat.attr,
               weight: itemMat.number,
@@ -443,9 +443,9 @@ export default {
         this.productInfo.color.forEach((itemColour) => {
           this.list[0].colourSizeArr.push({
             size_name: itemSize.size_name,
-            size_id: itemSize.id,
+            size_id: itemSize.size_id,
             colour_name: itemColour.color_name,
-            colour_id: itemColour.id,
+            colour_id: itemColour.color_id,
             materials: []
           })
         })
@@ -461,7 +461,7 @@ export default {
         }
         let colourSizeArr = JSON.parse(JSON.stringify(this.list[0].colourSizeArr))
         colourSizeArr.forEach((item) => {
-          let finded = itemPart.size.find((itemFind) => itemFind.size_name === item.size_name)
+          let finded = itemPart.size.find((itemFind) => itemFind.size_id === item.size_id)
           item.partNum = finded.number
           item.materials = [{
             name: itemPart.part_title || itemPart.name,

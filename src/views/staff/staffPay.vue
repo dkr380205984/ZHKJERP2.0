@@ -233,7 +233,8 @@
     </div>
     <div class="popup"
       v-show="showPopup">
-      <div class="main">
+      <div class="main"
+        style="width:800px">
         <div class="title">
           <div class="text">添加结算人员</div>
           <i class="el-icon-close"
@@ -243,7 +244,7 @@
           style="padding:16px 30px">
           <div class="row">
             <div class="info">
-              <el-select style="width:240px"
+              <el-select style="width:180px"
                 v-model="departmentPopup"
                 placeholder="选择部门筛选人员"
                 clearable>
@@ -253,11 +254,74 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <el-select style="margin-left:16px;width:180px"
+                v-model="staffTagKeyWord"
+                placeholder="选择标签筛选人员"
+                clearable>
+                <el-option v-for="(item,index) in staffTagList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
             </div>
           </div>
           <div class="row">
             <div class="info">
-              <el-checkbox style="margin-bottom:12px"
+              <span class="tableCtnLv2">
+                <span class="tb_header min40">
+                  <span class="tb_row"
+                    style="flex:0.4">
+                    <el-checkbox v-model="isCheckedAll"
+                      @change="$forceUpdate()"></el-checkbox>
+                  </span>
+                  <span class="tb_row">所属部门</span>
+                  <span class="tb_row">姓名</span>
+                  <span class="tb_row"
+                    style="flex:2.5">所含标签</span>
+                  <span class="tb_row"
+                    style="flex:0.4"> </span>
+                </span>
+                <span class="tb_content_box">
+                  <span class="tb_content min40"
+                    v-for="(item,index) in staffAllArr"
+                    :key="index">
+                    <span class="tb_row"
+                      style="flex:0.4">
+                      <el-checkbox v-model="item.checked"
+                        @change="$forceUpdate()"></el-checkbox>
+                    </span>
+                    <span class="tb_row">{{item.department_name}}</span>
+                    <span class="tb_row">{{item.name}}</span>
+                    <span class="tb_row tb_row_tag_box"
+                      style="flex:2.5">
+                      <template v-for="(itemTag,indexTag) in item.staff_tag">
+                        <!-- <span class="tb_row_tag"
+                          :key="indexTag"
+                          v-if="indexTag < 5">{{itemTag}}</span> -->
+                        <el-tag :key="indexTag"
+                          v-if="indexTag < 3"
+                          style="height:24px;line-height:24px;margin-right:8px">{{itemTag}}</el-tag>
+                      </template>
+                    </span>
+                    <span class="tb_row"
+                      style="flex:0.4">
+                      <el-popover placement="right"
+                        v-if="item.staff_tag.length>3"
+                        width="200"
+                        trigger="click">
+                        <el-tag v-for="(itemTag,indexTag) in item.staff_tag"
+                          :key="indexTag"
+                          style="height:24px;line-height:24px;margin-right:8px">{{itemTag}}</el-tag>
+                        <span class="btn noBorder"
+                          style="padding:0"
+                          slot="reference">更多</span>
+                      </el-popover>
+                    </span>
+                  </span>
+                </span>
+              </span>
+              <!-- <el-checkbox style="margin-bottom:12px"
                 label="全选"
                 v-model="isCheckedAll"></el-checkbox>
               <el-checkbox style="margin-bottom:12px"
@@ -265,7 +329,7 @@
                 :key="item.id"
                 :label="item.name"
                 v-model="item.checked"
-                @change="$forceUpdate()"></el-checkbox>
+                @change="$forceUpdate()"></el-checkbox> -->
             </div>
           </div>
         </div>
@@ -281,7 +345,7 @@
 </template>
 
 <script>
-import { staff, order, station } from '@/assets/js/api.js'
+import { staff, order, station, staffTag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -299,17 +363,26 @@ export default {
       staffAllList: [],
       workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
       settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }],
-      isCheckedAll: false
+      isCheckedAll: false,
+      staffTagList: [],
+      staffTagKeyWord: ''
     }
   },
   watch: {
     isCheckedAll (newVal) {
       this.staffAllList.forEach(item => {
-        if (this.departmentPopup && item.department_id === this.departmentPopup) {
+        if (!this.departmentPopup && !this.staffTagKeyWord) {
           item.checked = newVal
           this.$forceUpdate()
-        } else if (!this.departmentPopup) {
+        } else if (this.departmentPopup && !this.staffTagKeyWord && item.department_id === this.departmentPopup) {
           item.checked = newVal
+          this.$forceUpdate()
+        } else if (this.departmentPopup && this.staffTagKeyWord && item.department_id === this.departmentPopup && item.staff_tag.indexOf(this.staffTagKeyWord) !== -1) {
+          item.checked = newVal
+          this.$forceUpdate()
+        } else if (!this.departmentPopup && this.staffTagKeyWord && item.staff_tag.indexOf(this.staffTagKeyWord) !== -1) {
+          item.checked = newVal
+          this.$forceUpdate()
         }
       })
     }
@@ -532,13 +605,18 @@ export default {
   },
   computed: {
     staffAllArr () {
+      let filterArr = this.staffAllList
       if (this.departmentPopup) {
-        return this.staffAllList.filter((item) => {
+        filterArr = filterArr.filter((item) => {
           return Number(item.department_id) === Number(this.departmentPopup)
         })
-      } else {
-        return this.staffAllList
       }
+      if (this.staffTagKeyWord) {
+        filterArr = filterArr.filter((item) => {
+          return item.staff_tag.indexOf(this.staffTagKeyWord) !== -1
+        })
+      }
+      return filterArr
     }
   },
   mounted () {
@@ -549,10 +627,12 @@ export default {
       station.list({
         type: 2
       }),
-      staff.list()
+      staff.list(),
+      staffTag.list()
     ]).then((res) => {
       this.departmentArr = res[0].data.data
       this.staffAllList = res[1].data.data
+      this.staffTagList = res[2].data.data
       this.init()
     })
   }

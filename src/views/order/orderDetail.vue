@@ -1629,8 +1629,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             number: item.number,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             process_type: '织造'
           }
@@ -1640,8 +1640,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             number: item.number,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             process_type: item.type
           }
@@ -1651,8 +1651,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             number: 0,
             go_number: item.number
@@ -1663,8 +1663,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             number: 0,
             out_number: item.number
@@ -1690,16 +1690,16 @@ export default {
         let inspectionDetail = res[0].data.data.map(item => {
           return {
             product_id: item.product_id,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             semi_number: item.number,
             semi_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
           }
         }).concat(res[1].data.data.map(item => {
           return {
             product_id: item.product_id,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             finished_number: item.number,
             finished_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
           }
@@ -1748,8 +1748,8 @@ export default {
           let outStockDetail = res.data.data.map(item => {
             return {
               product_id: item.product_id,
-              size: item.size,
-              color: item.color,
+              size: item.size_name,
+              color: item.color_name,
               number: item.number
             }
           })
@@ -1944,8 +1944,8 @@ export default {
               ...item.category_info,
               client_name: item.client_name,
               number: item.number,
-              size: item.size,
-              color: item.color,
+              size: item.size_name,
+              color: item.color_name,
               is_part: item.is_part,
               price: item.price,
               total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
@@ -1973,8 +1973,8 @@ export default {
               price: item.price,
               number: item.number,
               total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
-              size: item.size,
-              color: item.color,
+              size: item.size_name,
+              color: item.color_name,
               is_part: item.is_part,
               process_type: item.type,
               compiled_time: this.$getTime(item.complete_time)

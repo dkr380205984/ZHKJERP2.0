@@ -361,8 +361,8 @@ export default {
           itemCS.materials.forEach((itemMat) => {
             json.material_info.push({
               type: item.chooseMaterial === 1 ? 1 : 2,
-              product_color: itemCS.colour_name,
-              product_size: itemCS.size_name,
+              color_id: itemCS.colour_id,
+              size_id: itemCS.size_id,
               material_name: itemMat.name,
               material_attribute: itemMat.attr,
               unit: itemMat.unit,
@@ -467,9 +467,9 @@ export default {
             if (!finded) {
               itemList.colourSizeArr.push({
                 size_name: itemSize.size_name,
-                size_id: itemSize.id,
+                size_id: itemSize.size_id,
                 colour_name: itemColour.color_name,
-                colour_id: itemColour.id,
+                colour_id: itemColour.color_id,
                 materials: []
               })
             }

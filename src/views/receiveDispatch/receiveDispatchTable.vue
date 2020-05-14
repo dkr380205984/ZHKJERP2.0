@@ -69,15 +69,14 @@ export default {
         let logIdArr = this.$route.query.logId.split(',')
         logIdArr.forEach(item => {
           let findData = data.find(items => +items.id === +item)
-          console.log(findData)
           if (findData) {
             this.printInfo.push({
               id: findData.id,
               client_name: findData.client_name,
               product_code: findData.product_code.code,
               type: [findData.category_info.category_name, findData.category_info.type_name, findData.category_info.style_name],
-              size: findData.size,
-              color: findData.color,
+              size: findData.size_name,
+              color: findData.color_name,
               count: findData.count,
               number: findData.number,
               unit: findData.category_info.unit,

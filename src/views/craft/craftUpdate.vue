@@ -81,7 +81,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -135,6 +135,7 @@
             </div>
             <div class="content">
               <el-autocomplete class="inline-input element"
+                clearable
                 v-model="yarn.yarnOtherWarp[index].value"
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入次要原料">
@@ -172,6 +173,7 @@
             </div>
             <div class="content">
               <el-input class="element"
+                clearable
                 style="width:172px"
                 v-model="material.materialWarp[index].value"
                 placeholder="请输入辅助原料"></el-input>
@@ -786,7 +788,7 @@
                   <el-option v-for="item in colourArr"
                     :key="item.id"
                     :label="item.color_name"
-                    :value="item.color_name"></el-option>
+                    :value="item.color_id"></el-option>
                 </el-select>
               </div>
               <div class="editBtn"
@@ -840,6 +842,7 @@
             </div>
             <div class="content">
               <el-autocomplete class="inline-input element"
+                clearable
                 v-model="yarn.yarnOtherWeft[index].value"
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入次要原料">
@@ -877,6 +880,7 @@
             </div>
             <div class="content">
               <el-input class="element"
+                clearable
                 style="width:172px"
                 v-model="material.materialWeft[index].value"
                 placeholder="请输入辅助原料"></el-input>
@@ -2344,7 +2348,7 @@ export default {
           weight_calculate_formula: this.weftCmp,
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWarp.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -2424,7 +2428,7 @@ export default {
         weft_data: {
           color_data: this.colour.map((item) => {
             return {
-              product_color: item.value,
+              color_id: item.value,
               color_scheme: item.colorWeft.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -2579,7 +2583,7 @@ export default {
       this.weftInfo = data.weft_data
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
-          value: item.product_color,
+          value: item.color_id,
           colorWarp: item.color_scheme.map((item) => {
             return {
               name: item.name,

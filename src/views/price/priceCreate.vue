@@ -279,7 +279,7 @@
             <div class="col">{{item.flower_id}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col">
-              <zh-img-list :list="item.images"></zh-img-list>
+              <zh-img-list :list="item.image"></zh-img-list>
             </div>
             <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time}}</div>
@@ -438,7 +438,8 @@
         <span class="title">产品报价</span>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
+        <div class="rowCtn"
+          v-if="priceLoadingList.length>0">
           <zh-transition :list='priceLoadingList'
             showKey='title'
             @changed='setPriceLoading'></zh-transition>
@@ -1241,7 +1242,7 @@ export default {
             vals.product_info.color.forEach(valColor => {
               sizeColorArr.push({
                 sizeColor: valSize.size_name + '/' + valColor.color_name,
-                id: valSize.id + '/' + valColor.id // 预留size和color的id
+                id: valSize.size_id + '/' + valColor.color_id // 预留size和color的id
               })
             })
           })
@@ -1255,7 +1256,7 @@ export default {
             product_code: vals.product_info.product_code,
             sizeColor: vals.color_size,
             sizeColorList: sizeColorArr,
-            images: vals.product_info.images,
+            image: vals.product_info.image,
             category_info: {
               product_category: vals.product_info.category_name
             },
@@ -1352,7 +1353,7 @@ export default {
                   }),
                   color: item.color,
                   flower_id: item.flower_name,
-                  images: item.image,
+                  image: item.image,
                   name: item.name,
                   user_name: item.user_name,
                   create_time: item.create_time,
@@ -1381,7 +1382,7 @@ export default {
                   }),
                   color: item.color,
                   flower_id: item.flower_name,
-                  images: item.image,
+                  image: item.image,
                   name: item.name,
                   user_name: item.user_name,
                   create_time: item.create_time,
@@ -1410,7 +1411,7 @@ export default {
           item.color.forEach(color => {
             sizeColor.push({
               sizeColor: size.size_name + '/' + color.color_name,
-              id: size.id + '/' + color.id // 预留size和color的id
+              id: size.size_id + '/' + color.color_id // 预留size和color的id
             })
           })
         })
@@ -1568,7 +1569,7 @@ export default {
     setCardData (item) {
       return {
         product_code: item.product_code,
-        img: item.images.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
+        img: item.image.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
         type_name: item.type_name,
         style_name: item.style_name,

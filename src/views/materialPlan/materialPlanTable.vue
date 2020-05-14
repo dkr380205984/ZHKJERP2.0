@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{company_name}}{{params.type === '1' ? '原' : '辅'}}料计划单</span>
+          <span class="title">{{company_name}}{{$route.query.type === '1' ? '原' : '辅'}}料计划单</span>
           <span class="item">
             <span class="label">联系人：</span>
             <span>{{contact_name}}</span>
@@ -59,7 +59,7 @@
         <template v-for="(item,index) in materialInfo">
           <div class="print_row bgGray"
             :key='index + "title"'>
-            <div class="row_item center w180">{{params.type === '1' ? '原' : '辅'}}料名称</div>
+            <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料名称</div>
             <div class="row_item center">{{item.material_name}}</div>
             <div class="row_item center w180">合计</div>
             <div class="row_item center">{{item.type === 1 ? $toFixed(item.total_weight/1000) + 'kg' : $toFixed(item.total_weight) + item.unit}}</div>
@@ -120,8 +120,8 @@ export default {
       //   this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
       // } else
       if (this.$route.query.proInfo) {
-        let proInfo = this.$route.query.proInfo.split(',').map(item => {
-          return item.split('-').map(itemI => {
+        let proInfo = this.$route.query.proInfo.split(';').map(item => {
+          return item.split(',').map(itemI => {
             return this.$strToAscII(itemI, true)
           })
         })
@@ -145,8 +145,8 @@ export default {
       //   this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.pid) === Number(this.params.proId) && Number(item.material_type) === Number(this.$route.query.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
       // } else
       if (this.$route.query.proInfo) {
-        let proInfo = this.$route.query.proInfo.split(',').map(item => {
-          return item.split('-').map(itemI => {
+        let proInfo = this.$route.query.proInfo.split(';').map(item => {
+          return item.split(',').map(itemI => {
             return this.$strToAscII(itemI, true)
           })
         })

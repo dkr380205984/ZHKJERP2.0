@@ -173,14 +173,14 @@
               :key="indexPro">
               <span class="tcolumn">
                 <div class="twoLineText">
-                  <span @click="$openUrl('/sample/sampleDetail/' + itemPro.product_info.product_id)"
+                  <span @click="$openUrl('/sample/sampleDetail/' + itemPro.id)"
                     style="color:#1A95FF;cursor: pointer;">{{itemPro.product_info.product_code}}</span>
                   <span>({{itemPro.product_info|filterType}})</span>
                 </div>
               </span>
               <span class="tcolumn ">
                 <span class="trow middle_page">
-                  <zh-img-list :list="itemPro.product_info.images"></zh-img-list>
+                  <zh-img-list :list="itemPro.product_info.image"></zh-img-list>
                 </span>
               </span>
               <span class="tcolumn flex2 noPad">
@@ -200,7 +200,7 @@
                     @click="$openUrl('/productPlan/productPlanDetail/' + itemPro.id.product_id + '/2')">配料单</span> -->
                   <span class="btn noBorder lineH54"
                     style="margin:0"
-                    @click="$openUrl('/sample/sampleDetail/' + itemPro.id.product_id)">查看详情</span>
+                    @click="$openUrl('/sample/sampleDetail/' + itemPro.id)">查看详情</span>
                 </span>
               </span>
             </span>
@@ -1271,27 +1271,7 @@ export default {
         time: '',
         isCustomerPay: false
       }, // 继续打样信息
-      sampleTypeArr: [
-        {
-          id: 0,
-          name: '开发样'
-        }, {
-          id: 1,
-          name: '修改样'
-        }, {
-          id: 2,
-          name: '销售样'
-        }, {
-          id: 3,
-          name: '确认样'
-        }, {
-          id: 4,
-          name: '产前样'
-        }, {
-          id: 5,
-          name: '大货样'
-        }
-      ],
+      sampleTypeArr: [],
       showCanclePopup: false, // 取消样单弹窗flag
       cancleYarn: [],
       cancleMaterial: [],
@@ -1338,6 +1318,11 @@ export default {
     },
     init (type) {
       this.loading = true
+      sampleOrder.typeList().then(res => {
+        if (res.data.status !== false) {
+          this.sampleTypeArr = res.data.data
+        }
+      })
       sampleOrder.detail({
         id: this.$route.params.id
       }).then(res => {
@@ -1345,7 +1330,7 @@ export default {
         this.sampleOrderArr = [sampleOrderInfo].concat(this.$clone(sampleOrderInfo.child_data)).map((item, index) => {
           item.product_info.forEach(itemPro => {
             itemPro.size_info.forEach(itemSize => {
-              let flag = item.client_pay.find(itemInner => (itemInner.size === itemSize.size && itemInner.color === itemSize.color && +itemPro.id.product_id === +itemInner.product_info.product_id))
+              let flag = item.client_pay.find(itemInner => (itemInner.size_id === itemSize.size_id && itemInner.color_id === itemSize.color_id && +itemPro.id.product_id === +itemInner.product_info.product_id))
               if (flag) {
                 itemSize.payNum = flag.number
                 itemSize.payPrice = flag.price
@@ -1373,11 +1358,11 @@ export default {
               sizeColorArr: JSON.stringify(itemPro.product_info.size_measurement.map(itemSize => {
                 return {
                   label: itemSize.size_name,
-                  value: itemSize.size_name,
+                  value: itemSize.size_id,
                   children: itemPro.product_info.color.map(itemColor => {
                     return {
                       label: itemColor.color_name,
-                      value: itemColor.color_name
+                      value: itemColor.color_id
                     }
                   })
                 }
@@ -1389,7 +1374,7 @@ export default {
             return {
               product_id: itemPro.product_id,
               number: itemPro.numbers,
-              size_color: [itemPro.size, itemPro.color],
+              size_color: [itemPro.size_id, itemPro.color_id],
               sizeColorArr: JSON.parse(itemPro.sizeColorArr),
               unit: itemPro.unit
             }
@@ -1581,8 +1566,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             number: item.number,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             process_type: '织造'
           }
@@ -1592,8 +1577,8 @@ export default {
             ...item.category_info,
             client_name: item.client_name,
             number: item.number,
-            size: item.size,
-            color: item.color,
+            size: item.size_name,
+            color: item.color_name,
             is_part: item.is_part,
             process_type: item.type
           }
@@ -1746,8 +1731,8 @@ export default {
               ...item.category_info,
               client_name: item.client_name,
               number: item.number,
-              size: item.size,
-              color: item.color,
+              size: item.size_name,
+              color: item.color_name,
               is_part: item.is_part,
               price: item.price,
               total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
@@ -1775,8 +1760,8 @@ export default {
               price: item.price,
               number: item.number,
               total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
-              size: item.size,
-              color: item.color,
+              size: item.size_name,
+              color: item.color_name,
               is_part: item.is_part,
               process_type: item.type,
               compiled_time: this.$getTime(item.complete_time)
@@ -1846,8 +1831,8 @@ export default {
                 flag.number = false
               }
               return {
-                size: itemSize.size_color[0],
-                color: itemSize.size_color[1],
+                size_id: itemSize.size_color[0],
+                color_id: itemSize.size_color[1],
                 numbers: itemSize.number
               }
             })
@@ -2078,11 +2063,11 @@ export default {
             product_id: itemPro.product_info.product_id,
             sizeColorArr: JSON.stringify(itemPro.product_info.size_measurement.map(itemSize => {
               return {
-                label: itemSize.size_name,
+                label: itemSize.size_id,
                 value: itemSize.size_name,
                 children: itemPro.product_info.color.map(itemColor => {
                   return {
-                    label: itemColor.color_name,
+                    label: itemColor.color_id,
                     value: itemColor.color_name
                   }
                 })
@@ -2095,7 +2080,7 @@ export default {
           return {
             product_id: itemPro.product_id,
             number: itemPro.numbers,
-            size_color: [itemPro.size, itemPro.color],
+            size_color: [itemPro.size_id, itemPro.color_id],
             sizeColorArr: JSON.parse(itemPro.sizeColorArr),
             unit: itemPro.unit
           }
@@ -2130,8 +2115,8 @@ export default {
             product_id: item.product_id,
             order_id: this.activeSampleOrderId,
             client_id: this.sampleOrderInfo.client_id,
-            color: item.size_color[1],
-            size: item.size_color[0],
+            color_id: item.size_color[1],
+            size_id: item.size_color[0],
             price: item.price,
             number: item.numbers,
             total_price: item.total_price

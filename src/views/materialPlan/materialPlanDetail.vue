@@ -299,12 +299,12 @@ export default {
         }
         return itemPro
       })
-      this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_name/color', 'size_name/size'], otherRule: [{ name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+      this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }, { name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
       // 处理计划时未填写产品物料计划数据不展示的问题（强行匹配没有物料计划的订单产品进去）
       let orderProductInfo = res[0].data.data.product_info
       orderProductInfo.forEach(itemPro => {
         let flag = this.materialPlanInfo.find(itemPlan => {
-          return +itemPlan.product_id === +itemPro.product_id && itemPlan.color === itemPro.color && itemPlan.size === itemPro.size
+          return +itemPlan.product_id === +itemPro.product_id && itemPlan.color_id === itemPro.color_id && itemPlan.size_id === itemPro.size_id
         })
         if (!flag) {
           this.materialPlanInfo.push({
@@ -323,7 +323,7 @@ export default {
         }
       })
       data.production_data.forEach(itemPro => {
-        let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color === itemPro.color_name && valPro.size === itemPro.size_name)
+        let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
         if (flag) {
           flag.material_loss = itemPro.loss_y
           flag.other_loss = itemPro.loss_f
@@ -429,8 +429,7 @@ export default {
         this.$message.error('请选择需要打印的相关产品')
         return
       }
-      let printInfo = checkedPro.map(item => [item.product_id, this.$strToAscII(item.size, false, ['%', '/', '-', ',', '&']), this.$strToAscII(item.color, false, ['%', '/', '-', ',', '&'])].join('-')).join(',')
-      console.log(printInfo)
+      let printInfo = checkedPro.map(item => [item.product_id, this.$strToAscII(item.size, false, ['%', '/', '-', ',', '&', '+']), this.$strToAscII(item.color, false, ['%', '/', '-', ',', '&', '+'])].join(',')).join(';')
       this.$openUrl('/materialPlanTable/' + this.$route.params.id + '/' + this.$route.params.type + '?type=' + type + '&proInfo=' + printInfo)
     }
   },

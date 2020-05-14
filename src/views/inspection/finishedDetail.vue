@@ -88,14 +88,14 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
+                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.production_number}}</div>
                       <div class="tcolumn">{{itemChild.inspectionNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum}}</div>
                       <div class="tcolumn">{{itemChild.rejectNum>0?(itemChild.rejectNum/itemChild.inspectionNum*100).toFixed(2):0}}%</div>
                       <div class="tcolumn">
                         <span class="blue"
-                          @click="normalInspection(item.product_id,itemChild.size + '/' + itemChild.color,itemChild.production_number - itemChild.inspectionNum)">检验</span>
+                          @click="normalInspection(item.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.production_number - itemChild.inspectionNum)">检验</span>
                       </div>
                     </div>
                   </div>
@@ -141,7 +141,7 @@
                         v-model="itemChild.colorSize">
                         <el-option v-for="(item,index) in item.colorSizeArr"
                           :key="index"
-                          :value="item.name"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -359,7 +359,7 @@
             </span>
             <span class="tb_row">{{item.complete_time}}</span>
             <span class="tb_row flex12">{{item.product_code}}<br />{{item.product_types}}</span>
-            <span class="tb_row">{{item.size}}/{{item.color}}</span>
+            <span class="tb_row">{{item.size_name}}/{{item.color_name}}</span>
             <span class="tb_row flex08">{{item.number}}</span>
             <span class="tb_row flex12">
               <span class="green"
@@ -491,8 +491,8 @@ export default {
         { title: '检验日期', key: 'complete_time' },
         { title: '产品编号', key: 'product_code' },
         { title: '产品品类', key: 'product_types' },
-        { title: '尺码', key: 'size' },
-        { title: '颜色', key: 'color' },
+        { title: '尺码', key: 'size_name' },
+        { title: '颜色', key: 'color_name' },
         { title: '检验数量', key: 'number' },
         { title: '次品数量', key: 'rejects_number' },
         { title: '次品原因', key: 'rejects_infos' },
@@ -513,7 +513,8 @@ export default {
           return item.product_id === product
         }).childrenMergeInfo.map((item) => {
           return {
-            name: item.size + '/' + item.color
+            name: item.size_name + '/' + item.color_name,
+            id: item.size_id + '/' + item.color_id
           }
         }) : [],
         product_info: [{
@@ -539,11 +540,12 @@ export default {
                 return item.product_id === itemFind.product_id
               }).childrenMergeInfo.map((item) => {
                 return {
-                  name: item.size + '/' + item.color
+                  name: item.size_name + '/' + item.color_name,
+                  id: item.size_id + '/' + item.color_id
                 }
               }),
               product_info: [{
-                colorSize: itemChild.size + '/' + itemChild.color,
+                colorSize: itemChild.size_id + '/' + itemChild.color_id,
                 number: itemChild.production_number - itemChild.inspectionNum > 0 ? itemChild.production_number - itemChild.inspectionNum : 0,
                 count: '',
                 substandard: [{
@@ -617,11 +619,11 @@ export default {
       this.inspection_data.forEach((item) => {
         item.product_info.forEach((itemChild) => {
           formData.push({
-            order_type: 1,
+            // order_type: 1,
             order_id: this.$route.params.id,
             product_id: item.product_id,
-            size: itemChild.colorSize.split('/')[0],
-            color: itemChild.colorSize.split('/')[1],
+            size_id: itemChild.colorSize.split('/')[0],
+            color_id: itemChild.colorSize.split('/')[1],
             count: itemChild.count,
             number: itemChild.number,
             complete_time: item.date,
@@ -666,7 +668,8 @@ export default {
         return item.product_id === id
       }).childrenMergeInfo.map((item) => {
         return {
-          name: item.size + '/' + item.color
+          name: item.size_name + '/' + item.color_name,
+          id: item.size_id + '/' + item.color_id
         }
       })
     },
@@ -757,7 +760,7 @@ export default {
       this.inspection_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           let findArr = this.inspection_log.filter((itemFilter) => {
-            return itemFilter.product_id === item.product_id && itemFilter.size === itemChild.size && itemFilter.color === itemChild.color
+            return itemFilter.product_id === item.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id
           })
           itemChild.inspectionNum = findArr.reduce((total, current) => {
             return total + current.number

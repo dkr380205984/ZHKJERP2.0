@@ -414,6 +414,7 @@ export default {
         size: this.size.map((item) => {
           return {
             size: item.size_name,
+            size_id: item.id,
             value: ''
           }
         })
@@ -516,12 +517,13 @@ export default {
       this.size = this.productInfo.size.map((item) => {
         return {
           size_name: item.size_name,
-          id: item.id
+          id: item.size_id
         }
       })
       this.size.forEach((item) => {
         this.craftInfo.machine_code.push({
           size: item.size_name,
+          size_id: item.id,
           value: ''
         })
       })
