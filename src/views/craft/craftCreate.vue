@@ -2923,18 +2923,23 @@ export default {
         type: 'warning'
       }).then(() => {
         if (type === 'warpTable') {
+          this.designData.warp.table.number = 1
           this.designData.warp.table.data = [[1], [null], [null], [null], [null], [null]]
           this.tableHot.designWarp.loadData(this.designData.warp.table.data)
         } else if (type === 'warpTableBack') {
+          this.designData.warp.tableBack.number = 1
           this.designData.warp.tableBack.data = [[1], [null], [null], [null], [null], [null]]
           this.tableHot.designWarpBack.loadData(this.designData.warp.tableBack.data)
         } else if (type === 'weftTable') {
+          this.designData.weft.table.number = 1
           this.designData.weft.table.data = [[1], [null], [null], [null], [null], [null]]
           this.tableHot.designWeft.loadData(this.designData.weft.table.data)
         } else if (type === 'weftTableBack') {
+          this.designData.weft.tableBack.number = 1
           this.designData.weft.tableBack.data = [[1], [null], [null], [null], [null], [null]]
           this.tableHot.designWeftBack.loadData(this.designData.weft.tableBack.data)
         } else {
+          this.tableData[type].number = 1
           this.tableData[type].data = [[1], [null], [null], [null], [null], [null]]
           this.tableHot[type].loadData(this.tableData[type].data)
           // this.$refs[type].hotInstance.loadData(this.tableData[type].data)
@@ -3192,14 +3197,32 @@ export default {
         setTimeout(() => {
           this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
           this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
+          this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
+          this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
         }, 500)
-        this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
-        this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
-
         this.loading = false
       })
     },
     submit () {
+      console.log(this.tableData.warp.data)
+      console.log(this.tableData.warp.data.map((item, index) => {
+        if (index === 1) {
+          return item.map((itemJia) => {
+            return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
+          })
+        } else {
+          if (item.length === this.tableData.warp.number) {
+            return item
+          } else {
+            for (let i = 0; i < this.tableData.warp.number; i++) {
+              item[i] = item[i] || null
+            }
+            return item
+          }
+        }
+      }))
+      return
+
       // 获取合并单元格信息
       let errorInput = false
       errorInput = this.colour.some((itemColour) => {
@@ -3542,7 +3565,14 @@ export default {
                 return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
-              return item
+              if (item.length === this.tableData.warp.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.warp.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
           merge_data: this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
@@ -3553,7 +3583,14 @@ export default {
                 return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
-              return item
+              if (item.length === this.tableData.warpBack.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
           merge_data_back: this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
@@ -3622,7 +3659,14 @@ export default {
                 return this.weftJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
-              return item
+              if (item.length === this.tableData.weft.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.weft.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
           merge_data: this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
@@ -3633,7 +3677,14 @@ export default {
                 return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
-              return item
+              if (item.length === this.tableData.weftBack.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
           merge_data_back: this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
