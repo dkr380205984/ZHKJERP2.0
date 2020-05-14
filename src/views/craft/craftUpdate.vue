@@ -2392,27 +2392,41 @@ export default {
               apply: item.array
             }
           }),
-          warp_rank: this.$refs.warp.hotInstance.getData().map((item, index) => {
+          warp_rank: this.tableData.warp.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
                 return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
-              return item
+              if (item.length === this.tableData.warp.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.warp.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
-          merge_data: this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data: this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
           back_status: this.ifDouble.warp,
-          warp_rank_back: this.$refs.warpBack.hotInstance.getData().map((item, index) => {
+          warp_rank_back: this.tableData.warpBack.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
                 return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
-              return item
+              if (item.length === this.tableData.warpBack.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
-          merge_data_back: this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data_back: this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
           weft: this.warpInfo.weft,
           side_id: this.warpInfo.side_id,
           machine_id: this.warpInfo.machine_id,
@@ -2472,27 +2486,41 @@ export default {
               apply: item.array
             }
           }),
-          weft_rank: this.$refs.weft.hotInstance.getData().map((item, index) => {
+          weft_rank: this.tableData.weft.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
                 return this.weftJia.find((itemFind) => itemFind.label === itemJia).value
               })
             } else {
-              return item
+              if (item.length === this.tableData.weft.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.weft.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
-          merge_data: this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data: this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
           back_status: this.ifDouble.weft,
-          weft_rank_back: this.$refs.weftBack.hotInstance.getData().map((item, index) => {
+          weft_rank_back: this.tableData.weftBack.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
                 return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
-              return item
+              if (item.length === this.tableData.weftBack.number) {
+                return item
+              } else {
+                for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                  item[i] = item[i] || null
+                }
+                return item
+              }
             }
           }),
-          merge_data_back: this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data_back: this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
           organization_id: this.weftInfo.organization_id,
           peifu: this.weftInfo.peifu,
           peifu_data: this.weftInfo.peifu_data,
