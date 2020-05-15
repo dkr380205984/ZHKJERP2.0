@@ -795,7 +795,7 @@
               :key="indexMa">
               <span class="tb_row two_line">{{itemMa.product_code}}<br />{{itemMa.category_info|filterProductType}}</span>
               <span class="tb_row two_line">
-                <zh-img-list :list="itemMa.category_info.images"></zh-img-list>
+                <zh-img-list :list="itemMa.category_info.image"></zh-img-list>
               </span>
               <span class="tb_row">{{itemMa.size_name + '/' + itemMa.color_name}}</span>
               <span class="tb_row">{{itemMa.total_number + itemMa.category_info.unit}}</span>

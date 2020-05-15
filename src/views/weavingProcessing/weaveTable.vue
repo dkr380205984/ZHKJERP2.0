@@ -25,7 +25,7 @@
         <div class="right">
           <span class="qrCode_box"
             style="margin-right:8px">
-            <img :src="itemWeave.category_info.images[0] ? itemWeave.category_info.images[0].image_url : errorImg"
+            <img :src="itemWeave.category_info.image[0] ? itemWeave.category_info.image[0].image_url : errorImg"
               alt="">
           </span>
           <span class="qrCode_box">
@@ -290,7 +290,7 @@ export default {
                 number: +item.number || 0,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign,
                 motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
@@ -447,7 +447,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign,
                 motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
@@ -606,7 +606,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
               }
@@ -762,7 +762,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }

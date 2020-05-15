@@ -1,5 +1,5 @@
 <template>
-  <div id='orderList'
+  <div id='orderStat'
     class='indexMain'
     v-loading='loading'>
     <div class="module">
@@ -36,6 +36,9 @@
         </div>
         <div class="list">
           <div class="title">
+            <div class="col flex02">
+              <span class="text"></span>
+            </div>
             <div class="col">
               <span class="text">发货日期</span>
             </div>
@@ -112,69 +115,132 @@
               <span class="text">操作</span>
             </div>
           </div>
-          <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col"> {{itemOrder.delivery_time}} </div>
-            <div class="col flex12">{{itemOrder.order_code}}</div>
-            <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle flex12">
-              <zh-img-list :list="itemOrder.image"
-                type='open'></zh-img-list>
-            </div>
-            <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.total_number}}</div>
-            <div class="col flex08"> {{itemOrder.group_name}} </div>
-            <div class="col flex16">
-              <div class="stateCtn"
-                :class="{'green':itemOrder.has_plan>0}">
-                <div class="state"></div>
-                <span class="name">计</span>
+          <el-collapse @change="changeCollapse">
+            <el-collapse-item class="collapse_item"
+              v-for="(itemOrder,indexOrder) in list"
+              :key="indexOrder"
+              :name='indexOrder'>
+              <template slot="title">
+                <div class="row">
+                  <div class="col flex02">
+                    <span class="el-icon-arrow-down"
+                      :class="{'active':itemOrder.isOpen}"></span>
+                  </div>
+                  <div class="col"> {{itemOrder.delivery_time}} </div>
+                  <div class="col flex12">{{itemOrder.order_code}}</div>
+                  <div class="col flex12">{{itemOrder.client_name}}</div>
+                  <div class="col middle flex12">
+                    <zh-img-list :list="itemOrder.image"
+                      type='open'></zh-img-list>
+                  </div>
+                  <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.total_number}}</div>
+                  <div class="col flex08"> {{itemOrder.group_name}} </div>
+                  <div class="col flex16">
+                    <div class="stateCtn"
+                      :class="{'green':itemOrder.has_plan>0}">
+                      <div class="state"></div>
+                      <span class="name">计</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
+                      <div class="state"></div>
+                      <span class="name">订</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
+                      <div class="state"></div>
+                      <span class="name">库</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
+                      <div class="state"></div>
+                      <span class="name">织</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
+                      <div class="state"></div>
+                      <span class="name">收</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
+                      <div class="state"></div>
+                      <span class="name">检</span>
+                    </div>
+                    <div class="stateCtn"
+                      :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
+                      <div class="state"></div>
+                      <span class="name">箱</span>
+                    </div>
+                  </div>
+                  <div class="col"
+                    :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
+                  <div class="col">
+                    <div class="stateCtn rowFlex"
+                      :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]">
+                      <div class="state"></div>
+                      <span class="name">{{filterStatus([itemOrder.delivery_time,itemOrder.status])[0]}}</span>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <span class="opr"
+                      @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
+                  </div>
+                </div>
+              </template>
+              <div class="collapse_content">
+                <div class="flexTb noMargin"
+                  v-for="(itemInner,indexInner) in itemOrder.production_data"
+                  :key="indexInner">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn flex12">产品</span>
+                      <span class="tcolumn center flex16">产品图片</span>
+                      <span class="tcolumn flex10 noPad">
+                        <span class="trow">
+                          <span class="tcolumn twoTitleSpan">
+                            <span class="leftBottom">颜色</span>
+                            <span class="line"></span>
+                            <span class="rightTop">尺码</span>
+                          </span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemSize}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="tbody">
+                    <span class="trow">
+                      <span class="tcolumn flex12">{{itemInner.product_code}}<br />{{itemInner.type.join('/')}}</span>
+                      <span class="tcolumn center flex16">
+                        <zh-img-list :list='itemInner.image'></zh-img-list>
+                      </span>
+                      <span class="tcolumn flex10 noPad">
+                        <span class="trow"
+                          v-for="(itemColor,indexColor) in itemInner.color_info"
+                          :key="indexColor">
+                          <span class="tcolumn">{{itemColor.color_name}}</span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemColor[itemSize]}}{{itemInner.unit || '件'}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
-                <div class="state"></div>
-                <span class="name">订</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
-                <div class="state"></div>
-                <span class="name">库</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
-                <div class="state"></div>
-                <span class="name">织</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
-                <div class="state"></div>
-                <span class="name">收</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
-                <div class="state"></div>
-                <span class="name">检</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
-                <div class="state"></div>
-                <span class="name">箱</span>
-              </div>
-            </div>
-            <div class="col"
-              :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
-            <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]">
-                <div class="state"></div>
-                <span class="name">{{filterStatus([itemOrder.delivery_time,itemOrder.status])[0]}}</span>
-              </div>
-            </div>
-            <div class="col">
-              <span class="opr"
-                @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
-            </div>
-          </div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -295,7 +361,7 @@ export default {
                   return a + b
                 }),
                 product_id: itemPro.category_info.product_id,
-                image: itemPro.category_info.images.length > 0 ? itemPro.category_info.images.map(itemImg => {
+                image: itemPro.category_info.image.length > 0 ? itemPro.category_info.image.map(itemImg => {
                   itemImg.product_id = itemPro.category_info.product_id
                   itemImg.product_type = itemPro.category_info.product_type
                   return itemImg
@@ -305,7 +371,40 @@ export default {
                 }]
               }
             })
+            let productionData = itemBatch.batch_info.map(itemPro => {
+              let sizeArr = []
+              let colorArr = []
+              itemPro.product_info.forEach(itemProInner => {
+                if (sizeArr.indexOf(itemProInner.size_name) === -1) {
+                  sizeArr.push(itemProInner.size_name)
+                }
+                let colorFlag = colorArr.find(itemColor => itemColor.color_name === itemProInner.color_name)
+                if (!colorFlag) {
+                  colorArr.push({
+                    color_name: itemProInner.color_name,
+                    [itemProInner.size_name]: itemProInner.numbers
+                  })
+                } else {
+                  if (colorFlag[itemProInner.size_name]) {
+                    colorFlag[itemProInner.size_name] = (Number(colorFlag[itemProInner.size_name]) || 0) + (Number(itemProInner.numbers) || 0)
+                  } else {
+                    colorFlag[itemProInner.size_name] = itemProInner.numbers
+                  }
+                }
+              })
+              return {
+                product_code: itemPro.category_info.product_code,
+                product_id: itemPro.category_info.product_id,
+                type: [itemPro.category_info.category_name, itemPro.category_info.type_name, itemPro.category_info.style_name],
+                image: itemPro.category_info.image,
+                unit: itemPro.category_info.unit,
+                product_type: itemPro.category_info.product_type,
+                size_info: sizeArr,
+                color_info: colorArr
+              }
+            })
             return {
+              isOpen: false,
               delivery_time: prop,
               order_code: itemBatch.order_code,
               client_name: itemBatch.client_name,
@@ -320,6 +419,7 @@ export default {
                 return a + b
               }),
               order_time: itemBatch.order_time,
+              production_data: productionData,
               ...itemBatch.log
 
             }
@@ -345,6 +445,15 @@ export default {
         }
       } else {
         return ['undefined', 'orange']
+      }
+    },
+    changeCollapse (ev) {
+      if (ev || ev === 0) {
+        this.list[ev].isOpen = true
+      } else {
+        this.list.forEach(item => {
+          item.isOpen = false
+        })
       }
     }
   },
@@ -376,5 +485,28 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/order/orderList.less";
+@import "~@/assets/less/order/orderStat.less";
+</style>
+<style lang="less">
+#orderStat {
+  .el-collapse {
+    border: 0;
+    .el-collapse-item__arrow {
+      position: absolute;
+      display: none;
+    }
+    .el-collapse-item__header {
+      display: flex;
+      align-items: center;
+      border-bottom: 0;
+      height: auto;
+      .row {
+        width: 100%;
+        .col {
+          line-height: 1.2em;
+        }
+      }
+    }
+  }
+}
 </style>

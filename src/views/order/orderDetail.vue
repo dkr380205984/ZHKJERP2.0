@@ -172,7 +172,7 @@
                       style="cursor: pointer;color:#1A95FF"
                       @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
                     <span class="tb_row middle">
-                      <zh-img-list :list='itemPro.product_info.images'></zh-img-list>
+                      <zh-img-list :list='itemPro.product_info.image'></zh-img-list>
                     </span>
                     <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
                     <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>

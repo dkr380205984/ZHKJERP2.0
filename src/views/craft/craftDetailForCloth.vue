@@ -246,7 +246,7 @@ export default {
         product_plan_info: null,
         quotation_info: [],
         order_info: [],
-        images: [],
+        image: [],
         component: [],
         product_code: '',
         sample_title: '',

@@ -679,12 +679,9 @@ export default {
           unit: item.unit,
           part_id: item.part_id ? item.part_id : '',
           part_title: item.fitting_name,
-          part_category: '',
-          part_color: this.colour.map((item) => {
-            return { color_name: item.colour }
-          }),
           part_size: item.size.map((itemSize) => {
             return {
+              size_id: itemSize.self_id || null,
               weight: itemSize.weight,
               size_name: itemSize.size,
               size_info: itemSize.desc,
@@ -712,7 +709,12 @@ export default {
         needle_type: this.needleType,
         description: this.desc,
         image: imgArr,
-        color: this.colour.map((item) => item.colour),
+        color: this.colour.map((item) => {
+          return {
+            color_name: item.colour,
+            color_id: item.color_id || null
+          }
+        }),
         component: this.ingredient.map((item) => {
           return {
             component_name: item.ingredient_name,
@@ -721,6 +723,7 @@ export default {
         }),
         size: this.size.map((item, index) => {
           return {
+            size_id: item.size_id || null,
             weight: item.total,
             size_name: item.size,
             size_info: item.desc,
@@ -754,11 +757,25 @@ export default {
       handler: function (newVal) {
         this.fittingInfo.forEach((item) => {
           let size = this.size.map((itemPro, indexPro) => {
-            return {
-              size: itemPro.size,
-              weight: item.size[indexPro] ? item.size[indexPro].weight : '',
-              desc: item.size[indexPro] ? item.size[indexPro].desc : '',
-              number: item.size[indexPro] ? item.size[indexPro].number : ''
+            let flag = item.size.find(itemPS => itemPS.size_id && itemPS.size_id === itemPro.size_id)
+            if (flag) {
+              return {
+                size_id: flag.size_id,
+                self_id: flag.self_id || null,
+                size: itemPro.size,
+                weight: flag.weight || '',
+                desc: flag.desc || '',
+                number: flag.number
+              }
+            } else {
+              return {
+                size_id: itemPro.size_id || null,
+                self_id: null,
+                size: itemPro.size,
+                weight: item.size[indexPro] ? item.size[indexPro].weight : '',
+                desc: item.size[indexPro] ? item.size[indexPro].desc : '',
+                number: item.size[indexPro] ? item.size[indexPro].number : ''
+              }
             }
           })
           item.size = size
@@ -822,25 +839,29 @@ export default {
         })
         this.size = productInfo.size.map(item => {
           return {
+            size_id: item.size_id || null,
             size: item.size_name,
             total: item.weight
           }
         })
         productInfo.size.forEach((itemSize, indexSize) => {
-          JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-            if (!this.sizePartArr[indexPart]) {
-              this.sizePartArr[indexPart] = {
-                part: '',
-                size: []
+          if (itemSize.part_info) {
+            JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+              if (!this.sizePartArr[indexPart]) {
+                this.sizePartArr[indexPart] = {
+                  part: '',
+                  size: []
+                }
               }
-            }
-            this.sizePartArr[indexPart].part = itemPart.part
-            this.sizePartArr[indexPart].size.push({ number: itemPart.size })
-          })
+              this.sizePartArr[indexPart].part = itemPart.part
+              this.sizePartArr[indexPart].size.push({ number: itemPart.size })
+            })
+          }
         })
         this.product_code = productInfo.product_code
         this.colour = productInfo.color.map(item => {
           return {
+            color_id: item.color_id || null,
             colour: item.color_name
           }
         })
@@ -867,6 +888,8 @@ export default {
             }),
             size: item.size.map((itemSize) => {
               return {
+                size_id: itemSize.size_id || null,
+                self_id: itemSize.self_id || null,
                 size: itemSize.size_name,
                 weight: itemSize.weight,
                 desc: itemSize.size_info,

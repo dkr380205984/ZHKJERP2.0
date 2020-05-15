@@ -479,7 +479,7 @@
                 :key="index + 'size_color' + indexSize">
                 <span class="label">尺码颜色{{indexSize + 1}}：</span>
                 <span class="info info_page">
-                  <el-select v-model="itemSize.size"
+                  <el-select v-model="itemSize.size_id"
                     placeholder="请选择尺码"
                     class="elInput"
                     disabled>
@@ -489,7 +489,7 @@
                       :value="item.size_id">
                     </el-option>
                   </el-select>
-                  <el-select v-model="itemSize.color"
+                  <el-select v-model="itemSize.color_id"
                     class="elInput"
                     placeholder="请选择颜色"
                     disabled>
@@ -859,6 +859,7 @@ export default {
           name: item.fitting_name,
           data_size: item.size.map((itemSize) => {
             return {
+              size_id: null,
               weight: itemSize.weight,
               size_name: itemSize.size,
               size_info: itemSize.desc,
@@ -879,10 +880,16 @@ export default {
         needle_type: this.needleType,
         description: this.desc,
         data_image: imgArr,
-        data_color: this.colour.map((item) => { return { color_name: item.colour } }),
+        data_color: this.colour.map((item) => {
+          return {
+            color_name: item.colour,
+            color_id: null
+          }
+        }),
         data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
         data_size: this.size.map((item, index) => {
           return {
+            size_id: null,
             weight: item.total,
             size_name: item.size,
             size_info: item.desc,
@@ -897,7 +904,7 @@ export default {
         part_data: this.hasFitting ? partData : []
       }
       sample.create(formData).then((res) => {
-        if (res.data.status) {
+        if (res.data.status !== false) {
           this.$message.success('保存成功')
           this.$confirm('是否快速添加样单?', '提示', {
             confirmButtonText: '是',
@@ -924,8 +931,8 @@ export default {
       info.size.forEach(itemSize => {
         info.color.forEach(itemColor => {
           sizeInfo.push({
-            size: itemSize.size_id,
-            color: itemColor.color_id,
+            size_id: itemSize.size_id,
+            color_id: itemColor.color_id,
             numbers: ''
           })
         })
@@ -1077,7 +1084,8 @@ export default {
                   desc: itemSize.size_info,
                   number: itemSize.number
                 }
-              })
+              }),
+              unit: item.unit
             }
           })
           this.needleType = productInfo.needle_type

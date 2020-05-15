@@ -710,10 +710,14 @@ export default {
           part_title: item.fitting_name,
           part_category: '',
           part_color: this.colour.map((item) => {
-            return { color_name: item.colour }
+            return {
+              color_name: item.colour,
+              color_id: null
+            }
           }),
           part_size: item.size.map((itemSize) => {
             return {
+              size_id: null,
               weight: itemSize.weight,
               size_name: itemSize.size,
               size_info: itemSize.desc,
@@ -740,7 +744,12 @@ export default {
         needle_type: this.needleType,
         description: this.desc,
         image: imgArr,
-        color: this.colour.map((item) => item.colour),
+        color: this.colour.map((item) => {
+          return {
+            color_name: item.colour,
+            color_id: null
+          }
+        }),
         component: this.ingredient.map((item) => {
           return {
             component_name: item.ingredient_name,
@@ -749,6 +758,7 @@ export default {
         }),
         size: this.size.map((item, index) => {
           return {
+            size_id: null,
             weight: item.total,
             size_name: item.size,
             size_info: null,
@@ -855,7 +865,8 @@ export default {
                   desc: itemSize.size_info,
                   number: itemSize.number
                 }
-              })
+              }),
+              unit: item.unit
             }
           })
           this.needleType = productInfo.needle_type
