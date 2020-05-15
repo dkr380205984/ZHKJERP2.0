@@ -596,7 +596,7 @@ export default {
       }).then(res => {
         this.list = res.data.data.map(item => {
           let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })
-          let img = item.images || []
+          let img = item.image || []
           img = img.map(itemImg => {
             return {
               thumb: itemImg.thumb,

@@ -251,7 +251,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
               }
@@ -312,7 +312,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }
@@ -373,7 +373,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
               }
@@ -432,7 +432,7 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.images,
+                img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }

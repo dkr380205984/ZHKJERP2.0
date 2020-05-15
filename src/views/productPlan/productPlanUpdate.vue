@@ -305,21 +305,20 @@ export default {
     },
     // 快捷操作 同步尺寸或者配色相同的信息
     shortcutOpr (index) {
-      console.log(this.list)
       let nowList = this.list[index]
       let nowColorSize = nowList.colourSizeArr[nowList.colourSizeIndex]
       // 第一步，找尺码相同的数据
       let sizeArr = []
       nowList.colourSizeArr.forEach((item) => {
-        if (item.size_name === nowColorSize.size_name && item.materials.length > sizeArr.length) {
-          sizeArr = JSON.parse(JSON.stringify(item.materials))
+        if (item.size_id === nowColorSize.size_id && item.materials.length > sizeArr.length) {
+          sizeArr = this.$clone(item.materials)
         }
       })
       // 第二步，找配色相同的数据
       let colourArr = []
       nowList.colourSizeArr.forEach((item) => {
-        if (item.colour_name === nowColorSize.colour_name && item.materials.length > colourArr.length) {
-          colourArr = JSON.parse(JSON.stringify(item.materials))
+        if (item.color_id === nowColorSize.color_id && item.materials.length > colourArr.length) {
+          colourArr = this.$clone(item.materials)
         }
       })
       // 合并尺码相同的数据和配色相同的数据
@@ -361,7 +360,7 @@ export default {
           itemCS.materials.forEach((itemMat) => {
             json.material_info.push({
               type: item.chooseMaterial === 1 ? 1 : 2,
-              color_id: itemCS.colour_id,
+              color_id: itemCS.color_id,
               size_id: itemCS.size_id,
               material_name: itemMat.name,
               material_attribute: itemMat.attr,
@@ -433,7 +432,7 @@ export default {
           id: item.id
         }
         item.material_info.forEach((itemMat) => {
-          let finded = json.colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
+          let finded = json.colourSizeArr.find((itemFind) => itemFind.size_id === itemMat.size_id && itemFind.color_id === itemMat.color_id)
           if (finded) {
             finded.materials.push({
               name: itemMat.material_name,
@@ -445,7 +444,9 @@ export default {
           } else {
             json.colourSizeArr.push({
               size_name: itemMat.product_size,
+              size_id: itemMat.size_id,
               colour_name: itemMat.product_color,
+              color_id: itemMat.color_id,
               materials: [{
                 name: itemMat.material_name,
                 attr: itemMat.material_attribute,
@@ -462,7 +463,7 @@ export default {
         this.productInfo.color.forEach((itemColour) => {
           this.list.forEach((itemList) => {
             let finded = itemList.colourSizeArr.find((itemFind) => {
-              return itemFind.colour_name === itemColour.color_name && itemFind.size_name === itemSize.size_name
+              return itemFind.color_id === itemColour.color_id && itemFind.size_id === itemSize.size_id
             })
             if (!finded) {
               itemList.colourSizeArr.push({

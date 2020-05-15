@@ -295,7 +295,7 @@ export default {
                   return a + b
                 }),
                 product_id: itemPro.category_info.product_id,
-                image: itemPro.category_info.images.length > 0 ? itemPro.category_info.images.map(itemImg => {
+                image: itemPro.category_info.image.length > 0 ? itemPro.category_info.image.map(itemImg => {
                   itemImg.product_id = itemPro.category_info.product_id
                   itemImg.product_type = itemPro.category_info.product_type
                   return itemImg
