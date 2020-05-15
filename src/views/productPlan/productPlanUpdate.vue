@@ -470,7 +470,7 @@ export default {
                 size_name: itemSize.size_name,
                 size_id: itemSize.size_id,
                 colour_name: itemColour.color_name,
-                colour_id: itemColour.color_id,
+                color_id: itemColour.color_id,
                 materials: []
               })
             }
