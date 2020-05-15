@@ -1454,12 +1454,18 @@ import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
 import 'handsontable/dist/handsontable.full.css'
 Handsontable.languages.registerLanguageDictionary(enCH) // 注册中文字典
+import * as Three from 'three'
 export default {
   components: {
     // HotTable
   },
   data () {
     return {
+      camera: null,
+      scene: null,
+      renderer: null,
+      mesh: null,
+
       ZDYMC: '',//新增字段，自定义名称
       DSGG: '',//新增字段，大身规格
       DSKZ: '',//新增值字段，大身克重
@@ -2555,6 +2561,25 @@ export default {
     }
   },
   methods: {
+    threeInit () {
+      let container = document.getElementById('container');
+
+      this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 0.01, 10);
+      this.camera.position.z = 1;
+
+      this.scene = new Three.Scene();
+
+      let geometry = new Three.BoxGeometry(0.2, 0.2, 0.2);
+      let material = new Three.MeshNormalMaterial();
+
+      this.mesh = new Three.Mesh(geometry, material);
+      this.scene.add(this.mesh);
+
+      this.renderer = new Three.WebGLRenderer({ antialias: true });
+      this.renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(this.renderer.domElement);
+
+    },
     afterSave (data) {
       this.msgFlag = data.msgFlag
     },
@@ -3208,25 +3233,6 @@ export default {
       })
     },
     submit () {
-      console.log(this.tableData.warp.data)
-      console.log(this.tableData.warp.data.map((item, index) => {
-        if (index === 1) {
-          return item.map((itemJia) => {
-            return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
-          })
-        } else {
-          if (item.length === this.tableData.warp.number) {
-            return item
-          } else {
-            for (let i = 0; i < this.tableData.warp.number; i++) {
-              item[i] = item[i] || null
-            }
-            return item
-          }
-        }
-      }))
-      return
-
       // 获取合并单元格信息
       let errorInput = false
       errorInput = this.colour.some((itemColour) => {
