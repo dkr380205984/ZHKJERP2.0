@@ -267,7 +267,10 @@ const materialPlan = {
   create: (params) => http.post(`${baseUrl}/order/material/plan/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/material/plan/show`, params),
-  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/order/material/plan/delete`, params, 'application/json'),
+  dressCreate: (params) => http.post(`${baseUrl}/dress/material/plan/save`, params, 'application/json'),
+  getDressDetailForOrder: (params) => http.get(`${baseUrl}/dress/material/plan/order`, params),
+  getDressDetailForId: (params) => http.get(`${baseUrl}/dress/material/plan/one`, params)
 }
 // 物料管理
 const materialManage = {

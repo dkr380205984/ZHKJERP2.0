@@ -663,11 +663,11 @@ export default {
                   end_num: '',
                   unit: itemMa.unit
                 }
-              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
                 let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
                 let sizeFlag = ''
                 if (partName) {
-                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
                 }
                 return {
                   product_part: itemMa.product_id,
@@ -748,11 +748,11 @@ export default {
               end_num: '',
               unit: itemMa.unit
             }
-          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
             let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
             let sizeFlag = ''
             if (partName) {
-              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
             }
             return {
               product_part: itemMa.product_id,
