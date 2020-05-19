@@ -207,7 +207,7 @@ const routes = [
     }, {
       path: '/weavingProcessing/weavingDetail/:id/:orderType',
       name: '织造分配详情',
-      component: () => import('../views/weavingProcessing/weavingDetail.vue')
+      component: () => import('../views/weavingProcessing/weavingDetailForCloth.vue')
     }, {
       path: '/weavingProcessing/weavingList/:params/:type',
       name: '织造分配列表',
