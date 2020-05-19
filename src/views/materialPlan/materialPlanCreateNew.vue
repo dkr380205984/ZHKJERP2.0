@@ -322,7 +322,8 @@ export default {
   },
   methods: {
     selectMaterial (e, item) {
-      item.unit = e.unit || '个'
+      console.log(e, item)
+      item.material_unit = e.unit || '个'
       this.computedTotal()
     },
     changeOtherMaterialUnit (e, item) {
@@ -355,26 +356,97 @@ export default {
         this.$message.warning('请勿频繁点击')
         return
       }
+      let flag = {
+        planTitle: true,
+        materialName: true,
+        materialAttr: true,
+        materialNum: true
+      }
+      let detailData = this.materialPlanInfo.map(itemPlan => {
+        if (!itemPlan.name) {
+          flag.planTitle = false
+        }
+        return {
+          title: itemPlan.name,
+          product_data: this.$flatten(itemPlan.product_info.productArr.map(itemPro => {
+            return itemPro.sizeColor.map(itemSizeColor => {
+              return {
+                product_id: itemPro.product_id,
+                size_id: itemSizeColor.split('/')[0] || '',
+                color_id: itemSizeColor.split('/')[1] || ''
+              }
+            })
+          })),
+          material_data: itemPlan.materials.map(itemMa => {
+            if (!itemMa.material_name) {
+              flag.materialName = false
+            }
+            if (!itemMa.material_attr) {
+              flag.materialAttr = false
+            }
+            if (!itemMa.material_number) {
+              flag.materialNum = false
+            }
+            return {
+              material_name: itemMa.material_name,
+              material_attribute: itemMa.material_attr,
+              material_type: itemMa.material_type,
+              weight: itemMa.material_number,
+              unit: itemMa.material_unit
+            }
+          })
+        }
+      })
+      if (detailData.length === 0) {
+        this.$message.error('检测到没有可提交的物料计划单')
+        return
+      }
+      if (!flag.planTitle) {
+        this.$message.error('检测到有物料计划单未填写名称，请输入')
+        return
+      }
+      if (!flag.materialName) {
+        this.$message.error('检测到有未填写的物料名称，请输入')
+        return
+      }
+      if (!flag.materialAttr) {
+        this.$message.error('检测到有未填写的物料属性，请输入')
+        return
+      }
+      if (!flag.materialNum) {
+        this.$message.error('检测到有未填写的物料数量，请输入')
+        return
+      }
+      let data = {
+        id: null,
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.type,
+        detail_data: detailData,
+        total_data: this.materialTotalInfo.map(itemMa => {
+          return {
+            material_name: itemMa.material_name,
+            material_type: itemMa.material_type,
+            material_attribute: itemMa.material_attr,
+            weight: itemMa.material_number,
+            unit: itemMa.material_unit
+          }
+        })
+      }
+      console.log(data)
       this.lock = false
-      // materialPlan.create({
-      //   order_id: this.$route.params.id,
-      //   order_type: this.$route.params.type,
-      //   detail_data: detailData,
-      //   total_data: totalData,
-      //   production_data: productionData
-      // }).then(res => {
-      //   if (res.data.status) {
-      //     this.$message.success('添加成功')
-      //     if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-      //       this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
-      //       this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-      //       this.msgSwitch = true
-      //     } else {
-      //       this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
-      //     }
-      //   }
-      //   this.lock = true
-      // })
+      materialPlan.dressCreate(data).then(res => {
+        if (res.data.status) {
+          this.$message.success('添加成功')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+          }
+        }
+        this.lock = true
+      })
     },
     deleteItem (item, index) {
       this.$confirm('此操作将删除该列数据, 是否继续?', '提示', {

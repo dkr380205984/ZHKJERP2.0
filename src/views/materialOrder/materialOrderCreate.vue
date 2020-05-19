@@ -408,7 +408,7 @@ export default {
     Promise.all([client.list({
       type: 2
     }), yarn.list(), yarnColor.list()]).then((res) => {
-      this.companyArr = res[0].data.data
+      this.companyArr = res[0].data.data.filter(itemClient => itemClient.type.indexOf(2) !== -1)
       this.materialArr = res[1].data.data.map((item) => {
         return {
           value: item.name

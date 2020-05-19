@@ -443,7 +443,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { product } from '@/assets/js/api.js'
+import { product, craft } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -567,39 +567,43 @@ export default {
         this.qrCodeUrl = url
       }
     })
-    product.detail({
-      id: this.$route.params.id
-    }).then((res) => {
-      if (res.data.status) {
-        this.detail = res.data.data
-        this.detail.sizePart = []
-        this.detail.size.forEach((itemSize, indexSize) => {
-          if (indexSize === 0) {
-            this.checkedSize.push(itemSize.size_name)
-          }
-          JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-            if (!this.detail.sizePart[indexPart]) {
-              this.detail.sizePart[indexPart] = {
-                part: '',
-                size: []
-              }
-            }
-            this.detail.sizePart[indexPart].part = itemPart.part
-            this.detail.sizePart[indexPart].size.push(itemPart.size)
-          })
-        })
-        this.detail.color.forEach((itemColor, indexColor) => {
-          if (indexColor === 0) {
-            this.checkedColor.push(itemColor.color_name)
-          }
-        })
-        this.handleCheckSize()
-        this.handleCheckColor()
-        if (this.detail.image.length === 0) {
-          this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
+    Promise.all([
+      product.detail({
+        id: this.$route.params.id
+      }),
+      craft.detailCloth({
+        product_id: this.$route.params.id,
+        product_type: 1
+      })
+    ]).then((res) => {
+      this.detail = res[0].data.data
+      this.detail.sizePart = []
+      this.detail.size.forEach((itemSize, indexSize) => {
+        if (indexSize === 0) {
+          this.checkedSize.push(itemSize.size_name)
         }
-        this.loading = false
+        JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+          if (!this.detail.sizePart[indexPart]) {
+            this.detail.sizePart[indexPart] = {
+              part: '',
+              size: []
+            }
+          }
+          this.detail.sizePart[indexPart].part = itemPart.part
+          this.detail.sizePart[indexPart].size.push(itemPart.size)
+        })
+      })
+      this.detail.color.forEach((itemColor, indexColor) => {
+        if (indexColor === 0) {
+          this.checkedColor.push(itemColor.color_name)
+        }
+      })
+      this.handleCheckSize()
+      this.handleCheckColor()
+      if (this.detail.image.length === 0) {
+        this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
       }
+      this.loading = false
     })
   }
 }
