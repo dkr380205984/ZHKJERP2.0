@@ -357,7 +357,6 @@ export default {
           itemPart.material_info.forEach((itemMat) => {
             let finded = partArr[indexPart].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
             let allProNeedNum = itemPart.product_info.size_measurement.find((itemFind) => itemFind.size_name === itemMat.product_size).number // 找到该配件在整个产品中所需的数量,用于展示整个产品所需的该配件的物料数量
-            console.log(allProNeedNum)
             if (finded) {
               finded.materials.push({
                 name: itemMat.material_name,

@@ -434,9 +434,9 @@
                   placeholder="选择尺码"
                   @change="selectTableSize($event,itemPro.product_info,indexSize)">
                   <el-option v-for="item in itemPro.size"
-                    :key="item.size_id"
-                    :value="item.size_id"
-                    :label="item.size_name"></el-option>
+                    :key="item.name"
+                    :value="item.name"
+                    :label="item.label"></el-option>
                 </el-select>
               </div>
               <div class="once gray blue">
@@ -478,9 +478,9 @@
                         @change="selectTableColor($event, itemPro,indexColor)"
                         placeholder="选择配色">
                         <el-option v-for="item in itemPro.color"
-                          :key="item.color_id"
-                          :value="item.color_id"
-                          :label="item.color_name"></el-option>
+                          :key="item.name"
+                          :value="item.name"
+                          :label="item.label"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -828,7 +828,7 @@ import { product, client, group, order, getToken, warnSetting } from '@/assets/j
 export default {
   data () {
     return {
-      tableType: 'normal',
+      tableType: 'table',
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -941,8 +941,18 @@ export default {
               id: itemPro.id,
               unit: itemPro.unit,
               price: '',
-              size: findPro.size,
-              color: findPro.color,
+              size: findPro.size.map(itemSize => {
+                return {
+                  label: itemSize.size_name,
+                  name: itemSize.size_id
+                }
+              }),
+              color: findPro.color.map(itemColor => {
+                return {
+                  label: itemColor.color_name,
+                  name: itemColor.color_id
+                }
+              }),
               product_info: productInfo
             })
           })
@@ -967,12 +977,12 @@ export default {
               unit: itemPro.unit,
               sizeColor: itemPro.size.map((itemSize) => {
                 return {
-                  value: itemSize.size_id,
-                  label: itemSize.size_name,
+                  value: itemSize.name,
+                  label: itemSize.label,
                   children: itemPro.color.map((itemColor) => {
                     return {
-                      value: itemColor.color_id,
-                      label: itemColor.color_name
+                      value: itemColor.name,
+                      label: itemColor.label
                     }
                   })
                 }
@@ -1215,13 +1225,13 @@ export default {
             let colorInfo = []
             itemPro.color.forEach((itemColor) => {
               colorInfo.push({
-                color: itemColor.color_name,
+                color: itemColor.color_id,
                 number: ''
               })
             })
             itemPro.size.forEach((itemSize) => {
               productInfo.push({
-                size: itemSize.size_name,
+                size: itemSize.size_id,
                 color: this.$clone(colorInfo)
               })
             })
@@ -1338,21 +1348,31 @@ export default {
         })
       }
       if (selectFlag && this.tableType === 'table') {
-        itemPro.size = selectFlag.size
-        itemPro.color = selectFlag.color
+        itemPro.size = selectFlag.size.map(itemSize => {
+          return {
+            label: itemSize.size_name,
+            name: itemSize.size_id
+          }
+        })
+        itemPro.color = selectFlag.color.map(itemColor => {
+          return {
+            label: itemColor.color_name,
+            name: itemColor.color_id
+          }
+        })
         itemPro.product_info = []
         itemPro.unit = selectFlag.category_info.name || '个'
         let productInfo = []
         let colorInfo = []
         itemPro.color.forEach((itemColor) => {
           colorInfo.push({
-            color: itemColor.color_id,
+            color: itemColor.name,
             number: ''
           })
         })
         itemPro.size.forEach((itemSize) => {
           productInfo.push({
-            size: itemSize.size_id,
+            size: itemSize.name,
             color: this.$clone(colorInfo)
           })
         })
@@ -1408,7 +1428,6 @@ export default {
       }
     },
     saveAll () {
-      console.log(this.batchDate)
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1534,8 +1553,8 @@ export default {
               itemPro.product_info.forEach((itemSize) => {
                 itemSize.color.forEach((itemColor) => {
                   productInfo.push({
-                    size_name: itemSize.size,
-                    color_name: itemColor.color,
+                    size_id: itemSize.size,
+                    color_id: itemColor.color,
                     numbers: itemColor.number,
                     unit_price: itemPro.price
                   })
@@ -1717,6 +1736,8 @@ export default {
         }) : []
         this.total_price = orderInfo.total_price
         this.remark = orderInfo.remark
+        this.tableType = 'normal'
+        this.changeTableType()
         this.loading = false
       })
     }

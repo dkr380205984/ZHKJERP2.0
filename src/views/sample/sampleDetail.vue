@@ -520,7 +520,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { sample } from '@/assets/js/api.js'
+import { sample, craft } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -647,11 +647,17 @@ export default {
         this.qrCodeUrl = url
       }
     })
-    sample.detail({
-      id: this.$route.params.id
-    }).then((res) => {
-      if (res.data.status) {
-        this.detail = res.data.data
+    Promise.all([
+      sample.detail({
+        id: this.$route.params.id
+      }),
+      craft.detailCloth({
+        product_id: this.$route.params.id,
+        product_type: 2
+      })
+    ]).then((res) => {
+      if (res[0].data.status !== false) {
+        this.detail = res[0].data.data
         this.detail.sizePart = []
         this.detail.size.forEach((itemSize, indexSize) => {
           if (indexSize === 0) {
@@ -683,6 +689,16 @@ export default {
         }
         this.loading = false
       }
+      if (res[1].data.status !== false) {
+        let data = res[1].data.data
+        this.detail.craft_info.push({
+          id: data.id,
+          user_name: data.user_name,
+          create_time: data.create_time,
+          is_dress: true
+        })
+      }
+      this.loading = false
     })
   }
 }

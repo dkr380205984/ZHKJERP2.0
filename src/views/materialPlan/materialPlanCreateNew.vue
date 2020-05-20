@@ -196,56 +196,91 @@
     </div>
     <div class="popup"
       v-if="isEditPro">
-      <div class="main">
+      <div class="main"
+        style="width:1000px">
         <div class="title">
-          <span class="text">产品选择</span>
+          <span class="text">编辑产品及数量</span>
           <span class="el-icon-close"
             @click="cancelEditPro"></span>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:600px">
           <template v-for="(itemPro,indexPro) in productEditInfo.productArr">
             <div class="row"
               :key="indexPro + 'product'">
               <span class="label">选择产品：</span>
-              <span class="info">
-                <el-select v-model="itemPro.product_id"
+              <span class="info popup_selectProInput">
+                <el-select v-model="itemPro.id"
                   @change="changePro($event,itemPro)"
                   placeholder="请选择产品">
                   <el-option v-for="item in productList"
                     :key="item.id"
-                    :label="item.product_code"
+                    :label="item.code + '(' + item.type + ')'"
                     :value="item.id">
                   </el-option>
                 </el-select>
+                <span class="editBtnBox">
+                  <span class="editBtn blue"
+                    @click="addItem(productEditInfo.productArr,'product')">添加</span>
+                  <span class="editBtn red"
+                    @click="deleteItem(productEditInfo.productArr,indexPro,true)">删除</span>
+                </span>
               </span>
-              <span class="editBtn red"
-                @click="deleteItem(productEditInfo,indexPro)">删除</span>
             </div>
+            <!-- <template v-for="(itemPart,indexPart) in itemPro.part_data">
+              <div class="row col"
+                :key="indexPart + 'part'">
+                <span class="label">选择部位：</span>
+                <span class="info popup_selectPartInput">
+                  <el-select v-model="itemPart.id"
+                    @change="changePart($event,itemPro,itemPart)"
+                    placeholder="请选择部位/配件">
+                    <el-option v-for="item in itemPro.partArr"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                  <span class="editBtnBox">
+                    <span class="editBtn blue"
+                      @click="addItem(itemPro.part_data,'part')">添加</span>
+                    <span class="editBtn red"
+                      @click="deleteItem(itemPro.part_data,indexPart,true)">删除</span>
+                  </span>
+                </span>
+              </div> -->
             <div class="row col"
               :key="indexPro + 'sizeColor'">
-              <span class="label">尺码颜色：</span>
+              <span class="label">尺码信息：</span>
               <span class="info">
-                <div class="row_item">
-                  <el-checkbox :indeterminate="itemPro.isIndeterminate"
-                    v-model="itemPro.checkAll"
-                    @change="handleCheckAllChange($event,itemPro)">全选</el-checkbox>
-                </div>
-                <div class="row_item">
-                  <el-checkbox-group v-model="itemPro.sizeColor"
-                    @change="handleCheckedChange($event,itemPro)">
-                    <el-checkbox v-for="(item,index) in itemPro.sizeColorArr"
-                      :label="item.id"
-                      :key="index"
-                      class="checkbox_item">{{item.name}}</el-checkbox>
-                  </el-checkbox-group>
+                <div class="tableCtnLv2 proup_table">
+                  <span class="tb_content">
+                    <span class="tb_row">配色组/尺码</span>
+                    <span class="tb_row"
+                      v-for="(itemSize,indexSize) in itemPart.sizeArr"
+                      :key="indexSize">{{itemSize.size_name}}</span>
+                  </span>
+                  <span class="tb_content"
+                    v-for="(itemColor,indexColor) in itemPart.colorArr"
+                    :key="indexColor">
+                    <span class="tb_row">{{itemColor.color_name}}</span>
+                    <span class="tb_row"
+                      v-for="(itemSize,indexSize) in itemPart.sizeArr"
+                      :key="indexSize">
+                      <zh-input v-model="itemColor.sizeNumInfo[itemSize.size_id]"
+                        style="width:80%"
+                        @change="getProStr"></zh-input>
+                    </span>
+                  </span>
                 </div>
               </span>
             </div>
+            <!--</template> -->
           </template>
-          <div class="row">
+          <!-- <div class="row">
             <div class="btn btnWhiteBlue"
               @click="addItem(productEditInfo,'product')">添加产品</div>
-          </div>
+          </div> -->
         </div>
         <div class="opr">
           <span class="btn btnGray"
@@ -304,17 +339,28 @@ export default {
         }
       ],
       productList: [],
-      productEditInfo: [
-        {
-          product_id: '',
-          product_code: '',
-          sizeColor: [],
-          sizeColorName: [],
-          sizeColorArr: [],
-          isIndeterminate: false,
-          checkAll: false
-        }
-      ],
+      productEditInfo: {
+        productArr: [
+          {
+            id: '',
+            product_code: '',
+            sizeArr: [],
+            colorArr: [],
+            partArr: [],
+            part_data: [
+              {
+                id: '',
+                name: '',
+                sizeColorInfo: [],
+                sizeArr: [],
+                colorArr: [],
+                size_info: []
+              }
+            ]
+          }
+        ],
+        productStr: ''
+      },
       oldProductEditInfo: [],
       isEditPro: false
 
@@ -448,7 +494,11 @@ export default {
         this.lock = true
       })
     },
-    deleteItem (item, index) {
+    deleteItem (item, index, flag) {
+      if (flag && item.length < 2) {
+        this.$message.warning('最少保留一项')
+        return
+      }
       this.$confirm('此操作将删除该列数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -503,13 +553,26 @@ export default {
         })
       } else if (type === 'product') {
         item.push({
-          product_id: '',
+          id: '',
           product_code: '',
-          sizeColor: [],
-          sizeColorName: [],
-          sizeColorArr: [],
-          isIndeterminate: false,
-          checkAll: false
+          sizeArr: [],
+          colorArr: [],
+          partArr: [],
+          part_data: [
+            {
+              id: '',
+              name: '',
+              sizeArr: [],
+              colorArr: []
+            }
+          ]
+        })
+      } else if (type === 'part') {
+        item.push({
+          id: '',
+          name: '',
+          sizeArr: [],
+          colorArr: []
         })
       }
     },
@@ -534,28 +597,73 @@ export default {
     editProInfo (item) {
       this.oldProductEditInfo = this.$clone(item)
       if (item.productArr.length === 0) {
-        item.productArr.push({
-          product_id: '',
-          product_code: '',
-          sizeColor: [],
-          sizeColorName: [],
-          sizeColorArr: [],
-          isIndeterminate: false,
-          checkAll: false
-        })
+        item.productArr.push(
+          {
+            id: '',
+            product_code: '',
+            sizeArr: [],
+            colorArr: [],
+            partArr: [],
+            part_data: [
+              {
+                id: '',
+                name: '',
+                sizeColorInfo: [],
+                sizeArr: [],
+                colorArr: [],
+                size_info: []
+              }
+            ]
+          }
+        )
       }
       this.productEditInfo = item
       this.isEditPro = true
     },
     changePro (ev, item) {
       if (ev) {
-        let flag = this.productList.find(itemPro => itemPro.id === item.product_id)
+        let flag = this.productList.find(itemPro => itemPro.id === item.id)
         if (flag) {
-          item.product_code = flag.product_code
-          item.sizeColorArr = flag.size_color_info.map(item => {
+          item.product_code = flag.code
+          item.partArr = this.$clone(flag.partArr)
+          item.sizeArr = this.$clone(flag.sizeArr)
+          item.colorArr = this.$clone(flag.colorArr)
+          item.part_data = [
+            {
+              id: item.id,
+              name: '成衣',
+              sizeArr: this.$clone(flag.sizeArr),
+              colorArr: this.$clone(flag.colorArr)
+            }
+          ]
+        }
+      }
+      this.getProStr()
+    },
+    changePart (ev, item, itemPart) {
+      let isChecked = item.part_data.filter(itemF => itemF.id === itemPart.id).length > 1
+      if (isChecked) {
+        this.$message.warning('检测到您已选过该部位/配件')
+        itemPart.id = ''
+        return
+      }
+      if (ev) {
+        let flag = item.partArr.find(itemF => itemF.id === itemPart.id)
+        if (flag) {
+          itemPart.name = flag.name
+          itemPart.sizeArr = this.$clone(item.sizeArr)
+          itemPart.colorArr = item.colorArr.map(itemColor => {
+            let sizeNumInfo = {}
+            for (let prop in itemColor.sizeNumInfo) {
+              let itemPartSize = itemColor.sizeNumInfo[prop]
+              let flagPartSizeInfo = flag.size_info.find(itemF => +itemF.size_id === +prop)
+              sizeNumInfo[prop] = itemPartSize * (flagPartSizeInfo ? flagPartSizeInfo.number : 1)
+              console.log(flagPartSizeInfo, itemPartSize, sizeNumInfo[prop])
+            }
             return {
-              id: item.size_id + '/' + item.color_id,
-              name: item.size_name + '/' + item.color_name
+              color_id: itemColor.color_id,
+              color_name: itemColor.color_name,
+              sizeNumInfo: sizeNumInfo
             }
           })
         }
@@ -598,9 +706,20 @@ export default {
     },
     getProStr () {
       let strArr = this.productEditInfo.productArr.map(item => {
-        return item.product_code + ':' + item.sizeColorName.join('、')
+        return item.part_data.map(itemPart => {
+          return item.product_code + '-' + itemPart.name + ':' + itemPart.colorArr.map(itemColor => {
+            let sizeColorName = []
+            for (let prop in itemColor.sizeNumInfo) {
+              let flag = itemPart.sizeArr.find(itemF => +itemF.size_id === +prop)
+              if (itemColor.sizeNumInfo[prop] && +itemColor.sizeNumInfo[prop] !== 0) {
+                sizeColorName.push(flag.size_name + '/' + itemColor.color_name)
+              }
+            }
+            return sizeColorName.join('、')
+          })
+        }).filter(itemF => itemF).join('')
       })
-      this.productEditInfo.productStr = strArr.length > 0 ? strArr.join(';') : ''
+      this.productEditInfo.productStr = strArr.join(';')
     }
   },
   created () {
@@ -613,7 +732,7 @@ export default {
       material.list()
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
-      this.productList = this.$mergeData(res[0].data.data.product_info.map(itemPro => {
+      let productList = this.$mergeData(res[0].data.data.product_info.map(itemPro => {
         return {
           id: itemPro.product_id,
           product_code: itemPro.product_code,
@@ -621,9 +740,64 @@ export default {
           size_name: itemPro.size_name,
           color_id: itemPro.color_id,
           color_name: itemPro.color_name,
-          type: [itemPro.category_name, itemPro.type_name, itemPro.style_name].join('/')
+          type: [itemPro.category_name, itemPro.type_name, itemPro.style_name].join('/'),
+          number: itemPro.numbers,
+          part_data: [{
+            name: '成衣',
+            id: itemPro.product_id,
+            size_info: []
+          }].concat(itemPro.part_data.map(itemPart => {
+            return {
+              name: itemPart.name,
+              id: itemPart.id,
+              size_info: itemPart.size_info
+            }
+          }))
         }
-      }), { mainRule: 'id', otherRule: [{ name: 'product_code' }, { name: 'type' }], childrenName: 'size_color_info', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'size_name' }, { name: 'color_name' }] } })
+      }), { mainRule: 'id', otherRule: [{ name: 'product_code' }, { name: 'type' }], childrenName: 'size_color_info', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'size_name' }, { name: 'color_name' }, { name: 'number', type: 'add' }, { name: 'part_data', type: 'concat' }] } }).map(itemPro => {
+        let sizeArr = []
+        let colorArr = []
+        let partArr = []
+        itemPro.size_color_info.forEach(itemSize => {
+          if (!sizeArr.find(itemF => itemF.size_id === itemSize.size_id)) {
+            sizeArr.push({
+              size_id: itemSize.size_id,
+              size_name: itemSize.size_name
+            })
+          }
+          let colorFlag = colorArr.find(itemF => itemF.color_id === itemSize.color_id)
+          if (!colorFlag) {
+            colorArr.push({
+              color_name: itemSize.color_name,
+              color_id: itemSize.color_id,
+              sizeNumInfo: {
+                [itemSize.size_id]: itemSize.number
+              }
+            })
+          } else {
+            if (colorFlag.sizeNumInfo[itemSize.size_id]) {
+              colorFlag.sizeNumInfo[itemSize.size_id] = (Number(colorFlag.sizeNumInfo[itemSize.size_id]) || 0) + (Number(itemSize.number) || 0)
+            } else {
+              colorFlag.sizeNumInfo[itemSize.size_id] = itemSize.number
+            }
+          }
+          itemSize.part_data.forEach(itemPart => {
+            let flag = partArr.find(itemF => itemF.id === itemPart.id)
+            if (!flag) {
+              partArr.push(itemPart)
+            }
+          })
+        })
+        return {
+          id: itemPro.id,
+          code: itemPro.product_code,
+          sizeArr: sizeArr,
+          colorArr: colorArr,
+          partArr: partArr,
+          type: itemPro.type
+        }
+      })
+      this.productList = productList
       this.computedTotal()
       this.yarnList = res[1].data.data.map((item) => {
         return {
