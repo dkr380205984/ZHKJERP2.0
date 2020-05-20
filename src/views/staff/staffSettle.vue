@@ -565,104 +565,106 @@ export default {
         year: this.date.split('-')[0],
         month: Math.round(this.date.split('-')[1])
       }).then((res) => {
-        this.list = res.data.data.map((item) => {
-          item.checked = false
-          item.total = [{
-            reason: '按时结算总计',
-            price: item.child_data.reduce((total, current) => {
-              if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
-                return Number(current.total_price) + total
-              } else {
-                return total
-              }
+        if (res.data.data) {
+          this.list = res.data.data.map((item) => {
+            item.checked = false
+            item.total = [{
+              reason: '按时结算总计',
+              price: item.child_data.reduce((total, current) => {
+                if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
+                  return Number(current.total_price) + total
+                } else {
+                  return total
+                }
+              }, 0)
+            }, {
+              reason: '订单/其他方式结算',
+              price: item.child_data.reduce((total, current) => {
+                if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
+                  return Number(current.total_price) + total
+                } else {
+                  return total
+                }
+              }, 0)
+            }]
+            item.price = item.total.reduce((total, current) => {
+              return total + current.price
             }, 0)
-          }, {
-            reason: '订单/其他方式结算',
-            price: item.child_data.reduce((total, current) => {
-              if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
-                return Number(current.total_price) + total
+            item.extra = [
+              {
+                edit: true,
+                reason: '基本工资',
+                price: 0
+              }, {
+                edit: true,
+                reason: '加班工资',
+                price: 0
+              }, {
+                edit: true,
+                reason: '劳务工资',
+                price: 0
+              }, {
+                edit: true,
+                reason: '生活补贴',
+                price: 0
+              }, {
+                edit: true,
+                reason: '其他',
+                price: 0
+              }
+            ]
+            item.deduct = [
+              {
+                edit: true,
+                reason: '养老金',
+                price: 0
+              },
+              {
+                edit: true,
+                reason: '个税',
+                price: 0
+              },
+              {
+                edit: true,
+                reason: '其他',
+                price: 0
+              }
+            ]
+            item.deduct_data.forEach(itemInner => {
+              if (itemInner.type === 1) {
+                let flag1 = item.extra.find(val => val.reason === itemInner.reason)
+                if (flag1) {
+                  flag1.price = itemInner.price
+                  flag1.edit = false
+                }
               } else {
-                return total
+                let flag2 = item.deduct.find(val => val.reason === itemInner.reason)
+                if (flag2) {
+                  flag2.price = itemInner.price
+                  flag2.edit = false
+                }
               }
+            })
+            // item.extra = item.deduct_data.filter((item) => item.type === 1)
+            // if (item.deduct_data.length === 0) {
+            // }
+            item.extra_price = item.extra.reduce((total, current) => {
+              return total + current.price
             }, 0)
-          }]
-          item.price = item.total.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.extra = [
-            {
-              edit: true,
-              reason: '基本工资',
-              price: 0
-            }, {
-              edit: true,
-              reason: '加班工资',
-              price: 0
-            }, {
-              edit: true,
-              reason: '劳务工资',
-              price: 0
-            }, {
-              edit: true,
-              reason: '生活补贴',
-              price: 0
-            }, {
-              edit: true,
-              reason: '其他',
-              price: 0
-            }
-          ]
-          item.deduct = [
-            {
-              edit: true,
-              reason: '养老金',
-              price: 0
-            },
-            {
-              edit: true,
-              reason: '个税',
-              price: 0
-            },
-            {
-              edit: true,
-              reason: '其他',
-              price: 0
-            }
-          ]
-          item.deduct_data.forEach(itemInner => {
-            if (itemInner.type === 1) {
-              let flag1 = item.extra.find(val => val.reason === itemInner.reason)
-              if (flag1) {
-                flag1.price = itemInner.price
-                flag1.edit = false
-              }
-            } else {
-              let flag2 = item.deduct.find(val => val.reason === itemInner.reason)
-              if (flag2) {
-                flag2.price = itemInner.price
-                flag2.edit = false
-              }
-            }
+            item.deduct_price = item.deduct.reduce((total, current) => {
+              return total + current.price
+            }, 0)
+            item.realityTotal = item.total.reduce((total, current) => {
+              return current.price + total
+            }, 0) + item.extra.reduce((total, current) => {
+              return current.price + total
+            }, 0) - item.deduct.reduce((total, current) => {
+              return current.price + total
+            }, 0)
+            return item
           })
-          // item.extra = item.deduct_data.filter((item) => item.type === 1)
-          // if (item.deduct_data.length === 0) {
-          // }
-          item.extra_price = item.extra.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.deduct_price = item.deduct.reduce((total, current) => {
-            return total + current.price
-          }, 0)
-          item.realityTotal = item.total.reduce((total, current) => {
-            return current.price + total
-          }, 0) + item.extra.reduce((total, current) => {
-            return current.price + total
-          }, 0) - item.deduct.reduce((total, current) => {
-            return current.price + total
-          }, 0)
-          return item
-        })
-        this.total = res.data.meta.total
+          this.total = res.data.meta.total
+        }
         this.loading = false
       })
     },

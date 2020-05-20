@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { materialPlan } from '@/assets/js/api.js'
+import { materialPlan, order, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -110,11 +110,27 @@ export default {
     //   let data = item.split('=')
     //   this.params[data[0]] = data[1]
     // })
-    materialPlan.detail({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.type
-    }).then(res => {
-      let data = res.data.data
+    let orderOrSample = this.$route.params.type === '1' ? order : sampleOrder
+    Promise.all([
+      materialPlan.detail({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.type
+      }),
+      orderOrSample.detail({
+        id: this.$route.params.id
+      })
+    ]).then(res => {
+      let orderProInfo = []
+      if (this.$route.params.type === '1') { // 获取订单或样单的产品id
+        orderProInfo = this.$flatten(res[1].data.data.batch_info.map(itemBatch => {
+          return itemBatch.product_info.map(itemPro => {
+            return itemPro.product_info.product_id
+          })
+        }))
+      } else {
+        orderProInfo = res[1].data.data.product_info.map(itemPro => itemPro.id)
+      }
+      let data = res[0].data.data
       this.orderInfo = data.order_info
       // if (this.params.proId) {
       //   this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
@@ -135,6 +151,7 @@ export default {
       } else {
         this.productInfo = this.$mergeData(data.production_data, { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
       }
+      this.productInfo = this.productInfo.filter(itemPro => orderProInfo.find(itemF => +itemF === +itemPro.product_id)) // 筛选掉配件
       let materialDetail = this.$clone(data.detail_data)
       materialDetail.forEach(itemPro => {
         if (!itemPro.pid) {

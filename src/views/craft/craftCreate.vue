@@ -30,7 +30,7 @@
             placeholder="输入编号导入工艺单">
             <el-option v-for="item in gydArr"
               :key="item.id"
-              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code.code:item.craft_code"
+              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
               :value="item.id">
               <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
               <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>

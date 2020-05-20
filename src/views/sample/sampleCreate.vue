@@ -748,11 +748,11 @@ export default {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
-      error = this.colour.some((item) => item.colour.length > 8)
-      if (error) {
-        this.$message.error('配色信息长度不得超过8个字符')
-        return
-      }
+      // error = this.colour.some((item) => item.colour.length > 8)
+      // if (error) {
+      //   this.$message.error('配色信息长度不得超过8个字符')
+      //   return
+      // }
       if (this.hasFitting) {
         error = this.fittingInfo.some((item) => !item.fitting_name)
       }

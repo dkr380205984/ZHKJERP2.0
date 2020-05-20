@@ -225,6 +225,7 @@
       <div class="listCtn hasBorderTop">
         <div class="tableCtnLv2">
           <div class="tb_header">
+            <span class="tb_row flex04 middle">类型</span>
             <span class="tb_row flex12">名称</span>
             <span class="tb_row">颜色</span>
             <span class="tb_row flex08">所需数量</span>
@@ -234,6 +235,8 @@
           <div class="tb_content"
             v-for="(itemMa,indexMa) in materialTotalInfo"
             :key="indexMa">
+            <span class="tb_row flex04 middle"
+              :class="itemMa.type === 1 ? 'green' : 'orange'">{{itemMa.type === 1 ? '原料' : '辅料'}}</span>
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
             <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? $toFixed(itemMa.total_number/1000) + 'kg' : $toFixed(itemMa.total_number) + itemMa.unit) : '-'}}</span>

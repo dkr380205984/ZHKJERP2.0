@@ -217,6 +217,7 @@
       <div class="listCtn hasBorderTop">
         <div class="tableCtnLv2">
           <div class="tb_header">
+            <span class="tb_row flex04 middle">类型</span>
             <span class="tb_row flex12">名称</span>
             <span class="tb_row">颜色</span>
             <span class="tb_row flex08">所需数量</span>
@@ -226,6 +227,8 @@
           <div class="tb_content"
             v-for="(itemMa,indexMa) in materialTotalInfo"
             :key="indexMa">
+            <span class="tb_row flex04 middle"
+              :class="itemMa.type === 1 ? 'green' : 'orange'">{{itemMa.type === 1 ? '原料' : '辅料'}}</span>
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
             <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? $toFixed(itemMa.total_number/1000) + 'kg' : $toFixed(itemMa.total_number) + itemMa.unit) : '-'}}</span>
@@ -663,11 +666,11 @@ export default {
                   end_num: '',
                   unit: itemMa.unit
                 }
-              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
                 let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
                 let sizeFlag = ''
                 if (partName) {
-                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
                 }
                 return {
                   product_part: itemMa.product_id,
@@ -748,11 +751,11 @@ export default {
               end_num: '',
               unit: itemMa.unit
             }
-          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.product_color === itemPro.color && itemMa.product_size === itemPro.size).map(itemMa => {
+          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
             let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
             let sizeFlag = ''
             if (partName) {
-              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_name === itemPro.size)
+              sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
             }
             return {
               product_part: itemMa.product_id,

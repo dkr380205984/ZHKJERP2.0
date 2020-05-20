@@ -2218,7 +2218,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showPopup=false">取消</div>
+            @click="updataYarnsFlag = false">取消</div>
           <div class="btn btnBlue"
             @click="saveYarns">确定</div>
         </div>
@@ -2735,10 +2735,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        sampleOrder.typeDelete({
+        sampleOrder.deleteType({
           id: id
         }).then((res) => {
-          if (res.data.status) {
+          if (res.data.status !== false) {
             this.$message({
               type: 'success',
               message: '删除成功!'
