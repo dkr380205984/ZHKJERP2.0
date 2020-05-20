@@ -20,7 +20,7 @@
                   <span class="create">确认完成</span>
                 </el-dropdown-item>
                 <el-dropdown-item command='change'
-                  v-if="orderInfo.status === 2001 || orderInfo.status === 2002">
+                  v-if="orderInfo.status === 2001 || orderInfo.status === 2002 || orderInfo.status === 2005">
                   <span class="updated">修改</span>
                 </el-dropdown-item>
                 <el-dropdown-item command='showCanclePopup'

@@ -642,6 +642,8 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/weavingProcessing/weavingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到织造分配</div>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>

@@ -870,6 +870,8 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/weavingProcessing/processingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到半成品分配</div>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>

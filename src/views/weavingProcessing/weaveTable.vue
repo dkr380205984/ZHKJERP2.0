@@ -306,10 +306,10 @@ export default {
                   sizeArr.push({
                     size_name: itemInfo.size,
                     size_id: itemInfo.size_id,
-                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                    totalNumber_size: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 尺码的总订单数
                   })
                 } else {
-                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + (+itemInfo.number || 0) + (itemInfo.motorise_number || 0) // 尺码的总订单数
                 }
                 let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
@@ -317,25 +317,25 @@ export default {
                     color_name: itemInfo.color,
                     color_id: itemInfo.color_id,
                     [itemInfo.size]: {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     },
-                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                    totalNumber_color: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                   })
                 } else {
                   if (flagColor[itemInfo.size]) {
-                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
-                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                    flagColor[itemInfo.size].number = (+flagColor[itemInfo.size].number || 0) + (+itemInfo.number || 0)
+                    flagColor[itemInfo.size].motorise_number = (+flagColor[itemInfo.size].motorise_number || 0) + (+itemInfo.motorise_number || 0)
                   } else {
                     flagColor[itemInfo.size] = {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     }
                   }
-                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                 }
               })
-              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (+itemInfo.number || 0) * (+itemInfo.price || 0)).reduce((a, b) => {
                 return a + b
               })
               itemPro.orderInfo = {
@@ -463,10 +463,10 @@ export default {
                   sizeArr.push({
                     size_name: itemInfo.size,
                     size_id: itemInfo.size_id,
-                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                    totalNumber_size: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 尺码的总订单数
                   })
                 } else {
-                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + (+itemInfo.number || 0) + (itemInfo.motorise_number || 0) // 尺码的总订单数
                 }
                 let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
@@ -474,25 +474,25 @@ export default {
                     color_name: itemInfo.color,
                     color_id: itemInfo.color_id,
                     [itemInfo.size]: {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     },
-                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                    totalNumber_color: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                   })
                 } else {
                   if (flagColor[itemInfo.size]) {
-                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
-                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                    flagColor[itemInfo.size].number = (+flagColor[itemInfo.size].number || 0) + (+itemInfo.number || 0)
+                    flagColor[itemInfo.size].motorise_number = (+flagColor[itemInfo.size].motorise_number || 0) + (+itemInfo.motorise_number || 0)
                   } else {
                     flagColor[itemInfo.size] = {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     }
                   }
-                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                 }
               })
-              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (+itemInfo.number || 0) * (+itemInfo.price || 0)).reduce((a, b) => {
                 return a + b
               })
               itemPro.orderInfo = {
@@ -523,8 +523,8 @@ export default {
                   colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
                     return {
                       material_attribute: itemAttr.material_attribute,
-                      number: this.$toFixed(itemAttr.number),
-                      material_unit: itemAttr.material_unit
+                      number: this.$toFixed(itemAttr.number / 1000),
+                      material_unit: 'kg'
                     }
                   })
                 })
@@ -621,10 +621,10 @@ export default {
                   sizeArr.push({
                     size_name: itemInfo.size,
                     size_id: itemInfo.size_id,
-                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                    totalNumber_size: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 尺码的总订单数
                   })
                 } else {
-                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + (+itemInfo.number || 0) + (itemInfo.motorise_number || 0) // 尺码的总订单数
                 }
                 let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
@@ -632,25 +632,25 @@ export default {
                     color_name: itemInfo.color,
                     color_id: itemInfo.color_id,
                     [itemInfo.size]: {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     },
-                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                    totalNumber_color: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                   })
                 } else {
                   if (flagColor[itemInfo.size]) {
-                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
-                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                    flagColor[itemInfo.size].number = (+flagColor[itemInfo.size].number || 0) + (+itemInfo.number || 0)
+                    flagColor[itemInfo.size].motorise_number = (+flagColor[itemInfo.size].motorise_number || 0) + (+itemInfo.motorise_number || 0)
                   } else {
                     flagColor[itemInfo.size] = {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     }
                   }
-                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                 }
               })
-              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (+itemInfo.number || 0) * (+itemInfo.price || 0)).reduce((a, b) => {
                 return a + b
               })
               itemPro.orderInfo = {
@@ -777,10 +777,10 @@ export default {
                   sizeArr.push({
                     size_name: itemInfo.size,
                     size_id: itemInfo.size_id,
-                    totalNumber_size: itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                    totalNumber_size: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 尺码的总订单数
                   })
                 } else {
-                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + itemInfo.number + itemInfo.motorise_number // 尺码的总订单数
+                  flagSize.totalNumber_size = (Number(flagSize.totalNumber_size) || 0) + (+itemInfo.number || 0) + (itemInfo.motorise_number || 0) // 尺码的总订单数
                 }
                 let flagColor = colorArr.find(itemColor => itemColor.color_id === itemInfo.color_id)
                 if (!flagColor) {
@@ -788,25 +788,25 @@ export default {
                     color_name: itemInfo.color,
                     color_id: itemInfo.color_id,
                     [itemInfo.size]: {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     },
-                    totalNumber_color: itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                    totalNumber_color: (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                   })
                 } else {
                   if (flagColor[itemInfo.size]) {
-                    flagColor[itemInfo.size].number = flagColor[itemInfo.size].number + itemInfo.number
-                    flagColor[itemInfo.size].motorise_number = flagColor[itemInfo.size].motorise_number + itemInfo.motorise_number
+                    flagColor[itemInfo.size].number = (+flagColor[itemInfo.size].number || 0) + (+itemInfo.number || 0)
+                    flagColor[itemInfo.size].motorise_number = (+flagColor[itemInfo.size].motorise_number || 0) + (+itemInfo.motorise_number || 0)
                   } else {
                     flagColor[itemInfo.size] = {
-                      number: itemInfo.number,
-                      motorise_number: itemInfo.motorise_number
+                      number: (+itemInfo.number || 0),
+                      motorise_number: (+itemInfo.motorise_number || 0)
                     }
                   }
-                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + itemInfo.number + itemInfo.motorise_number // 颜色的总订单数
+                  flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                 }
               })
-              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (itemInfo.number || 0) * (itemInfo.price || 0)).reduce((a, b) => {
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (+itemInfo.number || 0) * (+itemInfo.price || 0)).reduce((a, b) => {
                 return a + b
               })
               itemPro.orderInfo = {
@@ -837,8 +837,8 @@ export default {
                   colorInfo[itemColor.product_color] = itemColor.color_info.map(itemAttr => {
                     return {
                       material_attribute: itemAttr.material_attribute,
-                      number: this.$toFixed(itemAttr.number),
-                      material_unit: itemAttr.material_unit
+                      number: this.$toFixed(itemAttr.number / 1000),
+                      material_unit: 'kg'
                     }
                   })
                 })
