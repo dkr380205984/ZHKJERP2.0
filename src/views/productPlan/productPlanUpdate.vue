@@ -226,7 +226,7 @@ export default {
       let str = ''
       if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.component_name + item.number + '%' + ' / '
+          str += item.component_name + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {

@@ -303,6 +303,19 @@
               </div>
             </div>
           </div>
+          <div class="line">
+            <div class="once flex3 bgGray middle">
+              <div>克重</div>
+            </div>
+            <div class="once"
+              v-for="(item,index) in craftInfo.weight"
+              :key="index">
+              <el-input class="inputs"
+                v-model="item.value"
+                placeholder="输入克重">
+              </el-input>
+            </div>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
@@ -385,6 +398,7 @@ export default {
           crosswise_density: [],
           lengthwise_density: []
         },
+        weight: [],
         special_way: '',
         process: []
       },
@@ -399,7 +413,7 @@ export default {
       let str = ''
       if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.component_name + item.number + '%' + ' / '
+          str += item.component_name + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {
@@ -531,6 +545,13 @@ export default {
       this.addPart(this.craftInfo.organization)
       this.addPart(this.craftInfo.density.crosswise_density)
       this.addPart(this.craftInfo.density.lengthwise_density)
+      this.craftInfo.weight = this.size.map((item) => {
+        return {
+          size: item.size_name,
+          size_id: item.id,
+          value: ''
+        }
+      })
       // JSON.parse(this.productInfo.size[0].part_info).forEach((item) => {
       //   this.craftInfo.organization.push({
       //     name: item.part,
