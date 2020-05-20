@@ -284,6 +284,19 @@
               </div>
             </div>
           </div>
+          <div class="line">
+            <div class="once flex3 bgGray middle">
+              <div>克重</div>
+            </div>
+            <div class="once"
+              v-for="(item,index) in craftInfo.weight"
+              :key="index">
+              <el-input class="inputs"
+                v-model="item.value"
+                placeholder="输入克重">
+              </el-input>
+            </div>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
@@ -375,7 +388,7 @@ export default {
       let str = ''
       if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
-          str += item.component_name + item.number + '%' + ' / '
+          str += item.component_name + ' / '
         })
         return str.substring(0, str.length - 2)
       } else {
