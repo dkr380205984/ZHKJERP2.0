@@ -155,15 +155,15 @@ const routes = [
     }, {
       path: '/materialPlan/materialPlanCreate/:id/:type',
       name: '物料计划单添加',
-      component: () => import('../views/materialPlan/materialPlanCreateNew.vue')
+      component: () => import('../views/materialPlan/materialPlanCreate.vue')
     }, {
       path: '/materialPlan/materialPlanUpdate/:id/:type',
       name: '物料计划单修改',
-      component: () => import('../views/materialPlan/materialPlanUpdateNew.vue')
+      component: () => import('../views/materialPlan/materialPlanUpdate.vue')
     }, {
       path: '/materialPlan/materialPlanDetail/:id/:type',
       name: '物料计划单详情',
-      component: () => import('../views/materialPlan/materialPlanDetailNew.vue')
+      component: () => import('../views/materialPlan/materialPlanDetail.vue')
     }, {
       path: '/materialPlan/materialPlanList/:params/:type',
       name: '物料计划单列表',
