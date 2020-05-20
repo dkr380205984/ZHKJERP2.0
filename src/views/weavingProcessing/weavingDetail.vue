@@ -143,22 +143,6 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">织造单位</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <el-select v-model="item.company_id"
-                        filterable
-                        placeholder="请选择织造单位">
-                        <el-option v-for="item in companyArr"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.name"></el-option>
-                      </el-select>
-                    </div>
-                  </div>
-                  <div class="colCtn flex3">
-                    <div class="label">
                       <span class="text">选择产品</span>
                       <span class="explanation">(必填)</span>
                     </div>
@@ -173,6 +157,60 @@
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
+                  </div>
+                </div>
+                <div class="rowCtn"
+                  v-for="(itemChild,indexChild) in item.companyRate"
+                  :key="'zhizao'+ indexChild">
+                  <div class="colCtn flex3">
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">选择单位</span>
+                      <span class="explanation">(必填)</span>
+                    </div>
+                    <div class="content">
+                      <el-select v-model="itemChild.company_id"
+                        filterable
+                        placeholder="请选择单位">
+                        <el-option v-for="item in companyArr"
+                          :key="item.id"
+                          :value="item.id"
+                          :label="item.name"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                  <div class="colCtn flex3">
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">所需物料比例</span>
+                      <span class="explanation">(必填)</span>
+                    </div>
+                    <div class="content">
+                      <zh-input type='number'
+                        v-model="itemChild.rate"
+                        placeholder="请输入所需物料比例">
+                        <template slot="append">%</template>
+                      </zh-input>
+                    </div>
+                  </div>
+                  <div class="colCtn flex3">
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">工序名称</span>
+                      <span class="explanation">(必填)</span>
+                    </div>
+                    <div class="content">
+                      <el-autocomplete class="inline-input"
+                        v-model="itemChild.process"
+                        :fetch-suggestions="querySearch"
+                        placeholder="请输入内容"></el-autocomplete>
+                    </div>
+                    <div class="editBtn addBtn"
+                      v-if="indexChild===0"
+                      @click="addCompanyRate(index)">添加</div>
+                    <div class="editBtn deleteBtn"
+                      v-if="indexChild>0"
+                      @click="deleteCompanyRate(index,indexChild)">删除</div>
                   </div>
                 </div>
                 <div class="rowCtn"
@@ -205,7 +243,7 @@
                       <zh-input type="number"
                         v-model="itemChild.number"
                         placeholder="请输入分配数量">
-                        <template slot="append">机动数：{{'+'+parseInt(itemChild.number*itemChild.loss/100)}}</template>
+                        <template slot="append">机动数：{{'+'+ itemChild.number&&itemChild.loss?parseInt(itemChild.number*itemChild.loss/100):0}}</template>
                       </zh-input>
                     </div>
                   </div>
@@ -276,7 +314,7 @@
                   @click="cancleWeaving">取消分配</span>
                 <span class="once normal"
                   v-if="weaving_flag"
-                  @click="addWeaving">添加织造单位</span>
+                  @click="addWeaving">添加产品</span>
                 <span class="once ok"
                   v-if="weaving_flag"
                   @click="saveWeaving">确认分配
@@ -457,7 +495,7 @@
                 <div class="trow"
                   v-for="(item,index) in weaving_detail"
                   :key="index">
-                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn">{{item.client_name}}<span style="color:#1a95ff">({{item.process}})</span></div>
                   <div class="tcolumn noPad"
                     style="flex:6">
                     <div class="trow"
@@ -906,6 +944,14 @@ export default {
     }
   },
   methods: {
+    querySearch (queryString, cb) {
+      let arr = [{
+        value: '套口'
+      }, {
+        value: '织造'
+      }]
+      cb(arr)
+    },
     // 补纱打印
     printReplenish (client) {
       this.printPopup = true
@@ -939,7 +985,11 @@ export default {
       }
       this.weaving_flag = true
       this.weaving_data.push({
-        company_id: '',
+        companyRate: [{
+          company_id: '',
+          rate: 100,
+          process: '织造'
+        }],
         product_name: code || '',
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
@@ -996,7 +1046,11 @@ export default {
     },
     addWeaving () {
       this.weaving_data.push({
-        company_id: '',
+        companyRate: [{
+          company_id: '',
+          rate: 100,
+          process: '织造'
+        }],
         product_part: '',
         mixedData: [{
           partColorSize: '',
@@ -1023,16 +1077,34 @@ export default {
       let errorFlag = false
       let errMsg = ''
       this.weaving_data.forEach((item) => {
-        if (!item.company_id) {
-          errorFlag = true
-          errMsg = '请选择织造单位'
-        } else if (!item.product_name) {
+        if (!item.product_name) {
           errorFlag = true
           errMsg = '请选择产品'
         } else if (!item.complete_time) {
           errorFlag = true
           errMsg = '请选择截至日期'
         }
+        item.companyRate.forEach((itemChild) => {
+          if (!itemChild.company_id) {
+            errorFlag = true
+            errMsg = '请选择织造单位'
+          } else if (!itemChild.rate) {
+            errorFlag = true
+            errMsg = '请输入物料分配比例'
+          } else if (itemChild.process === '') {
+            errorFlag = true
+            errMsg = '请输入分配工序'
+          }
+        })
+        // 统计下物料分配比例是否为100%
+        let total = item.companyRate.reduce((total, current) => {
+          return total + Number(current.rate)
+        }, 0)
+        if (total !== 100) {
+          errorFlag = true
+          errMsg = '请保证物料分配比例相加为100%'
+        }
+
         item.mixedData.forEach((itemChild) => {
           if (!itemChild.partColorSize) {
             errorFlag = true
@@ -1055,19 +1127,23 @@ export default {
         item.mixedData.forEach((itemChild) => {
           let partColorSize = itemChild.partColorSize.split('/')
           let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '大身' // 判断是否为大身
-          formData.push({
-            order_id: this.$route.params.id,
-            order_type: this.$route.params.orderType,
-            product_id: partColorSize[0], // 配件id
-            client_id: item.company_id,
-            complete_time: this.$getTime(item.complete_time),
-            desc: item.desc,
-            price: itemChild.price,
-            motorise_number: itemChild.loss || 3,
-            number: itemChild.number,
-            size_id: partColorSize[1],
-            color_id: partColorSize[2],
-            is_part: partFlag ? 1 : 2
+          item.companyRate.forEach((itemCmp) => {
+            formData.push({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType,
+              product_id: partColorSize[0], // 配件id
+              client_id: itemCmp.company_id,
+              complete_time: this.$getTime(item.complete_time),
+              desc: item.desc,
+              price: itemChild.price,
+              motorise_number: itemChild.loss || 3,
+              number: itemChild.number,
+              size_id: partColorSize[1],
+              color_id: partColorSize[2],
+              is_part: partFlag ? 1 : 2,
+              proportion: itemCmp.rate,
+              process: itemCmp.process
+            })
           })
         })
       })
@@ -1103,6 +1179,16 @@ export default {
     deleteMixedData (index, indexChild) {
       this.weaving_data[index].mixedData.splice(indexChild, 1)
     },
+    addCompanyRate (index) {
+      this.weaving_data[index].companyRate.push({
+        company_id: '',
+        rate: 0,
+        process: ''
+      })
+    },
+    deleteCompanyRate (index, indexChild) {
+      this.weaving_data[index].companyRate.splice(indexChild, 1)
+    },
     // 填写公共信息
     commonFn () {
       this.checkWeaveList.forEach((item) => {
@@ -1125,7 +1211,11 @@ export default {
         })
         if (mixedData.length > 0) {
           this.weaving_data.push({
-            company_id: '',
+            companyRate: [{
+              company_id: '',
+              rate: 100,
+              process: '织造'
+            }],
             product_name: item.product_code,
             mixedData: mixedData,
             complete_time: '',
@@ -1141,7 +1231,7 @@ export default {
         this.easyWeaving_flag = true
       }
       this.weaving_data.forEach((item, index) => {
-        item.company_id = this.commonCompany[index]
+        item.companyRate[0].company_id = this.commonCompany[index]
         item.mixedData.forEach((itemChild) => {
           itemChild.price = this.commonPrice[index]
           itemChild.loss = this.commonLoss[index]
@@ -1412,7 +1502,7 @@ export default {
         item.check = false
         return item
       })
-      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }, { name: 'process' }] })
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
