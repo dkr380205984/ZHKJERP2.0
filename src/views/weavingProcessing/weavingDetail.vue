@@ -1043,7 +1043,9 @@ export default {
             number: itemChild.number,
             size_id: partColorSize[1],
             color_id: partColorSize[2],
-            is_part: partFlag ? 1 : 2
+            is_part: partFlag ? 1 : 2,
+            proportion: 100,
+            process: '织造'
           })
         })
       })
