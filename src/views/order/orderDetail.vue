@@ -1582,7 +1582,7 @@ export default {
               }
             }
           } else {
-            this.orderDetailInfo.push({
+            this.orderDetailInfo.material.push({
               material_name: itemMa.material_name,
               material_type: itemMa.material_type,
               unit: Number(itemMa.material_type) === 1 ? 'kg' : (itemMa.unit || '个'),

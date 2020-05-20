@@ -180,6 +180,7 @@
         <div class="flexTb">
           <div class="thead">
             <span class="trow">
+              <span class="tcolumn flex04 center">物料类型</span>
               <span class="tcolumn">物料名称</span>
               <span class="tcolumn flex20 noPad">
                 <span class="trow">
@@ -194,6 +195,8 @@
             <span class="trow"
               v-for="(itemMa,indexMa) in materialPlanTotalInfo"
               :key="indexMa">
+              <span class="tcolumn flex04 center"
+                :class="itemMa.type === 1 ? 'green' : 'orange'">{{itemMa.type === 1 ? '原料' : '辅料'}}</span>
               <span class="tcolumn">{{itemMa.material_name}}</span>
               <span class="tcolumn flex20 noPad">
                 <span class="trow"
@@ -309,8 +312,10 @@ export default {
         if (!flag) {
           this.materialPlanInfo.push({
             product_id: itemPro.product_id,
-            size: itemPro.size,
-            color: itemPro.color,
+            size: itemPro.size_name,
+            size_id: itemPro.size_id,
+            color: itemPro.color_name,
+            color_id: itemPro.color_id,
             product_code: itemPro.product_code,
             category_info: {
               category_name: itemPro.category_name,
