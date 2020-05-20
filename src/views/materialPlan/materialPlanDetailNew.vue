@@ -67,20 +67,20 @@
               </span>
             </span>
             <span class="tb_content">
-              <span class="tb_row">包含产品：{{'19ABA220206'}}</span>
+              <span class="tb_row">包含产品：{{filterProStr(itemPlan.product_data)}}</span>
             </span>
             <span class="tb_content">
-              <span class="tb_row fontBold">物料名称</span>
               <span class="tb_row fontBold">物料类型</span>
+              <span class="tb_row fontBold">物料名称</span>
               <span class="tb_row fontBold">物料颜色及属性</span>
               <span class="tb_row fontBold">所需数量</span>
             </span>
             <span class="tb_content minH30 noBorder"
               v-for="(itemMa,indexMa) in itemPlan.material_data"
               :key="indexMa">
-              <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row"
                 :class="itemMa.material_type === 1 ? 'green' : 'orange'">{{itemMa.material_type === 1 ? '原料' : '辅料'}}</span>
+              <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.material_attribute}}</span>
               <span class="tb_row">{{itemMa.weight}}{{itemMa.unit}}</span>
             </span>
@@ -185,7 +185,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { materialPlan, order, sampleOrder } from '@/assets/js/api.js'
+import { materialPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -200,36 +200,21 @@ export default {
     }
   },
   created () {
-    let orderOrSample = this.$route.params.type === '1' ? order : sampleOrder
+    // let orderOrSample = this.$route.params.type === '1' ? order : sampleOrder
     Promise.all([
-      orderOrSample.detail({
-        id: this.$route.params.id
+      // orderOrSample.detail({
+      //   id: this.$route.params.id
+      // }),
+      materialPlan.init({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.type
       }),
       materialPlan.getDressDetailForOrder({
         order_id: this.$route.params.id,
         order_type: this.$route.params.type
       })
     ]).then(res => {
-      let orderInfo = res[0].data.data
-      if (this.$route.params.type === '1') {
-        this.orderInfo = {
-          order_code: orderInfo.order_code,
-          client_name: orderInfo.client_name,
-          contacts: orderInfo.contacts,
-          group_name: orderInfo.group_name,
-          order_time: orderInfo.order_time,
-          desc: orderInfo.remark
-        }
-      } else {
-        this.orderInfo = {
-          order_code: orderInfo.title,
-          client_name: orderInfo.client_name,
-          contacts: orderInfo.contacts,
-          group_name: orderInfo.group_name,
-          order_time: orderInfo.order_time,
-          desc: orderInfo.desc
-        }
-      }
+      this.orderInfo = res[0].data.data.order_info
       this.materialPlansInfo = res[1].data.data.detail_data
       this.materialPlanTotalInfo = this.$mergeData(res[1].data.data.total_data, { mainRule: ['material_type/type', 'material_name', 'unit'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute', otherRule: [{ name: 'weight', type: 'add' }] } })
       this.materialPlanTotalInfo.forEach(itemMa => {
@@ -254,6 +239,24 @@ export default {
           this.$router.push('/materialPlan/materialPlanCreate/' + id + '/' + type)
         }
       })
+    },
+    filterProStr (item) {
+      let proInfo = item.map(itemPro => {
+        return {
+          product_id: itemPro.product_id,
+          product_code: itemPro.product_info.product_code,
+          size_id: itemPro.size_id,
+          size_name: itemPro.size_name,
+          color_id: itemPro.color_id,
+          color_name: itemPro.color_name
+        }
+      })
+      let mergeProInfo = this.$mergeData(proInfo, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }], childrenName: 'sizeColorInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'color_name' }, { name: 'size_name' }] } }).map(itemPro => {
+        return itemPro.product_code + '：' + itemPro.sizeColorInfo.map(itemAttr => {
+          return itemAttr.size_name + '/' + itemAttr.color_name
+        }).join('、')
+      }).join(';')
+      return mergeProInfo
     }
   },
   filters: {

@@ -1,10 +1,10 @@
 <template>
-  <div id="productPlanUpdate"
+  <div id="productPlanCreate"
     class="indexMain"
     v-loading="loading">
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+        <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"></zh-message>
@@ -18,11 +18,11 @@
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.title}">{{productInfo.title?productInfo.title:'无'}}</span>
+              :class="{'blue':productInfo.product_title}">{{ productInfo.product_title ? productInfo.product_title : '无'}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
-            <span class="text">{{productInfo.category_name}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
+            <span class="text">{{productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -45,7 +45,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in productInfo.size_measurement"
-                :key="index">{{item.size_name + ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+                :key="index">{{(item.size_name)+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
             </div>
           </div>
         </div>
@@ -69,12 +69,12 @@
           placement="top">
           <span class="btn btnBlue"
             style="height:32px;float:right;margin-top:11px"
-            @click="shortcutOpr(index)">智能同步</span>
+            @click="shortcutOpr(item)">智能同步物料数据</span>
         </el-tooltip>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="titleNum"
-          v-if="index>0">{{item.name}}</div>
+          v-if="index > 0">{{item.name}}（ 所需数量：{{item.colorInfo[item.colorIndex].partNum}} ）</div>
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
@@ -93,13 +93,31 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">配色尺码：</span>
+              <span class="text">产品配色：</span>
               <div class="selectBtnList">
                 <div class="selectButton"
-                  v-for="(itemColorSize,indexColorSize) in item.colourSizeArr"
-                  :key="itemColorSize.id"
-                  :class="{'selected':item.colourSizeIndex===indexColorSize,'success':item.colourSizeIndex!==indexColorSize&&itemColorSize.materials.length>0,'error':item.colourSizeIndex!==indexColorSize&&itemColorSize.materials.length===0}"
-                  @click="item.colourSizeIndex=indexColorSize">{{itemColorSize.size_name}}/{{itemColorSize.colour_name}}</div>
+                  v-for="(itemColor,indexColor) in item.colorInfo"
+                  :key="itemColor.color_id"
+                  :class="{'selected': item.colorIndex === indexColor,'success': item.colorIndex !== indexColor && itemColor.materials.length > 0,'error':item.colorIndex !== indexColor && itemColor.materials.length === 0}"
+                  @click="item.colorIndex = indexColor">{{itemColor.color_name}}</div>
+                <div class="btn btnWhiteBlue"
+                  style="margin-bottom:16px"
+                  @click="item.isShowSize = !item.isShowSize">{{!item.isShowSize ? '展开' : '收起'}}尺码</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn"
+          v-if="item.isShowSize">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">产品尺码：</span>
+              <div class="selectBtnList">
+                <div class="selectButton"
+                  v-for="(itemSize,indexSize) in (item.colorInfo[item.colorIndex] ? item.colorInfo[item.colorIndex].sizeInfo : [])"
+                  :key="itemSize.size_id"
+                  :class="{'selected' : item.colorInfo[item.colorIndex].sizeIndex === indexSize,'success': item.colorInfo[item.colorIndex].sizeIndex !== indexSize && itemSize.materials.length > 0,'error': item.colorInfo[item.colorIndex].sizeIndex !== indexSize && itemSize.materials.length === 0}"
+                  @click="item.colorInfo[item.colorIndex].sizeIndex = indexSize">{{itemSize.size_name}}</div>
               </div>
               <div v-if="index>0"
                 style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div>
@@ -118,55 +136,59 @@
                 </div>
               </div>
               <div class="tbody"
-                v-if="item.colourSizeArr.length>0">
+                v-if="item.colorInfo.length > 0">
                 <div class="trow"
-                  v-for="(itemMaterial,indexMaterial) in item.colourSizeArr[item.colourSizeIndex].materials"
-                  :key="indexMaterial">
+                  v-for="(itemMa,indexMa) in (item.isShowSize ? item.colorInfo[item.colorIndex].sizeInfo[item.colorInfo[item.colorIndex].sizeIndex].materials :item.colorInfo[item.colorIndex].materials)"
+                  :key="indexMa">
                   <div class="tcolumn">
                     <span class="inputs">
                       <el-autocomplete v-if="item.chooseMaterial===1"
-                        v-model="itemMaterial.name"
+                        v-model="itemMa.name"
                         :fetch-suggestions="searchYarn"
+                        @select="selectMaterial($event,itemMa)"
+                        @input="changeMaterialInfo(item)"
                         placeholder="请输入原料名称">
                       </el-autocomplete>
                       <el-autocomplete v-if="item.chooseMaterial===0"
-                        v-model="itemMaterial.name"
+                        v-model="itemMa.name"
                         :fetch-suggestions="searchMaterial"
-                        placeholder="请输入辅料名称">
+                        placeholder="请输入辅料名称"
+                        @select="selectMaterial($event,itemMa)"
+                        @input="changeMaterialInfo(item)">
                       </el-autocomplete>
                     </span>
                   </div>
                   <div class="tcolumn">
                     <span class="inputs">
-                      <!-- <el-input :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
-                        v-model="itemMaterial.attr"></el-input> -->
-                      <el-autocomplete v-model="itemMaterial.attr"
+                      <el-autocomplete v-model="itemMa.attr"
                         :fetch-suggestions="querySearch"
                         :placeholder="item.chooseMaterial===1?'请输入物料颜色':'请输入物料属性'"
-                        :trigger-on-focus="false"></el-autocomplete>
+                        @input="changeMaterialInfo(item)"></el-autocomplete>
                     </span>
                   </div>
                   <div class="tcolumn">
                     <span class="inputs">
                       <zh-input placeholder="请输入物料数量"
                         type="number"
-                        v-model="itemMaterial.number">
+                        v-model="itemMa.number"
+                        @input="changeMaterialInfo(item)">
                       </zh-input>
-                      <zh-input v-model="itemMaterial.unit"
+                      <zh-input v-model="itemMa.unit"
                         class="unit"
-                        placeholder="单位"></zh-input>
+                        placeholder="单位"
+                        @input="changeMaterialInfo(item)"></zh-input>
                     </span>
                   </div>
                   <div class="tcolumn flexCenter">
                     <span class="opr"
-                      @click="item.colourSizeArr[item.colourSizeIndex].materials.push($clone(itemMaterial))">复制</span>
+                      @click="copyItem(item,itemMa)">复制</span>
                     <span class="opr"
-                      @click="deleteMaterial(index,indexMaterial)">删除</span>
+                      @click="deleteMaterial(item,indexMa)">删除</span>
                   </div>
                 </div>
               </div>
               <div class="addRow"
-                @click="addMaterial(index)">+ 新增{{item.chooseMaterial===0?'辅料':'原料'}}</div>
+                @click="addMaterial(item)">+ 新增{{item.chooseMaterial===0?'辅料':'原料'}}</div>
             </div>
           </div>
         </div>
@@ -178,7 +200,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="submit">修改</div>
+            @click="submit">提交</div>
         </div>
       </div>
     </div>
@@ -192,6 +214,7 @@ export default {
   data () {
     return {
       loading: true,
+      lock: true,
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
@@ -201,7 +224,6 @@ export default {
         type_name: '',
         flower_id: '',
         style_name: '',
-        category_name: '',
         color: [],
         component: [],
         create_time: '',
@@ -213,8 +235,9 @@ export default {
         name: '大身信息',
         product_id: '',
         chooseMaterial: 1,
-        colourSizeArr: [],
-        colourSizeIndex: 0
+        colorInfo: [],
+        colorIndex: 0,
+        isShowSize: false
       }],
       yarnList: [],
       materialList: [],
@@ -263,31 +286,50 @@ export default {
               value: item.name
             }
           })
-          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+          let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : this.colorList
           cb(filterArr)
         })
       } else {
-        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : []
+        let filterArr = queryString ? this.colorList.filter(item => item.value.indexOf(queryString) !== -1) : this.colorList
         cb(filterArr)
       }
     },
+    selectMaterial (ev, itemMaterial) {
+      itemMaterial.unit = ev.unit
+    },
     // 添加原料
-    addMaterial (index) {
-      let unit = this.list[index].chooseMaterial === 1 ? 'g' : ''
-      this.list[index].colourSizeArr[this.list[index].colourSizeIndex].materials.push({
+    addMaterial (item) {
+      let unit = item.chooseMaterial === 1 ? 'g' : ''
+      let materials = !item.isShowSize ? item.colorInfo[item.colorIndex].materials : item.colorInfo[item.colorIndex].sizeInfo[item.colorInfo[item.colorIndex].sizeIndex].materials
+      materials.push({
         name: '',
         attr: '',
         number: '',
         unit: unit
       })
     },
-    deleteMaterial (index, indexMaterial) {
+    // 触发修改数据时
+    changeMaterialInfo (item) {
+      if (!item.isShowSize) {
+        let materials = item.colorInfo[item.colorIndex].materials
+        item.colorInfo[item.colorIndex].sizeInfo.forEach(itemSize => {
+          itemSize.materials = this.$clone(materials)
+        })
+      }
+    },
+    // 复制行数据
+    copyItem (item, itemMa) {
+      let materials = !item.isShowSize ? item.colorInfo[item.colorIndex].materials : item.colorInfo[item.colorIndex].sizeInfo[item.colorInfo[item.colorIndex].sizeIndex].materials
+      materials.push(this.$clone(itemMa))
+    },
+    deleteMaterial (item, indexMa) {
       this.$confirm('是否删除本列?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.list[index].colourSizeArr[this.list[index].colourSizeIndex].materials.splice(indexMaterial, 1)
+        let materials = !item.isShowSize ? item.colorInfo[item.colorIndex].materials : item.colorInfo[item.colorIndex].sizeInfo[item.colorInfo[item.colorIndex].sizeIndex].materials
+        materials.splice(indexMa, 1)
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -303,76 +345,91 @@ export default {
       let result = queryString ? this.materialList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialList
       cb(result)
     },
+    searchColor (queryString, cb) {
+      let result = queryString ? this.colorList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.colorList
+      cb(result)
+    },
     // 快捷操作 同步尺寸或者配色相同的信息
-    shortcutOpr (index) {
-      let nowList = this.list[index]
-      let nowColorSize = nowList.colourSizeArr[nowList.colourSizeIndex]
-      // 第一步，找尺码相同的数据
-      let sizeArr = []
-      nowList.colourSizeArr.forEach((item) => {
-        if (item.size_id === nowColorSize.size_id && item.materials.length > sizeArr.length) {
-          sizeArr = this.$clone(item.materials)
-        }
-      })
-      // 第二步，找配色相同的数据
-      let colourArr = []
-      nowList.colourSizeArr.forEach((item) => {
-        if (item.color_id === nowColorSize.color_id && item.materials.length > colourArr.length) {
-          colourArr = this.$clone(item.materials)
-        }
-      })
-      // 合并尺码相同的数据和配色相同的数据
-      if (sizeArr.length > colourArr.length) {
-        nowColorSize.materials = sizeArr.map((item, index) => {
-          return {
-            name: item.name,
-            number: item.number,
-            unit: item.unit,
-            attr: colourArr[index] ? colourArr[index].attr : ''
+    shortcutOpr (item) {
+      let filter = item.colorInfo.filter(itemF => itemF.materials.length > 0)
+      if (filter.length > 0) {
+        let standardData = filter[0]
+        item.colorInfo.forEach(itemC => {
+          if (itemC.materials.length === 0) {
+            itemC.materials = standardData.materials.map(itemMa => {
+              return {
+                name: itemMa.name,
+                attr: '',
+                number: itemMa.number,
+                unit: itemMa.unit
+              }
+            })
           }
+          itemC.sizeInfo.forEach(itemS => {
+            if (itemS.materials.length === 0) {
+              let flag = standardData.sizeInfo.find(itemF => itemF.size_id === itemS.size_id)
+              if (flag) {
+                itemS.materials = flag.materials.map(itemMa => {
+                  return {
+                    name: itemMa.name,
+                    attr: '',
+                    number: itemMa.number,
+                    unit: itemMa.unit
+                  }
+                })
+              } else {
+                itemS.materials = standardData.materials.map(itemMa => {
+                  return {
+                    name: itemMa.name,
+                    attr: '',
+                    number: itemMa.number,
+                    unit: itemMa.unit
+                  }
+                })
+              }
+            }
+          })
         })
+        this.$message.success('智能同步完成')
       } else {
-        nowColorSize.materials = colourArr.map((item, index) => {
-          return {
-            name: item.name,
-            attr: item.attr,
-            unit: item.unit,
-            number: sizeArr[index] ? sizeArr[index].number : ''
-          }
-        })
+        this.$message.warning('检测到没有可同步的数据')
       }
     },
     submit () {
-      if (this.loading) {
+      if (!this.lock) {
         this.$message.error('请勿重复点击')
         return
       }
-      let formData = []
-      this.list.forEach((item, index) => {
-        let json = {
-          part_type: index === 0 ? 1 : 2,
-          id: item.id,
-          product_id: item.product_id,
-          product_type: this.$route.params.type,
-          material_info: []
-        }
-        item.colourSizeArr.forEach((itemCS) => {
-          itemCS.materials.forEach((itemMat) => {
-            json.material_info.push({
-              type: item.chooseMaterial === 1 ? 1 : 2,
-              color_id: itemCS.color_id,
-              size_id: itemCS.size_id,
-              material_name: itemMat.name,
-              material_attribute: itemMat.attr,
-              unit: itemMat.unit,
-              weight: itemMat.number
+      let formData = this.list.map((item, index) => {
+        let materialInfo = []
+        item.colorInfo.forEach(itemC => {
+          itemC.sizeInfo.forEach(itemS => {
+            itemS.materials.forEach(itemMa => {
+              materialInfo.push({
+                type: item.chooseMaterial === 1 ? 1 : 2,
+                color_id: itemC.color_id,
+                size_id: itemS.size_id,
+                material_name: itemMa.name,
+                material_attribute: itemMa.attr,
+                weight: itemMa.number,
+                unit: itemMa.unit
+              })
             })
           })
         })
-        formData.push(json)
+        return {
+          part_type: index === 0 ? 1 : 2,
+          id: null,
+          product_id: item.product_id,
+          product_type: this.$route.params.type,
+          material_info: materialInfo
+        }
       })
       let error = null
       formData.forEach((item) => {
+        // if (item.material_info.length === 0) {
+        //   error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
+        // }
         item.material_info.forEach((item) => {
           if (!item.material_name) {
             error = '检测到有未填写物料名称，请填写'
@@ -392,97 +449,100 @@ export default {
         this.$message.error(error)
         return
       }
-      this.loading = true
+      this.lock = false
       productPlan.create({ data: formData }).then((res) => {
         if (res.data.status) {
-          this.$message.success('修改成功')
-          this.loading = false
+          this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type
-            this.msgContent = '<span style="color:#E6A23C">修改</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_name + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_name + ')'
+            this.msgUrl = '/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
             this.msgSwitch = true
           } else {
-            this.$router.push('/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type)
+            this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
           }
         }
+        this.lock = true
       })
     }
   },
   mounted () {
-    Promise.all([productPlan.detail({
-      id: this.$route.params.id
-    }), yarn.list(),
-    material.list(),
-    yarnColor.list()
+    Promise.all([
+      productPlan.detail({
+        id: this.$route.params.id
+      }),
+      yarn.list(),
+      material.list(),
+      yarnColor.list()
     ]).then((res) => {
       this.productInfo = res[0].data.data.product_info
       let data = res[0].data.data
-      this.list = [{
-        part_type: 1,
-        material_info: data.material_info,
-        id: data.id,
-        product_info: data.product_info
-      }].concat(data.part_info).map((item) => {
-        let json = {
-          colourSizeIndex: 0,
-          name: item.part_type === 1 ? '大身信息' : item.product_info.product_title,
-          chooseMaterial: item.material_info.length > 0 ? item.material_info[0].type === 1 ? 1 : 0 : 1,
-          colourSizeArr: [],
-          product_id: item.product_info.product_id,
-          id: item.id
-        }
-        item.material_info.forEach((itemMat) => {
-          let finded = json.colourSizeArr.find((itemFind) => itemFind.size_id === itemMat.size_id && itemFind.color_id === itemMat.color_id)
-          if (finded) {
-            finded.materials.push({
-              name: itemMat.material_name,
-              attr: itemMat.material_attribute,
-              number: itemMat.weight,
-              unit: itemMat.unit,
-              type: itemMat.type
-            })
-          } else {
-            json.colourSizeArr.push({
-              size_name: itemMat.product_size,
-              size_id: itemMat.size_id,
-              colour_name: itemMat.product_color,
-              color_id: itemMat.color_id,
-              materials: [{
-                name: itemMat.material_name,
-                attr: itemMat.material_attribute,
-                number: itemMat.weight,
-                unit: itemMat.unit,
-                type: itemMat.type
-              }]
+      this.list[0].product_id = this.productInfo.product_id
+      this.list[0].colorInfo = this.productInfo.color.map(itemColor => {
+        let sizeInfo = this.productInfo.size_measurement.map(itemSize => {
+          return {
+            size_name: itemSize.size_name,
+            size_id: itemSize.size_id,
+            materials: data.material_info.filter(itemF => +itemF.size_id === +itemSize.size_id && +itemF.color_id === +itemColor.color_id).map(itemMa => {
+              return {
+                name: itemMa.material_name,
+                attr: itemMa.material_attribute,
+                unit: itemMa.unit,
+                number: itemMa.weight
+              }
             })
           }
         })
+        return {
+          color_id: itemColor.color_id,
+          color_name: itemColor.color_name,
+          sizeInfo: sizeInfo,
+          sizeIndex: 0,
+          materials: this.$clone(sizeInfo[0].materials)
+        }
+      })
+      let part = data.part_info.map(itemPart => {
+        let json = {
+          name: itemPart.product_info.product_title,
+          product_id: itemPart.product_info.product_id,
+          chooseMaterial: 0,
+          colorInfo: [],
+          colorIndex: 0,
+          isShowSize: false
+        }
+        let colorInfo = this.$clone(this.list[0].colorInfo).map(itemC => {
+          itemC.sizeInfo.forEach(itemS => {
+            let finded = itemPart.product_info.size_measurement.find((itemFind) => +itemFind.size_id === +itemS.size_id)
+            itemC.partNum = finded.number
+            itemS.materials = itemPart.material_info.filter(itemF => +itemF.size_id === +itemS.size_id && +itemF.color_id === +itemC.color_id).map(itemMa => {
+              return {
+                name: itemMa.material_name,
+                attr: itemMa.material_attribute,
+                unit: itemMa.unit,
+                number: itemMa.weight
+              }
+            })
+          })
+          itemC.materials = this.$clone(itemC.sizeInfo[0].materials)
+          return itemC
+        })
+        json.colorInfo = colorInfo
         return json
       })
-      this.productInfo.size_measurement.forEach((itemSize) => {
-        this.productInfo.color.forEach((itemColour) => {
-          this.list.forEach((itemList) => {
-            let finded = itemList.colourSizeArr.find((itemFind) => {
-              return itemFind.color_id === itemColour.color_id && itemFind.size_id === itemSize.size_id
-            })
-            if (!finded) {
-              itemList.colourSizeArr.push({
-                size_name: itemSize.size_name,
-                size_id: itemSize.size_id,
-                colour_name: itemColour.color_name,
-                color_id: itemColour.color_id,
-                materials: []
-              })
-            }
-          })
-        })
-      })
+      this.list.push(...part)
+      console.log(this.$clone(this.list))
       this.yarnList = res[1].data.data.map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          unit: 'g'
         }
       })
       this.materialList = res[2].data.data.map((item) => {
+        return {
+          value: item.name,
+          unit: item.unit
+        }
+      })
+      this.colorList = res[3].data.data.map((item) => {
         return {
           value: item.name
         }
@@ -494,10 +554,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/productPlan/productPlanUpdate.less";
+@import "~@/assets/less/productPlan/productPlanCreate.less";
 </style>
 <style lang="less">
-#productPlanUpdate {
+#productPlanCreate {
   .unit {
     .zhInput {
       padding: 0;

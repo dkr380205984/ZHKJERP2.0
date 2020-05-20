@@ -16,15 +16,18 @@
           </div>
         </div>
         <div class="rightCtn">
-          <div class="box">
+          <div class="box"
+            @click="goOrderStat('day')">
             <span class="label">今日发货</span>
             <span class="number">{{dispatchCount.day}}</span>
           </div>
-          <div class="box">
+          <div class="box"
+            @click="goOrderStat('week')">
             <span class="label">本周发货</span>
             <span class="number">{{dispatchCount.week}}</span>
           </div>
-          <div class="box">
+          <div class="box"
+            @click="goOrderStat('month')">
             <span class="label">本月发货</span>
             <span class="number">{{dispatchCount.month}}</span>
           </div>
@@ -472,6 +475,23 @@ export default {
     }
   },
   methods: {
+    goOrderStat (type) {
+      let nowTime = this.$getTime()
+      if (type === 'day') {
+        this.$router.push('/order/orderStat/page=1&&keyword=&&date=' + nowTime + ',' + nowTime + '&&group_id=&&company_id=')
+      } else if (type === 'week') {
+        let nowDay = new Date(nowTime).getDay()
+        let nowWeekStart = this.$getTime(new Date(nowTime).getTime() - nowDay * 24 * 60 * 60 * 1000)
+        let nowWeekEnd = this.$getTime(new Date(nowTime).getTime() + (7 - nowDay) * 24 * 60 * 60 * 1000)
+        this.$router.push('/order/orderStat/page=1&&keyword=&&date=' + nowWeekStart + ',' + nowWeekEnd + '&&group_id=&&company_id=')
+      } else if (type === 'month') {
+        let nowYear = new Date(nowTime).getFullYear()
+        let nowMonth = new Date(nowTime).getMonth() + 1
+        let nowMonthStart = this.$getTime(new Date(nowYear + '-' + nowMonth))
+        let nowMonthEnd = this.$getTime(new Date(new Date(nowYear + '-' + (nowMonth + 1)).getTime() - (24 * 60 * 60 * 1000)))
+        this.$router.push('/order/orderStat/page=1&&keyword=&&date=' + nowMonthStart + ',' + nowMonthEnd + '&&group_id=&&company_id=')
+      }
+    },
     openWin (url) {
       window.open(url)
     },

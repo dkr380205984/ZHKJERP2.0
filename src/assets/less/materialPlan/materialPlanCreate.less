@@ -18,6 +18,9 @@
     padding: 0 0 0 40px;
     box-sizing: border-box;
   }
+  .flex04{
+    flex: 0.4!important;
+  }
   .flex08{
     flex: 0.8!important;
   }
@@ -26,6 +29,12 @@
   }
   .flex15{
     flex: 1.5;
+  }
+  .orange{
+    color: @orange;
+  }
+  .green{
+    color: @green;
   }
   // 以下是新版物料计划样式  
   .noMargin{
@@ -64,17 +73,57 @@
   .flex04{
     flex: 0.4;
   }
-  .col>.info{
-    display: flex;
-    flex-direction: column;
-    .row_item{
-      min-height: 32px;
+  // .col>.info{
+  //   display: flex;
+  //   flex-direction: column;
+  //   .row_item{
+  //     min-height: 32px;
+  //     display: flex;
+  //     align-items: center;
+  //     flex-wrap: wrap;
+  //     .checkbox_item{
+  //       margin-right: 8px;
+  //       margin-bottom: 8px;
+  //     }
+  //   }
+  // }
+  .popup{
+    .info{
+      position: relative;
       display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      .checkbox_item{
-        margin-right: 8px;
-        margin-bottom: 8px;
+      flex-direction: row;
+      &.popup_selectProInput{
+        flex: none;
+        width: 300px;
+      }
+      &.popup_selectPartInput{
+        flex: none;
+        width: 240px;
+      }
+      .editBtnBox{
+        position: absolute;
+        top: 50%;
+        right:0px;
+        transform: translate(100%,-50%);
+        display: flex;
+        align-items: center;
+        width: auto;
+        .editBtn{
+          position: static;
+          padding: 0 1em;
+        }
+      }
+      .proup_table{
+        border: 1px solid #E9E9E9;
+        overflow-x: scroll;
+        width: 800px;
+        .tb_content{
+          width: auto;
+          border-top: none;
+          .tb_row{
+            min-width: 180px;
+          }
+        }
       }
     }
   }

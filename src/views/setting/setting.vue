@@ -2348,7 +2348,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="updataYarnsFlag=false">取消</div>
+            @click="updataYarnsFlag = false">取消</div>
           <div class="btn btnBlue"
             @click="saveYarns">确定</div>
         </div>

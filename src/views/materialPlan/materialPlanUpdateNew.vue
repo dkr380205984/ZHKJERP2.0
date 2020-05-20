@@ -654,7 +654,7 @@ export default {
           return obj
         }), { mainRule: 'product_id', otherRule: [{ name: 'sizeColor', type: 'concat' }, { name: 'sizeColorName', type: 'concat' }, { name: 'sizeColorArr' }, { name: 'checkAll' }, { name: 'product_code' }, { name: 'isIndeterminate' }] })
 
-        let strArr = productArr.map(item => {
+        let strArr = productArr.map(item => { // 初始化选中的产品展示字符串
           return item.product_code + ':' + item.sizeColorName.join('、')
         })
         return {

@@ -575,14 +575,16 @@ export default {
         month: Number(this.date.split('-')[1]),
         department_id: this.department
       }).then((res) => {
-        this.list = res.data.data.map((item) => {
-          item.total_price = item.child_data.reduce((total, current) => {
-            return total + Math.round(current.total_price)
-          }, 0)
-          item.checked = false
-          return item
-        })
-        this.total = res.data.meta.total
+        if (res.data.data) {
+          this.list = res.data.data.map((item) => {
+            item.total_price = item.child_data.reduce((total, current) => {
+              return total + Math.round(current.total_price)
+            }, 0)
+            item.checked = false
+            return item
+          })
+          this.total = res.data.meta.total
+        }
         this.loading = false
       })
     },

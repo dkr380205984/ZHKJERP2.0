@@ -198,7 +198,7 @@
                     <div class="text"
                       v-if="detail.craft_info">{{detail.craft_info.user_name}}</div>
                     <div class="text"
-                      v-if="detail.craft_info">{{detail.craft_info.create_time.slice(0,10)}}</div>
+                      v-if="detail.craft_info">{{$getTime(detail.craft_info.create_time)}}</div>
                   </div>
                 </div>
                 <div class="menu">
@@ -576,32 +576,43 @@ export default {
         product_type: 1
       })
     ]).then((res) => {
-      this.detail = res[0].data.data
-      this.detail.sizePart = []
-      this.detail.size.forEach((itemSize, indexSize) => {
-        if (indexSize === 0) {
-          this.checkedSize.push(itemSize.size_name)
-        }
-        JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-          if (!this.detail.sizePart[indexPart]) {
-            this.detail.sizePart[indexPart] = {
-              part: '',
-              size: []
-            }
+      if (res[0].data.status !== false) {
+        this.detail = res[0].data.data
+        this.detail.sizePart = []
+        this.detail.size.forEach((itemSize, indexSize) => {
+          if (indexSize === 0) {
+            this.checkedSize.push(itemSize.size_name)
           }
-          this.detail.sizePart[indexPart].part = itemPart.part
-          this.detail.sizePart[indexPart].size.push(itemPart.size)
+          JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+            if (!this.detail.sizePart[indexPart]) {
+              this.detail.sizePart[indexPart] = {
+                part: '',
+                size: []
+              }
+            }
+            this.detail.sizePart[indexPart].part = itemPart.part
+            this.detail.sizePart[indexPart].size.push(itemPart.size)
+          })
         })
-      })
-      this.detail.color.forEach((itemColor, indexColor) => {
-        if (indexColor === 0) {
-          this.checkedColor.push(itemColor.color_name)
+        this.detail.color.forEach((itemColor, indexColor) => {
+          if (indexColor === 0) {
+            this.checkedColor.push(itemColor.color_name)
+          }
+        })
+        this.handleCheckSize()
+        this.handleCheckColor()
+        if (this.detail.image.length === 0) {
+          this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
         }
-      })
-      this.handleCheckSize()
-      this.handleCheckColor()
-      if (this.detail.image.length === 0) {
-        this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
+      }
+      if (res[1].data.status !== false) {
+        let data = res[1].data.data
+        this.detail.craft_info = {
+          id: data.id,
+          user_name: data.user_name,
+          create_time: data.create_time,
+          is_dress: true
+        }
       }
       this.loading = false
     })
