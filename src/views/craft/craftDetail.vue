@@ -1464,12 +1464,12 @@ export default {
       })
       this.material.materialWarp.forEach((item) => {
         item.apply.forEach((itemApply) => {
-          this.weight += Number(itemApply.weight)
+          this.weight += (Number(itemApply.weight) === 'NaN' ? 0 : Number(itemApply.weight))
         })
       })
       this.material.materialWeft.forEach((item) => {
         item.apply.forEach((itemApply) => {
-          this.weight += Number(itemApply.weight)
+          this.weight += (Number(itemApply.weight) === 'NaN' ? 0 : Number(itemApply.weight))
         })
       })
       this.weight = this.weight.toFixed(1)
