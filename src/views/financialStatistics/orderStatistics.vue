@@ -126,8 +126,8 @@
           </div>
           <div class="rightCtn"
             style="color:#1a95ff;font-size:14px"
-            v-if="orderStatistics.update_time.date!=='0000-00-00'">
-            更新日期：{{orderStatistics.update_time.date.slice(0,16)}}
+            v-if="orderStatistics.update_time!=='0000-00-00'">
+            更新日期：{{orderStatistics.update_time.slice(0,16)}}
           </div>
         </div>
         <div class="list">
@@ -278,9 +278,7 @@ export default {
           pack_order: '',
           stock_out: ''
         },
-        update_time: {
-          date: '0000-00-00'
-        }
+        update_time: '0000-00-00'
       }
     }
   },
@@ -333,9 +331,7 @@ export default {
           CKSL: orderStatistics.order_total_pack_real / 10000, // 出库数量
           SJZZ: orderStatistics.order_total_reality / 10000, // 实际总值
           GCCB: orderStatistics.company_cost / 10000, // 工厂成本
-          update_time: {
-            date: orderStatistics.update_time.date
-          },
+          update_time: orderStatistics.update_time,
           company_cost_detail: {
             material_order: orderStatistics.company_cost_detail.material_order / 10000,
             material_process: orderStatistics.company_cost_detail.material_process / 10000,
