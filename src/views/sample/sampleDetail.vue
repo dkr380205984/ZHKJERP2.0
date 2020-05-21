@@ -568,11 +568,12 @@ export default {
   },
   filters: {
     filterMaterials (arr) {
-      if (arr) {
-        let newArr = arr.filter(item => item.component_name && item.number).map(item => {
-          return item.component_name + item.number + '%'
+      let str = ''
+      if (arr[0] && arr[0].component_name) {
+        arr.forEach((item) => {
+          str += item.component_name + ' / '
         })
-        return newArr.join('/')
+        return str.substring(0, str.length - 2)
       } else {
         return '无'
       }
