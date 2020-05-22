@@ -133,7 +133,7 @@
                     <zh-img-list :list="itemOrder.image"
                       type='open'></zh-img-list>
                   </div>
-                  <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.total_number}}</div>
+                  <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.numbers}}</div>
                   <div class="col flex08"> {{itemOrder.group_name}} </div>
                   <div class="col flex16">
                     <div class="stateCtn"
@@ -350,84 +350,8 @@ export default {
         client_id: this.company_id,
         group_id: this.group_id
       }).then(res => {
-        let data = []
-        let batchData = res.data.data.data
-        for (let prop in batchData) {
-          let item = batchData[prop]
-          data.push(...item.map(itemBatch => {
-            let productInfo = itemBatch.batch_info.map(itemPro => {
-              return {
-                number: itemPro.product_info.map(itemSize => (+itemSize.numbers || 0)).reduce((a, b) => {
-                  return a + b
-                }),
-                product_id: itemPro.category_info.product_id,
-                image: itemPro.category_info.image.length > 0 ? itemPro.category_info.image.map(itemImg => {
-                  itemImg.product_id = itemPro.category_info.product_id
-                  itemImg.product_type = itemPro.category_info.product_type
-                  return itemImg
-                }) : [{
-                  product_id: itemPro.category_info.product_id,
-                  product_type: itemPro.category_info.product_type
-                }]
-              }
-            })
-            let productionData = itemBatch.batch_info.map(itemPro => {
-              let sizeArr = []
-              let colorArr = []
-              itemPro.product_info.forEach(itemProInner => {
-                if (sizeArr.indexOf(itemProInner.size_name) === -1) {
-                  sizeArr.push(itemProInner.size_name)
-                }
-                let colorFlag = colorArr.find(itemColor => itemColor.color_name === itemProInner.color_name)
-                if (!colorFlag) {
-                  colorArr.push({
-                    color_name: itemProInner.color_name,
-                    [itemProInner.size_name]: itemProInner.numbers
-                  })
-                } else {
-                  if (colorFlag[itemProInner.size_name]) {
-                    colorFlag[itemProInner.size_name] = (Number(colorFlag[itemProInner.size_name]) || 0) + (Number(itemProInner.numbers) || 0)
-                  } else {
-                    colorFlag[itemProInner.size_name] = itemProInner.numbers
-                  }
-                }
-              })
-              return {
-                product_code: itemPro.category_info.product_code,
-                product_id: itemPro.category_info.product_id,
-                type: [itemPro.category_info.category_name, itemPro.category_info.type_name, itemPro.category_info.style_name],
-                image: itemPro.category_info.image,
-                unit: itemPro.category_info.unit,
-                product_type: itemPro.category_info.product_type,
-                size_info: sizeArr,
-                color_info: colorArr
-              }
-            })
-            return {
-              isOpen: false,
-              delivery_time: prop,
-              order_code: itemBatch.order_code,
-              client_name: itemBatch.client_name,
-              image: productInfo.map(itemPro => itemPro.image).reduce((a, b) => {
-                return a.concat(b)
-              }),
-              status: itemBatch.status,
-              order_id: itemBatch.order_id,
-              batch_id: itemBatch.batch_id,
-              group_name: itemBatch.group_name,
-              total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
-                return a + b
-              }),
-              order_time: itemBatch.order_time,
-              production_data: productionData,
-              ...itemBatch.log
-
-            }
-          })
-          )
-        }
-        this.list = data
-        this.total = res.data.data.count
+        this.list = res.data.data
+        this.total = res.data.meta.total
         this.loading = false
       })
     },

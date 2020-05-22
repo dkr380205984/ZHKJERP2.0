@@ -3,6 +3,10 @@
     class='indexMain'
     v-loading="loading">
     <div class="module">
+      <zh-transition v-if="priceContactArr.length > 1"
+        :list="priceContactArr"
+        showKey='name'
+        @changed="changePrice"></zh-transition>
       <div class="titleCtn">
         <span class="title hasBorder">报价单信息</span>
       </div>
@@ -36,8 +40,8 @@
             <span class="text">{{code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">创建人：</span>
-            <span class="text">{{create_user}}</span>
+            <span class="label">报价名称：</span>
+            <span class="text">{{price_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -58,6 +62,10 @@
           <div class="colCtn flex3">
             <span class="label">联系人：</span>
             <span class="text">{{contact_man}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{create_user}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -194,30 +202,6 @@
         </div>
       </div>
     </div>
-    <div class="bottomFixBar">
-      <div class="main">
-        <div class="btnCtn">
-          <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
-          <div class="btn btnOrange"
-            @click="$router.push('/price/priceUpdate/' + $route.params.id)">修改</div>
-          <div class="btn btnBlue"
-            @click="$openUrl('/pricePrintTable/'+$route.params.id)">打印</div>
-        </div>
-        <div class="priceCtn">
-          <span class="title">总价：</span>
-          <span class="content">
-            <span class="price">{{total_price}}</span>
-            元
-          </span>
-          <span class="content marginLeft"
-            v-if="unit && unit !== '元'">
-            <span class="price">{{Number(total_price / exchange_rate * 100).toFixed(2)}}</span>
-            {{unit}}
-          </span>
-        </div>
-      </div>
-    </div>
     <div class="popup"
       v-show="checkFlag">
       <div class="main">
@@ -295,6 +279,32 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnOrange"
+            @click="$router.push('/price/priceUpdate/' + $route.params.id)">修改</div>
+          <div class="btn btnOrange"
+            @click="$router.push('/price/priceGiveAgain/' + $route.params.id)">再次报价</div>
+          <div class="btn btnBlue"
+            @click="$openUrl('/pricePrintTable/'+$route.params.id)">打印</div>
+        </div>
+        <div class="priceCtn">
+          <span class="title">总价：</span>
+          <span class="content">
+            <span class="price">{{total_price}}</span>
+            元
+          </span>
+          <span class="content marginLeft"
+            v-if="unit && unit !== '元'">
+            <span class="price">{{Number(total_price / exchange_rate * 100).toFixed(2)}}</span>
+            {{unit}}
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -311,6 +321,7 @@ export default {
       checkList: [],
       checkReason: '',
       code: '',
+      price_name: '',
       create_user: '',
       create_user_id: '',
       client_name: '',
@@ -329,14 +340,21 @@ export default {
       price_info: [],
       basic_info: [],
       check_time: '',
-      check_user: ''
+      check_user: '',
+      priceContactArr: [{
+        id: 2016
+      }],
+      activePriceId: ''
     }
   },
   methods: {
+    changePrice (e) {
+      this.getPriceDetail(e.id)
+    },
     checkPrice () {
       if (this.ifPass) {
         price.check({
-          id: this.$route.params.id
+          id: this.activePriceId
         }).then((res) => {
           if (res.data.status) {
             let title = '您有一条消息通知'
@@ -360,12 +378,12 @@ export default {
               this.$message.success('审核成功')
               this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
-            this.getPriceDetail()
+            this.getPriceDetail(this.activePriceId)
           }
         })
       } else {
         price.check({
-          id: this.$route.params.id,
+          id: this.activePriceId,
           reason: JSON.stringify(this.checkList),
           reason_text: this.checkReason
         }).then((res) => {
@@ -391,19 +409,21 @@ export default {
               this.$message.success('审核成功')
               this.$router.push('/price/priceDetail/' + this.$route.params.id)
             }
-            this.getPriceDetail()
+            this.getPriceDetail(this.activePriceId)
           }
         })
       }
     },
-    getPriceDetail () {
+    getPriceDetail (id, flag) { // flag为是否重置priceContactArr这个数组
       this.loading = true
+      this.activePriceId = id
       price.detail({
-        id: this.$route.params.id
+        id: id
       }).then(res => {
         if (res.data.status) {
           let data = res.data.data
           this.code = data.quotation_code
+          this.price_name = data.name
           this.check_time = data.check_time
           this.check_user = data.check_user
           this.create_user_id = data.user_id
@@ -509,6 +529,24 @@ export default {
           }]
           this.price_info = priceInfo
           this.basic_info = basicInfo
+          if (flag) {
+            this.priceContactArr = data.child_data.map((itemP, indexP) => {
+              return {
+                name: itemP.name || itemP.quotation_code || itemP.id,
+                pid: itemP.pid,
+                quotation_code: itemP.quotation_code,
+                id: itemP.id
+              }
+            }).sort((a, b) => {
+              return a.id - b.id
+            })
+            this.priceContactArr.unshift({
+              name: data.name,
+              id: data.id,
+              pid: data.pid,
+              quotation_code: data.quotation_code
+            })
+          }
         }
         this.loading = false
       })
@@ -535,7 +573,7 @@ export default {
     }
   },
   created () {
-    this.getPriceDetail()
+    this.getPriceDetail(this.$route.params.id, true)
   }
 }
 </script>

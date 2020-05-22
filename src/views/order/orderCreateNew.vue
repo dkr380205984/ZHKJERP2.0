@@ -47,6 +47,25 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
+              <span class="text">订单类型</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content">
+              <el-select v-model="order_type"
+                filterable
+                placeholder="请选择订单类型">
+                <el-option v-for="item in orderTypeArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">
               <span class="text">订单公司</span>
               <span class="explanation">(必填)</span>
             </span>
@@ -404,6 +423,13 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="content timeCtn">
+              <span class="label">批次名称</span>
+              <zh-input v-model="itemBatch.name"
+                placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
               <span class="label">交货日期</span>
               <el-date-picker v-model="itemBatch.time"
                 value-format="yyyy-MM-dd"
@@ -414,6 +440,15 @@
             <span style="position: absolute;right: -5em;font-size: 14px;color: #1a95ff;top: 0;line-height: 32px;cursor: pointer;"
               v-if="tableType==='table'"
               @click="addItem(itemBatch,'product')">新增产品</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="content timeCtn">
+              <span class="label">批次备注</span>
+              <zh-input v-model="itemBatch.remark"
+                placeholder="请输入批次备注"></zh-input>
+            </span>
           </div>
         </div>
         <template v-if="tableType==='table'">
@@ -824,7 +859,7 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken, warnSetting } from '@/assets/js/api.js'
+import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -865,6 +900,8 @@ export default {
       batchDate: [
         {
           time: '',
+          name: '',
+          remark: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -892,7 +929,9 @@ export default {
       isOpenWarn: false,
       warnType: '',
       warnList: [],
-      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }]
+      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }],
+      orderTypeArr: [],
+      order_type: ''
     }
   },
   methods: {
@@ -1054,6 +1093,8 @@ export default {
       } else if (type === 'batch') {
         item.push({
           time: '',
+          name: '',
+          remark: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -1438,6 +1479,10 @@ export default {
         this.$message.error('请填写订单号')
         return
       }
+      if (!this.order_type) {
+        this.$message.error('请选择订单类型')
+        return
+      }
       if (!this.client_id) {
         this.$message.error('请选择外贸公司')
         return
@@ -1542,7 +1587,9 @@ export default {
               }
             }),
             delivery_time: item.time,
-            batch_id: parseInt(index + 1)
+            batch_id: parseInt(index + 1),
+            batch_title: item.name,
+            desc: item.remark
           }
         })
       } else {
@@ -1566,7 +1613,9 @@ export default {
               }
             }),
             delivery_time: item.time,
-            batch_id: parseInt(index + 1)
+            batch_id: parseInt(index + 1),
+            batch_title: item.name,
+            desc: item.remark
           }
         })
       }
@@ -1574,6 +1623,7 @@ export default {
         order_code: this.order_code.map(item => {
           return item.code
         }).join(';'),
+        order_type: this.order_type,
         client_id: this.client_id,
         contacts: this.contact_id,
         account_unit: this.unit,
@@ -1626,6 +1676,7 @@ export default {
             code: item
           }
         })
+        this.order_type = orderInfo.order_type
         this.client_id = orderInfo.client_id.toString()
         this.getContact(this.client_id)
         this.contact_id = orderInfo.contacts_id
@@ -1658,6 +1709,8 @@ export default {
           }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
           orderBatch.push({
             time: itemBatch.delivery_time,
+            remark: itemBatch.desc,
+            name: itemBatch.batch_title,
             batch_info: productInfo
           })
           itemBatch.product_info.forEach(itemPro => {
@@ -1707,7 +1760,9 @@ export default {
                 sizeColor: itemPro.sizeColor,
                 unit: itemPro.unit
               }
-            })
+            }),
+            name: itemBatch.name,
+            remark: itemBatch.remark
           }
         })
         this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
@@ -1748,13 +1803,17 @@ export default {
       client.list(),
       group.list(),
       getToken(),
-      warnSetting.list()
+      warnSetting.list(),
+      orderType.typeList({
+        order_type: 1
+      })
     ]).then(res => {
       this.loading = true
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
       this.warnList = res[3].data.data.filter(item => item.order_type === 1)
+      this.orderTypeArr = res[4].data.data
       this.loading = false
     })
   },

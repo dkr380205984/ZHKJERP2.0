@@ -30,10 +30,10 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入样品名称"
+              <zh-input placeholder="请输入样品名称或款号"
                 v-model="name">
               </zh-input>
             </div>
@@ -548,7 +548,7 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder, productPart } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -608,27 +608,7 @@ export default {
       clientList: [],
       colorInfo: [],
       sizeInfo: [],
-      sampleTypeArr: [// 继续打样信息
-        {
-          id: 0,
-          name: '开发样'
-        }, {
-          id: 1,
-          name: '修改样'
-        }, {
-          id: 2,
-          name: '销售样'
-        }, {
-          id: 3,
-          name: '确认样'
-        }, {
-          id: 4,
-          name: '产前样'
-        }, {
-          id: 5,
-          name: '大货样'
-        }
-      ],
+      sampleTypeArr: [], // 继续打样信息
       importKeyword: '',
       sizePartArr: [{
         type: '',
@@ -1205,7 +1185,9 @@ export default {
       getToken(),
       material.list(),
       productPart.list(),
-      sampleOrder.typeList()
+      orderType.typeList({
+        order_type: 2
+      })
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {

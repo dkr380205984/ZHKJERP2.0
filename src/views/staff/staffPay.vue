@@ -345,7 +345,7 @@
 </template>
 
 <script>
-import { staff, order, station, staffTag } from '@/assets/js/api.js'
+import { staff, order, station, staffTag, process } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -361,11 +361,12 @@ export default {
       date: '',
       list: [],
       staffAllList: [],
-      workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
+      // workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
       settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }],
       isCheckedAll: false,
       staffTagList: [],
-      staffTagKeyWord: ''
+      staffTagKeyWord: '',
+      processArr: []
     }
   },
   watch: {
@@ -422,7 +423,7 @@ export default {
         price: '',
         number: '',
         total_price: '',
-        unit: '个',
+        unit: '件',
         desc: '',
         create_time: {
           date: this.date + '-' + ((new Date()).getDate() < 10 ? ('0' + (new Date()).getDate()) : (new Date()).getDate())
@@ -507,7 +508,7 @@ export default {
       this.list[index].child_data.splice(indexChild, 1)
     },
     searchWork (queryString, cb) {
-      let result = queryString ? this.workList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.workList
+      let result = queryString ? this.processArr.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.processArr
       cb(result)
     },
     searchSettle (queryString, cb) {
@@ -630,11 +631,19 @@ export default {
         type: 2
       }),
       staff.list(),
-      staffTag.list()
+      staffTag.list(),
+      process.list({
+        type: 3
+      })
     ]).then((res) => {
       this.departmentArr = res[0].data.data
       this.staffAllList = res[1].data.data
       this.staffTagList = res[2].data.data
+      this.processArr = res[3].data.data.map(item => {
+        return {
+          value: item.name
+        }
+      })
       this.init()
     })
   }

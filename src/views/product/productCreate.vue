@@ -24,10 +24,10 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">产品名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入产品名称"
+              <zh-input placeholder="请输入产品名称或款号"
                 v-model="name">
               </zh-input>
             </div>

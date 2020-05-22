@@ -48,7 +48,13 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">物料计划</span>
+        <span class="title">
+          物料计划
+          <span class="el-icon-setting settingMethod"
+            @click="settingMethodFlag = true"></span>
+        </span>
+        <span class="btn noBorder"
+          @click="fastWriteFlag = true">快捷填写</span>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="tableCtnLv2">
@@ -239,12 +245,93 @@
               :class="itemMa.type === 1 ? 'green' : 'orange'">{{itemMa.type === 1 ? '原料' : '辅料'}}</span>
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
-            <span class="tb_row flex08">{{itemMa.total_number ? (itemMa.type === 1 ? $toFixed(itemMa.total_number/1000) + 'kg' : $toFixed(itemMa.total_number) + itemMa.unit) : '-'}}</span>
-            <span class="tb_row flex08">{{$toFixed(itemMa.loss) || 0}}%</span>
+            <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + itemMa.unit : '-'}}</span>
+            <span class="tb_row flex08">{{itemMa.loss || 0}}%</span>
             <span class="tb_row flex08">
-              <span class="align"><em class="bigNum">{{$toFixed(itemMa.end_num) || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
+              <span class="align"><em class="bigNum">{{itemMa.end_num || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
             </span>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-if="settingMethodFlag">
+      <div class="main">
+        <div class="title">
+          <span class="text">设置取值方式</span>
+          <span class="el-icon-close"
+            @click="cancelSetting"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="info">
+              <el-select v-model="settingMethod"
+                placeholder="请选择方式">
+                <el-option v-for="item in settingMethodArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="cancelSetting">取消</div>
+          <div class="btn btnBlue"
+            @click="changeSettingMethodFlag">确定</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-if="fastWriteFlag">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <span class="text">快捷填写</span>
+          <span class="el-icon-close"
+            @click="fastWriteFlag = false"></span>
+        </div>
+        <div class="content">
+          <span class="tableCtnLv2">
+            <span class="tb_header">
+              <span class="tb_row flex12">产品品类</span>
+              <span class="tb_row">色组</span>
+              <span class="tb_row">下单数</span>
+              <span class="tb_row flex12">原料损耗</span>
+              <span class="tb_row flex12">辅料损耗</span>
+            </span>
+            <span class="tb_content"
+              v-for="(itemPro,indexPro) in productColorList"
+              :key='indexPro'>
+              <span class="tb_row flex12">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+              <span class="tb_row">{{itemPro.color}}</span>
+              <span class="tb_row">{{itemPro.order_num}}</span>
+              <span class="tb_row flex12">
+                <zh-input placeholder="损耗"
+                  v-model="itemPro.material_loss"
+                  style="width:130px"
+                  type="number">
+                  <template slot="append">%</template>
+                </zh-input>
+              </span>
+              <span class="tb_row flex12">
+                <zh-input placeholder="损耗"
+                  v-model="itemPro.other_loss"
+                  style="width:130px"
+                  type="number">
+                  <template slot="append">%</template>
+                </zh-input>
+              </span>
+            </span>
+          </span>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="fastWriteFlag = false">取消</div>
+          <div class="btn btnBlue"
+            @click="fastWriteLoss">确定</div>
         </div>
       </div>
     </div>
@@ -267,6 +354,27 @@ export default {
   data () {
     return {
       msgSwitch: false,
+      settingMethodFlag: false, // 设置取值方式
+      settingMethod: +window.sessionStorage.getItem('materialPlanSettingMethod') || 1,
+      settingMethodArr: [
+        {
+          name: '向上取整 （例：1.8变成2）',
+          id: 1
+        },
+        {
+          name: '四舍五入 （例：1.5变成2，1.4变成1）',
+          id: 2
+        },
+        {
+          name: '向下取整 （例：1.8变成1）',
+          id: 3
+        },
+        {
+          name: '不取整',
+          id: 4
+        }
+      ],
+      fastWriteFlag: false, // 快捷填写颜色损耗
       msgUrl: '',
       msgContent: '',
       loading: true,
@@ -276,16 +384,53 @@ export default {
       orderInfo: {},
       materialPlanInfo: [],
       materialTotalInfo: [],
-      colorList: []
+      colorList: [],
+      productColorList: []
     }
   },
   methods: {
+    cancelSetting () {
+      this.settingMethod = +window.sessionStorage.getItem('materialPlanSettingMethod') || 1
+      this.settingMethodFlag = false
+    },
+    changeSettingMethodFlag () {
+      window.sessionStorage.setItem('materialPlanSettingMethod', this.settingMethod)
+      this.settingMethodFlag = false
+    },
+    fastWriteLoss () {
+      this.fastWriteFlag = false
+      this.materialPlanInfo.forEach(itemPro => {
+        let flag = this.productColorList.find(itemF => itemF.color_id === itemPro.color_id)
+        if (flag) {
+          itemPro.material_loss = flag.material_loss
+          this.changeLoss(itemPro, 1, flag.material_loss)
+          itemPro.other_loss = flag.other_loss
+          this.changeLoss(itemPro, 2, flag.other_loss)
+        }
+      })
+    },
+    // 小数点处理方式
+    numberAutoMethod (num) {
+      let number = Number(num)
+      if (number || number === 0) {
+        if (+this.settingMethod === 1) { // 向上取整
+          return Math.ceil(number)
+        } else if (+this.settingMethod === 2) { // 四舍五入
+          return Math.round(number)
+        } else if (+this.settingMethod === 3) { // 向下取整
+          return parseInt(number)
+        } else {
+          return this.$toFixed(number)
+        }
+      } else {
+        throw new TypeError('“' + num + '”is not a number')
+      }
+    },
     selectMaterial (e, item) {
       item.unit = e.unit || '个'
       this.computedTotal()
     },
     changeOtherMaterialUnit (e, item) {
-      console.log(e, item)
       if (!e.target.value) {
         item.unit = '个'
       }
@@ -535,7 +680,7 @@ export default {
     changeLossInner (item, type) {
       if (type === 'loss') {
         if (item.total_number && item.material_loss) {
-          item.end_num = this.$toFixed(item.type === 1 ? (item.total_number / 1000 * (1 + item.material_loss / 100)) : (item.total_number * (1 + item.material_loss / 100)))
+          item.end_num = this.numberAutoMethod(item.type === 1 ? (item.total_number / 1000 * (1 + item.material_loss / 100)) : (item.total_number * (1 + item.material_loss / 100)))
         }
       } else if (type === 'end_num') {
         if (item.total_number && item.end_num) {
@@ -596,9 +741,10 @@ export default {
       let totalInfo = this.$mergeData(arr, { mainRule: ['material_name', 'color'], otherRule: [{ name: 'total_number', type: 'add' }, { name: 'unit' }, { name: 'end_num', type: 'add' }, { name: 'type' }] })
       this.materialTotalInfo = totalInfo.map(itemMa => {
         delete itemMa.childrenMergeInfo
+        itemMa.total_number = itemMa.type === 1 ? this.numberAutoMethod(itemMa.total_number / 1000) : this.numberAutoMethod(itemMa.total_number)
         return {
           ...itemMa,
-          loss: (itemMa.total_number && itemMa.end_num) ? this.$toFixed((itemMa.end_num * (itemMa.type === 1 ? 1000 : 1) - itemMa.total_number) / itemMa.total_number * 100) : 0
+          loss: (itemMa.total_number && itemMa.end_num) ? this.$toFixed((itemMa.end_num - itemMa.total_number) / itemMa.total_number * 100) : 0
         }
       }).sort((a, b) => {
         return a.material_name.localeCompare(b.material_name)
@@ -679,6 +825,8 @@ export default {
           })),
           part_data: itemPro.part_data
         }
+      }).sort((a, b) => {
+        return a.color_id - b.color_id
       })
       this.computedTotal()
       this.yarnList = res[1].data.data.map((item) => {
@@ -691,6 +839,10 @@ export default {
           value: item.name,
           unit: item.unit
         }
+      })
+      this.productColorList = this.$mergeData(this.materialPlanInfo, { mainRule: ['product_id', 'color_id'], otherRule: [{ name: 'color' }, { name: 'product_code' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'order_num', type: 'add' }, { name: 'material_loss' }, { name: 'other_loss' }] }).map(item => {
+        delete item.childrenMergeInfo
+        return item
       })
       this.loading = false
     })

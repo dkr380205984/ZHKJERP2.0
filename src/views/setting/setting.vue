@@ -105,39 +105,6 @@
               </div>
             </div>
           </template>
-          <template v-if="cName==='样单类型'">
-            <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加类型</div>
-              <div class="normalTb">
-                <div class="thead">
-                  <div class="trow">
-                    <div class="tcolumn padding40">样单类型名称</div>
-                    <div class="tcolumn right padding40">操作</div>
-                  </div>
-                </div>
-                <div class="tbody">
-                  <div class="trow"
-                    v-for="(item,index) in sampleOrderTypeArr"
-                    :key="index">
-                    <div class="tcolumn padding40">{{item.name}}</div>
-                    <div class="tcolumn right padding40">
-                      <span class="red"
-                        @click="deleteSampleOrderType(item.id)">删除</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="pageCtn">
-                <el-pagination background
-                  :page-size="5"
-                  layout="prev, pager, next"
-                  :total="sampleOrderTypeTotal"
-                  :current-page.sync="sampleOrderTypePage">
-                </el-pagination>
-              </div>
-            </div>
-          </template>
           <template v-if="cName==='产品花型'">
             <div class="flowerCtn">
               <div class="addBtn"
@@ -275,6 +242,72 @@
                 :total="sizeTotal"
                 :current-page.sync="sizePage">
               </el-pagination>
+            </div>
+          </template>
+          <template v-if="cName==='样单类型'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加类型</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">样单类型名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in sampleOrderTypeArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteSampleOrderType(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="sampleOrderTypeTotal"
+                  :current-page.sync="sampleOrderTypePage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='订单类型'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加类型</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">订单类型名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in orderTypeArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteOrderType(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="orderTypeTotal"
+                  :current-page.sync="orderTypePage">
+                </el-pagination>
+              </div>
             </div>
           </template>
           <template v-if="cName==='产品规格'">
@@ -660,6 +693,39 @@
                   layout="prev, pager, next"
                   :total="halfProcessTotal"
                   :current-page.sync="halfProcessPage">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='结算工序'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup=true">添加工序</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">工序名称</div>
+                    <div class="tcolumn right padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in staffProcessArr"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn right padding40">
+                      <span class="red"
+                        @click="deleteMaterialProcess(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="staffProcessTotal"
+                  :current-page.sync="staffProcessPage">
                 </el-pagination>
               </div>
             </div>
@@ -1126,30 +1192,6 @@
           </div>
         </div>
       </template>
-      <template v-if="cName==='样单类型'">
-        <div class="main">
-          <div class="title">
-            <div class="text">样单类型</div>
-            <i class="el-icon-close"
-              @click="showPopup=false"></i>
-          </div>
-          <div class="content">
-            <div class="row">
-              <div class="label">样单类型：</div>
-              <div class="info">
-                <el-input placeholder="请输入样单类型"
-                  v-model="sampleOrderType"></el-input>
-              </div>
-            </div>
-          </div>
-          <div class="opr">
-            <div class="btn btnGray"
-              @click="showPopup=false">取消</div>
-            <div class="btn btnBlue"
-              @click="saveSampleOrderType">确定</div>
-          </div>
-        </div>
-      </template>
       <template v-if="cName==='成衣类型'">
         <div class="main">
           <div class="title">
@@ -1282,6 +1324,54 @@
               @click="showPopup=false">取消</div>
             <div class="btn btnBlue"
               @click="saveMeasurement">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='样单类型'">
+        <div class="main">
+          <div class="title">
+            <div class="text">样单类型</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">样单类型：</div>
+              <div class="info">
+                <el-input placeholder="请输入样单类型"
+                  v-model="sampleOrderType"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveSampleOrderType">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='订单类型'">
+        <div class="main">
+          <div class="title">
+            <div class="text">订单类型</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">订单类型：</div>
+              <div class="info">
+                <el-input placeholder="请输入订单类型"
+                  v-model="orderType"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveOrderType">确定</div>
           </div>
         </div>
       </template>
@@ -1616,6 +1706,30 @@
               @click="showPopup=false">取消</div>
             <div class="btn btnBlue"
               @click="saveHalfProcess">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='结算工序'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加工序</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">工序名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入工序名称"
+                  v-model="staffProcess"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveStaffProcess">确定</div>
           </div>
         </div>
       </template>
@@ -2360,17 +2474,17 @@
 <script>
 import { permissions } from '@/assets/js/dictionary.js'
 import E from 'wangeditor'
-import { sampleOrder, productPart, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course, staffTag } from '@/assets/js/api.js'
+import { orderType, productPart, warnSetting, priceLoading, productType, flower, ingredient, colour, productSize, measurement, craftSetting, yarn, yarnColor, process, group, station, company, auth, client, getToken, material, packag, print, course, staffTag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       showPopup: false,
       yarn_handle_type: '',
       nav: {
-        '产品设置': ['成衣类型', '组织结构', '样单类型', '产品花型', '产品成分', '产品配色', '产品尺码'],
+        '产品设置': ['成衣类型', '组织结构', '产品花型', '产品成分', '产品配色', '产品尺码', '样单类型', '订单类型'],
         // '工艺单设置': ['边型', '机型', '组织法'],
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
-        '加工工序设置': ['原料工序', '半成品加工'],
+        '工序设置': ['原料工序', '半成品加工', '结算工序'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理'],
         '员工管理': ['员工帐号管理', '员工标签管理'],
         '打印设置': ['打印设置'],
@@ -2478,7 +2592,7 @@ export default {
         price: [],
         log: []
       },
-      // 加工工序
+      // 工序设置
       materialProcessList: [],
       materialProcess: '',
       materialProcessTotal: 1,
@@ -2487,6 +2601,10 @@ export default {
       halfProcess: '',
       halfProcessTotal: 1,
       halfProcessPage: 1,
+      staffProcessList: [],
+      staffProcess: '',
+      staffProcessTotal: 1,
+      staffProcessPage: 1,
       groupList: [],
       group: '',
       groupTotal: 1,
@@ -2697,7 +2815,11 @@ export default {
       sampleOrderType: '',
       sampleOrderTypeList: [],
       sampleOrderTypePage: 1,
-      sampleOrderTypeTotal: 1
+      sampleOrderTypeTotal: 1,
+      orderType: '',
+      orderTypeList: [],
+      orderTypePage: 1,
+      orderTypeTotal: 1
     }
   },
   watch: {
@@ -2736,6 +2858,8 @@ export default {
         this.getMaterialProcess()
       } else if (val === '半成品加工') {
         this.getHalfProcess()
+      } else if (val === '结算工序') {
+        this.getStaffProcess()
       } else if (val === '工厂小组管理') {
         this.getGroup()
       } else if (val === '工厂部门管理') {
@@ -2754,6 +2878,8 @@ export default {
         this.getOrderSampleWarn()
       } else if (val === '样单类型') {
         this.getSampleOrderType()
+      } else if (val === '订单类型') {
+        this.getOrderType()
       }
     },
     filterYarnKeyword (val) {
@@ -2776,6 +2902,9 @@ export default {
     },
     sampleOrderTypeArr () {
       return this.sampleOrderTypeList.slice((this.sampleOrderTypePage - 1) * 5, this.sampleOrderTypePage * 5)
+    },
+    orderTypeArr () {
+      return this.orderTypeList.slice((this.orderTypePage - 1) * 5, this.orderTypePage * 5)
     },
     ingredientArr () {
       return this.ingredientList.slice((this.ingredientPage - 1) * 5, this.ingredientPage * 5)
@@ -2814,6 +2943,9 @@ export default {
     materialProcessArr () {
       return this.materialProcessList.slice((this.materialProcessPage - 1) * 5, this.materialProcessPage * 5)
     },
+    staffProcessArr () {
+      return this.staffProcessList.slice((this.staffProcessPage - 1) * 5, this.staffProcessPage * 5)
+    },
     halfProcessArr () {
       return this.halfProcessList.slice((this.halfProcessPage - 1) * 5, this.halfProcessPage * 5)
     },
@@ -2825,6 +2957,31 @@ export default {
     }
   },
   methods: {
+    // 保存结算工序
+    saveStaffProcess () {
+      if (this.staffProcess) {
+        process.create({
+          type: 3,
+          name: this.staffProcess
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('添加成功')
+            this.staffProcess = ''
+            this.getStaffProcess()
+          }
+        })
+      } else {
+        this.$message.error('请输入工序名称')
+      }
+    },
+    getStaffProcess () {
+      process.list({
+        type: 3
+      }).then((res) => {
+        this.staffProcessList = res.data.data
+        this.staffProcessTotal = this.staffProcessList.length
+      })
+    },
     // 员工标签
     resetAuthTag () {
       this.showPopup = false
@@ -3429,15 +3586,18 @@ export default {
       })
     },
     getSampleOrderType () {
-      sampleOrder.typeList().then((res) => {
+      orderType.typeList({
+        order_type: 2
+      }).then((res) => {
         this.sampleOrderTypeList = res.data.data
         this.sampleOrderTypeTotal = this.sampleOrderTypeList.length
       })
     },
     saveSampleOrderType () {
       if (this.sampleOrderType) {
-        sampleOrder.saveType({
-          name: this.sampleOrderType
+        orderType.saveType({
+          name: this.sampleOrderType,
+          order_type: 2
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -3459,7 +3619,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        sampleOrder.deleteType({
+        orderType.deleteType({
           id: id
         }).then((res) => {
           if (res.data.status !== false) {
@@ -3468,6 +3628,58 @@ export default {
               message: '删除成功!'
             })
             this.getSampleOrderType()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    getOrderType () {
+      orderType.typeList({
+        order_type: 1
+      }).then((res) => {
+        this.orderTypeList = res.data.data
+        this.orderTypeTotal = this.orderTypeList.length
+      })
+    },
+    saveOrderType () {
+      if (this.orderType) {
+        orderType.saveType({
+          name: this.orderType,
+          order_type: 1
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success({
+              message: '添加订单类型成功'
+            })
+            this.orderType = ''
+            this.getOrderType()
+          }
+        })
+      } else {
+        this.$message.error({
+          message: '订单类型名称不能为空'
+        })
+      }
+    },
+    deleteOrderType (id) {
+      this.$confirm('是否删除该订单类型?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        orderType.deleteType({
+          id: id
+        }).then((res) => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getorderType()
           }
         })
       }).catch(() => {

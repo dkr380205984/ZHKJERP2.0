@@ -1204,7 +1204,7 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { sampleOrder, materialPlan, materialStock, weave, processing, finance, materialManage, materialProcess, yarn, material, stock } from '@/assets/js/api.js'
+import { sampleOrder, materialPlan, materialStock, weave, processing, finance, materialManage, materialProcess, yarn, material, stock, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1318,7 +1318,9 @@ export default {
     },
     init (type) {
       this.loading = true
-      sampleOrder.typeList().then(res => {
+      orderType.typeList({
+        order_type: 2
+      }).then(res => {
         if (res.data.status !== false) {
           this.sampleTypeArr = res.data.data
         }
@@ -2404,10 +2406,6 @@ export default {
       } else {
         return '待确认'
       }
-    },
-    filterOrderType (value) {
-      let sampleOrderType = ['开发样', '修改样', '销售样', '确认样', '产前样', '大货样']
-      return sampleOrderType[value]
     }
   }
 }

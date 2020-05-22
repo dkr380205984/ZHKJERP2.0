@@ -14,11 +14,11 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="content">
               <zh-input errorMsg="样品名称不能超过10个字"
-                placeholder="请输入样品名称"
+                placeholder="请输入样品名称或款号"
                 maxLength="10"
                 v-model="name">
               </zh-input>
