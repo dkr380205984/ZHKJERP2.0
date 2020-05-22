@@ -32,6 +32,17 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
+              <span class="text">报价单名称</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content">
+              <zh-input placeholder="请输入报价单名称"
+                v-model="price_name">
+              </zh-input>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">
               <span class="text">外贸公司</span>
               <span class="explanation">(必填)</span>
             </span>
@@ -64,6 +75,8 @@
               </el-select>
             </span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">结算单位</span>
@@ -86,8 +99,6 @@
               </el-select>
             </span>
           </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">汇率
@@ -1042,6 +1053,7 @@ export default {
       canClick: false,
       msgUrl: '',
       msgContent: '',
+      price_name: '',
       client_id: '',
       clientArr: [],
       contact_id: '',
@@ -1141,6 +1153,7 @@ export default {
       }).then(res => {
         let data = res.data.data
         this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
+        this.price_name = data.name
         this.client_id = data.client_id.toString()
         this.getContact()
         this.contact_id = data.client_contact
@@ -1207,6 +1220,10 @@ export default {
         }
         this.computedCost()
         this.checkedProList = data.product_info.map(vals => {
+          if (vals.product_info.product_type === 2) {
+            this.product_type = false
+            this.getList()
+          }
           let sizeColorArr = []
           vals.product_info.size_measurement.forEach(valSize => {
             vals.product_info.color.forEach(valColor => {
@@ -1217,7 +1234,7 @@ export default {
             })
           })
           // 将列表是勾选上
-          let checked = this.productList.find(proId => proId.id === vals.product_info.product_id)
+          let checked = this.productList.find(proId => +proId.id === +vals.product_info.product_id)
           if (checked) {
             checked.checked = true
           }
@@ -1564,6 +1581,7 @@ export default {
       this.lock = false
       price.create({
         id: this.$route.params.id,
+        name: this.price_name,
         client_id: this.client_id,
         quotation_code: quotationCode,
         client_contact: this.contact_id,

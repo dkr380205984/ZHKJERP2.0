@@ -548,27 +548,7 @@ export default {
       clientList: [],
       colorInfo: [],
       sizeInfo: [],
-      sampleTypeArr: [// 继续打样信息
-        {
-          id: 0,
-          name: '开发样'
-        }, {
-          id: 1,
-          name: '修改样'
-        }, {
-          id: 2,
-          name: '销售样'
-        }, {
-          id: 3,
-          name: '确认样'
-        }, {
-          id: 4,
-          name: '产前样'
-        }, {
-          id: 5,
-          name: '大货样'
-        }
-      ]
+      sampleTypeArr: [] // 继续打样信息
     }
   },
   methods: {
