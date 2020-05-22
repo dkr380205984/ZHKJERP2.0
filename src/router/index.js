@@ -101,6 +101,10 @@ const routes = [
       name: '报价单修改',
       component: () => import('../views/price/priceUpdate.vue')
     }, {
+      path: '/price/priceGiveAgain/:id',
+      name: '再次报价',
+      component: () => import('../views/price/priceGiveAgain.vue')
+    }, {
       path: '/price/priceList/:params',
       name: '报价单列表',
       component: () => import('../views/price/priceList.vue')
@@ -491,6 +495,7 @@ router.beforeEach((to, from, next) => {
     '报价单修改': ['织为云', '报价单修改'],
     '报价单列表': ['织为云', '报价单列表'],
     '报价单详情': ['织为云', '报价单列表', '报价单详情'],
+    '再次报价': ['织为云', '报价单列表', '报价单详情', '再次报价'],
     '工艺单添加': ['织为云', '产品列表', '工艺单添加'],
     '工艺单修改': ['织为云', '产品列表', '工艺单修改'],
     '工艺单详情': ['织为云', '产品列表', '工艺单详情'],

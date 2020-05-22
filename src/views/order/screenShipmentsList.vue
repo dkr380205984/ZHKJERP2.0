@@ -53,7 +53,7 @@
                 <span class="tb_row flex18">{{item.client_name}}</span>
                 <span class="tb_row"
                   style="flex-direction:column;justify-content: center;align-items: flex-start;">
-                  <span>{{item.total_number ? item.total_number : 0}}件</span>
+                  <span>{{item.numbers ? item.numbers : 0}}件</span>
                   <span style="color:#1A94FF">{{item.order_time}}</span>
                 </span>
                 <span class="tb_row flex3">
@@ -272,7 +272,6 @@ export default {
       }
     },
     getOrderData (item) {
-      console.log('order')
       item = item || {}
       let pagesInner = item.page || 1
       let data = item.data || []
@@ -296,48 +295,8 @@ export default {
           'start_time': this.searchList.start_time || this.start_time,
           'end_time': this.searchList.end_time || this.end_time
         }).then(res => {
-          let batchData = res.data.data.data
-          this.filterList.orderCount = res.data.data.count
-          for (let prop in batchData) {
-            let item = batchData[prop]
-            data.push(...item.map(itemBatch => {
-              let productInfo = itemBatch.batch_info.map(itemPro => {
-                return {
-                  number: itemPro.product_info.map(itemSize => (+itemSize.numbers || 0)).reduce((a, b) => {
-                    return a + b
-                  }),
-                  product_id: itemPro.category_info.product_id,
-                  image: itemPro.category_info.image.length > 0 ? itemPro.category_info.image.map(itemImg => {
-                    itemImg.product_id = itemPro.category_info.product_id
-                    itemImg.product_type = itemPro.category_info.product_type
-                    return itemImg
-                  }) : [{
-                    product_id: itemPro.category_info.product_id,
-                    product_type: itemPro.category_info.product_type
-                  }]
-                }
-              })
-              return {
-                delivery_time: prop,
-                order_code: itemBatch.order_code,
-                client_name: itemBatch.client_name,
-                image: productInfo.map(itemPro => itemPro.image).reduce((a, b) => {
-                  return a.concat(b)
-                }),
-                status: itemBatch.status,
-                order_id: itemBatch.order_id,
-                batch_id: itemBatch.batch_id,
-                group_name: itemBatch.group_name,
-                total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
-                  return a + b
-                }),
-                order_time: itemBatch.order_time,
-                ...itemBatch.log
-
-              }
-            })
-            )
-          }
+          data.push(...res.data.data)
+          this.filterList.orderCount = res.data.meta.total
           this.filterList.order.push(data.splice(0, 10))
           pagesInner++
           if (this.orderType) {
@@ -353,7 +312,6 @@ export default {
       }
     },
     getSampleData (item) {
-      console.log('sample')
       item = item || {}
       let pagesInner = item.page || 1
       let data = item.data || []
@@ -387,7 +345,7 @@ export default {
               order_type: 2,
               order_code: item.title,
               client_name: item.client_name,
-              total_number: item.total_number.map(itemNum => (Number(itemNum.numbers) || 0)).reduce((a, b) => {
+              numbers: item.total_number.map(itemNum => (Number(itemNum.numbers) || 0)).reduce((a, b) => {
                 return a + b
               }),
               order_time: item.order_time,

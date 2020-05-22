@@ -83,7 +83,7 @@
                 </transition>
               </span>
             </div>
-            <div class="col"><span class="text">名称</span></div>
+            <div class="col"><span class="text">名称/款号</span></div>
             <div class="col"><span class="text middle">图片</span></div>
             <div class="col">
               <transition v-show="!searchUserName"

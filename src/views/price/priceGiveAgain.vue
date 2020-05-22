@@ -12,12 +12,7 @@
             :content="msgContent"></zh-message>
         </span>
         <span style="height:32px">
-          <el-autocomplete v-model="priceCode"
-            :fetch-suggestions="getPriceList"
-            placeholder="请输入报价单编号"
-            :trigger-on-focus="false"
-            @select="getPriceInfo($event.id)"></el-autocomplete>
-          <!-- <el-select v-model="priceCode"
+          <el-select v-model="priceCode"
             filterable
             remote
             reserve-keyword
@@ -30,7 +25,7 @@
               :label="item.quotation_code"
               :value="item.id">
             </el-option>
-          </el-select> -->
+          </el-select>
         </span>
       </div>
       <div class="editCtn hasBorderTop">
@@ -364,8 +359,7 @@
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
-                placeholder="请选择尺码颜色"
-                @change="getProductPlan(item.id,product_type ? 1 : 2,$event)">
+                placeholder="请选择尺码颜色">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -449,12 +443,6 @@
         <span class="title">产品报价</span>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="rowCtn"
-          v-if="priceLoadingList.length>0">
-          <zh-transition :list='priceLoadingList'
-            showKey='title'
-            @changed='setPriceLoading'></zh-transition>
-        </div>
         <div class="rowCtn"
           v-for="(item,index) in priceInfo.raw_material"
           :key="index + 'raw_material'">
@@ -1035,7 +1023,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="verifyData">提交</div>
+            @click="canClick ? verifyData() : ()=>{return false}">提交</div>
         </div>
         <div class="priceCtn">
           <span class="title">总价：</span>
@@ -1055,13 +1043,14 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample, priceLoading } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
       loading: true,
       msgSwitch: false,
+      canClick: false,
       msgUrl: '',
       msgContent: '',
       price_name: '',
@@ -1138,7 +1127,7 @@ export default {
       priceList: [],
       lock: true,
       fileArr: [],
-      priceLoadingList: []
+      pid: ''
     }
   },
   methods: {
@@ -1147,32 +1136,13 @@ export default {
         item.unit = '个'
       }
     },
-    // 获取配料单信息
-    getProductPlan (id, type, sizeInfo) {
-      productPlan.getByProduct({
-        product_type: type,
-        product_id: id
-      }).then(res => {
-        if (res.data.status !== false) {
-          let flag = res.data.data.find(item => item.is_default)
-          let data = res.data.data.length === 1 ? res.data.data[0] : (flag || [])
-          console.log(data)
-        }
-      })
-    },
-    getPriceList (queryString, cb) {
+    getPriceList () {
       price.list({
-        code: queryString,
+        code: this.priceCode,
         limit: 9999
       }).then(res => {
         if (res.data.status !== false) {
-          this.priceList = res.data.data.map(item => {
-            return {
-              value: item.quotation_code,
-              id: item.id
-            }
-          })
-          cb(this.priceList)
+          this.priceList = res.data.data
         }
       })
     },
@@ -1183,8 +1153,11 @@ export default {
         id: id
       }).then(res => {
         let data = res.data.data
+        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
         this.price_name = data.name
+        this.pid = data.pid || data.id
         this.client_id = data.client_id.toString()
+        this.getContact()
         this.contact_id = data.client_contact
         this.unit = data.account_unit
         this.exchangeRate = data.exchange_rate
@@ -1248,8 +1221,11 @@ export default {
           basic_profits: JSON.parse(data.profit)
         }
         this.computedCost()
-        this.getContact()
         this.checkedProList = data.product_info.map(vals => {
+          if (vals.product_info.product_type === 2) {
+            this.product_type = false
+            this.getList()
+          }
           let sizeColorArr = []
           vals.product_info.size_measurement.forEach(valSize => {
             vals.product_info.color.forEach(valColor => {
@@ -1260,7 +1236,7 @@ export default {
             })
           })
           // 将列表是勾选上
-          let checked = this.productList.find(proId => proId.id === vals.product_info.product_id)
+          let checked = this.productList.find(proId => +proId.id === +vals.product_info.product_id)
           if (checked) {
             checked.checked = true
           }
@@ -1277,14 +1253,17 @@ export default {
             style_name: vals.product_info.style_name,
             color: vals.product_info.color,
             size: vals.size_measurement,
+            product_type: vals.product_info.product_type,
             checked: true
           }
         })
         this.setNum = data.number
         this.setNumRemake = data.product_need_desc
-        this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
         this.productDemand = data.product_need
         this.loading = false
+        setTimeout(() => {
+          this.canClick = true
+        }, 1000)
       })
     },
     getContact () {
@@ -1324,7 +1303,7 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.productList = res.data.data.map(item => {
-              if (this.checkedProList.find(vals => Number(vals.id) === Number(item.id))) {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
                 return { ...item, checked: true, product_type: 1 }
               } else {
                 return { ...item, checked: false, product_type: 1 }
@@ -1351,7 +1330,7 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             this.productList = res.data.data.map(item => {
-              if (this.checkedProList.find(vals => Number(vals.id) === Number(item.id))) {
+              if (this.checkedProList.find(vals => vals.id === item.id)) {
                 return {
                   checked: true,
                   product_type: 2,
@@ -1429,63 +1408,6 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
-        // planList.detail_code({
-        //   product_id: item.id
-        // }).then(res => {
-        //   // if (res.data.status) {
-        //   //   res.data.data.material_data.forEach(item => {
-        //   //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-        //   //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-        //   //     let number = item.colour.reduce((totalColour, currentColour) => {
-        //   //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-        //   //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-        //   //           return totalSize + Number(currentSize.number)
-        //   //         }, 0)
-        //   //       }, 0)
-        //   //     }, 0)
-        //   //     if (!findedYarn && item.type === 0) {
-        //   //       if (this.priceInfo.raw_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.checkedYarn(obj)
-        //   //         this.priceInfo.raw_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.raw_material[0].name = item.material
-        //   //         this.priceInfo.raw_material[0].weight = number
-        //   //         this.priceInfo.raw_material[0].disabled = true
-        //   //         this.checkedYarn(this.priceInfo.raw_material[0])
-        //   //       }
-        //   //     } else if (findedYarn && item.type === 0) {
-        //   //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //     if (!findedOther && item.type === 1) {
-        //   //       if (this.priceInfo.other_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.priceInfo.other_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.other_material[0].name = item.material
-        //   //         this.priceInfo.other_material[0].weight = number
-        //   //         this.priceInfo.other_material[0].disabled = true
-        //   //       }
-        //   //     } else if (findedOther && item.type === 1) {
-        //   //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //   })
-        //   // }
-        // })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -1581,8 +1503,6 @@ export default {
     },
     setCardData (item) {
       return {
-        product_id: item.id,
-        product_type: item.product_type,
         product_code: item.product_code,
         img: item.image.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
@@ -1662,6 +1582,7 @@ export default {
       this.lock = false
       price.create({
         id: null,
+        pid: this.pid || this.$route.params.id,
         name: this.price_name,
         client_id: this.client_id,
         quotation_code: quotationCode,
@@ -1698,7 +1619,7 @@ export default {
           this.$message({ type: 'success', message: '提交成功' })
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/price/priceDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#1a95ff">添加</span>了一张新报价单<span style="color:#1A95FF">'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一张新报价单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
             this.msgSwitch = true
           } else {
             this.$router.push('/price/priceDetail/' + res.data.data.id)
@@ -1730,69 +1651,10 @@ export default {
     searchCodeChange (newVal) {
       this.pages = 1
       this.getList()
-    },
-    // 报价单预加载
-    getPriceLoading () {
-      priceLoading.list({
-        page: 1,
-        limit: 9999
-      }).then(res => {
-        if (res.data.status !== false) {
-          console.log(res.data.data)
-        }
-      })
-    },
-    setPriceLoading (item) {
-      this.priceInfo.weave = JSON.parse(item.weave_info || '[]').map(val => {
-        return {
-          name: val.name,
-          number: '',
-          total_price: ''
-        }
-      })
-      if (!this.priceInfo.weave || this.priceInfo.weave.length === 0) {
-        this.priceInfo.weave = [{ name: '', number: '', total_price: '' }]
-      }
-      this.priceInfo.semi_process = JSON.parse(item.semi_product_info || '[]').map(val => {
-        return {
-          name: val.name,
-          number: '',
-          total_price: ''
-        }
-      })
-      if (!this.priceInfo.semi_process || this.priceInfo.semi_process.length === 0) {
-        this.priceInfo.semi_process = [{ name: '', total_price: '' }]
-      }
-      this.priceInfo.finished_process = JSON.parse(item.product_info || '[]').map(val => {
-        return {
-          name: val.name,
-          total_price: ''
-        }
-      })
-      if (!this.priceInfo.finished_process || this.priceInfo.finished_process.length === 0) {
-        this.priceInfo.finished_process = [{ name: '', total_price: '' }]
-      }
-      this.priceInfo.packag = JSON.parse(item.pack_material_info || '[]').map(val => {
-        return {
-          name: val.name,
-          total_price: ''
-        }
-      })
-      if (!this.priceInfo.packag || this.priceInfo.packag.length === 0) {
-        this.priceInfo.packag = [{ name: '', total_price: '' }]
-      }
-      this.priceInfo.other_fee = JSON.parse(item.others_info || '[]').map(val => {
-        return {
-          name: val.name,
-          total_price: ''
-        }
-      })
-      if (!this.priceInfo.other_fee || this.priceInfo.other_fee.length === 0) {
-        this.priceInfo.other_fee = [{ name: '', total_price: '' }]
-      }
     }
   },
   created () {
+    this.getList()
     Promise.all([
       client.list({
         company_id: this.companyId,
@@ -1818,11 +1680,7 @@ export default {
         company_id: this.companyId,
         type: 2
       }),
-      getToken({}),
-      priceLoading.list({
-        page: 1,
-        limit: 9999
-      })
+      getToken({})
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
       this.typeArr = res[1].data.data.map((item) => {
@@ -1847,100 +1705,13 @@ export default {
       })
       this.flowerArr = res[2].data.data
       this.groupArr = res[3].data.data
-      // this.yarnPriceList = res[4].data.data
       this.yarn_list = res[4].data.data.map(item => { return { value: item.name, priceArr: item.price } })
       this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
-      this.loading = false
-      // if (this.$route.fullPath.split('?')[1]) {
-      //   let hasProFlag = this.productList.find(key => key.id === this.$route.fullPath.split('?')[1])
-      //   if (hasProFlag) {
-      //     hasProFlag.checked = true
-      //     this.getProduct(true, this.$route.fullPath.split('?')[1])
-      //   } else {
-      //     this.getProductFId(this.$route.fullPath.split('?')[1])
-      //   }
-      // }
       this.postData.token = res[7].data.data
-      this.priceLoadingList = res[8].data.data.data
+      this.getPriceInfo(this.$route.params.id)
+      this.loading = false
     })
-    this.product_type = this.$route.query.productType === '1' || !this.$route.query.productType
-    this.getList()
-  },
-  mounted () {
-    if (this.$route.query.productId && this.$route.query.productType) {
-      if (this.product_type) {
-        product.detail({
-          id: this.$route.query.productId
-        }).then(res => {
-          if (res.data.status !== false) {
-            let data = res.data.data
-            let sizeColorList = []
-            data.size.forEach(itemSize => {
-              data.color.forEach(itemColor => {
-                sizeColorList.push({
-                  id: itemSize.id + '/' + itemColor.id,
-                  sizeColor: itemSize.size_name + '/' + itemColor.color_name
-                })
-              })
-            })
-            let obj = {
-              checked: true,
-              category_info: data.category_info,
-              color: data.color,
-              flower_id: data.flower_id,
-              id: data.id,
-              image: data.image,
-              product_code: data.product_code,
-              product_type: 1,
-              showFlag: false,
-              size: data.size,
-              sizeColor: '',
-              sizeColorList: sizeColorList,
-              style_name: data.style_name,
-              type_name: data.type_name
-            }
-            this.checkedProList.push(obj)
-          }
-        })
-      } else {
-        sample.detail({
-          id: this.$route.query.productId
-        }).then(res => {
-          if (res.data.status !== false) {
-            let data = res.data.data
-            let sizeColorList = []
-            data.size.forEach(itemSize => {
-              data.color.forEach(itemColor => {
-                sizeColorList.push({
-                  id: itemSize.id + '/' + itemColor.id,
-                  sizeColor: itemSize.size_name + '/' + itemColor.color_name
-                })
-              })
-            })
-            let obj = {
-              checked: true,
-              category_info: {
-                product_category: data.category_name
-              },
-              color: data.color,
-              flower_id: data.flower_name,
-              id: data.id,
-              image: data.image,
-              product_code: data.sample_product_code,
-              product_type: 2,
-              showFlag: false,
-              size: data.size,
-              sizeColor: '',
-              sizeColorList: sizeColorList,
-              style_name: data.style_name,
-              type_name: data.type_name
-            }
-            this.checkedProList.push(obj)
-          }
-        })
-      }
-    }
   },
   watch: {
     type: {

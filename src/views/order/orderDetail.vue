@@ -49,6 +49,12 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
+            <span class="label">订单类型：</span>
+            <span class="text">{{orderInfo.order_type}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
             <span class="label">订单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
@@ -137,6 +143,7 @@
           <div class="tableCtnLv2">
             <span class="tb_header">
               <span class="tb_row">发货日期</span>
+              <span class="tb_row">批次备注</span>
               <span class="tb_row tb_col flex6">
                 <span class="tb_col_item">
                   <span class="tb_row">产品信息</span>
@@ -151,7 +158,25 @@
             <span class="tb_content"
               v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
               :key="indexBatch">
-              <span class="tb_row">第{{itemBatch.batch_id}}批<br />{{itemBatch.delivery_time}}</span>
+              <span class="tb_row">
+                第{{itemBatch.batch_id}}批
+                <br />
+                {{itemBatch.batch_title}}
+                <br />
+                {{itemBatch.delivery_time}}
+              </span>
+              <span class="tb_row">
+                <template v-if="!itemBatch.desc">无</template>
+                <el-popover placement="top-start"
+                  v-else
+                  title="批次备注"
+                  width="200"
+                  trigger="hover"
+                  :content="(itemBatch.desc).toString()">
+                  <span style="cursor: pointer;color:#1A95FF"
+                    slot="reference">查看备注</span>
+                </el-popover>
+              </span>
               <span class="tb_row tb_col flex6">
                 <span class="tb_col_item"
                   v-for="(itemPro,indexPro) in itemBatch.product_info"

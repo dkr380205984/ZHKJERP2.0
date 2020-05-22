@@ -448,7 +448,7 @@
 </template>
 
 <script>
-import { sample, client, group, sampleOrder, warnSetting } from '@/assets/js/api.js'
+import { sample, client, group, sampleOrder, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -459,25 +459,7 @@ export default {
       msgContent: '',
       sample_order_title: '',
       sample_type: '',
-      sampleTypeArr: [{
-        id: 0,
-        name: '开发样'
-      }, {
-        id: 1,
-        name: '修改样'
-      }, {
-        id: 2,
-        name: '销售样'
-      }, {
-        id: 3,
-        name: '确认样'
-      }, {
-        id: 4,
-        name: '产前样'
-      }, {
-        id: 5,
-        name: '大货样'
-      }],
+      sampleTypeArr: [],
       order_time: this.$getTime(),
       group_id: '',
       groupArr: [],
@@ -762,7 +744,9 @@ export default {
         id: this.$route.params.id
       }),
       warnSetting.list(),
-      sampleOrder.typeList()
+      orderType.typeList({
+        order_type: 2
+      })
     ]).then(res => {
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
       this.groupArr = res[1].data.data

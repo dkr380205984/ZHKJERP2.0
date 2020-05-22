@@ -34,6 +34,9 @@
             <div class="col">
               <span class="text">编号</span>
             </div>
+            <div class="col">
+              <span class="text">名称</span>
+            </div>
             <div class="col flex15">
               <transition v-show="!searchTypeFlag"
                 name="el-zoom-in-bottom">
@@ -127,6 +130,7 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">{{item.code}}</div>
+            <div class="col">{{item.name}}</div>
             <div class="col flex15">{{item.client_name}}</div>
             <div class="col middle">
               <zh-img-list :list="item.img"></zh-img-list>
@@ -143,7 +147,7 @@
             </div>
             <div class="col middle">
               <span class="opr"
-                @click="$router.push('/price/priceDetail/' + item.id)">{{has_check==='1'?'审核':'详情'}}</span>
+                @click="$router.push('/price/priceDetail/' + item.pid)">{{has_check==='1'?'审核':'详情'}}</span>
               <span class="opr">
                 <el-dropdown @command="handleCommand($event,item.id)">
                   <span class="el-dropdown-link">
@@ -258,6 +262,7 @@ export default {
             })))
             return {
               code: item.quotation_code,
+              name: item.name,
               client_name: item.client_name,
               img: img,
               price: item.total_price,
@@ -267,7 +272,8 @@ export default {
               user_name: item.user_name,
               create_time: item.created_at ? item.created_at.split(' ')[0] : '',
               status: item.status,
-              id: item.id
+              id: item.id,
+              pid: item.pid || item.id
             }
           })
           this.total = res.data.meta.total
