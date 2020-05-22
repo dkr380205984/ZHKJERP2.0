@@ -3,13 +3,6 @@
     id="sampleCreate"
     v-loading="loading">
     <div class="module">
-      <!-- <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <span class="sampleCode">{{sampleCode}}</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
-      </div> -->
       <div class="titleCtn"
         style="display:flex;align-items:center;justify-content: space-between;">
         <span class="title">
@@ -87,26 +80,14 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="index===0">
-              <span class="text">样品成分</span>
+              <span class="text">样品纱线</span>
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
                 v-model="item.ingredient_name"
                 :fetch-suggestions="searchIngredient"
-                placeholder="请输入成分信息">
+                placeholder="请输入纱线信息">
               </el-autocomplete>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="index===0">
-            </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入比例"
-                v-model="item.ingredient_value">
-                <template slot="append">%</template>
-              </zh-input>
             </div>
             <div class="editBtn"
               :class="{'addBtn':index===0,'deleteBtn':index>0}"
@@ -548,7 +529,7 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
+import { productType, flower, yarn, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1180,7 +1161,7 @@ export default {
     Promise.all([
       productType.list(),
       flower.list(),
-      ingredient.list(),
+      yarn.list(),
       colour.list(),
       getToken(),
       material.list(),
