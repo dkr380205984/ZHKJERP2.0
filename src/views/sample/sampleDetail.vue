@@ -275,13 +275,13 @@
                     @click="$router.push('/price/priceCreate?productId=' + $route.params.id + '&productType=2')">添加</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
-                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">预览</span>
+                    @click="$router.push('/price/priceDetail/'+ (detail.quotation_info[quotation_index].pid || detail.quotation_info[quotation_index].id) + '?priceId=' + detail.quotation_info[quotation_index].id)">预览</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
                     @click="openWin('/pricePrintTable/' + detail.quotation_info[quotation_index].id )">打印</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
-                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">详情</span>
+                    @click="$router.push('/price/priceDetail/'+ (detail.quotation_info[quotation_index].pid || detail.quotation_info[quotation_index].id) + '?priceId=' + detail.quotation_info[quotation_index].id)">详情</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
                     @click="$router.push('/price/priceCreate?productId=' + $route.params.id + '&productType=2')">添加</span>

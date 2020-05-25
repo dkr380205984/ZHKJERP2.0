@@ -35,7 +35,7 @@
           <div class="colCtn flex3">
             <span class="label">发货批次：</span>
             <span class="text">
-              <zh-batch :data='$route.params.id'></zh-batch>
+              <zh-batch :data='orderInfo.order_batch'></zh-batch>
             </span>
           </div>
         </div>
