@@ -239,7 +239,10 @@
               v-for="(item1,index1) in GL"
               :key="index1"
               style="overflow:hidden">
-              <div class="mark">{{alphabet[index1]}}：</div>
+              <div class="mark">{{alphabet[index1]}}：
+                <span style="position:absolute;color:#1a95ff;font-size:12px;bottom:-1.2em;left:-0.5em;cursor:pointer"
+                  @click="showGL(item1)">预览</span>
+              </div>
               <div v-for="(item2,index2) in item1"
                 :key="index2"
                 class="deltaCtn">
@@ -623,6 +626,35 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showGLFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">预览纹版图</div>
+          <i class="el-icon-close"
+            @click="showGLFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="GLCtns">
+            <div class="rowLine"
+              v-for="(item,index) in GLYulan"
+              :key="index">
+              <div class="col"
+                v-for="(itemChild,indexChild) in item"
+                :key="indexChild"
+                :class="{'black':itemChild===1,'white':itemChild===0}"></div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showGLFlag = false">取消</div>
+          <a href="#order"
+            class="btn btnBlue"
+            @click="showGLFlag = false">确定</a>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -659,13 +691,14 @@ export default {
   },
   data () {
     return {
+      showGLFlag: false,
+      GLYulan: [], // 预览纹版图
       camera: null,
       scene: null,
       renderer: null,
       mesh: null,
       controls: null,
       show3D: true,
-
       weftCmp: '1',
       loading: true,
       data: [], // 有多张工艺单的时候保存原始数据
@@ -973,11 +1006,50 @@ export default {
     }
   },
   methods: {
+    // 预览纹版图
+    showGL (GL) {
+      console.log(GL)
+      let GLArr = []
+      GL.forEach((item) => {
+        item.forEach((itemChild) => {
+          if (itemChild) {
+            GLArr.push(itemChild.split(','))
+          }
+        })
+      })
+      let max = 0
+      GLArr.forEach((item) => {
+        item.forEach((itemChild) => {
+          if (Number(itemChild) > max) {
+            max = Number(itemChild)
+          }
+        })
+      })
+      GLArr = GLArr.map((item) => {
+        return (new Array(6)).fill(0).map((itemChild, indexChild) => {
+          if (item.find((itemFind) => Number(itemFind) === (indexChild + 1))) {
+            itemChild = 1
+          }
+          return itemChild
+        })
+      })
+      // 把黑白格在经向和纬向上重复四遍
+      GLArr = GLArr.map((item) => {
+        return item.concat(item).concat(item)
+      })
+      this.GLYulan = []
+      for (let i = 0; i < 3; i++) {
+        GLArr.forEach((item) => {
+          this.GLYulan.push(item)
+        })
+      }
+      this.showGLFlag = true
+      console.log(this.GLYulan)
+    },
     threeInit () {
       let container = document.getElementById('threeCtn')
       this.scene = new THREE.Scene()
       this.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000)
-      console.log(container.clientWidth)
       this.renderer = new THREE.WebGLRenderer()
       this.renderer.setSize(container.clientWidth, container.clientHeight)
       this.renderer.shadowMap.enabled = true
@@ -1338,7 +1410,6 @@ export default {
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.weftCmp = this.warpInfo.weight_calculate_formula
-      console.log(this.weftCmp)
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1)
       this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1)
       this.yarn.yarnOtherWarp = this.warpInfo.material_data.filter((item) => item.type_material === 2)
@@ -1455,7 +1526,6 @@ export default {
           }
         })
       })
-      console.log(this.colorWeight)
       this.colorWeight.warp.forEach((item) => {
         this.weight += item === 'NaN' ? 0 : Number(item)
       })
