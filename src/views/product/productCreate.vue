@@ -268,7 +268,8 @@
         </div>
         <div class="rowCtn"
           v-for="(itemIngredient,indexIngredient) in item.ingredient"
-          :key="'ingredient' + indexIngredient">
+          :key="'ingredient' + indexIngredient"
+          v-show="false">
           <div class="colCtn flex3">
             <div class="label"
               v-show="indexIngredient===0">

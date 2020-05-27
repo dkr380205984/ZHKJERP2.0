@@ -84,11 +84,11 @@
                     <div class="trow">
                       <div class="tcolumn">尺码配色</div>
                       <div class="tcolumn noPad"
-                        style="flex:4">
+                        style="flex:3">
                         <div class="trow">
                           <div class="tcolumn">产品部件</div>
                           <div class="tcolumn">计划数量</div>
-                          <div class="tcolumn">分配数量</div>
+                          <!-- <div class="tcolumn">分配数量</div> -->
                           <div class="tcolumn">操作</div>
                         </div>
                       </div>
@@ -115,17 +115,17 @@
                       :key="indexSize">
                       <div class="tcolumn">{{itemSize.size_name}}/{{itemSize.color_name}}</div>
                       <div class="tcolumn noPad"
-                        style="flex:4">
+                        style="flex:3">
                         <div class="trow"
                           v-for="(itemChild,indexChild) in itemSize.part_data"
                           :key="indexChild">
                           <div class="tcolumn">{{itemChild.name}}</div>
                           <div class="tcolumn">{{itemChild.number}}</div>
-                          <div class="tcolumn">{{itemChild.weavingNum}}</div>
+                          <!-- <div class="tcolumn">{{itemChild.weavingNum}}</div> -->
                           <div class="tcolumn">
                             <span class="btn noBorder"
                               style="padding:0;margin:0"
-                              @click="normalWeaving(item.product_code,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
+                              @click="normalWeaving(item.product_code,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number)">织造分配</span>
                           </div>
                         </div>
                       </div>
@@ -182,20 +182,6 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">所需物料比例</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <zh-input type='number'
-                        v-model="itemChild.rate"
-                        placeholder="请输入所需物料比例">
-                        <template slot="append">%</template>
-                      </zh-input>
-                    </div>
-                  </div>
-                  <div class="colCtn flex3">
-                    <div class="label"
-                      v-if="indexChild===0">
                       <span class="text">工序名称</span>
                       <span class="explanation">(必填)</span>
                     </div>
@@ -204,6 +190,20 @@
                         v-model="itemChild.process"
                         :fetch-suggestions="querySearch"
                         placeholder="请输入内容"></el-autocomplete>
+                    </div>
+                  </div>
+                  <div class="colCtn flex3">
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">单价信息</span>
+                      <span class="explanation">(必填)</span>
+                    </div>
+                    <div class="content">
+                      <zh-input type='number'
+                        v-model="itemChild.price"
+                        placeholder="请输入单价信息">
+                        <template slot="append">元</template>
+                      </zh-input>
                     </div>
                     <div class="editBtn addBtn"
                       v-if="indexChild===0"
@@ -243,27 +243,21 @@
                       <zh-input type="number"
                         v-model="itemChild.number"
                         placeholder="请输入分配数量">
-                        <template slot="append">机动数：{{'+'+ itemChild.number&&itemChild.loss?parseInt(itemChild.number*itemChild.loss/100):0}}</template>
                       </zh-input>
                     </div>
                   </div>
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">单价/机动数</span>
+                      <span class="text">机动数</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content"
                       style="display:flex">
                       <zh-input type="number"
-                        style="margin-right:12px"
-                        v-model="itemChild.price"
-                        placeholder="请输入单价">
-                        <template slot="append">元</template>
-                      </zh-input>
-                      <zh-input type="number"
                         v-model="itemChild.loss"
-                        placeholder="请输入机动数">
+                        placeholder="请输入机动数百分比">
+                        <template slot="prepend">机动数：{{'+'+ itemChild.number&&itemChild.loss?parseInt(itemChild.number*itemChild.loss/100):0}}</template>
                         <template slot="append">%</template>
                       </zh-input>
                     </div>
@@ -336,7 +330,7 @@
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
-                  <div class="tcolumn">织造单位</div>
+                  <div class="tcolumn">单位名称</div>
                   <div class="tcolumn noPad"
                     style="flex:7">
                     <div class="trow">
@@ -356,7 +350,7 @@
                 <div class="trow"
                   v-for="(item,index) in weaving_detail"
                   :key="index">
-                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn">{{item.client_name}}<span style="color:#1a95ff">({{item.process}})</span></div>
                   <div class="tcolumn noPad"
                     style="flex:7">
                     <div class="trow"
@@ -403,18 +397,19 @@
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn"
-                    style="flex:0.2"></div>
+                    style="flex:0.2">
+                    <el-checkbox v-model="checkAll"></el-checkbox>
+                  </div>
                   <div class="tcolumn"
                     style="flex:1.2">完成日期</div>
                   <div class="tcolumn"
-                    style="flex:1.5">织造单位</div>
+                    style="flex:1.5">单位名称</div>
                   <div class="tcolumn"
                     style="flex:1.5">产品名称</div>
                   <div class="tcolumn"
                     style="flex:1.2">尺码颜色</div>
                   <div class="tcolumn">单价(元)</div>
                   <div class="tcolumn">数量</div>
-                  <div class="tcolumn">机动数</div>
                   <div class="tcolumn">总价(元)</div>
                   <div class="tcolumn">备注</div>
                   <div class="tcolumn">操作人</div>
@@ -444,8 +439,7 @@
                     <span>{{item.color_name}}</span>
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">+{{parseInt(item.motorise_number *item.number/100)}}</div>
+                  <div class="tcolumn">{{item.number}}+{{parseInt(item.motorise_number *item.number/100)}}</div>
                   <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
@@ -467,25 +461,24 @@
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <div class="btn btnWhiteBlue"
+              @click="updateMat()">修改分配信息</div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
             style="margin-right:0">
             <div class="flexTb">
               <div class="thead">
                 <div class="trow">
-                  <div class="tcolumn">织造单位</div>
+                  <div class="tcolumn">单位名称</div>
                   <div class="tcolumn noPad"
-                    style="flex:6">
+                    style="flex:3">
                     <div class="trow">
-                      <!-- <div class="tcolumn">产品信息</div>
-                      <div class="tcolumn">尺码颜色</div>
-                      <div class="tcolumn">分配数量</div> -->
-                      <div class="tcolumn noPad"
-                        style="flex:3">
-                        <div class="trow">
-                          <div class="tcolumn">原料名称</div>
-                          <div class="tcolumn">原料颜色</div>
-                          <div class="tcolumn">原料数量</div>
-                        </div>
-                      </div>
+                      <div class="tcolumn">原料名称</div>
+                      <div class="tcolumn">原料颜色</div>
+                      <div class="tcolumn">原料数量</div>
                     </div>
                   </div>
                   <div class="tcolumn center">操作</div>
@@ -493,37 +486,24 @@
               </div>
               <div class="tbody">
                 <div class="trow"
-                  v-for="(item,index) in weaving_detail"
+                  v-for="(item,index) in material_detail"
                   :key="index">
-                  <div class="tcolumn">{{item.client_name}}<span style="color:#1a95ff">({{item.process}})</span></div>
+                  <div class="tcolumn">{{item.client_name}}</div>
                   <div class="tcolumn noPad"
-                    style="flex:6">
+                    style="flex:3">
                     <div class="trow"
-                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
-                      :key="indexChild">
-                      <!-- <div class="tcolumn">
-                      <span>{{itemChild.product_info.code}}</span>
-                      <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
-                      </div>
-                      <div class="tcolumn">{{itemChild.size}}/{{itemChild.color}}</div>
-                      <div class="tcolumn">{{itemChild.number}}</div> -->
-                      <div class="tcolumn noPad"
-                        style="flex:3">
-                        <div class="trow"
-                          v-for="(itemMat,indexMat) in itemChild.material_assign"
-                          :key="indexMat">
-                          <div class="tcolumn">{{itemMat.material_name}}</div>
-                          <div class="tcolumn">{{itemMat.material_attribute}}</div>
-                          <div class="tcolumn">{{itemMat.material_type===1?$toFixed(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
-                        </div>
-                        <div class="trow"
-                          v-if="itemChild.material_assign.length===0">
-                          <div class="tcolumn"
-                            style="text-align: center;flex-direction: row;align-items: center;">
-                            无法统计原料分配信息，这可能是因为物料计划单未
-                            <span class="blue">填写</span></div>
-                        </div>
-                      </div>
+                      v-for="(itemMat,indexMat) in item.childrenMergeInfo"
+                      :key="indexMat">
+                      <div class="tcolumn">{{itemMat.material_name}}</div>
+                      <div class="tcolumn">{{itemMat.material_attribute}}</div>
+                      <div class="tcolumn">{{itemMat.weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
+                    </div>
+                    <div class="trow"
+                      v-if="item.childrenMergeInfo.length===0">
+                      <div class="tcolumn"
+                        style="text-align: center;flex-direction: row;align-items: center;">
+                        无法统计原料分配信息，这可能是因为物料计划单未
+                        <span class="blue">填写</span></div>
                     </div>
                   </div>
                   <div class="tcolumn center">
@@ -612,7 +592,7 @@
         <div class="content"
           style="max-height:600px">
           <div class="tips">
-            提示信息：本步骤可以统一选择织造单位,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
+            提示信息：本步骤可以统一选择单位名称,织造单价和截止日期，如不需要可以选择直接跳过该步骤。
           </div>
           <div style="background: #f4f4f4;padding: 8px;margin: 12px 0;"
             v-for="(item,index) in checkWeaveList"
@@ -636,11 +616,11 @@
               </div>
             </div>
             <div class="row">
-              <div class="label">织造单位：</div>
+              <div class="label">单位名称：</div>
               <div class="info">
                 <el-select v-model="commonCompany[index]"
                   filterable
-                  placeholder="请选择织造单位">
+                  placeholder="请选择单位名称">
                   <el-option v-for="item in companyArr"
                     :key="item.id"
                     :value="item.id"
@@ -867,6 +847,105 @@
         </div>
       </div>
     </div>
+    <!-- 织造分配完成后确认物料信息 -->
+    <div class="popup"
+      v-show="showMaterialPopup">
+      <div class="main"
+        style="width:1200px">
+        <div class="title">
+          <div class="text">确认物料信息</div>
+        </div>
+        <div class="content"
+          style="padding:20px">
+          <div class="flexTb"
+            style="margin-bottom:24px">
+            <div class="thead">
+              <div class="trow">
+                <div class="tcolumn">原料名称</div>
+                <div class="tcolumn">原料颜色</div>
+                <div class="tcolumn">物料剩余可分配数量</div>
+              </div>
+            </div>
+            <div class="tbody">
+              <div class="trow"
+                v-for="(item,index) in material_plan"
+                :key="index">
+                <div class="tcolumn">{{item.material_name}}</div>
+                <div class="tcolumn">{{item.material_attribute}}</div>
+                <div class="tcolumn">{{item.canBeUse}}kg</div>
+              </div>
+            </div>
+          </div>
+          <div class="flexTb">
+            <div class="thead">
+              <div class="trow">
+                <div class="tcolumn">单位名称</div>
+                <div class="tcolumn noPad"
+                  style="flex:6">
+                  <div class="trow">
+                    <div class="tcolumn">原料名称</div>
+                    <div class="tcolumn">原料颜色</div>
+                    <div class="tcolumn">计划需要物料</div>
+                    <div class="tcolumn">百分比</div>
+                    <div class="tcolumn">实际分配数量</div>
+                    <div class="tcolumn">操作</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tbody">
+              <div class="trow"
+                v-for="(item,index) in weaving_mat"
+                :key="index">
+                <div class="tcolumn">{{item.client_name}}</div>
+                <div class="tcolumn noPad"
+                  style="flex:6">
+                  <div class="trow"
+                    v-for="(itemMat,indexMat) in item.material_merge"
+                    :key="indexMat">
+                    <div class="tcolumn">{{itemMat.material_name}}</div>
+                    <div class="tcolumn">{{itemMat.material_attribute}}</div>
+                    <div class="tcolumn">{{itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
+                    <div class="tcolumn">
+                      <zh-input v-model="itemMat.rate"
+                        type='number'
+                        placeholder="百分比"
+                        @input="changeWeight(itemMat)"
+                        style="height:40px">
+                        <template slot="append">%</template>
+                      </zh-input>
+                    </div>
+                    <div class="tcolumn">
+                      <zh-input v-model="itemMat.reality_weight"
+                        type='number'
+                        placeholder="数量"
+                        style="height:40px">
+                        <template slot="append">{{itemMat.material_type===1?'kg':itemMat.material_unit}}</template>
+                      </zh-input>
+                    </div>
+                    <div class="tcolumn">
+                      <span style="color:#F5222D;cursor:pointer"
+                        @click="deleteMat(item.material_merge,indexMat)">删除</span>
+                    </div>
+                  </div>
+                  <div class="trow"
+                    v-if="item.material_merge.length===0">
+                    <div class="tcolumn"
+                      style="text-align: center;flex-direction: row;align-items: center;">
+                      无法统计原料分配信息，这可能是因为物料计划单未
+                      <span class="blue">填写</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnBlue"
+            @click="saveWeavingMat">确定</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -886,6 +965,7 @@ export default {
   data () {
     return {
       loading: true,
+      checkAll: false,
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
@@ -903,6 +983,7 @@ export default {
       companyArr: [],
       weaving_data: [],
       weaving_detail: [],
+      weaving_mat: [], // 这个参数和weaving_deitai都是织造分配物料信息,这个参数用于被修改提交
       weaving_log: [],
       weaving_flag: false,
       easyWeaving_flag: false,
@@ -930,7 +1011,12 @@ export default {
       printPopup: false,
       showRouterPopup: false,
       showReplenishPopup: false,
-      replenishClientArr: []
+      showMaterialPopup: false,
+      replenishClientArr: [],
+      material_detail: [],
+      material_plan: [],
+      material_use: [],
+      ifUpdate: false // 判断物料分配是新增还是修改,新增的时候不能超过剩余物料数量,修改的时候不能超过计划值
     }
   },
   computed: {
@@ -942,6 +1028,11 @@ export default {
     weaving_data (val) {
       this.$nextTick(() => {
         this.$fuckSelect()
+      })
+    },
+    checkAll (val) {
+      this.weaving_log.forEach((item) => {
+        item.checked = val
       })
     }
   },
@@ -981,23 +1072,22 @@ export default {
       this.$openUrl('/replenishTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '?id=' + idArr.join(','))
     },
     normalWeaving (code, size, color, id, number) {
-      if (number !== 'undefined' && number <= 0) {
-        this.$message.warning('该部件已分配完毕')
-        return
-      }
+      // if (number !== 'undefined' && number <= 0) {
+      //   this.$message.warning('该部件已分配完毕')
+      //   return
+      // }
       this.weaving_flag = true
       this.weaving_data.push({
         companyRate: [{
           company_id: '',
-          rate: 100,
-          process: '织造'
+          process: '织造',
+          price: ''
         }],
         product_name: code || '',
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
-          price: '',
-          number: '',
-          loss: ''
+          number: number || '',
+          loss: 3
         }],
         complete_time: '',
         part_data: [],
@@ -1050,13 +1140,12 @@ export default {
       this.weaving_data.push({
         companyRate: [{
           company_id: '',
-          rate: 100,
+          price: '',
           process: '织造'
         }],
         product_part: '',
         mixedData: [{
           partColorSize: '',
-          price: '',
           number: '',
           loss: ''
         }],
@@ -1089,24 +1178,15 @@ export default {
         item.companyRate.forEach((itemChild) => {
           if (!itemChild.company_id) {
             errorFlag = true
-            errMsg = '请选择织造单位'
-          } else if (!itemChild.rate) {
+            errMsg = '请选择单位名称'
+          } else if (!itemChild.price) {
             errorFlag = true
-            errMsg = '请输入物料分配比例'
+            errMsg = '请输入单价'
           } else if (itemChild.process === '') {
             errorFlag = true
             errMsg = '请输入分配工序'
           }
         })
-        // 统计下物料分配比例是否为100%
-        let total = item.companyRate.reduce((total, current) => {
-          return total + Number(current.rate)
-        }, 0)
-        if (total !== 100) {
-          errorFlag = true
-          errMsg = '请保证物料分配比例相加为100%'
-        }
-
         item.mixedData.forEach((itemChild) => {
           if (!itemChild.partColorSize) {
             errorFlag = true
@@ -1137,33 +1217,162 @@ export default {
               client_id: itemCmp.company_id,
               complete_time: this.$getTime(item.complete_time),
               desc: item.desc,
-              price: itemChild.price,
+              price: itemCmp.price,
               motorise_number: itemChild.loss || 3,
               number: itemChild.number,
               size_id: partColorSize[1],
               color_id: partColorSize[2],
               is_part: partFlag ? 1 : 2,
-              proportion: itemCmp.rate,
               process: itemCmp.process
             })
           })
         })
       })
-      weave.create({
+      weave.dressCreate({
         data: formData
       }).then((res) => {
         if (res.data.status) {
-          this.$message.success('分配成功，请刷新页面后查看织造分配数量')
+          this.$message.success('分配成功，请确认物料分配数量')
           this.weaving_data = []
           this.weaving_flag = false
-          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造分配信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-            this.msgSwitch = true
-          } else {
-            this.$router.push('/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
-            this.$winReload()
+          weave.getDressMatInit({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.orderType,
+            product_data: formData.map((item) => {
+              return {
+                product_id: item.product_id,
+                size_id: item.size_id,
+                color_id: item.color_id,
+                number: item.number
+              }
+            })
+          }).then((res) => {
+            let matData = res.data.data.map((item, index) => {
+              let json = formData[index]
+              json.material_assign = item
+              return json
+            })
+            this.weaving_mat = this.$mergeData(matData, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }, { name: 'process' }] })
+            this.mergeMat(this.weaving_mat)
+            this.showMaterialPopup = true
+          })
+          // if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+          //   this.msgUrl = '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType
+          //   this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造分配信息,' + (this.$route.params.orderType === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+          //   this.msgSwitch = true
+          // } else {
+          //   this.$router.push('/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType)
+          //   this.$winReload()
+          // }
+        }
+      })
+    },
+    changeWeight (itemMat) {
+      itemMat.reality_weight = this.$toFixed(itemMat.rate / 100 * itemMat.material_weight)
+      this.$forceUpdate()
+    },
+    // 把原料名称和颜色相同的数据进行合并
+    mergeMat (data) {
+      data.forEach((item) => {
+        item.material_merge = []
+        item.client_name = item.client_name || this.companyArr.find((itemFind) => itemFind.id === item.client_id).name
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.material_assign.forEach((itemMat) => {
+            let finded = item.material_merge.find((itemFind) => {
+              return itemFind.material_name === itemMat.material_name && itemFind.material_attribute === itemMat.material_attribute
+            })
+            if (finded) {
+              finded.material_weight += itemMat.material_weight
+            } else {
+              item.material_merge.push(itemMat)
+            }
+          })
+        })
+        item.material_merge.forEach((itemMat) => {
+          itemMat.material_weight = itemMat.material_type === 1 ? this.$toFixed(itemMat.material_weight / 1000) : itemMat.material_weight
+          itemMat.reality_weight = ''
+        })
+      })
+    },
+    deleteMat (item, matIndex) {
+      if (item[matIndex].material_push_status === 1) {
+        this.$message.error('该物料已经出库,不能删除')
+        return
+      }
+      this.$confirm('该工序是否不需要此物料, 删除后将无法恢复?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        weave.deleteDress({
+          id: item[matIndex].id
+        }).then((res) => {
+          if (res.data.status) {
+            item.splice(matIndex, 1)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.$forceUpdate()
           }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    updateMat () {
+      this.weaving_mat = this.$clone(this.material_detail).map((item) => {
+        item.childrenMergeInfo.forEach((itemMat) => {
+          itemMat.reality_weight = itemMat.weight
+          itemMat.material_weight = itemMat.weight
+        })
+        return {
+          client_name: item.client_name,
+          client_id: item.client_id,
+          material_merge: item.childrenMergeInfo
+        }
+      })
+      this.showMaterialPopup = true
+    },
+    // 保存纱线原料分配信息
+    saveWeavingMat () {
+      let formData = []
+      let error = ''
+      this.weaving_mat.forEach((item) => {
+        item.material_merge.forEach((itemMat) => {
+          if (this.ifUpdate && Number(itemMat.reality_weight) > (Number(itemMat.canBeUse + itemMat.material_weight))) {
+            error = '物料实际值不能超过可用值,可以通过补纱或修改物料计划来分配更多物料'
+          }
+          if (!this.ifUpdate && Number(itemMat.reality_weight) > Number(itemMat.canBeUse)) {
+            error = '物料实际值不能超过可用值,可以通过补纱或修改物料计划来分配更多物料'
+          }
+          formData.push({
+            id: itemMat.id || '',
+            client_id: item.client_id,
+            material_name: itemMat.material_name,
+            material_attribute: itemMat.material_attribute,
+            material_type: itemMat.material_type,
+            unit: itemMat.unit || itemMat.material_unit,
+            weight: itemMat.reality_weight
+          })
+        })
+      })
+      if (error) {
+        this.$message.error(error)
+        return
+      }
+      weave.saveDressMat({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType,
+        material_data: formData
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('分配成功')
+          this.showMaterialPopup = false
+          this.$winReload()
         }
       })
     },
@@ -1173,7 +1382,6 @@ export default {
     addMixedData (index) {
       this.weaving_data[index].mixedData.push({
         partColorSize: '',
-        price: '',
         loss: '',
         number: ''
       })
@@ -1184,7 +1392,7 @@ export default {
     addCompanyRate (index) {
       this.weaving_data[index].companyRate.push({
         company_id: '',
-        rate: 0,
+        price: '',
         process: ''
       })
     },
@@ -1205,7 +1413,6 @@ export default {
           if (part.number - part.weavingNum > 0) {
             mixedData.push({
               partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
-              price: '',
               loss: '',
               number: part.number - part.weavingNum
             })
@@ -1215,7 +1422,7 @@ export default {
           this.weaving_data.push({
             companyRate: [{
               company_id: '',
-              rate: 100,
+              price: '0',
               process: '织造'
             }],
             product_name: item.product_code,
@@ -1234,8 +1441,8 @@ export default {
       }
       this.weaving_data.forEach((item, index) => {
         item.companyRate[0].company_id = this.commonCompany[index]
+        item.companyRate[0].price = this.commonPrice[index]
         item.mixedData.forEach((itemChild) => {
-          itemChild.price = this.commonPrice[index]
           itemChild.loss = this.commonLoss[index]
         })
         item.complete_time = this.commonDate[index]
@@ -1243,7 +1450,7 @@ export default {
       })
     },
     deleteLog (id, index) {
-      this.$confirm('请确认该分配信息还未出库物料', '提示', {
+      this.$confirm('请确认该分配信息还未出库物料,删除织造分配日志还需要手动调整物料分配信息', '提示', {
         confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1255,9 +1462,9 @@ export default {
             if (res.data.status) {
               this.$message({
                 type: 'success',
-                message: '删除成功!'
+                message: '删除成功,请重新确认物料信息!'
               })
-              this.$winReload()
+              this.updateMat()
             }
           })
         } else {
@@ -1270,7 +1477,7 @@ export default {
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
               this.weaving_log.splice(index, 1)
-              this.$winReload()
+              this.updateMat()
             }
           })
         }
@@ -1283,14 +1490,12 @@ export default {
     },
     replenishFn (data) {
       data.childrenMergeInfo.forEach((item) => {
-        item.material_assign.forEach((itemMat) => {
-          let name = itemMat.material_name + '/' + itemMat.material_attribute
-          if (!this.replenish_yarn.find((itemFind) => itemFind.name === name)) {
-            this.replenish_yarn.push({
-              name: name
-            })
-          }
-        })
+        let name = item.material_name + '/' + item.material_attribute
+        if (!this.replenish_yarn.find((itemFind) => itemFind.name === name)) {
+          this.replenish_yarn.push({
+            name: name
+          })
+        }
       })
       this.replenish_data.yarn_info = [{
         yarn: '',
@@ -1451,6 +1656,14 @@ export default {
       materialStock.init({
         order_id: this.$route.params.id,
         order_type: this.$route.params.orderType
+      }),
+      weave.getDressMat({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      }),
+      materialPlan.detail({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType // 区分订单和样单
       })
     ]).then((res) => {
       this.orderInfo = res[0].data.data
@@ -1504,7 +1717,16 @@ export default {
         item.check = false
         return item
       })
-      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }, { name: 'process' }] })
+      this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }, { name: 'process' }] })
+      this.material_detail = this.$mergeData(res[6].data.data, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }, { name: 'process' }] })
+      res[6].data.data.forEach((item) => {
+        let finded = this.material_use.find((itemFind) => itemFind.material_name === item.material_name && item.material_attribute === itemFind.material_attribute)
+        if (finded) {
+          finded.weight = Number(finded.weight) + Number(item.weight)
+        } else {
+          this.material_use.push(item)
+        }
+      })
       // 根据织造日志统计一下分配数量
       this.weaving_info.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
@@ -1521,6 +1743,16 @@ export default {
         item.check = false
         return item
       })
+      this.material_plan = res[7].data.data.total_data
+      this.material_plan.forEach((item) => {
+        item.canBeUse = item.reality_weight / 1000
+        let finded = this.material_use.find((itemFind) => itemFind.material_name === item.material_name && item.material_attribute === itemFind.material_attribute)
+        if (finded) {
+          item.canBeUse -= finded.weight
+        }
+        item.canBeUse = this.$toFixed(item.canBeUse)
+      })
+      console.log(this.material_plan)
       this.replenishClientArr = this.$mergeData(res[5].data.data.material_process_client.concat(res[5].data.data.material_order_client).concat(res[5].data.data.order_weave_client).concat(res[5].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
       this.loading = false
     })

@@ -2499,7 +2499,15 @@ export default {
           item.checked = true
         })
         if (this.$route.params.type === '1') {
-          this.easyOrder(1)
+          this.$confirm('订购色纱还是白胚?', '提示', {
+            confirmButtonText: '白胚',
+            cancelButtonText: '色纱',
+            type: 'warning'
+          }).then(() => {
+            this.easyOrder(1)
+          }).catch(() => {
+            this.easyOrder(2)
+          })
         } else {
           this.easyOrder(2)
         }

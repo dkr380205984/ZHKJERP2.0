@@ -298,7 +298,12 @@ const replenish = {
 const weave = {
   create: (params) => http.post(`${baseUrl}/production/weave/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/production/weave/list`, params),
-  delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json'),
+  dressCreate: (params) => http.post(`${baseUrl}/production/dress/weave/save`, params, 'application/json'),
+  deleteDress: (params) => http.post(`${baseUrl}/dress/material/distribute/delete`, params, 'application/json'),
+  getDressMatInit: (params) => http.post(`${baseUrl}/dress/material/distribute/init`, params, 'application/json'),
+  saveDressMat: (params) => http.post(`${baseUrl}/dress/material/distribute/save`, params, 'application/json'),
+  getDressMat: (params) => http.get(`${baseUrl}/dress/material/distribute/detail`, params)
 }
 // 半成品加工分配
 const processing = {

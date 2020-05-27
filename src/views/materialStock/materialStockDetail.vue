@@ -72,7 +72,8 @@
           <div class="rowCtn">
             <div class="colCtn"
               style="margin-right:0">
-              <div class="flexTb">
+              <div class="flexTb"
+                style="border-bottom:0">
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn"
@@ -343,7 +344,8 @@
           <div class="rowCtn">
             <div class="colCtn"
               style="margin-right:0">
-              <div class="flexTb">
+              <div class="flexTb"
+                style="border-bottom:0">
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn"
@@ -476,7 +478,7 @@
                           <el-option v-for="item in itemMa.color_info"
                             :key="item.name"
                             :label="item.name"
-                            :value="item.name">
+                            :value="item.name +'dkr'+ item.id">
                           </el-option>
                         </el-select>
                       </div>
@@ -1144,11 +1146,12 @@ export default {
             material_info: itemMa.color_info.filter(itemColor => this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0)) > 0).map(itemColor => {
               return {
                 material_name: itemMa.material_name,
-                material_attribute: itemColor.attr,
+                material_attribute: itemColor.attr + 'dkr' + itemColor.id,
                 number: this.$toFixed((itemColor.type === 1 ? itemColor.weight / 1000 : itemColor.weight) - (itemColor.outStockNum || 0)),
                 color_info: itemMa.color_info.map(itemColorInner => {
                   return {
-                    name: itemColorInner.attr
+                    name: itemColorInner.attr,
+                    id: itemColorInner.id
                   }
                 })
               }
@@ -1291,6 +1294,7 @@ export default {
           })
         })
       } else if (type === 'weave') {
+        console.log(this.weaveStockEditInfo)
         this.weaveStockEditInfo.forEach(item => {
           if (!item.client_name) {
             flag.client = false
@@ -1313,7 +1317,8 @@ export default {
               client_id: item.client_name,
               material_name: itemMa.material_name,
               order_type: this.$route.params.orderType,
-              material_color: itemMa.material_attribute,
+              material_color: itemMa.material_attribute.split('dkr')[0],
+              batches_id: itemMa.material_attribute.split('dkr')[1],
               total_weight: itemMa.number,
               complete_time: item.time,
               desc: item.remark,
@@ -1486,10 +1491,11 @@ export default {
     },
     // 织造加工module点击表格内操作时
     handleClickProcess (item, itemMa, itemColor) {
+      console.log(item, itemMa, itemColor)
       let num = this.$toFixed((itemColor.type === 1 ? (+itemColor.weight + +itemColor.replenish_weight) / 1000 : (+itemColor.weight + +itemColor.replenish_weight)) - (+itemColor.outStockNum || 0))
       let materialInfo = {
         material_name: itemMa.material_name,
-        material_attribute: itemColor.attr,
+        material_attribute: itemColor.attr + 'dkr' + itemColor.id,
         number: num > 0 ? num : 0
       }
       let obj = {
@@ -1522,6 +1528,7 @@ export default {
     changeAttrInfo (eve, item, itemInner) {
       itemInner.color_info = item.materialInfo.find(items => items.material_name === eve).color_info.map(value => {
         return {
+          id: value.id,
           name: value.attr
         }
       })
@@ -1577,7 +1584,7 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           }),
-          weave.detail({
+          weave.getDressMat({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           }),
@@ -1601,13 +1608,20 @@ export default {
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
           // 初始化织造出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
-            return {
-              checked: false,
-              client_name: items.client_name,
-              client_id: items.client_id,
-              material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'material_weight/weight', type: 'add' }, { name: 'material_unit/unit' }, { name: 'material_type/type' }] } })
-            }
+          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+          this.weaveInfo.forEach((item) => {
+            item.material_info = this.$mergeData(item.childrenMergeInfo, { mainRule: ['material_name'], childrenName: 'color_info' })
+            item.material_info.forEach((item) => {
+              item.color_info = item.color_info.map((itemColor) => {
+                return {
+                  attr: itemColor.material_attribute,
+                  weight: itemColor.weight * 1000,
+                  unit: itemColor.unit,
+                  type: itemColor.type,
+                  id: itemColor.id
+                }
+              })
+            })
           })
           // 合并补纱信息入织造出入库
           res[3].data.data.filter(item => +item.type === 1).forEach(item => {
@@ -1629,6 +1643,7 @@ export default {
               }
             }
           })
+          console.log(this.weaveInfo)
           // 初始化统计数据
           this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
             return {
