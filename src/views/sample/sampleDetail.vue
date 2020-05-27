@@ -315,7 +315,7 @@
                 <div class="menu">
                   <span v-if="detail.order_info.length===0"
                     class="opration"
-                    @click="$router.push('/sample/sampleOrderCreate')">添加</span>
+                    @click="$router.push('/sample/sampleOrderCreate?productId=' + $route.params.id)">添加</span>
                   <!-- <span v-if="detail.order_info.length > 0"
                     class="opration"
                     @click="$router.push('/price/priceDetail/'+detail.order_info[order_index].id)">预览</span> -->
@@ -327,7 +327,7 @@
                     @click="$router.push('/sample/sampleOrderDetail/'+detail.order_info[order_index].id)">详情</span>
                   <span v-if="detail.order_info.length > 0"
                     class="opration"
-                    @click="$router.push('/sample/sampleOrderCreate')">添加</span>
+                    @click="$router.push('/sample/sampleOrderCreate?productId=' + $route.params.id)">添加</span>
                 </div>
               </div>
             </div>

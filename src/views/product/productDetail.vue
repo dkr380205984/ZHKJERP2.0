@@ -293,7 +293,7 @@
                 <div class="menu">
                   <span v-if="detail.order_info.length===0"
                     class="opration"
-                    @click="$router.push('/order/orderCreate')">添加</span>
+                    @click="$router.push('/order/orderCreate?productId=' + $route.params.id)">添加</span>
                   <!-- <span v-if="detail.order_info.length > 0"
                     class="opration"
                     @click="$router.push('/price/priceDetail/'+detail.order_info[order_index].id)">预览</span> -->

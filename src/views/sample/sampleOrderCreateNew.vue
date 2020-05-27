@@ -805,6 +805,45 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.productId) { // 样品详情进入直接勾选优化
+      sample.detail({
+        id: this.$route.query.productId
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          let sizeInfo = []
+          data.size.forEach(itemSize => {
+            data.color.forEach(itemColor => {
+              sizeInfo.push({
+                size_color: [itemSize.size_id, itemColor.color_id],
+                number: ''
+              })
+            })
+          })
+          this.checkedProList.push({
+            id: data.id,
+            sample_product_code: data.sample_product_code,
+            sizeColor: data.size.map(itemSize => {
+              return {
+                value: itemSize.size_id,
+                label: itemSize.size_name,
+                children: data.color.map(itemColor => {
+                  return {
+                    value: itemColor.color_id,
+                    label: itemColor.color_name
+                  }
+                })
+              }
+            }),
+            sizeInfo: sizeInfo,
+            unit: data.unit || '件'
+          })
+        }
+      })
+    }
+    if (this.$route.query.orderId) { // 复制样单直接导入某个订单
+      this.importOrder({ id: this.$route.query.orderId })
+    }
     this.getList()
     Promise.all([
       client.list(),

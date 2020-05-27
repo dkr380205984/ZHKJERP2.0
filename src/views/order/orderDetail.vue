@@ -620,7 +620,10 @@
                 <span class="trow"
                   v-for="(item,index) in orderDetailInfo.finance.materialOrder"
                   :key="index">
-                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name|| item.stock_name}}</span>
+                  <span class="tcolumn">
+                    <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
+                    {{item.client_name|| item.stock_name}}
+                  </span>
                   <span class="tcolumn noPad flex5">
                     <span class="trow"
                       v-for="(itemMa,indexMa) in item.material_info"
@@ -628,7 +631,7 @@
                       <span class="tcolumn">{{itemMa.material_name}}</span>
                       <span class="tcolumn">{{itemMa.color}}</span>
                       <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
+                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
                       <span class="tcolumn">{{itemMa.compiled_time}}</span>
                     </span>
                   </span>
@@ -1104,6 +1107,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div>
         </div>
       </div>
     </div>

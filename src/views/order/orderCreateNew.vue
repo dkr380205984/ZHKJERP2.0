@@ -1387,6 +1387,69 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.productId) { // 产品详情进入直接勾选上该产品的优化
+      product.detail({
+        id: this.$route.query.productId
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          let data = res.data.data
+          this.checkedProList.push({
+            id: data.id,
+            product_code: data.product_code,
+            size: data.size,
+            color: data.color,
+            checked: true,
+            sizeColor: data.size.map(itemSize => {
+              return {
+                value: itemSize.size_id,
+                label: itemSize.size_name,
+                children: data.color.map(itemColor => {
+                  return {
+                    value: itemColor.color_id,
+                    label: itemColor.color_name
+                  }
+                })
+              }
+            })
+          })
+          this.batchDate.forEach(itemBatch => {
+            itemBatch.time = this.$getTime()
+            let sizeColor = data.size.map(itemSize => {
+              return data.color.map(itemColor => {
+                return {
+                  size_color: [itemSize.size_id, itemColor.color_id],
+                  number: '',
+                  price: ''
+                }
+              })
+            })
+            itemBatch.batch_info = []
+            itemBatch.batch_info.push({
+              id: data.id.toString(),
+              product_info: sizeColor.reduce((a, b) => {
+                return a.concat(b)
+              }),
+              sizeColor: data.size.map(itemSize => {
+                return {
+                  value: itemSize.size_id,
+                  label: itemSize.size_name,
+                  children: data.color.map(itemColor => {
+                    return {
+                      value: itemColor.color_id,
+                      label: itemColor.color_name
+                    }
+                  })
+                }
+              }),
+              unit: data.category_info.name
+            })
+          })
+        }
+      })
+    }
+    if (this.$route.query.orderId) { // 复制订单直接导入某个订单
+      this.importOrder({ id: this.$route.query.orderId })
+    }
     this.getList()
     Promise.all([
       client.list(),

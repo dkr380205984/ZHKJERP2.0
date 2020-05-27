@@ -631,8 +631,7 @@ export default {
         status_product_inspection: this.has_inspection,
         status_stock_out: this.has_boxing
       }).then(res => {
-        this.list = res.data.data
-        this.list.forEach(item => {
+        this.list = res.data.data.map(item => {
           item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
             return item.image.length > 0 ? item.image.map(itemImg => {
               return {
@@ -650,6 +649,7 @@ export default {
           item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
             return Number(total) + Number(itemNum)
           })
+          return item
         })
         this.total = res.data.meta.total
         this.loading = false
