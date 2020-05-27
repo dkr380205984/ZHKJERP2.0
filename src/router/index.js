@@ -117,6 +117,10 @@ const routes = [
       name: '工艺单添加',
       component: () => import('../views/craft/craftCreateForCloth.vue')
     }, {
+      path: '/product/productCraftList/:params',
+      name: '工艺单列表',
+      component: () => import('../views/craft/craftList.vue')
+    }, {
       path: '/craft/craftUpdate/:id/:type',
       name: '工艺单修改',
       component: () => import('../views/craft/craftUpdateForCloth.vue')
@@ -148,6 +152,10 @@ const routes = [
       path: '/productPlan/productPlanCreate/:id/:type',
       name: '配料单添加',
       component: () => import('../views/productPlan/productPlanCreate.vue')
+    }, {
+      path: '/product/productPlanList/:params',
+      name: '配料单列表',
+      component: () => import('../views/productPlan/productPlanList.vue')
     }, {
       path: '/productPlan/productPlanUpdate/:id/:type',
       name: '配料单修改',
@@ -193,9 +201,17 @@ const routes = [
       name: '物料订购',
       component: () => import('../views/material/materialDetail.vue')
     }, {
+      path: '/material/materialBatchDetail/:id/:orderType/:type',
+      name: '物料批量订购',
+      component: () => import('../views/material/materialBatchDetail.vue')
+    }, {
       path: '/material/materialList/:params/:type',
       name: '物料订购列表',
       component: () => import('../views/material/materialList.vue')
+    }, {
+      path: '/material/materialBatchList/:params/:type',
+      name: '物料批量订购列表',
+      component: () => import('../views/material/materialBatchList.vue')
     }, {
       path: '/materialStock/materialStockList/:params/:type',
       name: '物料出入库列表',
@@ -496,6 +512,7 @@ router.beforeEach((to, from, next) => {
     '报价单列表': ['织为云', '报价单列表'],
     '报价单详情': ['织为云', '报价单列表', '报价单详情'],
     '再次报价': ['织为云', '报价单列表', '报价单详情', '再次报价'],
+    '工艺单列表': ['织为云', '工艺单列表'],
     '工艺单添加': ['织为云', '产品列表', '工艺单添加'],
     '工艺单修改': ['织为云', '产品列表', '工艺单修改'],
     '工艺单详情': ['织为云', '产品列表', '工艺单详情'],
@@ -504,6 +521,7 @@ router.beforeEach((to, from, next) => {
     '订单发货列表': ['织为云', '订单发货列表'],
     '订单修改': ['织为云', '订单列表', '订单修改'],
     '订单详情': ['织为云', '订单列表', '订单详情'],
+    '配料单列表': ['织为云', '配料单列表'],
     '配料单添加': ['织为云', '产品列表', '配料单添加'],
     '配料单修改': ['织为云', '产品列表', '配料单修改'],
     '配料单详情': ['织为云', '产品列表', '配料单详情'],
@@ -523,6 +541,8 @@ router.beforeEach((to, from, next) => {
     '物料预订购修改': ['织为云', '物料预订购列表', '物料预订购修改'],
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
+    '物料批量订购列表': ['织为云', '物料批量订购列表'],
+    '物料批量订购': ['织为云', '物料订购列表', '物料批量订购'],
     '系统设置': ['织为云', '系统设置'],
     '物料出入库列表': ['织为云', '物料出入库列表'],
     '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],

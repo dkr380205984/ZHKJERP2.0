@@ -785,7 +785,7 @@ export default {
           production_num: itemPro.numbers,
           unit: itemPro.unit,
           part_arr: this.$clone([{
-            name: '大身',
+            name: '成衣',
             id: itemPro.product_id
           }].concat(itemPro.part_data.map(itemPart => {
             return {

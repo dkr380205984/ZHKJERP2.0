@@ -198,6 +198,12 @@ export default {
         }, {
           name: '产品列表',
           url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        }, {
+          name: '工艺单列表',
+          url: '/product/productCraftList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        }, {
+          name: '配料单列表',
+          url: '/product/productPlanList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
         }]
       }, {
         name: '订单管理',
@@ -231,6 +237,9 @@ export default {
         }, {
           name: '订单物料列表',
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        }, {
+          name: '批量订购列表',
+          url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
         }]
       }, {
         name: '物料出入库管理',

@@ -194,7 +194,11 @@
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="!detail.craft_info">待添加</div>
+                      v-if="!detail.craft_info && !detail.create_craft_user && !detail.create_craft_user_time">待添加</div>
+                    <template v-else-if="!detail.craft_info && detail.create_craft_user && detail.create_craft_user_time">
+                      <div class="text">已指派给：{{detail.create_craft_user}}</div>
+                      <div class="text">{{detail.create_craft_user_time}}</div>
+                    </template>
                     <div class="text"
                       v-if="detail.craft_info">{{detail.craft_info.user_name}}</div>
                     <div class="text"
@@ -202,6 +206,9 @@
                   </div>
                 </div>
                 <div class="menu">
+                  <span v-if="!detail.craft_info"
+                    class="opration"
+                    @click="showUserPopup(1)">指派</span>
                   <span v-if="!detail.craft_info"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
@@ -228,7 +235,11 @@
                   <div class="content">
                     <div class="text title">配料单</div>
                     <div class="text"
-                      v-if="!detail.product_plan_info">待添加</div>
+                      v-if="!detail.product_plan_info && !detail.create_material_user && !detail.create_material_user_time">待添加</div>
+                    <template v-else-if="!detail.product_plan_info && detail.create_material_user && detail.create_material_user_time">
+                      <div class="text">已指派给：{{detail.create_material_user}}</div>
+                      <div class="text">{{detail.create_material_user_time}}</div>
+                    </template>
                     <div class="text"
                       v-if="detail.product_plan_info">{{detail.product_plan_info.user_name}}</div>
                     <div class="text"
@@ -236,6 +247,9 @@
                   </div>
                 </div>
                 <div class="menu">
+                  <span v-if="!detail.product_plan_info"
+                    class="opration"
+                    @click="showUserPopup(2)">指派</span>
                   <span v-if="!detail.product_plan_info"
                     class="opration"
                     @click="$router.push('/productPlan/productPlanCreate/'+ $route.params.id + '/1')">添加</span>
@@ -284,13 +298,13 @@
                     @click="$router.push('/price/priceCreate?productId=' + $route.params.id + '&productType=1' )">添加</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
-                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">预览</span>
+                    @click="$router.push('/price/priceDetail/'+(detail.quotation_info[quotation_index].pid || detail.quotation_info[quotation_index].id) + '?priceId=' + detail.quotation_info[quotation_index].id)">预览</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
                     @click="openWin('/pricePrintTable/' + detail.quotation_info[quotation_index].id )">打印</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
-                    @click="$router.push('/price/priceDetail/'+detail.quotation_info[quotation_index].id)">详情</span>
+                    @click="$router.push('/price/priceDetail/'+(detail.quotation_info[quotation_index].pid || detail.quotation_info[quotation_index].id) + '?priceId=' + detail.quotation_info[quotation_index].id)">详情</span>
                   <span v-if="detail.quotation_info.length > 0"
                     class="opration"
                     @click="noOpr">...</span>
@@ -324,7 +338,7 @@
                 <div class="menu">
                   <span v-if="detail.order_info.length===0"
                     class="opration"
-                    @click="$router.push('/order/orderCreate')">添加</span>
+                    @click="$router.push('/order/orderCreate?productId=' + $route.params.id)">添加</span>
                   <!-- <span v-if="detail.order_info.length > 0"
                     class="opration"
                     @click="$router.push('/price/priceDetail/'+detail.order_info[order_index].id)">预览</span> -->
@@ -438,12 +452,43 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="assignPopupFlag">
+      <div class="main">
+        <span class="title">
+          <span class="text">指派人员</span>
+          <span class="el-icon-close"
+            @click="assignPopupFlag = false"></span>
+        </span>
+        <div class="content">
+          <div class="row">
+            <span class="label">指派人员：</span>
+            <span class="info">
+              <el-select v-model="assignInfo.user_id"
+                placeholder="请选择指派人员">
+                <el-option v-for="item in assignInfo.userInfo"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click='assignPopupFlag = false'>取消</div>
+          <div class="btn btnBlue"
+            @click="saveAssignInfo">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { product, craft } from '@/assets/js/api.js'
+import { product, craft, auth, assignCraftOrPlan } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -482,7 +527,14 @@ export default {
       checkedSize: [],
       isIndeterminateColor: true,
       checkAllColor: false,
-      checkedColor: []
+      checkedColor: [],
+      // 指派数据
+      assignPopupFlag: false,
+      assignInfo: {
+        type: '',
+        userInfo: [],
+        user_id: ''
+      }
     }
   },
   filters: {
@@ -499,6 +551,36 @@ export default {
     }
   },
   methods: {
+    // 点击指派按钮
+    showUserPopup (type) {
+      this.assignInfo.type = type
+      if (this.assignInfo.userInfo.length === 0) {
+        auth.list().then(res => {
+          if (res.data.status !== false) {
+            this.assignInfo.userInfo = res.data.data
+          }
+        })
+      }
+      this.assignPopupFlag = true
+    },
+    // 指派弹窗确定
+    saveAssignInfo () {
+      if (!this.assignInfo.user_id) {
+        this.$message.error('请选择指派人员')
+        return
+      }
+      assignCraftOrPlan({
+        product_id: this.$route.params.id,
+        product_type: 1,
+        type: this.assignInfo.type,
+        appoint_user: this.assignInfo.user_id
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('指派成功')
+          this.assignPopupFlag = false
+        }
+      })
+    },
     noOpr () {
       this.$message.warning('暂未开放该功能')
     },

@@ -419,7 +419,7 @@ export default {
         })
         return {
           part_type: index === 0 ? 1 : 2,
-          id: null,
+          id: item.id,
           product_id: item.product_id,
           product_type: this.$route.params.type,
           material_info: materialInfo
@@ -454,11 +454,11 @@ export default {
         if (res.data.status) {
           this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type
+            this.msgUrl = '/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新配料单<span style="color:#1A95FF">' + this.productInfo.product_code + '</span>(' + this.productInfo.category_info.product_category + '/' + this.productInfo.type_name + '/' + this.productInfo.style_name + '/' + this.productInfo.flower_id + ')'
             this.msgSwitch = true
           } else {
-            this.$router.push('/productPlan/productPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+            this.$router.push('/productPlan/productPlanDetail/' + this.productInfo.product_id + '/' + this.$route.params.type)
           }
         }
         this.lock = true
@@ -500,8 +500,10 @@ export default {
           materials: this.$clone(sizeInfo[0].materials)
         }
       })
+      this.list[0].id = data.id
       let part = data.part_info.map(itemPart => {
         let json = {
+          id: itemPart.id,
           name: itemPart.product_info.product_title,
           product_id: itemPart.product_info.product_id,
           chooseMaterial: 0,
@@ -529,7 +531,6 @@ export default {
         return json
       })
       this.list.push(...part)
-      console.log(this.$clone(this.list))
       this.yarnList = res[1].data.data.map((item) => {
         return {
           value: item.name,

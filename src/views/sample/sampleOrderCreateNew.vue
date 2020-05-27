@@ -189,7 +189,7 @@
               </transition>
             </div>
             <div class="col">
-              <span class="text">名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="col middle">
               <span class="text">图片</span>
@@ -624,12 +624,6 @@ export default {
         this.checkedProList.push(newItem)
       } else {
         // 产品取消选中时，批次内删除该产品
-        this.batchDate.forEach(itemBatch => {
-          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-          if (index !== -1) {
-            itemBatch.batch_info.splice(index, 1)
-          }
-        })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
         if (cancleProFlag) {
           cancleProFlag.checked = false
@@ -804,6 +798,44 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.productId) { // 样品详情进入直接勾选优化
+      sample.detail({
+        id: this.$route.query.productId
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          let sizeInfo = []
+          data.size.forEach(itemSize => {
+            data.color.forEach(itemColor => {
+              sizeInfo.push({
+                size_color: [itemSize.size_id, itemColor.color_id],
+                number: ''
+              })
+            })
+          })
+          this.checkedProList.push({
+            id: data.id,
+            sample_product_code: data.sample_product_code,
+            sizeColor: data.size.map(itemSize => {
+              return {
+                value: itemSize.size_id,
+                label: itemSize.size_name,
+                children: data.color.map(itemColor => {
+                  return {
+                    value: itemColor.color_id,
+                    label: itemColor.color_name
+                  }
+                })
+              }
+            }),
+            sizeInfo: sizeInfo
+          })
+        }
+      })
+    }
+    if (this.$route.query.orderId) { // 复制样单直接导入某个订单
+      this.importOrder({ id: this.$route.query.orderId })
+    }
     this.getList()
     Promise.all([
       client.list(),

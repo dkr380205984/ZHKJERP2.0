@@ -41,12 +41,13 @@ export default {
     }, // 默认选第几个
     markId: {
       default: 1
-    } // 组件唯一标识符，一个页面同时用到两个该组件时必须有唯一标识符
+    }, // 组件唯一标识符，一个页面同时用到两个该组件时必须有唯一标识符
+    value: Number
   },
   data () {
     return {
       id: this.markId ? this.markId : 1,
-      activeIndex: this.defautChoose ? this.defautChoose : 0,
+      activeIndex: this.defautChoose ? this.defautChoose : (this.value || 0),
       translate: 0,
       tranlateIndex: 0, // 标记当前处于哪个dom元素，暂时没有需要知道这个
       ifTranslate: false // 判断是否需要平移元素
@@ -56,6 +57,7 @@ export default {
     choosed (item, index) {
       this.activeIndex = index
       this.$emit('changed', item)
+      this.$emit('input', this.activeIndex)
     },
     scrollLeft () {
       if (this.tranlateIndex === 0) {

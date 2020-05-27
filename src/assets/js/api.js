@@ -461,7 +461,10 @@ const orderType = {
   saveType: (params) => http.post(`${baseUrl}/order/type/save`, params, 'application/json'),
   deleteType: (params) => http.post(`${baseUrl}/order/type/delete`, params, 'application/json')
 }
+// 指派工艺单配料单
+const assignCraftOrPlan = (params) => http.post(`${baseUrl}/product/appoint/save`, params, 'application/json')
 export {
+  assignCraftOrPlan,
   orderType,
   staffTag,
   getAuthorization,

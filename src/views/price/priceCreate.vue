@@ -213,7 +213,7 @@
               </transition>
             </div>
             <div class="col">
-              <span class="text">名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="col middle">
               <span class="text">图片</span>

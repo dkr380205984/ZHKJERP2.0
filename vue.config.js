@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'development') {
 module.exports = {
   devServer: {
     host: '0.0.0.0',
-    port: 8899,
+    port: 8999,
     https: false,
     proxy: {
       '/api': {

@@ -498,11 +498,25 @@ export default {
             return {
               size_name: itemSize.size_name,
               size_id: itemSize.size_id,
-              materials: []
+              materials: this.productInfo.component.map(itemC => { // 将产品里成分同步到每个色组尺码
+                return {
+                  name: itemC.component_name,
+                  attr: '',
+                  number: '',
+                  unit: 'g'
+                }
+              })
             }
           }),
           sizeIndex: 0,
-          materials: []
+          materials: this.productInfo.component.map(itemC => { // 将产品里成分同步到每个色组尺码
+            return {
+              name: itemC.component_name,
+              attr: '',
+              number: '',
+              unit: 'g'
+            }
+          })
         }
       })
       let part = this.productInfo.part_info || this.productInfo.part_data

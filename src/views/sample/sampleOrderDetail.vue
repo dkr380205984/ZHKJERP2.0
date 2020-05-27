@@ -672,6 +672,7 @@
             finish-status="success"
             align-center>
             <el-step title="样品转产品"></el-step>
+            <!-- <el-step title="补充信息"></el-step> -->
             <el-step title="确认完成"></el-step>
             <el-step title="完成"></el-step>
           </el-steps>
@@ -688,9 +689,64 @@
             </el-checkbox-group>
           </div>
         </div>
+        <!-- <div class="content"
+          v-if=" changeSampleForProductPopup === 2">
+          <template v-for="(itemPro,indexPro) in sampleForProductInfo">
+            <div class="row"
+              :key="indexPro + 'code'">
+              <span class="label">产品编号：</span>
+              <span class="info">
+                <el-select v-model="itemPro.id"
+                  placeholder="请选择产品"
+                  disabled>
+                  <el-option v-for="item in sampleForProductInfo"
+                    :key="item.id"
+                    :label="item.product_code"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </span>
+            </div>
+            <div class="row"
+              :key="indexPro + 'name'">
+              <span class="label">名称/款号：</span>
+              <span class="info">
+                <zh-input v-model="itemPro.name"
+                  placeholder="请输入产品名称/款号"></zh-input>
+              </span>
+            </div>
+            <div class="row" v-for="(itemSize,indexSize) in itemPro.size"
+              :key="indexPro + 'size' + indexSize">
+              <span class="label">{{indexSize === 0 ? '产品尺码：' : ''}}</span>
+              <span class="info">
+                <zh-input v-model="itemSize.name"
+                  placeholder="请输入产品尺码"></zh-input>
+              </span>
+              <span v-if="indexSize === 0"
+                class="editBtn blue"
+                @click="addItem(itemPro.size,'size')">添加</span>
+              <span v-else
+                class="editBtn red"
+                @click="deleteItem(itemPro.size,indexSize)">删除</span>
+            </div>
+            <div class="row" v-for="(itemColor,indexColor) in itemPro.color"
+              :key="indexPro + 'color' + indexColor">
+              <span class="label">{{indexColor === 0 ? '产品颜色：' : ''}}</span>
+              <span class="info">
+                <zh-input v-model="itemColor.name"
+                  placeholder="请输入产品颜色"></zh-input>
+              </span>
+              <span v-if="indexColor === 0"
+                class="editBtn blue"
+                @click="addItem(itemPro.color,'color')">添加</span>
+              <span v-else
+                class="editBtn red"
+                @click="deleteItem(itemPro.color,indexColor)">删除</span>
+            </div>
+          </template>
+        </div> -->
         <div class="content center_popup"
           v-if="changeSampleForProductPopup === 2 || changeSampleForProductPopup === 3">
-          <!-- <div class="row"> -->
           <span class="el-icon-warning-outline orange"
             v-if="isCommit === 'before'">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户已确定”，并且将已选中的样品转为产品（其默认配料单以及工艺单会转为该产品配料单以及工艺单），是否继续?</span>
           <span class="blue"
@@ -699,7 +755,6 @@
             v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
           <span class="red"
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
-          <!-- </div> -->
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -743,7 +798,6 @@
             align-center>
             <el-step title="修改样品信息"></el-step>
             <el-step title="打样信息"></el-step>
-            <!-- <el-step title="客户付费"></el-step> -->
             <el-step title="完成"></el-step>
           </el-steps>
         </div>
@@ -826,79 +880,8 @@
             </span>
           </div>
         </div>
-        <!-- <div class="content"
-          v-if="showChangeSampleOrderPopup === 3">
-          <div class="row">
-            <span class="label">客户付费：</span>
-            <span class="info info_col_middle">
-              <el-switch v-model="continueSampleInfo.isCustomerPay"
-                active-text="是"
-                inactive-text="否">
-              </el-switch>
-            </span>
-          </div>
-          <template v-if="continueSampleInfo.isCustomerPay">
-            <template v-for="(itemPro,indexPro) in continueSampleInfo.product_info">
-              <div class="row"
-                :key="indexPro+'code'">
-                <span class="label"></span>
-                <span class="info">
-                  <el-select v-model="itemPro.product_id"
-                    filterable
-                    disabled
-                    placeholder="请选择打样类型"
-                    @change="changeProductSizeColorArr(itemPro,$event)">
-                    <el-option v-for="item in productList"
-                      :key="item.product_id"
-                      :label="item.product_code"
-                      :value="item.product_id">
-                    </el-option>
-                  </el-select>
-                </span>
-              </div>
-              <div class="row"
-                :key="indexPro + 'info'">
-                <span class="label"></span>
-                <span class="info popup_info_page">
-                  <el-cascader class="elInput"
-                    v-model="itemPro.size_color"
-                    placeholder='尺码/颜色'
-                    disabled
-                    :options="itemPro.sizeColorArr"></el-cascader>
-                  <zh-input v-model="itemPro.numbers"
-                    class="elInput"
-                    type='number'
-                    placeholder='付费数量'
-                    @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
-                    <template slot="append">{{itemPro.unit}}</template>
-                  </zh-input>
-                </span>
-              </div>
-              <div class="row"
-                :key="indexPro + 'price'">
-                <span class="label"></span>
-                <span class="info popup_info_page">
-                  <zh-input v-model="itemPro.price"
-                    class="elInput"
-                    type='number'
-                    placeholder='单价'
-                    @input="itemPro.total_price = (Number(itemPro.numbers) || 0) * (Number(itemPro.price) || 0)">
-                    <template slot="append">元</template>
-                  </zh-input>
-                  <zh-input v-model="itemPro.total_price"
-                    class="elInput"
-                    type='number'
-                    placeholder='总价'>
-                    <template slot="append">元</template>
-                  </zh-input>
-                </span>
-              </div>
-            </template>
-          </template>
-        </div> -->
         <div class="content center_popup"
           v-if="showChangeSampleOrderPopup === 3 || showChangeSampleOrderPopup === 4">
-          <!-- <div class="row"> -->
           <span class="el-icon-warning-outline orange"
             v-if="isCommit === 'before'">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户已确定”，是否继续?</span>
           <span class="blue"
@@ -907,7 +890,6 @@
             v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
           <span class="red"
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
-          <!-- </div> -->
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -1196,6 +1178,8 @@
           <div class="btn btnOrange"
             v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002"
             @click="changeOrderStatus('change')">修改</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleOrderCreate?orderId=' + $route.params.id)">复制此样单</div>
         </div>
       </div>
     </div>
@@ -1282,7 +1266,9 @@ export default {
       yarnStockId: '',
       materialStockId: '',
       changeSampleForProductPopup: false, // 样品转为产品窗口
+      // 大货生产
       sampleForProductId: [],
+      // sampleForProductInfo: [],
       isOkStatus: false,
       customerPayPopupFlag: false, // 客户付费窗口flag
       warnData: {
@@ -2249,6 +2235,10 @@ export default {
           number: '',
           sizeColorArr: []
         })
+      // } else if (type === 'size' || type === 'color') {
+      //   item.push({
+      //     name: ''
+      //   })
       }
       this.$forceUpdate()
     },
@@ -2372,6 +2362,30 @@ export default {
           this.$message.error('未知操作')
         }
       }
+    // },
+    // sampleForProductId (newVal) { //  大货生产勾选样品变化时，处理改变补充数据
+    //   let productInfo = []
+    //   newVal.forEach(itemId => {
+    //     let flag = this.productList.find(itemP => +itemP.product_id === +itemId)
+    //     if (flag) {
+    //       productInfo.push({
+    //         id: flag.product_id,
+    //         name: flag.product_title,
+    //         product_code: flag.product_code,
+    //         color: flag.color.map(itemColor => {
+    //           return {
+    //             name: itemColor.color_name
+    //           }
+    //         }),
+    //         size: flag.size_measurement.map(itemSize => {
+    //           return {
+    //             name: itemSize.size_name
+    //           }
+    //         })
+    //       })
+    //     }
+    //   })
+    //   this.sampleForProductInfo = productInfo
     }
   },
   filters: {

@@ -4,6 +4,7 @@
     v-loading="loading">
     <div class="module">
       <zh-transition v-if="priceContactArr.length > 1"
+        v-model="transitionIndex"
         :list="priceContactArr"
         showKey='name'
         @changed="changePrice"></zh-transition>
@@ -63,10 +64,6 @@
             <span class="label">联系人：</span>
             <span class="text">{{contact_man}}</span>
           </div>
-          <div class="colCtn flex3">
-            <span class="label">创建人：</span>
-            <span class="text">{{create_user}}</span>
-          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -79,6 +76,10 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{create_user}}</span>
+          </div>
           <div class="colCtn flex3">
             <span class="label">更新时间：</span>
             <span class="text">{{update_time}}</span>
@@ -285,11 +286,11 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnOrange"
-            @click="$router.push('/price/priceUpdate/' + $route.params.id)">修改</div>
+            @click="$router.push('/price/priceUpdate/' + activePriceId)">修改</div>
           <div class="btn btnOrange"
-            @click="$router.push('/price/priceGiveAgain/' + $route.params.id)">再次报价</div>
+            @click="$router.push('/price/priceGiveAgain/' + activePriceId)">再次报价</div>
           <div class="btn btnBlue"
-            @click="$openUrl('/pricePrintTable/'+$route.params.id)">打印</div>
+            @click="$openUrl('/pricePrintTable/'+activePriceId)">打印</div>
         </div>
         <div class="priceCtn">
           <span class="title">总价：</span>
@@ -344,7 +345,8 @@ export default {
       priceContactArr: [{
         id: 2016
       }],
-      activePriceId: ''
+      activePriceId: '',
+      transitionIndex: ''
     }
   },
   methods: {
@@ -422,6 +424,29 @@ export default {
       }).then(res => {
         if (res.data.status) {
           let data = res.data.data
+          if (flag) {
+            this.priceContactArr = data.child_data.map((itemP, indexP) => {
+              return {
+                name: itemP.name || itemP.quotation_code || itemP.id,
+                pid: itemP.pid,
+                quotation_code: itemP.quotation_code,
+                id: itemP.id
+              }
+            }).sort((a, b) => {
+              return a.id - b.id
+            })
+            this.priceContactArr.unshift({
+              name: data.name,
+              id: data.id,
+              pid: data.pid,
+              quotation_code: data.quotation_code
+            })
+            if (this.$route.query.priceId !== this.$route.params.id && this.$route.query.priceId) {
+              this.transitionIndex = this.priceContactArr.findIndex(itemF => +itemF.id === +this.$route.query.priceId)
+              this.getPriceDetail(this.$route.query.priceId)
+              return
+            }
+          }
           this.code = data.quotation_code
           this.price_name = data.name
           this.check_time = data.check_time
@@ -529,24 +554,6 @@ export default {
           }]
           this.price_info = priceInfo
           this.basic_info = basicInfo
-          if (flag) {
-            this.priceContactArr = data.child_data.map((itemP, indexP) => {
-              return {
-                name: itemP.name || itemP.quotation_code || itemP.id,
-                pid: itemP.pid,
-                quotation_code: itemP.quotation_code,
-                id: itemP.id
-              }
-            }).sort((a, b) => {
-              return a.id - b.id
-            })
-            this.priceContactArr.unshift({
-              name: data.name,
-              id: data.id,
-              pid: data.pid,
-              quotation_code: data.quotation_code
-            })
-          }
         }
         this.loading = false
       })

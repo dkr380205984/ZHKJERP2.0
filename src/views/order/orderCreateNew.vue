@@ -262,7 +262,7 @@
               </transition>
             </div>
             <div class="col">
-              <span class="text">名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="col middle">
               <span class="text">图片</span>
@@ -1106,7 +1106,35 @@ export default {
               }
             ]
           }],
-          batch_info_new: []
+          batch_info_new: this.checkedProList.map(itemPro => {
+            return {
+              color: itemPro.color.map(itemColor => {
+                return {
+                  name: itemColor.color_id,
+                  label: itemColor.color_name
+                }
+              }),
+              id: itemPro.id,
+              product_info: itemPro.size.map(itemSize => {
+                return {
+                  size: itemSize.size_id,
+                  color: itemPro.color.map(itemColor => {
+                    return {
+                      color: itemColor.color_id,
+                      number: ''
+                    }
+                  })
+                }
+              }),
+              size: itemPro.size.map(itemSize => {
+                return {
+                  name: itemSize.size_id,
+                  label: itemSize.size_name
+                }
+              }),
+              unit: itemPro.category_info.name
+            }
+          })
         })
       } else if (type === 'batch_pro') {
         item.push({
@@ -1337,9 +1365,16 @@ export default {
       } else {
         // 产品取消选中时，批次内删除该产品
         this.batchDate.forEach(itemBatch => {
-          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-          if (index !== -1) {
-            itemBatch.batch_info.splice(index, 1)
+          if (this.tableType === 'normal') {
+            let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+            if (index !== -1) {
+              itemBatch.batch_info.splice(index, 1)
+            }
+          } else {
+            let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+            if (index !== -1) {
+              itemBatch.batch_info_new.splice(index, 1)
+            }
           }
         })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
@@ -1352,10 +1387,18 @@ export default {
     cancleChecked (item) {
       // 产品取消选中时，批次内删除该产品
       this.batchDate.forEach(itemBatch => {
-        let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-        if (index !== -1) {
-          itemBatch.batch_info.splice(index, 1)
-          this.isResouceShow++
+        if (this.tableType === 'normal') {
+          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info.splice(index, 1)
+            this.isResouceShow++
+          }
+        } else {
+          let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info_new.splice(index, 1)
+            this.isResouceShow++
+          }
         }
       })
       item.checked = false
@@ -1516,11 +1559,11 @@ export default {
         this.$message.error('检测到没有批次数据，请添加')
         return
       }
-      if (this.tableType === 'normal') {
-        this.batchDate.forEach(item => {
-          if (!item.time) {
-            timeFlag = false
-          }
+      this.batchDate.forEach(item => {
+        if (!item.time) {
+          timeFlag = false
+        }
+        if (this.tableType === 'normal') {
           if (item.batch_info.length < 1) {
             this.$message.error('检测到批次内没有产品信息，请添加')
             flag = false
@@ -1539,8 +1582,35 @@ export default {
               }
             })
           })
-        })
-      }
+        } else {
+          if (item.batch_info_new.length < 1) {
+            this.$message.error('检测到批次内没有产品信息，请添加')
+            flag = false
+          }
+          item.batch_info_new.forEach(itemBtach => {
+            if (!itemBtach.id) {
+              flag = false
+            }
+            if (!itemBtach.price) {
+              flag = false
+            }
+            if (itemBtach.product_info.length < 1) {
+              this.$message.error('检测到产品内没有尺码颜色信息，请添加')
+              flag = false
+            }
+            itemBtach.product_info.forEach(itemPro => {
+              if (!itemPro.size) {
+                flag = false
+              }
+              itemPro.color.forEach(itemColor => {
+                if (!itemColor.color || !itemColor.number) {
+                  flag = false
+                }
+              })
+            })
+          })
+        }
+      })
       if (!timeFlag) {
         this.$message.error('请选择交货日期')
         return
@@ -1798,6 +1868,66 @@ export default {
     }
   },
   created () {
+    if (this.$route.query.productId) { // 产品详情进入直接勾选上该产品的优化
+      product.detail({
+        id: this.$route.query.productId
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          let data = res.data.data
+          this.checkedProList.push({
+            id: data.id,
+            product_code: data.product_code,
+            size: data.size,
+            color: data.color,
+            checked: true,
+            sizeColor: data.size.map(itemSize => {
+              return {
+                value: itemSize.size_id,
+                label: itemSize.size_name,
+                children: data.color.map(itemColor => {
+                  return {
+                    value: itemColor.color_id,
+                    label: itemColor.color_name
+                  }
+                })
+              }
+            })
+          })
+          this.batchDate.forEach(itemBatch => {
+            itemBatch.batch_info_new.push({
+              color: data.color.map(itemColor => {
+                return {
+                  label: itemColor.color_name,
+                  name: itemColor.color_id
+                }
+              }),
+              id: data.id.toString(),
+              product_info: data.size.map(itemSize => {
+                return {
+                  size: itemSize.size_id,
+                  color: data.color.map(itemColor => {
+                    return {
+                      color: itemColor.color_id,
+                      number: ''
+                    }
+                  })
+                }
+              }),
+              size: data.size.map(itemSize => {
+                return {
+                  label: itemSize.size_name,
+                  name: itemSize.size_id
+                }
+              }),
+              unit: data.category_info.name
+            })
+          })
+        }
+      })
+    }
+    if (this.$route.query.orderId) { // 复制订单直接导入某个订单
+      this.importOrder({ id: this.$route.query.orderId })
+    }
     this.getList()
     Promise.all([
       client.list(),

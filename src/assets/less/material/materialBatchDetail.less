@@ -1,0 +1,161 @@
+@import '../common.less';
+#materialBatchDetail{
+  .blue{
+    color: @blue;
+    cursor: pointer;
+  }
+  .green{
+    color: @green;
+  }
+  .createModule{
+    position: relative;
+    background: #f8f8f8;
+    padding: 16px 0;
+    margin: 16px 0;
+    .text{
+      color: @font65;
+    }
+    .deleteIconBtn{
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      background: @orange;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .flex3{
+      max-width: 319.3px;
+    }
+  }
+  .popup{
+    .tips{
+      color: @font65;
+      background: #f4f4f4;
+      padding: 12px;
+      font-size: @fontMiddle;
+    }
+    .content{
+      max-height: 500px;
+      border-bottom: 0;
+      &:nth-last-child(2){
+        border-bottom: 1px solid #E9E9E9;
+      }
+      .hasMargin{
+        margin-bottom: 16px;
+        height: 32px;
+      }
+      .text{
+        line-height: 32px;
+        font-size: @fontMiddle;
+        color: @font65;
+        margin-right: 16px;
+        &.blue{
+          color: @blue;
+        }
+      }
+      .column{
+        background: #f4f4f4;
+      }
+      .info{
+        &.elInputInfo{
+          display: flex;
+          align-items: center;
+          .elInput{
+            flex: 1;
+            margin-right: 16px;
+            &:last-child{
+              margin-right: 0;
+            }
+          }
+        }
+
+      }
+    }
+    .box{
+      border:1px solid #D9D9D9;
+      border-radius: 4px;
+      color: @font65;
+      font-size: @fontMiddle;
+      .line1{
+        display: flex;
+        padding: 0 16px;
+        justify-content: space-between;
+        border-bottom:1px solid #D9D9D9;
+        line-height: 40px;
+        color: @font85;
+      }
+      .list{
+        padding: 8px 16px;
+        line-height: 36px;
+        max-height: 500px;
+        overflow: auto;
+        .li{
+          display: flex;
+          .once{
+            flex:1;
+            &.right{
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+  }
+  .flexTb{
+    border-bottom: 0;
+  }
+  a{
+    text-decoration:none
+  }
+  .log{
+    .tcolumn{
+      padding: 0 5px;
+    }
+  }
+  .orange{
+    color: @orange;
+    cursor: pointer;
+  }
+  .btnCtn_page{
+    display: flex;
+    &.right{
+      justify-content: flex-end;
+    }
+    &.marginTop20{        
+      margin-top: 20px;
+    }
+    .noMargin{
+      margin: 0!important;
+    }
+  }
+  .flex04{
+    flex: 0.4;
+  }
+  .flex08{
+    flex: 0.8;
+  }
+  .flex12{
+    flex: 1.2
+  }
+  .flex2{
+    flex: 2
+  }
+  .collapse_row{
+    width: 100%;
+    .detail_box{
+      width: calc(100% - 30px);
+      min-height: 40px;
+      margin: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      background-color: @font25;
+      padding:24px 48px;
+      box-sizing: border-box;
+    }
+  }
+}
