@@ -410,6 +410,10 @@ const routes = [
     name: '工艺单打印',
     component: () => import('../views/craft/craftTable.vue')
   }, {
+    path: '/craftTableToPDF',
+    name: '工艺单打印',
+    component: () => import('../views/craft/craftTableToPDF.vue')
+  }, {
     path: '/productPlanTable/:id/:type/:index',
     name: '配料单打印',
     component: () => import('../views/productPlan/productPlanTable.vue')
