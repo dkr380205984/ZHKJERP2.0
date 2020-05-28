@@ -355,7 +355,10 @@
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn"
-                    style="flex:0.2"></div>
+                    style="flex:0.2">
+                    <el-checkbox v-model="checkAll"
+                      @change="getAll"></el-checkbox>
+                  </div>
                   <div class="tcolumn"
                     style="flex:1.2">完成日期</div>
                   <div class="tcolumn"
@@ -826,6 +829,7 @@ import { order, materialPlan, client, weave, replenish, sampleOrder, materialSto
 export default {
   data () {
     return {
+      checkAll: false,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -1307,6 +1311,11 @@ export default {
     },
     deleteClient (index) {
       this.replenish_data.client_info.splice(index, 1)
+    },
+    getAll () {
+      this.weaving_log.forEach((item) => {
+        item.checked = this.checkAll
+      })
     }
   },
   created () {
