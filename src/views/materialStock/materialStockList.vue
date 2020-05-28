@@ -39,6 +39,7 @@
           <div class="rightCtn">
             <el-switch class="switch"
               @change="changeRouter(1)"
+              :disabled="checkedList.length>0"
               v-model="orderType"
               active-color="#1A95FF"
               inactive-color="#E6A23C"
@@ -49,6 +50,9 @@
         </div>
         <div class="list">
           <div class="title">
+            <div class="col flex04">
+              <span class="text"></span>
+            </div>
             <div class="col flex12">
               <span class="text">订单号</span>
             </div>
@@ -123,6 +127,11 @@
           <div class="row"
             v-for="(itemOrder,indexOrder) in list"
             :key="indexOrder">
+            <div class="col flex04">
+              <el-checkbox v-model="itemOrder.checked"
+                :disabled="itemOrder.has_plan === 0"
+                @change="checkedChange(itemOrder,$event)"></el-checkbox>
+            </div>
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
@@ -186,6 +195,29 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar"
+      v-if="checkedList.length > 0">
+      <div class="main">
+        <div class="checkedInfo"
+          style="float:left">
+          已选择
+          <span class="blue">{{checkedList.length}}</span>
+          个订单：
+          <template v-for="(item,index) in checkedList">
+            <span class="blue"
+              :key="index">{{item.code}}</span>;
+          </template>
+        </div>
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="cancelChecked">取消</div>
+          <div class="btn btnWhiteBlue"
+            @click="$router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2')">辅料批量入库</div>
+          <div class="btn btnWhiteBlue"
+            @click="$router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1')">原料批量入库</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -208,7 +240,9 @@ export default {
       company_id: '',
       companyArr: [],
       searchCompanyFlag: false,
-      searchGroupFlag: false
+      searchGroupFlag: false,
+      // 批量订购勾选数据
+      checkedList: []
     }
   },
   watch: {
@@ -222,6 +256,25 @@ export default {
     }
   },
   methods: {
+    checkedChange (item, event) {
+      if (event) {
+        this.checkedList.push({
+          id: item.id,
+          code: item.order_code
+        })
+      } else {
+        let index = this.checkedList.findIndex(itemF => +itemF.id === +item.id)
+        if (index || index === 0) {
+          this.checkedList.splice(index, 1)
+        }
+      }
+    },
+    cancelChecked () {
+      this.list.forEach(item => {
+        item.checked = false
+      })
+      this.checkedList = []
+    },
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
@@ -264,8 +317,7 @@ export default {
           group_id: this.group_id,
           status: this.state
         }).then(res => {
-          this.list = res.data.data
-          this.list.forEach(item => {
+          this.list = res.data.data.map(item => {
             item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
               return item.image.length > 0 ? item.image.map(itemImg => {
                 return {
@@ -283,6 +335,12 @@ export default {
             item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
               return Number(total) + Number(itemNum)
             })
+            if (this.checkedList.find(itemF => +itemF.id === +item.id)) {
+              item.checked = true
+            } else {
+              item.checked = false
+            }
+            return item
           })
           this.total = res.data.meta.total
           this.loading = false
