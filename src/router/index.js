@@ -221,6 +221,10 @@ const routes = [
       name: '物料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
+      path: '/materialStock/materialStockBatchDetail/:id/:orderType/:type',
+      name: '物料批量出入库详情',
+      component: () => import('../views/materialStock/materialStockBatchDetail.vue')
+    }, {
       path: '/materialStock/materialStockDetail/:id/:type',
       name: '辅料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
@@ -541,11 +545,12 @@ router.beforeEach((to, from, next) => {
     '物料预订购修改': ['织为云', '物料预订购列表', '物料预订购修改'],
     '物料订购列表': ['织为云', '物料订购列表'],
     '物料订购': ['织为云', '物料订购列表', '物料订购'],
-    '物料批量订购列表': ['织为云', '物料批量订购列表'],
+    // '物料批量订购列表': ['织为云', '物料批量订购列表'],
     '物料批量订购': ['织为云', '物料订购列表', '物料批量订购'],
     '系统设置': ['织为云', '系统设置'],
     '物料出入库列表': ['织为云', '物料出入库列表'],
     '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
+    '物料批量出入库详情': ['织为云', '物料订购列表', '物料批量出入库详情'],
     '织造分配列表': ['织为云', '织造分配列表'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],

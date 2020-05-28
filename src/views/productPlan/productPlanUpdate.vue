@@ -355,38 +355,34 @@ export default {
       if (filter.length > 0) {
         let standardData = filter[0]
         item.colorInfo.forEach(itemC => {
-          if (itemC.materials.length === 0) {
-            itemC.materials = standardData.materials.map(itemMa => {
-              return {
-                name: itemMa.name,
-                attr: '',
-                number: itemMa.number,
-                unit: itemMa.unit
-              }
-            })
-          }
+          itemC.materials = standardData.materials.map(itemMa => {
+            return {
+              name: itemMa.name,
+              attr: '',
+              number: itemMa.number,
+              unit: itemMa.unit
+            }
+          })
           itemC.sizeInfo.forEach(itemS => {
-            if (itemS.materials.length === 0) {
-              let flag = standardData.sizeInfo.find(itemF => itemF.size_id === itemS.size_id)
-              if (flag) {
-                itemS.materials = flag.materials.map(itemMa => {
-                  return {
-                    name: itemMa.name,
-                    attr: '',
-                    number: itemMa.number,
-                    unit: itemMa.unit
-                  }
-                })
-              } else {
-                itemS.materials = standardData.materials.map(itemMa => {
-                  return {
-                    name: itemMa.name,
-                    attr: '',
-                    number: itemMa.number,
-                    unit: itemMa.unit
-                  }
-                })
-              }
+            let flag = standardData.sizeInfo.find(itemF => itemF.size_id === itemS.size_id)
+            if (flag) {
+              itemS.materials = flag.materials.map(itemMa => {
+                return {
+                  name: itemMa.name,
+                  attr: '',
+                  number: itemMa.number,
+                  unit: itemMa.unit
+                }
+              })
+            } else {
+              itemS.materials = standardData.materials.map(itemMa => {
+                return {
+                  name: itemMa.name,
+                  attr: '',
+                  number: itemMa.number,
+                  unit: itemMa.unit
+                }
+              })
             }
           })
         })

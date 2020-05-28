@@ -363,7 +363,7 @@ export default {
       if (filter.length > 0) {
         let standardData = filter[0]
         item.colorInfo.forEach(itemC => {
-          if (itemC.materials.length === 0) {
+          if (itemC.color_id !== standardData.color_id) {
             itemC.materials = standardData.materials.map(itemMa => {
               return {
                 name: itemMa.name,
@@ -372,9 +372,7 @@ export default {
                 unit: itemMa.unit
               }
             })
-          }
-          itemC.sizeInfo.forEach(itemS => {
-            if (itemS.materials.length === 0) {
+            itemC.sizeInfo.forEach(itemS => {
               let flag = standardData.sizeInfo.find(itemF => itemF.size_id === itemS.size_id)
               if (flag) {
                 itemS.materials = flag.materials.map(itemMa => {
@@ -395,8 +393,8 @@ export default {
                   }
                 })
               }
-            }
-          })
+            })
+          }
         })
         this.$message.success('智能同步完成')
       } else {
