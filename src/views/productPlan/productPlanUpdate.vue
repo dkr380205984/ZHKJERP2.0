@@ -62,7 +62,7 @@
       v-for="(item,index) in list"
       :key="index">
       <div class="titleCtn">
-        <span class="title">{{index===0?'大身信息':'配件'+ chinaNum[index - 1]}}</span>
+        <span class="title">{{index===0?'成衣信息':'配件'+ chinaNum[index - 1]}}</span>
         <el-tooltip class="item"
           effect="dark"
           content="智能同步可以同步原料信息,相同配色的物料属性信息,以及相同尺码物料数量信息,请在有多个尺码和配色的时候使用该功能"
@@ -232,7 +232,7 @@ export default {
         name: ''
       },
       list: [{
-        name: '大身信息',
+        name: '成衣信息',
         product_id: '',
         chooseMaterial: 1,
         colorInfo: [],
@@ -428,7 +428,7 @@ export default {
       let error = null
       formData.forEach((item) => {
         // if (item.material_info.length === 0) {
-        //   error = '检测到有未填写物料的大身/配件，请添加至少一种物料'
+        //   error = '检测到有未填写物料的成衣/配件，请添加至少一种物料'
         // }
         item.material_info.forEach((item) => {
           if (!item.material_name) {

@@ -321,9 +321,9 @@ export default {
           this.defaultIndex = index
         }
         let mainArr = [{
-          name: '大身信息',
+          name: '成衣信息',
           colourSizeArr: []
-        }] // 大身
+        }] // 成衣
         let partArr = [] // 配件
         item.material_info.forEach((itemMat) => {
           let finded = mainArr[0].colourSizeArr.find((itemFind) => itemFind.size_name === itemMat.product_size && itemFind.colour_name === itemMat.product_color)
@@ -388,7 +388,7 @@ export default {
         }
       })
 
-      // 大身新增物料比例字段，把物料总数加一加
+      // 成衣新增物料比例字段，把物料总数加一加
       this.list.forEach((itemList) => {
         itemList.data.forEach((itemData) => {
           itemData.colourSizeArr.forEach((item) => {

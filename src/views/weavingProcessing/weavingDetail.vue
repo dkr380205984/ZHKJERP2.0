@@ -256,9 +256,14 @@
                       style="display:flex">
                       <zh-input type="number"
                         v-model="itemChild.loss"
-                        placeholder="请输入机动数百分比">
-                        <template slot="prepend">机动数：{{'+'+ itemChild.number&&itemChild.loss?parseInt(itemChild.number*itemChild.loss/100):0}}</template>
+                        @input="changeLoss(itemChild)"
+                        placeholder="请输入百分比">
                         <template slot="append">%</template>
+                      </zh-input>
+                      <zh-input style="margin-left:12px"
+                        v-model="itemChild.lossNum"
+                        placeholder="请输入机动数">
+                        <template slot="append">件</template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -363,8 +368,8 @@
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">+{{parseInt(itemChild.motorise_number *itemChild.number/100)}}</div>
-                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number + parseInt(itemChild.motorise_number *itemChild.number/100)*itemChild.price)}}</div>
+                      <div class="tcolumn">+{{parseInt(itemChild.motorise_number)}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number + parseInt(itemChild.motorise_number)*itemChild.price)}}</div>
                       <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
@@ -439,7 +444,7 @@
                     <span>{{item.color_name}}</span>
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
-                  <div class="tcolumn">{{item.number}}+{{parseInt(item.motorise_number *item.number/100)}}</div>
+                  <div class="tcolumn">{{item.number}}+{{parseInt(item.motorise_number)}}</div>
                   <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>
@@ -854,6 +859,9 @@
         style="width:1200px">
         <div class="title">
           <div class="text">确认物料信息</div>
+          <span class="el-icon-close"
+            v-show="ifUpdate"
+            @click="closeMat"></span>
         </div>
         <div class="content"
           style="padding:20px">
@@ -870,9 +878,12 @@
               <div class="trow"
                 v-for="(item,index) in material_plan"
                 :key="index">
-                <div class="tcolumn">{{item.material_name}}</div>
-                <div class="tcolumn">{{item.material_attribute}}</div>
-                <div class="tcolumn">{{item.canBeUse}}kg</div>
+                <div class="tcolumn"
+                  :style="{'color':item.checked?'#1a95ff':'rgba(0,0,0,0.65)'}">{{item.material_name}}</div>
+                <div class="tcolumn"
+                  :style="{'color':item.checked?'#1a95ff':'rgba(0,0,0,0.65)'}">{{item.material_attribute}}</div>
+                <div class="tcolumn"
+                  :style="{'color':item.canBeUse<0?'#F5222D':'#1a95ff'}">{{item.canBeUse}}kg</div>
               </div>
             </div>
           </div>
@@ -910,6 +921,7 @@
                       <zh-input v-model="itemMat.rate"
                         type='number'
                         placeholder="百分比"
+                        @focus="getPlan(itemMat)"
                         @input="changeWeight(itemMat)"
                         style="height:40px">
                         <template slot="append">%</template>
@@ -919,7 +931,9 @@
                       <zh-input v-model="itemMat.reality_weight"
                         type='number'
                         placeholder="数量"
-                        style="height:40px">
+                        style="height:40px"
+                        @focus="getPlan(itemMat)"
+                        @input="changePlan(itemMat)">
                         <template slot="append">{{itemMat.material_type===1?'kg':itemMat.material_unit}}</template>
                       </zh-input>
                     </div>
@@ -941,6 +955,9 @@
           </div>
         </div>
         <div class="opr">
+          <div class="btn btnGray"
+            v-show="ifUpdate"
+            @click="closeMat">取消</div>
           <div class="btn btnBlue"
             @click="saveWeavingMat">确定</div>
         </div>
@@ -1015,6 +1032,7 @@ export default {
       replenishClientArr: [],
       material_detail: [],
       material_plan: [],
+      material_plan_old: [],
       material_use: [],
       ifUpdate: false // 判断物料分配是新增还是修改,新增的时候不能超过剩余物料数量,修改的时候不能超过计划值
     }
@@ -1037,6 +1055,9 @@ export default {
     }
   },
   methods: {
+    changeLoss (obj) {
+      obj.lossNum = parseInt(obj.number * obj.loss / 100)
+    },
     querySearch (queryString, cb) {
       let arr = [{
         value: '套口'
@@ -1087,7 +1108,8 @@ export default {
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           number: number || '',
-          loss: 3
+          loss: 3,
+          lossNum: parseInt(number * 0.03)
         }],
         complete_time: '',
         part_data: [],
@@ -1130,7 +1152,7 @@ export default {
       //   }
       // })
       // if (this.weaving_data.length === 0) {
-      //   this.$message.warning('所有大身信息已分配完毕，如需分配其他部件，请手动分配')
+      //   this.$message.warning('所有成衣信息已分配完毕，如需分配其他部件，请手动分配')
       // } else {
       //   this.weaving_flag = true
       //   this.easyWeaving_flag = true
@@ -1147,7 +1169,8 @@ export default {
         mixedData: [{
           partColorSize: '',
           number: '',
-          loss: ''
+          loss: '',
+          lossNum: ''
         }],
         complete_time: '',
         part_data: [],
@@ -1208,7 +1231,7 @@ export default {
       this.weaving_data.forEach((item) => {
         item.mixedData.forEach((itemChild) => {
           let partColorSize = itemChild.partColorSize.split('/')
-          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '大身' // 判断是否为大身
+          let partFlag = item.part_data.find((itemFind) => Number(itemFind.id) === Number(partColorSize[0])).name === '成衣' // 判断是否为成衣
           item.companyRate.forEach((itemCmp) => {
             formData.push({
               order_id: this.$route.params.id,
@@ -1218,7 +1241,7 @@ export default {
               complete_time: this.$getTime(item.complete_time),
               desc: item.desc,
               price: itemCmp.price,
-              motorise_number: itemChild.loss || 3,
+              motorise_number: itemChild.lossNum,
               number: itemChild.number,
               size_id: partColorSize[1],
               color_id: partColorSize[2],
@@ -1269,6 +1292,23 @@ export default {
     },
     changeWeight (itemMat) {
       itemMat.reality_weight = this.$toFixed(itemMat.rate / 100 * itemMat.material_weight)
+      this.changePlan(itemMat)
+      this.$forceUpdate()
+    },
+    getPlan (material) {
+      this.material_plan.forEach((item) => { item.checked = false })
+      let finded = this.material_plan.find((itemFind) => itemFind.material_name === material.material_name && itemFind.material_attribute === material.material_attribute)
+      finded.checked = true
+      this.$forceUpdate()
+    },
+    changePlan (material) {
+      let finded = this.material_plan_old.find((itemFind) => itemFind.material_name === material.material_name && itemFind.material_attribute === material.material_attribute)
+      let finded2 = this.material_plan.find((itemFind) => itemFind.material_name === material.material_name && itemFind.material_attribute === material.material_attribute)
+      if (this.ifUpdate) {
+        finded2.canBeUse = finded.canBeUse - (material.reality_weight - (finded.reality_weight / 1000 - finded.canBeUse))
+      } else {
+        finded2.canBeUse = finded.canBeUse - material.reality_weight
+      }
       this.$forceUpdate()
     },
     // 把原料名称和颜色相同的数据进行合并
@@ -1304,24 +1344,33 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        weave.deleteDress({
-          id: item[matIndex].id
-        }).then((res) => {
-          if (res.data.status) {
-            item.splice(matIndex, 1)
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            this.$forceUpdate()
-          }
-        })
+        if (item[matIndex].id) {
+          weave.deleteDress({
+            id: item[matIndex].id
+          }).then((res) => {
+            if (res.data.status) {
+              item.splice(matIndex, 1)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$forceUpdate()
+            }
+          })
+        } else {
+          item.splice(matIndex, 1)
+          this.$forceUpdate()
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
         })
       })
+    },
+    closeMat () {
+      this.ifUpdate = false
+      this.showMaterialPopup = false
     },
     updateMat () {
       this.weaving_mat = this.$clone(this.material_detail).map((item) => {
@@ -1335,6 +1384,7 @@ export default {
           material_merge: item.childrenMergeInfo
         }
       })
+      this.ifUpdate = true
       this.showMaterialPopup = true
     },
     // 保存纱线原料分配信息
@@ -1342,26 +1392,33 @@ export default {
       let formData = []
       let error = ''
       this.weaving_mat.forEach((item) => {
+        this.material_plan.forEach((item) => {
+          if (item.canBeUse < 0) {
+            error = '物料实际值不能物料剩余可分配数量,可以通过补纱或修改物料计划来分配更多物料'
+          }
+        })
         item.material_merge.forEach((itemMat) => {
-          if (this.ifUpdate && Number(itemMat.reality_weight) > (Number(itemMat.canBeUse + itemMat.material_weight))) {
-            error = '物料实际值不能超过可用值,可以通过补纱或修改物料计划来分配更多物料'
+          if (itemMat.weight) {
+            formData.push({
+              id: itemMat.id || '',
+              client_id: item.client_id,
+              material_name: itemMat.material_name,
+              material_attribute: itemMat.material_attribute,
+              material_type: itemMat.material_type,
+              unit: itemMat.unit || itemMat.material_unit,
+              weight: itemMat.reality_weight
+            })
           }
-          if (!this.ifUpdate && Number(itemMat.reality_weight) > Number(itemMat.canBeUse)) {
-            error = '物料实际值不能超过可用值,可以通过补纱或修改物料计划来分配更多物料'
-          }
-          formData.push({
-            id: itemMat.id || '',
-            client_id: item.client_id,
-            material_name: itemMat.material_name,
-            material_attribute: itemMat.material_attribute,
-            material_type: itemMat.material_type,
-            unit: itemMat.unit || itemMat.material_unit,
-            weight: itemMat.reality_weight
-          })
         })
       })
       if (error) {
         this.$message.error(error)
+        return
+      }
+      if (formData.length === 0) {
+        this.$message.success('物料未分配')
+        this.showMaterialPopup = false
+        this.$winReload()
         return
       }
       weave.saveDressMat({
@@ -1383,7 +1440,8 @@ export default {
       this.weaving_data[index].mixedData.push({
         partColorSize: '',
         loss: '',
-        number: ''
+        number: '',
+        lossNum: ''
       })
     },
     deleteMixedData (index, indexChild) {
@@ -1410,13 +1468,12 @@ export default {
         let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
           let part = itemChild.part_data.find((itemFind) => { return Number(itemFind.id) === Number(item.checkPart) })
-          if (part.number - part.weavingNum > 0) {
-            mixedData.push({
-              partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
-              loss: '',
-              number: part.number - part.weavingNum
-            })
-          }
+          mixedData.push({
+            partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
+            loss: '',
+            number: part.number,
+            lossNum: ''
+          })
         })
         if (mixedData.length > 0) {
           this.weaving_data.push({
@@ -1433,17 +1490,16 @@ export default {
           })
         }
       })
-      if (this.weaving_data.length === 0) {
-        this.$message.warning('已选择的产品部件已分配完毕，如需分配其他部件，请手动分配')
-      } else {
-        this.weaving_flag = true
-        this.easyWeaving_flag = true
-      }
+
+      this.weaving_flag = true
+      this.easyWeaving_flag = true
+
       this.weaving_data.forEach((item, index) => {
         item.companyRate[0].company_id = this.commonCompany[index]
         item.companyRate[0].price = this.commonPrice[index]
         item.mixedData.forEach((itemChild) => {
           itemChild.loss = this.commonLoss[index]
+          itemChild.lossNum = parseInt(itemChild.number * itemChild.loss / 100)
         })
         item.complete_time = this.commonDate[index]
         this.easyWeaving_flag = false
@@ -1687,7 +1743,7 @@ export default {
           itemChild.size_id = item.size_id
         })
         item.part_data.unshift({
-          name: '大身',
+          name: '成衣',
           number: item.production_number,
           id: item.product_id,
           color: item.color_name,
@@ -1743,6 +1799,7 @@ export default {
         item.check = false
         return item
       })
+      this.material_plan_update = this.$clone(res[7].data.data.total_data)
       this.material_plan = res[7].data.data.total_data
       this.material_plan.forEach((item) => {
         item.canBeUse = item.reality_weight / 1000
@@ -1753,6 +1810,7 @@ export default {
         item.canBeUse = this.$toFixed(item.canBeUse)
       })
       console.log(this.material_plan)
+      this.material_plan_old = this.$clone(this.material_plan)
       this.replenishClientArr = this.$mergeData(res[5].data.data.material_process_client.concat(res[5].data.data.material_order_client).concat(res[5].data.data.order_weave_client).concat(res[5].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
       this.loading = false
     })
