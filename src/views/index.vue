@@ -237,9 +237,9 @@ export default {
         }, {
           name: '订单物料列表',
           url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        }, {
-          name: '批量订购列表',
-          url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+          // }, {
+          //   name: '批量订购列表',
+          //   url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
         }]
       }, {
         name: '物料出入库管理',
