@@ -1,5 +1,34 @@
 @import '../common.less';
 #craftCreate{
+  .popup{
+    .rowLine{
+      height: 11px;
+      display: flex;
+      justify-content: center;
+      &:nth-last-child(1){
+        height: 12px;
+        .col{
+          border-bottom: 1px solid #111;
+        }
+      }
+      .col{
+        width:10px;
+        height: 10px;
+        border-left:  1px solid #111;
+        
+        border-top: 1px solid #111;
+        &:nth-last-child(1){
+          border-right: 1px solid #111;
+        }
+        &.black{
+          background: #999;
+        }
+        &.white{
+          background: #fff;
+        }
+      }
+    }
+  }
   .titleCtn{
     .opr{
       font-size: @fontMiddle;

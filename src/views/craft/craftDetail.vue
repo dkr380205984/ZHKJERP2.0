@@ -666,6 +666,8 @@
             @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
           <div class="btn btnBlue"
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
+          <div class="btn btnBlue"
+            @click="goPDF">转为PDF</div>
           <div class="btn btnRed"
             @click="deleteCraft">删除</div>
         </div>
@@ -1045,6 +1047,17 @@ export default {
       }
       this.showGLFlag = true
       console.log(this.GLYulan)
+    },
+    goPDF () {
+      if (this.warpInfo.color_data.length === 1) {
+        this.$openUrl('/craftTableToPDF/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.craftId + '/' + 0)
+      } else {
+        if (this.selectColour === -1) {
+          this.$message.error('请选择仿真图像的配色方案再预览PDF')
+          return
+        }
+        this.$openUrl('/craftTableToPDF/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.craftId + '/' + this.selectColour)
+      }
     },
     threeInit () {
       let container = document.getElementById('threeCtn')
