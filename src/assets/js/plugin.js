@@ -339,6 +339,7 @@ const plugin = {
 }
 export default {
   install (Vue) {
+    Vue.prototype.$getDataType = plugin.getDataType
     Vue.prototype.$winReload = plugin.winReload
     Vue.prototype.$openUrl = plugin.openUrl
     Vue.prototype.$getTime = plugin.getTime

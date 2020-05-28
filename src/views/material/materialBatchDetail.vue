@@ -1116,15 +1116,6 @@ export default {
       pages: 1,
       type: this.$route.params.type,
       loading: true,
-      orderInfo: {
-        order_code: '',
-        client_name: '',
-        user_name: '',
-        group_name: '',
-        order_time: '',
-        order_batch: [],
-        desc: ''
-      },
       materialArr: [], // 物料原始数据，用于下拉框选项
       order_data: [], // 订购
       order_stock_info: [], // 订购调取详情
@@ -1380,7 +1371,7 @@ export default {
         { title: '总价(元)', key: 'total_price' },
         { title: '备注', key: 'desc' },
         { title: '操作人', key: 'user_name' }
-      ], this.orderInfo)
+      ], this.orderList)
     },
     // 批量导出excel加工
     downloadProcess () {
@@ -1404,7 +1395,7 @@ export default {
         { title: '总价(元)', key: 'total_price' },
         { title: '备注', key: 'desc' },
         { title: '操作人', key: 'user_name' }
-      ], this.orderInfo)
+      ], this.orderList)
     },
     searchColor (queryString, cb) {
       let result = queryString ? this.colorList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.colorList
