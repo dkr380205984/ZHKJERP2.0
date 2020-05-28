@@ -524,7 +524,7 @@
               v-for="(item1,index1) in GL"
               :key="index1">
               <div class="mark">{{alphabet[index1]}}：
-                <span style="position:absolute;color:#1a95ff;font-size:12px;bottom:-1.2em;left:0em;cursor:pointer"
+                <span style="position:absolute;color:#1a95ff;font-size:12px;top:1.3em;left:0em;cursor:pointer"
                   @click="showGL(item1)">预览</span>
               </div>
               <div v-for="(item2,index2) in item1"
@@ -2597,7 +2597,6 @@ export default {
   methods: {
     // 预览纹版图
     showGL (GL) {
-      console.log(GL)
       let GLArr = []
       GL.forEach((item) => {
         item.forEach((itemChild) => {
@@ -2615,8 +2614,8 @@ export default {
         })
       })
       GLArr = GLArr.map((item) => {
-        return (new Array(6)).fill(0).map((itemChild, indexChild) => {
-          if (item.find((itemFind) => Number(itemFind) === (indexChild + 1))) {
+        return (new Array(max - 2)).fill(0).map((itemChild, indexChild) => {
+          if (item.find((itemFind) => Number(itemFind) === (indexChild + 3))) {
             itemChild = 1
           }
           return itemChild
@@ -2633,7 +2632,6 @@ export default {
         })
       }
       this.showGLFlag = true
-      console.log(this.GLYulan)
     },
     threeInit () {
       let container = document.getElementById('container');

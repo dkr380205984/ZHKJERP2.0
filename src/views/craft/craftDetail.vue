@@ -1010,7 +1010,6 @@ export default {
   methods: {
     // 预览纹版图
     showGL (GL) {
-      console.log(GL)
       let GLArr = []
       GL.forEach((item) => {
         item.forEach((itemChild) => {
@@ -1028,8 +1027,8 @@ export default {
         })
       })
       GLArr = GLArr.map((item) => {
-        return (new Array(6)).fill(0).map((itemChild, indexChild) => {
-          if (item.find((itemFind) => Number(itemFind) === (indexChild + 1))) {
+        return (new Array(max - 2)).fill(0).map((itemChild, indexChild) => {
+          if (item.find((itemFind) => Number(itemFind) === (indexChild + 3))) {
             itemChild = 1
           }
           return itemChild
@@ -1046,7 +1045,6 @@ export default {
         })
       }
       this.showGLFlag = true
-      console.log(this.GLYulan)
     },
     goPDF () {
       if (this.warpInfo.color_data.length === 1) {
