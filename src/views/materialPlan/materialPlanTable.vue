@@ -132,18 +132,13 @@ export default {
       }
       let data = res[0].data.data
       this.orderInfo = data.order_info
-      // if (this.params.proId) {
-      //   this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
-      // } else
       if (this.$route.query.proInfo) {
         let proInfo = this.$route.query.proInfo.split(';').map(item => {
-          return item.split(',').map(itemI => {
-            return this.$strToAscII(itemI, true)
-          })
+          return item.split(',')
         })
         let filterData = data.production_data.filter(item => {
           let flag = proInfo.find(itemF => {
-            return +itemF[0] === +item.product_id
+            return +itemF[0] === +item.product_id && +itemF[1] === +item.size_id && +itemF[2] === +item.color_id
           })
           return flag
         })
@@ -158,18 +153,13 @@ export default {
           itemPro.pid = itemPro.product_id
         }
       })
-      // if (this.params.proId) {
-      //   this.materialInfo = this.$mergeData(materialDetail.filter(item => Number(item.pid) === Number(this.params.proId) && Number(item.material_type) === Number(this.$route.query.type)), { mainRule: 'material_name', otherRule: [{ name: 'material_type/type' }, { name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/weight', type: 'add' }] } })
-      // } else
       if (this.$route.query.proInfo) {
         let proInfo = this.$route.query.proInfo.split(';').map(item => {
-          return item.split(',').map(itemI => {
-            return this.$strToAscII(itemI, true)
-          })
+          return item.split(',')
         })
         let filterData = materialDetail.filter(item => {
           let flag = proInfo.find(itemF => {
-            return +itemF[0] === +item.pid && itemF[1] === item.size_name && itemF[2] === item.color_name && Number(item.material_type) === Number(this.$route.query.type)
+            return +itemF[0] === +item.pid && +itemF[1] === +item.size_id && +itemF[2] === +item.color_id && Number(item.material_type) === Number(this.$route.query.type)
           })
           return flag
         })

@@ -17,6 +17,7 @@
             <div class="thead">
               <div class="trow">
                 <div class="tcolumn">发货批次</div>
+                <div class="tcolumn">批次备注</div>
                 <div class="tcolumn">产品编号</div>
                 <div class="tcolumn">产品图片</div>
                 <div class="tcolumn">尺码/配色</div>
@@ -29,7 +30,22 @@
                 :key="index">
                 <div class="tcolumn">
                   <span>第{{index+1}}批</span>
+                  <span>{{item.batch_title}}</span>
                   <span>{{item.delivery_time}}</span>
+                </div>
+                <div class="tcolumn">
+                  <span>
+                    <template v-if="!item.desc">无</template>
+                    <el-popover placement="top-start"
+                      v-else
+                      title="批次备注"
+                      width="200"
+                      trigger="hover"
+                      :content="(item.desc).toString()">
+                      <span style="cursor: pointer;color:#1A95FF"
+                        slot="reference">查看备注</span>
+                    </el-popover>
+                  </span>
                 </div>
                 <div class="tcolumn"
                   style="flex:4">

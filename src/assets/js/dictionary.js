@@ -10,7 +10,7 @@ const permissions = [{
   module: '产品管理',
   id: 3
 }, {
-  module: '设计单管理',
+  module: '工艺配料管理',
   id: 4
 }, {
   module: '订单管理',

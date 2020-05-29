@@ -350,7 +350,49 @@ export default {
         client_id: this.company_id,
         group_id: this.group_id
       }).then(res => {
-        this.list = res.data.data
+        this.list = res.data.data.map(itemOrder => {
+          let allProInfo = []
+          itemOrder.batch_info.forEach(itemB => {
+            allProInfo.push(...itemB.product_info)
+          })
+          let productInfo = this.$mergeData(allProInfo, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_info' }, { name: 'image' }], childrenName: 'other_info' })
+          return {
+            isOpen: false,
+            ...itemOrder,
+            production_data: productInfo.map(itemM => {
+              let sizeArr = []
+              let colorArr = []
+              itemM.other_info.forEach(itemOther => {
+                if (sizeArr.indexOf(itemOther.size_name) === -1) {
+                  sizeArr.push(itemOther.size_name)
+                }
+                let colorFlag = colorArr.find(itemColor => itemColor.color_name === itemOther.color_name)
+                if (!colorFlag) {
+                  colorArr.push({
+                    color_name: itemOther.color_name,
+                    [itemOther.size_name]: itemOther.numbers
+                  })
+                } else {
+                  if (colorFlag[itemOther.size_name]) {
+                    colorFlag[itemOther.size_name] = (Number(colorFlag[itemOther.size_name]) || 0) + (Number(itemOther.numbers) || 0)
+                  } else {
+                    colorFlag[itemOther.size_name] = itemOther.numbers
+                  }
+                }
+              })
+              return {
+                product_code: itemM.product_code,
+                product_id: itemM.product_id,
+                type: [itemM.category_info.category_name, itemM.category_info.type_name, itemM.category_info.style_name],
+                image: itemM.image,
+                unit: itemM.category_info.unit,
+                // product_type: itemM.category_info.product_type,
+                size_info: sizeArr,
+                color_info: colorArr
+              }
+            })
+          }
+        })
         this.total = res.data.meta.total
         this.loading = false
       })
@@ -372,13 +414,13 @@ export default {
       }
     },
     changeCollapse (ev) {
-      if (ev || ev === 0) {
-        this.list[ev].isOpen = true
-      } else {
-        this.list.forEach(item => {
+      this.list.forEach((item, index) => {
+        if (ev.indexOf(index) !== -1) {
+          item.isOpen = true
+        } else {
           item.isOpen = false
-        })
-      }
+        }
+      })
     }
   },
   created () {
