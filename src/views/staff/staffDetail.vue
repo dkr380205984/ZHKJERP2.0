@@ -311,16 +311,15 @@ export default {
             total_price: this.staffInfo.child_data.filter((item) => Number(item.year) === Number(itemYear.year) && Number(item.month) === Number(itemMonth.month)).reduce((total, current) => {
               return total + Number(current.total_price)
             }, 0),
-            deduct_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 1).reduce((total, current) => {
+            deduct_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 2).reduce((total, current) => {
               return total + Number(current.price)
             }, 0),
-            extra_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 2).reduce((total, current) => {
+            extra_price: itemMonth.childrenMergeInfo.filter((item) => item.type === 1).reduce((total, current) => {
               return total + Number(current.price)
             }, 0)
           })
         })
       })
-      console.log(this.payInfo)
       this.date = this.$getTime(new Date()).slice(0, 7)
       this.otherDate = this.$getTime(new Date()).slice(0, 7)
     })

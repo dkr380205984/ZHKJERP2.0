@@ -711,6 +711,7 @@ import { product, client, group, order, getToken, warnSetting, orderType } from 
 export default {
   data () {
     return {
+      lock: true,
       loading: true,
       listLoading: true,
       msgSwitch: false,
@@ -1033,6 +1034,10 @@ export default {
       })
     },
     saveAll () {
+      if (!this.lock) {
+        this.$message.warning('请勿频繁点击')
+        return
+      }
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1178,6 +1183,7 @@ export default {
         others_info: JSON.stringify(otherInfo),
         time_progress: warnData
       }
+      this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('修改成功')
