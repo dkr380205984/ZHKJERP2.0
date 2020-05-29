@@ -687,7 +687,7 @@ export default {
           this.detail.image = [{ image_url: require('@/assets/image/index/noPic.jpg') }]
         }
       }
-      if (res[1].data.status !== false) {
+      if (res[1].data.status !== false && res[1].data.data) {
         let data = res[1].data.data
         this.detail.craft_info = {
           id: data.id,

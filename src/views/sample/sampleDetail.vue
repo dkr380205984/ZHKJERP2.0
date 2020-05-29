@@ -764,7 +764,7 @@ export default {
         }
         this.loading = false
       }
-      if (res[1].data.status !== false) {
+      if (res[1].data.status !== false && res[1].data.data) {
         let data = res[1].data.data
         this.detail.craft_info.push({
           id: data.id,

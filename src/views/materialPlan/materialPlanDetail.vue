@@ -434,7 +434,7 @@ export default {
         this.$message.error('请选择需要打印的相关产品')
         return
       }
-      let printInfo = checkedPro.map(item => [item.product_id, this.$strToAscII(item.size, false, ['%', '/', '-', ',', '&', '+']), this.$strToAscII(item.color, false, ['%', '/', '-', ',', '&', '+'])].join(',')).join(';')
+      let printInfo = checkedPro.map(item => [item.product_id, item.size_id, item.color_id].join(',')).join(';')
       this.$openUrl('/materialPlanTable/' + this.$route.params.id + '/' + this.$route.params.type + '?type=' + type + '&proInfo=' + printInfo)
     }
   },

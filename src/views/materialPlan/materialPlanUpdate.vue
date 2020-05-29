@@ -636,6 +636,10 @@ export default {
       }
     },
     deleteItem (item, index) {
+      if (item[index].order_prog > 0) {
+        this.$message.warning('检测到你已订购过物料信息，无法删除')
+        return
+      }
       this.$confirm('此操作将删除该列数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -747,7 +751,7 @@ export default {
       let totalInfo = this.$mergeData(arr, { mainRule: ['material_name', 'color'], otherRule: [{ name: 'total_number', type: 'add' }, { name: 'unit' }, { name: 'end_num', type: 'add' }, { name: 'type' }] })
       this.materialTotalInfo = totalInfo.map(itemMa => {
         delete itemMa.childrenMergeInfo
-        itemMa.total_number = itemMa.type === 1 ? this.numberAutoMethod(itemMa.total_number / 1000) : this.numberAutoMethod(itemMa.total_number)
+        itemMa.total_number = itemMa.type === 1 ? this.numberAutoMethod((itemMa.total_number || 0) / 1000) : this.numberAutoMethod(itemMa.total_number || 0)
         return {
           ...itemMa,
           loss: (itemMa.total_number && itemMa.end_num) ? this.$toFixed((itemMa.end_num - itemMa.total_number) / itemMa.total_number * 100) : 0
@@ -757,7 +761,9 @@ export default {
       })
     },
     copyItem (data, item) {
-      data.push(this.$clone(item))
+      let copyItem = this.$clone(item)
+      copyItem.order_prog = 0
+      data.push(copyItem)
       this.computedTotal()
     },
     // 导入配料单数据
@@ -938,7 +944,7 @@ export default {
         }
         return itemPro
       })
-      planInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/material_color' }, { name: 'single_weight/number' }, { name: 'single_weight_loss/number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+      planInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/material_color' }, { name: 'single_weight/number' }, { name: 'single_weight_loss/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
       this.materialPlanInfo.forEach(itemPro => {
         let planFlag = planInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
         if (planFlag) {
@@ -949,10 +955,11 @@ export default {
               type: itemMa.type,
               color: itemMa.material_color,
               number: itemMa.plan_number || ((itemMa.number / (1 + itemMa.material_loss / 100)) || 0),
-              total_number: this.$toFixed(itemMa.total_number),
+              total_number: this.$toFixed(itemMa.total_number) || '',
               material_loss: itemMa.material_loss,
               end_num: itemMa.type === 1 ? this.$toFixed(itemMa.end_num / 1000) : this.$toFixed(itemMa.end_num),
-              unit: itemMa.unit
+              unit: itemMa.unit,
+              order_prog: itemMa.type === 1 ? data.material_order_progress.y_percent : data.material_order_progress.f_percent
             }
           })
         }

@@ -231,6 +231,16 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/staff/staffSettle')">转至合计结算</div>
+        </div>
+      </div>
+    </div>
     <div class="popup"
       v-show="showPopup">
       <div class="main"
@@ -362,7 +372,7 @@ export default {
       list: [],
       staffAllList: [],
       // workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
-      settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }],
+      settleList: [{ value: '按时结算', normal: true }, { value: '按天结算', normal: true }, { value: '按月结算', normal: true }],
       isCheckedAll: false,
       staffTagList: [],
       staffTagKeyWord: '',
@@ -471,7 +481,7 @@ export default {
           item.addFlag = false
           itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
           this.loading = false
-          this.$forceUpdate()
+          this.init()
         }
       })
     },
@@ -557,7 +567,7 @@ export default {
       if (ev.value === '按时结算') {
         item.unit = '小时'
       }
-      if (ev.value === '按日结算') {
+      if (ev.value === '按天结算') {
         item.unit = '天'
       }
       if (ev.value === '按月结算') {

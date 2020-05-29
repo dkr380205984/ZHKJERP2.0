@@ -77,6 +77,31 @@
           <span class="row_item center">{{item|filterTotal}}</span>
           <span class="row_item center"></span>
         </div>
+        <div class="print_row bgGray"
+          v-if="indexPage === list.length - 1">
+          <span class="row_item center">合计</span>
+          <span class="row_item center"></span>
+          <span class="row_item col flex7">
+            <div class="print_row noBorder">
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+            </div>
+          </span>
+          <span class="row_item col flex3">
+            <div class="print_row noBorder">
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+              <span class="row_item center"></span>
+            </div>
+          </span>
+          <span class="row_item center">{{totalPrice}}</span>
+          <span class="row_item center"></span>
+        </div>
       </div>
     </div>
   </div>
@@ -157,12 +182,12 @@ export default {
     })
   },
   mounted () {
-    const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/materialOrder/materialOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
-      if (!err) {
-        this.qrCodeUrl = url
-      }
-    })
+    // const QRCode = require('qrcode')
+    // QRCode.toDataURL(window.location.origin + '/materialOrder/materialOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
+    //   if (!err) {
+    //     this.qrCodeUrl = url
+    //   }
+    // })
   },
   filters: {
     filterTotal (item) {
@@ -173,14 +198,51 @@ export default {
         item.zhiwuPrice ? item.zhiwuPrice.price : 0,
         item.jiabanPrice ? item.jiabanPrice.price : 0,
         item.shenghuoPrice ? item.shenghuoPrice.price : 0,
-        item.otherPrice ? item.otherPrice.price : 0,
+        item.otherPrice ? item.otherPrice.price : 0
+      ]
+      let deductArr = [
         item.yanglaoPrice ? item.yanglaoPrice.price : 0,
         item.geshuiPrice ? item.geshuiPrice.price : 0,
         item.qitaPrice ? item.qitaPrice.price : 0
       ]
       return arr.map(value => Number(value) || 0).reduce((a, b) => {
         return a + b
+      }) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
+        return a + b
       })
+    }
+  },
+  computed: {
+    totalPrice () {
+      let total = this.list.map(itemA => {
+        let total = itemA.map(itemB => {
+          let arr = [
+            itemB.jijianPrice || 0,
+            itemB.jishiPrice || 0,
+            itemB.jibenPrice ? itemB.jibenPrice.price : 0,
+            itemB.zhiwuPrice ? itemB.zhiwuPrice.price : 0,
+            itemB.jiabanPrice ? itemB.jiabanPrice.price : 0,
+            itemB.shenghuoPrice ? itemB.shenghuoPrice.price : 0,
+            itemB.otherPrice ? itemB.otherPrice.price : 0
+          ]
+          let deductArr = [
+            itemB.yanglaoPrice ? itemB.yanglaoPrice.price : 0,
+            itemB.geshuiPrice ? itemB.geshuiPrice.price : 0,
+            itemB.qitaPrice ? itemB.qitaPrice.price : 0
+          ]
+          return arr.map(value => Number(value) || 0).reduce((a, b) => {
+            return a + b
+          }) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
+            return a + b
+          })
+        })
+        return total.reduce((a, b) => {
+          return a + b
+        })
+      })
+      return this.$toFixed(total.reduce((a, b) => {
+        return a + b
+      }, 0))
     }
   }
 }
