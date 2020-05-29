@@ -1398,7 +1398,7 @@ export default {
           }
         })
         item.material_merge.forEach((itemMat) => {
-          if (itemMat.weight) {
+          if (itemMat.reality_weight) {
             formData.push({
               id: itemMat.id || '',
               client_id: item.client_id,

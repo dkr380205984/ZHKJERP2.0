@@ -66,11 +66,16 @@
                     style="flex:6">
                     <div class="trow">
                       <div class="tcolumn">产品信息</div>
-                      <div class="tcolumn">尺码颜色</div>
-                      <div class="tcolumn">分配数量</div>
-                      <div class="tcolumn">入库数量</div>
-                      <div class="tcolumn">截止日期</div>
-                      <div class="tcolumn">操作</div>
+                      <div class="tcolumn noPad"
+                        style="flex:5">
+                        <div class="trow">
+                          <div class="tcolumn">尺码颜色</div>
+                          <div class="tcolumn">分配数量</div>
+                          <div class="tcolumn">入库数量</div>
+                          <div class="tcolumn">截止日期</div>
+                          <div class="tcolumn">操作</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -79,7 +84,9 @@
                 <div class="trow"
                   v-for="(item,index) in weave_detail"
                   :key="index">
-                  <div class="tcolumn">{{item.client_name}}</div>
+                  <div class="tcolumn">{{item.client_name}}
+                    <span style="color:#1a95ff">{{item.process}}</span>
+                  </div>
                   <div class="tcolumn noPad"
                     style="flex:6">
                     <div class="trow"
@@ -89,14 +96,21 @@
                         <span>{{itemChild.product_info.code}}</span>
                         <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
-                      <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.inNum}}</div>
-                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
-                      <div class="tcolumn">
-                        <span class="btn noBorder"
-                          style="padding:0;margin:0"
-                          @click="normalWeave(item.client_id,itemChild.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.number-itemChild.inNum)">入库</span>
+                      <div class="tcolumn noPad"
+                        style="flex:5">
+                        <div class="trow"
+                          v-for="(itemSon,indexSon) in itemChild.colorSize"
+                          :key="indexSon">
+                          <div class="tcolumn">{{itemSon.size_name}}/{{itemSon.color_name}}</div>
+                          <div class="tcolumn">{{itemSon.number}}</div>
+                          <div class="tcolumn">{{itemSon.inNum}}</div>
+                          <div class="tcolumn">{{itemSon.complete_time.slice(0,10)}}</div>
+                          <div class="tcolumn">
+                            <span class="btn noBorder"
+                              style="padding:0;margin:0"
+                              @click="normalWeave(item.client_id,itemChild.product_id,itemSon.size_id + '/' + itemSon.color_id,itemSon.number)">入库</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -241,8 +255,7 @@
                   @click="addWeave">添加织造单位</span>
                 <span class="once ok"
                   v-if="weave_flag"
-                  @click="saveWeave">确认入库
-                </span>
+                  @click="saveWeave">确认入库</span>
               </div>
             </div>
           </div>
@@ -496,7 +509,10 @@
             <div class="tableCtnLv2">
               <span class="tb_header">
                 <span class="tb_row"
-                  style="flex:0.4"></span>
+                  style="flex:0.4">
+                  <el-checkbox @change="getAll"
+                    v-model="checkAll"></el-checkbox>
+                </span>
                 <span class="tb_row"
                   style="flex:1.2">操作日期</span>
                 <span class="tb_row">加工单位</span>
@@ -563,6 +579,7 @@ import { order, weave, processing, client, receive, dispatch, process } from '@/
 export default {
   data () {
     return {
+      checkAll: false,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -604,6 +621,11 @@ export default {
     }
   },
   methods: {
+    getAll () {
+      this.log.forEach((item) => {
+        item.checked = this.checkAll
+      })
+    },
     // 批量导出excel
     download () {
       let data = this.log.filter(item => item.checked)
@@ -645,6 +667,7 @@ export default {
       cb(results)
     },
     normalWeave (client, product, colorSize, number) {
+      console.log(client)
       this.weave_flag = true
       this.weave_data.push({
         product_id: product || '',
@@ -669,6 +692,13 @@ export default {
     easyWeave () {
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
+          let productInfo = itemChild.colorSize.map((itemSon) => {
+            return {
+              colorSize: itemSon.size_id + '/' + itemSon.color_id,
+              number: itemSon.number,
+              count: ''
+            }
+          })
           this.weave_data.push({
             product_id: itemChild.product_id,
             colorSizeArr: this.weave_product.find((item) => {
@@ -679,11 +709,7 @@ export default {
                 id: item.size_id + '/' + item.color_id
               }
             }),
-            product_info: [{
-              colorSize: itemChild.size_id + '/' + itemChild.color_id,
-              number: itemChild.number - itemChild.inNum,
-              count: ''
-            }],
+            product_info: productInfo,
             desc: '',
             client_id: item.client_id,
             date: this.$getTime(new Date())
@@ -1212,7 +1238,60 @@ export default {
       order_type: 1
     }), process.list()]).then((res) => {
       this.orderInfo = res[0].data.data
-      this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      console.log(res[1].data.data)
+      res[1].data.data.forEach((item) => {
+        let finded = this.weave_detail.find((itemFind) => {
+          return itemFind.client_name === item.client_name && itemFind.process === item.process
+        })
+        if (finded) {
+          let findedPro = finded.childrenMergeInfo.find((itemChild) => {
+            return item.product_info.code === itemChild.product_info.code
+          })
+          if (findedPro) {
+            findedPro.colorSize.push({
+              color_name: item.color_name,
+              color_id: item.color_id,
+              size_name: item.size_name,
+              size_id: item.size_id,
+              number: item.number,
+              complete_time: item.complete_time
+            })
+          } else {
+            finded.push({
+              category_info: item.category_info,
+              product_info: item.product_info,
+              product_id: item.product_id,
+              colorSize: [{
+                color_name: item.color_name,
+                color_id: item.color_id,
+                size_name: item.size_name,
+                size_id: item.size_id,
+                number: item.number,
+                complete_time: item.complete_time
+              }]
+            })
+          }
+        } else {
+          this.weave_detail.push({
+            client_name: item.client_name,
+            process: item.process,
+            client_id: item.client_id,
+            childrenMergeInfo: [{
+              category_info: item.category_info,
+              product_info: item.product_info,
+              product_id: item.product_id,
+              colorSize: [{
+                color_name: item.color_name,
+                color_id: item.color_id,
+                size_name: item.size_name,
+                size_id: item.size_id,
+                number: item.number,
+                complete_time: item.complete_time
+              }]
+            }]
+          })
+        }
+      })
       this.process_detail = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       this.weave_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.process_product = this.$mergeData(res[2].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
@@ -1234,17 +1313,19 @@ export default {
       })
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
-          itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type === '织造'
-          }).reduce((total, current) => {
-            return total + current.number
-          }, 0)
+          itemChild.colorSize.forEach((itemSon) => {
+            itemSon.inNum = res[4].data.data.filter((itemFilter) => {
+              return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemSon.size_id && itemFilter.color_id === itemSon.color_id && itemFilter.client_name === item.client_name && Number(itemFilter.type) === 1
+            }).reduce((total, current) => {
+              return total + current.number
+            }, 0)
+          })
         })
       })
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && Number(itemFilter.type) === 2
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1253,7 +1334,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.outNum = res[5].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && Number(itemFilter.type) === 2
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
