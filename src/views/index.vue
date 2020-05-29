@@ -198,7 +198,12 @@ export default {
         }, {
           name: '产品列表',
           url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        }, {
+        }]
+      }, {
+        name: '工艺配料管理',
+        id: 66,
+        icon: require('@/assets/image/index/产品管理.png'),
+        children: [{
           name: '工艺单列表',
           url: '/product/productCraftList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
         }, {
