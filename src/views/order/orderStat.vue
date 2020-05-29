@@ -351,11 +351,7 @@ export default {
         group_id: this.group_id
       }).then(res => {
         this.list = res.data.data.map(itemOrder => {
-          let allProInfo = []
-          itemOrder.batch_info.forEach(itemB => {
-            allProInfo.push(...itemB.product_info)
-          })
-          let productInfo = this.$mergeData(allProInfo, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_info' }, { name: 'image' }], childrenName: 'other_info' })
+          let productInfo = this.$mergeData(itemOrder.product_info, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_info' }, { name: 'image' }], childrenName: 'other_info' })
           return {
             isOpen: false,
             ...itemOrder,
@@ -370,18 +366,18 @@ export default {
                 if (!colorFlag) {
                   colorArr.push({
                     color_name: itemOther.color_name,
-                    [itemOther.size_name]: itemOther.numbers
+                    [itemOther.size_name]: itemOther.number
                   })
                 } else {
                   if (colorFlag[itemOther.size_name]) {
-                    colorFlag[itemOther.size_name] = (Number(colorFlag[itemOther.size_name]) || 0) + (Number(itemOther.numbers) || 0)
+                    colorFlag[itemOther.size_name] = (Number(colorFlag[itemOther.size_name]) || 0) + (Number(itemOther.number) || 0)
                   } else {
-                    colorFlag[itemOther.size_name] = itemOther.numbers
+                    colorFlag[itemOther.size_name] = itemOther.number
                   }
                 }
               })
               return {
-                product_code: itemM.product_code,
+                product_code: itemM.product_code.code,
                 product_id: itemM.product_id,
                 type: [itemM.category_info.category_name, itemM.category_info.type_name, itemM.category_info.style_name],
                 image: itemM.image,
