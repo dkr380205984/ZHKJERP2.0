@@ -239,8 +239,9 @@
               v-for="(item1,index1) in GL"
               :key="index1"
               style="overflow:hidden">
-              <div class="mark">{{alphabet[index1]}}：
-                <span style="position:absolute;color:#1a95ff;font-size:12px;bottom:-1.2em;left:-0.5em;cursor:pointer"
+              <div class="mark"
+                style="position:relative">{{alphabet[index1]}}：
+                <span style="position:absolute;color:#1a95ff;font-size:12px;bottom:-1.3em;left:0em;cursor:pointer"
                   @click="showGL(item1)">预览</span>
               </div>
               <div v-for="(item2,index2) in item1"
