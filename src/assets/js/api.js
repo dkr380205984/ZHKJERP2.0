@@ -236,7 +236,8 @@ const order = {
   list: (params) => http.get(`${baseUrl}/order/list`, params),
   detail: (params) => http.get(`${baseUrl}/order/detail`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/one`, params),
-  changeStatus: (params) => http.post(`${baseUrl}/order/status/check`, params, 'application/json')
+  changeStatus: (params) => http.post(`${baseUrl}/order/status/check`, params, 'application/json'),
+  getOrderBatch: (params) => http.get(`${baseUrl}/order/batch/info`, params)
 }
 // 样品订单
 const sampleOrder = {

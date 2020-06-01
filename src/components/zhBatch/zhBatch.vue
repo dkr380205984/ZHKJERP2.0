@@ -1,6 +1,6 @@
 <template>
   <div class="zhBatch">
-    <span class="zhText">共{{test.length}}批
+    <span class="zhText">共{{data.length}}批
       <span class="blue"
         @click="showPopup=true">(点击查看详情)</span>
     </span>
