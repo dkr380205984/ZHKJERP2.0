@@ -1617,7 +1617,7 @@ export default {
                   attr: itemColor.material_attribute,
                   weight: itemColor.weight * 1000,
                   unit: itemColor.unit,
-                  type: itemColor.type,
+                  type: itemColor.material_type,
                   id: itemColor.id
                 }
               })

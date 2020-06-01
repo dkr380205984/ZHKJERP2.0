@@ -436,7 +436,7 @@ export default {
               return a.id - b.id
             })
             this.priceContactArr.unshift({
-              name: data.name,
+              name: data.name || data.quotation_code || data.id,
               id: data.id,
               pid: data.pid,
               quotation_code: data.quotation_code

@@ -74,7 +74,7 @@
       </div>
       <div class="editCtn hasBorderTop">
         <div class="titleNum"
-          v-if="index>0">{{item.name}}（ 所需数量：{{item.colourSizeArr[item.colourSizeIndex].partNum}} ）</div>
+          v-if="index>0">{{item.name}}（ 所需数量：{{item.colorInfo[item.colorIndex].sizeInfo[item.colorInfo[item.colorIndex].sizeIndex].partNum}} ）</div>
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
@@ -104,8 +104,8 @@
                   style="margin-bottom:16px"
                   @click="item.isShowSize = !item.isShowSize">{{!item.isShowSize ? '展开' : '收起'}}尺码</div>
               </div>
-              <!-- <div v-if="index>0"
-                style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div> -->
+              <div v-if="index>0"
+                style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div>
             </div>
           </div>
         </div>
@@ -121,8 +121,8 @@
                   :class="{'selected' : item.colorInfo[item.colorIndex].sizeIndex === indexSize,'success': item.colorInfo[item.colorIndex].sizeIndex !== indexSize && itemSize.materials.length > 0,'error': item.colorInfo[item.colorIndex].sizeIndex !== indexSize && itemSize.materials.length === 0}"
                   @click="item.colorInfo[item.colorIndex].sizeIndex = indexSize">{{itemSize.size_name}}</div>
               </div>
-              <div v-if="index>0"
-                style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div>
+              <!-- <div v-if="index>0"
+                style="font-size:12px;color:#E6A23C">注意,以下为一个{{item.name}}所需数量 (例:一个产品需要5个纽扣,配料单里每个纽扣需要1个纽扣,因此填1即可)</div> -->
             </div>
           </div>
         </div>
@@ -529,11 +529,13 @@ export default {
         }
         let colorInfo = this.$clone(this.list[0].colorInfo)
         colorInfo.forEach((item) => {
-          let finded = itemPart.size.find((itemFind) => itemFind.size_id === item.size_id)
-          item.partNum = finded.number
+          item.sizeInfo.forEach(itemSize => {
+            let finded = itemPart.size.find((itemFind) => itemFind.size_id === itemSize.size_id)
+            itemSize.partNum = finded.number
+          })
           item.materials = [{
             name: itemPart.part_title || itemPart.name,
-            attr: item.colour_name,
+            attr: item.color_name,
             number: 1,
             unit: itemPart.unit
           }]

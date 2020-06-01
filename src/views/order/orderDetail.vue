@@ -208,11 +208,98 @@
             </div>
           </template>
           <template v-if="tableType==='table'">
-            <div class="timeCtn"
+            <div class="new_batch_style"
               v-for="(itemBatch,indexBatch) in  orderInfo.batch_info_new"
               :key="indexBatch">
+              <div class="line">
+                <span class="line_item">第{{itemBatch.batch_id}}批：{{itemBatch.delivery_time}}</span>
+                <span class="line_item">批次名称：{{itemBatch.name}}</span>
+                <span class="line_item">批次类型：{{itemBatch.type}}</span>
+              </div>
+              <div class="line">
+                <span class="line_item">批次备注：{{itemBatch.remark || '无'}}</span>
+              </div>
+              <div class="line">
+                <div class="flexTb noMargin"
+                  v-for="(itemInner,indexInner) in itemBatch.product_info"
+                  :key="indexInner">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn flex12">产品</span>
+                      <span class="tcolumn center flex16"
+                        style="font-size:12px">产品图片</span>
+                      <span class="tcolumn flex8 noPad">
+                        <span class="trow">
+                          <span class="tcolumn twoTitleSpan">
+                            <span class="leftBottom">颜色</span>
+                            <span class="line"></span>
+                            <span class="rightTop">尺码</span>
+                          </span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemSize.size_name}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center">合计</span>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="tbody">
+                    <span class="trow">
+                      <span class="tcolumn flex12">
+                        <span class="blue"
+                          @click="$router.push('/product/productDetail/' + itemInner.product_id)">{{itemInner.product_code}}</span>
+                        <span>{{itemInner.type.join('/')}}</span>
+                        <span>单价：{{itemInner.price || 0}}元/{{itemInner.unit || '件'}}</span>
+                      </span>
+                      <span class="tcolumn center flex16">
+                        <zh-img-list :list='itemInner.image'></zh-img-list>
+                      </span>
+                      <span class="tcolumn flex8 noPad">
+                        <span class="trow"
+                          v-for="(itemColor,indexColor) in itemInner.color_info"
+                          :key="indexColor">
+                          <span class="tcolumn">{{itemColor.color_name}}</span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemColor[itemSize.size_name]}}{{itemInner.unit || '件'}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center">{{itemColor.number || 0}}{{itemInner.unit || '件'}}</span>
+                        </span>
+                        <span class="trow">
+                          <span class="tcolumn">合计</span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemSize.number || 0}}{{itemInner.unit || '件'}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center">{{itemInner.number || 0}}{{itemInner.unit || '件'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="timeCtn">
               <span class="tb_row"
-                style="padding-left:32px">第{{itemBatch.batch_id}}批：{{itemBatch.delivery_time}}</span>
+                style="padding-left:32px"></span>
+              <span class="tb_row"
+                style="padding-left:32px"></span>
+              <span class="tb_row"
+                style="padding-left:32px"></span>
+              <div class="tableCtnNew"></div>
               <div class="tableCtnNew"
                 v-for="(itemPro,indexPro) in itemBatch.product_info"
                 :key="indexPro">
@@ -267,7 +354,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </template>
         </div>
       </div>
@@ -1351,11 +1438,10 @@ export default {
     init () {
       this.loading = true
       Promise.all([
-        order.detail({
+        order.detailInfo({
           id: this.$route.params.id
         })
       ]).then(res => {
-        console.log(res)
         this.orderInfo = res[0].data.data
         this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
@@ -1387,40 +1473,67 @@ export default {
         })
         this.orderInfo.batch_info_new = this.orderInfo.batch_info.map((itemBatch) => {
           // 把产品编号相同的先合并一下
-          let mergePro = this.$mergeData(itemBatch.product_info, { mainRule: 'product_code', otherRule: [{ name: 'product_info' }, { name: 'unit_price' }] })
-          let productInfo = mergePro.map((itemPro) => {
-            let colorInfo = []
-            let productInfo = []
-            itemPro.product_info.color.forEach((itemColor) => {
-              colorInfo.push({
-                color: itemColor.color_name,
-                number: ''
-              })
-            })
-            itemPro.product_info.size_measurement.forEach((itemSize) => {
-              productInfo.push({
-                size: itemSize.size_name,
-                color: this.$clone(colorInfo)
-              })
-            })
-            console.log(itemPro.childrenMergeInfo)
-            productInfo.forEach((itemSize) => {
-              itemSize.color.forEach((itemColor) => {
-                let find = itemPro.childrenMergeInfo.find((itemFind) => itemFind.size_name === itemSize.size && itemFind.color_name === itemColor.color)
-                itemColor.number = !find ? '' : find.numbers
-              })
+          let productInfo = this.$mergeData(itemBatch.product_info.map(itemM => {
+            return {
+              ...itemM,
+              product_id: itemM.product_info.product_id,
+              product_type: itemM.product_info.product_type
+            }
+          }), { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'product_type' }, { name: 'category_info' }, { name: 'image' }, { name: 'unit_price/price' }], childrenName: 'other_info' })
+          let productInfoData = productInfo.map(itemM => {
+            let sizeArr = []
+            let colorArr = []
+            itemM.other_info.forEach(itemOther => {
+              let sizeFlag = sizeArr.find(itemF => itemF.size_name === itemOther.size_name)
+              if (sizeFlag) {
+                sizeFlag.number = (Number(sizeFlag.number) || 0) + (Number(itemOther.numbers) || 0)
+              } else {
+                sizeArr.push({
+                  size_name: itemOther.size_name,
+                  number: itemOther.numbers
+                })
+              }
+              // if (sizeArr.indexOf(itemOther.size_name) === -1) {
+              //   sizeArr.push(itemOther.size_name)
+              // }
+              let colorFlag = colorArr.find(itemColor => itemColor.color_name === itemOther.color_name)
+              if (!colorFlag) {
+                colorArr.push({
+                  color_name: itemOther.color_name,
+                  [itemOther.size_name]: itemOther.numbers,
+                  number: itemOther.numbers
+                })
+              } else {
+                if (colorFlag[itemOther.size_name]) {
+                  colorFlag[itemOther.size_name] = (Number(colorFlag[itemOther.size_name]) || 0) + (Number(itemOther.numbers) || 0)
+                } else {
+                  colorFlag[itemOther.size_name] = itemOther.numbers
+                }
+                colorFlag.number = (Number(colorFlag.number) || 0) + (Number(itemOther.numbers) || 0)
+              }
             })
             return {
-              product_code: itemPro.product_code,
-              unit: itemPro.product_info.unit,
-              price: itemPro.unit_price,
-              product_info: productInfo
+              product_code: itemM.product_code,
+              product_id: itemM.product_id,
+              type: [itemM.category_info.category_name, itemM.category_info.type_name, itemM.category_info.style_name],
+              image: itemM.image,
+              unit: itemM.category_info.unit,
+              price: itemM.price,
+              product_type: itemM.product_type,
+              size_info: sizeArr,
+              color_info: colorArr,
+              number: sizeArr.map(itemS => (+itemS.number || 0)).reduce((a, b) => {
+                return a + b
+              }, 0)
             }
           })
           return {
             batch_id: itemBatch.batch_id,
+            name: itemBatch.batch_title,
+            remark: itemBatch.desc,
+            type: itemBatch.order_type,
             delivery_time: itemBatch.delivery_time,
-            product_info: productInfo
+            product_info: productInfoData
           }
         })
         let productList = []
