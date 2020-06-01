@@ -49,12 +49,6 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">订单类型：</span>
-            <span class="text">{{orderInfo.order_type}}</span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
             <span class="label">订单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
@@ -1278,7 +1272,7 @@ export default {
     init () {
       this.loading = true
       Promise.all([
-        order.detail({
+        order.detailInfo({
           id: this.$route.params.id
         })
       ]).then(res => {
