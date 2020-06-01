@@ -45,7 +45,8 @@
           </div>
           <div class="tabelBodyCtn">
             <div class="tabelBodyMain hasBorder">
-              <div class="box">
+              <div class="box"
+                style="flex:1.5">
                 <div class="label">员工编号</div>
               </div>
               <div class="box">
@@ -76,7 +77,8 @@
             :key="index">
             <div class="tabelBodyMain"
               :class="{'hasBorder':index<list.length-1}">
-              <div class="box">
+              <div class="box"
+                style="flex:1.5">
                 <div class="label noWarp">
                   <i class="el-icon-caret-right"
                     v-if="!item.checked"
@@ -263,6 +265,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/staff/staffPay')">转至日常结算</div>
         </div>
       </div>
     </div>

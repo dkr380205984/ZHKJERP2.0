@@ -137,13 +137,11 @@ export default {
       // } else
       if (this.$route.query.proInfo) {
         let proInfo = this.$route.query.proInfo.split(';').map(item => {
-          return item.split(',').map(itemI => {
-            return this.$strToAscII(itemI, true)
-          })
+          return item.split(',')
         })
         let filterData = data.production_data.filter(item => {
           let flag = proInfo.find(itemF => {
-            return +itemF[0] === +item.product_id
+            return +itemF[0] === +item.product_id && +itemF[1] === +item.size_id && +itemF[2] === +item.color_id
           })
           return flag
         })
@@ -163,13 +161,11 @@ export default {
       // } else
       if (this.$route.query.proInfo) {
         let proInfo = this.$route.query.proInfo.split(';').map(item => {
-          return item.split(',').map(itemI => {
-            return this.$strToAscII(itemI, true)
-          })
+          return item.split(',')
         })
         let filterData = materialDetail.filter(item => {
           let flag = proInfo.find(itemF => {
-            return +itemF[0] === +item.pid && itemF[1] === item.size_name && itemF[2] === item.color_name && Number(item.material_type) === Number(this.$route.query.type)
+            return +itemF[0] === +item.pid && +itemF[1] === +item.size_id && +itemF[2] === +item.color_id && Number(item.material_type) === Number(this.$route.query.type)
           })
           return flag
         })

@@ -53,7 +53,7 @@
           <span class="btn noBorder"
             @click="fastWriteFlag = true">快捷填写</span>
           <span class="btn noBorder"
-            @click="importPlanData">同步配料单数据</span>
+            @click="importPlanData()">同步所有配料单数据</span>
         </div>
       </div>
       <div class="listCtn hasBorderTop">
@@ -207,6 +207,8 @@
                   </span>
                 </div>
                 <div class="tb_content">
+                  <div class="tb_row tb_row_handle_btn"
+                    @click="importPlanData(itemPro)">同步配料单数据</div>
                   <div class="tb_row tb_row_handle_btn"
                     @click="addItem(itemPro.material_info,'material')">+ 新增原料</div>
                   <div class="tb_row tb_row_handle_btn"
@@ -767,7 +769,7 @@ export default {
       this.computedTotal()
     },
     // 导入配料单数据
-    importPlanData () {
+    importPlanData (itemData) {
       this.$confirm('同步配料信息将会覆盖现有的物料信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -778,52 +780,26 @@ export default {
           order_id: this.$route.params.id,
           order_type: this.$route.params.type
         }).then(res => {
-          let materialPlanInfo = res.data.data.product_info
-          this.materialPlanInfo = materialPlanInfo.map(itemPro => {
-            return {
-              product_code: itemPro.product_code,
-              product_id: itemPro.product_id,
-              category_name: itemPro.category_name,
-              style_name: itemPro.style_name,
-              type_name: itemPro.type_name,
-              size: itemPro.size_name,
-              color: itemPro.color_name,
-              size_id: itemPro.size_id,
-              color_id: itemPro.color_id,
-              order_num: itemPro.numbers,
-              stock_num: itemPro.stock_number,
-              stock_num_use: 0,
-              material_loss: '',
-              other_loss: '',
-              production_num: itemPro.numbers,
-              unit: itemPro.unit,
-              part_arr: this.$clone([{
-                name: '大身',
-                id: itemPro.product_id
-              }].concat(itemPro.part_data.map(itemPart => {
-                return {
-                  name: itemPart.name,
-                  id: itemPart.id
-                }
-              }))),
-              part_data: itemPro.part_data,
-              material_info: itemPro.material_info.map(itemMa => {
+          if (itemData) {
+            let materialPlanInfo = res.data.data.product_info.find(itemF => +itemF.product_id === +itemData.product_id && +itemF.size_id === +itemData.size_id && +itemF.color_id === +itemData.color_id)
+            if (materialPlanInfo) {
+              itemData.material_info = materialPlanInfo.material_info.map(itemMa => {
                 return {
                   product_part: itemMa.product_id,
                   material_name: itemMa.material_name,
                   type: itemMa.type,
                   color: itemMa.material_attribute,
                   number: itemMa.weight,
-                  total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
+                  total_number: this.$toFixed(itemMa.weight * materialPlanInfo.numbers),
                   material_loss: '',
                   end_num: '',
                   unit: itemMa.unit
                 }
-              }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
-                let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
+              }).concat(materialPlanInfo.part_data_material.filter(itemMa => itemMa.color_id === materialPlanInfo.color_id && itemMa.size_id === materialPlanInfo.size_id).map(itemMa => {
+                let partName = materialPlanInfo.part_data.find(items => +items.id === +itemMa.product_id)
                 let sizeFlag = ''
                 if (partName) {
-                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
+                  sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === materialPlanInfo.size_id)
                 }
                 return {
                   product_part: itemMa.product_id,
@@ -831,14 +807,79 @@ export default {
                   type: itemMa.type,
                   color: itemMa.material_attribute,
                   number: itemMa.weight,
-                  total_number: this.$toFixed(itemMa.weight * itemPro.numbers * (sizeFlag ? sizeFlag.number : 1)),
+                  total_number: this.$toFixed(itemMa.weight * materialPlanInfo.numbers * (sizeFlag ? sizeFlag.number : 1)),
                   material_loss: '',
                   end_num: '',
                   unit: itemMa.unit
                 }
               }))
+            } else {
+              this.$message.error('未匹配到该产品的配料单数据')
             }
-          })
+          } else {
+            let materialPlanInfo = res.data.data.product_info
+            this.materialPlanInfo = materialPlanInfo.map(itemPro => {
+              return {
+                product_code: itemPro.product_code,
+                product_id: itemPro.product_id,
+                category_name: itemPro.category_name,
+                style_name: itemPro.style_name,
+                type_name: itemPro.type_name,
+                size: itemPro.size_name,
+                color: itemPro.color_name,
+                size_id: itemPro.size_id,
+                color_id: itemPro.color_id,
+                order_num: itemPro.numbers,
+                stock_num: itemPro.stock_number,
+                stock_num_use: 0,
+                material_loss: '',
+                other_loss: '',
+                production_num: itemPro.numbers,
+                unit: itemPro.unit,
+                part_arr: this.$clone([{
+                  name: '大身',
+                  id: itemPro.product_id
+                }].concat(itemPro.part_data.map(itemPart => {
+                  return {
+                    name: itemPart.name,
+                    id: itemPart.id
+                  }
+                }))),
+                part_data: itemPro.part_data,
+                material_info: itemPro.material_info.map(itemMa => {
+                  return {
+                    product_part: itemMa.product_id,
+                    material_name: itemMa.material_name,
+                    type: itemMa.type,
+                    color: itemMa.material_attribute,
+                    number: itemMa.weight,
+                    total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
+                    material_loss: '',
+                    end_num: '',
+                    unit: itemMa.unit
+                  }
+                }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
+                  let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
+                  let sizeFlag = ''
+                  if (partName) {
+                    sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
+                  }
+                  return {
+                    product_part: itemMa.product_id,
+                    material_name: itemMa.material_name,
+                    type: itemMa.type,
+                    color: itemMa.material_attribute,
+                    number: itemMa.weight,
+                    total_number: this.$toFixed(itemMa.weight * itemPro.numbers * (sizeFlag ? sizeFlag.number : 1)),
+                    material_loss: '',
+                    end_num: '',
+                    unit: itemMa.unit
+                  }
+                }))
+              }
+            })
+          }
+          this.computedTotal()
           this.loading = false
         })
       }).catch(() => {

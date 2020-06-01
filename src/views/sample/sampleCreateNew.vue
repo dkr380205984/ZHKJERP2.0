@@ -511,6 +511,7 @@ import { productType, flower, ingredient, colour, getToken, material, sample, de
 export default {
   data () {
     return {
+      lock: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -713,6 +714,10 @@ export default {
       item.unit = ev.unit
     },
     submit () {
+      if (!this.lock) {
+        this.$message.warning('请勿频繁点击')
+        return
+      }
       let error = false
       if (this.type.length <= 0) {
         this.$message.error('请选择样品品类')
@@ -826,6 +831,7 @@ export default {
         }),
         part_data: this.hasFitting ? partData : []
       }
+      this.lock = false
       sample.create(formData).then((res) => {
         if (res.data.status !== false) {
           this.$message.success('保存成功')

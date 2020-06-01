@@ -18,18 +18,22 @@
         </div>
       </div>
       <div class="print_body">
-        <div class="print_row">
-          <span class="row_item center w180">订单号</span>
-          <span class="row_item left">{{orderInfo.order_code || orderInfo.title}}</span>
-          <span class="row_item center w180">下单日期</span>
-          <span class="row_item left flex08">{{orderInfo.order_time}}</span>
-        </div>
-        <div class="print_row has_marginBottom">
-          <span class="row_item center w180">订单公司</span>
-          <span class="row_item left">{{orderInfo.client_name}}</span>
-          <span class="row_item center w180">负责小组</span>
-          <span class="row_item left flex08">{{orderInfo.group_name}}</span>
-        </div>
+        <template v-for="(itemOrder,indexOrder) in orderInfo">
+          <div class="print_row"
+            :key="indexOrder + 'code'">
+            <span class="row_item center w180">订单号</span>
+            <span class="row_item left">{{itemOrder.order_code || itemOrder.title}}</span>
+            <span class="row_item center w180">下单日期</span>
+            <span class="row_item left flex08">{{itemOrder.order_time}}</span>
+          </div>
+          <div class="print_row has_marginBottom"
+            :key="indexOrder + 'client'">
+            <span class="row_item center w180">订单公司</span>
+            <span class="row_item left">{{itemOrder.client_name}}</span>
+            <span class="row_item center w180">负责小组</span>
+            <span class="row_item left flex08">{{itemOrder.group_name}}</span>
+          </div>
+        </template>
         <div class="print_row has_marginBottom">
           <span class="row_item center w180">加工单位</span>
           <span class="row_item left">{{$route.query.clientName}}</span>
@@ -85,20 +89,21 @@ export default {
   },
   methods: {
     init (type) {
+      let orderId = this.$route.params.id.split('-')
       if (+type === 1) {
         Promise.all([
           order.detail({
-            id: this.$route.params.id
+            id: orderId
           }),
           materialManage.detail({
             order_type: this.$route.params.orderType,
-            order_id: this.$route.params.id
+            order_id: orderId
           }),
           print.detail({
             type: this.$route.params.type === '1' ? 5 : 6
           })
         ]).then(res => {
-          this.orderInfo = res[0].data.data
+          this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
           let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName || item.stock_name === this.$route.query.clientName)
           this.materialInfo = this.$mergeData(materialInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['color_code/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'unit' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
@@ -114,17 +119,17 @@ export default {
       } else {
         Promise.all([
           sampleOrder.detail({
-            id: this.$route.params.id
+            id: orderId
           }),
           materialManage.detail({
             order_type: this.$route.params.orderType,
-            order_id: this.$route.params.id
+            order_id: orderId
           }),
           print.detail({
             type: this.$route.params.type === '1' ? 5 : 6
           })
         ]).then(res => {
-          this.orderInfo = res[0].data.data
+          this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
           let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName || item.stock_name === this.$route.query.clientName)
           this.materialInfo = this.$mergeData(materialInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['color_code/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'unit' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)

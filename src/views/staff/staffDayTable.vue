@@ -40,7 +40,7 @@
         <div class="print_row"
           v-for="(item,index) in itemPage"
           :key="index">
-          <span class="row_item center">{{item.code}}</span>
+          <span class="row_item center">{{ indexPage * 15 + index + 1}}</span>
           <span class="row_item center">{{item.name}}</span>
           <span class="row_item col flex7">
             <div class="print_row"
@@ -133,9 +133,9 @@ export default {
               return a + b
             }) : 0
           })
-          this.totalPrice = arrList.length > 0 ? arrList.reduce((a, b) => {
+          this.totalPrice = arrList.length > 0 ? this.$toFixed(arrList.reduce((a, b) => {
             return a + b
-          }) : 0
+          })) : 0
           this.loading = false
           setTimeout(() => {
             window.print()
