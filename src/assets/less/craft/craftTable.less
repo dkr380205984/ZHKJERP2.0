@@ -55,6 +55,16 @@
   .noBorder{
     border: none!important;
   }
+  .print_body, //  改变边框颜色(新增2020-06-01)
+  .print_row,
+  .row_item,
+  .col_title,
+  .row_item_span{
+    border-color: rgba(1,1,1,1) !important;
+  }
+  .print_body{  //  新增2020-06-01
+    border-bottom: none;
+  }
   .row_item{
     .index{
       min-width: 28px;
@@ -128,7 +138,8 @@
         content: '';
         display: block;
         width: 153px;
-        border-top: 1px solid @font25;
+        // border-top: 1px solid @font25;
+        border-top: 1px solid rgba(1,1,1,1);//  新增2020-06-01
         position: absolute;
         top: 30px;
         left: -7px;

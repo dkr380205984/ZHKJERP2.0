@@ -7,6 +7,8 @@
         <span class="title">结算单信息</span>
         <div class="titleBtnCtn">
           <div class="btn btnWhiteBlue"
+            @click="showLogPopup = true">查看操作日志</div>
+          <div class="btn btnWhiteBlue"
             @click="$openUrl('/staffDayTable?year=' + date.split('-')[0] + '&month=' + date.split('-')[1] + '&departmentId=' + department)">打印</div>
           <div class="btn btnWhiteBlue"
             @click="showPopup=true">添加结算人员</div>
@@ -338,6 +340,36 @@
             @click="showPopup=false">取消</div>
           <div class="btn btnBlue"
             @click="checkStaff">确定</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup">
+      <div class="main"
+        style="width:1024px">
+        <div class="title">
+          <div class="text">日常工作结算表操作日志</div>
+          <i class="el-icon-close"
+            @click="showPopup=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="col">
+              <el-date-picker v-model="value2"
+                type="month"
+                placeholder="筛选月份">
+              </el-date-picker>
+            </div>
+            <div class="col">
+              <el-select v-model="value"
+                placeholder="筛选部门">
+                <el-option v-for="item in []"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -47,31 +47,6 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
-              <span class="text">订单类型</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <!-- <el-autocomplete v-model="order_type"
-                :fetch-suggestions="querySearchOrderType"
-                placeholder="请选择订单类型"></el-autocomplete> -->
-              <el-select v-model="order_type"
-                filterable
-                placeholder="请选择订单类型">
-                <el-option v-for="item in orderTypeArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-              <!-- <zh-input placeholder="请选择订单类型"
-                v-model="order_type">
-              </zh-input> -->
-            </span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
               <span class="text">订单公司</span>
               <span class="explanation">(必填)</span>
             </span>
@@ -422,6 +397,14 @@
               <span class="label">批次名称</span>
               <zh-input v-model="itemBatch.name"
                 placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
+              <span class="label">批次类型</span>
+              <el-autocomplete v-model="itemBatch.type"
+                :fetch-suggestions="querySearchType"
+                placeholder="请输入批次类型"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -777,6 +760,7 @@ export default {
           time: '',
           name: '',
           remark: '',
+          type: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -804,11 +788,16 @@ export default {
       warnType: '',
       warnList: [],
       timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }],
-      orderTypeArr: [],
-      order_type: ''
+      orderTypeArr: []
     }
   },
   methods: {
+    // 批次类型输入建议函数
+    querySearchType (queryString, cb) {
+      let restaurants = this.orderTypeArr
+      let results = queryString ? restaurants.filter(itemF => itemF.value.indexOf(queryString) !== -1) : restaurants
+      cb(results)
+    },
     // 获取汇率
     getUnit (ev) {
       this.exchange_rate = moneyArr.find((item) => item.name === ev).default
@@ -875,6 +864,7 @@ export default {
           time: '',
           name: '',
           remark: '',
+          type: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -1111,10 +1101,6 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      // if (!this.contact_id) {
-      //   this.$message.error('请选择联系人')
-      //   return
-      // }
       if (!this.group_id) {
         this.$message.error('请选择负责小组')
         return
@@ -1123,10 +1109,6 @@ export default {
         this.$message.error('请选择结算单位')
         return
       }
-      // if (!this.exchange_rate) {
-      //   this.$message.error('请输入汇率')
-      //   return
-      // }
       if (Number(this.tax_prop) !== 0 && !this.tax_prop) {
         this.$message.error('请输入税率')
         return
@@ -1199,7 +1181,6 @@ export default {
         order_code: this.order_code.map(item => {
           return item.code
         }).join(';'),
-        order_type: this.order_type,
         client_id: this.client_id,
         contacts: this.contact_id,
         account_unit: this.unit,
@@ -1225,6 +1206,7 @@ export default {
             delivery_time: item.time,
             batch_id: parseInt(index + 1),
             batch_title: item.name,
+            order_type: item.type,
             desc: item.remark
           }
         }),
@@ -1308,6 +1290,7 @@ export default {
             time: itemBatch.delivery_time,
             remark: itemBatch.desc,
             name: itemBatch.batch_title,
+            type: itemBatch.order_type,
             batch_info: productInfo
           })
           itemBatch.product_info.forEach(itemPro => {
@@ -1359,7 +1342,8 @@ export default {
               }
             }),
             name: itemBatch.name,
-            remark: itemBatch.remark
+            remark: itemBatch.remark,
+            type: itemBatch.type
           }
         })
         this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
@@ -1471,7 +1455,11 @@ export default {
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
       this.warnList = res[3].data.data.filter(item => item.order_type === 1)
-      this.orderTypeArr = res[4].data.data
+      this.orderTypeArr = res[4].data.data.map(item => {
+        return {
+          value: item.name
+        }
+      })
       this.loading = false
     })
   },
