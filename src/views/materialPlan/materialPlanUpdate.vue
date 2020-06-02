@@ -352,7 +352,7 @@ export default {
       loading: true,
       msgSwitch: false,
       settingMethodFlag: false, // 设置取值方式
-      settingMethod: +window.sessionStorage.getItem('materialPlanSettingMethod') || 1,
+      settingMethod: +window.localStorage.getItem('materialPlanSettingMethod') || 1,
       settingMethodArr: [
         {
           name: '向上取整 （例：1.8变成2）',
@@ -387,11 +387,11 @@ export default {
   },
   methods: {
     cancelSetting () {
-      this.settingMethod = +window.sessionStorage.getItem('materialPlanSettingMethod') || 1
+      this.settingMethod = +window.localStorage.getItem('materialPlanSettingMethod') || 1
       this.settingMethodFlag = false
     },
     changeSettingMethodFlag () {
-      window.sessionStorage.setItem('materialPlanSettingMethod', this.settingMethod)
+      window.localStorage.setItem('materialPlanSettingMethod', this.settingMethod)
       this.settingMethodFlag = false
     },
     fastWriteLoss () {
