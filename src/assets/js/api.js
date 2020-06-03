@@ -235,6 +235,7 @@ const order = {
   delete: (params) => http.post(`${baseUrl}/order/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/order/list`, params),
   detail: (params) => http.get(`${baseUrl}/order/detail`, params),
+  detailInfo: (params) => http.get(`${baseUrl}/order/info/detail`, params),
   editDetail: (params) => http.get(`${baseUrl}/order/one`, params),
   changeStatus: (params) => http.post(`${baseUrl}/order/status/check`, params, 'application/json'),
   getOrderBatch: (params) => http.get(`${baseUrl}/order/batch/info`, params)

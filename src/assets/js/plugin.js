@@ -1,3 +1,4 @@
+import Message from 'element-ui'
 const plugin = {
   /************************************
    *str:url地址
@@ -337,6 +338,20 @@ const plugin = {
     })
   }
 }
+const submitLock = () => {
+  let lock = true
+  return function (messageStr) { // 采用闭包保存lock状态
+    if (!lock) {
+      let str = messageStr || '请勿频繁点击'
+      Message.Message.warning(str)
+      return true
+    }
+    lock = false
+    setTimeout(() => {
+      lock = true
+    }, 1000)
+  }
+}
 export default {
   install (Vue) {
     Vue.prototype.$getDataType = plugin.getDataType
@@ -352,5 +367,6 @@ export default {
     Vue.prototype.$formatNum = plugin.formatNum
     Vue.prototype.$strToAscII = plugin.strToAscII
     Vue.prototype.$fuckSelect = plugin.fuckSelect
+    Vue.prototype.$submitLock = submitLock()
   }
 }

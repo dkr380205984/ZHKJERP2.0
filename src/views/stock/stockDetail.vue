@@ -1662,6 +1662,9 @@ export default {
       })
     },
     saveYarn () {
+      if (this.$submitLock()) {
+        return
+      }
       let flag = {
         name: true,
         attr: true,
@@ -1734,6 +1737,9 @@ export default {
       })
     },
     saveMaterial () {
+      if (this.$submitLock()) {
+        return
+      }
       let flag = {
         name: true,
         attr: true,
@@ -1806,6 +1812,9 @@ export default {
       })
     },
     savePack () {
+      if (this.$submitLock()) {
+        return
+      }
       let flag = {
         name: true,
         attr: true,
@@ -1885,6 +1894,9 @@ export default {
       })
     },
     saveProduct () {
+      if (this.$submitLock()) {
+        return
+      }
       let data = []
       let flag = {
         name: true,
