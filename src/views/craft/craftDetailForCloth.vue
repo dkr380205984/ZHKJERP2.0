@@ -88,6 +88,30 @@
     </div>
     <div class="module">
       <div class="titleCtn">
+        <span class="title">工艺单照片</span>
+      </div>
+      <div class="detailCtn hasBorderTop">
+        <div class="imgCtn">
+          <div class="imgChild"
+            v-for="(item,index) in imgArr"
+            :key="index">
+            <img class="img"
+              :src="item">
+            <div class="cover"
+              @click="handlePictureCardPreview(item)">
+              <i class="el-icon-zoom-in"></i>
+            </div>
+          </div>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%"
+              :src="dialogImageUrl"
+              alt="">
+          </el-dialog>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
         <span class="title">工艺详情</span>
       </div>
       <div class="detailCtn hasBorderTop">
@@ -99,7 +123,7 @@
               :key="item.id">{{item.size_name}}</div>
           </div>
           <div class="line">
-            <div class="once flex3 bgGray">机号</div>
+            <div class="once flex3 bgGray">针型</div>
             <div class="once"
               v-for="(item,index) in craftInfo.machine_code"
               :key="index">
@@ -240,7 +264,10 @@ import { craft } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      dialogVisible: false,
+      dialogImageUrl: '',
       loading: true,
+      imgArr: [],
       productInfo: {
         category_info: {
           product_category: '',
@@ -295,6 +322,10 @@ export default {
     }
   },
   methods: {
+    handlePictureCardPreview (file) {
+      this.dialogImageUrl = file
+      this.dialogVisible = true
+    },
     deleteCraft () {
       this.$confirm('此操作将永久删除该工艺单, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -342,6 +373,7 @@ export default {
           id: item.id
         }
       })
+      this.imgArr = res.data.data.file_url
       this.craftInfo = JSON.parse(res.data.data.complete_data)
       this.user_name = res.data.data.user_name
       this.create_time = res.data.data.create_time
