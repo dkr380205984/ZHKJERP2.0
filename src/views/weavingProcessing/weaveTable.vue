@@ -51,9 +51,13 @@
           <div class="row_item center w180">工序</div>
           <div class="row_item left">{{itemWeave.process_type || ''}}</div>
           <div class="row_item center w180">均价</div>
-          <div class="row_item left">{{$toFixed(itemWeave.totalPrice/itemWeave.orderInfo.total_number)}}元</div>
+          <div class="row_item left">{{showFlag ? ($toFixed(itemWeave.totalPrice/itemWeave.orderInfo.total_number) + '元') : ''}}</div>
           <div class="row_item center w180">总价</div>
-          <div class="row_item left">{{itemWeave.totalPrice || 0}}元</div>
+          <div class="row_item left showPriceCtn">
+            {{showFlag ? ((itemWeave.totalPrice || 0) + '元') : ''}}
+            <span class="showPriceBtn"
+              @click="showFlag = !showFlag">{{showFlag ? '隐藏' : '显示'}}价格</span>
+          </div>
         </div>
         <div class="print_row has_marginBottom">
           <div class="row_item center w180">产品品类</div>
@@ -193,7 +197,8 @@ export default {
       orderInfo: {},
       weaveInfo: [],
       materialInfo: [],
-      clientList: []
+      clientList: [],
+      showFlag: false
     }
   },
   methods: {
@@ -240,7 +245,7 @@ export default {
                 img: item.category_info.image,
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign,
-                motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
+                motorise_number: +item.motorise_number || 0
               }
             })
             // 筛选原料数据
@@ -294,7 +299,7 @@ export default {
                   flagColor.totalNumber_color = (Number(flagColor.totalNumber_color) || 0) + (+itemInfo.number || 0) + (+itemInfo.motorise_number || 0) // 颜色的总订单数
                 }
               })
-              itemPro.totalPrice = itemPro.data_info.map(itemInfo => (+itemInfo.number || 0) * (+itemInfo.price || 0)).reduce((a, b) => {
+              itemPro.totalPrice = itemPro.data_info.map(itemInfo => ((+itemInfo.number || 0) + (+itemInfo.motorise_number || 0)) * (+itemInfo.price || 0)).reduce((a, b) => {
                 return a + b
               })
               itemPro.orderInfo = {
@@ -359,14 +364,13 @@ export default {
                 process_type: item.type,
                 img: item.category_info.image,
                 sizeInfo: sizeInfo,
-                material_info: item.part_assign,
-                motorise_number: Math.round((+item.motorise_number || 0) * (+item.number || 0) / 100) || 0
+                material_info: item.part_assign
               }
             })
             // 筛选原料数据
-            let materialInfo = this.$newSplice(this.$mergeData(res[3].data.data.filter(itemF => +itemF.client_id === +this.$route.query.clientId && +itemF.material_type === 2), { mainRule: ['material_name', 'material_attribute'], otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'material_type' }] }).map(item => {
+            let materialInfo = this.$newSplice(this.$mergeData(this.$flatten(weaveInfo.map(item => item.material_info)), { mainRule: ['name/material_name', 'material_attribute'], otherRule: [{ name: 'number/weight', type: 'add' }, { name: 'unit' }] }).map(item => {
               return {
-                material_type: item.material_type,
+                material_type: 2,
                 material_name: item.material_name,
                 material_attribute: item.material_attribute,
                 weight: item.weight,
@@ -450,13 +454,14 @@ export default {
             print.detail({
               type: 1
             }),
-            print.detail({
-              type: 3
-            }),
             sampleOrder.detail({
               id: this.$route.params.id
             }),
             weave.detail({
+              order_id: this.$route.params.id,
+              order_type: this.$route.params.orderType
+            }),
+            weave.getDressMat({
               order_id: this.$route.params.id,
               order_type: this.$route.params.orderType
             })
@@ -484,7 +489,8 @@ export default {
                 process_type: '织造',
                 img: item.category_info.image,
                 sizeInfo: sizeInfo,
-                material_info: item.material_assign
+                material_info: item.material_assign,
+                motorise_number: +item.motorise_number || 0
               }
             })
             // 筛选原料数据
@@ -572,9 +578,6 @@ export default {
             print.detail({
               type: 2
             }),
-            print.detail({
-              type: 4
-            }),
             sampleOrder.detail({
               id: this.$route.params.id
             }),
@@ -585,12 +588,10 @@ export default {
           ]).then(res => {
             this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
-            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('company_name') + '原料调拨单')
-            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
             // 处理订单信息
-            this.orderInfo = res[2].data.data
+            this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
               let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
@@ -612,9 +613,9 @@ export default {
               }
             })
             // 筛选原料数据
-            let materialInfo = this.$newSplice(this.$mergeData(res[3].data.data.filter(itemF => +itemF.client_id === +this.$route.query.clientId && +itemF.material_type === 2), { mainRule: ['material_name', 'material_attribute'], otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'material_type' }] }).map(item => {
+            let materialInfo = this.$newSplice(this.$mergeData(this.$flatten(weaveInfo.map(item => item.material_info)), { mainRule: ['name/material_name', 'material_attribute'], otherRule: [{ name: 'number/weight', type: 'add' }, { name: 'unit' }] }).map(item => {
               return {
-                material_type: item.material_type,
+                material_type: 2,
                 material_name: item.material_name,
                 material_attribute: item.material_attribute,
                 weight: item.weight,
@@ -795,20 +796,10 @@ export default {
           this.qrCodeUrl = url
         }
       })
-      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/1/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl2 = url
-        }
-      })
     } else {
       QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
           this.qrCodeUrl = url
-        }
-      })
-      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/2/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl2 = url
         }
       })
     }

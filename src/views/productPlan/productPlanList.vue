@@ -149,11 +149,12 @@
               </div>
             </div>
             <div class="col">
-              <span class="opr orange" v-if="(isProductType && !item.has_plan) || !isProductType"
-                @click="$router.push('/productPlan/productPlanCreate/'+ item.id + '/' + 1)">添加</span>
+              <span class="opr orange"
+                v-if="(isProductType && !item.has_plan) || !isProductType"
+                @click="$router.push('/productPlan/productPlanCreate/'+ item.id + '/' + (isProductType ? 1 : 2))">添加</span>
               <span class="opr"
                 v-if="item.has_plan"
-                @click="$router.push('/productPlan/productPlanDetail/' + item.id + '/' + 1)">详情</span>
+                @click="$router.push('/productPlan/productPlanDetail/' + item.id + '/' + (isProductType ? 1 : 2))">详情</span>
             </div>
           </div>
         </div>

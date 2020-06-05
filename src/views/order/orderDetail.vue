@@ -49,12 +49,6 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">订单类型：</span>
-            <span class="text">{{orderInfo.order_type}}</span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
             <span class="label">订单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
@@ -148,14 +142,15 @@
             :style="{'color':tableType==='table'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
         </span>
       </div>
-      <div class="detailCtn">
+      <div class="detailCtn"
+        v-if="tableType==='normal'">
         <div class="rowCtn"
           style="flex-wrap:wrap">
-          <template v-if="tableType==='normal'">
+          <template>
             <div class="tableCtnLv2">
               <span class="tb_header">
-                <span class="tb_row">发货日期</span>
-                <span class="tb_row">批次备注</span>
+                <span class="tb_row middle">发货日期</span>
+                <span class="tb_row middle">批次备注</span>
                 <span class="tb_row tb_col flex6">
                   <span class="tb_col_item">
                     <span class="tb_row">产品信息</span>
@@ -169,14 +164,15 @@
               </span>
               <span class="tb_content"
                 v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
-                :key="indexBatch"><span class="tb_row">
-                  第{{itemBatch.batch_id}}批
-                  <br />
-                  {{itemBatch.batch_title}}
-                  <br />
-                  {{itemBatch.delivery_time}}
+                :key="indexBatch">
+                <span class="tb_row middle tb_col"
+                  style="padding:12px 0;">
+                  <span style="font-size:16px;font-weight:bold;margin-bottom:4px">第{{itemBatch.batch_id}}批</span>
+                  <span style="margin-bottom:4px">({{itemBatch.batch_title || '无'}})</span>
+                  <span style="margin-bottom:4px">{{itemBatch.delivery_time}}</span>
+                  <span>{{itemBatch.order_type}}</span>
                 </span>
-                <span class="tb_row">
+                <span class="tb_row middle">
                   <template v-if="!itemBatch.desc">无</template>
                   <el-popover placement="top-start"
                     v-else
@@ -207,7 +203,7 @@
               </span>
             </div>
           </template>
-          <template v-if="tableType==='table'">
+          <!-- <template v-if="tableType==='table'">
             <div class="new_batch_style"
               v-for="(itemBatch,indexBatch) in  orderInfo.batch_info_new"
               :key="indexBatch">
@@ -292,72 +288,101 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="timeCtn">
-              <span class="tb_row"
-                style="padding-left:32px"></span>
-              <span class="tb_row"
-                style="padding-left:32px"></span>
-              <span class="tb_row"
-                style="padding-left:32px"></span>
-              <div class="tableCtnNew"></div>
-              <div class="tableCtnNew"
-                v-for="(itemPro,indexPro) in itemBatch.product_info"
-                :key="indexPro">
-                <div class="line">
-                  <div class="once gray bigWidth">产品/单价</div>
-                  <div class="once gray">
-                    <div class="biaotou rightTop">尺码</div>
-                    <div class="xiexian"></div>
-                    <div class="biaotou leftBottom">配色</div>
+          </template> -->
+        </div>
+      </div>
+      <template v-if="tableType==='table'">
+        <div class="detailCtn"
+          v-for="(itemBatch,indexBatch) in  orderInfo.batch_info_new"
+          :key="indexBatch">
+          <div class="titleNum">第{{itemBatch.batch_id}}批</div>
+          <div class="rowCtn"
+            style="flex-wrap:wrap">
+            <div class="new_batch_style">
+              <div class="line">
+                <span class="line_item">交货日期：{{itemBatch.delivery_time}}</span>
+                <span class="line_item">批次名称：{{itemBatch.name}}</span>
+                <span class="line_item">批次类型：{{itemBatch.type}}</span>
+              </div>
+              <div class="line">
+                <span class="line_item">批次备注：{{itemBatch.remark || '暂无备注信息'}}</span>
+              </div>
+              <div class="line">
+                <div class="flexTb noMargin"
+                  v-for="(itemInner,indexInner) in itemBatch.product_info"
+                  :key="indexInner">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn flex12">产品</span>
+                      <span class="tcolumn center flex16"
+                        style="font-size:14px">产品图片</span>
+                      <span class="tcolumn flex8 noPad">
+                        <span class="trow">
+                          <span class="tcolumn twoTitleSpan">
+                            <span class="leftBottom">颜色</span>
+                            <span class="line"></span>
+                            <span class="rightTop">尺码</span>
+                          </span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemSize.size_name}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center">合计</span>
+                        </span>
+                      </span>
+                    </span>
                   </div>
-                  <div class="once gray"
-                    v-for="(itemSize,indexSize) in itemPro.product_info"
-                    :key="indexSize">
-                    {{itemSize.size}}
-                  </div>
-                </div>
-                <div class="line">
-                  <div class="once gray middle bigWidth">
-                    <div class="inputs"
-                      style="cursor: pointer;color:#1A95FF"
-                      @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">
-                      {{itemPro.product_code}}
-                    </div>
-                    <div class="inputs"
-                      style="margin-top:12px">
-                      单价：{{itemPro.price}}{{orderInfo.account_unit}}
-                    </div>
-                  </div>
-                  <div class="lineChildCtn">
-                    <div class="lineChild"
-                      v-for="(itemColor,indexColor) in itemPro.product_info[0].color"
-                      :key="indexColor">
-                      <div class="once middle"
-                        :class="{'justOne': itemPro.product_info[0].color.length===1}">
-                        <div class="inputs">
-                          {{itemColor.color}}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="lineChildCtn"
-                    v-for="(itemSize,indexSize) in itemPro.product_info"
-                    :key="indexSize">
-                    <div class="lineChild"
-                      v-for="(itemColor,indexColor) in itemSize.color"
-                      :key="indexColor + '/' + indexSize">
-                      <div class="once middle"
-                        :class="{'justOne': itemPro.product_info[0].color.length===1}">
-                        {{itemColor.number?itemColor.number + itemPro.unit : 0}}
-                      </div>
-                    </div>
+                  <div class="tbody">
+                    <span class="trow">
+                      <span class="tcolumn flex12">
+                        <span class="blue"
+                          @click="$router.push('/product/productDetail/' + itemInner.product_id)">{{itemInner.product_code}}</span>
+                        <span>{{itemInner.type.join('/')}}</span>
+                        <span>单价：{{itemInner.price || 0}}元/{{itemInner.unit || '件'}}</span>
+                      </span>
+                      <span class="tcolumn center flex16">
+                        <zh-img-list :list='itemInner.image'></zh-img-list>
+                      </span>
+                      <span class="tcolumn flex8 noPad">
+                        <span class="trow"
+                          v-for="(itemColor,indexColor) in itemInner.color_info"
+                          :key="indexColor">
+                          <span class="tcolumn">{{itemColor.color_name}}</span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemColor[itemSize.size_name]}}{{itemInner.unit || '件'}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center bgGray">{{itemColor.number || 0}}{{itemInner.unit || '件'}}</span>
+                        </span>
+                        <span class="trow bgGray">
+                          <span class="tcolumn">合计</span>
+                          <span class="tcolumn"
+                            v-for="(itemSize,indexSize) in itemInner.size_info"
+                            :key="indexSize">{{itemSize.number || 0}}{{itemInner.unit || '件'}}</span>
+                          <template v-if="itemInner.size_info.length < 7">
+                            <span class="tcolumn"
+                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
+                              :key='indexB + "buchong"'></span>
+                          </template>
+                          <span class="tcolumn center">{{itemInner.number || 0}}{{itemInner.unit || '件'}}</span>
+                        </span>
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>
-            </div> -->
-          </template>
+            </div>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
     <div class="module"
       v-if="warnData.isOpenWarn">
@@ -1260,6 +1285,76 @@
         </div>
       </div>
     </div>
+    <!-- <div class="popup"
+      v-show="showCompletePopup">
+      <div class="main"
+        style="width:600px">
+        <div class="title">
+          <span class="text">完成订单</span>
+          <span class="el-icon-close"
+            @click="showCompletePopup = false"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showCompletePopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="选择批次"></el-step>
+            <el-step title="确认完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showCompletePopup === 1">
+          <div class="row"
+            style="flex-direction:column">
+            <span class="row_item">请选择完成批次：</span>
+            <span class="row_item"
+              v-for="(itemB,indexB) in orderInfo.batch_info"
+              :key="indexB">
+              <el-checkbox v-model="itemB.checked"
+                @change="$forceUpdate()"></el-checkbox>
+              <span class="time">{{itemB.delivery_time}}</span>
+              <span class="batch">第{{itemB.batch_id}}批</span>
+            </span>
+          </div>
+        </div>
+        <div class="content center"
+          v-if="showCompletePopup === 2 || showCompletePopup === 3">
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改选中订单批次状态为完成，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+        </div>
+        <div class="opr"
+          style="justify-content:flex-end">
+          <div style="display:flex">
+            <div class="btn btnGray"
+              v-if="showCompletePopup === 1 && isCommit"
+              @click="closePopup">取消</div>
+            <div class="btn btnGray"
+              v-if="showCompletePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+              @click="showCompletePopup--">上一步</div>
+            <div class="btn btnBlue"
+              v-if="showCompletePopup < 2"
+              @click="showCompletePopup++">下一步</div>
+            <div class="btn btnBlue"
+              v-if="showCompletePopup === 2 && isCommit === 'before'"
+              @click="changeOrderStatus('ok')">确定</div>
+            <div class="btn btnBlue"
+              v-if="showCompletePopup === 2 && isCommit === 'error'"
+              @click="changeOrderStatus('ok')">重试<em class="el-icon-refresh-left"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCompletePopup === 2  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCompletePopup === 3 && isCommit === 'compiled'"
+              @click="closePopup">完成</div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1366,6 +1461,8 @@ export default {
         endTime: this.$getTime(),
         warnArr: []
       }
+      // 批次完成状态
+      // showCompletePopup: false
     }
   },
   methods: {
@@ -2161,7 +2258,17 @@ export default {
     },
     // 修改订单状态
     changeOrderStatus (type) {
+      // if (type === 'beforeOk') {
+      //   this.showCompletePopup = 1
+      // } else
       if (type === 'ok') {
+        // let checkedBatch = this.orderInfo.batch_info.filter(item => item.checked).map(item => item.batch_id)
+        // if (checkedBatch.length === 0) {
+        //   this.$message.warning('请最少勾选一项需要修改状态的批次')
+        //   return
+        // }
+        // return
+        // this.isCommit = 'commit'
         this.$confirm('此操作将永久修改订单状态, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2172,8 +2279,11 @@ export default {
             type: 3
           }).then(res => {
             if (res.data.status !== false) {
+              // this.isCommit = 'compiled'
               this.$message.success('确认完成')
               this.init()
+            } else {
+              // this.isCommit = 'error'
             }
           })
         }).catch(() => {

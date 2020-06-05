@@ -92,7 +92,7 @@ export default {
       let orderId = this.$route.params.id.split('-')
       if (+type === 1) {
         Promise.all([
-          order.detail({
+          order.detailInfo({
             id: orderId
           }),
           materialManage.detail({
@@ -105,6 +105,10 @@ export default {
         ]).then(res => {
           this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
           let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName || item.stock_name === this.$route.query.clientName)
+          if (this.$route.query.logId) {
+            let logId = this.$route.query.logId.split('-')
+            materialInfo = materialInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
+          }
           this.materialInfo = this.$mergeData(materialInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['color_code/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'unit' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item
@@ -131,6 +135,10 @@ export default {
         ]).then(res => {
           this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
           let materialInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName || item.stock_name === this.$route.query.clientName)
+          if (this.$route.query.logId) {
+            let logId = this.$route.query.logId.split('-')
+            materialInfo = materialInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
+          }
           this.materialInfo = this.$mergeData(materialInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['color_code/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'unit' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item

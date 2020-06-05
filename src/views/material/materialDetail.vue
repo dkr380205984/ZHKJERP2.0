@@ -691,11 +691,19 @@
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
-        <div class="btnCtn_page">
-          <div class="btn noBorder noMargin"
-            @click="deleteOrderLog('all')">批量删除</div>
-          <div class="btn noBorder noMargin"
-            @click="downloadOrder">批量导出excel</div>
+        <div class="btnCtn_page"
+          style="justify-content: space-between;">
+          <span style="display:flex">
+            <div class="btn noBorder noMargin"
+              @click="deleteOrderLog('all')">批量删除</div>
+            <div class="btn noBorder noMargin"
+              @click="downloadOrder">批量导出excel</div>
+          </span>
+          <span style="display:flex">
+            <div class="btn noBorder"
+              :style="'color:' + checkedOrderClientInfo.length > 1 ? '#E9E9E9' : false"
+              @click="printOrderTable">打印</div>
+          </span>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -748,11 +756,19 @@
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
-        <div class="btnCtn_page">
-          <div class="btn noBorder noMargin"
-            @click="deleteProcessLog('all')">批量删除</div>
-          <div class="btn noBorder noMargin"
-            @click="downloadProcess">批量导出excel</div>
+        <div class="btnCtn_page"
+          style="justify-content: space-between;">
+          <span style="display:flex">
+            <div class="btn noBorder noMargin"
+              @click="deleteProcessLog('all')">批量删除</div>
+            <div class="btn noBorder noMargin"
+              @click="downloadProcess">批量导出excel</div>
+          </span>
+          <span style="display:flex">
+            <div class="btn noBorder"
+              :style="'color:' + checkedOrderClientInfo.length > 1 ? '#E9E9E9' : false"
+              @click="printProcessTable">打印</div>
+          </span>
         </div>
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
@@ -1466,6 +1482,32 @@ export default {
     }
   },
   methods: {
+    // 加工日志勾选打印
+    printProcessTable () {
+      if (this.checkedProcessClientInfo.length === 0) {
+        this.$message.warning('请勾选最少一个')
+        return
+      }
+      if (this.checkedProcessClientInfo.length > 1) {
+        this.$message.error('打印仅支持单个订购调取单位打印')
+        return
+      }
+      let data = this.process_log.filter(item => item.checked).map(item => item.id).join('-')
+      this.$openUrl('/materialProcessTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '/' + this.$route.params.type + '?clientName=' + this.checkedProcessClientInfo[0] + '&logId=' + data)
+    },
+    // 订购日志勾选打印
+    printOrderTable () {
+      if (this.checkedOrderClientInfo.length === 0) {
+        this.$message.warning('请勾选最少一个')
+        return
+      }
+      if (this.checkedOrderClientInfo.length > 1) {
+        this.$message.error('打印仅支持单个订购调取单位打印')
+        return
+      }
+      let data = this.order_stock_log.filter(item => item.checked).map(item => item.id).join('-')
+      this.$openUrl('/materialTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '/' + this.$route.params.type + '?clientName=' + this.checkedOrderClientInfo[0].client_name + '&type=' + this.checkedOrderClientInfo[0].type_source + '&logId=' + data)
+    },
     afterSend () {
       if (this.$route.params.easyOrder === 'easy') {
         this.$router.push('/material/materialDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType + '/normal')
@@ -2374,6 +2416,23 @@ export default {
       return (this.stock_data.reduce((total, current) => {
         return total + Number(current.stock[0].weight)
       }, 0)).toFixed(2)
+    },
+    checkedOrderClientInfo () {
+      let data = this.order_stock_log.filter(item => item.checked).map(item => {
+        return {
+          client_name: item.client_name,
+          type_source: item.type_source
+        }
+      })
+      return this.$mergeData(data, { mainRule: ['client_name', 'type_source'] })
+    },
+    checkedProcessClientInfo () {
+      let data = this.process_log.filter(item => item.checked).map(item => {
+        return {
+          client_name: item.client_name
+        }
+      })
+      return this.$mergeData(data, { mainRule: 'client_name' }).map(item => item.client_name)
     }
   },
   watch: {

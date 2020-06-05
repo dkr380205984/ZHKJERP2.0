@@ -149,11 +149,12 @@
               </div>
             </div>
             <div class="col">
-              <span class="opr orange" v-if="(!item.has_craft && isProductType) || !isProductType"
-                @click="$router.push('/craft/craftCreate/'+ item.id + '/' + 1)">添加</span>
+              <span class="opr orange"
+                v-if="(!item.has_craft && isProductType) || !isProductType"
+                @click="$router.push('/craft/craftCreate/'+ item.id + '/' + (isProductType ? 1 : 2))">添加</span>
               <span class="opr"
                 v-if="item.has_craft"
-                @click="$router.push('/craft/craftDetail/'+item.id + '/' + 1)">详情</span>
+                @click="$router.push('/craft/craftDetail/'+item.id + '/' + (isProductType ? 1 : 2))">详情</span>
             </div>
           </div>
         </div>

@@ -1020,7 +1020,7 @@ export default {
             itemPro.product_info.forEach((itemSize) => {
               itemSize.color.forEach((itemColor) => {
                 productInfo.push({
-                  size_color: [itemSize.size_id, itemColor.color_id],
+                  size_color: [itemSize.size, itemColor.color],
                   price: itemPro.price,
                   number: itemColor.number
                 })
@@ -1296,82 +1296,83 @@ export default {
         this.checkedProList.push(item)
         this.batchDate.forEach(itemBatch => {
           this.checkedProList.forEach((itemPro, indexPro) => {
-            let arr = []
-            itemPro.size.forEach(itemSize => {
-              itemPro.color.forEach(itemColor => {
-                arr.push({
-                  size_color: [itemSize.size_id, itemColor.color_id],
-                  price: '',
+            if (this.tableType === 'normal') {
+              let arr = []
+              itemPro.size.forEach(itemSize => {
+                itemPro.color.forEach(itemColor => {
+                  arr.push({
+                    size_color: [itemSize.size_id, itemColor.color_id],
+                    price: '',
+                    number: ''
+                  })
+                })
+              })
+              if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
+                if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
+                  itemBatch.batch_info[0].id = itemPro.id
+                  itemBatch.batch_info[0].unit = itemPro.category_info.name
+                  itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
+                  itemBatch.batch_info[0].product_info = arr
+                } else {
+                  itemBatch.batch_info.push({
+                    id: itemPro.id,
+                    unit: itemPro.category_info.name,
+                    sizeColor: itemPro.sizeColor,
+                    product_info: arr
+                  })
+                }
+              }
+            } else {
+              let productInfo = []
+              let colorInfo = []
+              itemPro.color.forEach((itemColor) => {
+                colorInfo.push({
+                  color: itemColor.color_id,
                   number: ''
                 })
               })
-            })
-            let productInfo = []
-            let colorInfo = []
-            itemPro.color.forEach((itemColor) => {
-              colorInfo.push({
-                color: itemColor.color_id,
-                number: ''
+              itemPro.size.forEach((itemSize) => {
+                productInfo.push({
+                  size: itemSize.size_id,
+                  color: this.$clone(colorInfo)
+                })
               })
-            })
-            itemPro.size.forEach((itemSize) => {
-              productInfo.push({
-                size: itemSize.size_id,
-                color: this.$clone(colorInfo)
-              })
-            })
-            if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
-              if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
-                itemBatch.batch_info[0].id = itemPro.id
-                itemBatch.batch_info[0].unit = itemPro.category_info.name
-                itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
-                itemBatch.batch_info[0].product_info = arr
-                itemBatch.batch_info_new[0] = {
-                  id: '',
-                  unit: '',
-                  size: [],
-                  color: [],
-                  product_info: []
+              if (!itemBatch.batch_info_new.find(val => val.id === itemPro.id)) {
+                if (itemBatch.batch_info_new[0] && !itemBatch.batch_info_new[0].id) {
+                  itemBatch.batch_info_new[0].id = itemPro.id
+                  itemBatch.batch_info_new[0].unit = itemPro.category_info.name
+                  itemBatch.batch_info_new[0].size = itemPro.size.map((item) => {
+                    return {
+                      name: item.size_id,
+                      label: item.size_name
+                    }
+                  })
+                  itemBatch.batch_info_new[0].color = itemPro.color.map((item) => {
+                    return {
+                      name: item.color_id,
+                      label: item.color_name
+                    }
+                  })
+                  itemBatch.batch_info_new[0].product_info = productInfo
+                } else {
+                  itemBatch.batch_info_new.push({
+                    id: itemPro.id,
+                    unit: itemPro.category_info.name,
+                    size: itemPro.size.map(itemSize => {
+                      return {
+                        name: itemSize.size_id,
+                        label: itemSize.size_name
+                      }
+                    }),
+                    color: itemPro.color.map((itemColor) => {
+                      return {
+                        name: itemColor.color_id,
+                        label: itemColor.color_name
+                      }
+                    }),
+                    product_info: productInfo
+                  })
                 }
-                itemBatch.batch_info_new[0].id = itemPro.id
-                itemBatch.batch_info_new[0].unit = itemPro.category_info.name
-                itemBatch.batch_info_new[0].size = itemPro.size.map((item) => {
-                  return {
-                    name: item.size_id,
-                    label: item.size_name
-                  }
-                })
-                itemBatch.batch_info_new[0].color = itemPro.color.map((item) => {
-                  return {
-                    name: item.color_id,
-                    label: item.color_name
-                  }
-                })
-                itemBatch.batch_info_new[0].product_info = productInfo
-              } else {
-                itemBatch.batch_info.push({
-                  id: itemPro.id,
-                  unit: itemPro.category_info.name,
-                  sizeColor: itemPro.sizeColor,
-                  product_info: arr
-                })
-                itemBatch.batch_info_new.push({
-                  id: itemPro.id,
-                  unit: itemPro.category_info.name,
-                  size: itemPro.size.map((item) => {
-                    return {
-                      name: item.color_id,
-                      label: item.color_name
-                    }
-                  }),
-                  color: itemPro.color.map((item) => {
-                    return {
-                      name: item.color_id,
-                      label: item.color_name
-                    }
-                  }),
-                  product_info: productInfo
-                })
               }
             }
             this.isResouceShow++
@@ -1387,9 +1388,9 @@ export default {
               itemBatch.batch_info.splice(index, 1)
             }
           } else {
-            let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
-            if (index !== -1) {
-              itemBatch.batch_info_new.splice(index, 1)
+            let newIndex = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+            if (newIndex !== -1) {
+              itemBatch.batch_info_new.splice(newIndex, 1)
             }
           }
         })

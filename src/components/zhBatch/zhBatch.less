@@ -43,54 +43,102 @@
         border-bottom: 1px solid #E9E9E9;
         max-height: 600px;
         overflow-y: auto;
-        .zhTable{
-          display: block;
-          margin: 0 32px;
-          border:1px solid transparent;
-          border-bottom-color:#E9E9E9;
-          font-size: 14px;
-          .thead {
-            background: #FAFAFA;
-            height: 54px;
-            color: rgba(0,0,0,0.85);
-            border-bottom: 1px solid #E9E9E9;
-          }
-          .tbody {
-            background: #fff;
-            color: rgba(0,0,0,0.65);
-          }
-          .trow {
+        .zh_batch_item{
+          background-color: rgba(0,0,0,0.05);
+          display: flex;
+          flex-direction: column;
+          .line{
+            display: flex;
+            padding:0 16px;
+            box-sizing: border-box;
             width: 100%;
-            min-height: 54px;
-            border-bottom: 1px solid #E9E9E9;
-            &:nth-last-child(1) {
-              border-bottom: 0;
+            overflow-x: auto;
+            .line_item{
+              min-width: 200px;
             }
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            text-align: center;
-            &.important {
-              color: #1a95ff;
-            }
-          }
-          .tcolumn {
-            min-height: 54px;
-            border-right: 1px solid #E9E9E9;
-            justify-content: center;
-            text-align: center;
-            &:nth-first-child(1) {
-              border-left: 0;
-            }
-            &:nth-last-child(1) {
-              border-right: 0;
-            }
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            &.important {
-              color: #1a95ff;
+            .batchTable {
+              display: block;
+              border:1px solid transparent;
+              border-bottom-color:#E9E9E9;
+              font-size: 14px;
+              .thead {
+                background: #FAFAFA;
+                color: rgba(0,0,0,0.85);
+                border-bottom: 1px solid #E9E9E9;
+              }
+              .tbody {
+                background: #fff;
+                color: rgba(0,0,0,0.65);
+              }
+              .trow {
+                width: 100%;
+                min-height: 54px;
+                border-bottom: 1px solid #E9E9E9;
+                &:nth-last-child(1) {
+                  border-bottom: 0;
+                }
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                text-align: center;
+                &.important {
+                  color: #1a95ff;
+                }
+              }
+              .tcolumn {
+                min-height: 54px;
+                min-width: 100px;
+                border-right: 1px solid #E9E9E9;
+                justify-content: center;
+                display: flex;
+                flex-direction: column;
+                padding:0 10px;
+                flex-wrap: wrap;
+                word-break: break-all;
+                &:nth-first-child(1) {
+                  border-left: 0;
+                }
+                &:nth-last-child(1) {
+                  border-right: 0;
+                }
+                &.center{
+                  align-items: center;
+                }
+                &.noPad{
+                  padding: 0;
+                }
+                &.important {
+                  color: #1a95ff;
+                }
+                &.twoTitleItem{
+                  position: relative;
+                  line-height: 1em;
+                  .leftBottom{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-100%,0);
+                  }
+                  .rightTop{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(0,-100%);
+                  }
+                  .obliqueLine{
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    width: 133px;
+                    height: 1px;
+                    border-bottom: 1px solid #E9E9E9;
+                    transform: translateX(-50%) rotateZ(24deg);
+                  }
+                }
+                &.w180{
+                  width: 180px;
+                }
+              }
             }
           }
         }

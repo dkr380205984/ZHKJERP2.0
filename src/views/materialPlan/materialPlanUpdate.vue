@@ -132,6 +132,7 @@
                   :key="indexMa">
                   <span class="tb_row">
                     <el-select placeholder="请选择部位"
+                      :disabled="itemMa.order_prog > 0"
                       v-model="itemMa.product_part"
                       style="width:130px;">
                       <el-option v-for="item in itemPro.part_arr"
@@ -144,6 +145,7 @@
                   <span class="tb_row flex15">
                     <el-autocomplete v-if="itemMa.type === 1 "
                       v-model="itemMa.material_name"
+                      :disabled="itemMa.order_prog > 0"
                       :fetch-suggestions="searchYarn"
                       style="width:210px"
                       @select="computedTotal"
@@ -151,6 +153,7 @@
                     </el-autocomplete>
                     <el-autocomplete v-if="itemMa.type === 2"
                       v-model="itemMa.material_name"
+                      :disabled="itemMa.order_prog > 0"
                       :fetch-suggestions="searchMaterial"
                       style="width:210px"
                       @select="selectMaterial($event,itemMa)"
@@ -165,6 +168,7 @@
                     </zh-input> -->
                     <el-autocomplete placeholder="请输入颜色"
                       v-model="itemMa.color"
+                      :disabled="itemMa.order_prog > 0"
                       @select="computedTotal"
                       style="width:130px"
                       :fetch-suggestions="querySearch"
@@ -174,7 +178,7 @@
                   <span class="tb_row flex08">{{itemMa.total_number ? $toFixed(itemMa.total_number) + '' + itemMa.unit : '-'}}</span>
                   <span class="tb_row">
                     <zh-input placeholder="损耗"
-                      :disabled="itemMa.disabled"
+                      :disabled="itemMa.disabled || itemMa.order_prog > 0"
                       v-model="itemMa.material_loss"
                       style="width:130px"
                       @input="changeLossInner(itemMa,'loss')"
@@ -184,6 +188,7 @@
                   </span>
                   <span class="tb_row">
                     <zh-input placeholder="数量"
+                      :disabled="itemMa.order_prog > 0"
                       v-model="itemMa.end_num"
                       style="width:130px"
                       @input="changeLossInner(itemMa,'end_num')"
@@ -690,7 +695,11 @@ export default {
     // 改变外层损耗
     changeLoss (item, type, eve) {
       item.material_info.filter(itemMa => Number(itemMa.type) === Number(type)).forEach(itemMa => {
-        itemMa.material_loss = eve
+        if (itemMa.order_prog > 0) {
+
+        } else {
+          itemMa.material_loss = eve
+        }
         this.changeLossInner(itemMa, 'loss')
       })
     },

@@ -532,6 +532,12 @@ export default {
           item.sizeInfo.forEach(itemSize => {
             let finded = itemPart.size.find((itemFind) => itemFind.size_id === itemSize.size_id)
             itemSize.partNum = finded.number
+            itemSize.materials = [{
+              name: itemPart.part_title || itemPart.name,
+              attr: item.color_name,
+              number: 1,
+              unit: itemPart.unit
+            }]
           })
           item.materials = [{
             name: itemPart.part_title || itemPart.name,

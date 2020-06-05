@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">
           物料计划
           <span class="el-icon-setting settingMethod"
@@ -765,14 +765,40 @@ export default {
       material.list()
     ]).then(res => {
       this.orderInfo = res[0].data.data.order_info
-      let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size_id', 'color_id'], otherRule: [{ name: 'size_name' }, { name: 'color_name' }, { name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
+      let materialPlanInfo = this.$mergeData(res[0].data.data.product_info, { mainRule: ['product_id', 'product_code', 'size_id', 'color_id'], otherRule: [{ name: 'size_name' }, { name: 'color_name' }, { name: 'component' }, { name: 'numbers', type: 'add' }, { name: 'part_data' }, { name: 'part_data_material' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'unit' }, { name: 'stock_number' }, { name: 'material_info' }, { name: 'category_name' }] })
       this.materialPlanInfo = materialPlanInfo.map(itemPro => {
+        let materialInfo = itemPro.material_info.length > 0 ? itemPro.material_info.map(itemMa => {
+          return {
+            product_part: itemMa.product_id,
+            material_name: itemMa.material_name,
+            type: itemMa.type,
+            color: itemMa.material_attribute,
+            number: itemMa.weight,
+            total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
+            material_loss: '',
+            end_num: '',
+            unit: itemMa.unit
+          }
+        }) : itemPro.component.map(itemMa => {
+          return {
+            product_part: itemPro.product_id,
+            material_name: itemMa.component_name,
+            type: 1,
+            color: '',
+            number: '',
+            total_number: '',
+            material_loss: '',
+            end_num: '',
+            unit: 'g'
+          }
+        })
         return {
           product_code: itemPro.product_code,
           product_id: itemPro.product_id,
           category_name: itemPro.category_name,
           style_name: itemPro.style_name,
           type_name: itemPro.type_name,
+          component: itemPro.component,
           size: itemPro.size_name,
           color: itemPro.color_name,
           size_id: itemPro.size_id,
@@ -793,19 +819,7 @@ export default {
               id: itemPart.id
             }
           }))),
-          material_info: itemPro.material_info.map(itemMa => {
-            return {
-              product_part: itemMa.product_id,
-              material_name: itemMa.material_name,
-              type: itemMa.type,
-              color: itemMa.material_attribute,
-              number: itemMa.weight,
-              total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
-              material_loss: '',
-              end_num: '',
-              unit: itemMa.unit
-            }
-          }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
+          material_info: materialInfo.concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
             let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
             let sizeFlag = ''
             if (partName) {

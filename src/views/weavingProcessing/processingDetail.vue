@@ -749,8 +749,8 @@ export default {
           process_type: [],
           colorSizeArr: item.childrenMergeInfo.map((itemChild) => {
             return {
-              name: item.size_name + '/' + item.color_name,
-              id: item.size_id + '/' + item.color_id
+              name: itemChild.size_name + '/' + itemChild.color_name,
+              id: itemChild.size_id + '/' + itemChild.color_id
             }
           }),
           partDataArr: item.childrenMergeInfo[0].part_data,
