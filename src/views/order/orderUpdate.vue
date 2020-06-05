@@ -1484,11 +1484,11 @@ export default {
         this.$message.error('检测到没有批次数据，请添加')
         return
       }
-      if (this.tableType === 'normal') {
-        this.batchDate.forEach(item => {
-          if (!item.time) {
-            timeFlag = false
-          }
+      this.batchDate.forEach(item => {
+        if (!item.time) {
+          timeFlag = false
+        }
+        if (this.tableType === 'normal') {
           if (item.batch_info.length < 1) {
             this.$message.error('检测到批次内没有产品信息，请添加')
             flag = false
@@ -1502,13 +1502,40 @@ export default {
               flag = false
             }
             itemBtach.product_info.forEach(itemPro => {
-              if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+              if (itemPro.size_color.length === 0 || !itemPro.number) {
                 flag = false
               }
             })
           })
-        })
-      }
+        } else {
+          if (item.batch_info_new.length < 1) {
+            this.$message.error('检测到批次内没有产品信息，请添加')
+            flag = false
+          }
+          item.batch_info_new.forEach(itemBtach => {
+            if (!itemBtach.id) {
+              flag = false
+            }
+            // if (!itemBtach.price) {
+            //   flag = false
+            // }
+            if (itemBtach.product_info.length < 1) {
+              this.$message.error('检测到产品内没有尺码颜色信息，请添加')
+              flag = false
+            }
+            itemBtach.product_info.forEach(itemPro => {
+              if (!itemPro.size) {
+                flag = false
+              }
+              itemPro.color.forEach(itemColor => {
+                if (!itemColor.color || !itemColor.number) {
+                  flag = false
+                }
+              })
+            })
+          })
+        }
+      })
       if (!timeFlag) {
         this.$message.error('请选择交货日期')
         return

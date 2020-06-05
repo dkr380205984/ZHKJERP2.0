@@ -1567,7 +1567,7 @@ export default {
               flag = false
             }
             itemBtach.product_info.forEach(itemPro => {
-              if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+              if (itemPro.size_color.length === 0 || !itemPro.number) {
                 flag = false
               }
             })
@@ -1816,7 +1816,7 @@ export default {
                   return {
                     size_color: [itemSize.size_id, itemSize.color_id],
                     number: itemSize.number,
-                    price: itemSize.price
+                    price: ''
                   }
                 }),
                 sizeColor: itemPro.sizeColor,
