@@ -33,7 +33,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">金额</span>
-              <span class="text">￥{{orderInfo.total_price}}</span>
+              <span class="text">{{canSeePriceFlag ? '￥' + orderInfo.total_price : '/'}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
@@ -196,99 +196,14 @@
                     </span>
                     <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
                     <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                    <span class="tb_row">{{$toFixed(itemPro.unit_price) + orderInfo.account_unit}}</span>
-                    <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}{{orderInfo.account_unit}}</span>
+                    <span class="tb_row">{{canSeePriceFlag ?  $toFixed(itemPro.unit_price) + orderInfo.account_unit : '/'}}</span>
+                    <span class="tb_row">{{canSeePriceFlag ? $toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)) + orderInfo.account_unit : '/'}}</span>
                   </span>
                 </span>
               </span>
             </div>
           </template>
-          <!-- <template v-if="tableType==='table'">
-            <div class="new_batch_style"
-              v-for="(itemBatch,indexBatch) in  orderInfo.batch_info_new"
-              :key="indexBatch">
-              <div class="line">
-                <span class="line_item">第{{itemBatch.batch_id}}批：{{itemBatch.delivery_time}}</span>
-                <span class="line_item">批次名称：{{itemBatch.name}}</span>
-                <span class="line_item">批次类型：{{itemBatch.type}}</span>
-              </div>
-              <div class="line">
-                <span class="line_item">批次备注：{{itemBatch.remark || '无'}}</span>
-              </div>
-              <div class="line">
-                <div class="flexTb noMargin"
-                  v-for="(itemInner,indexInner) in itemBatch.product_info"
-                  :key="indexInner">
-                  <div class="thead">
-                    <span class="trow">
-                      <span class="tcolumn flex12">产品</span>
-                      <span class="tcolumn center flex16"
-                        style="font-size:12px">产品图片</span>
-                      <span class="tcolumn flex8 noPad">
-                        <span class="trow">
-                          <span class="tcolumn twoTitleSpan">
-                            <span class="leftBottom">颜色</span>
-                            <span class="line"></span>
-                            <span class="rightTop">尺码</span>
-                          </span>
-                          <span class="tcolumn"
-                            v-for="(itemSize,indexSize) in itemInner.size_info"
-                            :key="indexSize">{{itemSize.size_name}}</span>
-                          <template v-if="itemInner.size_info.length < 7">
-                            <span class="tcolumn"
-                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
-                              :key='indexB + "buchong"'></span>
-                          </template>
-                          <span class="tcolumn center">合计</span>
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                  <div class="tbody">
-                    <span class="trow">
-                      <span class="tcolumn flex12">
-                        <span class="blue"
-                          @click="$router.push('/product/productDetail/' + itemInner.product_id)">{{itemInner.product_code}}</span>
-                        <span>{{itemInner.type.join('/')}}</span>
-                        <span>单价：{{itemInner.price || 0}}元/{{itemInner.unit || '件'}}</span>
-                      </span>
-                      <span class="tcolumn center flex16">
-                        <zh-img-list :list='itemInner.image'></zh-img-list>
-                      </span>
-                      <span class="tcolumn flex8 noPad">
-                        <span class="trow"
-                          v-for="(itemColor,indexColor) in itemInner.color_info"
-                          :key="indexColor">
-                          <span class="tcolumn">{{itemColor.color_name}}</span>
-                          <span class="tcolumn"
-                            v-for="(itemSize,indexSize) in itemInner.size_info"
-                            :key="indexSize">{{itemColor[itemSize.size_name]}}{{itemInner.unit || '件'}}</span>
-                          <template v-if="itemInner.size_info.length < 7">
-                            <span class="tcolumn"
-                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
-                              :key='indexB + "buchong"'></span>
-                          </template>
-                          <span class="tcolumn center">{{itemColor.number || 0}}{{itemInner.unit || '件'}}</span>
-                        </span>
-                        <span class="trow">
-                          <span class="tcolumn">合计</span>
-                          <span class="tcolumn"
-                            v-for="(itemSize,indexSize) in itemInner.size_info"
-                            :key="indexSize">{{itemSize.number || 0}}{{itemInner.unit || '件'}}</span>
-                          <template v-if="itemInner.size_info.length < 7">
-                            <span class="tcolumn"
-                              v-for="(itemB,indexB) in 7-itemInner.size_info.length"
-                              :key='indexB + "buchong"'></span>
-                          </template>
-                          <span class="tcolumn center">{{itemInner.number || 0}}{{itemInner.unit || '件'}}</span>
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template> -->
+
         </div>
       </div>
       <template v-if="tableType==='table'">
@@ -342,7 +257,7 @@
                         <span class="blue"
                           @click="$router.push('/product/productDetail/' + itemInner.product_id)">{{itemInner.product_code}}</span>
                         <span>{{itemInner.type.join('/')}}</span>
-                        <span>单价：{{itemInner.price || 0}}元/{{itemInner.unit || '件'}}</span>
+                        <span>单价：{{canSeePriceFlag ? (itemInner.price || 0) + '元/' + (itemInner.unit || '件') : '/'}}</span>
                       </span>
                       <span class="tcolumn center flex16">
                         <zh-img-list :list='itemInner.image'></zh-img-list>
@@ -1375,6 +1290,7 @@ export default {
   data () {
     return {
       loading: true,
+      canSeePriceFlag: false,
       tableType: 'table',
       orderInfo: {
         order_code: '',
@@ -1775,6 +1691,9 @@ export default {
               }
             ]
           }
+        }
+        if (window.sessionStorage.getItem('user_id') === orderData.user_id || +window.sessionStorage.getItem('has_check') > 0) {
+          this.canSeePriceFlag = true
         }
         this.loading = false
       })

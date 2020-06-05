@@ -100,7 +100,7 @@
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <el-select v-model="itemYarn.yarnName"
+                  <!-- <el-select v-model="itemYarn.yarnName"
                     filterable
                     default-first-option
                     clearable
@@ -111,7 +111,11 @@
                       :label="item.name"
                       :value="item.name">
                     </el-option>
-                  </el-select>
+                  </el-select> -->
+                  <el-autocomplete v-model="itemYarn.yarnName"
+                    clearable
+                    :fetch-suggestions="querySearchYarn"
+                    placeholder="请选择需要操作的原料"></el-autocomplete>
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -342,7 +346,7 @@
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <el-select v-model="itemMa.materialName"
+                  <!-- <el-select v-model="itemMa.materialName"
                     filterable
                     default-first-option
                     clearable
@@ -352,7 +356,11 @@
                       :label="item.name"
                       :value="item.name">
                     </el-option>
-                  </el-select>
+                  </el-select> -->
+                  <el-autocomplete v-model="itemMa.materialName"
+                    clearable
+                    :fetch-suggestions="querySearchMaterial"
+                    placeholder="请选择需要操作的辅料"></el-autocomplete>
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -582,7 +590,7 @@
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <el-select v-model="itemMa.packName"
+                  <!-- <el-select v-model="itemMa.packName"
                     filterable
                     default-first-option
                     clearable
@@ -592,7 +600,11 @@
                       :label="item.name"
                       :value="item.name">
                     </el-option>
-                  </el-select>
+                  </el-select> -->
+                  <el-autocomplete v-model="itemMa.packName"
+                    clearable
+                    :fetch-suggestions="querySearchPack"
+                    placeholder="请选择需要操作的包装辅料"></el-autocomplete>
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -1110,6 +1122,33 @@ export default {
     }
   },
   methods: {
+    querySearchYarn (queryString, cb) {
+      let list = this.yarnNameList.map(item => {
+        return {
+          value: item.name
+        }
+      })
+      let returnList = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
+      cb(returnList)
+    },
+    querySearchMaterial (queryString, cb) {
+      let list = this.materialNameList.map(item => {
+        return {
+          value: item.name
+        }
+      })
+      let returnList = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
+      cb(returnList)
+    },
+    querySearchPack (queryString, cb) {
+      let list = this.packNameList.map(item => {
+        return {
+          value: item.name
+        }
+      })
+      let returnList = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
+      cb(returnList)
+    },
     getListAndLog (type) {
       if (type === 1) {
         this.getYarnList(1)

@@ -44,25 +44,6 @@
             </span>
           </div>
         </div>
-        <!-- <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">订单类型</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <el-select v-model="order_type"
-                filterable
-                placeholder="请选择订单类型">
-                <el-option v-for="item in orderTypeArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </span>
-          </div>
-        </div> -->
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
@@ -1600,9 +1581,9 @@ export default {
             if (!itemBtach.id) {
               flag = false
             }
-            if (!itemBtach.price) {
-              flag = false
-            }
+            // if (!itemBtach.price) {
+            //   flag = false
+            // }
             if (itemBtach.product_info.length < 1) {
               this.$message.error('检测到产品内没有尺码颜色信息，请添加')
               flag = false
