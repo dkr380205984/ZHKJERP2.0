@@ -28,10 +28,12 @@
               <div class="trow"
                 v-for="(item,index) in data"
                 :key="index">
-                <div class="tcolumn">
-                  <span>第{{index+1}}批</span>
-                  <span>{{item.batch_title}}</span>
-                  <span>{{item.delivery_time}}</span>
+                <div class="tcolumn"
+                  style="padding:12px 0;line-height:1em">
+                  <span style="font-size:16px;font-weight:bold;margin-bottom:4px">第{{item.batch_id}}批</span>
+                  <span style="margin-bottom:4px">({{item.batch_title || '无'}})</span>
+                  <span style="margin-bottom:4px">{{item.delivery_time}}</span>
+                  <span>{{item.order_type}}</span>
                 </div>
                 <div class="tcolumn">
                   <span>

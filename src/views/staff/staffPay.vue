@@ -7,7 +7,7 @@
         <span class="title">结算单信息</span>
         <div class="titleBtnCtn">
           <div class="btn btnWhiteBlue"
-            @click="showLogPopup = true">查看操作日志</div>
+            @click="showLogPopup = true;getPayLog(1)">查看操作日志</div>
           <div class="btn btnWhiteBlue"
             @click="$openUrl('/staffDayTable?year=' + date.split('-')[0] + '&month=' + date.split('-')[1] + '&departmentId=' + department)">打印</div>
           <div class="btn btnWhiteBlue"
@@ -291,6 +291,7 @@
                     <span class="tb_row"
                       style="flex:0.4">
                       <el-checkbox v-model="item.checked"
+                        :key="item.id"
                         @change="$forceUpdate()"></el-checkbox>
                     </span>
                     <span class="tb_row">{{item.department_name}}</span>
@@ -343,31 +344,101 @@
         </div>
       </div>
     </div>
-    <div class="popup">
+    <div class="popup"
+      v-if="showLogPopup">
       <div class="main"
-        style="width:1024px">
+        style="width:1024px;">
         <div class="title">
           <div class="text">日常工作结算表操作日志</div>
           <i class="el-icon-close"
-            @click="showPopup=false"></i>
+            @click="showLogPopup=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:580px"
+          v-loading='logLoading'>
           <div class="row">
             <div class="col">
-              <el-date-picker v-model="value2"
+              <el-date-picker v-model="date_log"
+                @change="getPayLog(1)"
                 type="month"
+                :clearable="false"
+                value-format="yyyy-MM"
                 placeholder="筛选月份">
               </el-date-picker>
+              <!-- <el-date-picker
+                placeholder="">
+              </el-date-picker> -->
             </div>
-            <div class="col">
-              <el-select v-model="value"
-                placeholder="筛选部门">
-                <el-option v-for="item in []"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+            <div class="col"
+              style="margin-left:16px">
+              <el-select v-model="department_id"
+                @change="getPayLog(1)"
+                placeholder="筛选部门"
+                clearable>
+                <el-option v-for="(item,index) in departmentArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
               </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="tableCtnLv2 minHeight5">
+              <div class="tb_content">
+                <span class="tb_row">员工部门</span>
+                <span class="tb_row">员工编号</span>
+                <span class="tb_row">员工姓名</span>
+                <span class="tb_row">结算日期</span>
+                <span class="tb_row">工序</span>
+                <span class="tb_row">结算方式</span>
+                <span class="tb_row">单价</span>
+                <span class="tb_row">数量</span>
+                <span class="tb_row">合计</span>
+                <span class="tb_row">备注</span>
+                <span class="tb_row">结算人</span>
+                <span class="tb_row">结算时间</span>
+              </div>
+              <div class="tb_content"
+                v-for="(itemLog,indexLog) in staffLogList"
+                :key="indexLog">
+                <span class="tb_row">{{itemLog.department_name}}</span>
+                <span class="tb_row">{{itemLog.staff_code}}</span>
+                <span class="tb_row">{{itemLog.staff_name}}</span>
+                <span class="tb_row">{{itemLog.complete_time}}</span>
+                <span class="tb_row">{{itemLog.work_type}}</span>
+                <span class="tb_row">{{itemLog.settle_type}}</span>
+                <span class="tb_row">{{itemLog.price}}</span>
+                <span class="tb_row">{{itemLog.number}}</span>
+                <span class="tb_row">{{itemLog.total_price}}</span>
+                <span class="tb_row">{{itemLog.desc}}</span>
+                <span class="tb_row">{{itemLog.user_name}}</span>
+                <span class="tb_row">{{$getTime(itemLog.created_at.date)}}</span>
+              </div>
+              <div class="tb_content">
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row">平均单价</span>
+                <span class="tb_row"></span>
+                <span class="tb_row">合计数量</span>
+                <span class="tb_row"></span>
+                <span class="tb_row">合计金额</span>
+                <span class="tb_row"></span>
+              </div>
+              <div class="tb_content">
+                <span class="tb_row right">
+                  <el-pagination background
+                    :page-size="5"
+                    layout="prev, pager, next"
+                    :total="logTotal"
+                    :current-page.sync="logPage"
+                    @current-change="getPayLog">
+                  </el-pagination>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -393,6 +464,7 @@ export default {
     return {
       loading: true,
       showPopup: false,
+      showLogPopup: false,
       defaultImage: require('@/assets/image/index/noPic.jpg'),
       testValue: '',
       page: 1,
@@ -408,7 +480,14 @@ export default {
       isCheckedAll: false,
       staffTagList: [],
       staffTagKeyWord: '',
-      processArr: []
+      processArr: [],
+      // 操作日志
+      logLoading: false,
+      staffLogList: [],
+      logTotal: 1,
+      logPage: 1,
+      date_log: '',
+      department_id: ''
     }
   },
   watch: {
@@ -510,10 +589,11 @@ export default {
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('操作成功')
-          item.addFlag = false
-          itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
-          this.loading = false
-          this.$forceUpdate()
+          // item.addFlag = false
+          // itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
+          this.init()
+          // this.loading = false
+          // this.$forceUpdate()
         }
       })
     },
@@ -646,6 +726,24 @@ export default {
           this.loading = false
         }
       })
+    },
+    getPayLog (page) {
+      this.logLoading = true
+      this.logPage = page
+      staff.payLog({
+        limit: 5,
+        page: page,
+        staff_id: '',
+        department_id: this.department_id,
+        year: this.date_log.split('-')[0],
+        month: Number(this.date_log.split('-')[1])
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.staffLogList = res.data.data
+          this.logTotal = res.data.meta.total
+        }
+        this.logLoading = false
+      })
     }
   },
   computed: {
@@ -668,6 +766,7 @@ export default {
     // 设置默认日期
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
+    this.date_log = this.date
     Promise.all([
       station.list({
         type: 2
@@ -729,6 +828,9 @@ export default {
       border-bottom-left-radius: 0;
       padding: 0 4px;
     }
+  }
+  .tb_row {
+    word-break: break-all;
   }
 }
 </style>

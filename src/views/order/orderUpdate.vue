@@ -1044,10 +1044,6 @@ export default {
         this.$message.error('请填写订单号')
         return
       }
-      if (!this.order_type) {
-        this.$message.error('请选择订单类型')
-        return
-      }
       if (!this.client_id) {
         this.$message.error('请选择外贸公司')
         return

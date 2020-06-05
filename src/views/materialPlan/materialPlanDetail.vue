@@ -262,12 +262,11 @@
 </template>
 
 <script>
-import { materialPlan } from '@/assets/js/api.js'
+import { materialPlan, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
-      leftNum: 32,
       orderInfo: {},
       materialPlanInfo: [],
       productMaterialTotal: [],
@@ -280,128 +279,7 @@ export default {
     }
   },
   created () {
-    Promise.all([
-      materialPlan.init({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type
-      }),
-      materialPlan.detail({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.type
-      })
-    ]).then(res => {
-      let data = res[1].data.data
-      // 初始化订单信息
-      this.orderInfo = data.order_info
-      // 处理计划数据
-      let planInfo = this.$clone(data.detail_data).sort((a, b) => {
-        return a.pid - b.pid
-      }).map(itemPro => {
-        if (itemPro.pid === 0) {
-          itemPro.pid = itemPro.product_id
-        }
-        return itemPro
-      })
-      this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }, { name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
-      // 处理计划时未填写产品物料计划数据不展示的问题（强行匹配没有物料计划的订单产品进去）
-      let orderProductInfo = res[0].data.data.product_info
-      orderProductInfo.forEach(itemPro => {
-        let flag = this.materialPlanInfo.find(itemPlan => {
-          return +itemPlan.product_id === +itemPro.product_id && itemPlan.color_id === itemPro.color_id && itemPlan.size_id === itemPro.size_id
-        })
-        if (!flag) {
-          this.materialPlanInfo.push({
-            product_id: itemPro.product_id,
-            size: itemPro.size_name,
-            size_id: itemPro.size_id,
-            color: itemPro.color_name,
-            color_id: itemPro.color_id,
-            product_code: itemPro.product_code,
-            category_info: {
-              category_name: itemPro.category_name,
-              style_name: itemPro.style_name,
-              type_name: itemPro.type_name,
-              unit: itemPro.unit
-            },
-            material_info: []
-          })
-        }
-      })
-      data.production_data.forEach(itemPro => {
-        let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
-        if (flag) {
-          flag.material_loss = itemPro.loss_y
-          flag.other_loss = itemPro.loss_f
-          flag.production_num = itemPro.product_number
-          flag.order_num = itemPro.order_number
-          flag.stock_num = ''
-        }
-      })
-      // 插入产品所需部位数量
-      this.materialPlanInfo.forEach(itemPro => {
-        itemPro.material_info.forEach(itemPart => {
-          let flag = this.$clone(data.production_data).find(value => +value.product_id === +itemPart.product_part && value.size_name === itemPro.size && value.color_name === itemPro.color)
-          if (flag) {
-            itemPart.need_part_number = flag.product_number / itemPro.production_num
-          }
-        })
-      })
-      // 处理所需物料
-      let productMaterialTotal = this.$mergeData(planInfo, { mainRule: ['pid/product_id'], otherRule: [{ name: 'product_code' }], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'material_attribute/color', 'size_name/size', 'material_type/type'], otherRule: [{ name: 'reality_weight/number', type: 'add' }, { name: 'unit' }] } })
-      productMaterialTotal = productMaterialTotal.map(itemPro => {
-        let materialInfo = this.$mergeData(itemPro.material_info.map(itemMa => {
-          delete itemMa.childrenMergeInfo
-          return itemMa
-        }), { mainRule: ['material_name', 'color', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'size_info', childrenRule: { mainRule: 'size', otherRule: [{ name: 'number', type: 'add' }] } }).map(itemMa => {
-          let obj = {}
-          itemMa.size_info.forEach(itemSize => {
-            obj[itemSize.size] = itemSize.number
-          })
-          return {
-            color: itemMa.color,
-            material_name: itemMa.material_name,
-            type: itemMa.type,
-            unit: itemMa.unit,
-            ...obj
-          }
-        })
-        return {
-          name: itemPro.product_code,
-          product_id: itemPro.product_id,
-          material_info: materialInfo
-        }
-      })
-      let proSizeArr = this.$mergeData(data.production_data, { mainRule: 'product_id', childrenName: 'size_arr', childrenRule: { mainRule: 'size_name' } })
-      proSizeArr.forEach(valPro => {
-        let sizeFlag = productMaterialTotal.find(itemPro => itemPro.product_id === valPro.product_id)
-        if (sizeFlag) {
-          sizeFlag.sizeArr = valPro.size_arr.map(itemSize => itemSize.size_name)
-        }
-      })
-      this.productMaterialTotal = productMaterialTotal
-      this.activeProId = this.productMaterialTotal[0] ? this.productMaterialTotal[0].product_id : ''
-      this.showMaterialInfo = this.productMaterialTotal[0] ? this.productMaterialTotal[0].material_info : []
-      this.showSizeArr = this.productMaterialTotal[0] ? this.productMaterialTotal[0].sizeArr : []
-      // 处理统计数据
-      this.materialPlanTotalInfo = this.$mergeData(data.total_data.filter(itemNum => Number(itemNum.reality_weight)), { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
-      this.materialPlanTotalInfo = this.materialPlanTotalInfo.map(itemMa => {
-        return {
-          material_name: itemMa.material_name,
-          type: itemMa.type,
-          unit: itemMa.unit,
-          color_info: itemMa.color_info.map(itemColor => {
-            return {
-              color: itemColor.color,
-              number: itemColor.number
-            }
-          }),
-          total_number: this.$toFixed(itemMa.color_info.map(itemColor => Number(itemColor.number)).reduce((total, itemNum) => {
-            return total + itemNum
-          }))
-        }
-      })
-      this.loading = false
-    })
+    this.init(this.$route.params.id, this.$route.params.type)
     if (this.$route.query.showRouterPopup === 'true') {
       this.showRouterPopup = true
     }
@@ -436,14 +314,257 @@ export default {
       }
       let printInfo = checkedPro.map(item => [item.product_id, item.size_id, item.color_id].join(',')).join(';')
       this.$openUrl('/materialPlanTable/' + this.$route.params.id + '/' + this.$route.params.type + '?type=' + type + '&proInfo=' + printInfo)
-    }
-  },
-  watch: {
-    leftNum (newVal) {
-      if (newVal >= 32) {
-        this.leftNum = 32
-      } else if (newVal + this.$refs.scroll_dom.offsetWidth < 1300) {
-        this.leftNum = 1300 - this.$refs.scroll_dom.offsetWidth
+    },
+    init (id, type) {
+      if (type === '1') {
+        Promise.all([
+          materialPlan.init({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type
+          }),
+          materialPlan.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type
+          }),
+          order.detail({
+            id: id
+          })
+        ]).then(res => {
+          let data = res[1].data.data
+          // 初始化订单信息
+          this.orderInfo = res[2].data.data
+          // 处理计划数据
+          let planInfo = this.$clone(data.detail_data).sort((a, b) => {
+            return a.pid - b.pid
+          }).map(itemPro => {
+            if (itemPro.pid === 0) {
+              itemPro.pid = itemPro.product_id
+            }
+            return itemPro
+          })
+          this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }, { name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+          // 处理计划时未填写产品物料计划数据不展示的问题（强行匹配没有物料计划的订单产品进去）
+          let orderProductInfo = res[0].data.data.product_info
+          orderProductInfo.forEach(itemPro => {
+            let flag = this.materialPlanInfo.find(itemPlan => {
+              return +itemPlan.product_id === +itemPro.product_id && itemPlan.color_id === itemPro.color_id && itemPlan.size_id === itemPro.size_id
+            })
+            if (!flag) {
+              this.materialPlanInfo.push({
+                product_id: itemPro.product_id,
+                size: itemPro.size_name,
+                size_id: itemPro.size_id,
+                color: itemPro.color_name,
+                color_id: itemPro.color_id,
+                product_code: itemPro.product_code,
+                category_info: {
+                  category_name: itemPro.category_name,
+                  style_name: itemPro.style_name,
+                  type_name: itemPro.type_name,
+                  unit: itemPro.unit
+                },
+                material_info: []
+              })
+            }
+          })
+          data.production_data.forEach(itemPro => {
+            let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
+            if (flag) {
+              flag.material_loss = itemPro.loss_y
+              flag.other_loss = itemPro.loss_f
+              flag.production_num = itemPro.product_number
+              flag.order_num = itemPro.order_number
+              flag.stock_num = ''
+            }
+          })
+          // 插入产品所需部位数量
+          this.materialPlanInfo.forEach(itemPro => {
+            itemPro.material_info.forEach(itemPart => {
+              let flag = this.$clone(data.production_data).find(value => +value.product_id === +itemPart.product_part && value.size_name === itemPro.size && value.color_name === itemPro.color)
+              if (flag) {
+                itemPart.need_part_number = flag.product_number / itemPro.production_num
+              }
+            })
+          })
+          // 处理所需物料
+          let productMaterialTotal = this.$mergeData(planInfo, { mainRule: ['pid/product_id'], otherRule: [{ name: 'product_code' }], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'material_attribute/color', 'size_name/size', 'material_type/type'], otherRule: [{ name: 'reality_weight/number', type: 'add' }, { name: 'unit' }] } })
+          productMaterialTotal = productMaterialTotal.map(itemPro => {
+            let materialInfo = this.$mergeData(itemPro.material_info.map(itemMa => {
+              delete itemMa.childrenMergeInfo
+              return itemMa
+            }), { mainRule: ['material_name', 'color', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'size_info', childrenRule: { mainRule: 'size', otherRule: [{ name: 'number', type: 'add' }] } }).map(itemMa => {
+              let obj = {}
+              itemMa.size_info.forEach(itemSize => {
+                obj[itemSize.size] = itemSize.number
+              })
+              return {
+                color: itemMa.color,
+                material_name: itemMa.material_name,
+                type: itemMa.type,
+                unit: itemMa.unit,
+                ...obj
+              }
+            })
+            return {
+              name: itemPro.product_code,
+              product_id: itemPro.product_id,
+              material_info: materialInfo
+            }
+          })
+          let proSizeArr = this.$mergeData(data.production_data, { mainRule: 'product_id', childrenName: 'size_arr', childrenRule: { mainRule: 'size_name' } })
+          proSizeArr.forEach(valPro => {
+            let sizeFlag = productMaterialTotal.find(itemPro => itemPro.product_id === valPro.product_id)
+            if (sizeFlag) {
+              sizeFlag.sizeArr = valPro.size_arr.map(itemSize => itemSize.size_name)
+            }
+          })
+          this.productMaterialTotal = productMaterialTotal
+          this.activeProId = this.productMaterialTotal[0] ? this.productMaterialTotal[0].product_id : ''
+          this.showMaterialInfo = this.productMaterialTotal[0] ? this.productMaterialTotal[0].material_info : []
+          this.showSizeArr = this.productMaterialTotal[0] ? this.productMaterialTotal[0].sizeArr : []
+          // 处理统计数据
+          this.materialPlanTotalInfo = this.$mergeData(data.total_data.filter(itemNum => Number(itemNum.reality_weight)), { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
+          this.materialPlanTotalInfo = this.materialPlanTotalInfo.map(itemMa => {
+            return {
+              material_name: itemMa.material_name,
+              type: itemMa.type,
+              unit: itemMa.unit,
+              color_info: itemMa.color_info.map(itemColor => {
+                return {
+                  color: itemColor.color,
+                  number: itemColor.number
+                }
+              }),
+              total_number: this.$toFixed(itemMa.color_info.map(itemColor => Number(itemColor.number)).reduce((total, itemNum) => {
+                return total + itemNum
+              }))
+            }
+          })
+          this.loading = false
+        })
+      } else {
+        Promise.all([
+          materialPlan.init({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type
+          }),
+          materialPlan.detail({
+            order_id: this.$route.params.id,
+            order_type: this.$route.params.type
+          })
+        ]).then(res => {
+          let data = res[1].data.data
+          // 初始化订单信息
+          this.orderInfo = data.order_info
+          // 处理计划数据
+          let planInfo = this.$clone(data.detail_data).sort((a, b) => {
+            return a.pid - b.pid
+          }).map(itemPro => {
+            if (itemPro.pid === 0) {
+              itemPro.pid = itemPro.product_id
+            }
+            return itemPro
+          })
+          this.materialPlanInfo = this.$mergeData(planInfo, { mainRule: ['pid/product_id', 'color_id', 'size_id'], otherRule: [{ name: 'color_name/color' }, { name: 'size_name/size' }, { name: 'category_info' }, { name: 'product_code' }], childrenName: 'material_info', childrenRule: { otherRule: [{ name: 'product_id/product_part' }, { name: 'name' }, { name: 'material_name' }, { name: 'material_type/type' }, { name: 'material_attribute/color' }, { name: 'single_weight/number' }, { name: 'single_weight/plan_number' }, { name: 'total_weight/total_number' }, { name: 'loss/material_loss' }, { name: 'reality_weight/end_num' }, { name: 'unit' }] } })
+          // 处理计划时未填写产品物料计划数据不展示的问题（强行匹配没有物料计划的订单产品进去）
+          let orderProductInfo = res[0].data.data.product_info
+          orderProductInfo.forEach(itemPro => {
+            let flag = this.materialPlanInfo.find(itemPlan => {
+              return +itemPlan.product_id === +itemPro.product_id && itemPlan.color_id === itemPro.color_id && itemPlan.size_id === itemPro.size_id
+            })
+            if (!flag) {
+              this.materialPlanInfo.push({
+                product_id: itemPro.product_id,
+                size: itemPro.size_name,
+                size_id: itemPro.size_id,
+                color: itemPro.color_name,
+                color_id: itemPro.color_id,
+                product_code: itemPro.product_code,
+                category_info: {
+                  category_name: itemPro.category_name,
+                  style_name: itemPro.style_name,
+                  type_name: itemPro.type_name,
+                  unit: itemPro.unit
+                },
+                material_info: []
+              })
+            }
+          })
+          data.production_data.forEach(itemPro => {
+            let flag = this.materialPlanInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
+            if (flag) {
+              flag.material_loss = itemPro.loss_y
+              flag.other_loss = itemPro.loss_f
+              flag.production_num = itemPro.product_number
+              flag.order_num = itemPro.order_number
+              flag.stock_num = ''
+            }
+          })
+          // 插入产品所需部位数量
+          this.materialPlanInfo.forEach(itemPro => {
+            itemPro.material_info.forEach(itemPart => {
+              let flag = this.$clone(data.production_data).find(value => +value.product_id === +itemPart.product_part && value.size_name === itemPro.size && value.color_name === itemPro.color)
+              if (flag) {
+                itemPart.need_part_number = flag.product_number / itemPro.production_num
+              }
+            })
+          })
+          // 处理所需物料
+          let productMaterialTotal = this.$mergeData(planInfo, { mainRule: ['pid/product_id'], otherRule: [{ name: 'product_code' }], childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'material_attribute/color', 'size_name/size', 'material_type/type'], otherRule: [{ name: 'reality_weight/number', type: 'add' }, { name: 'unit' }] } })
+          productMaterialTotal = productMaterialTotal.map(itemPro => {
+            let materialInfo = this.$mergeData(itemPro.material_info.map(itemMa => {
+              delete itemMa.childrenMergeInfo
+              return itemMa
+            }), { mainRule: ['material_name', 'color', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'size_info', childrenRule: { mainRule: 'size', otherRule: [{ name: 'number', type: 'add' }] } }).map(itemMa => {
+              let obj = {}
+              itemMa.size_info.forEach(itemSize => {
+                obj[itemSize.size] = itemSize.number
+              })
+              return {
+                color: itemMa.color,
+                material_name: itemMa.material_name,
+                type: itemMa.type,
+                unit: itemMa.unit,
+                ...obj
+              }
+            })
+            return {
+              name: itemPro.product_code,
+              product_id: itemPro.product_id,
+              material_info: materialInfo
+            }
+          })
+          let proSizeArr = this.$mergeData(data.production_data, { mainRule: 'product_id', childrenName: 'size_arr', childrenRule: { mainRule: 'size_name' } })
+          proSizeArr.forEach(valPro => {
+            let sizeFlag = productMaterialTotal.find(itemPro => itemPro.product_id === valPro.product_id)
+            if (sizeFlag) {
+              sizeFlag.sizeArr = valPro.size_arr.map(itemSize => itemSize.size_name)
+            }
+          })
+          this.productMaterialTotal = productMaterialTotal
+          this.activeProId = this.productMaterialTotal[0] ? this.productMaterialTotal[0].product_id : ''
+          this.showMaterialInfo = this.productMaterialTotal[0] ? this.productMaterialTotal[0].material_info : []
+          this.showSizeArr = this.productMaterialTotal[0] ? this.productMaterialTotal[0].sizeArr : []
+          // 处理统计数据
+          this.materialPlanTotalInfo = this.$mergeData(data.total_data.filter(itemNum => Number(itemNum.reality_weight)), { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
+          this.materialPlanTotalInfo = this.materialPlanTotalInfo.map(itemMa => {
+            return {
+              material_name: itemMa.material_name,
+              type: itemMa.type,
+              unit: itemMa.unit,
+              color_info: itemMa.color_info.map(itemColor => {
+                return {
+                  color: itemColor.color,
+                  number: itemColor.number
+                }
+              }),
+              total_number: this.$toFixed(itemMa.color_info.map(itemColor => Number(itemColor.number)).reduce((total, itemNum) => {
+                return total + itemNum
+              }))
+            }
+          })
+          this.loading = false
+        })
       }
     }
   },

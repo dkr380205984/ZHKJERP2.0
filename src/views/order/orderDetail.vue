@@ -136,8 +136,8 @@
         <div class="rowCtn">
           <div class="tableCtnLv2">
             <span class="tb_header">
-              <span class="tb_row">发货日期</span>
-              <span class="tb_row">批次备注</span>
+              <span class="tb_row middle">发货日期</span>
+              <span class="tb_row middle">批次备注</span>
               <span class="tb_row tb_col flex6">
                 <span class="tb_col_item">
                   <span class="tb_row">产品信息</span>
@@ -152,14 +152,14 @@
             <span class="tb_content"
               v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
               :key="indexBatch">
-              <span class="tb_row">
-                第{{itemBatch.batch_id}}批
-                <br />
-                {{itemBatch.batch_title}}
-                <br />
-                {{itemBatch.delivery_time}}
+              <span class="tb_row middle tb_col"
+                style="padding:12px 0;">
+                <span style="font-size:16px;font-weight:bold;margin-bottom:4px">第{{itemBatch.batch_id}}批</span>
+                <span style="margin-bottom:4px">({{itemBatch.batch_title || '无'}})</span>
+                <span style="margin-bottom:4px">{{itemBatch.delivery_time}}</span>
+                <span>{{itemBatch.order_type}}</span>
               </span>
-              <span class="tb_row">
+              <span class="tb_row middle">
                 <template v-if="!itemBatch.desc">无</template>
                 <el-popover placement="top-start"
                   v-else
