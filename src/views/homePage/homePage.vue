@@ -208,26 +208,26 @@
         </div>
       </div>
       <div class="rightCtn">
-        <div class="container"
+        <!-- <div class="container"
           style="height:calc(100% - 350px);border-bottom:24px solid #F0F2F5">
           <img style="width:177px;height:177px;margin: 20px auto;display:block"
             :src="require('../../assets/image/homePage/二维码.png')" />
           <div style="font-size:18px;color:rgba(0,0,0,0.65);text-align:center">微信扫一扫使用小程序</div>
+        </div> -->
+        <!-- <div class="container"
+          style="height:306px"> -->
+        <div class="title">使用教学
+          <span class="btn noBorder"
+            style="padding-right:0"
+            @click="$openUrl('/tutorialSystem/tutorialSystemList')">查看全部</span>
         </div>
-        <div class="container"
-          style="height:306px">
-          <div class="title">使用教学
-            <span class="btn noBorder"
-              style="padding-right:0"
-              @click="$openUrl('/tutorialSystem/tutorialSystemList')">查看全部</span>
-          </div>
-          <div class="line"
-            v-for="(item,index) in tutorialSystemArr"
-            :key="index">
-            <div class="number">{{index + 1}}</div>
-            <div class="text"
-              @click.prevent="$openUrl('/tutorialSystem/tutorialSystemDetail/' + item.id)">{{item.title}}</div>
-          </div>
+        <div class="line"
+          v-for="(item,index) in tutorialSystemArr"
+          :key="index">
+          <div class="number">{{index + 1}}</div>
+          <div class="text"
+            @click.prevent="$openUrl('/tutorialSystem/tutorialSystemDetail/' + item.id)">{{item.title}}</div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -579,7 +579,7 @@ export default {
     ]).then((res) => {
       this.msgList = res[0].data.data
       this.dispatchCount = res[1].data.data
-      this.tutorialSystemArr = res[2].data.data.splice(0, 6)
+      this.tutorialSystemArr = res[2].data.data.splice(0, 16)
     })
   }
 }
