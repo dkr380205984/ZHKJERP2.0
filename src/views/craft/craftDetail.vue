@@ -70,6 +70,30 @@
         </div>
       </div>
     </div>
+    <div class="module"
+      v-if="imgSrc.length>0">
+      <div class="titleCtn">
+        <span class="title hasBorder">图片信息</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">图片信息：</span>
+            <div class="imgCtn">
+              <!-- <img v-for="(item,index) in detail.image"
+                :key="index"
+                :src="item.image_url" /> -->
+              <el-image style="width:150px;height:150px;margin-right:16px"
+                v-for="(item,index) in imgSrc"
+                :key="index"
+                :src="item.file_url || ''"
+                :preview-src-list="[item.file_url]">
+              </el-image>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">原料经向</span>
@@ -559,7 +583,8 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <div class="label">仿真图像：</div>
+            <div class="label">仿真图像：
+            </div>
             <div class="btnList">
               <div class="button"
                 v-for="(item,index) in warpInfo.color_data"
@@ -570,7 +595,17 @@
           </div>
         </div>
         <div class="rowCtn"
+          style="position:relative"
           v-show="selectColour!==-1">
+          <span style="position: absolute;
+              left: 0px;
+              top: -1em;
+              color: rgb(26, 149, 255);
+              cursor: pointer;
+              right: 0;
+              margin: auto;
+              text-align: center;"
+            @click="uploadImg">上传当前配色图片</span>
           <div class="ColCtn"
             style="width:100%">
             <div class="canvasCtn">
@@ -682,7 +717,7 @@
 
 <script>
 import * as THREE from 'three'
-import { craft } from '@/assets/js/api.js'
+import { craft, getToken } from '@/assets/js/api.js'
 import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
@@ -694,6 +729,8 @@ export default {
   },
   data () {
     return {
+      token: '',
+      imgSrc: [],
       showGLFlag: false,
       GLYulan: [], // 预览纹版图
       camera: null,
@@ -1009,6 +1046,79 @@ export default {
     }
   },
   methods: {
+    // 上传图片
+    uploadImg () {
+      let _this = this
+      let uploadData = {
+        product_id: this.$route.params.id,
+        product_type: this.$route.params.type,
+        craft_id: _this.$route.params.type === '1' ? _this.data.id : _this.data[_this.craftIndex].id,
+        is_back: 1,
+        color_id: _this.warpInfo.color_data[_this.selectColour].color_id,
+        file_url: null
+      }
+      if (this.imgSrc.find((item) => item.colour === this.warpInfo.color_data[this.craftIndex].product_color)) {
+        this.$message.error('请勿重复上传')
+        return
+      }
+      // 获取图片base64链接
+      var image = _this.$refs.myCanvas.toDataURL('image/png')
+      var url = 'https://upload.qiniup.com/'
+      var xhr = new XMLHttpRequest()
+      let formData = new FormData()
+      formData.append('token', _this.token)
+      let filename = Date.parse(new Date()) + '.jpg'
+      formData.append('key', filename)
+      formData.append('file', this.dataURLtoFile(image, filename))
+      xhr.open('POST', url, true)
+      xhr.send(formData)
+      _this.loading = true
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          uploadData.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhr.responseText).key
+          _this.$message.success('上传成功')
+          craft.uploadImg(uploadData).then((res) => {
+            _this.imgSrc.push(uploadData)
+            _this.loading = false
+            if (_this.warpInfo.back_status === 1 || _this.weftInfo.back_status === 1) {
+              _this.loading = true
+              var imageBack = _this.$refs.myCanvasBack.toDataURL('image/png')
+              var urlBack = 'https://upload.qiniup.com/'
+              var xhrBack = new XMLHttpRequest()
+              let formData = new FormData()
+              formData.append('token', _this.token)
+              let filename = Date.parse(new Date()) + '.jpg'
+              formData.append('key', filename)
+              formData.append('file', _this.dataURLtoFile(imageBack, filename))
+              xhrBack.open('POST', urlBack, true)
+              xhrBack.send(formData)
+              xhrBack.onreadystatechange = function () {
+                if (xhrBack.readyState === 4) {
+                  uploadData.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhrBack.responseText).key
+                  uploadData.is_back = 2
+                  _this.$message.success('上传背面成功')
+                  craft.uploadImg(uploadData).then((res) => {
+                    _this.loading = false
+                    _this.imgSrc.push(uploadData)
+                  })
+                }
+              }
+            }
+          })
+        }
+      }
+    },
+    dataURLtoFile (dataurl, filename) {
+      var arr = dataurl.split(',')
+      var mime = arr[0].match(/:(.*?);/)[1]
+      var bstr = atob(arr[1])
+      var n = bstr.length
+      var u8arr = new Uint8Array(n)
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n)
+      }
+      return new File([u8arr], filename, { type: mime })
+    },
     // 预览纹版图
     showGL (GL) {
       let GLArr = []
@@ -1402,6 +1512,7 @@ export default {
       }, 100)
     },
     init (data, index) {
+      this.imgSrc = data.image
       this.craftIndex = index
       this.selectColour = -1
       this.weight = 0
@@ -1858,6 +1969,7 @@ export default {
     }).then((res) => {
       if (res.data.status) {
         if (this.$route.params.type === '1') {
+          this.data = res.data.data
           this.init(res.data.data, 0)
         } else {
           this.data = res.data.data
@@ -1868,8 +1980,12 @@ export default {
           })
           this.init(this.data[this.craftIndex], this.craftIndex)
         }
+        console.log(this.warpInfo)
         this.loading = false
       }
+    })
+    getToken().then((res) => {
+      this.token = res.data.data
     })
   },
   mounted () {

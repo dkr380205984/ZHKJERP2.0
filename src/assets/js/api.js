@@ -121,7 +121,8 @@ const craft = {
   list: (params) => http.get(`${baseUrl}/product/craft/list`, params),
   createCloth: (params) => http.post(`${baseUrl}/dress/craft/save`, params, 'application/json'),
   detailCloth: (params) => http.get(`${baseUrl}/dress/craft/detail`, params),
-  deleteCloth: (params) => http.post(`${baseUrl}/dress/craft/delete`, params, 'application/json')
+  deleteCloth: (params) => http.post(`${baseUrl}/dress/craft/delete`, params, 'application/json'),
+  uploadImg: (params) => http.post(`${baseUrl}/craft/image/save`, params, 'application/json')
 }
 // 客户管理
 const client = {
