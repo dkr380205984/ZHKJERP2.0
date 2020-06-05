@@ -339,6 +339,7 @@
                 :before-remove="beforeRemove"
                 :file-list="fileArr"
                 :data="postData"
+                :on-success="successFile"
                 ref="uploada"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -381,10 +382,12 @@
 
 <script>
 import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, product, deleteFile } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, product } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      addArr: [],
+      deleteArr: [],
       loading: true,
       msgSwitch: false,
       letterArr: letterArr,
@@ -537,36 +540,62 @@ export default {
         return false
       }
     },
+    successFile (response, file, fileList) {
+      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
+    },
     beforeRemove (file, fileList) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFile({
+        this.deleteArr.push({
           id: file.id ? file.id : null,
           file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let deleteIndex = 0
-            fileList.forEach((item, index) => {
-              if (file.response) {
-                if (item.response && (item.response.key === file.response.key)) {
-                  deleteIndex = index
-                }
-              } else {
-                if (item.url === file.url) {
-                  deleteIndex = index
-                }
-              }
-            })
-            fileList.splice(deleteIndex, 1)
+        })
+        let deleteIndex = 0
+        fileList.forEach((item, index) => {
+          if (file.response) {
+            if (item.response && (item.response.key === file.response.key)) {
+              deleteIndex = index
+            }
+          } else {
+            if (item.url === file.url) {
+              deleteIndex = index
+            }
           }
         })
+        console.log(deleteIndex)
+        fileList.splice(deleteIndex, 1)
+        this.$forceUpdate()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        // deleteFile({
+        //   id: file.id ? file.id : null,
+        //   file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+        // }).then((res) => {
+        //   if (res.data.status) {
+        //     this.$message({
+        //       type: 'success',
+        //       message: '删除成功!'
+        //     })
+        // let deleteIndex = 0
+        // fileList.forEach((item, index) => {
+        //   if (file.response) {
+        //     if (item.response && (item.response.key === file.response.key)) {
+        //       deleteIndex = index
+        //     }
+        //   } else {
+        //     if (item.url === file.url) {
+        //       deleteIndex = index
+        //     }
+        //   }
+        // })
+        // fileList.splice(deleteIndex, 1)
+        //   }
+        // })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -671,7 +700,7 @@ export default {
           unit: item.unit
         }
       })
-      const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
+      // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         product_code: this.product_code.join(''),
         name: this.name,
@@ -682,7 +711,10 @@ export default {
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        image: imgArr,
+        image: {
+          file_data: this.addArr,
+          delete_data: this.deleteArr
+        },
         color: this.colour.map((item) => {
           return {
             color_name: item.colour,

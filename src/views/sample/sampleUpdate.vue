@@ -325,6 +325,7 @@
             </div>
             <div class="content autoHeight">
               <el-upload class="upload"
+                :on-success="successFile"
                 action="https://upload.qiniup.com/"
                 accept="image/jpeg,image/gif,image/png,image/bmp"
                 :before-upload="beforeAvatarUpload"
@@ -373,10 +374,12 @@
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, sample } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      addArr: [],
+      deleteArr: [],
       lock: true,
       loading: true,
       msgSwitch: false,
@@ -508,6 +511,9 @@ export default {
       let result = queryString ? this.materialArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialArr
       cb(result)
     },
+    successFile (response, file, fileList) {
+      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
+    },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
       let fileNameLength = file.name.length// 取到文件名长度
@@ -531,30 +537,52 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFile({
+        this.deleteArr.push({
           id: file.id ? file.id : null,
           file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let deleteIndex = 0
-            fileList.forEach((item, index) => {
-              if (file.response) {
-                if (item.response && (item.response.key === file.response.key)) {
-                  deleteIndex = index
-                }
-              } else {
-                if (item.url === file.url) {
-                  deleteIndex = index
-                }
-              }
-            })
-            fileList.splice(deleteIndex, 1)
+        })
+        let deleteIndex = 0
+        fileList.forEach((item, index) => {
+          if (file.response) {
+            if (item.response && (item.response.key === file.response.key)) {
+              deleteIndex = index
+            }
+          } else {
+            if (item.url === file.url) {
+              deleteIndex = index
+            }
           }
         })
+        fileList.splice(deleteIndex, 1)
+        this.$forceUpdate()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        // deleteFile({
+        //   id: file.id ? file.id : null,
+        //   file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+        // }).then((res) => {
+        //   if (res.data.status) {
+        //     this.$message({
+        //       type: 'success',
+        //       message: '删除成功!'
+        //     })
+        // let deleteIndex = 0
+        // fileList.forEach((item, index) => {
+        //   if (file.response) {
+        //     if (item.response && (item.response.key === file.response.key)) {
+        //       deleteIndex = index
+        //     }
+        //   } else {
+        //     if (item.url === file.url) {
+        //       deleteIndex = index
+        //     }
+        //   }
+        // })
+        // fileList.splice(deleteIndex, 1)
+        //   }
+        // })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -659,7 +687,7 @@ export default {
           data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
-      const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
+      // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         id: this.$route.params.id,
         sample_product_code: this.sample_product_code,
@@ -670,7 +698,10 @@ export default {
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        data_image: imgArr,
+        data_image: {
+          file_data: this.addArr,
+          delete_data: this.deleteArr
+        },
         data_color: this.colour.map((item) => {
           return {
             color_name: item.colour,
