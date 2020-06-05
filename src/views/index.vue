@@ -356,6 +356,10 @@ export default {
         this.$nextTick(() => {
           this.$fuckSelect()
         })
+        let body = document.getElementsByClassName('body')[0]
+        if (body) {
+          body.scrollTop = 0
+        }
       },
       deep: true
     }

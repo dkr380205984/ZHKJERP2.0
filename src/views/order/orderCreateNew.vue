@@ -1329,7 +1329,7 @@ export default {
                   return {
                     size_color: [itemSize.size_id, itemSize.color_id],
                     number: itemSize.number,
-                    price: itemSize.price
+                    price: ''
                   }
                 }),
                 sizeColor: itemPro.sizeColor,
