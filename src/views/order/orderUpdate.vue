@@ -701,6 +701,7 @@ export default {
   data () {
     return {
       lock: true,
+      canSeePriceFlag: false,
       loading: true,
       listLoading: true,
       msgSwitch: false,
@@ -1219,6 +1220,9 @@ export default {
       })
       // 初始化修改订单数据
       let orderInfo = res[3].data.data
+      if (window.sessionStorage.getItem('user_id') === orderInfo.user_id || +window.sessionStorage.getItem('has_check') > 0) {
+        this.canSeePriceFlag = true
+      }
       this.order_code = orderInfo.order_code.split(';').map(item => {
         return {
           code: item
@@ -1254,6 +1258,13 @@ export default {
           delete items.image
           return items
         }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name' }, { name: 'color_name' }] } })
+        // if (!this.canSeePriceFlag) {
+        //   productInfo.forEach(itemPro => {
+        //     itemPro.product_info.forEach(itemInner => {
+        //       itemInner.price = ''
+        //     })
+        //   })
+        // }
         orderBatch.push({
           time: itemBatch.delivery_time,
           remark: itemBatch.desc,
@@ -1305,7 +1316,7 @@ export default {
                 return {
                   size_color: [itemSize.size_id, itemSize.color_id],
                   number: itemSize.number,
-                  price: itemSize.price
+                  price: this.canSeePriceFlag ? itemSize.price : ''
                 }
               }),
               sizeColor: itemPro.sizeColor,
