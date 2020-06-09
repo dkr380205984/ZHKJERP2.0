@@ -90,6 +90,7 @@ export default {
             window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))
             window.sessionStorage.setItem('logo', res.data.data.company_logo)
             window.sessionStorage.setItem('has_check', res.data.data.has_check)
+            window.sessionStorage.setItem('user_id', res.data.data.user_id)
             window.sessionStorage.setItem('group_name', res.data.data.group_name)
             window.localStorage.setItem('zhUsername', _this.telephone)
             if (_this.remPsd) {

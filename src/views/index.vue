@@ -18,8 +18,8 @@
           <i v-show="false"
             class="el-icon-data-line elIcon"
             @click="$router.push('/other/chartIndex')"></i>
-          <i class="el-icon-cpu elIcon"
-            @click="$router.push('/equipment')"></i>
+          <!-- <i class="el-icon-cpu elIcon"
+            @click="$router.push('/equipment')"></i> -->
           <div class="msgCtn">
             <el-badge :is-dot="total>0">
               <i class="el-icon-bell elIcon"
@@ -356,6 +356,10 @@ export default {
         this.$nextTick(() => {
           this.$fuckSelect()
         })
+        let body = document.getElementsByClassName('body')[0]
+        if (body) {
+          body.scrollTop = 0
+        }
       },
       deep: true
     }

@@ -110,13 +110,13 @@ export default {
     //   let data = item.split('=')
     //   this.params[data[0]] = data[1]
     // })
-    let orderOrSample = this.$route.params.type === '1' ? order : sampleOrder
+    let orderOrSample = this.$route.params.type === '1' ? order.detailInfo : sampleOrder.detail
     Promise.all([
       materialPlan.detail({
         order_id: this.$route.params.id,
         order_type: this.$route.params.type
       }),
-      orderOrSample.detail({
+      orderOrSample({
         id: this.$route.params.id
       })
     ]).then(res => {

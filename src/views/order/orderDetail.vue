@@ -33,7 +33,7 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">金额</span>
-              <span class="text">￥{{orderInfo.total_price}}</span>
+              <span class="text">{{canSeePriceFlag ? '￥' + orderInfo.total_price : '/'}}</span>
             </div>
             <div class="block">
               <span class="label">状态</span>
@@ -136,8 +136,8 @@
         <div class="rowCtn">
           <div class="tableCtnLv2">
             <span class="tb_header">
-              <span class="tb_row">发货日期</span>
-              <span class="tb_row">批次备注</span>
+              <span class="tb_row middle">发货日期</span>
+              <span class="tb_row middle">批次备注</span>
               <span class="tb_row tb_col flex6">
                 <span class="tb_col_item">
                   <span class="tb_row">产品信息</span>
@@ -152,14 +152,14 @@
             <span class="tb_content"
               v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
               :key="indexBatch">
-              <span class="tb_row">
-                第{{itemBatch.batch_id}}批
-                <br />
-                {{itemBatch.batch_title}}
-                <br />
-                {{itemBatch.delivery_time}}
+              <span class="tb_row middle tb_col"
+                style="padding:12px 0;">
+                <span style="font-size:16px;font-weight:bold;margin-bottom:4px">第{{itemBatch.batch_id}}批</span>
+                <span style="margin-bottom:4px">({{itemBatch.batch_title || '无'}})</span>
+                <span style="margin-bottom:4px">{{itemBatch.delivery_time}}</span>
+                <span>{{itemBatch.order_type}}</span>
               </span>
-              <span class="tb_row">
+              <span class="tb_row middle">
                 <template v-if="!itemBatch.desc">无</template>
                 <el-popover placement="top-start"
                   v-else
@@ -183,8 +183,8 @@
                   </span>
                   <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
                   <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
-                  <span class="tb_row">{{$toFixed(itemPro.unit_price) + orderInfo.account_unit}}</span>
-                  <span class="tb_row">{{$toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0))}}{{orderInfo.account_unit}}</span>
+                  <span class="tb_row">{{canSeePriceFlag ?  $toFixed(itemPro.unit_price) + orderInfo.account_unit : '/'}}</span>
+                  <span class="tb_row">{{canSeePriceFlag ? $toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)) + orderInfo.account_unit : '/'}}</span>
                 </span>
               </span>
             </span>
@@ -1116,6 +1116,7 @@ export default {
   data () {
     return {
       loading: true,
+      canSeePriceFlag: false,
       orderInfo: {
         order_code: '',
         batch_info: [],
@@ -1279,7 +1280,6 @@ export default {
         this.orderInfo = res[0].data.data
         this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
-          console.log(splitArr)
           return {
             url: item,
             name: splitArr[splitArr.length - 1]
@@ -1448,6 +1448,9 @@ export default {
               }
             ]
           }
+        }
+        if (window.sessionStorage.getItem('user_id') === orderData.user_id || +window.sessionStorage.getItem('has_check') > 0) {
+          this.canSeePriceFlag = true
         }
         this.loading = false
       })

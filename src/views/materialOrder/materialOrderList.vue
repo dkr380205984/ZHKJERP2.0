@@ -55,8 +55,11 @@
               </span>
             </div>
             <div class="col">
-              <span class="text">预付款(元)</span>
+              <span class="text">包含纱线</span>
             </div>
+            <!-- <div class="col">
+              <span class="text">预付款(元)</span>
+            </div> -->
             <div class="col">
               <span class="text">预定总量(kg)</span>
             </div>
@@ -77,8 +80,22 @@
               <span class="text">{{item.client_name}}</span>
             </div>
             <div class="col">
-              <span class="text">{{item.total_price}}</span>
+              <span class="text">
+                {{item.material_info.map(item=>item.material_name).join(',').slice(0,10)}}
+                <template v-if="item.material_info.map(item=>item.material_name).join(',').length>10">
+                  <el-tooltip placement="top">
+                    <div slot="content"
+                      v-html="item.material_info.map(item=>item.material_name + '<br />').join('')">
+                    </div>
+                    <span class="btn noBorder"
+                      style="padding:0">查看全部</span>
+                  </el-tooltip>
+                </template>
+              </span>
             </div>
+            <!-- <div class="col">
+              <span class="text">{{item.total_price}}</span>
+            </div> -->
             <div class="col">
               <span class="text">{{item.total_weight}}</span>
             </div>
