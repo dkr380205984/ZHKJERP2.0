@@ -481,6 +481,10 @@ const routes = [
     path: '/staffDayTable',
     name: '日常结算单',
     component: () => import('../views/staff/staffDayTable.vue')
+  }, {
+    path: '/orderStatTable',
+    name: '订单发货信息单',
+    component: () => import('../views/order/orderStatTable.vue')
   }
 ]
 

@@ -39,6 +39,11 @@
             <div class="col flex02">
               <span class="text"></span>
             </div>
+            <div class="col flex02">
+              <span class="text">
+                <el-checkbox v-model="checkedAll"></el-checkbox>
+              </span>
+            </div>
             <div class="col">
               <span class="text">发货日期</span>
             </div>
@@ -125,6 +130,12 @@
                   <div class="col flex02">
                     <span class="el-icon-arrow-down"
                       :class="{'active':itemOrder.isOpen}"></span>
+                  </div>
+                  <div class="col flex02">
+                    <span class="text">
+                      <el-checkbox v-model="itemOrder.checked"
+                        @click.stop="()=>{return false}"></el-checkbox>
+                    </span>
                   </div>
                   <div class="col"> {{itemOrder.delivery_time}} </div>
                   <div class="col flex12">{{itemOrder.order_code}}</div>
@@ -253,6 +264,17 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar"
+      v-if="list.filter(itemF=>itemF.checked).length > 0">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="checkedAll = false">取消</div>
+          <div class="btn btnWhiteBlue"
+            @click="printOrderStat">打印</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -300,7 +322,9 @@ export default {
             picker.$emit('pick', [start, end])
           }
         }]
-      }
+      },
+      // 打印生产单
+      checkedAll: false
     }
   },
   watch: {
@@ -311,6 +335,11 @@ export default {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
       this.getOrderList()
+    },
+    checkedAll (newVal) {
+      this.list.forEach(item => {
+        item.checked = newVal
+      })
     }
   },
   methods: {
@@ -352,8 +381,16 @@ export default {
       }).then(res => {
         this.list = res.data.data.map(itemOrder => {
           let productInfo = this.$mergeData(itemOrder.product_info, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_info' }, { name: 'image' }], childrenName: 'other_info' })
+          itemOrder.image = this.$flatten(productInfo.map(item => {
+            item.image.map(itemI => {
+              itemI.product_id = item.product_id
+              return itemI
+            })
+            return item.image
+          }))
           return {
             isOpen: false,
+            checked: false,
             ...itemOrder,
             production_data: productInfo.map(itemM => {
               let sizeArr = []
@@ -417,6 +454,14 @@ export default {
           item.isOpen = false
         }
       })
+    },
+    printOrderStat () {
+      let printItem = this.list.filter(item => item.checked).map(item => item.order_id + '-' + item.batch_id)
+      if (printItem.length === 0) {
+        this.$message.warning('请勾选打印数据')
+        return
+      }
+      this.$openUrl('/orderStatTable?page=' + this.pages + '&keyword=' + this.keyword + '&date=' + this.date + '&group_id=' + this.group_id + '&company_id=' + this.company_id + '&idArr=' + printItem.join(','))
     }
   },
   created () {
