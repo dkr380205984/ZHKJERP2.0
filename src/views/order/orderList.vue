@@ -347,7 +347,7 @@
             <div class="col">
               <span class="opr"
                 @click="$router.push('/order/orderDetail/' + itemOrder.id)">详情</span>
-              <!-- <span class="opr">
+              <span class="opr">
                 <el-dropdown @command="handleCommand($event,itemOrder.id)">
                   <span class="el-dropdown-link">
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
@@ -361,7 +361,7 @@
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
-              </span> -->
+              </span>
             </div>
           </div>
         </div>
