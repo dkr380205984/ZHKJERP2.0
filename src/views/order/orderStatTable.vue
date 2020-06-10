@@ -138,7 +138,7 @@ export default {
                 group_name: itemOrder.group_name,
                 order_time: itemOrder.order_time,
                 number: itemOrder.numbers,
-                batchInfo: ['第' + itemOrder.batch_id + '批', itemOrder.batch_title, itemOrder.batch_type, itemOrder.batch_desc],
+                batchInfo: ['第' + itemOrder.batch_id + '批', itemOrder.batch_title, itemOrder.order_type, itemOrder.desc],
                 delivery_time: itemOrder.delivery_time,
                 production_data: productInfo.map(itemM => {
                   let sizeArr = []
