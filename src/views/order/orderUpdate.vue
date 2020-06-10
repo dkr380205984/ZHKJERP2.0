@@ -44,8 +44,10 @@
             <span class="content">
               <el-select v-model="client_id"
                 placeholder="请选择订单公司"
+                filterable
+                :filter-method="searchClient"
                 @change="getContact($event)">
-                <el-option v-for="item in clientArr"
+                <el-option v-for="item in clientArrReal"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -842,6 +844,7 @@ import { product, client, group, order, getToken, warnSetting, orderType } from 
 export default {
   data () {
     return {
+      clientArrReal: [],
       lock: true,
       canSeePriceFlag: false,
       loading: true,
@@ -916,6 +919,36 @@ export default {
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.clientArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.clientArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.clientArr)
+      }
+    },
     // 批次类型输入建议函数
     querySearchType (queryString, cb) {
       let restaurants = this.orderTypeArr
@@ -1676,6 +1709,10 @@ export default {
     ]).then(res => {
       this.loading = true
       this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
+      this.clientArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.clientArr)
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
       this.warnList = res[4].data.data.filter(item => item.order_type === 1)
