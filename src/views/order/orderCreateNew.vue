@@ -1641,7 +1641,7 @@ export default {
                     size_id: itemSize.size_color[0],
                     color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
-                    unit_price: itemSize.price
+                    unit_price: itemSize.price || null
                   }
                 })
               }
@@ -1664,7 +1664,7 @@ export default {
                     size_id: itemSize.size,
                     color_id: itemColor.color,
                     numbers: itemColor.number,
-                    unit_price: itemPro.price
+                    unit_price: itemPro.price || null
                   })
                 })
               })
@@ -1884,7 +1884,10 @@ export default {
                   }
                 })
               }
-            })
+            }),
+            category_info: {
+              name: data.category_info.name
+            }
           })
           this.batchDate.forEach(itemBatch => {
             itemBatch.batch_info_new.push({

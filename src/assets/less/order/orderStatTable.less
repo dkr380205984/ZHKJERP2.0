@@ -1,0 +1,38 @@
+@import '../common.less';
+#orderStatTable{
+  .noBorder{
+    border:none;
+  }
+  .bgGray2{
+    background-color: #E9E9E9;
+  }
+  .mergeTitle{
+    position: relative;
+    font-size: 18px;
+    .top{
+      position: absolute;
+      top: 50%;
+      left: 60%;
+      transform: translateY(-100%);
+    }
+    .line{
+      display: block;
+      width: 206px;
+      border-bottom: 1px solid #999;
+      height: 1px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) rotateZ(29deg);
+    }
+    .bottom{
+      position: absolute;
+      top: 50%;
+      left: 40%;
+      transform: translateX(-100%);
+    }
+  }
+  .flex8{
+    flex: 8;
+  }
+}

@@ -16,7 +16,8 @@
       </div>
       <div class="detailCtn">
         <div class="excelTable">
-          <div class="title">
+          <div class="title"
+            style="align-items:center">
             <div class="block">
               <div class="selectCtn">
                 <el-select v-model="department"
@@ -43,6 +44,8 @@
                 </el-date-picker>
               </div>
             </div>
+            <div class="btn noBorder"
+              @click="showPreFilledPopup = true">快捷设置</div>
             <!-- <div class="block">合计</div> -->
           </div>
           <div class="tabelBodyCtn">
@@ -230,16 +233,6 @@
             :current-page.sync="page"
             @current-change="getList">
           </el-pagination>
-        </div>
-      </div>
-    </div>
-    <div class="bottomFixBar">
-      <div class="main">
-        <div class="btnCtn">
-          <div class="btn btnGray"
-            @click="$router.go(-1)">返回</div>
-          <div class="btn btnBlue"
-            @click="$router.push('/staff/staffSettle')">转至合计结算</div>
         </div>
       </div>
     </div>
@@ -454,6 +447,73 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showPreFilledPopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">快捷设置</span>
+          <span class="el-icon-close"
+            @click="closePreFilledPopup"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">工序：</span>
+            <span class="info">
+              <el-autocomplete class="inline-input inputs"
+                v-model="preFilledInfo.work_type"
+                :fetch-suggestions="searchWork"
+                placeholder="输入工序"></el-autocomplete>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">结算方式：</span>
+            <span class="info">
+              <el-autocomplete class="inline-input inputs staffPayElautocomplete"
+                v-model="preFilledInfo.settle_type"
+                :fetch-suggestions="searchSettle"
+                @select="selectSettle($event,preFilledInfo)"
+                placeholder="可搜索订单号">
+                <template slot-scope="{ item }">
+                  <span v-if="item.normal">{{item.value}}</span>
+                  <div class="staffPayProductCtn"
+                    v-if="!item.normal">
+                    <span class="staffPayOnce">{{item.order_code}}</span>
+                    <span class="staffPayOnce">{{item.product_code}}</span>
+                    <span class="staffPayOnce image">
+                      <img :src="item.image||defaultImage" />
+                    </span>
+                  </div>
+                </template>
+              </el-autocomplete>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">单价：</span>
+            <span class="info">
+              <zh-input type="number"
+                placeholder="输入单价"
+                v-model="preFilledInfo.price">
+                <template slot="append">元</template>
+              </zh-input>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnBlue"
+            @click="closePreFilledPopup">确定</div>
+        </div>
+      </div>
+    </div>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/staff/staffSettle')">转至合计结算</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -487,7 +547,14 @@ export default {
       logTotal: 1,
       logPage: 1,
       date_log: '',
-      department_id: ''
+      department_id: '',
+      // 预填设置
+      showPreFilledPopup: false,
+      preFilledInfo: {
+        work_type: '',
+        settle_type: '',
+        price: ''
+      }
     }
   },
   watch: {
@@ -537,11 +604,11 @@ export default {
         id: null,
         staff_id: item.id,
         complete_time: this.date + '-' + ((new Date()).getDate() < 10 ? ('0' + (new Date()).getDate()) : (new Date()).getDate()),
-        work_type: '',
+        work_type: this.preFilledInfo.work_type || '',
         year: this.date.split('-')[0],
         month: this.date.split('-')[1],
-        settle_type: '',
-        price: '',
+        settle_type: this.preFilledInfo.settle_type || '',
+        price: this.preFilledInfo.price || '',
         number: '',
         total_price: '',
         unit: '件',
@@ -743,6 +810,10 @@ export default {
         }
         this.logLoading = false
       })
+    },
+    closePreFilledPopup () {
+      window.sessionStorage.setItem('staffPayPreFilledInfo', JSON.stringify(this.preFilledInfo))
+      this.showPreFilledPopup = false
     }
   },
   computed: {
@@ -762,6 +833,12 @@ export default {
     }
   },
   mounted () {
+    let info = window.sessionStorage.getItem('staffPayPreFilledInfo')
+    this.preFilledInfo = info ? JSON.parse(info) : {
+      work_type: '',
+      settle_type: '',
+      price: ''
+    }
     // 设置默认日期
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
