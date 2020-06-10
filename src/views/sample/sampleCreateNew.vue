@@ -368,6 +368,7 @@
                 :before-upload="beforeAvatarUpload"
                 :before-remove="beforeRemove"
                 :file-list="fileArr"
+                :on-success="successFile"
                 :data="postData"
                 ref="uploada"
                 list-type="picture">
@@ -529,10 +530,12 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, yarn, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
+import { productType, flower, yarn, colour, getToken, material, sample, client, auth, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      addArr: [],
+      deleteArr: [],
       lock: true,
       loading: true,
       msgSwitch: false,
@@ -710,6 +713,9 @@ export default {
       let result = queryString ? this.materialArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialArr
       cb(result)
     },
+    successFile (response, file, fileList) {
+      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
+    },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
       let fileNameLength = file.name.length// 取到文件名长度
@@ -733,29 +739,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFile({
+        this.deleteArr.push({
           id: file.id ? file.id : null,
           file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let deleteIndex = 0
-            fileList.forEach((item, index) => {
-              if (file.response) {
-                if (item.response && (item.response.key === file.response.key)) {
-                  deleteIndex = index
-                }
-              } else {
-                if (item.url === file.url) {
-                  deleteIndex = index
-                }
-              }
-            })
-            fileList.splice(deleteIndex, 1)
+        })
+        let deleteIndex = 0
+        fileList.forEach((item, index) => {
+          if (file.response) {
+            if (item.response && (item.response.key === file.response.key)) {
+              deleteIndex = index
+            }
+          } else {
+            if (item.url === file.url) {
+              deleteIndex = index
+            }
           }
+        })
+        fileList.splice(deleteIndex, 1)
+        this.$forceUpdate()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         })
       }).catch(() => {
         this.$message({
@@ -835,7 +839,7 @@ export default {
           data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
-      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
+      // let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         sample_product_code: this.sample_code.join(''),
         name: this.name,
@@ -845,7 +849,10 @@ export default {
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        data_image: imgArr,
+        data_image: {
+          file_data: this.addArr,
+          delete_data: this.deleteArr
+        },
         data_color: this.colour.map((item) => {
           return {
             color_name: item.colour,
