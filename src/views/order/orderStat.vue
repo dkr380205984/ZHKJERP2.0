@@ -326,6 +326,16 @@ export default {
         //   })
         //   )
         // }
+        res.data.data.forEach(item => {
+          item.image = []
+          item.image = this.$flatten(this.$mergeData(item.product_info, { mainRule: 'product_id', otherRule: [{ name: 'image' }] }).map(item => {
+            item.image.map(itemI => {
+              itemI.product_id = item.product_id
+              return itemI
+            })
+            return item.image
+          }))
+        })
         this.list = res.data.data
         this.total = res.data.meta.total
         this.loading = false
