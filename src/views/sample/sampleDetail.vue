@@ -466,6 +466,8 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="$router.push('/sample/sampleUpdate/'+$route.params.id)">修改</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleCreate?sampleId=' + $route.params.id)">复制此样品</div>
         </div>
       </div>
     </div>
@@ -612,6 +614,9 @@ export default {
   },
   filters: {
     filterMaterials (arr) {
+      if (!arr) {
+        return '无'
+      }
       let str = ''
       if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {
