@@ -1015,16 +1015,18 @@ export default {
             }
           })
           productInfo.size.forEach((itemSize, indexSize) => {
-            JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-              if (!this.sizePartArr[indexPart]) {
-                this.sizePartArr[indexPart] = {
-                  part: '',
-                  size: []
+            if (itemSize.part_info) {
+              JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+                if (!this.sizePartArr[indexPart]) {
+                  this.sizePartArr[indexPart] = {
+                    part: '',
+                    size: []
+                  }
                 }
-              }
-              this.sizePartArr[indexPart].part = itemPart.part
-              this.sizePartArr[indexPart].size.push({ number: itemPart.size })
-            })
+                this.sizePartArr[indexPart].part = itemPart.part
+                this.sizePartArr[indexPart].size.push({ number: itemPart.size })
+              })
+            }
           })
           this.colour = productInfo.color.map(item => {
             return {
@@ -1219,6 +1221,9 @@ export default {
       })
       this.partArr = res[6].data.data
       this.sampleTypeArr = res[7].data.data
+      if (this.$route.query.sampleId) {
+        this.importSample({ id: this.$route.query.sampleId })
+      }
       this.loading = false
     })
   }

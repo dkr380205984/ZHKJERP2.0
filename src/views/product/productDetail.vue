@@ -399,6 +399,8 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="$router.push('/product/productUpdate/'+$route.params.id)">修改</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/product/productCreate?productId=' + $route.params.id)">复制此产品</div>
         </div>
       </div>
     </div>

@@ -24,9 +24,10 @@
   }
   .tableCtnNew{
     margin: 20px 32px;
+    overflow: auto;
     .line{
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       .lineChild{
         width: auto;
         display: flex;
@@ -51,7 +52,7 @@
         padding: 6px 12px;
         line-height: 38px;
         min-height: 38px;
-        width: 7em;
+        min-width: 7em;
         border: 1px solid #E9E9E9;
         border-bottom: 0;
         border-right: 0;
@@ -103,7 +104,7 @@
           background: #FAFAFA;
         }
         &.bigWidth{
-          width: 10em;
+          min-width: 10em;
         }
         .inputs{
           height: 32px;
