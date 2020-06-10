@@ -464,7 +464,14 @@ let orderType = {
 }
 // 指派工艺单配料单
 const assignCraftOrPlan = (params) => http.post(`${baseUrl}/product/appoint/save`, params, 'application/json')
+// 可视化接口
+const echartsApi = {
+  calendar: (params) => http.get(`${baseUrl}/vision/dispatch/calendar`, params),
+  clientAnalyse: (params) => http.get(`${baseUrl}/vision/client/analyse`, params),
+  orderProduction: (params) => http.get(`${baseUrl}/vision/order/output/client`, params)
+}
 export {
+  echartsApi,
   assignCraftOrPlan,
   orderType,
   staffTag,

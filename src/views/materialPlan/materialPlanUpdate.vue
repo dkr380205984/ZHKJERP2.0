@@ -53,7 +53,7 @@
           <span class="btn noBorder"
             @click="fastWriteFlag = true">快捷填写</span>
           <span class="btn noBorder"
-            @click="importPlanData()">同步所有配料单数据</span>
+            @click="importPlanData()">同步最新数据</span>
         </div>
       </div>
       <div class="listCtn hasBorderTop">
