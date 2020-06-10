@@ -1057,6 +1057,14 @@ export default {
         color_id: _this.warpInfo.color_data[_this.selectColour].color_id,
         file_url: null
       }
+      let uploadDataBack = {
+        product_id: this.$route.params.id,
+        product_type: this.$route.params.type,
+        craft_id: _this.$route.params.type === '1' ? _this.data.id : _this.data[_this.craftIndex].id,
+        is_back: 2,
+        color_id: _this.warpInfo.color_data[_this.selectColour].color_id,
+        file_url: null
+      }
       if (this.imgSrc.find((item) => item.colour === this.warpInfo.color_data[this.craftIndex].product_color)) {
         this.$message.error('请勿重复上传')
         return
@@ -1094,12 +1102,12 @@ export default {
               xhrBack.send(formData)
               xhrBack.onreadystatechange = function () {
                 if (xhrBack.readyState === 4) {
-                  uploadData.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhrBack.responseText).key
-                  uploadData.is_back = 2
+                  uploadDataBack.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhrBack.responseText).key
+                  uploadDataBack.is_back = 2
                   _this.$message.success('上传背面成功')
-                  craft.uploadImg(uploadData).then((res) => {
+                  craft.uploadImg(uploadDataBack).then((res) => {
                     _this.loading = false
-                    _this.imgSrc.push(uploadData)
+                    _this.imgSrc.push(uploadDataBack)
                   })
                 }
               }
