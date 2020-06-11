@@ -190,12 +190,12 @@
                     :key="indexPro">
                     <span class="tb_row"
                       style="cursor: pointer;color:#1A95FF"
-                      @click="$openUrl('/product/productDetail/' + itemPro.product_info.product_id)">{{itemPro.product_code}}<br />{{itemPro.product_info|filterType}}</span>
+                      @click="$openUrl('/product/productDetail/' + itemPro.product_id)">{{itemPro.product_code}}<br />{{itemPro.category_info|filterType}}</span>
                     <span class="tb_row middle">
-                      <zh-img-list :list='itemPro.product_info.image'></zh-img-list>
+                      <zh-img-list :list='itemPro.image'></zh-img-list>
                     </span>
                     <span class="tb_row">{{itemPro.size_name + '/' + itemPro.color_name}}</span>
-                    <span class="tb_row">{{itemPro.numbers + itemPro.product_info.unit}}</span>
+                    <span class="tb_row">{{itemPro.numbers + itemPro.category_info.unit}}</span>
                     <span class="tb_row">{{canSeePriceFlag ?  $toFixed(itemPro.unit_price) + orderInfo.account_unit : '/'}}</span>
                     <span class="tb_row">{{canSeePriceFlag ? $toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)) + orderInfo.account_unit : '/'}}</span>
                   </span>
@@ -1489,10 +1489,9 @@ export default {
           let productInfo = this.$mergeData(itemBatch.product_info.map(itemM => {
             return {
               ...itemM,
-              product_id: itemM.product_info.product_id,
-              product_type: itemM.product_info.product_type
+              product_id: itemM.product_id
             }
-          }), { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'product_type' }, { name: 'category_info' }, { name: 'image' }, { name: 'unit_price/price' }], childrenName: 'other_info' })
+          }), { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_info' }, { name: 'image' }, { name: 'unit_price/price' }], childrenName: 'other_info' })
           let productInfoData = productInfo.map(itemM => {
             let sizeArr = []
             let colorArr = []
@@ -1532,7 +1531,6 @@ export default {
               image: itemM.image,
               unit: itemM.category_info.unit,
               price: itemM.price,
-              product_type: itemM.product_type,
               size_info: sizeArr,
               color_info: colorArr,
               number: sizeArr.map(itemS => (+itemS.number || 0)).reduce((a, b) => {
@@ -1556,8 +1554,15 @@ export default {
         this.product_order_total_number = numArr.length > 0 ? numArr.reduce((a, b) => a + b) : 0
         res[0].data.data.batch_info.forEach(itemBatch => {
           itemBatch.product_info.forEach(itemPro => {
-            if (!productList.find(item => item.product_id === itemPro.product_info.product_id)) {
-              productList.push(itemPro.product_info)
+            if (!productList.find(item => item.product_id === itemPro.product_id)) {
+              productList.push({
+                product_id: itemPro.product_id,
+                size: itemPro.all_size,
+                color: itemPro.all_color,
+                image: itemPro.image,
+                product_code: itemPro.product_code,
+                category_info: itemPro.category_info
+              })
             }
           })
         })
@@ -1867,8 +1872,8 @@ export default {
           return {
             product_id: item.product_id,
             product_code: proFlag ? proFlag.product_code : '',
-            type: proFlag ? [proFlag.category_name, proFlag.type_name, proFlag.style_name] : [],
-            unit: proFlag ? proFlag.unit : '件',
+            type: proFlag ? [proFlag.category_info.category_name, proFlag.category_info.type_name, proFlag.category_info.style_name] : [],
+            unit: proFlag ? proFlag.category_info.unit : '件',
             color_info: item.color_info.map(itemColor => {
               return {
                 size: itemColor.size,
@@ -1896,7 +1901,7 @@ export default {
           this.orderInfo.batch_info.forEach(itemBatch => {
             orderProductInfo.push(...itemBatch.product_info.map(itemPro => {
               return {
-                product_id: itemPro.product_info.product_id,
+                product_id: itemPro.product_id,
                 color: itemPro.color_name,
                 size: itemPro.size_name,
                 order_number: itemPro.numbers
@@ -1916,8 +1921,8 @@ export default {
             return {
               product_id: item.product_id,
               product_code: proFlag ? proFlag.product_code : '',
-              type: proFlag ? [proFlag.category_name, proFlag.type_name, proFlag.style_name] : [],
-              unit: proFlag ? proFlag.unit : '件',
+              type: proFlag ? [proFlag.category_info.category_name, proFlag.category_info.type_name, proFlag.category_info.style_name] : [],
+              unit: proFlag ? proFlag.category_info.unit : '件',
               color_info: item.color_info.map(itemColor => {
                 return {
                   size: itemColor.size,

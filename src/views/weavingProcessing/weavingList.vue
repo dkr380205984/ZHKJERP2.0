@@ -137,7 +137,7 @@
               <div class="stateCtn rowFlex"
                 :class="itemOrder.product_weave_progress.product<100?'orange':'green'">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.product_weave_progress.product}}%</span>
+                <span class="name">{{itemOrder.product_weave_progress.product > 100 ? 100 : itemOrder.product_weave_progress.product}}%</span>
               </div>
             </div>
             <div class="col">

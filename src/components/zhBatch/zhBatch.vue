@@ -108,7 +108,7 @@ export default {
               color_name: itemPro.color_name,
               image: itemPro.image,
               number: itemPro.numbers,
-              product_id: itemPro.product_info.product_id,
+              product_id: itemPro.product_id,
               product_code: itemPro.product_code,
               size_id: itemPro.size_id,
               size_name: itemPro.size_name,
@@ -169,7 +169,6 @@ export default {
           }
         })
         this.batch_data = batchData
-        console.log(this.batch_data)
       }
     }
   },

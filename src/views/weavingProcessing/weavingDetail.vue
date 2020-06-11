@@ -1800,7 +1800,7 @@ export default {
         return item
       })
       this.material_plan_update = this.$clone(res[7].data.data.total_data)
-      this.material_plan = res[7].data.data.total_data
+      this.material_plan = res[7].data.data.total_data.filter(itemF => +itemF.material_type === 1)
       this.material_plan.forEach((item) => {
         item.canBeUse = item.reality_weight / 1000
         let finded = this.material_use.find((itemFind) => itemFind.material_name === item.material_name && item.material_attribute === itemFind.material_attribute)

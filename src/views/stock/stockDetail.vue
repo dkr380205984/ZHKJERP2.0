@@ -7,11 +7,11 @@
         <div class="title">仓库信息</div>
       </div>
       <div class="detailCtn">
-        <div class="floatRight">
+        <!-- <div class="floatRight">
           <div class="btnCtn">
             <div class="btn btnBlue">打印标签</div>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">仓库名称：</span>
@@ -206,6 +206,11 @@
                 placeholder="输入原料按回车键查询"
                 @change="getYarnLog(1)">
               </el-input>
+              <el-input class="inputs"
+                v-model="searchYarnLogCode"
+                placeholder="输入关联单号按回车键查询"
+                @change="getYarnLog(1)">
+              </el-input>
               <el-select v-model="yarnAction"
                 class="inputs"
                 filterable
@@ -217,6 +222,17 @@
                   :value="item.action">
                 </el-option>
               </el-select>
+              <el-date-picker v-model="searchYarnLogDate"
+                style="margin-right:16px"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                @change="getYarnLog(1)">
+              </el-date-picker>
               <div class="btn btnGray"
                 style="margin-left:0"
                 @click="resetEditInfo('filterYarnLog')">重置</div>
@@ -239,7 +255,7 @@
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量（kg）</span>
               <span class="tb_row flex08">操作人</span>
-              <span class="tb_row middle flex08">备注信息</span>
+              <span class="tb_row flex08">备注信息</span>
             </div>
             <div class="tb_content"
               v-for="(itemLog,indexLog) in yarnLog"
@@ -256,18 +272,25 @@
               <span class="tb_row flex08">{{itemLog.weight}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
               <span class="tb_row middle flex08">
-                <template v-if="itemLog.desc">
+                <template v-if="!itemLog.desc">无</template>
+                <template v-else-if="itemLog.desc.length <= 10">{{itemLog.desc}}</template>
+                <template v-else-if="itemLog.desc.length > 10">
+                  {{itemLog.desc.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
                     trigger="click"
                     :content="itemLog.desc">
-                    <span class="btn noBorder"
-                      style="margin:0"
+                    <span style="color:#1A95FF;cursor: pointer;"
                       slot="reference">查看</span>
                   </el-popover>
                 </template>
-                <template v-else>无</template>
               </span>
+            </div>
+            <div class="tb_content">
+              <span class="tb_row"></span>
+              <span class="tb_row"></span>
+              <span class="tb_row right">合计：</span>
+              <span class="tb_row flex04">{{this.yarnTotalNumber || 0}}kg</span>
             </div>
           </div>
           <div class="pageCtn">
@@ -448,19 +471,34 @@
               <el-input class="inputs"
                 v-model="searchMaterialLog"
                 placeholder="输入辅料按回车键查询"
-                @change="getMaterialLog">
+                @change="getMaterialLog(1)">
+              </el-input>
+              <el-input class="inputs"
+                v-model="searchMaterialLogCode"
+                placeholder="输入关联单号按回车键查询"
+                @change="getMaterialLog(1)">
               </el-input>
               <el-select v-model="materialAction"
                 class="inputs"
                 filterable
                 placeholder="请选择需要筛选的类型"
-                @change="getMaterialLog">
+                @change="getMaterialLog(1)">
                 <el-option v-for="(item,index) in actionArr"
                   :key="index"
                   :label="item.name"
                   :value="item.action">
                 </el-option>
               </el-select>
+              <el-date-picker v-model="searchMaterialLogDate"
+                style="margin-right:16px"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions">
+              </el-date-picker>
               <div class="btn btnGray"
                 style="margin-left:0"
                 @click="resetEditInfo('filterMaterialLog')">重置</div>
@@ -482,7 +520,7 @@
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量</span>
               <span class="tb_row flex08">操作人</span>
-              <span class="tb_row middle flex08">备注信息</span>
+              <span class="tb_row flex08">备注信息</span>
             </div>
             <div class="tb_content"
               v-for="(itemLog,indexLog) in materialLog"
@@ -497,18 +535,19 @@
               <span class="tb_row">{{itemLog.action|filterAction}}</span>
               <span class="tb_row flex08">{{itemLog.weight}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
-              <span class="tb_row middle flex08">
-                <template v-if="itemLog.desc">
+              <span class="tb_row flex08">
+                <template v-if="!itemLog.desc">无</template>
+                <template v-else-if="itemLog.desc.length <= 10">{{itemLog.desc}}</template>
+                <template v-if="itemLog.desc.length > 10">
+                  {{itemLog.desc.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
                     trigger="click"
                     :content="itemLog.desc">
-                    <span class="btn noBorder"
-                      style="margin:0"
+                    <span style="color:#1A95FF;cursor: pointer;"
                       slot="reference">查看</span>
                   </el-popover>
                 </template>
-                <template v-else>无</template>
               </span>
             </div>
           </div>
@@ -697,17 +736,21 @@
                 placeholder="输入辅料按回车键查询"
                 @change="getPackLog(1)">
               </el-input>
-              <!-- <el-select v-model="packAction"
-                class="inputs"
-                filterable
-                placeholder="请选择需要筛选的类型"
-                @change="getPackLog">
-                <el-option v-for="(item,index) in actionArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.action">
-                </el-option>
-              </el-select> -->
+              <el-input class="inputs"
+                v-model="searchPackLogCode"
+                placeholder="输入关联单号按回车键查询"
+                @change="getPackLog(1)">
+              </el-input>
+              <el-date-picker v-model="searchPackLogDate"
+                style="margin-right:16px"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions">
+              </el-date-picker>
               <div class="btn btnGray"
                 style="margin-left:0"
                 @click="resetEditInfo('filterPackLog')">重置</div>
@@ -730,7 +773,7 @@
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量</span>
               <span class="tb_row flex08">操作人</span>
-              <span class="tb_row middle flex08">备注信息</span>
+              <span class="tb_row flex08">备注信息</span>
             </div>
             <div class="tb_content"
               v-for="(itemLog,indexLog) in packLog"
@@ -746,18 +789,19 @@
               <span class="tb_row">{{actionTypeArr[itemLog.action_type]}}</span>
               <span class="tb_row flex08">{{itemLog.number}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
-              <span class="tb_row middle flex08">
-                <template v-if="itemLog.desc">
+              <span class="tb_row flex08">
+                <template v-if="!itemLog.desc">无</template>
+                <template v-else-if="itemLog.desc.length <= 10">{{itemLog.desc}}</template>
+                <template v-if="itemLog.desc.length > 10">
+                  {{itemLog.desc.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
                     trigger="click"
                     :content="itemLog.desc">
-                    <span class="btn noBorder"
-                      style="margin:0"
+                    <span style="color:#1A95FF;cursor: pointer;"
                       slot="reference">查看</span>
                   </el-popover>
                 </template>
-                <template v-else>无</template>
               </span>
             </div>
           </div>
@@ -958,6 +1002,21 @@
                 placeholder="输入编号按回车键查询"
                 @change="getProductLog(1)">
               </el-input>
+              <el-input class="inputs"
+                v-model="searchProductLogCode"
+                placeholder="输入关联单号按回车键查询"
+                @change="getProductLog(1)">
+              </el-input>
+              <el-date-picker v-model="searchProductLogDate"
+                style="margin-right:16px"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions">
+              </el-date-picker>
               <div class="btn btnGray"
                 style="margin-left:0"
                 @click="resetEditInfo('filterProductLog')">重置</div>
@@ -977,7 +1036,7 @@
               <span class="tb_row">关联订单</span>
               <span class="tb_row flex08">收发数量</span>
               <span class="tb_row flex08">操作人</span>
-              <span class="tb_row middle flex08">备注信息</span>
+              <span class="tb_row flex08">备注信息</span>
               <span class="tb_row middle flex08">操作</span>
             </div>
             <div class="tb_content"
@@ -993,18 +1052,19 @@
               <span class="tb_row">{{itemLog.order_code}}</span>
               <span :class="{'tb_row':true, 'flex08':true, 'two_line':true,'green':itemLog.type === 1,'orange':itemLog.type === 2}">{{actionTypeArr[itemLog.type]}}<br />{{itemLog.stock_number}}</span>
               <span class="tb_row flex08">{{itemLog.user_name}}</span>
-              <span class="tb_row middle flex08">
-                <template v-if="itemLog.remark">
+              <span class="tb_row flex08">
+                <template v-if="!itemLog.remark">无</template>
+                <template v-else-if="itemLog.remark.length <= 10">{{itemLog.remark}}</template>
+                <template v-else-if="itemLog.remark.length > 10">
+                  {{itemLog.remark.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
                     trigger="click"
                     :content="itemLog.remark">
-                    <span class="btn noBorder"
-                      style="margin:0"
+                    <span style="color:#1A95FF;cursor: pointer;"
                       slot="reference">查看</span>
                   </el-popover>
                 </template>
-                <template v-else>无</template>
               </span>
               <span class="tb_row flex08 middle">
                 <span class="tb_handle_btn blue">打印</span>
@@ -1059,6 +1119,8 @@ export default {
       yarnNameList: [],
       searchYarn: '',
       searchYarnLog: '',
+      searchYarnLogCode: '',
+      searchYarnLogDate: '',
       yarnAction: '',
       yarnEditInfo: [],
       actionTypeArr: ['', '入库', '出库', '调取出库'],
@@ -1095,6 +1157,8 @@ export default {
       materialNameList: [],
       searchMaterial: '',
       searchMaterialLog: '',
+      searchMaterialLogCode: '',
+      searchMaterialLogDate: '',
       materialAction: '',
       packList: [],
       packTotal: 1,
@@ -1107,6 +1171,8 @@ export default {
       packNameList: [],
       searchPack: '',
       searchPackLog: '',
+      searchPackLogCode: '',
+      searchPackLogDate: '',
       // packAction: '',
       productList: [],
       productTotal: 1,
@@ -1117,8 +1183,37 @@ export default {
       productLogPages: 1,
       searchProduct: '',
       searchProductLog: '',
+      searchProductLogCode: '',
+      searchProductLogDate: '',
       productNameList: [],
-      productEditInfo: []
+      productEditInfo: [],
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   methods: {
@@ -1242,24 +1337,35 @@ export default {
     },
     getYarnLog (page) {
       this.loading = true
-      yarnStock.log({
-        stock_id: this.$route.params.id,
-        type: 1,
-        material_name: this.searchYarnLog,
-        action: this.yarnAction,
-        page: page || this.yarnLogPages,
-        limit: 5
-      }).then(res => {
-        if (res.data.status === false) {
-          this.$message.error('获取原料日志失败，' + res.data.message)
-        } else {
-          this.yarnLog = []
-          this.yarnLog = res.data.data.map(item => {
-            item.checked = false
-            return item
-          })
-          this.yarnLogTotal = res.data.meta.total
-        }
+      Promise.all([
+        yarnStock.log({
+          stock_id: this.$route.params.id,
+          type: 1,
+          material_name: this.searchYarnLog,
+          action: this.yarnAction,
+          page: page || this.yarnLogPages,
+          limit: 5,
+          start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
+          end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
+          order_code: this.searchYarnLogCode
+        }),
+        yarnStock.logCount({
+          stock_id: this.$route.params.id,
+          type: 1,
+          start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
+          end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
+          order_code: this.searchYarnLogCode,
+          material_name: this.searchYarnLog,
+          action: this.yarnAction
+        })
+      ]).then(res => {
+        this.yarnLog = []
+        this.yarnLog = res[0].data.data.map(item => {
+          item.checked = false
+          return item
+        })
+        this.yarnLogTotal = res[0].data.meta.total
+        this.yarnTotalNumber = res[1].data.data
         this.loading = false
       })
     },
@@ -1628,6 +1734,8 @@ export default {
           this.getYarnList(1)
         } else if (type === 'filterYarnLog') {
           this.searchYarnLog = ''
+          this.searchYarnLogCode = ''
+          this.searchYarnLogDate = ''
           this.yarnAction = ''
           this.getYarnLog()
         } else if (type === 'material') {
@@ -1646,6 +1754,8 @@ export default {
         } else if (type === 'filterMaterialLog') {
           this.searchMaterialLog = ''
           this.materialAction = ''
+          this.searchMaterialLogCode = ''
+          this.searchMaterialLogDate = ''
           this.getMaterialLog()
         } else if (type === 'pack') {
           this.packEditInfo = [
@@ -1663,6 +1773,8 @@ export default {
           this.getPackList(1)
         } else if (type === 'filterPackLog') {
           this.searchPackLog = ''
+          this.searchPackLogCode = ''
+          this.searchPackLogDate = ''
           // this.packAction = ''
           this.getPackLog()
         } else if (type === 'product') {
@@ -1684,6 +1796,8 @@ export default {
           this.getProductList(1)
         } else if (type === 'filterProductLog') {
           this.searchProductLog = ''
+          this.searchProductLogCode = ''
+          this.searchProductLogDate = ''
           this.getProductLog()
         } else {
           this.$message.error('出现未知错误，请重试或刷新页面')

@@ -338,8 +338,8 @@
                     <span :class="{'green':itemInner.packInfo}">{{itemInner.product_info ? itemInner.product_info.product_code : itemInner.name}}</span>
                     {{itemInner|filterName}}
                   </span>
-                  <span class="tcolumn">{{itemInner.size_color? itemInner.size_color.join('/') : '/'}}</span>
-                  <span class="tcolumn">{{itemInner.number ? itemInner.number + (itemInner.product_info ? itemInner.product_info.unit : itemInner.packInfo ? itemInner.packInfo.unit : '') + '/' + (item.unit ? item.unit : '') : '/'}}</span>
+                  <span class="tcolumn">{{itemInner.size_color_name ? itemInner.size_color_name.join('/') : '/'}}</span>
+                  <span class="tcolumn">{{itemInner.number ? itemInner.number + (itemInner.product_info ? itemInner.product_info.category_info.unit : itemInner.packInfo ? itemInner.packInfo.unit : '') + '/' + (item.unit ? item.unit : '') : '/'}}</span>
                 </span>
               </span>
               <span class="tcolumn">{{item.packNum ? item.packNum + (item.unit ? item.unit : '') : '/'}}</span>
@@ -876,7 +876,16 @@ export default {
     }).then(res => {
       this.orderInfo = res.data.data
       let productList = this.orderInfo.order_batch.map(itemBatch => {
-        return itemBatch.product_info.map(itemPro => itemPro.product_info)
+        return itemBatch.product_info.map(itemPro => {
+          return {
+            product_id: itemPro.product_id,
+            size: itemPro.all_size,
+            color: itemPro.all_color,
+            image: itemPro.image,
+            product_code: itemPro.product_code,
+            category_info: itemPro.category_info
+          }
+        })
       })
       let newProductList = []
       productList.forEach(item => {
@@ -887,7 +896,7 @@ export default {
         })
       })
       this.productList = newProductList.map(itemPro => {
-        let sizeColor = itemPro.size_measurement.map(itemSize => {
+        let sizeColor = itemPro.size.map(itemSize => {
           return {
             label: itemSize.size_name,
             value: itemSize.size_id,
