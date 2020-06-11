@@ -135,8 +135,9 @@
                     <div class="content">
                       <el-select v-model="item.company_id"
                         filterable
+                        :filter-method="searchClient"
                         placeholder="请选择加工单位">
-                        <el-option v-for="item in companyArr"
+                        <el-option v-for="item in clientArrReal"
                           :key="item.id"
                           :value="item.id"
                           :label="item.name"></el-option>
@@ -557,8 +558,9 @@
               <div class="info">
                 <el-select v-model="commonCompany[index]"
                   filterable
+                  :filter-method="searchClient"
                   placeholder="请选择加工单位">
-                  <el-option v-for="item in companyArr"
+                  <el-option v-for="item in clientArrReal"
                     :key="item.id"
                     :value="item.id"
                     :label="item.name"></el-option>
@@ -671,6 +673,7 @@ export default {
         desc: ''
       },
       companyArr: [],
+      clientArrReal: [],
       processArr: [],
       process_data: [],
       process_info: [],
@@ -698,6 +701,36 @@ export default {
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.companyArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.companyArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.companyArr)
+      }
+    },
     // 检测是否含有辅料（判断是否可以入打印页面）
     havePartMaterial (data) {
       let materialArr = []
@@ -968,6 +1001,10 @@ export default {
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(5) !== -1
       })
+      this.companyArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.companyArr)
       this.processArr = res[3].data.data.filter(item => item.type === 2)
       this.process_log = res[4].data.data.map((item) => {
         item.check = false

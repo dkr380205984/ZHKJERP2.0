@@ -171,8 +171,9 @@
                     <div class="content">
                       <el-select v-model="itemChild.company_id"
                         filterable
+                        :filter-method="searchClient"
                         placeholder="请选择单位">
-                        <el-option v-for="item in companyArr"
+                        <el-option v-for="item in clientArrReal"
                           :key="item.id"
                           :value="item.id"
                           :label="item.name"></el-option>
@@ -625,8 +626,9 @@
               <div class="info">
                 <el-select v-model="commonCompany[index]"
                   filterable
+                  :filter-method="searchClient"
                   placeholder="请选择单位名称">
-                  <el-option v-for="item in companyArr"
+                  <el-option v-for="item in clientArrReal"
                     :key="item.id"
                     :value="item.id"
                     :label="item.name"></el-option>
@@ -998,6 +1000,7 @@ export default {
       weaving_info: [],
       productArr: [],
       companyArr: [],
+      clientArrReal: [],
       weaving_data: [],
       weaving_detail: [],
       weaving_mat: [], // 这个参数和weaving_deitai都是织造分配物料信息,这个参数用于被修改提交
@@ -1055,6 +1058,36 @@ export default {
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.companyArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.companyArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.companyArr)
+      }
+    },
     changeLoss (obj) {
       obj.lossNum = parseInt(obj.number * obj.loss / 100)
     },
@@ -1769,6 +1802,10 @@ export default {
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
       })
+      this.companyArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.companyArr)
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false
         return item
@@ -1809,7 +1846,6 @@ export default {
         }
         item.canBeUse = this.$toFixed(item.canBeUse)
       })
-      console.log(this.material_plan)
       this.material_plan_old = this.$clone(this.material_plan)
       this.replenishClientArr = this.$mergeData(res[5].data.data.material_process_client.concat(res[5].data.data.material_order_client).concat(res[5].data.data.order_weave_client).concat(res[5].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
       this.loading = false
