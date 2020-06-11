@@ -124,7 +124,7 @@ export default {
       if (this.$route.params.type === '1') { // 获取订单或样单的产品id
         orderProInfo = this.$flatten(res[1].data.data.batch_info.map(itemBatch => {
           return itemBatch.product_info.map(itemPro => {
-            return itemPro.product_info.product_id
+            return itemPro.product_id
           })
         }))
       } else {

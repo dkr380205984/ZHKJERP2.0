@@ -359,11 +359,15 @@
               v-if="checkedProList.length > 0">
               <div class="flexWarp"
                 v-for="(itemCheck,indexCheck) in checkedProList"
-                :key="indexCheck">
+                :key="indexCheck"
+                style="display:flex">
                 <zh-input placeholder="请选择产品"
                   disabled
                   v-model="itemCheck.product_code">
                 </zh-input>
+                <div class="btn noBorder"
+                  style="padding:0;white-space: nowrap;"
+                  @click="getProductInfo(itemCheck)">更新</div>
                 <div class="editBtn deleteBtn"
                   @click="cancleChecked(itemCheck)">删除
                 </div>
@@ -804,6 +808,39 @@ export default {
       } else {
         this.clientArrReal = this.$clone(this.clientArr)
       }
+    },
+    // 更新产品数据
+    getProductInfo (item) {
+      this.loading = true
+      product.detail({
+        id: item.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let data = res.data.data
+          item.color = data.color
+          item.size = data.size
+          item.sizeColor = data.size.map(itemS => {
+            return {
+              label: itemS.size_name,
+              value: itemS.size_id,
+              children: data.color.map(itemC => {
+                return {
+                  label: itemC.color_name,
+                  value: itemC.color_id
+                }
+              })
+            }
+          })
+          this.batchDate.forEach(itemB => {
+            itemB.batch_info.forEach(itemP => {
+              if (+itemP.id === +item.id) {
+                itemP.sizeColor = item.sizeColor
+              }
+            })
+          })
+        }
+        this.loading = false
+      })
     },
     // 批次类型输入建议函数
     querySearchType (queryString, cb) {
@@ -1277,13 +1314,13 @@ export default {
       let arr = [] // 存储产品id
       orderInfo.order_batch.forEach(itemBatch => {
         let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
-          items.id = items.product_info.product_id.toString()
-          items.unit = items.product_info.unit
-          items.sizeColor = items.product_info.size_measurement.map(valSize => {
+          items.id = items.product_id.toString()
+          items.unit = items.category_info.unit
+          items.sizeColor = items.all_size.map(valSize => {
             return {
               value: valSize.size_id,
               label: valSize.size_name,
-              children: items.product_info.color.map(valColor => {
+              children: items.all_color.map(valColor => {
                 return {
                   value: valColor.color_id,
                   label: valColor.color_name
@@ -1310,19 +1347,19 @@ export default {
           batch_info: productInfo
         })
         itemBatch.product_info.forEach(itemPro => {
-          let flag = arr.find(itemId => itemId.id === itemPro.product_info.product_id.toString())
+          let flag = arr.find(itemId => itemId.id === itemPro.product_id.toString())
           if (!flag) {
             arr.push({
               category_info: {
-                name: itemPro.product_info.unit,
-                product_category: itemPro.product_info.category_name
+                name: itemPro.category_info.unit,
+                product_category: itemPro.category_info.category_name
               },
               checked: true,
-              color: itemPro.product_info.color,
-              flower_id: itemPro.product_info.flower_name,
-              id: itemPro.product_info.product_id.toString(),
-              product_code: itemPro.product_info.product_code,
-              sizeColor: itemPro.product_info.size_measurement.map(valSize => {
+              color: itemPro.all_color,
+              flower_id: itemPro.category_info.flower_name,
+              id: itemPro.product_id.toString(),
+              product_code: itemPro.product_code,
+              sizeColor: itemPro.all_size.map(valSize => {
                 return {
                   value: valSize.size_id,
                   label: valSize.size_name,
@@ -1334,7 +1371,7 @@ export default {
                   })
                 }
               }),
-              size: itemPro.product_info.size_measurement
+              size: itemPro.all_size
             })
           }
         })

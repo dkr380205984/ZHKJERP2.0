@@ -125,14 +125,16 @@
                   <span class="tb_row">产品部位</span>
                   <span class="tb_row flex15">物料名称</span>
                   <span class="tb_row">物料颜色</span>
-                  <span class="tb_row flex08">单个数量
+                  <span class="tb_row flex08">
+                    配料数量
                     <el-tooltip class="item"
                       effect="dark"
-                      content="单个部位所需数量"
+                      content="单个部位配料数量"
                       placement="top-start">
                       <span class="el-icon-question"></span>
                     </el-tooltip>
                   </span>
+                  <span class="tb_row flex08">所需数量</span>
                   <span class="tb_row flex08">合计数量</span>
                   <span class="tb_row">原料损耗</span>
                   <span class="tb_row">最终数量</span>
@@ -144,6 +146,7 @@
                   <span class="tb_row">
                     <el-select placeholder="请选择部位"
                       v-model="itemMa.product_part"
+                      @change="changePart(itemMa,itemPro)"
                       style="width:130px;">
                       <el-option v-for="item in itemPro.part_arr"
                         :key="item.id"
@@ -177,13 +180,14 @@
                       :trigger-on-focus="false"></el-autocomplete>
                   </span>
                   <span class="tb_row flex08">{{itemMa.number ? $toFixed(itemMa.number) + '' + itemMa.unit : '-'}}</span>
-                  <span class="tb_row flex08">{{itemMa.total_number ? $toFixed(itemMa.total_number) + '' + itemMa.unit : '-'}}</span>
+                  <span class="tb_row flex08">{{itemMa.need_number ? $toFixed(itemMa.need_number) + '*' +  itemPro.production_num : '-'}}</span>
+                  <span class="tb_row flex08">{{itemMa.number && itemMa.need_number ? $toFixed(itemMa.number * itemMa.need_number * itemPro.production_num) + '' + itemMa.unit : '-'}}</span>
                   <span class="tb_row">
                     <zh-input placeholder="损耗"
                       :disabled="itemMa.disabled"
                       v-model="itemMa.material_loss"
                       style="width:130px"
-                      @input="changeLossInner(itemMa,'loss')"
+                      @input="changeLossInner(itemMa,'loss',itemPro.production_num)"
                       type="number">
                       <template slot="append">%</template>
                     </zh-input>
@@ -192,7 +196,7 @@
                     <zh-input placeholder="数量"
                       v-model="itemMa.end_num"
                       style="width:130px"
-                      @input="changeLossInner(itemMa,'end_num')"
+                      @input="changeLossInner(itemMa,'end_num',itemPro.production_num)"
                       type="number">
                       <template slot="append">
                         <template v-if="itemMa.type === 1">kg</template>
@@ -245,7 +249,7 @@
               :class="itemMa.type === 1 ? 'green' : 'orange'">{{itemMa.type === 1 ? '原料' : '辅料'}}</span>
             <span class="tb_row flex12">{{itemMa.material_name}}</span>
             <span class="tb_row">{{itemMa.color}}</span>
-            <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + itemMa.unit : '-'}}</span>
+            <span class="tb_row flex08">{{itemMa.total_number ? itemMa.total_number + (itemMa.type === 1 ? 'kg' : itemMa.unit) : '-'}}</span>
             <span class="tb_row flex08">{{itemMa.loss || 0}}%</span>
             <span class="tb_row flex08">
               <span class="align"><em class="bigNum">{{itemMa.end_num || 0}}</em>{{itemMa.type === 1 ? 'kg' : itemMa.unit}}</span>
@@ -389,6 +393,12 @@ export default {
     }
   },
   methods: {
+    // 改变大身配件部位
+    changePart (itemInner, item) {
+      let flag = item.part_arr.find(itemF => itemF.id === itemInner.product_part)
+      itemInner.need_number = flag ? flag.number : 1
+      this.changeLossInner(itemInner, 'loss', item.production_num)
+    },
     cancelSetting () {
       this.settingMethod = +window.localStorage.getItem('materialPlanSettingMethod') || 1
       this.settingMethodFlag = false
@@ -464,8 +474,6 @@ export default {
       for (let indexPro in this.materialPlanInfo) {
         let itemPro = this.materialPlanInfo[indexPro]
         if (itemPro.material_info.length === 0) {
-          // this.$message.error('检测到产品"' + itemPro.product_code + '"没有计划信息，请填写')
-          // return
           isAllComplete = false
         }
         for (let indexMa in itemPro.material_info) {
@@ -520,39 +528,23 @@ export default {
           }
         })
         itemPro.material_info.forEach(itemMa => {
-          let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_part)
-          if (partName) {
-            let sizeFlag = partName.size_info.find(itemPartSize => itemPartSize.size_id === itemPro.size_id)
-            detailData.push({
-              product_id: itemMa.product_part,
-              material_name: itemMa.material_name,
-              material_type: itemMa.type,
-              material_attribute: itemMa.color,
-              loss: itemMa.material_loss,
-              single_weight_loss: this.$toFixed(itemMa.number),
-              single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num / (sizeFlag ? sizeFlag.number : 1),
-              reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
-              total_weight: itemMa.total_number,
-              size_id: itemPro.size_id,
-              color_id: itemPro.color_id,
-              unit: itemMa.unit
-            })
-          } else {
-            detailData.push({
-              product_id: itemMa.product_part,
-              material_name: itemMa.material_name,
-              material_type: itemMa.type,
-              material_attribute: itemMa.color,
-              loss: itemMa.material_loss,
-              single_weight_loss: '',
-              single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num,
-              reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
-              total_weight: itemMa.total_number,
-              size_id: itemPro.size_id,
-              color_id: itemPro.color_id,
-              unit: itemMa.unit
-            })
-          }
+          detailData.push({
+            product_id: itemMa.product_part,
+            material_name: itemMa.material_name,
+            material_type: itemMa.type,
+            material_attribute: itemMa.color,
+            loss: itemMa.material_loss,
+            single_weight_loss: this.$toFixed(itemMa.number),
+            single_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num) / itemPro.production_num / itemMa.need_number,
+            reality_weight: (Number(itemMa.type) === 1 ? itemMa.end_num * 1000 : itemMa.end_num),
+            total_weight: this.$toFixed(+(itemMa.number * itemMa.need_number * itemPro.production_num) || 0) || '',
+            size_id: itemPro.size_id,
+            color_id: itemPro.color_id,
+            unit: itemMa.unit,
+            need_weight: itemMa.need_number,
+            mix_material_weight: itemMa.number,
+            calculate_method: this.settingMethod
+          })
         })
       })
       this.materialTotalInfo.forEach(itemMa => {
@@ -673,18 +665,19 @@ export default {
     changeLoss (item, type, eve) {
       item.material_info.filter(itemMa => Number(itemMa.type) === Number(type)).forEach(itemMa => {
         itemMa.material_loss = eve
-        this.changeLossInner(itemMa, 'loss')
+        this.changeLossInner(itemMa, 'loss', item.production_num)
       })
     },
     // 改变内层损耗和数量
-    changeLossInner (item, type) {
+    changeLossInner (item, type, productionNum) {
+      let totalNum = item.number * item.need_number * productionNum
       if (type === 'loss') {
-        if (item.total_number && item.material_loss) {
-          item.end_num = this.numberAutoMethod(item.type === 1 ? (item.total_number / 1000 * (1 + item.material_loss / 100)) : (item.total_number * (1 + item.material_loss / 100)))
+        if (totalNum && item.material_loss) {
+          item.end_num = this.numberAutoMethod(item.type === 1 ? (totalNum / 1000 * (1 + item.material_loss / 100)) : (totalNum * (1 + item.material_loss / 100)))
         }
       } else if (type === 'end_num') {
-        if (item.total_number && item.end_num) {
-          item.material_loss = this.$toFixed(item.type === 1 ? ((item.end_num * 1000 / item.total_number) - 1) * 100 : ((item.end_num / item.total_number) - 1) * 100)
+        if (totalNum && item.end_num) {
+          item.material_loss = this.$toFixed(item.type === 1 ? ((item.end_num * 1000 / totalNum) - 1) * 100 : ((item.end_num / totalNum) - 1) * 100)
         }
       }
       this.computedTotal()
@@ -702,27 +695,11 @@ export default {
       }
       if (item.production_num) {
         item.material_info.forEach(itemMa => {
-          itemMa.total_number = this.$toFixed(item.production_num * itemMa.number)
-          this.changeLossInner(itemMa, 'loss')
+          itemMa.total_number = this.$toFixed(item.production_num * itemMa.number * itemMa.need_number)
+          this.changeLossInner(itemMa, 'loss', item.production_num)
         })
       }
     },
-    // 改变产品部位
-    changePart (eve, partArr, item) {
-      let flag = partArr.find(itemPart => itemPart.id === eve)
-      if (flag) {
-        item.type = flag.type
-        item.unit = Number(flag.type) === 1 ? 'g' : '个'
-      }
-    },
-    // changeStockNum (item) {
-    //   if (Number(item.stock_num_use) > Number(item.stock_num)) {
-    //     this.$message.warning('库存调取请勿超出库存数量')
-    //     return
-    //   }
-    //   item.production_num = item.order_num - item.stock_num_use
-    //   this.changeEndNum(item)
-    // },
     searchYarn (queryString, cb) {
       this.computedTotal()
       let result = queryString ? this.yarnList.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.yarnList
@@ -736,7 +713,16 @@ export default {
     computedTotal () {
       let arr = []
       this.materialPlanInfo.forEach(itemPro => {
-        arr.push(...this.$clone(itemPro.material_info))
+        arr.push(...itemPro.material_info.map(itemM => {
+          return {
+            material_name: itemM.material_name,
+            color: itemM.color,
+            unit: itemM.unit,
+            end_num: itemM.end_num,
+            type: itemM.type,
+            total_number: itemM.number * itemPro.production_num * itemM.need_number
+          }
+        }))
       })
       let totalInfo = this.$mergeData(arr, { mainRule: ['material_name', 'color'], otherRule: [{ name: 'total_number', type: 'add' }, { name: 'unit' }, { name: 'end_num', type: 'add' }, { name: 'type' }] })
       this.materialTotalInfo = totalInfo.map(itemMa => {
@@ -786,11 +772,14 @@ export default {
           unit: itemPro.unit,
           part_arr: this.$clone([{
             name: '大身',
-            id: itemPro.product_id
+            id: itemPro.product_id,
+            number: 1
           }].concat(itemPro.part_data.map(itemPart => {
+            let flag = itemPart.size_info.find(itemF => itemF.size_id === itemPro.size_id)
             return {
               name: itemPart.name,
-              id: itemPart.id
+              id: itemPart.id,
+              number: flag ? (+flag.number || 1) : 1
             }
           }))),
           material_info: itemPro.material_info.map(itemMa => {
@@ -800,10 +789,10 @@ export default {
               type: itemMa.type,
               color: itemMa.material_attribute,
               number: itemMa.weight,
-              total_number: this.$toFixed(itemMa.weight * itemPro.numbers),
               material_loss: '',
               end_num: '',
-              unit: itemMa.unit
+              unit: itemMa.unit,
+              need_number: 1
             }
           }).concat(itemPro.part_data_material.filter(itemMa => itemMa.color_id === itemPro.color_id && itemMa.size_id === itemPro.size_id).map(itemMa => {
             let partName = itemPro.part_data.find(items => +items.id === +itemMa.product_id)
@@ -817,7 +806,7 @@ export default {
               type: itemMa.type,
               color: itemMa.material_attribute,
               number: itemMa.weight,
-              total_number: this.$toFixed(itemMa.weight * itemPro.numbers * (sizeFlag ? sizeFlag.number : 1)),
+              need_number: (sizeFlag ? (+sizeFlag.number || 1) : 1),
               material_loss: '',
               end_num: '',
               unit: itemMa.unit

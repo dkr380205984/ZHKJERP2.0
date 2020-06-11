@@ -111,6 +111,8 @@
             </div>
             <div class="content">
               <el-select v-model="item.size"
+                filterable
+                @change="selectSize(item)"
                 placeholder="请选择样品规格">
                 <el-option v-for="(item,index) in sizeArr"
                   :key="index"
@@ -160,6 +162,7 @@
               <el-autocomplete class="inline-input"
                 v-model="item.colour"
                 :fetch-suggestions="searchColour"
+                @select="changeColor(item)"
                 placeholder="请输入配色信息">
               </el-autocomplete>
             </div>
@@ -424,6 +427,20 @@ export default {
     }
   },
   methods: {
+    selectSize (item) {
+      let filterList = this.size.filter(itemF => itemF.size === item.size)
+      if (filterList.length > 1) {
+        this.$message.warning('请勿选择重复的尺码信息')
+        item.size = ''
+      }
+    },
+    changeColor (item) {
+      let filterList = this.colour.filter(itemF => itemF.colour === item.colour)
+      if (filterList.length > 1) {
+        this.$message.warning('请勿输入重复的配色信息')
+        item.colour = ''
+      }
+    },
     addFitting () {
       this.fittingInfo.push({
         fitting_name: '',

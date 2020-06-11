@@ -211,7 +211,8 @@ const stock = {
 // 物料库存（原料辅料都在这）
 const yarnStock = {
   list: (params) => http.get(`${baseUrl}/stock/material/list`, params),
-  log: (params) => http.get(`${baseUrl}/stock/material/detail`, params)
+  log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
+  logCount: (params) => http.get(`${baseUrl}/stock/material/detail/count`, params)
 }
 // 包装库存
 const packStock = {
