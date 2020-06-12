@@ -946,6 +946,9 @@ export default {
       this.materialArr.forEach((item) => {
         item.value = item.name
       })
+      if (this.$route.query.productId) {
+        this.importPorduct({ id: this.$route.query.productId })
+      }
       this.loading = false
     })
   },

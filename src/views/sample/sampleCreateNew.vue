@@ -1168,6 +1168,9 @@ export default {
         item.value = item.name
       })
       this.sampleTypeArr = res[6].data.data
+      if (this.$route.query.sampleId) {
+        this.importSample({ id: this.$route.query.sampleId })
+      }
       this.loading = false
     })
   }

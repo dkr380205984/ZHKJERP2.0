@@ -429,6 +429,8 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
             @click="$router.push('/sample/sampleUpdate/'+$route.params.id)">修改</div>
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleCreate?sampleId='+$route.params.id)">复制此样品</div>
         </div>
       </div>
     </div>

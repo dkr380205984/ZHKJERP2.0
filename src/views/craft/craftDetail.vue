@@ -691,6 +691,11 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      style="display:flex;align-items:center;justify-content:center;"
+      v-if="showImageLoading">
+      <img :src="showImageUrl">
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -729,6 +734,8 @@ export default {
   },
   data () {
     return {
+      showImageLoading: false,
+      showImageUrl: require('../../assets/image/craft/loading.png'),
       token: '',
       imgSrc: [],
       showGLFlag: false,
@@ -1457,7 +1464,8 @@ export default {
     },
     // 换颜色
     getColour (index) {
-      this.loading = true
+      // this.loading = true
+      this.showImageLoading = true
       this.selectColour = index
       window.scrollTo(0, 9999)
       setTimeout(() => {
@@ -1516,7 +1524,8 @@ export default {
         img.src = dom.toDataURL() // canvas转图片
         let imgBack = this.$refs.imgBack
         imgBack.src = domBack.toDataURL()
-        this.loading = false
+        this.showImageLoading = false
+        // this.loading = false
       }, 100)
     },
     init (data, index) {

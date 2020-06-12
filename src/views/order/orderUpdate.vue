@@ -1363,7 +1363,7 @@ export default {
                 return {
                   value: valSize.size_id,
                   label: valSize.size_name,
-                  children: itemPro.product_info.color.map(valColor => {
+                  children: itemPro.all_color.map(valColor => {
                     return {
                       value: valColor.color_id,
                       label: valColor.color_name
