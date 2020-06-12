@@ -1319,12 +1319,13 @@ export default {
     },
     getYarnList (page) {
       this.loading = true
+      this.yarnPages = page || this.yarnPages
       yarnStock.list({
         limit: 5,
         stock_id: this.$route.params.id,
         type: 1,
         material_name: this.searchYarn,
-        page: page || this.yarnPages
+        page: this.yarnPages
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取原料库存列表失败，' + res.data.message)
@@ -1337,13 +1338,14 @@ export default {
     },
     getYarnLog (page) {
       this.loading = true
+      this.yarnLogPages = page || this.yarnLogPages
       Promise.all([
         yarnStock.log({
           stock_id: this.$route.params.id,
           type: 1,
           material_name: this.searchYarnLog,
           action: this.yarnAction,
-          page: page || this.yarnLogPages,
+          page: this.yarnLogPages,
           limit: 5,
           start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
           end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
@@ -1405,9 +1407,10 @@ export default {
     },
     getMaterialList (page) {
       this.loading = true
+      this.materialPages = page || this.materialPages
       yarnStock.list({
         limit: 5,
-        page: page || this.materialPages,
+        page: this.materialPages,
         stock_id: this.$route.params.id,
         type: 2,
         material_name: this.searchMaterial
@@ -1423,12 +1426,13 @@ export default {
     },
     getMaterialLog (page) {
       this.loading = true
+      this.materialLogPages = page || this.materialLogPages
       yarnStock.log({
         stock_id: this.$route.params.id,
         type: 2,
         material_name: this.searchMaterialLog,
         action: this.materialAction,
-        page: page || this.materialLogPages,
+        page: this.materialLogPages,
         limit: 5
       }).then(res => {
         if (res.data.status === false) {
@@ -1479,9 +1483,10 @@ export default {
     },
     getPackList (page) {
       this.loading = true
+      this.packPages = page || this.packPages
       packStock.list({
         limit: 5,
-        page: page || this.packPages,
+        page: this.packPages,
         stock_id: this.$route.params.id,
         material_name: this.searchPack
       }).then(res => {
@@ -1496,11 +1501,12 @@ export default {
     },
     getPackLog (page) {
       this.loading = true
+      this.packLogPages = page || this.packLogPages
       packStock.log({
         stock_id: this.$route.params.id,
         material_name: this.searchPackLog,
         limit: 5,
-        page: page || this.packLogPages
+        page: this.packLogPages
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取包装出入库日志失败，' + res.data.message)
@@ -1549,10 +1555,11 @@ export default {
     },
     getProductList (page) {
       this.loading = true
+      this.productPages = page || this.productPages
       productStock.list({
         stock_id: this.$route.params.id,
         limit: 5,
-        page: page || this.productPages,
+        page: this.productPages,
         product_code: this.searchProduct
       }).then(res => {
         if (res.data.status === false) {
@@ -1566,11 +1573,12 @@ export default {
     },
     getProductLog (page) {
       this.loading = true
+      this.productLogPages = page || this.productLogPages
       productStock.log({
         stock_id: this.$route.params.id,
         type: 1,
         product_code: this.searchProductLog,
-        page: page || this.productLogPages,
+        page: this.productLogPages,
         limit: 5
       }).then(res => {
         if (res.data.status === false) {

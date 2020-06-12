@@ -1,5 +1,5 @@
 import http from './http.js'
-const baseUrl = '/api'
+const baseUrl = '/dress'
 // 登录
 const login = (params) => http.post(`${baseUrl}/auth/login`, params, 'application/json')
 // 注销
