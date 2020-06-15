@@ -51,6 +51,9 @@ const permissions = [{
 }, {
   module: '员工管理',
   id: 17
+}, {
+  module: '报销单管理',
+  id: 18
 }]
 const moneyArr = [{
   name: '元',

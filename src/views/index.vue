@@ -336,6 +336,17 @@ export default {
           name: '合计工资结算单',
           url: '/staff/staffSettle'
         }]
+      }, {
+        name: '报销管理',
+        id: 18,
+        icon: require('@/assets/image/index/财务管理.png'),
+        children: [{
+          name: '添加报销单',
+          url: '/reimbursemen/reimbursemenCreate'
+        }, {
+          name: '报销单列表',
+          url: '/reimbursemen/reimbursemenList'
+        }]
       }]
     }
   },

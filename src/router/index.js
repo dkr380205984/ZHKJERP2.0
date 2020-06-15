@@ -404,6 +404,18 @@ const routes = [
       path: '/staff/staffSettle',
       name: '合计工资结算单',
       component: () => import('../views/staff/staffSettle.vue')
+    }, {
+      path: '/reimbursemen/reimbursemenCreate',
+      name: '添加报销单',
+      component: () => import('../views/reimbursemen/reimbursemenCreate.vue')
+    }, {
+      path: '/reimbursemen/reimbursemenList',
+      name: '报销单列表',
+      component: () => import('../views/reimbursemen/reimbursemenList.vue')
+    }, {
+      path: '/reimbursemen/reimbursemenDetail',
+      name: '报销单详情',
+      component: () => import('../views/reimbursemen/reimbursemenDetail.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -591,7 +603,10 @@ router.beforeEach((to, from, next) => {
     '修改员工': ['织为云', '员工列表', '修改员工'],
     '合计工资结算单': ['织为云', '合计工资结算单'],
     '操作记录统计': ['织为云', '操作记录统计'],
-    '数据可视化': ['织为云', '数据可视化']
+    '数据可视化': ['织为云', '数据可视化'],
+    '添加报销单': ['织为云', '添加报销单'],
+    '报销单详情': ['织为云', '报销单列表', '报销单详情'],
+    '报销单列表': ['织为云', '报销单列表']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
