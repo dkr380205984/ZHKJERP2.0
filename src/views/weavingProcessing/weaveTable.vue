@@ -806,11 +806,11 @@ export default {
   },
   filters: {
     filterType (item) {
-      if (item.is_part > 0) {
-        return item.name
-      } else {
-        return [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/')
-      }
+      // if (item.is_part > 0) {
+      //   return item.name
+      // } else {
+      return item.category_info.category_name ? [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/') : item.name
+      // }
     },
     filterialTotal (item) {
       let price = 0

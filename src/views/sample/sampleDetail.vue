@@ -743,16 +743,18 @@ export default {
           if (indexSize === 0) {
             this.checkedSize.push(itemSize.size_name)
           }
-          JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
-            if (!this.detail.sizePart[indexPart]) {
-              this.detail.sizePart[indexPart] = {
-                part: '',
-                size: []
+          if (itemSize.part_info) {
+            JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+              if (!this.detail.sizePart[indexPart]) {
+                this.detail.sizePart[indexPart] = {
+                  part: '',
+                  size: []
+                }
               }
-            }
-            this.detail.sizePart[indexPart].part = itemPart.part
-            this.detail.sizePart[indexPart].size.push(itemPart.size)
-          })
+              this.detail.sizePart[indexPart].part = itemPart.part
+              this.detail.sizePart[indexPart].size.push(itemPart.size)
+            })
+          }
         })
         this.detail.color.forEach((itemColor, indexColor) => {
           if (indexColor === 0) {
