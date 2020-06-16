@@ -361,6 +361,10 @@ const routes = [
       name: '合作公司财务操作记录',
       component: () => import('../views/financialStatistics/oprDetail.vue')
     }, {
+      path: '/financialStatistics/annualStatistics',
+      name: '年度合计费用',
+      component: () => import('../views/financialStatistics/annualStatistics.vue')
+    }, {
       path: '/financialStatistics/clientDetail',
       name: '样单财务统计',
       component: () => import('../views/financialStatistics/clientDetail.vue')
@@ -413,7 +417,7 @@ const routes = [
       name: '报销单列表',
       component: () => import('../views/reimbursemen/reimbursemenList.vue')
     }, {
-      path: '/reimbursemen/reimbursemenDetail',
+      path: '/reimbursemen/reimbursemenDetail/:id',
       name: '报销单详情',
       component: () => import('../views/reimbursemen/reimbursemenDetail.vue')
     }]
@@ -596,6 +600,7 @@ router.beforeEach((to, from, next) => {
     '合作公司财务统计': ['织为云', '合作公司财务统计'],
     '合作公司财务详情': ['织为云', '合作公司财务统计', '合作公司财务详情'],
     '合作公司财务操作记录': ['织为云', '合作公司财务统计', '合作公司财务详情', '合作公司财务操作记录'],
+    '年度合计费用': ['织为云', '合作公司财务统计', '年度合计费用'],
     '添加员工': ['织为云', '添加员工'],
     '员工列表': ['织为云', '员工列表'],
     '员工详情': ['织为云', '员工列表', '员工详情'],

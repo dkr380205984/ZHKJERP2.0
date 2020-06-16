@@ -32,7 +32,7 @@
             <div class="col">
               <span class="text">
                 <span class="text"
-                  v-show="!searchCompanyFlag">外贸公司
+                  v-show="!searchCompanyFlag">纱线公司
                   <i class="el-icon-search iconBtn"
                     @click="searchCompanyFlag=true"></i>
                 </span>

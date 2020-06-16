@@ -99,7 +99,7 @@
             </div>
             <div class="col flex16">
               <span class="text">
-                <span class="text">产品织造进度</span>
+                <span class="text">产品收发进度</span>
               </span>
             </div>
             <div class="col">
