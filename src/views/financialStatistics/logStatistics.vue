@@ -46,8 +46,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索公司名称查询"
                   clearable
+                  :filter-method="(query)=>{searchClient(query,'matOrder')}"
                   filterable>
-                  <el-option v-for="item in clientFilter.matOrder"
+                  <el-option v-for="item in clientFilter.matOrderFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -224,8 +225,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索加工单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matProcess"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'matProcess')}">
+                  <el-option v-for="item in clientFilter.matProcessFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -408,8 +410,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索出入库单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matStock"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'matStock')}">
+                  <el-option v-for="item in clientFilter.matStockFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -548,8 +551,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索织造单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proWeave"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'proWeave')}">
+                  <el-option v-for="item in clientFilter.proWeaveFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -712,8 +716,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索补纱单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proWeave"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'proWeave')}">
+                  <el-option v-for="item in clientFilter.proWeaveFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -858,8 +863,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索公司名称"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proProcess"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'proProcess')}">
+                  <el-option v-for="item in clientFilter.proProcessFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -1032,10 +1038,11 @@
                   style="width:160px"
                   v-model="client_id"
                   @change="changeRouter(1)"
-                  placeholder="搜索织造单位名称查询"
+                  placeholder="搜索单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
+                  filterable
+                  :filter-method="searchClientEasy">
+                  <el-option v-for="item in clientListReal"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -1196,8 +1203,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索半成品加工单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
+                  filterable
+                  :filter-method="searchClientEasy">
+                  <el-option v-for="item in clientListReal"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -1354,8 +1362,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索织造单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
+                  filterable
+                  :filter-method="searchClientEasy">
+                  <el-option v-for="item in clientListReal"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -1637,8 +1646,9 @@
                   @change="changeRouter(1)"
                   placeholder="搜索包装辅料单位名称查询"
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matOther"
+                  filterable
+                  :filter-method="(query)=>{searchClient(query,'matOrder')}">
+                  <el-option v-for="item in clientFilter.matOtherFuck"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id"></el-option>
@@ -2270,11 +2280,21 @@ export default {
         matRep: [],
         proStock: [],
         proSemi: [],
-        matOther: []
+        matOther: [],
+        matOrderFuck: [],
+        matProcessFuck: [],
+        matStockFuck: [],
+        proWeaveFuck: [],
+        proProcessFuck: [],
+        matRepFuck: [],
+        proStockFuck: [],
+        proSemiFuck: [],
+        matOtherFuck: []
       },
       stockList: [],
       stock_id: '',
       clientList: [],
+      clientListReal: [],
       authList: [],
       processList: [],
       type: '物料订购调取',
@@ -2368,6 +2388,66 @@ export default {
     }
   },
   methods: {
+    searchClient (query, type) {
+      this.clientFilter[type + 'Fuck'] = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientFilter[type + 'Fuck'] = this.clientFilter[type].filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.clientFilter[type].forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientFilter[type + 'Fuck'].push(item)
+            }
+          })
+        }
+      } else {
+        this.clientFilter[type + 'Fuck'] = this.$clone(this.clientFilter[type])
+      }
+    },
+    searchClientEasy (query) {
+      this.clientListReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientListReal = this.clientList.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.clientList.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientListReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientListReal = this.$clone(this.clientList)
+      }
+    },
     downloadLog () {
       if (this.checkList.length === 0) {
         this.$message.error('请选择需要打印的日志')
@@ -2974,7 +3054,11 @@ export default {
     this.getFilters()
     this.getList()
     client.list().then((res) => {
-      this.clientList = res.data.data
+      this.clientList = res.data.data.map((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+        return item
+      })
+      this.clientListReal = this.$clone(this.clientList)
       this.clientFilter = {
         matOrder: this.clientList.filter((item) => {
           return item.type.indexOf(2) !== -1 || item.type.indexOf(3) !== -1 || item.type.indexOf(10) !== -1
@@ -3001,6 +3085,33 @@ export default {
           return item.type.indexOf(4) !== -1
         }),
         matOther: this.clientList.filter((item) => {
+          return item.type.indexOf(7) !== -1
+        }),
+        matOrderFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(2) !== -1 || item.type.indexOf(3) !== -1 || item.type.indexOf(10) !== -1
+        }),
+        matProcessFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(3) !== -1
+        }),
+        matStockFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(3) !== -1 || item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
+        }),
+        proWeaveFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(4) !== -1
+        }),
+        proProcessFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(5) !== -1
+        }),
+        matRepFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(4) !== -1
+        }),
+        proStockFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(5) !== -1
+        }),
+        proSemiFuck: this.clientList.filter((item) => {
+          return item.type.indexOf(4) !== -1
+        }),
+        matOtherFuck: this.clientList.filter((item) => {
           return item.type.indexOf(7) !== -1
         })
       }

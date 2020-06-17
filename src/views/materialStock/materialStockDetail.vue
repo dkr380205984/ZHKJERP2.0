@@ -72,7 +72,8 @@
           <div class="rowCtn">
             <div class="colCtn"
               style="margin-right:0">
-              <div class="flexTb">
+              <div class="flexTb"
+                style="border-bottom:0">
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn"
