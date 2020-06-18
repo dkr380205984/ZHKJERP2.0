@@ -1133,12 +1133,49 @@
                 <el-pagination background
                   :page-size="5"
                   layout="prev, pager, next"
-                  :total="priceTotal"
-                  :current-page.sync="pricePages">
+                  :total="sampleWarnList.length"
+                  :current-page.sync="sampleWarnPages">
                 </el-pagination>
               </div>
             </div>
           </template>
+          <!-- <template v-if="cName==='次品原因'">
+            <div class="flowerCtn">
+              <div class="addBtn"
+                @click="showPopup = true">添加</div>
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">次品原因</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in defectiveList[defectivePages - 1]"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40"
+                      style="flex-direction: row;align-items:center;">
+                      <span class="blue"
+                        @click="changeDefective(item)">修改</span>
+                      <span class="red"
+                        style="margin-left:16px"
+                        @click="deleteDefective(item.id)">删除</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="defectiveList.length"
+                  :current-page.sync="defectivePages">
+                </el-pagination>
+              </div>
+            </div>
+          </template> -->
         </div>
       </div>
     </div>
@@ -2211,6 +2248,30 @@
           </div>
         </div>
       </template>
+      <!-- <template v-if="cName==='次品原因'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加次品原因</div>
+            <i class="el-icon-close"
+              @click="closeDefectivePopup"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">次品原因：</div>
+              <div class="info">
+                <el-input placeholder="请输入次品原因"
+                  v-model="defectiveEditInfo.name"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="closeDefectivePopup">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDefective">确定</div>
+          </div>
+        </div>
+      </template> -->
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -2490,6 +2551,7 @@ export default {
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载'],
         '预警设置': ['订单预警', '样单预警']
+        // '检验设置': ['次品原因']
       },
       pName: '',
       cName: '',
@@ -2820,6 +2882,13 @@ export default {
       orderTypeList: [],
       orderTypePage: 1,
       orderTypeTotal: 1
+      // 检验设置
+      // defectiveList: [],
+      // defectivePages: 1,
+      // defectiveEditInfo: {
+      //   name: '',
+      //   id: null
+      // }
     }
   },
   watch: {
@@ -2957,6 +3026,23 @@ export default {
     }
   },
   methods: {
+    // 检验设置
+    // changeDefective (item) {
+
+    // },
+    // deleteDefective (id) {
+
+    // },
+    // saveDefective () {
+
+    // },
+    // closeDefectivePopup () {
+    //   this.showPopup = false
+    //   this.defectiveEditInfo = {
+    //     name: '',
+    //     id: null
+    //   }
+    // },
     // 保存结算工序
     saveStaffProcess () {
       if (this.staffProcess) {

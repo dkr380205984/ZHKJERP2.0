@@ -258,7 +258,8 @@ const materialOrder = {
   detail: (params) => http.get(`${baseUrl}/material/reserve/detail`, params),
   stockIn: (params) => http.post(`${baseUrl}/material/stock/reserve/push`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
-  logDelete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json')
+  logDelete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json'),
+  allLog: (params) => http.get(`${baseUrl}/stock/reserve/material/log`, params)
 }
 // 物料计划单
 const materialPlan = {
@@ -345,7 +346,10 @@ const packPlan = {
   deletePackOut: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json'), // 装箱出库删除
   packActual: (params) => http.post(`${baseUrl}/pack/real/save`, params, 'application/json'), // 实际装箱
   packActualLog: (params) => http.get(`${baseUrl}/pack/real/list`, params), // 实际装箱日志
-  deletePackActual: (params) => http.post(`${baseUrl}/pack/real/delete`, params, 'application/json') // 实际装箱删除
+  deletePackActual: (params) => http.post(`${baseUrl}/pack/real/delete`, params, 'application/json'), // 实际装箱删除
+  outMarket: (params) => http.post(`${baseUrl}/sell/out/save`, params, 'application/json'), // 销售出库
+  outMarketLog: (params) => http.get(`${baseUrl}/sell/out/list`, params), // 销售出库日志
+  deleteOutMark: (params) => http.post(`${baseUrl}/sell/out/delete`, params, 'application/json') // 销售出库删除
 }
 // 产品检验
 const inspection = {

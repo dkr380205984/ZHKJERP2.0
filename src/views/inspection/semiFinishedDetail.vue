@@ -216,6 +216,9 @@
                       </div>
                       <div class="content">
                         <el-select v-model="itemSon.reason"
+                          filterable
+                          allow-create
+                          default-first-option
                           placeholder="请选择次品原因"
                           multiple>
                           <el-option v-for="(item,index) in defectiveType"

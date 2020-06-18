@@ -18,8 +18,19 @@
               <span class="text">报销人</span>
             </div>
             <div class="content">
-              <el-input placeholder="请输入报销人"
-                v-model="reimbursement_user"></el-input>
+              <el-select v-model="reimbursement_user"
+                filterable
+                allow-create
+                default-first-option
+                placeholder="请选择报销人">
+                <el-option v-for="item in userArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+              <!-- <el-input placeholder="请输入报销人"
+                v-model="reimbursement_user"></el-input> -->
             </div>
           </div>
           <div class="colCtn">
@@ -27,8 +38,20 @@
               <span class="text">同行人</span>
             </div>
             <div class="content">
-              <el-input placeholder="请输入同行人"
-                v-model="reimbursement_other_user"></el-input>
+              <el-select v-model="reimbursement_other_user"
+                multiple
+                filterable
+                allow-create
+                default-first-option
+                placeholder="请选择同行人员">
+                <el-option v-for="item in userArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+              <!-- <el-input placeholder="请输入同行人"
+                v-model="reimbursement_other_user"></el-input> -->
             </div>
           </div>
         </div>
@@ -134,6 +157,7 @@
 </template>
 
 <script>
+import { staff } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -157,7 +181,8 @@ export default {
           price: 400
         }
       ],
-      remark: ''
+      remark: '',
+      userArr: []
     }
   },
   methods: {
@@ -203,6 +228,14 @@ export default {
         return a + b
       }, 0)
     }
+  },
+  created () {
+    this.reimbursement_user = window.sessionStorage.getItem('user_name')
+    Promise.all([
+      staff.list()
+    ]).then(res => {
+      this.userArr = res[0].data.data
+    })
   }
 }
 </script>

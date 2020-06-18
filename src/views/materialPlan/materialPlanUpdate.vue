@@ -994,13 +994,17 @@ export default {
         let planFlag = planInfo.find(valPro => valPro.product_id === itemPro.product_id && valPro.color_id === itemPro.color_id && valPro.size_id === itemPro.size_id)
         if (planFlag) {
           itemPro.material_info = planFlag.material_info.map(itemMa => {
+            let needNumber = itemMa.need_number
+            if (!needNumber) {
+              needNumber = itemPro.part_arr.find(itemF => +itemF.id === +itemMa.product_part).number
+            }
             return {
               product_part: itemMa.product_part,
               material_name: itemMa.material_name,
               type: itemMa.type,
               color: itemMa.material_color,
               number: itemMa.plan_number,
-              need_number: itemMa.need_number,
+              need_number: needNumber,
               material_loss: itemMa.material_loss,
               end_num: itemMa.type === 1 ? this.$toFixed(itemMa.end_num / 1000) : this.$toFixed(itemMa.end_num),
               unit: itemMa.unit,

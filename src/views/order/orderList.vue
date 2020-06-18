@@ -17,6 +17,10 @@
         <div class="number">{{monthAll}}</div>
         <v-chart style="width:320px;height:120px"
           :options="monthData" />
+        <!-- 为什么不用vue-echarts的组件：
+                暂时没找到点击图例外触发click的方法-->
+        <!-- <div style="width:320px;height:120px"
+          ref="monthEcharts"></div> -->
       </div>
       <div class="charts">
         <div class="title">
@@ -32,6 +36,8 @@
         <div class="number">{{processAll}}</div>
         <v-chart style="width:320px;height:120px"
           :options="processData" />
+        <!-- <div style="width:320px;height:120px"
+          ref="runingEcharts"></div> -->
       </div>
       <div class="charts">
         <div class="title">
@@ -47,6 +53,8 @@
         <div class="number">{{delayAll}}</div>
         <v-chart style="width:320px;height:120px"
           :options="delayData" />
+        <!-- <div style="width:320px;height:120px"
+          ref="timeOutEcharts"></div> -->
       </div>
       <div class="charts">
         <div class="title">
@@ -696,6 +704,50 @@ export default {
       }
       return daysOfMonth
     }
+    // clickEcharts (event, echart, type) {
+    //   if (type === 'month') {
+    //     let XY = [event.offsetX, event.offsetY]
+    //     let day = echart.convertFromPixel({ seriesIndex: 0 }, XY)[0] + 1
+    //     let nowTime = this.$getTime().split('-')
+    //     let nowYM = nowTime[0] + '-' + nowTime[1]
+    //     let date = nowYM + '-' + (day.length > 1 ? '0' + day : day)
+    //     this.date = [date, date]
+    //   } else if (type === 'runing') {
+    //     let XY = [event.offsetX, event.offsetY]
+    //     let index = echart.convertFromPixel({ seriesIndex: 0 }, XY)[0]
+    //     let date = this.$getTime(new Date(this.$getTime()).getTime() + (index * 1000 * 60 * 60 * 24))
+    //     this.date = [date, date]
+    //     this.state = '2002'
+    //     this.searchState2Flag = true
+    //   } else if (type === 'timeOut') {
+    //     let XY = [event.offsetX, event.offsetY]
+    //     let index = echart.convertFromPixel({ seriesIndex: 0 }, XY)[0]
+    //     let date = this.$getTime(new Date(this.$getTime()).getTime() - ((14 - index - 1) * 1000 * 60 * 60 * 24))
+    //     this.date = [date, date]
+    //     this.state = '2005'
+    //     this.searchState2Flag = true
+    //   }
+    //   this.changeRouter(1)
+    // },
+    // initEcharts () {
+    //   let _this = this
+    //   let echarts = require('echarts')
+    //   let monthEcharts = echarts.init(this.$refs.monthEcharts)
+    //   monthEcharts.setOption(this.monthData)
+    //   monthEcharts.getZr().on('click', (event) => {
+    //     _this.clickEcharts(event, monthEcharts, 'month')
+    //   })
+    //   let runingEcharts = echarts.init(this.$refs.runingEcharts)
+    //   runingEcharts.setOption(this.processData)
+    //   runingEcharts.getZr().on('click', (event) => {
+    //     _this.clickEcharts(event, runingEcharts, 'runing')
+    //   })
+    //   let timeOutEcharts = echarts.init(this.$refs.timeOutEcharts)
+    //   timeOutEcharts.setOption(this.delayData)
+    //   timeOutEcharts.getZr().on('click', (event) => {
+    //     _this.clickEcharts(event, timeOutEcharts, 'timeOut')
+    //   })
+    // }
   },
   created () {
     this.getFilters()
@@ -737,6 +789,7 @@ export default {
       this.processAll = data.proceed.total_number
       this.delayAll = data.delay.total_number
       this.monthAll = data.month.total_number
+      // this.initEcharts()
     })
   },
   filters: {
