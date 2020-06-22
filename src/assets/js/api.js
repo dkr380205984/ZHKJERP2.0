@@ -474,7 +474,16 @@ const echartsApi = {
   clientAnalyse: (params) => http.get(`${baseUrl}/vision/client/analyse`, params),
   orderProduction: (params) => http.get(`${baseUrl}/vision/order/output/client`, params)
 }
+// 报销管理
+const reimbursement = {
+  create: (params) => http.post(`${baseUrl}/reimburse/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/reimburse/detail`, params),
+  list: (params) => http.get(`${baseUrl}/reimburse/list`, params),
+  delete: (params) => http.post(`${baseUrl}/reimburse/delete`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/reimburse/check`, params, 'application/json')
+}
 export {
+  reimbursement,
   echartsApi,
   assignCraftOrPlan,
   orderType,
