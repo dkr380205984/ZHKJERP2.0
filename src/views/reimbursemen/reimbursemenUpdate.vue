@@ -1,6 +1,7 @@
 <template>
   <div id="reimbursemenCreate"
-    class="indexMain">
+    class="indexMain"
+    v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
         <span class="title">报销明细</span>
@@ -61,6 +62,7 @@
                 action="https://upload.qiniup.com/"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
+                :file-list="fileArr"
                 ref="reimbursementFile"
                 list-type="picture">
                 <div class="uploadBtn">
@@ -108,6 +110,7 @@ import { staff, getToken, reimbursement } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
       list: [
         {
           name: '',
@@ -116,7 +119,8 @@ export default {
       ],
       remark: '',
       userArr: [],
-      postData: { token: '' }
+      postData: { token: '' },
+      fileArr: []
     }
   },
   methods: {
@@ -145,7 +149,7 @@ export default {
         invoice_image: null,
         invoice_file: invoiceFile,
         apply_text: this.remark,
-        id: null
+        id: this.$route.params.id
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('提交成功')
@@ -154,10 +158,7 @@ export default {
       })
     },
     beforeAvatarUpload (file) {
-      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
-      let fileNameLength = file.name.length// 取到文件名长度
-      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
-      this.postData.key = new Date().getTime() + '.' + fileFormat
+      this.postData.key = new Date().getTime()
       const isLt2M = file.size / 1024 / 1024 < 10
       if (!isLt2M) {
         this.$message.error('文件大小不能超过 10MB!')
@@ -189,10 +190,29 @@ export default {
     this.reimbursement_user = window.sessionStorage.getItem('user_name')
     Promise.all([
       staff.list(),
-      getToken()
+      getToken(),
+      reimbursement.detail({
+        id: this.$route.params.id
+      })
     ]).then(res => {
       this.userArr = res[0].data.data
       this.postData.token = res[1].data.data
+      // 初始化修改数据
+      let initData = res[2].data.data
+      this.list = initData.detail_data ? JSON.parse(initData.detail_data).map(itemM => {
+        return {
+          name: itemM.name,
+          price: itemM.price
+        }
+      }) : []
+      this.remark = initData.apply_text
+      this.fileArr = initData.invoice_file.map(itemM => {
+        return {
+          name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+          url: itemM
+        }
+      })
+      this.loading = false
     })
   }
 }

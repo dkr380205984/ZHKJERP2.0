@@ -1,5 +1,5 @@
 <template>
-  <div id="productList"
+  <div id="reimbursementList"
     class="indexMain"
     v-loading="loading">
     <div class="module">
@@ -52,6 +52,7 @@
                   <div v-show="searchUserFlag"
                     class="filterBox">
                     <el-select v-model="user_name"
+                      filterable
                       @change="changeRouter(1)"
                       clearable
                       placeholder="筛选申请人">
@@ -99,7 +100,7 @@
             <div class="col">
               <span class="text">审核人</span>
             </div>
-            <div class="col">
+            <div class="col middle">
               <span class="text">操作</span>
             </div>
           </div>
@@ -109,18 +110,24 @@
             <div class="col">{{item.code}}</div>
             <div class="col">{{item.create_time}}</div>
             <div class="col">{{item.apply_user}}</div>
-            <div class="col">{{item.apply_price}}</div>
-            <div class="col">{{item.reality_price || '/'}}</div>
+            <div class="col">{{item.detail_data|filterTotal}}</div>
+            <div class="col">{{item.real_data|filterRealTotal}}</div>
             <div class="col">
-              <div :class="['stateCtn', 'rowFlex', item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue']">
+              <div :class="['stateCtn', 'rowFlex', item.status === 1 ? 'green' : item.status === 2 ? 'red' : 'blue']">
                 <div class="state"></div>
                 <span class="name">{{item.status|filterStatus}}</span>
               </div>
             </div>
             <div class="col">{{item.check_user}}</div>
-            <div class="col">
+            <div class="col middle">
+              <span class="opr orange"
+                :class="{'gray' : item.status === 1 }"
+                @click="item.status === 1 ? ()=> false : $router.push('/reimbursemen/reimbursemenUpdate/' + item.id)">修改</span>
               <span class="opr"
                 @click="$router.push('/reimbursemen/reimbursemenDetail/' + item.id)">详情</span>
+              <span class="opr red"
+                :class="{'gray' : item.status === 1 }"
+                @click="item.status === 1 ? ()=> false : deleteReimbursement(item)">删除</span>
             </div>
           </div>
         </div>
@@ -138,6 +145,7 @@
 </template>
 
 <script>
+import { auth, reimbursement } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -161,17 +169,7 @@ export default {
           id: 3
         }
       ],
-      list: [
-        {
-          code: '1111',
-          create_time: '2020-06-05',
-          apply_user: '隔壁老王',
-          apply_price: 1000,
-          reality_price: 800,
-          status: 2,
-          check_user: '王会计'
-        }
-      ],
+      list: [],
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -215,15 +213,64 @@ export default {
   },
   methods: {
     reset () {
-      this.$router.push('/reimbursemen.reimbursemenList?keyword=&date=&applyUser=&status=')
+      this.$router.push('/reimbursemen/reimbursemenList?keyword=&date=&applyUser=&status=')
+    },
+    getList () {
+      this.loading = true
+      reimbursement.list({
+        limit: 10,
+        page: this.page
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        }
+      })
+    },
+    deleteReimbursement (item) {
+      this.$confirm(`此操作将永久删除编号为${item.code}的报销单, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        reimbursement.delete({
+          id: item.id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            this.getList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   },
   created () {
-    this.loading = false
+    this.getList()
+    Promise.all([
+      auth.list()
+    ]).then(res => {
+      this.userArr = res[0].data.data
+    })
   },
   filters: {
     filterStatus (item) {
-      return +item === 2 ? '通过' : +item === 3 ? '驳回' : '待审核'
+      return +item === 1 ? '通过' : +item === 2 ? '驳回' : '待审核'
+    },
+    filterTotal (item) {
+      return item ? JSON.parse(item).map(itemM => (+itemM.price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0) : 0
+    },
+    filterRealTotal (item) {
+      return item ? JSON.parse(item).map(itemM => (+itemM.price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0) : 0
     }
   }
 }

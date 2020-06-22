@@ -219,8 +219,10 @@
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                           v-if="type==='1'"></span>
                         <span class="blue"
+                          @click="replenishProcess(item,itemChild)">加工</span>
+                        <!-- <span class="blue"
                           @click="supplyStock(item.material_name,itemChild.material_color,itemChild.need_weight-itemChild.order_weight, item.id)"
-                          v-if="type==='1'">调取</span>
+                          v-if="type==='1'">调取</span> -->
                         <!-- <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"></span>
                         <a href="#process"
@@ -2235,6 +2237,22 @@ export default {
       })
       this.easyProcessFlag = true
       this.process_flag = true
+    },
+    replenishProcess (itemMa, itemAttr) {
+      this.process_data.push({
+        replenishFlag: itemMa.replenishFlag,
+        company_id: '',
+        processList: [
+          {
+            replenish_material_name: itemMa.material_name + '/' + itemAttr.material_color, // 补纱的时候才会用到，用于现实
+            material_id: itemAttr.id,
+            number: itemAttr.order_weight,
+            price: ''
+          }
+        ]
+      })
+      this.process_flag = true
+      this.$goElView('process')
     },
     saveProcess () {
       let errorFlag = false

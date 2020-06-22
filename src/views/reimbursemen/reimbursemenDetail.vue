@@ -9,23 +9,48 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">报销人：</span>
-            <span class="text">{{reimbursemenInfo.reimbursemen_user}}</span>
+            <span class="label">报销单号：</span>
+            <span class="text">{{reimbursemenInfo.code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">同行人：</span>
-            <span class="text">{{reimbursemenInfo.reimbursemen_other_user || ''}}</span>
+            <span class="label">报销人：</span>
+            <span class="text">{{reimbursemenInfo.apply_user}}</span>
           </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">审核状态：</span>
             <span class="text"
-              :class="{'red':reimbursemenInfo.status === 3,'blue':reimbursemenInfo.status === 1,'green':reimbursemenInfo.status === 2}">{{reimbursemenInfo.status|filterStatus}}</span>
+              :class="{'red':reimbursemenInfo.status === 2,'blue':reimbursemenInfo.status === 0,'green':reimbursemenInfo.status === 1}">{{reimbursemenInfo.status|filterStatus}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">审核人：</span>
+            <span class="text">{{reimbursemenInfo.check_user}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">审核时间：</span>
+            <span class="text">{{reimbursemenInfo.check_time || ''}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">报销事由：</span>
-            <span class="text">{{reimbursemenInfo.reimbursemen_content || ''}}</span>
+            <span class="label">审核意见：</span>
+            <span class="text">{{reimbursemenInfo.check_text}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">报销凭证：</span>
+            <span class="text text-warp">
+              <span v-for="(item,index) in reimbursemenInfo.invoice_file"
+                :key="index"
+                class="linkBox">
+                <i class="el-icon-view el-icon--right"></i>
+                <a :href="item.url"
+                  target="view_window"
+                  :download="item.url">{{item.name}}</a>
+              </span>
+            </span>
           </div>
         </div>
       </div>
@@ -47,7 +72,7 @@
               :key="index">
               <div class="tb_row">{{item.name}}</div>
               <div class="tb_row">{{item.apply_price}}</div>
-              <div class="tb_row">{{item.reality_price}}</div>
+              <div class="tb_row right">{{item.reality_price}}</div>
             </div>
             <div class="tb_header">
               <div class="tb_row strong">合计费用</div>
@@ -56,7 +81,7 @@
             </div>
           </div>
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">付款方式：</span>
             <span class="text">
@@ -67,11 +92,11 @@
               <span class="iconFont jk">借款扣除</span>
             </span>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">备注信息：</span>
-            <span class="text">{{reimbursemenInfo.remark}} </span>
+            <span class="text">{{reimbursemenInfo.apply_text}} </span>
           </div>
         </div>
       </div>
@@ -82,7 +107,8 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="checkShow">审核</div>
+            @click="checkShow"
+            v-if="hasCheckStatus">审核</div>
         </div>
       </div>
     </div>
@@ -120,6 +146,7 @@
                 <span class="tb_row">{{item.apply_price}}</span>
                 <span class="tb_row">
                   <zh-input placeholder="请输入"
+                    type='number'
                     :disabled="checkInfo.status === 2"
                     class="tb_row_input"
                     v-model="item.reality_price"></zh-input>
@@ -132,7 +159,7 @@
               </span>
             </div>
           </div>
-          <div class="row">
+          <!-- <div class="row">
             <span class="label">付款方式：</span>
             <span class="text">
               <el-radio-group v-model="checkInfo.pay_type"
@@ -164,12 +191,24 @@
                 </el-radio>
               </el-radio-group>
             </span>
+          </div> -->
+          <div class="row">
+            <span class="label">审核备注：</span>
+            <span class="text"
+              style="width:100%">
+              <el-input type="textarea"
+                :rows="2"
+                placeholder="请输入审核备注"
+                v-model="checkInfo.check_remark">
+              </el-input>
+            </span>
           </div>
         </div>
         <div class="opr">
           <span class="btn btnGray"
             @click="closePopup">取消</span>
-          <span class="btn btnBlue">确定</span>
+          <span class="btn btnBlue"
+            @click="checkSave">确定</span>
         </div>
       </div>
     </div>
@@ -178,42 +217,20 @@
 
 <script>
 // import { chinaNum } from '@/assets/js/dictionary.js'
-// import { product, craft, auth, assignCraftOrPlan } from '@/assets/js/api.js'
+import { reimbursement } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
-      reimbursemenInfo: {
-        reimbursemen_user: '隔壁老王',
-        reimbursemen_other_user: '老李',
-        status: 2,
-        reimbursemen_content: '外出办公',
-        pay_type: 3,
-        remark: '备注信息，长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本长文本。'
-      },
-      list: [
-        {
-          name: '油费',
-          apply_price: 100,
-          reality_price: ''
-        },
-        {
-          name: '打车费',
-          apply_price: 80,
-          reality_price: ''
-        },
-        {
-          name: '住宿费',
-          apply_price: 300,
-          reality_price: ''
-        }
-      ],
+      reimbursemenInfo: {},
+      list: [],
       showPopup: false,
       checkInfo: {
         status: 1,
         list: [],
-        pay_type: 1
-      }
+        check_remark: ''
+      },
+      hasCheckStatus: false
     }
   },
   filters: {
@@ -228,15 +245,22 @@ export default {
       }, 0)
     },
     filterStatus (item) {
-      return +item === 2 ? '通过' : +item === 3 ? '驳回' : '待审核'
+      return +item === 1 ? '通过' : +item === 2 ? '驳回' : '待审核'
     }
   },
   methods: {
     checkShow () {
       this.checkInfo = {
         status: 1,
-        list: this.$clone(this.list),
-        pay_type: 1
+        list: this.list.map(itemM => {
+          // itemM.reality_price = itemM.apply_price
+          return {
+            name: itemM.name,
+            apply_price: itemM.apply_price,
+            reality_price: itemM.apply_price
+          }
+        }),
+        check_remark: ''
       }
       this.showPopup = true
     },
@@ -245,12 +269,78 @@ export default {
       this.checkInfo = {
         status: 1,
         list: [],
-        pay_type: 1
+        check_remark: ''
       }
+    },
+    checkSave () {
+      if (!this.checkInfo.status) {
+        this.$message.error('请选择审核结果')
+        return
+      }
+      // if (this.checkInfo.list.filter(itemF => !itemF.reality_price && +itemF.reality_price !== 0).length > 0) {
+      //   this.$message.error('请将实际报销金额填写完整！')
+      //   return
+      // }
+      // console.log(666)
+      reimbursement.check({
+        id: this.$route.params.id,
+        status: this.checkInfo.status,
+        real_data: this.checkInfo.status === 1 ? JSON.stringify(this.checkInfo.list.map(itemM => {
+          return {
+            name: itemM.name,
+            price: itemM.reality_price
+          }
+        })) : [],
+        check_text: this.checkInfo.check_remark
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('审核完成')
+          this.showPopup = false
+          this.init()
+        }
+      })
+    },
+    init () {
+      this.loading = true
+      this.hasCheckStatus = +window.sessionStorage.getItem('has_check') > 0
+      reimbursement.detail({
+        id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.reimbursemenInfo = res.data.data
+          this.reimbursemenInfo.invoice_file = this.reimbursemenInfo.invoice_file.map(itemM => {
+            return {
+              name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+              url: itemM
+            }
+          })
+          this.list = this.reimbursemenInfo.detail_data ? JSON.parse(this.reimbursemenInfo.detail_data).map(itemM => {
+            return {
+              name: itemM.name,
+              apply_price: itemM.price
+            }
+          }) : []
+          if (this.reimbursemenInfo.real_data) {
+            JSON.parse(this.reimbursemenInfo.real_data).forEach(item => {
+              let flag = this.list.find(itemF => itemF.name === item.name)
+              if (flag) {
+                flag.reality_price = item.price
+              } else {
+                this.list.push({
+                  name: item.name,
+                  apply_price: 0,
+                  reality_price: item.price
+                })
+              }
+            })
+          }
+        }
+        this.loading = false
+      })
     }
   },
   created () {
-    this.loading = false
+    this.init()
   }
 }
 </script>

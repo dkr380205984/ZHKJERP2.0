@@ -318,9 +318,9 @@ export default {
         }, {
           name: '操作记录统计',
           url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name='
-          // }, {
-          //   name: '年度合计费用',
-          //   url: '/financialStatistics/annualStatistics?year='
+        }, {
+          name: '年度合计费用',
+          url: '/financialStatistics/annualStatistics?year='
         }]
       }, {
         name: '员工管理',
@@ -339,17 +339,17 @@ export default {
           name: '合计工资结算单',
           url: '/staff/staffSettle'
         }]
-        // }, {
-        //   name: '报销管理',
-        //   id: 18,
-        //   icon: require('@/assets/image/index/财务管理.png'),
-        //   children: [{
-        //     name: '添加报销单',
-        //     url: '/reimbursemen/reimbursemenCreate'
-        //   }, {
-        //     name: '报销单列表',
-        //     url: '/reimbursemen/reimbursemenList'
-        //   }]
+      }, {
+        name: '报销管理',
+        id: 18,
+        icon: require('@/assets/image/index/财务管理.png'),
+        children: [{
+          name: '添加报销单',
+          url: '/reimbursemen/reimbursemenCreate'
+        }, {
+          name: '报销单列表',
+          url: '/reimbursemen/reimbursemenList'
+        }]
       }]
     }
   },

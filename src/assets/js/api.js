@@ -475,7 +475,16 @@ const orderType = {
 }
 // 指派工艺单配料单
 const assignCraftOrPlan = (params) => http.post(`${baseUrl}/product/appoint/save`, params, 'application/json')
+// 报销管理
+const reimbursement = {
+  create: (params) => http.post(`${baseUrl}/reimburse/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/reimburse/detail`, params),
+  list: (params) => http.get(`${baseUrl}/reimburse/list`, params),
+  delete: (params) => http.post(`${baseUrl}/reimburse/delete`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/reimburse/check`, params, 'application/json')
+}
 export {
+  reimbursement,
   assignCraftOrPlan,
   orderType,
   staffTag,

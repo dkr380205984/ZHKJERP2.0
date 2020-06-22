@@ -420,6 +420,10 @@ const routes = [
       path: '/reimbursemen/reimbursemenDetail/:id',
       name: '报销单详情',
       component: () => import('../views/reimbursemen/reimbursemenDetail.vue')
+    }, {
+      path: '/reimbursemen/reimbursemenUpdate/:id',
+      name: '报销单修改',
+      component: () => import('../views/reimbursemen/reimbursemenUpdate.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -611,6 +615,7 @@ router.beforeEach((to, from, next) => {
     '数据可视化': ['织为云', '数据可视化'],
     '添加报销单': ['织为云', '添加报销单'],
     '报销单详情': ['织为云', '报销单列表', '报销单详情'],
+    '报销单修改': ['织为云', '报销单列表', '报销单修改'],
     '报销单列表': ['织为云', '报销单列表']
   }
   store.commit('getRoute', routerTable[to.name])
