@@ -268,8 +268,8 @@ export default {
       return findMonth ? findMonth.childrenMergeInfo : []
     },
     otherpayJSON () {
-      let year = this.date.split('-')[0]
-      let month = this.date.split('-')[1]
+      let year = this.otherDate.split('-')[0]
+      let month = this.otherDate.split('-')[1]
       let finded = this.payOtherInfo.find((item) => item.month === month && item.year === year)
       return finded || {
         total_price: 0,
@@ -320,8 +320,8 @@ export default {
           })
         })
       })
-      this.date = this.$getTime(new Date()).slice(0, 7)
-      this.otherDate = this.$getTime(new Date()).slice(0, 7)
+      this.date = this.yearMonth[0].date || this.$getTime(new Date()).slice(0, 7)
+      this.otherDate = this.payOtherInfo[0] ? this.payOtherInfo[0].year + '-' + this.payOtherInfo[0].month : this.$getTime(new Date()).slice(0, 7)
     })
   }
 }

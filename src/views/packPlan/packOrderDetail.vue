@@ -887,7 +887,7 @@ export default {
           order_type: 1
         })
       ]).then(res => {
-        let stockLog = res[0].data.map(item => {
+        let stockLog = res[0].data.data.map(item => {
           let flag = this.packList.find(items => items.name === item.material_name)
           return {
             checked: false,

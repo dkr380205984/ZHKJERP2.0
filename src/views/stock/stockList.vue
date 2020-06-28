@@ -82,7 +82,7 @@
               <span class="opr orange"
                 @click="updatedStock(item)">修改</span>
               <span class="opr"
-                @click="$router.push('/stock/stockDetail/' + item.id + '/' + item.type[0])">详情</span>
+                @click="$router.push('/stock/stockDetail/' + item.id + '/' + item.type)">详情</span>
             </div>
           </div>
         </div>

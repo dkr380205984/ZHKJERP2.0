@@ -1244,7 +1244,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type === itemChild.type
           }).reduce((total, current) => {
             return total + current.number
           }, 0)
@@ -1253,7 +1253,7 @@ export default {
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.outNum = res[5].data.data.filter((itemFilter) => {
-            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type !== '织造'
+            return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemChild.size_id && itemFilter.color_id === itemChild.color_id && itemFilter.client_name === item.client_name && itemFilter.production_type === itemChild.type
           }).reduce((total, current) => {
             return total + current.number
           }, 0)

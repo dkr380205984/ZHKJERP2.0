@@ -1,0 +1,91 @@
+@import '../common.less';
+@font-face {
+  font-family: 'iconfont';  /* project id 924328 */
+  src: url('//at.alicdn.com/t/font_924328_zv2wooicik9.eot');
+  src: url('//at.alicdn.com/t/font_924328_zv2wooicik9.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_924328_zv2wooicik9.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_924328_zv2wooicik9.woff') format('woff'),
+  url('//at.alicdn.com/t/font_924328_zv2wooicik9.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_924328_zv2wooicik9.svg#iconfont') format('svg');
+}
+#reimnursementDetail{
+  .iconFont{
+    font-family: 'iconfont';
+    display: flex;
+    align-items: center;
+    &::before{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 20px;
+      margin-right: 8px;
+    }
+    &.zfb::before{
+      content: '\e627';
+      color:rgba(2,169,241,1);
+      font-size: 26px;
+    }
+    &.wx::before{
+      content: '\e637';
+      color: rgba(0,200,0,1);
+      font-size: 26px;
+    }
+    &.yh::before{
+      content: '';
+      background-image: linear-gradient(100deg,#FE5656 0%,#FE5656 25%,#FFFFFF 30%,#2F8AD0 35%, #2F8AD0 65%, #FFFFFF 70%,#1AC0D0 75%, #1AC0D0 100%);
+    }
+    &.jk::before{
+      content: '\e602';
+      color: rgba(109, 199, 236, 1);
+      font-size: 26px;
+    }
+    &.xj::before{
+      content: '\e60e';
+      color: rgba(245, 127, 22, 1);
+      font-size: 26px;
+    }
+  }
+  .green{
+    color: @green;
+  }
+  .red{
+    color: @red;
+  }
+  .blue{
+    color: @blue;
+  }
+  .tb_row_input{
+    width: 80%;
+  }
+  .center{
+    display: flex;
+    align-items: center;
+  }
+  .radioBox{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    .radio_item{
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      line-height: 36px;
+    }
+  }
+  .text-warp{
+    display: flex;
+    flex-wrap: wrap;
+    .linkBox{
+      margin: 4px 16px 0 0;
+      line-height: 34px;
+      &:hover{
+        color: @blue;
+      }
+      a{      
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+}

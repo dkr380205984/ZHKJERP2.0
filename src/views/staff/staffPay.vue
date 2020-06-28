@@ -425,11 +425,11 @@
                 <span class="tb_row"></span>
                 <span class="tb_row"></span>
                 <span class="tb_row">平均单价</span>
-                <span class="tb_row"></span>
+                <span class="tb_row">{{log_avg_price}}</span>
                 <span class="tb_row">合计数量</span>
-                <span class="tb_row"></span>
+                <span class="tb_row">{{log_total_number}}</span>
                 <span class="tb_row">合计金额</span>
-                <span class="tb_row"></span>
+                <span class="tb_row">{{log_total_price}}</span>
               </div>
               <div class="tb_content">
                 <span class="tb_row right">
@@ -548,6 +548,9 @@ export default {
       logPage: 1,
       date_log: '',
       department_id: '',
+      log_avg_price: 0,
+      log_total_number: 0,
+      log_total_price: 0,
       // 预填设置
       showPreFilledPopup: false,
       preFilledInfo: {
@@ -808,6 +811,9 @@ export default {
         if (res.data.status !== false) {
           this.staffLogList = res.data.data
           this.logTotal = res.data.meta.total
+          this.log_avg_price = res.data.avg_price
+          this.log_total_number = res.data.total_number
+          this.log_total_price = res.data.total_price
         }
         this.logLoading = false
       })

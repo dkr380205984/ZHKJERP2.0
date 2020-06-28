@@ -23,6 +23,10 @@
               style="margin-left:0"
               @click="reset">重置</div>
           </div>
+          <div class="rightCtn">
+            <span class="btn btnWhiteBlue"
+              @click="getLogList(1)">查看预定购日志</span>
+          </div>
         </div>
         <div class="list">
           <div class="title">
@@ -128,11 +132,138 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showMaterialOrderLogPopup">
+      <div class="main"
+        style="width:1024px;">
+        <div class="title">
+          <div class="text">预定购入库日志</div>
+          <i class="el-icon-close"
+            @click="showMaterialOrderLogPopup=false"></i>
+        </div>
+        <div class="content"
+          style="max-height:580px"
+          v-loading='logLoading'>
+          <div class="row"
+            style="height:32px">
+            <div class="col">
+              <zh-input placeholder="筛选物料名称"
+                v-model="logSearchWord"
+                @change="getLogList(1)"
+                clearable></zh-input>
+            </div>
+            <div class="col"
+              style="margin-left:16px">
+              <el-select v-model="logClient"
+                @change="getLogList(1)"
+                placeholder="筛选纱线单位"
+                clearable>
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="col"
+              style="margin-left:16px">
+              <el-select v-model="logStock"
+                @change="getLogList(1)"
+                placeholder="筛选入库仓库"
+                clearable>
+                <el-option v-for="(item,index) in stockList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="col"
+              style="margin-left:16px">
+              <el-date-picker v-model="logDate"
+                style="height:32px"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="getLogList(1)"
+                clearable>
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="row">
+            <div class="tableCtnLv2 minHeight5">
+              <div class="tb_content">
+                <span class="tb_row">订购日期</span>
+                <span class="tb_row">纱线单位</span>
+                <span class="tb_row">物料名称</span>
+                <span class="tb_row">物料颜色</span>
+                <span class="tb_row">物料价格</span>
+                <span class="tb_row">入库数量</span>
+                <span class="tb_row">入库仓库</span>
+                <span class="tb_row middle">备注</span>
+                <span class="tb_row">操作人</span>
+                <span class="tb_row">操作时间</span>
+              </div>
+              <div class="tb_content"
+                v-for="(itemLog,indexLog) in logList"
+                :key="indexLog">
+                <span class="tb_row">{{itemLog.order_time}}</span>
+                <span class="tb_row">{{itemLog.client_name}}</span>
+                <span class="tb_row">{{itemLog.material_name}}</span>
+                <span class="tb_row">{{itemLog.color_code}}</span>
+                <span class="tb_row">{{itemLog.price}}</span>
+                <span class="tb_row">{{itemLog.weight}}</span>
+                <span class="tb_row">{{itemLog.stock_name}}</span>
+                <span class="tb_row middle">
+                  <!-- <template v-if="!itemLog.desc"></template> -->
+                  <el-popover placement="top-start"
+                    v-if="itemLog.desc"
+                    title="备注"
+                    width="200"
+                    trigger="hover"
+                    :content="itemLog.desc">
+                    <div class="btn noBorder"
+                      style="padding:0;margin:0"
+                      slot="reference">查看</div>
+                  </el-popover>
+                </span>
+                <span class="tb_row">{{itemLog.user_name}}</span>
+                <span class="tb_row">{{$getTime(itemLog.create_time)}}</span>
+              </div>
+              <div class="tb_content">
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row"></span>
+                <span class="tb_row">合计总价</span>
+                <span class="tb_row">{{totalPrice}}</span>
+                <span class="tb_row">合计入库数量</span>
+                <span class="tb_row">{{totalNumber}}</span>
+              </div>
+              <div class="tb_content">
+                <span class="tb_row right">
+                  <el-pagination background
+                    :page-size="5"
+                    layout="prev, pager, next"
+                    :total="logTotal"
+                    :current-page.sync="logPages"
+                    @current-change="getLogList">
+                  </el-pagination>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { materialOrder, client } from '@/assets/js/api.js'
+import { materialOrder, client, stock } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -145,7 +276,21 @@ export default {
       client_id: '',
       company_id: '',
       companyArr: [],
-      searchCompanyFlag: false
+      searchCompanyFlag: false,
+      // 弹窗日志数据
+      showMaterialOrderLogPopup: false,
+      logLoading: false,
+      logList: [],
+      logDate: '',
+      logSearchWord: '',
+      logClient: '',
+      logStock: '',
+      logUser: '',
+      logPages: 1,
+      logTotal: 1,
+      totalPrice: 0,
+      totalNumber: 0,
+      stockList: []
     }
   },
   watch: {
@@ -190,6 +335,34 @@ export default {
     },
     reset () {
       this.$router.push('/materialOrder/materialOrderList/page=1&&client_id=&&date=')
+    },
+    getLogList (page) {
+      if (!this.showMaterialOrderLogPopup) {
+        this.showMaterialOrderLogPopup = true
+      }
+      if (this.stockList.length === 0) {
+        stock.list({ type: [1] }).then(res => {
+          this.stockList = res.data.data
+        })
+      }
+      this.logLoading = true
+      materialOrder.allLog({
+        material_name: this.logSearchWord,
+        client_id: this.logClient,
+        start_time: this.logDate ? this.logDate[0] : '',
+        end_time: this.logDate ? this.logDate[1] : '',
+        stock_id: this.logStock,
+        limit: 5,
+        page: page || this.logPages
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.logList = res.data.data
+          this.logTotal = res.data.meta.total
+          this.totalPrice = res.data.total_price
+          this.totalNumber = res.data.total_weight
+        }
+        this.logLoading = false
+      })
     }
   },
   created () {

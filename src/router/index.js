@@ -400,6 +400,22 @@ const routes = [
       path: '/staff/staffSettle',
       name: '合计工资结算单',
       component: () => import('../views/staff/staffSettle.vue')
+    }, {
+      path: '/reimbursement/reimbursementCreate',
+      name: '添加报销单',
+      component: () => import('../views/reimbursement/reimbursementCreate.vue')
+    }, {
+      path: '/reimbursement/reimbursementList',
+      name: '报销单列表',
+      component: () => import('../views/reimbursement/reimbursementList.vue')
+    }, {
+      path: '/reimbursement/reimbursementDetail/:id',
+      name: '报销单详情',
+      component: () => import('../views/reimbursement/reimbursementDetail.vue')
+    }, {
+      path: '/reimbursement/reimbursementUpdate/:id',
+      name: '报销单修改',
+      component: () => import('../views/reimbursement/reimbursementUpdate.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',

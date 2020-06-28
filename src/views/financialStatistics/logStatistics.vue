@@ -2180,15 +2180,15 @@
               v-if="type==='销售出库'">
               <div class="oneBox">
                 <div class="label">销售数量:</div>
-                <div class="content">{{$formatNum(statistics.stock_out.total_cubic_number)}}件</div>
+                <div class="content">{{$formatNum(statistics.out_market.total_number)}}件</div>
               </div>
               <div class="oneBox">
                 <div class="label">平均单价:</div>
-                <div class="content">{{statistics.stock_out.avg_price}}元</div>
+                <div class="content">{{statistics.out_market.avg_price}}元</div>
               </div>
               <div class="oneBox">
                 <div class="label">总价:</div>
-                <div class="content">{{$formatNum(statistics.stock_out.total_price)}}元</div>
+                <div class="content">{{$formatNum(statistics.out_market.total_price)}}元</div>
               </div>
             </div>
           </el-tab-pane>
@@ -2247,7 +2247,7 @@
 
 <script>
 import { downloadExcel, getHash } from '@/assets/js/common.js'
-import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, logStatistics, client, auth, process, stock } from '@/assets/js/api.js'
+import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, client, auth, process, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2353,6 +2353,11 @@ export default {
           total_cubic_number: 0,
           total_price: 0,
           avg_price: 0
+        },
+        out_market: {
+          avg_price: 0,
+          total_number: 0,
+          total_price: 0
         }
       },
       operate_type: ''
@@ -2784,6 +2789,11 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.material_order = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_weight: res.data.total_weight
+          }
           this.loading = false
         })
       } else if (this.type === '物料加工') {
@@ -2801,6 +2811,11 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.material_process = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_weight: res.data.total_weight
+          }
           this.loading = false
         })
       } else if (this.type === '物料出入库') {
@@ -2818,6 +2833,9 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.material_push = {
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '织造分配') {
@@ -2835,6 +2853,11 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.production_weave = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '补纱日志') {
@@ -2852,6 +2875,9 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.yarn_replenish = {
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '半成品加工') {
@@ -2869,6 +2895,11 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.semi_product = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_weight: res.data.total_weight
+          }
           this.loading = false
         })
       } else if (this.type === '产品入库') {
@@ -2887,6 +2918,9 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.product_pop = {
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '产品出库') {
@@ -2905,6 +2939,9 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.product_push = {
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '半成品检验') {
@@ -2936,6 +2973,10 @@ export default {
             }
           })
           this.total = res.data.meta.total
+          this.statistics.semi_product_inspection = {
+            total_number: res.data.total_number,
+            rejects_number: res.data.rejects_number
+          }
           this.loading = false
         })
       } else if (this.type === '成品检验') {
@@ -2966,6 +3007,10 @@ export default {
             }
           })
           this.total = res.data.meta.total
+          this.statistics.product_inspection = {
+            total_number: res.data.total_number,
+            rejects_number: res.data.rejects_number
+          }
           this.loading = false
         })
       } else if (this.type === '包装订购') {
@@ -2983,6 +3028,11 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.pack_order = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_number: res.data.total_number
+          }
           this.loading = false
         })
       } else if (this.type === '实际装箱') {
@@ -3000,6 +3050,10 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.pack_real = {
+            total_number: res.data.total_number,
+            total_box: res.data.total_box
+          }
           this.loading = false
         })
       } else if (this.type === '装箱出库') {
@@ -3016,6 +3070,12 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.stock_out = {
+            total_number: res.data.total_number,
+            total_cubic_number: res.data.total_cubic_number,
+            total_price: res.data.total_price,
+            avg_price: res.data.avg_price
+          }
           this.loading = false
         })
       } else if (this.type === '销售出库') {
@@ -3032,22 +3092,27 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.statistics.out_market = {
+            avg_price: res.data.avg_price,
+            total_number: res.data.total_number,
+            total_price: res.data.total_price
+          }
           this.loading = false
         })
       }
-      logStatistics.detail({
-        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        client_id: this.client_id,
-        product_code: this.product_code,
-        order_type: this.order_type,
-        production_type: this.production_type,
-        operate_user: this.operate_user,
-        material_name: this.material_name
-      }).then((res) => {
-        this.statistics = res.data.data
-        this.loadingStatistics = false
-      })
+      // logStatistics.detail({
+      //   start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+      //   end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+      //   client_id: this.client_id,
+      //   product_code: this.product_code,
+      //   order_type: this.order_type,
+      //   production_type: this.production_type,
+      //   operate_user: this.operate_user,
+      //   material_name: this.material_name
+      // }).then((res) => {
+      //   this.statistics = res.data.data
+      //   this.loadingStatistics = false
+      // })
     }
   },
   created () {
