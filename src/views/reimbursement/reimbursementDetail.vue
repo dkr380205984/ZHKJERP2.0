@@ -106,6 +106,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnOrange"
+            @click="$openUrl('/reimbursementTable/' + $route.params.id)">打印</div>
           <div class="btn btnBlue"
             @click="checkShow"
             v-if="hasCheckStatus">审核</div>
@@ -124,13 +126,27 @@
         <div class="content"
           style="max-height:600px;">
           <div class="row">
-            <span class="label">审核结果：</span>
+            <span class="label">审核意见：</span>
             <span class="text center">
               <el-radio-group v-model="checkInfo.status">
                 <el-radio :label="1">通过</el-radio>
                 <el-radio :label="2">驳回</el-radio>
               </el-radio-group>
             </span>
+          </div>
+          <div class="row">
+            <div class="label">开启通知：</div>
+            <div class="info"
+              style="line-height:32px">
+              <el-radio v-model="ifMsg"
+                :label="1">总是通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="2">只在驳回时通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="3">关闭通知</el-radio>
+              <el-radio v-model="ifMsg"
+                :label="4">只在通过时通知</el-radio>
+            </div>
           </div>
           <div class="row">
             <div class="tableCtnLv2">
@@ -217,11 +233,12 @@
 
 <script>
 // import { chinaNum } from '@/assets/js/dictionary.js'
-import { reimbursement } from '@/assets/js/api.js'
+import { reimbursement, notify } from '@/assets/js/api.js'
 export default {
   data () {
     return {
       loading: true,
+      ifMsg: 1,
       reimbursemenInfo: {},
       list: [],
       showPopup: false,
@@ -271,17 +288,14 @@ export default {
         list: [],
         check_remark: ''
       }
+      this.ifMsg = 1
     },
     checkSave () {
       if (!this.checkInfo.status) {
         this.$message.error('请选择审核结果')
         return
       }
-      // if (this.checkInfo.list.filter(itemF => !itemF.reality_price && +itemF.reality_price !== 0).length > 0) {
-      //   this.$message.error('请将实际报销金额填写完整！')
-      //   return
-      // }
-      // console.log(666)
+      this.loading = true
       reimbursement.check({
         id: this.$route.params.id,
         status: this.checkInfo.status,
@@ -294,9 +308,30 @@ export default {
         check_text: this.checkInfo.check_remark
       }).then(res => {
         if (res.data.status !== false) {
-          this.$message.success('审核完成')
-          this.showPopup = false
-          this.init()
+          // this.$message.success('审核完成')
+          let title = '您有一条消息通知'
+          if (this.ifMsg === 1 || (this.ifMsg === 2 && this.checkInfo.status === 2) || (this.ifMsg === 4 && this.checkInfo.status === 1)) {
+            notify.create({
+              title: title,
+              type: '普通',
+              tag: '工序',
+              content: '有一张报销单' + (this.checkInfo.status === 1 ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>'),
+              router_url: '/reimbursement/reimbursementDetail/' + this.$route.params.id,
+              receive_user: [this.reimbursemenInfo.user_id]
+            }).then((res) => {
+              if (res.data.status) {
+                this.showPopup = false
+                this.$message.success('审核成功')
+                this.loading = false
+                this.init()
+              }
+            })
+          } else {
+            this.showPopup = false
+            this.$message.success('审核成功')
+            this.loading = false
+            this.init()
+          }
         }
       })
     },

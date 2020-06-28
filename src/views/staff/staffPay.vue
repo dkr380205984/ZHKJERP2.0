@@ -536,7 +536,7 @@ export default {
       list: [],
       staffAllList: [],
       // workList: [{ value: '检验' }, { value: '织造' }, { value: '加工' }, { value: '装箱' }],
-      settleList: [{ value: '按时结算', normal: true }, { value: '按日结算', normal: true }, { value: '按月结算', normal: true }],
+      settleList: [{ value: '按小时结算', normal: true }, { value: '按天数结算', normal: true }, { value: '按整月结算', normal: true }],
       isCheckedAll: false,
       staffTagList: [],
       staffTagKeyWord: '',

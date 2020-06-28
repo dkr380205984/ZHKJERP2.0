@@ -490,6 +490,10 @@ const routes = [
     name: '日常结算单',
     component: () => import('../views/staff/staffDayTable.vue')
   }, {
+    path: '/reimbursementTable/:id',
+    name: '报销单',
+    component: () => import('../views/reimbursement/reimbursementTable.vue')
+  }, {
     path: '/screenShipmentsList',
     name: '大屏发货列表',
     component: () => import('../views/order/screenShipmentsList.vue')
@@ -597,7 +601,11 @@ router.beforeEach((to, from, next) => {
     '修改员工': ['织为云', '员工列表', '修改员工'],
     '合计工资结算单': ['织为云', '合计工资结算单'],
     '操作记录统计': ['织为云', '操作记录统计'],
-    '数据可视化': ['织为云', '数据可视化']
+    '数据可视化': ['织为云', '数据可视化'],
+    '添加报销单': ['织为云', '添加报销单'],
+    '报销单详情': ['织为云', '报销单列表', '报销单详情'],
+    '报销单修改': ['织为云', '报销单列表', '报销单修改'],
+    '报销单列表': ['织为云', '报销单列表']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
