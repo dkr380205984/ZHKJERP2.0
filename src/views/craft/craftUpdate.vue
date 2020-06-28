@@ -245,8 +245,9 @@
                 @click="clearTable('warp')">重置</div>
             </div>
             <div class="hotTable">
-              <hot-table :settings="tableData.warp"
-                ref="warp"></hot-table>
+              <!-- <hot-table :settings="tableData.warp"
+                ref="warp"></hot-table> -->
+              <div ref="warp"></div>
             </div>
           </div>
         </div>
@@ -292,8 +293,9 @@
                 @click="clearTable('warpBack')">重置</div>
             </div>
             <div class="hotTable">
-              <hot-table :settings="tableData.warpBack"
-                ref="warpBack"></hot-table>
+              <!-- <hot-table :settings="tableData.warpBack"
+                ref="warpBack"></hot-table> -->
+              <div ref="warpBack"></div>
             </div>
           </div>
         </div>
@@ -952,8 +954,9 @@
                 @click="clearTable('weft')">重置</div>
             </div>
             <div class="hotTable">
-              <hot-table :settings="tableData.weft"
-                ref="weft"></hot-table>
+              <!-- <hot-table :settings="tableData.weft"
+                ref="weft"></hot-table> -->
+              <div ref="weft"></div>
             </div>
           </div>
         </div>
@@ -999,8 +1002,9 @@
                 @click="clearTable('weftBack')">重置</div>
             </div>
             <div class="hotTable">
-              <hot-table :settings="tableData.weftBack"
-                ref="weftBack"></hot-table>
+              <!-- <hot-table :settings="tableData.weftBack"
+                ref="weftBack"></hot-table> -->
+              <div ref="weftBack"></div>
             </div>
           </div>
         </div>
@@ -1102,18 +1106,14 @@
     </div>
   </div>
 </template>
-
+<script src="https://cdn.jsdelivr.net/npm/handsontable@7.3.0/dist/handsontable.full.min.js"></script>
 <script>
 import { yarn, yarnColor, material, craftConfig, penetrationMethod, craft } from '@/assets/js/api.js'
-import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
 import 'handsontable/dist/handsontable.full.css'
 Handsontable.languages.registerLanguageDictionary(enCH) // 注册中文字典
 export default {
-  components: {
-    HotTable
-  },
   data () {
     return {
       weftCmp: '1',
@@ -1264,8 +1264,11 @@ export default {
             if (opt === 'edit') {
               let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
               let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
-              let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // 旧代码保留一份
+              // let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
               merge.forEach((item) => {
                 if (item.row === 3 || item.row === 4) {
                   for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
@@ -1379,8 +1382,10 @@ export default {
             if (opt === 'edit') {
               let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
               let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
-              let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
               merge.forEach((item) => {
                 if (item.row === 3 || item.row === 4) {
                   for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
@@ -1494,8 +1499,10 @@ export default {
             if (opt === 'edit') {
               let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
               let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
-              let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
               merge.forEach((item) => {
                 if (item.row === 3 || item.row === 4) {
                   for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
@@ -1609,8 +1616,10 @@ export default {
             if (opt === 'edit') {
               let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
               let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
-              let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              let mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
+              // let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
               merge.forEach((item) => {
                 if (item.row === 3 || item.row === 4) {
                   for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
@@ -1646,6 +1655,12 @@ export default {
           width: '100%',
           height: 250
         }
+      },
+      tableHot: {
+        warp: '',
+        warpBack: '',
+        weft: '',
+        weftBack: '',
       },
       warpInfo: {
         weft: null, // 总头纹
@@ -2685,12 +2700,12 @@ export default {
           number: ''
         }]
       }
-      this.$refs.warp.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
-        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      }))
-      this.$refs.weft.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
-        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      }))
+      // this.$refs.warp.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
+      //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      // }))
+      // this.$refs.weft.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
+      //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+      // }))
       this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
       this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
       this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
@@ -2723,6 +2738,11 @@ export default {
       this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
       this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
       this.tableData.weftBack.number = JSON.parse(this.weftInfo.weft_rank_back)[0].length
+
+      this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
+      this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
+      this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
+      this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
 
       this.ifDouble.warp = data.warp_data.back_status
       this.ifDouble.weft = data.weft_data.back_status
