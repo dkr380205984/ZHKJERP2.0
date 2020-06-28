@@ -1,9 +1,15 @@
 <template>
-  <div id="reimbursemenCreate"
+  <div id="reimbursementCreate"
     class="indexMain">
     <div class="module">
       <div class="titleCtn">
-        <span class="title">报销明细</span>
+        <span class="title">
+          报销明细
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent">
+          </zh-message>
+        </span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -108,6 +114,9 @@ import { staff, getToken, reimbursement } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      msgSwitch: false,
+      msgUrl: '',
+      msgContent: '',
       list: [
         {
           name: '',
@@ -149,7 +158,13 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('提交成功')
-          this.$router.push('/reimbursemen/reimbursemenList')
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/reimbursement/reimbursementList'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个报销单'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/reimbursement/reimbursementList')
+          }
         }
       })
     },
@@ -199,5 +214,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/reimbursemen/reimbursemenCreate.less";
+@import "~@/assets/less/reimbursement/reimbursementCreate.less";
 </style>

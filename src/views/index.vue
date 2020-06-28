@@ -345,10 +345,10 @@ export default {
         icon: require('@/assets/image/index/财务管理.png'),
         children: [{
           name: '添加报销单',
-          url: '/reimbursemen/reimbursemenCreate'
+          url: '/reimbursement/reimbursementCreate'
         }, {
           name: '报销单列表',
-          url: '/reimbursemen/reimbursemenList'
+          url: '/reimbursement/reimbursementList'
         }]
       }]
     }

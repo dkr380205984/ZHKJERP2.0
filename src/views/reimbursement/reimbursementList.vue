@@ -30,7 +30,7 @@
           </div>
           <div class="rightCtn">
             <div class="btn btnBlue"
-              @click="$router.push('/reimbursemen/reimbursemenCreate')">添加报销单</div>
+              @click="$router.push('/reimbursement/reimbursementCreate')">添加报销单</div>
           </div>
         </div>
         <div class="list">
@@ -122,9 +122,9 @@
             <div class="col middle">
               <span class="opr orange"
                 :class="{'gray' : item.status === 1 }"
-                @click="item.status === 1 ? ()=> false : $router.push('/reimbursemen/reimbursemenUpdate/' + item.id)">修改</span>
+                @click="item.status === 1 ? ()=> false : $router.push('/reimbursement/reimbursementUpdate/' + item.id)">修改</span>
               <span class="opr"
-                @click="$router.push('/reimbursemen/reimbursemenDetail/' + item.id)">详情</span>
+                @click="$router.push('/reimbursement/reimbursementDetail/' + item.id)">详情</span>
               <span class="opr red"
                 :class="{'gray' : item.status === 1 }"
                 @click="item.status === 1 ? ()=> false : deleteReimbursement(item)">删除</span>
@@ -213,7 +213,7 @@ export default {
   },
   methods: {
     reset () {
-      this.$router.push('/reimbursemen/reimbursemenList?keyword=&date=&applyUser=&status=')
+      this.$router.push('/reimbursement/reimbursementList?keyword=&date=&applyUser=&status=')
     },
     getList () {
       this.loading = true
@@ -277,5 +277,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~@/assets/less/reimbursemen/reimbursemenList.less";
+@import "~@/assets/less/reimbursement/reimbursementList.less";
 </style>

@@ -409,21 +409,21 @@ const routes = [
       name: '合计工资结算单',
       component: () => import('../views/staff/staffSettle.vue')
     }, {
-      path: '/reimbursemen/reimbursemenCreate',
+      path: '/reimbursement/reimbursementCreate',
       name: '添加报销单',
-      component: () => import('../views/reimbursemen/reimbursemenCreate.vue')
+      component: () => import('../views/reimbursement/reimbursementCreate.vue')
     }, {
-      path: '/reimbursemen/reimbursemenList',
+      path: '/reimbursement/reimbursementList',
       name: '报销单列表',
-      component: () => import('../views/reimbursemen/reimbursemenList.vue')
+      component: () => import('../views/reimbursement/reimbursementList.vue')
     }, {
-      path: '/reimbursemen/reimbursemenDetail/:id',
+      path: '/reimbursement/reimbursementDetail/:id',
       name: '报销单详情',
-      component: () => import('../views/reimbursemen/reimbursemenDetail.vue')
+      component: () => import('../views/reimbursement/reimbursementDetail.vue')
     }, {
-      path: '/reimbursemen/reimbursemenUpdate/:id',
+      path: '/reimbursement/reimbursementUpdate/:id',
       name: '报销单修改',
-      component: () => import('../views/reimbursemen/reimbursemenUpdate.vue')
+      component: () => import('../views/reimbursement/reimbursementUpdate.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -501,6 +501,10 @@ const routes = [
     path: '/staffDayTable',
     name: '日常结算单',
     component: () => import('../views/staff/staffDayTable.vue')
+  }, {
+    path: '/reimbursementTable/:id',
+    name: '报销单',
+    component: () => import('../views/reimbursement/reimbursementTable.vue')
   }, {
     path: '/orderStatTable',
     name: '订单发货信息单',
