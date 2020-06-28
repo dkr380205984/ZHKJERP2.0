@@ -153,11 +153,12 @@
                       @change="changeRouter(1)"
                       clearable
                       filterable
+                      :filter-method="searchClient"
                       placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"></el-option>
+                      <el-option v-for="item in clientArrReal"
+                        :key="item.id"
+                        :value="item.id"
+                        :label="item.name"></el-option>
                     </el-select>
                   </div>
                 </transition>
@@ -243,6 +244,7 @@ import { group, client, statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      clientArrReal: [],
       loading: true,
       loadingTop: true,
       date: '',
@@ -293,6 +295,36 @@ export default {
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.companyArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.companyArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.companyArr)
+      }
+    },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
@@ -373,6 +405,10 @@ export default {
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
+      this.companyArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.companyArr)
     })
   }
 }

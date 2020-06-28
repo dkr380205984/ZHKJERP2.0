@@ -86,13 +86,15 @@
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-select placeholder="请选择订购单位"
+              <el-select v-model="company"
                 filterable
-                v-model="company">
-                <el-option v-for="(item,index) in companyArr"
-                  :key="index"
+                placeholder="请选择订单公司"
+                :filter-method="searchClient">
+                <el-option v-for="item in clientArrReal"
+                  :key="item.id"
                   :label="item.name"
-                  :value="item.id"></el-option>
+                  :value="item.id">
+                </el-option>
               </el-select>
             </div>
           </div>
@@ -173,6 +175,7 @@ import { client, yarn, yarnColor, materialOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      clientArrReal: [],
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -196,6 +199,36 @@ export default {
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.companyArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.companyArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.clientArr)
+      }
+    },
     searchMaterial (queryString, cb) {
       let result = queryString ? this.materialArr.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialArr
       cb(result)
@@ -293,7 +326,11 @@ export default {
     }), yarn.list(), yarnColor.list(), materialOrder.detail({
       id: this.$route.params.id
     })]).then((res) => {
-      this.companyArr = res[0].data.data
+      this.companyArr = res[0].data.data.filter(itemClient => itemClient.type.indexOf(2) !== -1)
+      this.companyArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.companyArr)
       this.materialArr = res[1].data.data.map((item) => {
         return {
           value: item.name
@@ -312,7 +349,8 @@ export default {
       this.total_weight = data.total_weight
       this.remark = data.desc
       this.material_info = data.material_info.map((item) => {
-        return { material_name: item.material_name,
+        return {
+          material_name: item.material_name,
           color_code: item.color_code,
           price: item.price,
           weight: item.weight,
