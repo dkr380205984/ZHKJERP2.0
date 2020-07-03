@@ -1200,76 +1200,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="popup"
-      v-show="showCompletePopup">
-      <div class="main"
-        style="width:600px">
-        <div class="title">
-          <span class="text">完成订单</span>
-          <span class="el-icon-close"
-            @click="showCompletePopup = false"></span>
-        </div>
-        <div class="content steps">
-          <el-steps :active="showCompletePopup-1"
-            finish-status="success"
-            align-center>
-            <el-step title="选择批次"></el-step>
-            <el-step title="确认完成"></el-step>
-          </el-steps>
-        </div>
-        <div class="content"
-          v-if="showCompletePopup === 1">
-          <div class="row"
-            style="flex-direction:column">
-            <span class="row_item">请选择完成批次：</span>
-            <span class="row_item"
-              v-for="(itemB,indexB) in orderInfo.batch_info"
-              :key="indexB">
-              <el-checkbox v-model="itemB.checked"
-                @change="$forceUpdate()"></el-checkbox>
-              <span class="time">{{itemB.delivery_time}}</span>
-              <span class="batch">第{{itemB.batch_id}}批</span>
-            </span>
-          </div>
-        </div>
-        <div class="content center"
-          v-if="showCompletePopup === 2 || showCompletePopup === 3">
-          <span class="el-icon-warning-outline orange"
-            v-if="isCommit === 'before'">确认提交后将修改选中订单批次状态为完成，是否继续?</span>
-          <span class="blue"
-            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
-          <span class="green"
-            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
-          <span class="red"
-            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
-        </div>
-        <div class="opr"
-          style="justify-content:flex-end">
-          <div style="display:flex">
-            <div class="btn btnGray"
-              v-if="showCompletePopup === 1 && isCommit"
-              @click="closePopup">取消</div>
-            <div class="btn btnGray"
-              v-if="showCompletePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
-              @click="showCompletePopup--">上一步</div>
-            <div class="btn btnBlue"
-              v-if="showCompletePopup < 2"
-              @click="showCompletePopup++">下一步</div>
-            <div class="btn btnBlue"
-              v-if="showCompletePopup === 2 && isCommit === 'before'"
-              @click="changeOrderStatus('ok')">确定</div>
-            <div class="btn btnBlue"
-              v-if="showCompletePopup === 2 && isCommit === 'error'"
-              @click="changeOrderStatus('ok')">重试<em class="el-icon-refresh-left"></em></div>
-            <div class="btn btnBlue"
-              v-if="showCompletePopup === 2  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
-            <div class="btn btnBlue"
-              v-if="showCompletePopup === 3 && isCommit === 'compiled'"
-              @click="closePopup">完成</div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1789,7 +1719,6 @@ export default {
         let productionDetail = res[0].data.data.map(item => {
           return {
             ...item.product_info,
-            ...item.category_info,
             client_name: item.client_name,
             number: item.number,
             size: item.size_name,
@@ -1800,7 +1729,6 @@ export default {
         }).concat(res[1].data.data.map(item => {
           return {
             ...item.product_info,
-            ...item.category_info,
             client_name: item.client_name,
             number: item.number,
             size: item.size_name,
@@ -1833,7 +1761,7 @@ export default {
             out_number: item.number
           }
         }))
-        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
         this.loading = false
       })
     },
@@ -2650,7 +2578,7 @@ export default {
   },
   filters: {
     filterType (item) {
-      return item.is_part ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
+      return item.is_part === 2 ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
     },
     filterStatus (status) {
       if (status === 2001) {

@@ -632,8 +632,8 @@
                 </div>
                 <div class="col"
                   style="flex:1.5">
-                  <span>{{item.product_info.code}}</span>
-                  <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                  <span>{{item.product_info.product_code}}</span>
+                  <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
                 </div>
                 <div class="col">
                   <span>{{item.size_name}}</span>
@@ -951,8 +951,8 @@
                 </div>
                 <div class="col"
                   style="flex:1.5">
-                  <span>{{item.product_info.code}}</span>
-                  <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                  <span>{{item.product_info.product_code}}</span>
+                  <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
                 </div>
                 <div class="col">
                   {{item.size_name}}
@@ -979,7 +979,7 @@
                   <span class="text">{{item.user_name}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.complete_time.slice(0,10)}}</span>
+                  <span class="text">{{item.complete.slice(0,10)}}</span>
                 </div>
               </div>
             </div>
@@ -2303,7 +2303,7 @@ export default {
         semi_product: {
           avg_price: 0,
           total_price: 0,
-          total_weight: 0
+          total_number: 0
         },
         product_pop: {
           total_number: 0
@@ -2818,7 +2818,7 @@ export default {
           this.statistics.semi_product = {
             avg_price: res.data.avg_price,
             total_price: res.data.total_price,
-            total_weight: res.data.total_weight
+            total_number: res.data.total_number
           }
           this.loading = false
         })
@@ -2838,7 +2838,7 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
-          this.statistics.product_pop = {
+          this.statistics.product_push = {
             total_number: res.data.total_number
           }
           this.loading = false
@@ -2859,7 +2859,7 @@ export default {
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
-          this.statistics.product_push = {
+          this.statistics.product_pop = {
             total_number: res.data.total_number
           }
           this.loading = false
