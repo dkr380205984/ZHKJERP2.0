@@ -317,13 +317,13 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
                       <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
@@ -390,8 +390,8 @@
                     style="flex:1.5">{{item.client_name}}</div>
                   <div class="tcolumn"
                     style="flex:1.5">
-                    <span>{{item.product_info.code}}</span>
-                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                    <span>{{item.product_info.product_code}}</span>
+                    <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
                   </div>
                   <div class="tcolumn"
                     style="flex:1.2">
@@ -1442,7 +1442,7 @@ export default {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.part_data.forEach((itemPart) => {
             itemPart.weavingNum = this.weaving_log.filter((item) => {
-              return item.category_info.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
+              return item.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
             }).reduce((total, current) => {
               return total + current.number
             }, 0)

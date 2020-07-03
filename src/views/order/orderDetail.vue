@@ -1548,7 +1548,6 @@ export default {
         let productionDetail = res[0].data.data.map(item => {
           return {
             ...item.product_info,
-            ...item.category_info,
             client_name: item.client_name,
             number: item.number,
             size: item.size_name,
@@ -1559,7 +1558,6 @@ export default {
         }).concat(res[1].data.data.map(item => {
           return {
             ...item.product_info,
-            ...item.category_info,
             client_name: item.client_name,
             number: item.number,
             size: item.size_name,
@@ -1592,7 +1590,7 @@ export default {
             out_number: item.number
           }
         }))
-        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
         this.loading = false
       })
     },
@@ -2397,7 +2395,7 @@ export default {
   },
   filters: {
     filterType (item) {
-      return item.is_part ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
+      return item.is_part === 2 ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
     },
     filterStatus (status) {
       if (status === 2001) {

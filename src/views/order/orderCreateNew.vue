@@ -1332,7 +1332,7 @@ export default {
                 color: itemPro.all_color,
                 flower_id: itemPro.category_info.flower_name,
                 id: itemPro.product_id.toString(),
-                product_code: itemPro.product_info.product_code,
+                product_code: itemPro.product_code,
                 sizeColor: itemPro.all_size.map(valSize => {
                   return {
                     value: valSize.size_id,

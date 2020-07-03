@@ -848,7 +848,7 @@ export default {
     }
     // 设置默认日期
     let now = new Date()
-    this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
+    this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth())) : (now.getMonth()))
     this.date_log = this.date
     Promise.all([
       station.list({

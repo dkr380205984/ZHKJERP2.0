@@ -85,8 +85,8 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
@@ -121,7 +121,7 @@
                         <el-option v-for="item in inspection_product"
                           :key="item.product_id"
                           :value="item.product_id"
-                          :label="item.product_info.code + '('+(item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name) +')'"></el-option>
+                          :label="item.product_info.product_code + '('+(item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title) +')'"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -287,117 +287,11 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module log">
-      <div class="titleCtn">
-        <span class="title">半成品检验日志</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.2">检验日期</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">织造单位</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">产品名称</div>
-                  <div class="tcolumn"
-                    style="flex:1.2">尺码颜色</div>
-                  <div class="tcolumn">检验数量</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">次品信息</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in inspection_log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">{{item.client_name}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">{{item.product_name}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.size + '/' + item.color}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">
-                    <span class="green"
-                      v-if="item.rejects_info===0">无次品</span>
-                    <span class="blue"
-                      v-if="item.rejects_info!==0"
-                      @click="rejectsDetail(item.rejects_info)">有次品(查看)</span>
-                  </div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
-                  <div class="tcolumn">
-                    <span style="cursor:pointer;color:#F5222D"
-                      @click="deleteLog(item.id,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title">半成品检验日志</span>
       </div>
       <div class="listCtn hasBorderTop">
-        <!-- <div class="normalTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn"
-                    style="flex:1.2">检验日期</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">产品名称</div>
-                  <div class="tcolumn"
-                    style="flex:1.2">尺码颜色</div>
-                  <div class="tcolumn">检验数量</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">次品信息</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in inspection_log"
-                  :key="index">
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">产品名称</div>
-                  <div class="tcolumn"
-                    style="flex:1.2">{{item.size + '/' + item.color}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.5">
-                    <span class="green"
-                      v-if="item.rejects_info===0">无次品</span>
-                    <span class="blue"
-                      v-if="item.rejects_info!==0"
-                      @click="rejectsDetail(item.rejects_info)">有次品(查看)</span>
-                  </div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">操作人</div>
-                  <div class="tcolumn">
-                    <span class="red"
-                      @click="deleteLog(item.id,index)">删除</span>
-                  </div>
-                </div>
-              </div>
-            </div> -->
         <div class="btnCtn_page">
           <div class="btn noBorder noMargin"
             @click="deleteLog('all')">批量删除</div>
@@ -474,9 +368,107 @@
         </div>
       </div>
     </div>
+    <!-- 扣款窗口 -->
+    <div class="popup"
+      v-if="deductPopupFlag">
+      <div class="main">
+        <div class="title">
+          单位扣款
+          <span class="el-icon-close"
+            @click="deductPopupFlag = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">扣款单位：</span>
+            <span class="info">
+              <el-select v-model="deductInfo.client_id"
+                filterable
+                placeholder="请选择需要扣款的单位">
+                <el-option v-for="item in clientArr"
+                  :key="item.client_id"
+                  :label="item.client_name"
+                  :value="item.client_id + '-' + item.type">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">扣款金额：</span>
+            <span class="info">
+              <zh-input type='number'
+                v-model=" deductInfo.price"
+                placeholder="请输入需要扣除款项的金额">
+                <template slot="append">元</template>
+              </zh-input>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">扣款备注：</span>
+            <span class="info">
+              <zh-input v-model=" deductInfo.remark"
+                placeholder="请输入扣款备注">
+              </zh-input>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <span class="btn btnGray"
+            @click="deductPopupFlag = false">取消</span>
+          <span class="btn btnBlue"
+            @click="clientDeduct">确定</span>
+        </div>
+      </div>
+    </div>
+    <!-- 操作记录 -->
+    <div class="popup"
+      v-show="deductLogPopupFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">扣款记录</div>
+          <i class="el-icon-close"
+            @click="deductLogPopupFlag=false"></i>
+        </div>
+        <div class="content">
+          <el-timeline>
+            <el-timeline-item v-for="(item, index) in deductLogList"
+              :key="index">
+              <el-collapse>
+                <el-collapse-item>
+                  <template slot="title">
+                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
+                    <span style="margin-left:20px;color:#F5222D">扣款</span>
+                    <span style="margin-left:20px">金额：
+                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
+                    </span>
+                  </template>
+                  <div class="collapseBox">
+                    <span class="label">扣款单位：</span>
+                    <span class="info">{{item.client_name}} </span>
+                  </div>
+                  <div class="collapseBox">
+                    <span class="label">扣款原因：</span>
+                    <span class="info">{{item.desc}}</span>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="deductLogPopupFlag=false">关闭</div>
+          <div class="btn btnBlue"
+            @click="deductLogPopupFlag=false">确定</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnWhiteBlue"
+            @click="deductLogPopupFlag = true">扣款日志</div>
+          <div class="btn btnWhiteRed"
+            @click="deductPopupFlag = true">单位扣款</div>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>
@@ -487,7 +479,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, weave, inspection, client } from '@/assets/js/api.js'
+import { order, weave, inspection, client, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -517,10 +509,57 @@ export default {
         number: '',
         reason: []
       }],
-      inspection_flag: false
+      inspection_flag: false,
+      // 扣款窗口数据
+      deductPopupFlag: false,
+      clientArr: [],
+      deductInfo: {
+        client_id: '',
+        price: '',
+        remark: ''
+      },
+      deductLogPopupFlag: false,
+      deductLogList: []
     }
   },
   methods: {
+    // 扣款提交
+    clientDeduct () {
+      if (!this.deductInfo.client_id) {
+        this.$message.error('请选择需要扣款的合作单位')
+        return
+      }
+      if (!this.deductInfo.price) {
+        this.$message.error('请填写需要扣除款项的金额')
+        return
+      }
+      chargebacks.create({
+        id: null,
+        client_id: this.deductInfo.client_id.split('-')[0],
+        order_id: JSON.stringify([this.$route.params.id]),
+        complete_time: this.$getTime(),
+        deduct_price: this.deductInfo.price,
+        desc: this.deductInfo.remark,
+        order_type: 1,
+        type: this.deductInfo.client_id.split('-')[1]
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('扣款成功')
+          this.deductPopupFlag = false
+          this.getDeductLog()
+        }
+      })
+    },
+    // 获取扣款日志
+    getDeductLog () {
+      chargebacks.log({
+        order_type: 1,
+        order_id: this.$route.params.id,
+        type: [4]
+      }).then((res) => {
+        this.deductLogList = res.data.data
+      })
+    },
     // 批量导出excel
     download () {
       let data = this.inspection_log.filter(item => item.checked)
@@ -790,6 +829,7 @@ export default {
     }
   },
   mounted () {
+    this.getDeductLog()
     Promise.all([order.detail({
       id: this.$route.params.id
     }), weave.detail({
@@ -810,6 +850,13 @@ export default {
         }
       })
       this.weave_detail = this.$mergeData(mergeData, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      this.clientArr = this.$unique(this.weave_detail.map(itemM => {
+        return {
+          client_name: itemM.client_name,
+          client_id: itemM.client_id,
+          type: 4
+        }
+      }), 'client_id')
       this.inspection_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.companyArr = res[2].data.data.filter((item) => {
         return item.type.indexOf(4) !== -1
@@ -829,7 +876,6 @@ export default {
           item.rejects_info = 0
         }
       })
-      console.log(this.weave_detail)
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inspectionNum = this.inspection_log.filter((itemFilter) => {
@@ -847,4 +893,27 @@ export default {
 
 <style lang="less" scoped>
 @import "~@/assets/less/inspection/semiFinishedDetail.less";
+</style>
+<style lang="less">
+#semiFinishedDetail {
+  .popup {
+    .el-timeline-item {
+      padding-bottom: 0px;
+      margin-bottom: -9px;
+    }
+    .el-collapse-item__header {
+      min-height: 46px;
+      height: 46px;
+    }
+    .el-timeline-item__tail {
+      margin-top: 14px;
+    }
+    .el-timeline-item__node--normal {
+      margin-top: 14px;
+    }
+    .collapseBox {
+      margin: 12px;
+    }
+  }
+}
 </style>
