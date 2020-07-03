@@ -166,6 +166,22 @@
               </el-date-picker>
             </span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">是否客供纱</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content"
+              style="display: flex;
+                align-items: center;">
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="是">是</el-radio>
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="否">否</el-radio>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -853,6 +869,7 @@ import { product, client, group, order, getToken, warnSetting, orderType } from 
 export default {
   data () {
     return {
+      ifKegong: '否',
       tableType: 'table',
       lock: true,
       loading: true,

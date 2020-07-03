@@ -1785,6 +1785,7 @@ export default {
           size_id: item.size_id
         })
       })
+      console.log(productInfo)
       this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }] })
       this.weaving_info.forEach((item) => {
         let mixedData = []

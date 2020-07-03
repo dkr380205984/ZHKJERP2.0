@@ -237,6 +237,10 @@ const routes = [
       name: '织造分配详情',
       component: () => import('../views/weavingProcessing/weavingDetail.vue')
     }, {
+      path: '/weavingProcessing/weavingNoMat/:id/:orderType',
+      name: '织造分配',
+      component: () => import('../views/weavingProcessing/weavingNoMat.vue')
+    }, {
       path: '/weavingProcessing/weavingList/:params/:type',
       name: '织造分配列表',
       component: () => import('../views/weavingProcessing/weavingList.vue')
@@ -586,6 +590,7 @@ router.beforeEach((to, from, next) => {
     '物料批量出入库详情': ['织为云', '物料订购列表', '物料批量出入库详情'],
     '织造分配列表': ['织为云', '织造分配列表'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
+    '织造分配': ['织为云', '织造分配列表', '织造分配详情'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
     '装箱计划单列表': ['织为云', '装箱计划单列表'],
