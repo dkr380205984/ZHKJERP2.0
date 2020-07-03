@@ -1685,7 +1685,6 @@ export default {
             flag.time = false
           }
           return {
-            order_type: 1,
             order_id: this.$route.params.id,
             user_id: window.sessionStorage.getItem('user_id'),
             client_id: item.client_name,
@@ -1975,12 +1974,12 @@ export default {
       this.orderInfo.order_batch.map(item => item.product_info).forEach(item => {
         productDetail = productDetail.concat(item)
       })
-      this.productInfo = this.$mergeData(productDetail, { mainRule: ['product_code', 'size_id', 'color_id'], otherRule: [{ name: 'size_name/size' }, { name: 'color_name/color' }, { name: 'product_info' }, { name: 'numbers/order_number', type: 'add' }] }).map(item => {
-        let sizeColor = item.product_info.size_measurement.map(itemSize => {
+      this.productInfo = this.$mergeData(productDetail, { mainRule: ['product_code', 'size_id', 'color_id'], otherRule: [{ name: 'size_name/size' }, { name: 'color_name/color' }, { name: 'all_color' }, { name: 'all_size' }, { name: 'category_info' }, { name: 'image' }, { name: 'product_id' }, { name: 'unit_price' }, { name: 'numbers/order_number', type: 'add' }] }).map(item => {
+        let sizeColor = item.all_size.map(itemSize => {
           return {
             value: itemSize.size_id,
             label: itemSize.size_name,
-            children: item.product_info.color.map(itemColor => {
+            children: item.all_color.map(itemColor => {
               return {
                 value: itemColor.color_id,
                 label: itemColor.color_name
@@ -1992,23 +1991,23 @@ export default {
           sizeColor: sizeColor,
           size_color: [item.size_id, item.color_id],
           size_color_name: [item.size, item.color],
-          color: item.product_info.color,
-          size: item.product_info.size_measurement,
+          color: item.all_color,
+          size: item.all_size,
           product_code: item.product_code,
-          id: item.product_info.product_id,
-          type: [item.product_info.category_name, item.product_info.type_name, item.product_info.style_name],
-          flower_name: item.product_info.flower_name,
-          unit: item.product_info.unit,
+          id: item.product_id,
+          type: [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name],
+          flower_name: item.category_info.flower_name,
+          unit: item.category_info.unit,
           order_number: item.order_number
         }
         return obj
       })
-      this.productInfo_merge_list = this.$mergeData(productDetail, { mainRule: 'product_code', otherRule: [{ name: 'product_info' }], childrenName: 'size_info', childrenRule: { mainRule: 'size_id', otherRule: [{ name: 'size_name' }], childrenName: 'color_info' } }).map(item => {
+      this.productInfo_merge_list = this.$mergeData(productDetail, { mainRule: 'product_code', otherRule: [{ name: 'product_id' }, { name: 'category_info' }], childrenName: 'size_info', childrenRule: { mainRule: 'size_id', otherRule: [{ name: 'size_name' }], childrenName: 'color_info' } }).map(item => {
         return {
           product_code: item.product_code,
-          product_id: item.product_info.product_id,
-          type: [item.product_info.category_name, item.product_info.type_name, item.product_info.style_name],
-          unit: item.product_info.unit,
+          product_id: item.product_id,
+          type: [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name],
+          unit: item.category_info.unit,
           size_info: item.size_info.map(itemSize => {
             return {
               value: itemSize.size_id,

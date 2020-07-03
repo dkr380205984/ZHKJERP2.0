@@ -336,6 +336,20 @@ const plugin = {
         }, 200)
       }
     })
+  },
+  // 数组去重(仅用数组内子项为数字或字符串的数据结构)
+  unique (arr, key) {
+    if (key) {
+      let newArr = []
+      arr.forEach(itemF => {
+        if (!newArr.find(itemFI => itemFI[key] === itemF[key])) {
+          newArr.push(itemF)
+        }
+      })
+      return newArr
+    } else {
+      return [...new Set(arr)]
+    }
   }
 }
 const submitLock = () => {
@@ -368,5 +382,6 @@ export default {
     Vue.prototype.$strToAscII = plugin.strToAscII
     Vue.prototype.$fuckSelect = plugin.fuckSelect
     Vue.prototype.$submitLock = submitLock()
+    Vue.prototype.$unique = plugin.unique
   }
 }
