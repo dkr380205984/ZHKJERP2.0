@@ -444,6 +444,51 @@
     </div>
     <div class="module">
       <div class="titleCtn">
+        <span class="title">原料入库信息</span>
+      </div>
+      <div class="editCtn hasBorderTop"
+        v-if="materialStockInfo.length>0">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">原料名称</div>
+                  <div class="tcolumn noPad"
+                    style="flex:2">
+                    <div class="trow">
+                      <div class="tcolumn">原料颜色</div>
+                      <span class="tcolumn">已入库数量</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="(item,index) in materialStockInfo"
+                  :key="index">
+                  <div class="tcolumn">{{item.material_name}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:2">
+                    <div class="trow"
+                      v-for="(itemColor,indexColor) in item.childrenMergeInfo"
+                      :key="indexColor">
+                      <div class="tcolumn">{{itemColor.material_color}}</div>
+                      <span class="tcolumn green">{{$toFixed(itemColor.weight || 0)}}kg</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="normalCtn hasBorderTop"
+        v-if="materialStockInfo.length===0">暂无入库信息</div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
         <span class="title">原料分配信息</span>
       </div>
       <div class="editCtn hasBorderTop">
@@ -845,7 +890,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
+import { order, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -900,9 +945,8 @@ export default {
       showMaterialPopup: false,
       replenishClientArr: [],
       material_detail: [],
-      material_plan: [],
-      material_plan_old: [],
       material_use: [],
+      materialStockInfo: [],
       ifUpdate: false // 判断物料分配是新增还是修改,新增的时候不能超过剩余物料数量,修改的时候不能超过计划值
     }
   },
@@ -1257,6 +1301,22 @@ export default {
     },
     updateMat () {
       console.log(this.material_detail)
+      this.weaving_mat = this.material_detail.map((item) => {
+        return {
+          company_id: item.client_id,
+          client_name: item.client_name,
+          material_merge: item.childrenMergeInfo.map((itemChild) => {
+            return {
+              id: itemChild.id,
+              canbeEdit: false,
+              material_name: itemChild.material_name,
+              material_attribute: itemChild.material_attribute,
+              number: itemChild.weight
+            }
+          })
+        }
+      })
+      this.showMaterialPopup = true
     },
     closeMat () {
       this.ifUpdate = false
@@ -1501,9 +1561,9 @@ export default {
         order_id: this.$route.params.id,
         order_type: this.$route.params.orderType
       }),
-      materialPlan.detail({
+      materialStock.detail({
         order_id: this.$route.params.id,
-        order_type: this.$route.params.orderType // 区分订单和样单
+        order_type: this.$route.params.orderType
       })
     ]).then((res) => {
       this.orderInfo = res[0].data.data
@@ -1558,33 +1618,11 @@ export default {
           this.material_use.push(item)
         }
       })
-      // 根据织造日志统计一下分配数量
-      // this.weaving_info.forEach((item) => {
-      //   item.childrenMergeInfo.forEach((itemChild) => {
-      //     itemChild.part_data.forEach((itemPart) => {
-      //       itemPart.weavingNum = this.weaving_log.filter((item) => {
-      //         return item.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
-      //       }).reduce((total, current) => {
-      //         return total + current.number
-      //       }, 0)
-      //     })
-      //   })
-      // })
       this.replenish_log = res[3].data.data.map((item) => {
         item.check = false
         return item
       })
-      this.material_plan_update = this.$clone(res[6].data.data.total_data)
-      this.material_plan = res[6].data.data.total_data.filter(itemF => +itemF.material_type === 1)
-      this.material_plan.forEach((item) => {
-        item.canBeUse = item.reality_weight / 1000
-        let finded = this.material_use.find((itemFind) => itemFind.material_name === item.material_name && item.material_attribute === itemFind.material_attribute)
-        if (finded) {
-          item.canBeUse -= finded.weight
-        }
-        item.canBeUse = this.$toFixed(item.canBeUse)
-      })
-      this.material_plan_old = this.$clone(this.material_plan)
+      this.materialStockInfo = this.$mergeData(res[6].data.data, { mainRule: 'material_name', childrenRule: { mainRule: 'material_color', otherRule: [{ name: 'material_type' }, { name: 'total_weight' }, { name: 'unit' }] } })
       this.replenishClientArr = this.$mergeData(res[4].data.data.material_process_client.concat(res[4].data.data.material_order_client).concat(res[4].data.data.order_weave_client).concat(res[4].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
       this.loading = false
     })

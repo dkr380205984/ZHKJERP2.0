@@ -145,13 +145,19 @@
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                v-if="itemOrder.has_plan!==0"
+                v-if="itemOrder.has_plan!==0 && itemOrder.material_status === 2"
                 @click="$router.push('/weavingProcessing/weavingDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
+                织造分配
+              </span>
+              <!-- 客供纱 -->
+              <span class="opr"
+                v-if=" itemOrder.material_status === 1"
+                @click="$router.push('/weavingProcessing/weavingNoMat/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
                 织造分配
               </span>
               <span class="opr"
                 style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.has_plan===0">暂无物料计划</span>
+                v-if="itemOrder.material_status === 2 && itemOrder.has_plan===0">暂无物料计划</span>
             </div>
           </div>
         </div>
