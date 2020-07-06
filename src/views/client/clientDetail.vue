@@ -2008,7 +2008,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.material_order = {
             avg_price: res.data.avg_price,
@@ -2029,7 +2034,12 @@ export default {
           page: this.pages
         }).then(res => {
           if (res.data.status !== false) {
-            this.list = res.data.data
+            this.list = res.data.data.map(itemM => {
+              return {
+                ...itemM,
+                checked: false
+              }
+            })
             this.total = res.data.meta.total
             this.statistics.material_order_order = {
               total_price: res.data.total_price,
@@ -2052,7 +2062,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.material_process = {
             avg_price: res.data.avg_price,
@@ -2075,7 +2090,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.production_weave = {
             avg_price: res.data.avg_price,
@@ -2098,7 +2118,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.semi_product = {
             avg_price: res.data.avg_price,
@@ -2121,7 +2146,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.pack_order = {
             avg_price: res.data.avg_price,
@@ -2143,7 +2173,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.stock_out = {
             total_number: res.data.total_number,
@@ -2166,7 +2201,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.out_market = {
             avg_price: res.data.avg_price,
@@ -2318,12 +2358,12 @@ export default {
   },
   computed: {
     checkOrder () {
-      return this.list.filter((item) => item.checked).map(itemM => {
+      return this.$unique(this.list.filter((item) => item.checked).map(itemM => {
         return {
           order_code: this.type === '物料预订购' ? ('预订购订单-' + itemM.id) : itemM.order_code,
           order_id: this.type === '物料预订购' ? itemM.id : itemM.order_id
         }
-      })
+      }), 'order_id')
     },
     checkOrderTotalPrice () {
       return this.list.filter((item) => item.checked).map(itemM => (+itemM.total_price || 0)).reduce((a, b) => a + b, 0)
