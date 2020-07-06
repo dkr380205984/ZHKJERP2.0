@@ -25,7 +25,7 @@
         <div class="right">
           <span class="qrCode_box"
             style="margin-right:8px">
-            <img :src="itemWeave.category_info.image[0] ? itemWeave.category_info.image[0].image_url : errorImg"
+            <img :src="itemWeave.image[0] ? itemWeave.image[0].image_url : errorImg"
               alt="">
           </span>
           <span class="qrCode_box">
@@ -227,12 +227,12 @@ export default {
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
             let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
-              let sizeInfo = flag || {}
+              // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
+              // let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
-                category_info: item.category_info,
+                // category_info: item.category_info,
                 client_name: item.client_name,
                 size: item.size_name,
                 size_id: item.size_id,
@@ -242,8 +242,8 @@ export default {
                 number: +item.number || 0,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.process,
-                img: item.category_info.image,
-                sizeInfo: sizeInfo,
+                // img: item.category_info.image,
+                // sizeInfo: sizeInfo,
                 material_info: item.material_assign,
                 motorise_number: +item.motorise_number || 0
               }
@@ -260,7 +260,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -347,12 +347,12 @@ export default {
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
             let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
-              let sizeInfo = flag || {}
+              // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
+              // let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
-                category_info: item.category_info,
+                // category_info: item.category_info,
                 client_name: item.client_name,
                 size: item.size_name,
                 size_id: item.size_id,
@@ -362,8 +362,8 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.image,
-                sizeInfo: sizeInfo,
+                // img: item.category_info.image,
+                // sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }
             })
@@ -379,7 +379,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -472,12 +472,12 @@ export default {
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
             let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
-              let sizeInfo = flag || {}
+              // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
+              // let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
-                category_info: item.category_info,
+                category_info: item.product_info,
                 client_name: item.client_name,
                 size: item.size_name,
                 size_id: item.size_id,
@@ -487,8 +487,8 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: '织造',
-                img: item.category_info.image,
-                sizeInfo: sizeInfo,
+                // img: item.category_info.image,
+                // sizeInfo: sizeInfo,
                 material_info: item.material_assign,
                 motorise_number: +item.motorise_number || 0
               }
@@ -505,7 +505,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -592,12 +592,12 @@ export default {
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
             let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
-              let sizeInfo = flag || {}
+              // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
+              // let sizeInfo = flag || {}
               return {
                 ...item.product_info,
                 is_part: item.is_part,
-                category_info: item.category_info,
+                // category_info: item.category_info,
                 client_name: item.client_name,
                 size: item.size_name,
                 size_id: item.size_id,
@@ -607,8 +607,8 @@ export default {
                 number: item.number,
                 compiled_time: this.$getTime(item.complete_time),
                 process_type: item.type,
-                img: item.category_info.image,
-                sizeInfo: sizeInfo,
+                // img: item.category_info.image,
+                // sizeInfo: sizeInfo,
                 material_info: item.part_assign
               }
             })
@@ -624,7 +624,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'code/product_code', otherRule: [{ name: 'client_name' }, { name: 'name' }, { name: 'category_info' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -809,7 +809,7 @@ export default {
       // if (item.is_part > 0) {
       //   return item.name
       // } else {
-      return item.category_info.category_name ? [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/') : item.name
+      return item.category_name ? [item.category_name, item.type_name, item.style_name].join('/') : item.name
       // }
     },
     filterialTotal (item) {
