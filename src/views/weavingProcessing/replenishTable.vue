@@ -41,7 +41,7 @@
           <template v-for="(itemR,indexR) in item.replenish_info">
             <div class="print_row"
               :key="indexR + 'replenish'">
-              <span class="row_item center">承担比例{{itemR.percent}}%</span>
+              <span class="row_item center">承担金额{{itemR.percent}}元</span>
             </div>
             <div class="print_row bgGray"
               :key='indexR + "header"'>

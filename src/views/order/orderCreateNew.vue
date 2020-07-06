@@ -786,10 +786,10 @@ export default {
       other_file_arr: [],
       importKeyword: '',
       // 预警数据
-      isOpenWarn: false,
+      isOpenWarn: true,
       warnType: '',
       warnList: [],
-      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }],
+      timeData: [{ percent: 0.10, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.35, name: '半成品入库' }, { percent: 0.15, name: '成品入库' }, { percent: 0.15, name: '成品装箱' }],
       orderTypeArr: []
     }
   },

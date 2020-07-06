@@ -58,8 +58,8 @@
           <span class="row_item center">{{item.name}}</span>
           <span class="row_item col flex7">
             <div class="print_row noBorder">
-              <span class="row_item center">{{item.jijianPrice || 0}}</span>
-              <span class="row_item center">{{item.jishiPrice || 0}}</span>
+              <span class="row_item center">{{$toFixed(item.jijianPrice || 0)}}</span>
+              <span class="row_item center">{{$toFixed(item.jishiPrice || 0)}}</span>
               <span class="row_item center">{{item.jibenPrice ? item.jibenPrice.price : 0}}</span>
               <span class="row_item center">{{item.zhiwuPrice ? item.zhiwuPrice.price : 0}}</span>
               <span class="row_item center">{{item.jiabanPrice ? item.jiabanPrice.price : 0}}</span>
@@ -133,8 +133,9 @@ export default {
         month: Number(this.$route.query.month)
       }).then(res => {
         let data = res.data.data.map(item => {
-          let jijian = item.child_data.filter(value => value.settle_type !== '按时结算').map(value => Number(value.total_price))
-          let jishi = item.child_data.filter(value => value.settle_type === '按时结算').map(value => Number(value.total_price))
+          let thisMonthData = item.child_data.filter(itemF => new Date(itemF.complete_time).getMonth() === +this.$route.query.month - 1)
+          let jijian = thisMonthData.filter(value => value.settle_type !== '按时结算').map(value => Number(value.total_price))
+          let jishi = thisMonthData.filter(value => value.settle_type === '按时结算').map(value => Number(value.total_price))
           let obj = {
             name: item.name,
             jijianPrice: jijian.length > 0 ? jijian.reduce((a, b) => {
@@ -207,9 +208,9 @@ export default {
       ]
       return arr.map(value => Number(value) || 0).reduce((a, b) => {
         return a + b
-      }) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
+      }, 0) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
         return a + b
-      })
+      }, 0)
     }
   },
   computed: {
@@ -232,13 +233,13 @@ export default {
           ]
           return arr.map(value => Number(value) || 0).reduce((a, b) => {
             return a + b
-          }) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
+          }, 0) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
             return a + b
-          })
+          }, 0)
         })
         return total.reduce((a, b) => {
           return a + b
-        })
+        }, 0)
       })
       return this.$toFixed(total.reduce((a, b) => {
         return a + b
