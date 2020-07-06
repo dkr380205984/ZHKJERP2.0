@@ -481,6 +481,13 @@ export default {
                 },
                 material_info: []
               })
+            } else {
+              flag.category_info = {
+                category_name: itemPro.category_name,
+                style_name: itemPro.style_name,
+                type_name: itemPro.type_name,
+                unit: itemPro.unit
+              }
             }
           })
           data.production_data.forEach(itemPro => {

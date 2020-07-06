@@ -192,7 +192,7 @@
             <div class="col">{{item.company_cost}}</div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/sample/sampleDetail/' + item.id)">详情</span>
+                @click="$router.push('/sample/sampleOrderDetail/' + item.id)">详情</span>
             </div>
           </div>
         </div>

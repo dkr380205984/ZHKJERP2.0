@@ -317,13 +317,13 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
-                      <div class="tcolumn">{{itemChild.price*itemChild.number}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
                       <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
                     </div>
                   </div>
@@ -390,8 +390,8 @@
                     style="flex:1.5">{{item.client_name}}</div>
                   <div class="tcolumn"
                     style="flex:1.5">
-                    <span>{{item.product_info.code}}</span>
-                    <span>{{item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name}}</span>
+                    <span>{{item.product_info.product_code}}</span>
+                    <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
                   </div>
                   <div class="tcolumn"
                     style="flex:1.2">
@@ -521,7 +521,7 @@
                   <div class="tcolumn">纱线名称</div>
                   <div class="tcolumn">纱线颜色</div>
                   <div class="tcolumn">补纱数量</div>
-                  <div class="tcolumn">承担比例</div>
+                  <div class="tcolumn">承担金额</div>
                   <div class="tcolumn">备注信息</div>
                   <div class="tcolumn">操作</div>
                 </div>
@@ -541,7 +541,7 @@
                   <div class="tcolumn">{{item.need_weight}}</div>
                   <div class="tcolumn">
                     <span v-for="(itemChild,indexChild) in item.client_info"
-                      :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}%)</span>
+                      :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}元)</span>
                   </div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">
@@ -643,7 +643,7 @@
         </div>
         <div class="content">
           <div class="tips">
-            提示信息：请按实际情况填写金额承担比例。
+            提示信息：请按实际情况填写承担金额。
           </div>
           <div class="row"
             v-for="(item,index) in replenish_data.yarn_info"
@@ -677,11 +677,11 @@
             v-for="(item,index) in replenish_data.client_info"
             :key="index +'aaa'">
             <div class="label"
-              :style="{'visibility': (index>0?'hidden':'visible')}">承担比例：</div>
+              :style="{'visibility': (index>0?'hidden':'visible')}">承担金额：</div>
             <div class="info input-with-select">
               <el-input v-model="item.percent"
-                placeholder="请输入比例">
-                <template slot="append">%</template>
+                placeholder="请输入承担金额">
+                <template slot="append">元</template>
                 <template slot="prepend">
                   <el-select style="width:120px"
                     placeholder="单位"
@@ -704,8 +704,11 @@
           <div class="row">
             <div class="label">备注信息：</div>
             <div class="info">
-              <el-input v-model="replenish_data.desc"
-                placeholder="请输入备注信息"></el-input>
+              <!-- <el-input v-model="replenish_data.desc"
+                placeholder="请输入备注信息"></el-input> -->
+              <el-autocomplete v-model="replenish_data.desc"
+                :fetch-suggestions="querySearchReplenish"
+                placeholder="请输入备注信息"></el-autocomplete>
             </div>
           </div>
         </div>
@@ -735,7 +738,7 @@
               <span class="tb_row">纱线名称</span>
               <span class="tb_row flex06">颜色</span>
               <span class="tb_row flex06">重量</span>
-              <span class="tb_row">承担比例</span>
+              <span class="tb_row">承担金额</span>
             </div>
             <div class="tb_content"
               v-for="(item,index) in printInfo"
@@ -873,6 +876,13 @@ export default {
         desc: '补纱'
       },
       replenish_log: [],
+      replenishRemarkList: [
+        { value: '工艺算错' },
+        { value: '纱线算错' },
+        { value: '条数多织' },
+        { value: '次品重织' },
+        { value: '其它原因' }
+      ],
       printInfo: [],
       printPopup: false,
       showRouterPopup: false,
@@ -893,6 +903,9 @@ export default {
     }
   },
   methods: {
+    querySearchReplenish (queryString, cb) {
+      cb(queryString ? this.replenishRemarkList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.replenishRemarkList)
+    },
     searchClient (query) {
       this.clientArrReal = []
       if (query) {
@@ -936,7 +949,7 @@ export default {
           created_at: this.$getTime(item.created_at),
           need_weight: item.need_weight,
           percent_info: item.client_info.map(value => {
-            return (+value.client_id === 0 ? '本厂' : value.client_name) + '(' + value.percent + '%)'
+            return (+value.client_id === 0 ? '本厂' : value.client_name) + '(' + value.percent + '元)'
           })
         }
       })
@@ -1243,23 +1256,11 @@ export default {
     saveReplenish () {
       let errorFlag = false
       let errMsg = ''
-      let percent = this.replenish_data.client_info.reduce((total, current) => {
-        return total + Number(current.percent)
-      }, 0)
-      if (percent !== 100) {
-        errorFlag = true
-        errMsg = '请保证承担比例相加等于100%'
-      }
-      this.replenish_data.client_info.forEach((item) => {
-        // if (!item.id) {
-        //   errorFlag = true
-        //   errMsg = '请选择承担单位'
-        // }
-        if (!item.percent) {
-          errorFlag = true
-          errMsg = '请输入承担比例'
-        }
-      })
+      // this.replenish_data.client_info.forEach((item) => {
+      //   if (!item.percent) {
+      //     item.percent = 0
+      //   }
+      // })
       this.replenish_data.yarn_info.forEach((item) => {
         if (!item.yarn) {
           errorFlag = true
@@ -1442,7 +1443,7 @@ export default {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.part_data.forEach((itemPart) => {
             itemPart.weavingNum = this.weaving_log.filter((item) => {
-              return item.category_info.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
+              return item.product_id === itemPart.id && item.size_id === itemPart.size_id && item.color_id === itemPart.color_id
             }).reduce((total, current) => {
               return total + current.number
             }, 0)

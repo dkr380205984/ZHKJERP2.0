@@ -106,14 +106,15 @@ export default {
         month: Number(this.$route.query.month)
       }).then(res => {
         res.data.data.forEach(item => {
-          let totalPrice = item.child_data.map(value => Number(value.total_price) || 0)
-          let data = item.child_data.map(value => {
+          let thisMonthData = item.child_data.filter(itemF => new Date(itemF.complete_time).getMonth() === +this.$route.query.month - 1)
+          let totalPrice = thisMonthData.map(value => Number(value.total_price) || 0)
+          let data = thisMonthData.map(value => {
             return {
               name: item.name,
               code: item.staff_code,
-              totalPrice: totalPrice.length > 0 ? totalPrice.reduce((a, b) => {
+              totalPrice: totalPrice.reduce((a, b) => {
                 return a + b
-              }) : 0,
+              }, 0),
               ...value
             }
           })
@@ -131,11 +132,11 @@ export default {
             })
             return arr.length > 0 ? arr.reduce((a, b) => {
               return a + b
-            }) : 0
+            }, 0) : 0
           })
           this.totalPrice = arrList.length > 0 ? this.$toFixed(arrList.reduce((a, b) => {
             return a + b
-          })) : 0
+          }, 0)) : 0
           this.loading = false
           setTimeout(() => {
             window.print()

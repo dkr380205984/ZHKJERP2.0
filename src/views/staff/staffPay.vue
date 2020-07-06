@@ -746,13 +746,13 @@ export default {
       }
     },
     selectSettle (ev, item) {
-      if (ev.value === '按时结算') {
+      if (ev.value === '按小时结算') {
         item.unit = '小时'
       }
-      if (ev.value === '按日结算') {
+      if (ev.value === '按天数结算') {
         item.unit = '天'
       }
-      if (ev.value === '按月结算') {
+      if (ev.value === '按整月结算') {
         item.unit = '月'
       }
     },
@@ -848,7 +848,7 @@ export default {
     }
     // 设置默认日期
     let now = new Date()
-    this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth() + 1)) : (now.getMonth() + 1))
+    this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth())) : (now.getMonth()))
     this.date_log = this.date
     Promise.all([
       station.list({
