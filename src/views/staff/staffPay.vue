@@ -745,13 +745,13 @@ export default {
       }
     },
     selectSettle (ev, item) {
-      if (ev.value === '按时结算') {
+      if (ev.value === '按小时结算') {
         item.unit = '小时'
       }
-      if (ev.value === '按天结算') {
+      if (ev.value === '按天数结算') {
         item.unit = '天'
       }
-      if (ev.value === '按月结算') {
+      if (ev.value === '按整月结算') {
         item.unit = '月'
       }
     },

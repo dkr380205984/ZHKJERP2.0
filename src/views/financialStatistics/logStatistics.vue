@@ -764,7 +764,7 @@
                   <span class="text">订购数量(kg)</span>
                 </div>
                 <div class="col">
-                  <span class="text">承担比例</span>
+                  <span class="text">承担金额</span>
                 </div>
                 <div class="col">
                   <span class="text">备注</span>
@@ -804,7 +804,7 @@
                 </div>
                 <div class="col">
                   <span v-for="(itemChild,indexChild) in item.client_info"
-                    :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}%)</span>
+                    :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}元)</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
