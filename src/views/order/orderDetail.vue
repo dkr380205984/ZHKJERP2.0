@@ -2419,7 +2419,7 @@ export default {
             color: itemPro.color_name,
             size: itemPro.size_name,
             number: itemPro.numbers,
-            product_id: itemPro.product_info.product_id,
+            product_id: itemPro.product_id,
             product_code: itemPro.product_code
           }
         })
