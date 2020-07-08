@@ -1757,18 +1757,6 @@ export default {
         typeStr: [],
         financial_data: {}
       },
-      clientList: [],
-      clientFilter: {
-        matOrder: [],
-        matProcess: [],
-        matStock: [],
-        proWeave: [],
-        proProcess: [],
-        matRep: [],
-        proStock: [],
-        proSemi: [],
-        matOther: []
-      },
       authList: [],
       processList: [],
       stockList: [],
@@ -1859,7 +1847,6 @@ export default {
         client.detail({
           id: this.$route.params.id
         }),
-        client.list(),
         auth.list(),
         process.list(),
         stock.list()
@@ -1889,46 +1876,15 @@ export default {
         } else if (this.clientInfo.type.indexOf(11) !== -1) {
           this.type = '销售出库'
         }
-        // 初始化客户筛选数据
-        this.clientList = res[1].data.data
-        this.clientFilter = {
-          matOrder: this.clientList.filter((item) => {
-            return item.type.indexOf(2) !== -1 || item.type.indexOf(3) !== -1 || item.type.indexOf(10) !== -1
-          }),
-          matProcess: this.clientList.filter((item) => {
-            return item.type.indexOf(3) !== -1
-          }),
-          matStock: this.clientList.filter((item) => {
-            return item.type.indexOf(3) !== -1 || item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
-          }),
-          proWeave: this.clientList.filter((item) => {
-            return item.type.indexOf(4) !== -1
-          }),
-          proProcess: this.clientList.filter((item) => {
-            return item.type.indexOf(5) !== -1
-          }),
-          matRep: this.clientList.filter((item) => {
-            return item.type.indexOf(4) !== -1
-          }),
-          proStock: this.clientList.filter((item) => {
-            return item.type.indexOf(5) !== -1
-          }),
-          proSemi: this.clientList.filter((item) => {
-            return item.type.indexOf(4) !== -1
-          }),
-          matOther: this.clientList.filter((item) => {
-            return item.type.indexOf(7) !== -1
-          })
-        }
         // 初始化用户筛选数据
-        this.authList = res[2].data.data
+        this.authList = res[1].data.data
         // 初始化加工工序筛选数据
-        this.processList = res[3].data.data
+        this.processList = res[2].data.data
         this.processList.unshift({
           name: '织造'
         })
         // 初始化仓库筛选数据
-        this.stockList = res[4].data.data
+        this.stockList = res[3].data.data
         this.getList()
         this.getSettleChargbacksLog()
         this.loading = false
@@ -1943,21 +1899,6 @@ export default {
       this.loadingStatistics = true
       this.list = []
       if (this.type === '所有订单') {
-        // statistics.clientDetailList({
-        //   client_id: this.$route.params.id,
-        //   client_type: 1,
-        //   order_type: this.order_type === 2 ? 2 : 1,
-        //   limit: 10,
-        //   page: this.pages,
-        //   start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-        //   end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        //   keyword: this.order_code
-        // }).then(res => {
-        //   this.list = res.data.data
-        //   this.total = res.data.meta.total
-        //   this.loading = false
-        //   this.loadingStatistics = false
-        // })
         if (this.order_type !== 1) {
           statistics.sampleList({
             limit: 10,
@@ -2008,7 +1949,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.material_order = {
             avg_price: res.data.avg_price,
@@ -2029,7 +1975,12 @@ export default {
           page: this.pages
         }).then(res => {
           if (res.data.status !== false) {
-            this.list = res.data.data
+            this.list = res.data.data.map(itemM => {
+              return {
+                ...itemM,
+                checked: false
+              }
+            })
             this.total = res.data.meta.total
             this.statistics.material_order_order = {
               total_price: res.data.total_price,
@@ -2052,7 +2003,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.material_process = {
             avg_price: res.data.avg_price,
@@ -2075,7 +2031,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.production_weave = {
             avg_price: res.data.avg_price,
@@ -2098,7 +2059,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.semi_product = {
             avg_price: res.data.avg_price,
@@ -2121,7 +2087,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.pack_order = {
             avg_price: res.data.avg_price,
@@ -2143,7 +2114,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.stock_out = {
             total_number: res.data.total_number,
@@ -2166,7 +2142,12 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
         }).then((res) => {
-          this.list = res.data.data
+          this.list = res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
           this.total = res.data.meta.total
           this.statistics.out_market = {
             avg_price: res.data.avg_price,
@@ -2318,12 +2299,12 @@ export default {
   },
   computed: {
     checkOrder () {
-      return this.list.filter((item) => item.checked).map(itemM => {
+      return this.$unique(this.list.filter((item) => item.checked).map(itemM => {
         return {
           order_code: this.type === '物料预订购' ? ('预订购订单-' + itemM.id) : itemM.order_code,
           order_id: this.type === '物料预订购' ? itemM.id : itemM.order_id
         }
-      })
+      }), 'order_id')
     },
     checkOrderTotalPrice () {
       return this.list.filter((item) => item.checked).map(itemM => (+itemM.total_price || 0)).reduce((a, b) => a + b, 0)
