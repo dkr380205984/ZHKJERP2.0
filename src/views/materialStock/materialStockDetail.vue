@@ -655,6 +655,7 @@
       </div>
       <div class="listCtn hasBorderTop">
         <div class="flexTb"
+          style="border-bottom:0"
           v-if="activeType === 'plan'">
           <div class="thead">
             <span class="trow">
@@ -966,7 +967,8 @@ export default {
           value: 5
         }
       ],
-      stockArr: []
+      stockArr: [],
+      orderLog: []// 订购日志，入库的时候把入库的单价拿过来传给后端方便统计
     }
   },
   watch: {
@@ -1278,7 +1280,10 @@ export default {
                 desc: item.remark
               })
             } else {
+              let finded = this.orderLog.find((itemFind) => itemFind.material_name === itemMa.material_name && itemFind.color_code === itemMa.material_attribute && itemFind.type_source !== 2)
               data.push({
+                order_client: finded ? finded.client_id : '', // 物料订购单位
+                price: finded ? finded.price : 0, // 单价
                 order_id: this.$route.params.id,
                 client_id: item.client_name,
                 material_name: itemMa.material_name,
@@ -1591,9 +1596,14 @@ export default {
           replenish.list({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
+          }),
+          materialManage.detail({
+            order_type: this.$route.params.orderType,
+            order_id: this.$route.params.id
           })
         ]).then(res => {
           // 初始化原料出入库数据
+          this.orderLog = res[4].data.data
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1).concat(res[3].data.data.filter(item => +item.type === 1).map(item => {
             return {
               material_name: item.material_name,
@@ -1606,6 +1616,7 @@ export default {
           }))
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
+          console.log(this.materialStockInfo)
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
           // 初始化织造出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
