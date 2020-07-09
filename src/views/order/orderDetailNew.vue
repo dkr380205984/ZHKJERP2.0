@@ -870,6 +870,275 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showCanclePopup">
+      <div class="main"
+        style="width:600px">
+        <div class="title">
+          <span class="text">取消订单{{showCanclePopup|filterTitle}}</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showCanclePopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="原料结余入库"></el-step>
+            <el-step title="辅料结余入库"></el-step>
+            <el-step title="包装结余入库"></el-step>
+            <el-step title="产品结余入库"></el-step>
+            <el-step title="完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 1">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="yarnStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type === 1)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleYarn">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">原料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <zh-input v-model="itemMa.material_name"
+                  placeholder="请填写原料"
+                  class="elInput" /> -->
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchYarn"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleYarn,'yarn')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleYarn,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">kg</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 2">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="materialStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type === 2)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in cancleMaterial">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">辅料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchMaterial"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleMaterial,'material')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleMaterial,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">{{(itemMa.unit || '件')}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 3">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="packStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type === 3)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in canclePack">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">包装信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchPack"
+                  class="elInput"
+                  placeholder="请填写包装"></el-autocomplete>
+                <zh-input v-model="itemMa.size"
+                  placeholder="规格"
+                  class="elInput" />
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(canclePack,'pack')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(canclePack,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.attribute"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.number"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">件</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content"
+          v-if="showCanclePopup === 4">
+          <div class="row">
+            <span class="label">入库仓库：</span>
+            <span class="info">
+              <el-select v-model="productStockId"
+                placeholder="请选择入库仓库">
+                <el-option v-for="item in stockList.filter(item=>item.type === 4)"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <template v-for="(itemMa,indexMa) in canCleProduct">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">产品信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchPack"
+                  class="elInput"
+                  placeholder="请填写包装"></el-autocomplete> -->
+                <zh-input v-model="itemMa.product_code"
+                  placeholder="产品"
+                  class="elInput"
+                  disabled />
+                <zh-input v-model="itemMa.size"
+                  placeholder="尺码"
+                  disabled
+                  class="elInput" />
+              </span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">颜色/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="颜色"
+                  disabled
+                  class="elInput" />
+                <zh-input v-model="itemMa.number"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">件</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content center"
+          v-if="showCanclePopup === 5 || showCanclePopup === 6">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为取消，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr"
+          :style="{'justify-content': showCanclePopup > 4 ? 'flex-end' : 'space-between'}">
+          <div class="btn btnGray"
+            @click="clearData(showCanclePopup)"
+            v-if='(showCanclePopup === 1 || showCanclePopup === 2 || showCanclePopup === 3 || showCanclePopup === 4)'>清空该页数据</div>
+          <div style="display:flex">
+            <div class="btn btnGray"
+              v-if="showCanclePopup === 1 && isCommit"
+              @click="closePopup">取消</div>
+            <div class="btn btnGray"
+              v-if="showCanclePopup<5"
+              @click="jumpGoStock">跳过结余</div>
+            <div class="btn btnGray"
+              v-if="showCanclePopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+              @click="showCanclePopup--">上一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup < 5"
+              @click="showCanclePopup++">下一步</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5 && isCommit === 'before'"
+              @click="changeOrderStatus('cancle')">确定</div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5 && isCommit === 'error'"
+              @click="changeOrderStatus('cancle')">重试<em class="el-icon-refresh-left"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 5  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            <div class="btn btnBlue"
+              v-if="showCanclePopup === 6 && isCommit === 'compiled'"
+              @click="closePopup">完成</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">

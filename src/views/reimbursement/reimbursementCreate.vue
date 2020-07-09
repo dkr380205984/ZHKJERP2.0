@@ -1,6 +1,7 @@
 <template>
   <div id="reimbursementCreate"
-    class="indexMain">
+    class="indexMain"
+    v-loading='loading'>
     <div class="module">
       <div class="titleCtn">
         <span class="title">
@@ -12,6 +13,23 @@
         </span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">报销人</span>
+            <span class="content">
+              <el-select v-model="user_id"
+                filterable
+                clearable
+                placeholder="请选择报销人">
+                <el-option v-for="item in userArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </div>
         <div class="rowCtn">
           <div class="tableCtnLv2">
             <div class="tb_header">
@@ -110,10 +128,11 @@
 </template>
 
 <script>
-import { staff, getToken, reimbursement } from '@/assets/js/api.js'
+import { auth, getToken, reimbursement } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
@@ -124,6 +143,7 @@ export default {
         }
       ],
       remark: '',
+      user_id: '',
       userArr: [],
       postData: { token: '' }
     }
@@ -150,6 +170,7 @@ export default {
         return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key))
       })
       reimbursement.create({
+        reimburse_user: this.user_id,
         detail_data: JSON.stringify(list),
         invoice_image: null,
         invoice_file: invoiceFile,
@@ -201,13 +222,14 @@ export default {
     }
   },
   created () {
-    this.reimbursement_user = window.sessionStorage.getItem('user_name')
     Promise.all([
-      staff.list(),
+      auth.list(),
       getToken()
     ]).then(res => {
       this.userArr = res[0].data.data
+      this.user_id = window.sessionStorage.getItem('user_id')
       this.postData.token = res[1].data.data
+      this.loading = false
     })
   }
 }

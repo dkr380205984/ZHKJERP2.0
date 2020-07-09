@@ -103,7 +103,7 @@
               <span class="text">下单时间</span>
             </div>
             <div class="col middle"
-              style="flex:2">>
+              style="flex:2">
               <span class="text">操作</span>
             </div>
           </div>
