@@ -29,6 +29,10 @@ const routes = [
     name: 'index',
     component: () => import('../views/index.vue'),
     children: [{
+      path: '/meau/meau',
+      name: '其它菜单',
+      component: () => import('../views/meau/meau.vue')
+    }, {
       path: '/homePage/homePage',
       name: '首页',
       component: () => import('../views/homePage/homePage.vue')
@@ -250,7 +254,7 @@ const routes = [
       component: () => import('../views/stock/stockDetail.vue')
     }, {
       path: '/packPlan/packPlanList/:params',
-      name: '装箱计划单列表',
+      name: '装箱管理列表',
       component: () => import('../views/packPlan/packPlanList.vue')
     }, {
       path: '/packPlan/packPlanCreate/:id',
@@ -353,7 +357,7 @@ const routes = [
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
-      path: '/financialStatistics/oprDetail/:clentId/:type/:orderId/:oprId/:oprType',
+      path: '/financialStatistics/oprDetail/:clentId/:type/:oprId/:oprType',
       name: '合作公司财务操作记录',
       component: () => import('../views/financialStatistics/oprDetail.vue')
     }, {
@@ -515,6 +519,7 @@ router.beforeEach((to, from, next) => {
     '编辑页': ['织为云', '编辑页'],
     '详情页': ['织为云', '详情页'],
     '列表页': ['织为云', '列表页'],
+    '其它菜单': ['织为云', '其它菜单'],
     '样品添加': ['织为云', '样品添加'],
     '样品详情': ['织为云', '样品列表', '样品详情'],
     '样品修改': ['织为云', '样品列表', '样品修改'],
@@ -569,16 +574,17 @@ router.beforeEach((to, from, next) => {
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
-    '装箱计划单列表': ['织为云', '装箱计划单列表'],
-    '装箱计划单详情': ['织为云', '装箱计划单列表', '装箱计划单详情'],
+    '装箱管理列表': ['织为云', '装箱管理列表'],
+    '装箱计划单详情': ['织为云', '装箱管理列表', '装箱计划单详情'],
     '包装订购列表': ['织为云', '包装订购列表'],
+    '包装订购详情': ['织为云', '装箱管理列表', '包装订购详情'],
     '产品收发列表': ['织为云', '产品收发列表'],
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
     '产品检验列表': ['织为云', '产品检验列表'],
     '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
     '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情'],
     '装箱出库列表': ['织为云', '装箱出库列表'],
-    '装箱出库详情': ['织为云', '装箱出库列表', '装箱出库详情'],
+    '装箱出库详情': ['织为云', '装箱管理列表', '装箱出库详情'],
     '设备管理': ['织为云', '设备管理'],
     '客户列表': ['织为云', '客户列表'],
     '客户添加': ['织为云', '客户列表', '客户添加'],

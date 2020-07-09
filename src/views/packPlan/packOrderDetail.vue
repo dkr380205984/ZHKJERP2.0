@@ -2,6 +2,22 @@
   <div id='packOrderDetail'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item"
+        @click="$router.push('/packPlan/packPlanCreate/' + $route.params.id)">
+        <span class="icon packPlan"></span>
+        <span class="name">装箱计划</span>
+      </div>
+      <div class="cut_item active">
+        <span class="icon packOrder"></span>
+        <span class="name">包装订购</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/packPlan/packStock/' + $route.params.id)">
+        <span class="icon packOut"></span>
+        <span class="name">装箱出库</span>
+      </div>
+    </div>
     <div class="module">
       <div class="titleCtn">
         <div class="title">

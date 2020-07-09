@@ -12,6 +12,8 @@ import ECharts from 'vue-echarts'
 import 'echarts-gl'
 import 'echarts/lib/chart/line'
 import 'echarts/lib/component/polar'
+// 导入icon svg
+import './assets/font/iconfont.js'
 
 Vue.component('v-chart', ECharts)
 Vue.use(MyPlugin)

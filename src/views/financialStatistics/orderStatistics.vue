@@ -1,6 +1,55 @@
 <template>
   <div class="indexMain"
     id="orderStatistics">
+    <div class="listCutCtn">
+      <div class="cut_item active">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-dingdancaiwutongji"></use>
+        </svg>
+        <span class="name">订单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yangdancaiwutongji"></use>
+        </svg>
+        <span class="name">样单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinchanliangtongji"></use>
+        </svg>
+        <span class="name">产品产量统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">物料使用统计</span>
+      </div>
+      <!-- <div class="cut_item"
+        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
+        </svg>
+        <span class="name">年度财务统计</span>
+      </div> -->
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-caozuorizhitongji"></use>
+        </svg>
+        <span class="name">操作记录统计</span>
+      </div>
+    </div>
     <div class="module"
       v-loading="loadingTop">
       <div class="listHead">
@@ -102,32 +151,56 @@
     <div class="module"
       v-loading="loading">
       <div class="listCtn">
-        <div class="filterCtn">
-          <div class="leftCtn">
-            <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入订单号按回车键查询"></el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)"></el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
-          </div>
-          <div class="rightCtn"
-            style="color:#1a95ff;font-size:14px"
+        <div class="addCtn">
+          <div style="width:auto;color:#1a95ff;font-size:14px"
             v-if="orderStatistics.update_time!=='0000-00-00'">
             更新日期：{{orderStatistics.update_time.slice(0,16)}}
+          </div>
+        </div>
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入订单号按回车键查询"></el-input>
+              <el-select v-model="company_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                filterable
+                :filter-method="searchClient"
+                placeholder="筛选公司">
+                <el-option v-for="item in clientArrReal"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"></el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)"></el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
         </div>
         <div class="list">
@@ -139,54 +212,10 @@
               <span class="text">下单日期</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">
-                  订单公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      :filter-method="searchClient"
-                      placeholder="筛选公司">
-                      <el-option v-for="item in clientArrReal"
-                        :key="item.id"
-                        :value="item.id"
-                        :label="item.name"></el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">订单公司</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchGroupFlag">
-                  负责小组
-                  <i class="el-icon-search iconBtn"
-                    @click="searchGroupFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchGroupFlag"
-                    class="filterBox">
-                    <el-select v-model="group_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="小组">
-                      <el-option v-for="(item,index) in groupArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id"></el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">负责小组</span>
             </div>
             <div class="col">
               <span class="text">下单数量</span>

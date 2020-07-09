@@ -1,35 +1,94 @@
 <template>
   <div class="indexMain"
     id="productStatistics">
+    <div class="listCutCtn">
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-dingdancaiwutongji"></use>
+        </svg>
+        <span class="name">订单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yangdancaiwutongji"></use>
+        </svg>
+        <span class="name">样单财务统计</span>
+      </div>
+      <div class="cut_item active">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinchanliangtongji"></use>
+        </svg>
+        <span class="name">产品产量统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">物料使用统计</span>
+      </div>
+      <!-- <div class="cut_item"
+        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
+        </svg>
+        <span class="name">年度财务统计</span>
+      </div> -->
+      <div class="cut_item "
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-caozuorizhitongji"></use>
+        </svg>
+        <span class="name">操作记录统计</span>
+      </div>
+    </div>
     <div class="module"
       v-loading="loading">
       <div class="listCtn">
-        <div class="filterCtn">
-          <div class="leftCtn">
-            <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入产品编号按回车键查询"></el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)"></el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
-          </div>
-          <div class="rightCtn"
-            style="color:#1a95ff;font-size:14px"
+        <div class="addCtn">
+          <div style="color:#1a95ff;font-size:14px"
             v-if="update_time.date!=='0000-00-00'">
             更新日期：{{update_time.date.slice(0,16)}}
+          </div>
+        </div>
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入产品编号按回车键查询"></el-input>
+              <el-cascader class="filter_item"
+                v-model="type"
+                placeholder="筛选品类"
+                :options="typeArr"
+                @change="getType"
+                clearable
+                filterable>
+              </el-cascader>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)"></el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
         </div>
         <div class="list">
@@ -39,26 +98,7 @@
             </div>
             <div class="col"
               style="flex:1.5">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchTypeFlag">品类
-                  <i class="el-icon-search iconBtn"
-                    @click="searchTypeFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchTypeFlag"
-                    class="filterBox">
-                    <el-cascader class="filter"
-                      v-model="type"
-                      placeholder="筛选品类"
-                      :options="typeArr"
-                      @change="getType"
-                      clearable
-                      filterable>
-                    </el-cascader>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">品类</span>
             </div>
             <div class="col">
               <span class="text middle">产品图片</span>

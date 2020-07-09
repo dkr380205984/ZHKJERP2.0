@@ -50,7 +50,7 @@
               <el-select v-model="client_id"
                 filterable
                 default-first-option
-                 :filter-method="searchClient"
+                :filter-method="searchClient"
                 placeholder="请选择外贸公司"
                 @change="getContact">
                 <el-option v-for="item in clientArrReal"
@@ -1689,28 +1689,13 @@ export default {
   created () {
     this.getList()
     Promise.all([
-      client.list({
-        company_id: this.companyId,
-        keyword: '',
-        status: ''
-      }),
-      productType.list({
-        company_id: this.companyId
-      }),
-      flower.list({
-        company_id: this.companyId
-      }),
-      group.list({
-        company_id: this.companyId
-      }),
-      yarn.list({
-        keyword: ''
-      }),
-      material.list({
-        company_id: this.companyId
-      }),
+      client.list(),
+      productType.list(),
+      flower.list(),
+      group.list(),
+      yarn.list(),
+      material.list(),
       course.list({
-        company_id: this.companyId,
         type: 2
       }),
       getToken({})

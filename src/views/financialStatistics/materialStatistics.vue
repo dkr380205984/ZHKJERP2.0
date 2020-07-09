@@ -1,32 +1,83 @@
 <template>
   <div class="indexMain"
     id="materialStatistics">
+    <div class="listCutCtn">
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-dingdancaiwutongji"></use>
+        </svg>
+        <span class="name">订单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yangdancaiwutongji"></use>
+        </svg>
+        <span class="name">样单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinchanliangtongji"></use>
+        </svg>
+        <span class="name">产品产量统计</span>
+      </div>
+      <div class="cut_item active">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">物料使用统计</span>
+      </div>
+      <!-- <div class="cut_item"
+        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
+        </svg>
+        <span class="name">年度财务统计</span>
+      </div> -->
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-caozuorizhitongji"></use>
+        </svg>
+        <span class="name">操作记录统计</span>
+      </div>
+    </div>
     <div class="module"
       v-loading="loading">
       <div class="listCtn">
-        <div class="filterCtn">
-          <div class="leftCtn">
-            <span class="label">筛选条件：</span>
-            <div class="tabCtn">
-              <span class="tab"
-                :class="{'active':type===1}"
-                @click="type=1">原料</span>
-              <span class="tab"
-                :class="{'active':type===2}"
-                @click="type=2">辅料</span>
-            </div>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入物料按回车键查询"></el-input>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
-          </div>
-          <div class="rightCtn"
-            style="color:#1a95ff;font-size:14px"
+        <div class="addCtn">
+          <div style="color:#1a95ff;font-size:14px"
             v-if="update_time.date!=='0000-00-00'">
             更新日期：{{update_time.date.slice(0,16)}}
+          </div>
+        </div>
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <div class="tabCtn">
+                <span class="tab"
+                  :class="{'active':type===1}"
+                  @click="type=1">原料</span>
+                <span class="tab"
+                  :class="{'active':type===2}"
+                  @click="type=2">辅料</span>
+              </div>
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入物料按回车键查询"></el-input>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
         </div>
         <div class="list">

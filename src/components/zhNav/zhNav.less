@@ -1,3 +1,12 @@
+@font-face {
+  font-family: 'zhkj_icon';  /* project id 1928040 */
+  src: url('//at.alicdn.com/t/font_1928040_b176vh51kug.eot');
+  src: url('//at.alicdn.com/t/font_1928040_b176vh51kug.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.woff') format('woff'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.svg#font_family') format('svg');
+}
 .zhNavCtn{
   height: 100%;
   background:rgba(46,57,79,1);
@@ -130,6 +139,37 @@
         left:10px;
         right: 10px;
       }
+    }
+  }
+}
+.iconFont{
+  font-family: 'zhkj_icon';
+  // color: #FFF;
+  font-size: 20px;
+  margin-right: 8px;
+  &.product{
+    &::after{
+      content: '\e617';
+    }
+  }
+  &.sample{
+    &::after{
+      content: '\e615';
+    }
+  }
+  &.price{
+    &::after{
+      content: '\e614';
+    }
+  }
+  &.financial{
+    &::after{
+      content: '\e612';
+    }
+  }
+  &.other{
+    &::after{
+      content: '\e618';
     }
   }
 }

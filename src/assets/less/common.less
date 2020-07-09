@@ -10,6 +10,15 @@
 @fontBig:16px;
 @fontMiddle:14px;
 @fontSmall:12px;
+@font-face {
+  font-family: 'zhkj_icon';  /* project id 1928040 */
+  src: url('//at.alicdn.com/t/font_1928040_b176vh51kug.eot');
+  src: url('//at.alicdn.com/t/font_1928040_b176vh51kug.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.woff') format('woff'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_1928040_b176vh51kug.svg#font_family') format('svg');
+}
 .indexMain{
   width: 100%;
   .module{
@@ -545,6 +554,107 @@
         display: flex;
         justify-content: flex-end;
       }
+      // 列表改版新增样式2020-07-07 start   
+      .filterCtn2{
+        display: flex;
+        margin-bottom: 16px;
+        .leftCtn{
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          padding-left: 5em;
+          position: relative;
+          .label{
+            position: absolute;
+            top: 0;
+            left: 0;
+            line-height: 32px;
+          }
+          .filter_line{
+            margin-top: 16px;
+            height: 32px;
+            display: flex;
+            transition: all 0.1s linear;
+            overflow: hidden;
+            align-items: center;
+            &.hiddle{
+              height: 0;
+              margin-top: 0!important;
+            }
+            &:nth-child(2){
+              margin-top: 0;
+            }
+            .cutBox{
+              display: flex;
+              width: 8em;
+              height: 32px;
+              align-items: center;
+              font-size: @fontMiddle;
+              margin-right: 16px;
+              .item{
+                width: 50%;
+                display: flex;
+                justify-content: center;
+                border: 1px solid #E8E8E8;
+                min-height: 32px;
+                align-items: center;
+                box-sizing: border-box;
+                cursor: pointer;
+                &:first-child{
+                  border-top-left-radius: 4px;
+                  border-bottom-left-radius: 4px;
+                }
+                &:last-child{
+                  border-top-right-radius: 4px;
+                  border-bottom-right-radius: 4px;
+                }
+                &.active{
+                  color: @blue;
+                  border-color: @blue;
+                }
+              }
+            }
+            .filter_item{
+              width: 200px;
+              margin-right: 16px;
+              display: flex;
+              align-items: center;
+              &:last-child{
+                margin-right: 0;
+              }
+            }
+            .resetBtn{
+              padding: 0 24px;
+              line-height: 30px;
+              border: 1px solid #DCDFE6;
+              border-radius: 4px;
+              cursor: pointer;
+              user-select: none;
+            }
+          }
+        }
+        .rightCtn{
+          width: 4em;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          color: @blue;
+          user-select: none;
+          .openIcon{
+            transition: all 0.1s linear;
+            margin-left: 8px;
+            &.active{
+              transform: rotateZ(-180deg);
+            }
+          }
+        }
+      }
+      .addCtn{
+        display: flex;
+        margin-bottom: 16px;
+        justify-content: flex-end;
+      }
+      // 列表改版新增样式2020-07-07 end
     }
     //无数据样式
     .normalCtn{
@@ -555,9 +665,79 @@
       &.hasBorderTop{        
         border-top: 1px solid #E9E9E9;
       }
-
     }
   }
+  // 列表改版新增样式2020-07-07 start 
+  .listCutCtn{
+    display: flex;
+    justify-content: space-between;
+    height: 126px;
+    margin-bottom: 24px;
+    .cut_item{
+      flex: 1;
+      margin-right: 24px;
+      background-color: #FFF;
+      transition: all 0.1s linear;
+      border-radius: 6px;
+      cursor: pointer;
+      color: @font65;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      &:last-child{
+        margin-right: 0;
+      }
+      &:hover,
+      &.active{
+        background-color: #E6F7FF;
+        color: @blue;
+      }
+      .icon{
+        font-family: 'zhkj_icon';
+        font-size: 40px;
+        margin-bottom: 8px;
+        &.product{
+          &:after{
+            content: '\e617';
+          }
+        }
+        &.order{
+          &::after{
+            content: '\e615';
+          }
+        }
+        &.packPlan{
+          &::after{
+            content: '\e626';
+          }
+        }
+        &.packOrder{
+          &::after{
+            content: '\e610';
+          }
+        }
+        &.packOut{
+          &::after{
+            content: '\e629';
+          }
+        }
+      }
+      .iconFont{        
+        width: 48px;
+        height: 48px;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .name{
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+  }
+  // 列表改版新增样式2020-07-07 end
   // 切换组件
   .swichCtn{
     padding: 0 32px;

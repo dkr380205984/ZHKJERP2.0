@@ -338,8 +338,8 @@ export default {
                 title: title,
                 type: '普通',
                 tag: '审核',
-                content: '有一张报价单' + (this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>'),
-                router_url: '/financialStatistics/oprDetail/' + this.$route.params.client_id + '/' + this.$route.params.type + '/' + this.$route.params.oprId + '/' + this.$route.params.orderId + '/' + this.$route.params.oprType,
+                content: '有一张' + this.$route.params.oprType + '单' + (this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>'),
+                router_url: '/financialStatistics/oprDetail/' + this.$route.params.client_id + '/' + this.$route.params.type + '/' + this.$route.params.oprId + '/' + this.$route.params.oprType + '?orderId=' + '/' + this.$route.query.orderId,
                 receive_user: [this.info.user_id]
               }).then((res) => {
                 if (res.data.status) {
@@ -366,8 +366,8 @@ export default {
                 title: title,
                 type: '普通',
                 tag: '审核',
-                content: '有一张报价单' + this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>',
-                router_url: '/financialStatistics/oprDetail/' + this.$route.params.client_id + '/' + this.$route.params.type + '/' + this.$route.params.oprId + '/' + this.$route.params.orderId + '/' + this.$route.params.oprType,
+                content: '有一张' + this.$route.params.oprType + '单' + this.ifPass ? '<span style="color:#01B48C">已审核通过</span>' : '<span style="color:#F5222D">已被驳回</span>',
+                router_url: '/financialStatistics/oprDetail/' + this.$route.params.client_id + '/' + this.$route.params.type + '/' + this.$route.params.oprId + '/' + this.$route.params.oprType + '?orderId=' + this.$route.query.orderId,
                 receive_user: [this.info.user_id]
               }).then((res) => {
                 if (res.data.status) {
@@ -389,6 +389,7 @@ export default {
           id: this.updateInfo.id,
           client_id: this.$route.params.clentId,
           order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+          order_type: this.$route.query.orderType || '',
           type: this.$route.params.type
         }
         if (this.updateInfo.desc !== this.info.desc) {
@@ -450,8 +451,8 @@ export default {
       if (this.$route.params.oprType === '扣款') {
         chargebacks.log({
           client_id: this.$route.params.clentId,
-          client_type: this.$route.params.type,
-          order_id: this.$route.params.orderId
+          type: [this.$route.params.type],
+          order_id: this.$route.query.orderId || ''
         }).then((res) => {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
           this.updateInfo = this.$clone(this.info)
@@ -462,8 +463,8 @@ export default {
       } else {
         settle.log({
           client_id: this.$route.params.clentId,
-          client_type: this.$route.params.type,
-          order_id: this.$route.params.orderId
+          type: [this.$route.params.type],
+          order_id: this.$route.query.orderId || ''
         }).then((res) => {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
           this.updateInfo = this.$clone(this.info)
