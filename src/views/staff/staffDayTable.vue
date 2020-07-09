@@ -56,7 +56,7 @@
               <span class="row_item left">{{itemInner.desc || '/'}}</span>
             </div>
           </span>
-          <span class="row_item center">{{item.totalPrice}}</span>
+          <span class="row_item center">{{$toFixed(item.totalPrice)}}</span>
         </div>
         <div class="print_row bgGray"
           v-if="indexPage === list.length - 1">
@@ -127,9 +127,7 @@ export default {
         } else {
           this.list = this.$newSplice(arr, 14).map(item => this.$mergeData(item, { mainRule: ['code', 'name'], otherRule: [{ name: 'totalPrice' }], childrenName: 'data_info' }))
           let arrList = this.list.map(item => {
-            let arr = item.map(itemInner => {
-              return itemInner.totalPrice
-            })
+            let arr = item.map(itemInner => +itemInner.totalPrice || 0)
             return arr.length > 0 ? arr.reduce((a, b) => {
               return a + b
             }, 0) : 0
