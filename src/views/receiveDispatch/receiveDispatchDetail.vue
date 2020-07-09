@@ -93,8 +93,8 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn noPad"
                         style="flex:5">
@@ -136,7 +136,7 @@
                         <el-option v-for="item in weave_product"
                           :key="item.product_id"
                           :value="item.product_id"
-                          :label="item.product_info.code + '('+(item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name) +')'"></el-option>
+                          :label="item.product_info.product_code + '('+(item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title) +')'"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -300,8 +300,8 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">
-                        <span>{{itemChild.product_info.code}}</span>
-                        <span>{{itemChild.category_info.category_name?itemChild.category_info.category_name+'/'+ itemChild.category_info.type_name+'/'+ itemChild.category_info.style_name:itemChild.product_info.name}}</span>
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.type}}</div>
@@ -342,7 +342,7 @@
                         <el-option v-for="item in process_product"
                           :key="item.product_id"
                           :value="item.product_id"
-                          :label="item.product_info.code + '('+(item.category_info.category_name?item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name:item.product_info.name) +')'"></el-option>
+                          :label="item.product_info.product_code + '('+(item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title) +')'"></el-option>
                       </el-select>
                     </div>
                   </div>

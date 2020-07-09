@@ -70,6 +70,18 @@
               @change="changeRouter(1)"
               placeholder="输入编号按回车键查询">
             </el-input>
+            <el-select v-model="client_type"
+              class="inputs"
+              @change="changeRouter(1)"
+              filterable
+              clearable
+              placeholder="筛选公司类型">
+              <el-option v-for="(item,index) in companyType"
+                :key="index"
+                :label="item.name"
+                :value="item.value">
+              </el-option>
+            </el-select>
             <el-select v-model="clientStatus"
               placeholder="筛选状态"
               class="inputs">
@@ -97,29 +109,7 @@
               <span class="text">客户简称</span>
             </div>
             <div class="col flex12">
-              <transition v-show="!searchTypeFlag"
-                name="el-zoom-in-bottom">
-                <span class="text">客户类型
-                  <i class="el-icon-search iconBtn"
-                    @click="searchTypeFlag=true"></i>
-                </span>
-              </transition>
-              <transition name="el-zoom-in-top">
-                <div v-show="searchTypeFlag"
-                  class="filterBox">
-                  <el-select v-model="client_type"
-                    @change="changeRouter(1)"
-                    filterable
-                    clearable
-                    placeholder="筛选公司类型">
-                    <el-option v-for="(item,index) in companyType"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.value">
-                    </el-option>
-                  </el-select>
-                </div>
-              </transition>
+              <span class="text">客户类型 </span>
             </div>
             <div class="col flex08">
               <span class="text">联系电话</span>

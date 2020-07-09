@@ -2,6 +2,55 @@
   <div id="logStatistics"
     class="indexMain"
     v-loading="loading">
+    <div class="listCutCtn">
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-dingdancaiwutongji"></use>
+        </svg>
+        <span class="name">订单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yangdancaiwutongji"></use>
+        </svg>
+        <span class="name">样单财务统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinchanliangtongji"></use>
+        </svg>
+        <span class="name">产品产量统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">物料使用统计</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
+        </svg>
+        <span class="name">年度财务统计</span>
+      </div>
+      <div class="cut_item active">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-caozuorizhitongji"></use>
+        </svg>
+        <span class="name">操作记录统计</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <el-tabs style="width:100%;font-size:16px"

@@ -4,37 +4,62 @@
     v-loading='loading'>
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-select style="width:140px;margin-right:12px"
-              v-model="searchOrderOrProduct"
-              @change="changeRouter(1)">
-              <el-option value="order"
-                label="订单搜索"></el-option>
-              <el-option value="product"
-                label="产品编号搜索"></el-option>
-            </el-select>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              :placeholder="'输入' + (searchOrderOrProduct==='order'?'订单号':'产品编号')+'按回车键查询'">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
+            <span class="filter_line">
+              <el-select style="width:140px;margin-right:12px"
+                class="filter_item"
+                v-model="searchOrderOrProduct"
+                @change="changeRouter(1)">
+                <el-option value="order"
+                  label="订单搜索"></el-option>
+                <el-option value="product"
+                  label="产品编号搜索"></el-option>
+              </el-select>
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                :placeholder="'输入' + (searchOrderOrProduct==='order'?'订单号':'产品编号')+'按回车键查询'">
+              </el-input>
+              <el-select v-model="company_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                filterable
+                placeholder="筛选公司">
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </span>
           </div>
         </div>
         <div class="list">
@@ -43,29 +68,7 @@
               <span class="text">订单号</span>
             </div>
             <div class="col flex12">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">外贸公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">外贸公司</span>
             </div>
             <div class="col middle">
               <span class="text">产品图片</span>
@@ -74,38 +77,13 @@
               <span class="text">订单数量(件)</span>
             </div>
             <div class="col flex08">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchGroupFlag">负责小组
-                  <i class="el-icon-search iconBtn"
-                    @click="searchGroupFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchGroupFlag"
-                    class="filterBox">
-                    <el-select v-model="group_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="小组">
-                      <el-option v-for="(item,index) in groupArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">负责小组</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text">半成品检验进度</span>
-              </span>
+              <span class="text">半成品检验进度</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text">成品检验进度</span>
-              </span>
+              <span class="text">成品检验进度</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
@@ -184,32 +162,10 @@ export default {
       date: '',
       pages: 1,
       total: 0,
-      state: '',
       group_id: '',
       groupArr: [],
       company_id: '',
-      companyArr: [],
-      has_materialPlan: '', // 物料计划
-      has_materialOrder: '', // 物料订购
-      has_materialStock: '', // 物料出入库
-      has_weave: '', // 织造分配
-      has_productInOut: '', // 产品收发
-      has_inspection: '', // 成品检验
-      has_boxing: '', // 装箱出库
-      stateArr: [{
-        name: '全部',
-        id: '0'
-      }, {
-        name: '已取消',
-        id: '1'
-      }, {
-        name: '其他',
-        id: '2'
-      }],
-      searchCompanyFlag: false,
-      searchGroupFlag: false,
-      searchStateFlag: false,
-      searchState2Flag: false
+      companyArr: []
     }
   },
   watch: {
@@ -232,32 +188,15 @@ export default {
       } else {
         this.date = ''
       }
-      this.has_materialPlan = params.has_materialPlan
-      this.has_materialOrder = params.has_materialOrder
-      this.has_materialStock = params.has_materialStock
-      this.has_weave = params.has_weave
-      this.has_productInOut = params.has_productInOut
-      this.has_inspection = params.has_inspection
-      this.has_boxing = params.has_boxing
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      if (this.group_id) {
-        this.searchGroupFlag = true
-      }
       this.company_id = params.company_id
-      if (this.company_id) {
-        this.searchCompanyFlag = true
-      }
-      this.state = params.state
-      if (this.state) {
-        this.searchState2Flag = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/inspection/inspectionList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/inspection/inspectionList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
-      this.$router.push('/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
+      this.$router.push('/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=')
     },
     getOrderList () {
       this.loading = true
@@ -269,8 +208,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        group_id: this.group_id,
-        status: this.state
+        group_id: this.group_id
       }).then(res => {
         this.list = res.data.data
         this.list.forEach(item => {

@@ -4,30 +4,73 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入编号按回车键查询">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              style="margin-left:0"
-              @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入编号按回车键查询">
+              </el-input>
+              <el-select v-model="client_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                filterable
+                clearable
+                placeholder="筛选公司">
+                <el-option v-for="(item,index) in clientArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="user_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                filterable
+                clearable
+                placeholder="筛选创建人">
+                <el-option v-for="(item,index) in userArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="status"
+                class="filter_item"
+                style="width:160px"
+                @change="changeRouter(1)"
+                filterable
+                clearable
+                placeholder="筛选状态">
+                <el-option v-for="(item,index) in statusArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                style="margin-left:0"
+                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
+            </div>
           </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/price/priceCreate')">添加报价</div>
         </div>
         <div class="list">
           <div class="title">
@@ -38,29 +81,7 @@
               <span class="text">名称</span>
             </div>
             <div class="col flex15">
-              <transition v-show="!searchTypeFlag"
-                name="el-zoom-in-bottom">
-                <span class="text">外贸公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchTypeFlag=true"></i>
-                </span>
-              </transition>
-              <transition name="el-zoom-in-top">
-                <div v-show="searchTypeFlag"
-                  class="filterBox">
-                  <el-select v-model="client_id"
-                    @change="changeRouter(1)"
-                    filterable
-                    clearable
-                    placeholder="筛选公司">
-                    <el-option v-for="(item,index) in clientArr"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </div>
-              </transition>
+              <span class="text">外贸公司</span>
             </div>
             <div class="col middle">
               <span class="text">图片</span>
@@ -70,57 +91,14 @@
             </div>
             <div class="col flex01"></div>
             <div class="col">
-              <transition v-show="!searchUserName"
-                name="el-zoom-in-bottom">
-                <span class="text">创建人
-                  <i class="el-icon-search iconBtn"
-                    @click="searchUserName=true"></i>
-                </span>
-              </transition>
-              <transition name="el-zoom-in-top">
-                <div v-show="searchUserName"
-                  class="filterBox">
-                  <el-select v-model="user_id"
-                    @change="changeRouter(1)"
-                    filterable
-                    clearable
-                    placeholder="筛选创建人">
-                    <el-option v-for="(item,index) in userArr"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </div>
-              </transition>
+              <span class="text">创建人</span>
             </div>
             <div class="col flex08">
               <span class="text">创建时间
               </span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchStatusFlag">审核状态
-                  <i class="el-icon-search iconBtn"
-                    @click="searchStatusFlag=true"></i></span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchStatusFlag"
-                    class="filterBox">
-                    <el-select v-model="status"
-                      @change="changeRouter(1)"
-                      filterable
-                      clearable
-                      placeholder="筛选状态">
-                      <el-option v-for="(item,index) in statusArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">审核状态</span>
             </div>
             <div class="col middle">
               <span class="text">操作</span>

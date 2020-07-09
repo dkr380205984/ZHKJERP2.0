@@ -1633,6 +1633,13 @@
                   </template>
                   <template v-if="item.methods==='结算'">
                     <div class="collapseBox">
+                      <span class="label">操作：</span>
+                      <span class="info">
+                        <div class="blue"
+                          @click="goSettleDeductDetail(item)">查看详情</div>
+                      </span>
+                    </div>
+                    <div class="collapseBox">
                       <span class="label">是否开票：</span>
                       <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
                     </div>
@@ -1656,6 +1663,13 @@
                     </div>
                   </template>
                   <template v-if="item.methods==='扣款'">
+                    <div class="collapseBox">
+                      <span class="label">操作：</span>
+                      <span class="info">
+                        <div class="blue"
+                          @click="goSettleDeductDetail(item)">查看详情</div>
+                      </span>
+                    </div>
                     <div class="collapseBox">
                       <span class="label">包含订单：</span>
                       <span class="info">
@@ -1842,6 +1856,9 @@ export default {
     }
   },
   methods: {
+    goSettleDeductDetail (item) {
+      this.$router.push('/financialStatistics/oprDetail/' + this.$route.params.id + '/' + this.typeNum + '/' + item.id + '/' + item.methods + '?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)
+    },
     init () {
       Promise.all([
         client.detail({

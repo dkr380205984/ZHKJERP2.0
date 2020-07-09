@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="flexCtn flexCtn1">
-      <div class="leftCtn">
+      <div class="lineCtn">
         <div class="title">搜索</div>
         <div class="content">
           <div class="searchCtn">
@@ -165,7 +165,7 @@
           </div>
         </div>
       </div>
-      <div class="rightCtn">
+      <!-- <div class="rightCtn">
         <div class="title">快捷操作
           <span class="btn noBorder"
             style="padding-right:0"
@@ -176,6 +176,51 @@
             v-for="(item,index) in userChoosedOpr"
             :key="index"
             @click="$router.push(item.url)">{{item.opr}}</span>
+        </div>
+      </div> -->
+    </div>
+    <div class="fastEditCtn">
+      <div class="first_line">
+        <div class="fastEdit_item"
+          v-for="(item,index) in userCheckedOpr"
+          :key="index"
+          @click="easyOprFlag ? false : $router.push(item.url)">
+          <svg class="iconFont"
+            aria-hidden="true">
+            <use :xlink:href="'#' + item.icon"></use>
+          </svg>
+          <span class="name">{{item.opr}}</span>
+          <span class="editBtn delete el-icon-minus red"
+            v-if="easyOprFlag"
+            @click.stop="item.isChecked = false"></span>
+        </div>
+        <div class="edit_item"
+          @click="easyOprFlag ? saveOpr() : easyOprFlag = true">
+          <svg class="iconFont"
+            aria-hidden="true">
+            <use xlink:href="#icon-xitongshezhi"></use>
+          </svg>
+          <span class="name blue">{{easyOprFlag ? '完成编辑' : '自定义编辑'}}</span>
+        </div>
+      </div>
+      <div class="edit_line_box"
+        :class="easyOprFlag ? false : 'hiddle'"
+        :style="'height:' + userCanCheckedOpr.length * 132 + 'px'">
+        <div class="edit_line"
+          v-for="(item,index) in userCanCheckedOpr"
+          :key="index">
+          <div class="fastEdit_item"
+            v-for="(itemN,indexN) in item"
+            :key="indexN">
+            <svg class="iconFont"
+              aria-hidden="true">
+              <use :xlink:href="'#' + itemN.icon"></use>
+            </svg>
+            <span class="name">{{itemN.opr}}</span>
+            <span class="editBtn add el-icon-plus green"
+              v-if="easyOprFlag"
+              @click.stop="addFastList(itemN)"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -231,7 +276,7 @@
         </div>
       </div>
     </div>
-    <div class="popup"
+    <!-- <div class="popup"
       v-show="easyOprFlag">
       <div class="main">
         <div class="title">
@@ -269,7 +314,7 @@
             @click="saveOpr">确定</div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -301,90 +346,143 @@ export default {
       easyOprFlag: false,
       easyOpr: [{
         id: 1,
+        isChecked: true,
         opr: '添加样品',
+        icon: 'icon-tianjiayangpin',
         url: '/sample/sampleCreate'
       }, {
         id: 1,
+        isChecked: false,
         opr: '样品列表',
+        icon: 'icon-yangpin',
         url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
       }, {
         id: 3,
+        isChecked: false,
         opr: '添加产品',
+        icon: 'icon-tianjiachanpin',
         url: '/product/productCreate'
       }, {
         id: 3,
+        isChecked: false,
         opr: '产品列表',
+        icon: 'icon-chanpin',
         url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
       }, {
         id: 2,
+        isChecked: false,
         opr: '添加报价单',
+        icon: 'icon-tianjiabaojiadan',
         url: '/price/priceCreate',
         check: true
       }, {
         id: 2,
+        isChecked: false,
         opr: '报价单列表',
-        url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=',
-        check: true
+        icon: 'icon-baojiadan',
+        url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id='
       }, {
         id: 5,
+        isChecked: false,
         opr: '添加订单',
+        icon: 'icon-tianjiadingdan',
         url: '/order/orderCreate'
       }, {
         id: 5,
+        isChecked: false,
         opr: '订单列表',
+        icon: 'icon-dingdan',
         url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state='
       }, {
+        id: 5,
+        isChecked: false,
+        opr: '添加样单',
+        icon: 'icon-tianjiayangdan',
+        url: '/sample/sampleOrderCreate'
+      }, {
+        id: 5,
+        isChecked: false,
+        opr: '样单列表',
+        icon: 'icon-yangdan',
+        url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+      }, {
         id: 6,
+        isChecked: false,
         opr: '物料计划单列表',
+        icon: 'icon-wuliaojihua',
         url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=/1'
       }, {
         id: 7,
-        opr: '物料预订购',
-        url: '/materialOrder/materialOrderCreate'
-      }, {
-        id: 7,
-        opr: '物料预订购列表',
-        url: '/materialOrder/materialOrderList/page=1&&keyword=&&date='
-      }, {
-        id: 7,
-        opr: '订单物料订购列表',
+        isChecked: false,
+        opr: '物料订购列表',
+        icon: 'icon-wuliaodinggou',
         url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         id: 15,
+        isChecked: false,
         opr: '物料出入库列表',
+        icon: 'icon-wuliaochuruku',
         url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
         id: 8,
-        opr: '织造分配列表',
+        isChecked: false,
+        opr: '织造加工列表',
+        icon: 'icon-zhizaojiagong',
         url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
       }, {
-        id: 8,
-        opr: '半成品加工分配列表',
-        url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=/1'
-      }, {
         id: 9,
+        isChecked: false,
         opr: '产品收发列表',
+        icon: 'icon-chanpinshoufa',
         url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
       }, {
         id: 10,
+        isChecked: false,
         opr: '产品检验列表',
+        icon: 'icon-chanpinjianyan',
         url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
       }, {
         id: 12,
+        isChecked: false,
         opr: '仓库列表',
+        icon: 'icon-kucunguanli',
         url: '/stock/stockList/page=1&&keyword=&&type='
       }, {
         id: 11,
-        opr: '装箱计划单列表',
+        isChecked: false,
+        opr: '装箱出库列表',
+        icon: 'icon-zhuangxiangchuku',
         url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
       }, {
-        id: 11,
-        opr: '包装订购列表',
-        url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+        id: 17,
+        isChecked: false,
+        opr: '添加员工',
+        icon: 'icon-yuangongguanli',
+        url: '/staff/staffCreate'
       }, {
-        id: 11,
-        opr: '装箱出库列表',
-        url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state='
+        id: 17,
+        isChecked: false,
+        opr: '员工列表',
+        icon: 'icon-yuangongliebiao',
+        url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
+      }, {
+        id: 13,
+        isChecked: false,
+        opr: '客户列表',
+        icon: 'icon-kehuguanli',
+        url: '/client/clientList/page=1&&keyword=&&clientType='
+      }, {
+        id: 18,
+        isChecked: false,
+        opr: '添加报销单',
+        icon: 'icon-baoxiaodanguanli',
+        url: '/reimbursement/reimbursementCreate'
+      }, {
+        id: 18,
+        isChecked: false,
+        opr: '报销单列表',
+        icon: 'icon-baoxiaodanguanli',
+        url: '/reimbursement/reimbursementList'
       }],
       userEasyOpr: window.localStorage.getItem('userEasyOpr') ? JSON.parse(window.localStorage.getItem('userEasyOpr')) : [],
       dispatchCount: {
@@ -446,23 +544,12 @@ export default {
       }
     },
     // 用户可选的操作
-    userChooseOpr () {
-      let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-      if (moduleArr) {
-        return this.easyOpr.filter((item) => {
-          return moduleArr.find((itemFind) => itemFind === item.id)
-        })
-      } else {
-        return this.easyOpr
-      }
+    userCanCheckedOpr () {
+      return this.$newSplice(this.easyOpr.filter(itemF => !itemF.isChecked), 7)
     },
     // 用户已选的操作
-    userChoosedOpr () {
-      let arr = []
-      this.userEasyOpr.forEach((item) => {
-        arr.push(this.easyOpr.find((itemFind) => itemFind.opr === item))
-      })
-      return arr
+    userCheckedOpr () {
+      return this.easyOpr.filter(itemF => itemF.isChecked)
     }
   },
   filters: {
@@ -484,6 +571,13 @@ export default {
     }
   },
   methods: {
+    addFastList (item) {
+      if (this.userCheckedOpr.length >= 6) {
+        this.$message.warning('最多可添加6个快捷操作入口')
+      } else {
+        item.isChecked = true
+      }
+    },
     goOrderStat (type) {
       let nowTime = this.$getTime()
       if (type === 'day') {
@@ -560,7 +654,7 @@ export default {
       this.userEasyOpr.splice(index, 1)
     },
     saveOpr () {
-      window.localStorage.setItem('userEasyOpr', JSON.stringify(this.userEasyOpr))
+      window.localStorage.setItem('userEasyOpr', JSON.stringify(this.userCheckedOpr.map(itemM => itemM.opr)))
       this.$message.success('编辑成功')
       this.easyOprFlag = false
     }
@@ -580,6 +674,17 @@ export default {
       this.msgList = res[0].data.data
       this.dispatchCount = res[1].data.data
       this.tutorialSystemArr = res[2].data.data.splice(0, 16)
+    })
+  },
+  created () {
+    let modules = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : []
+    this.easyOpr = this.easyOpr.filter(itemF => modules.indexOf(itemF.id) !== -1)
+    let userEasyOpr = window.localStorage.getItem('userEasyOpr') ? JSON.parse(window.localStorage.getItem('userEasyOpr')) : []
+    userEasyOpr.forEach(item => {
+      let flag = this.easyOpr.find(itemF => itemF.opr === item)
+      if (flag) {
+        flag.isChecked = true
+      }
     })
   }
 }

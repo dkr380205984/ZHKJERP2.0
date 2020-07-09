@@ -10,9 +10,7 @@
             </div>
             <div class="name">{{companyName}}</div>
           </div>
-          <zh-nav :data="navCmp"
-            maxLength="4">
-          </zh-nav>
+          <zh-nav :data="navCmp"></zh-nav>
         </div>
         <div class="rightCtn">
           <i v-show="false"
@@ -160,197 +158,247 @@ export default {
       oldPasd: '',
       firstPasd: '',
       lastPasd: '',
-      navData: [{
-        name: '样品管理',
-        icon: require('@/assets/image/index/样品管理.png'),
-        id: 1,
-        children: [{
-          name: '样品添加',
-          url: '/sample/sampleCreate'
-        }, {
-          name: '样品列表',
-          url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        }, {
-          name: '样品订单添加',
-          url: '/sample/sampleOrderCreate'
-        }, {
-          name: '样品订单列表',
-          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        }]
-      }, {
-        name: '报价管理',
-        icon: require('@/assets/image/index/报价单管理.png'),
-        id: 2,
-        children: [{
-          name: '添加报价单',
-          url: '/price/priceCreate'
-        }, {
-          name: '报价单列表',
-          url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
-        }]
-      }, {
-        name: '产品管理',
-        id: 3,
-        icon: require('@/assets/image/index/产品管理.png'),
-        children: [{
-          name: '产品添加',
-          url: '/product/productCreate'
-        }, {
-          name: '产品列表',
-          url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        }]
-      }, {
-        name: '工艺配料管理',
-        id: 4,
-        icon: require('@/assets/image/index/工艺单管理.png'),
-        children: [{
-          name: '工艺单列表',
-          url: '/product/productCraftList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        }, {
-          name: '配料单列表',
-          url: '/product/productPlanList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        }]
-      }, {
-        name: '订单管理',
-        id: 5,
-        icon: require('@/assets/image/index/订单管理.png'),
-        children: [{
-          name: '添加订单',
-          url: '/order/orderCreate'
-        }, {
-          name: '订单列表',
+      navData: [
+        // {
+        //   name: '样品管理',
+        //   icon: require('@/assets/image/index/样品管理.png'),
+        //   id: 1,
+        //   children: [{
+        //     name: '样品添加',
+        //     url: '/sample/sampleCreate'
+        //   }, {
+        //     name: '样品列表',
+        //     url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        //   }, {
+        //     name: '样品订单添加',
+        //     url: '/sample/sampleOrderCreate'
+        //   }, {
+        //     name: '样品订单列表',
+        //     url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        //   }]
+        // },
+        // {
+        //   name: '报价管理',
+        //   icon: require('@/assets/image/index/报价单管理.png'),
+        //   id: 2,
+        //   children: [{
+        //     name: '添加报价单',
+        //     url: '/price/priceCreate'
+        //   }, {
+        //     name: '报价单列表',
+        //     url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
+        //   }]
+        // },
+        // {
+        //   name: '产品管理',
+        //   id: 3,
+        //   icon: require('@/assets/image/index/产品管理.png'),
+        //   children: [{
+        //     name: '产品添加',
+        //     url: '/product/productCreate'
+        //   }, {
+        //     name: '产品列表',
+        //     url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        //   }]
+        // },
+        // {
+        //   name: '工艺配料管理',
+        //   id: 4,
+        //   icon: require('@/assets/image/index/工艺单管理.png'),
+        //   children: [{
+        //     name: '工艺单列表',
+        //     url: '/product/productCraftList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        //   }, {
+        //     name: '配料单列表',
+        //     url: '/product/productPlanList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
+        //   }]
+        // },
+        // {
+        //   name: '订单管理',
+        //   id: 5,
+        //   icon: require('@/assets/image/index/订单管理.png'),
+        //   children: [{
+        //     name: '添加订单',
+        //     url: '/order/orderCreate'
+        //   }, {
+        //     name: '订单列表',
+        //     url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        //   }, {
+        //     name: '订单发货列表',
+        //     url: '/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id='
+        //   }]
+        // },
+        // {
+        //   name: '物料计划生产管理',
+        //   id: 6,
+        //   icon: require('@/assets/image/index/计划生产管理.png'),
+        //   url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        // },
+        // {
+        //   name: '物料订购管理',
+        //   id: 7,
+        //   icon: require('@/assets/image/index/物料管理.png'),
+        //   children: [{
+        //     name: '物料预订购',
+        //     url: '/materialOrder/materialOrderCreate'
+        //   }, {
+        //     name: '预订购列表',
+        //     url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
+        //   }, {
+        //     name: '订单物料列表',
+        //     url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        //     // }, {
+        //     //   name: '批量订购列表',
+        //     //   url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        //   }]
+        // },
+        // {
+        //   name: '物料出入库管理',
+        //   id: 15,
+        //   icon: require('@/assets/image/index/装箱管理.png'),
+        //   url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        // },
+        // {
+        //   name: '织造加工管理',
+        //   id: 8,
+        //   icon: require('@/assets/image/index/织造加工管理.png'),
+        //   children: [{
+        //     name: '生产织造列表',
+        //     url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        //   }, {
+        //     name: '半成品加工列表',
+        //     url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
+        //   }]
+        // },
+        // {
+        //   name: '产品收发管理',
+        //   id: 9,
+        //   icon: require('@/assets/image/index/收发管理.png'),
+        //   url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        // },
+        // {
+        //   name: '产品检验管理',
+        //   id: 10,
+        //   icon: require('@/assets/image/index/检验管理.png'),
+        //   url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        // },
+        // {
+        //   name: '装箱管理',
+        //   id: 11,
+        //   icon: require('@/assets/image/index/装箱管理.png'),
+        //   children: [{
+        //     name: '装箱计划单列表',
+        //     url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        //   }, {
+        //     name: '包装订购列表',
+        //     url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        //   }, {
+        //     name: '装箱出库列表',
+        //     url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        //   }]
+        // },
+        // {
+        //   name: '库存管理',
+        //   id: 12,
+        //   icon: require('@/assets/image/index/库存管理.png'),
+        //   url: '/stock/stockList/page=1&&keyword=&&type='
+        // },
+        // {
+        //   name: '客户管理',
+        //   id: 13,
+        //   icon: require('@/assets/image/index/客户管理.png'),
+        //   url: '/client/clientList/page=1&&keyword=&&clientType='
+        // },
+        // {
+        //   name: '财务统计',
+        //   id: 16,
+        //   icon: require('@/assets/image/index/财务管理.png'),
+        //   children: [{
+        //     name: '订单财务统计',
+        //     url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+        //   }, {
+        //     name: '样单财务统计',
+        //     url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+        //   }, {
+        //     name: '产品产量统计',
+        //     url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL='
+        //   }, {
+        //     name: '物料使用统计',
+        //     url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY='
+        //   }, {
+        //     name: '合作公司财务统计',
+        //     url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
+        //   }, {
+        //     name: '操作记录统计',
+        //     url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name='
+        //   }, {
+        //     name: '年度合计费用',
+        //     url: '/financialStatistics/annualStatistics?year='
+        //   }]
+        // },
+        // {
+        //   name: '员工管理',
+        //   id: 17,
+        //   icon: require('@/assets/image/index/员工管理.png'),
+        //   children: [{
+        //     name: '添加员工',
+        //     url: '/staff/staffCreate'
+        //   }, {
+        //     name: '员工列表',
+        //     url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
+        //   }, {
+        //     name: '日常工资结算表',
+        //     url: '/staff/staffPay'
+        //   }, {
+        //     name: '合计工资结算单',
+        //     url: '/staff/staffSettle'
+        //   }]
+        // },
+        // {
+        //   name: '报销管理',
+        //   id: 18,
+        //   icon: require('@/assets/image/index/财务管理.png'),
+        //   children: [{
+        //     name: '添加报销单',
+        //     url: '/reimbursement/reimbursementCreate'
+        //   }, {
+        //     name: '报销单列表',
+        //     url: '/reimbursement/reimbursementList'
+        //   }]
+        // }
+      ],
+      newNavData: [
+        {
+          name: '产品/订单',
+          id: 3,
+          icon: 'product',
           url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        }, {
-          name: '订单发货列表',
-          url: '/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id='
-        }]
-      }, {
-        name: '物料计划生产管理',
-        id: 6,
-        icon: require('@/assets/image/index/计划生产管理.png'),
-        url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-      }, {
-        name: '物料订购管理',
-        id: 7,
-        icon: require('@/assets/image/index/物料管理.png'),
-        children: [{
-          name: '物料预订购',
-          url: '/materialOrder/materialOrderCreate'
-        }, {
-          name: '预订购列表',
-          url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
-        }, {
-          name: '订单物料列表',
-          url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-          // }, {
-          //   name: '批量订购列表',
-          //   url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        }]
-      }, {
-        name: '物料出入库管理',
-        id: 15,
-        icon: require('@/assets/image/index/装箱管理.png'),
-        url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-      }, {
-        name: '织造加工管理',
-        id: 8,
-        icon: require('@/assets/image/index/织造加工管理.png'),
-        children: [{
-          name: '生产织造列表',
-          url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        }, {
-          name: '半成品加工列表',
-          url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        }]
-      }, {
-        name: '产品收发管理',
-        id: 9,
-        icon: require('@/assets/image/index/收发管理.png'),
-        url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-      }, {
-        name: '产品检验管理',
-        id: 10,
-        icon: require('@/assets/image/index/检验管理.png'),
-        url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-      }, {
-        name: '装箱管理',
-        id: 11,
-        icon: require('@/assets/image/index/装箱管理.png'),
-        children: [{
-          name: '装箱计划单列表',
-          url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        }, {
-          name: '包装订购列表',
-          url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        }, {
-          name: '装箱出库列表',
-          url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        }]
-      }, {
-        name: '库存管理',
-        id: 12,
-        icon: require('@/assets/image/index/库存管理.png'),
-        url: '/stock/stockList/page=1&&keyword=&&type='
-      }, {
-        name: '客户管理',
-        id: 13,
-        icon: require('@/assets/image/index/客户管理.png'),
-        url: '/client/clientList/page=1&&keyword=&&clientType='
-      }, {
-        name: '财务统计',
-        id: 16,
-        icon: require('@/assets/image/index/财务管理.png'),
-        children: [{
-          name: '订单财务统计',
+        },
+        {
+          name: '样品/样单',
+          id: 1,
+          icon: 'sample',
+          url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
+        },
+        {
+          name: '报价管理',
+          id: 2,
+          icon: 'price',
+          url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
+        },
+        {
+          name: '财务管理',
+          id: 16,
+          icon: 'financial',
           url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
-        }, {
-          name: '样单财务统计',
-          url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
-        }, {
-          name: '产品产量统计',
-          url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL='
-        }, {
-          name: '物料使用统计',
-          url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY='
-        }, {
-          name: '合作公司财务统计',
-          url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
-        }, {
-          name: '操作记录统计',
-          url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name='
-        }, {
-          name: '年度合计费用',
-          url: '/financialStatistics/annualStatistics?year='
-        }]
-      }, {
-        name: '员工管理',
-        id: 17,
-        icon: require('@/assets/image/index/员工管理.png'),
-        children: [{
-          name: '添加员工',
-          url: '/staff/staffCreate'
-        }, {
-          name: '员工列表',
-          url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
-        }, {
-          name: '日常工资结算表',
-          url: '/staff/staffPay'
-        }, {
-          name: '合计工资结算单',
-          url: '/staff/staffSettle'
-        }]
-      }, {
-        name: '报销管理',
-        id: 18,
-        icon: require('@/assets/image/index/财务管理.png'),
-        children: [{
-          name: '添加报销单',
-          url: '/reimbursement/reimbursementCreate'
-        }, {
-          name: '报销单列表',
-          url: '/reimbursement/reimbursementList'
-        }]
-      }]
+        },
+        {
+          name: '其他管理',
+          id: null,
+          icon: 'other',
+          url: '/meau/meau'
+        }
+      ]
     }
   },
   computed: {
@@ -366,11 +414,11 @@ export default {
     navCmp () {
       let moduleArr = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : null
       if (moduleArr) {
-        return this.navData.filter((item) => {
-          return moduleArr.indexOf(Number(item.id)) !== -1
+        return this.newNavData.filter((item) => {
+          return (item.id ? moduleArr.indexOf(Number(item.id)) !== -1 : true)
         })
       } else {
-        return this.navData
+        return this.newNavData
       }
     }
   },

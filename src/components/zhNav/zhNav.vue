@@ -58,9 +58,11 @@
           <el-submenu :key="index"
             :index="index.toString() + 'item'">
             <template slot="title">
-              <img v-if="item.icon"
+              <!-- <img v-if="item.icon"
                 :src="item.icon"
-                class="img" />
+                class="img" /> -->
+              <span class="iconFont"
+                :class="item.icon"></span>
               <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
             </template>
             <template v-for="(itemChild,indexChild) in item.children">
@@ -68,9 +70,11 @@
                 <el-submenu :key="indexChild"
                   :index="indexChild.toString() + 'itemChild'">
                   <template slot="title">
-                    <img v-if="itemChild.icon"
+                    <!-- <img v-if="itemChild.icon"
                       :src="itemChild.icon"
-                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" />
+                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" /> -->
+                    <span class="iconFont"
+                      :class="itemChild.icon"></span>
                     <span style="font-size:14px;vertical-align: 0px;">{{itemChild.name}}</span>
                   </template>
                   <el-menu-item v-for="(itemGrand,indexGrand) in itemChild.children"
@@ -86,9 +90,11 @@
                 <el-menu-item :key="indexChild"
                   :index="itemChild.url">
                   <template slot="title">
-                    <img v-if="itemChild.icon"
+                    <!-- <img v-if="itemChild.icon"
                       :src="itemChild.icon"
-                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" />
+                      style="width:21px;height: 21px;vertical-align: -5px;margin-right:5px;" /> -->
+                    <span class="iconFont"
+                      :class="itemChild.icon"></span>
                     <span style="font-size:14px;vertical-align: 0px;">{{itemChild.name}}</span>
                   </template>
                 </el-menu-item>
@@ -100,9 +106,11 @@
           <el-menu-item :key="index"
             :index="item.url">
             <template slot="title">
-              <img v-if="item.icon"
+              <!-- <img v-if="item.icon"
                 :src="item.icon"
-                class="img" />
+                class="img" /> -->
+              <span class="iconFont"
+                :class="item.icon"></span>
               <span style="font-size:16px;vertical-align: 0px;">{{item.name}}</span>
             </template>
           </el-menu-item>

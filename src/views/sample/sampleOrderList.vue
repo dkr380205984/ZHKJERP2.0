@@ -2,6 +2,17 @@
   <div id='sampleOrderList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item active">
+        <span class="icon order"></span>
+        <span class="name">样单列表</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation=')">
+        <span class="icon product"></span>
+        <span class="name">样品列表</span>
+      </div>
+    </div>
     <div class="chartsCtn">
       <div class="charts">
         <div class="title">
@@ -66,38 +77,136 @@
     </div>
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-select style="width:140px;margin-right:12px"
-              v-model="searchOrderOrProduct"
-              @change="changeRouter(1)">
-              <el-option value="order"
-                label="订单搜索"></el-option>
-              <el-option value="product"
-                label="产品编号搜索"></el-option>
-            </el-select>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              :placeholder="'输入' + (searchOrderOrProduct==='order'?'样单号':'产品编号')+'按回车键查询'">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              style="margin-left:0"
-              @click="reset">重置</div>
+            <div class="filter_line">
+              <el-select style="width:140px;margin-right:12px"
+                class="filter_item"
+                v-model="searchOrderOrProduct"
+                @change="changeRouter(1)">
+                <el-option value="order"
+                  label="订单搜索"></el-option>
+                <el-option value="product"
+                  label="产品编号搜索"></el-option>
+              </el-select>
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                :placeholder="'输入' + (searchOrderOrProduct==='order'?'样单号':'产品编号')+'按回车键查询'">
+              </el-input>
+              <el-select v-model="company_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                filterable
+                placeholder="筛选公司">
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="!openHiddleFilter ? 'hiddle' : false">
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="state"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选状态">
+                <el-option v-for="(item,index) in stateArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-dropdown :hide-on-click="false"
+                class="filter_item"
+                trigger="click"
+                style="cursor:pointer">
+                <span class="el-dropdown-link">
+                  筛选流程<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item>
+                    物料计划：
+                    <el-radio-group v-model="has_materialPlan"
+                      @change="changeRouter(1)">
+                      <el-radio label=''>全部</el-radio>
+                      <el-radio label="1">有</el-radio>
+                      <el-radio label="2">无</el-radio>
+                    </el-radio-group>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    物料订购：
+                    <el-radio-group v-model="has_material"
+                      @change="changeRouter(1)"
+                      divided>
+                      <el-radio label=''>全部</el-radio>
+                      <el-radio label="1">有</el-radio>
+                      <el-radio label="2">无</el-radio>
+                    </el-radio-group>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    物料入库：
+                    <el-radio-group v-model="has_materialStock"
+                      @change="changeRouter(1)"
+                      divided>
+                      <el-radio label=''>全部</el-radio>
+                      <el-radio label="1">有</el-radio>
+                      <el-radio label="0">无</el-radio>
+                    </el-radio-group>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    织造分配：
+                    <el-radio-group v-model="has_weave"
+                      @change="changeRouter(1)"
+                      divided>
+                      <el-radio label=''>全部</el-radio>
+                      <el-radio label="1">有</el-radio>
+                      <el-radio label="2">无</el-radio>
+                    </el-radio-group>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
           </div>
+          <div class="rightCtn"
+            @click="openHiddleFilter = !openHiddleFilter">
+            {{openHiddleFilter ? '收起' : '展开'}}
+            <span class="el-icon-arrow-down openIcon"
+              :class="openHiddleFilter ? 'active' : false"></span>
+          </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleOrderCreate')">新建样单</div>
         </div>
         <div class="list">
           <div class="title">
@@ -105,29 +214,7 @@
               <span class="text">样单标题</span>
             </div>
             <div class="col flex12">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">样单公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">样单公司</span>
             </div>
             <div class="col middle">
               <span class="text">样品图片</span>
@@ -136,114 +223,13 @@
               <span class="text">样单数量(件)</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchGroupFlag">负责小组
-                  <i class="el-icon-search iconBtn"
-                    @click="searchGroupFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchGroupFlag"
-                    class="filterBox">
-                    <el-select v-model="group_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选小组">
-                      <el-option v-for="(item,index) in groupArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">负责小组</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchStateFlag">流程进度
-                  <i class="el-icon-search iconBtn"
-                    @click="searchStateFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchStateFlag"
-                    class="filterBox">
-                    <el-dropdown :hide-on-click="false"
-                      trigger="click"
-                      style="cursor:pointer">
-                      <span class="el-dropdown-link">
-                        筛选流程<i class="el-icon-arrow-down el-icon--right"></i>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>
-                          物料计划：
-                          <el-radio-group v-model="has_materialPlan"
-                            @change="changeRouter(1)">
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          物料订购：
-                          <el-radio-group v-model="has_material"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          物料入库：
-                          <el-radio-group v-model="has_materialStock"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="0">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                        <el-dropdown-item>
-                          织造分配：
-                          <el-radio-group v-model="has_weave"
-                            @change="changeRouter(1)"
-                            divided>
-                            <el-radio label=''>全部</el-radio>
-                            <el-radio label="1">有</el-radio>
-                            <el-radio label="2">无</el-radio>
-                          </el-radio-group>
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">流程进度</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchState2Flag">样单状态
-                  <i class="el-icon-search iconBtn"
-                    @click="searchState2Flag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchState2Flag"
-                    class="filterBox">
-                    <el-select v-model="state"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选状态">
-                      <el-option v-for="(item,index) in stateArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">样单状态</span>
             </div>
             <div class="col">
               <span class="text">交货时间</span>
@@ -332,6 +318,7 @@ import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      openHiddleFilter: false,
       processData: {
         tooltip: {
           trigger: 'axis',
@@ -485,10 +472,6 @@ export default {
       groupArr: [],
       company_id: '',
       companyArr: [],
-      searchCompanyFlag: false,
-      searchGroupFlag: false,
-      searchStateFlag: false,
-      searchState2Flag: false,
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -558,17 +541,8 @@ export default {
       this.has_weave = params.has_weave
       this.has_materialPlan = params.has_materialPlan
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      if (this.group_id) {
-        this.searchGroupFlag = true
-      }
       this.company_id = params.company_id
-      if (this.company_id) {
-        this.searchCompanyFlag = true
-      }
       this.state = params.state
-      if (this.state) {
-        this.searchState2Flag = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1
