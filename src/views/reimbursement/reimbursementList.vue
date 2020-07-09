@@ -109,7 +109,7 @@
             :key="index">
             <div class="col">{{item.code}}</div>
             <div class="col">{{item.create_time}}</div>
-            <div class="col">{{item.apply_user}}</div>
+            <div class="col">{{item.reimburse_user}}</div>
             <div class="col">{{item.detail_data|filterTotal}}</div>
             <div class="col">{{item.real_data|filterRealTotal}}</div>
             <div class="col">

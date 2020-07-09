@@ -5,25 +5,16 @@
     <div class="listCutCtn">
       <div class="cut_item"
         @click="$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')">
-        <svg class="iconFont"
-          aria-hidden="true">
-          <use xlink:href="#icon-dingdancaiwutongji"></use>
-        </svg>
+        <span class="icon staffList"></span>
         <span class="name">员工列表</span>
       </div>
       <div class="cut_item"
         @click="$router.push('/staff/staffPay')">
-        <svg class="iconFont"
-          aria-hidden="true">
-          <use xlink:href="#icon-yangdancaiwutongji"></use>
-        </svg>
+        <span class="icon staffDay"></span>
         <span class="name">日常工资结算</span>
       </div>
       <div class="cut_item active">
-        <svg class="iconFont"
-          aria-hidden="true">
-          <use xlink:href="#icon-chanpinchanliangtongji"></use>
-        </svg>
+        <span class="icon staffTotal"></span>
         <span class="name">合计工资结算</span>
       </div>
     </div>

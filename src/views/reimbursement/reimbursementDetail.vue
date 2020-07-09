@@ -14,7 +14,7 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">报销人：</span>
-            <span class="text">{{reimbursemenInfo.apply_user}}</span>
+            <span class="text">{{reimbursemenInfo.reimburse_user}}</span>
           </div>
         </div>
         <div class="rowCtn">
