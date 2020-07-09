@@ -968,9 +968,61 @@
         </div>
       </div>
     </div>
+    <!-- 操作记录 -->
+    <div class="popup"
+      v-show="deductLogPopupFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">扣款记录</div>
+          <i class="el-icon-close"
+            @click="deductLogPopupFlag=false"></i>
+        </div>
+        <div class="content">
+          <el-timeline>
+            <el-timeline-item v-for="(item, index) in deductLogList"
+              :key="index">
+              <el-collapse>
+                <el-collapse-item>
+                  <template slot="title">
+                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
+                    <span style="margin-left:20px;color:#F5222D">扣款</span>
+                    <span style="margin-left:20px">金额：
+                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
+                    </span>
+                  </template>
+                  <div class="collapseBox">
+                    <span class="label">操作：</span>
+                    <span class="info">
+                      <span class="blue"
+                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
+                    </span>
+                  </div>
+                  <div class="collapseBox">
+                    <span class="label">扣款单位：</span>
+                    <span class="info">{{item.client_name}} </span>
+                  </div>
+                  <div class="collapseBox">
+                    <span class="label">扣款原因：</span>
+                    <span class="info">{{item.desc}}</span>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="deductLogPopupFlag=false">关闭</div>
+          <div class="btn btnBlue"
+            @click="deductLogPopupFlag=false">确定</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnWhiteBlue"
+            @click="deductLogPopupFlag = true">扣款日志</div>
           <div class="btn btnBlue"
             @click="$router.push('/weavingProcessing/processingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到半成品分配</div>
           <div class="btn btnGray"
@@ -982,7 +1034,7 @@
 </template>
 
 <script>
-import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
+import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1047,7 +1099,9 @@ export default {
       material_plan: [],
       material_plan_old: [],
       material_use: [],
-      ifUpdate: false // 判断物料分配是新增还是修改,新增的时候不能超过剩余物料数量,修改的时候不能超过计划值
+      ifUpdate: false, // 判断物料分配是新增还是修改,新增的时候不能超过剩余物料数量,修改的时候不能超过计划值
+      deductLogPopupFlag: false,
+      deductLogList: []
     }
   },
   computed: {
@@ -1068,6 +1122,16 @@ export default {
     }
   },
   methods: {
+    // 获取扣款日志
+    getDeductLog () {
+      chargebacks.log({
+        order_type: 1,
+        order_id: this.$route.params.id,
+        type: [99]
+      }).then((res) => {
+        this.deductLogList = res.data.data
+      })
+    },
     querySearchReplenish (queryString, cb) {
       cb(queryString ? this.replenishRemarkList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.replenishRemarkList)
     },
@@ -1721,6 +1785,7 @@ export default {
     if (this.$route.query.showReplenishPopup === 'true') {
       this.showReplenishPopup = true
     }
+    this.getDeductLog()
     Promise.all([
       api.detail({
         id: this.$route.params.id
@@ -1853,4 +1918,31 @@ export default {
 
 <style lang="less" scoped>
 @import "~@/assets/less/weavingProcessing/weavingDetail.less";
+</style>
+<style lang="less">
+#weavingDetail {
+  .popup {
+    .el-timeline-item {
+      padding-bottom: 0px;
+      margin-bottom: -9px;
+    }
+    .el-collapse-item__header {
+      min-height: 46px;
+      height: 46px;
+    }
+    .el-timeline-item__tail {
+      margin-top: 14px;
+    }
+    .el-timeline-item__node--normal {
+      margin-top: 14px;
+    }
+    .collapseBox {
+      display: flex;
+      margin: 12px;
+      .info {
+        flex: 1;
+      }
+    }
+  }
+}
 </style>

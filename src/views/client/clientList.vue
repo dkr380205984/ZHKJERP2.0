@@ -68,7 +68,7 @@
             <el-input class="inputs"
               v-model="keyword"
               @change="changeRouter(1)"
-              placeholder="输入编号按回车键查询">
+              placeholder="输入单位名称按回车键查询">
             </el-input>
             <el-select v-model="client_type"
               class="inputs"

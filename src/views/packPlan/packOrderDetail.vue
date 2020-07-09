@@ -583,6 +583,13 @@
                     </span>
                   </template>
                   <div class="collapseBox">
+                    <span class="label">操作：</span>
+                    <span class="info">
+                      <span class="blue"
+                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
+                    </span>
+                  </div>
+                  <div class="collapseBox">
                     <span class="label">扣款单位：</span>
                     <span class="info">{{item.client_name}} </span>
                   </div>
