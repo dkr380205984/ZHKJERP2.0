@@ -156,6 +156,22 @@
               </el-date-picker>
             </span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">是否客供纱</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content"
+              style="display: flex;
+                align-items: center;">
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="是">是</el-radio>
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="否">否</el-radio>
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -848,6 +864,7 @@ import { product, client, group, order, getToken, warnSetting, orderType } from 
 export default {
   data () {
     return {
+      ifKegong: '',
       clientArrReal: [],
       lock: true,
       canSeePriceFlag: false,
@@ -1706,6 +1723,7 @@ export default {
         })
       }
       let data = {
+        material_status: this.ifKegong === '是' ? 1 : 2,
         id: this.$route.params.id,
         order_code: this.order_code.map(item => {
           return item.code
@@ -1795,6 +1813,7 @@ export default {
       this.exchange_rate = orderInfo.exchange_rate
       this.tax_prop = orderInfo.tax_rate
       this.order_time = orderInfo.order_time
+      this.ifKegong = orderInfo.material_status === 1 ? '是' : '否'
       let orderBatch = []
       let arr = [] // 存储产品id
       orderInfo.order_batch.forEach(itemBatch => {

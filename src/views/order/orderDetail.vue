@@ -46,6 +46,10 @@
             <span class="label">订单号：</span>
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">是否客供：</span>
+            <span class="text">{{orderInfo.material_status===2?'非客供纱':'客供纱'}}</span>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">

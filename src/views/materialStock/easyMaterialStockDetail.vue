@@ -58,7 +58,8 @@
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
-            <div class="flexTb">
+            <div class="flexTb"
+              style="border-bottom:0">
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn">{{$route.params.type==='1'?'原':'辅'}}料名称</div>
@@ -156,6 +157,20 @@
                       </el-select>
                     </div>
                   </div>
+                  <div class="colCtn flex3">
+                    <div class="label">
+                      <span class="text">批缸号/色号</span>
+                    </div>
+                    <div class="content">
+                      <zh-input placeholder="请输入批缸号"
+                        class="elInput"
+                        style="margin-right:12px"
+                        v-model="itemStock.vat_code"></zh-input>
+                      <zh-input placeholder="请输入色号"
+                        class="elInput"
+                        v-model="itemStock.color_code"></zh-input>
+                    </div>
+                  </div>
                 </div>
                 <div class="rowCtn"
                   v-for="(itemMa,indexMa) in itemStock.material_info"
@@ -183,7 +198,7 @@
                       <el-autocomplete class="elInput"
                         v-model="itemMa.material_attribute"
                         :fetch-suggestions="querySearchAttr"
-                        :placeholder="'请输入内容' + $route.params.type === '1' ? '原' : '辅' + '料颜色'"></el-autocomplete>
+                        placeholder="请输入颜色"></el-autocomplete>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -959,6 +974,8 @@ export default {
               })
             } else {
               data.push({
+                order_client: null, // 物料订购单位
+                price: 0, // 单价
                 order_id: this.$route.params.id,
                 client_id: item.client_name,
                 material_name: itemMa.material_name,
@@ -1111,6 +1128,8 @@ export default {
           client_name: '',
           editType: 3,
           stockId: '',
+          vat_code: '',
+          color_code: '',
           material_info: [
             {
               material_name: '',

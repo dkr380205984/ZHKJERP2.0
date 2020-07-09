@@ -55,6 +55,10 @@
                 style="margin-left:0"
                 @click="resetEditInfo('filterYarnList')">重置</div>
             </div>
+            <div class="leftCtn">
+              <div class="btn btnBlue"
+                @click="weight=1">不看少于一公斤</div>
+            </div>
           </div>
           <div class="tableCtnLv2 minHeight5">
             <div class="tb_header">
@@ -178,10 +182,12 @@
               v-show="yarnEditInfo.length > 0"
               @click="resetEditInfo('yarn')">重置</div>
             <div class="btn btnDashed bgBlue_page"
+              style="color:rgba(0,0,0,0.65);line-height:32px"
               v-if="yarnEditInfo.length === 0"
               @click="addItem(yarnEditInfo,'yarn')">+添加出入库</div>
             <div class="btn btnDashed"
               v-else
+              style="color:rgba(0,0,0,0.65);line-height:32px"
               @click="addItem(yarnEditInfo,'yarn')">
               <div class="btn btnOrange">+添加出入库</div>
             </div>
@@ -1101,6 +1107,7 @@ import { stock, yarnStock, yarn, yarnColor, material, packStock, packag, product
 export default {
   data () {
     return {
+      weight: 0,
       loading: true,
       selectLoading: false,
       stockInfo: {
@@ -1317,7 +1324,7 @@ export default {
         }
       }
     },
-    getYarnList (page) {
+    getYarnList (page, weight) {
       this.loading = true
       this.yarnPages = page || this.yarnPages
       yarnStock.list({
@@ -1325,7 +1332,8 @@ export default {
         stock_id: this.$route.params.id,
         type: 1,
         material_name: this.searchYarn,
-        page: this.yarnPages
+        page: this.yarnPages,
+        weight: this.weight
       }).then(res => {
         if (res.data.status === false) {
           this.$message.error('获取原料库存列表失败，' + res.data.message)
@@ -1738,6 +1746,7 @@ export default {
             }
           ]
         } else if (type === 'filterYarnList') {
+          this.weight = 0
           this.searchYarn = ''
           this.getYarnList(1)
         } else if (type === 'filterYarnLog') {
@@ -2315,6 +2324,9 @@ export default {
     }
   },
   watch: {
+    weight (newVal) {
+      this.getYarnList(1)
+    }
   }
 }
 </script>

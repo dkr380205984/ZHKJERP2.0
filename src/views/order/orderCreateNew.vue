@@ -1734,6 +1734,7 @@ export default {
         order_code: this.order_code.map(item => {
           return item.code
         }).join(';'),
+        material_status: this.ifKegong === '是' ? 1 : 2,
         client_id: this.client_id,
         contacts: this.contact_id,
         account_unit: this.unit,
