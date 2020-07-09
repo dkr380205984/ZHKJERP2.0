@@ -75,7 +75,7 @@ const routes = [
     }, {
       path: '/sample/sampleOrderDetail/:id',
       name: '样品订单详情',
-      component: () => import('../views/sample/sampleOrderDetail.vue')
+      component: () => import('../views/sample/sampleOrderDetailNew.vue')
     }, {
       path: '/product/productCreate',
       name: '产品添加',
@@ -135,7 +135,7 @@ const routes = [
     }, {
       path: '/order/orderDetail/:id',
       name: '订单详情',
-      component: () => import('../views/order/orderDetail.vue')
+      component: () => import('../views/order/orderDetailNew.vue')
     }, {
       path: '/order/orderCreate',
       name: '订单添加',
