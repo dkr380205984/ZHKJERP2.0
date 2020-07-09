@@ -1,32 +1,97 @@
 <template>
   <div class="indexMain"
     v-loading="loading">
+    <div class="listCutCtn">
+      <div class="cut_item active"
+        @click="$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-dingdancaiwutongji"></use>
+        </svg>
+        <span class="name">员工列表</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/staff/staffPay')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yangdancaiwutongji"></use>
+        </svg>
+        <span class="name">日常工资结算</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push('/staff/staffSettle')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinchanliangtongji"></use>
+        </svg>
+        <span class="name">合计工资结算</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入姓名按回车键查询">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              style="margin-left:0"
-              @click="reset">重置</div>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入姓名按回车键查询">
+              </el-input>
+              <el-select v-model="department"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选部门">
+                <el-option v-for="(item,index) in departmentArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="type"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选工种">
+                <el-option v-for="(item,index) in typeArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="state"
+                class="filter_item"
+                style="width:160px"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选员工状态">
+                <el-option v-for="(item,index) in stateArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/staff/staffCreate')">添加员工</div>
         </div>
         <div class="list">
           <div class="title">
@@ -37,82 +102,19 @@
               <span class="text">员工姓名</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchDepartment">部门
-                  <i class="el-icon-search iconBtn"
-                    @click="searchDepartment=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchDepartment"
-                    class="filterBox">
-                    <el-select v-model="department"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选部门">
-                      <el-option v-for="(item,index) in departmentArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">部门</span>
             </div>
             <div class="col">
               <span class="text">手机号</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchType">工种
-                  <i class="el-icon-search iconBtn"
-                    @click="searchType=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchType"
-                    class="filterBox">
-                    <el-select v-model="type"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选工种">
-                      <el-option v-for="(item,index) in typeArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">工种</span>
             </div>
             <div class="col">
               <span class="text">入职时间</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchState">员工状态
-                  <i class="el-icon-search iconBtn"
-                    @click="searchState=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchState"
-                    class="filterBox">
-                    <el-select v-model="state"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选员工状态">
-                      <el-option v-for="(item,index) in stateArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">员工状态</span>
             </div>
             <div class="col">
               <span class="text">操作</span>
@@ -254,7 +256,16 @@ export default {
       searchType: false,
       searchState: false,
       state: '',
-      stateArr: [],
+      stateArr: [
+        {
+          name: '在职',
+          id: '1'
+        },
+        {
+          name: '离职',
+          id: '2'
+        }
+      ],
       department: '',
       departmentArr: [],
       type: '',
@@ -298,7 +309,6 @@ export default {
         limit: 10,
         page: this.page
       }).then((res) => {
-        console.log(res)
         this.list = res.data.data
         this.total = res.data.meta.total
         this.loading = false
@@ -317,15 +327,6 @@ export default {
       this.type = params.type || ''
       this.state = params.state || ''
       this.department = Number(params.department) || ''
-      if (this.type) {
-        this.searchType = true
-      }
-      if (this.state) {
-        this.searchState = true
-      }
-      if (this.department) {
-        this.searchDepartment = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1

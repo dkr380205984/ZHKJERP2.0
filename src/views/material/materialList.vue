@@ -4,48 +4,79 @@
     v-loading='loading'>
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-select style="width:140px;margin-right:12px"
-              v-model="searchOrderOrProduct"
-              @change="changeRouter(1)">
-              <el-option value="order"
-                :label="orderType?'订单搜索':'样单搜索'"></el-option>
-              <el-option value="product"
-                label="产品编号搜索"></el-option>
-            </el-select>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              :placeholder="'输入' + (searchOrderOrProduct==='order'?(orderType?'订单号':'样单号'):'产品编号')+'按回车键查询'">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
+            <div class="filter_line">
+              <div class="cutBox">
+                <div class="item"
+                  :class="{'active':orderType}"
+                  @click="orderType = true">订单</div>
+                <div class="item"
+                  :class="{'active':!orderType}"
+                  @click="orderType = false">样单</div>
+              </div>
+              <el-select style="width:140px;margin-right:12px"
+                class="filter_item"
+                v-model="searchOrderOrProduct"
+                @change="changeRouter(1)">
+                <el-option value="order"
+                  :label="orderType?'订单搜索':'样单搜索'"></el-option>
+                <el-option value="product"
+                  label="产品编号搜索"></el-option>
+              </el-select>
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                :placeholder="'输入' + (searchOrderOrProduct==='order'?(orderType?'订单号':'样单号'):'产品编号')+'按回车键查询'">
+              </el-input>
+              <el-select v-model="company_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                filterable
+                placeholder="筛选公司">
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="openHiddleFilter ? false : 'hiddle'">
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </div>
           </div>
-          <div class="rightCtn">
-            <el-switch class="switch"
-              @change="changeRouter(1)"
-              :disabled="checkedList.length>0"
-              v-model="orderType"
-              active-color="#1A95FF"
-              inactive-color="#E6A23C"
-              active-text="订单"
-              inactive-text="样单">
-            </el-switch>
+          <div class="rightCtn"
+            @click="openHiddleFilter = !openHiddleFilter">
+            {{openHiddleFilter ? '收起' : '展开'}}
+            <span class="el-icon-arrow-down openIcon"
+              :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
         <div class="list">
@@ -57,29 +88,7 @@
               <span class="text">订单号</span>
             </div>
             <div class="col flex12">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">外贸公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">外贸公司</span>
             </div>
             <div class="col middle">
               <span class="text">产品图片</span>
@@ -88,28 +97,7 @@
               <span class="text">订单数量(件)</span>
             </div>
             <div class="col flex08">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchGroupFlag">负责小组
-                  <i class="el-icon-search iconBtn"
-                    @click="searchGroupFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchGroupFlag"
-                    class="filterBox">
-                    <el-select v-model="group_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="小组">
-                      <el-option v-for="(item,index) in groupArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">负责小组</span>
             </div>
             <div class="col flex12">
               <span class="text">采购进度(原)</span>
@@ -227,6 +215,7 @@ import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      openHiddleFilter: false,
       searchOrderOrProduct: 'order',
       loading: true,
       list: [],
@@ -239,8 +228,6 @@ export default {
       groupArr: [],
       company_id: '',
       companyArr: [],
-      searchCompanyFlag: false,
-      searchGroupFlag: false,
       // 批量订购勾选数据
       checkedList: []
     }
@@ -253,6 +240,9 @@ export default {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
       this.getOrderList()
+    },
+    orderType (newVal) {
+      this.changeRouter(1)
     }
   },
   methods: {

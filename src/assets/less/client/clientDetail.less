@@ -114,7 +114,6 @@
       border: 1px solid #E8E8E8;
       min-height: 32px;
       align-items: center;
-      // line-height: 32px;
       box-sizing: border-box;
       cursor: pointer;
       &:first-child{
@@ -140,10 +139,17 @@
   .popup{
     .collapseBox{
       display: flex;
+      .label{
+        width: 6em;
+      }
     }
     .info{
       display: flex;
       align-items: center;
+      .blue{
+        user-select: none;
+        cursor: pointer;
+      }
     }
   }
 }
