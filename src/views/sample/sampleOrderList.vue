@@ -198,6 +198,10 @@
             </div>
           </div>
         </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleOrderCreate')">新建样单</div>
+        </div>
         <div class="list">
           <div class="title">
             <div class="col">

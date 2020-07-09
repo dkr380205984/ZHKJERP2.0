@@ -228,6 +228,10 @@
             </div>
           </div>
         </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/order/orderCreate')">新建订单</div>
+        </div>
         <div class="list">
           <div class="title">
             <div class="col flex12">

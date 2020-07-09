@@ -113,8 +113,10 @@
               </el-dropdown>
             </div>
           </div>
-          <div class="rightCtn">
-          </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/product/productCreate')">新建产品</div>
         </div>
         <div class="list">
           <div class="title">
