@@ -500,6 +500,9 @@
                   <span class="text">属性</span>
                 </div>
                 <div class="col">
+                  <span class="text">价格</span>
+                </div>
+                <div class="col">
                   <span class="text">操作类型</span>
                 </div>
                 <div class="col">
@@ -534,6 +537,9 @@
                 </div>
                 <div class="col">
                   <span class="text">{{item.material_color}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.price}}元</span>
                 </div>
                 <div class="col">
                   <span class="text"
@@ -2725,18 +2731,19 @@ export default {
       this.operate_user = params.operate_user
       this.material_name = this.$strToAscII(params.material_name, true)
       this.stock_id = Number(params.stock_id) || ''
+      this.operate_type = params.operate_type || ''
       this.type = params.type
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id + '&&operate_type=' + this.operate_type)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
       this.rejects_flag = true
     },
     reset () {
-      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id=')
+      this.$router.push('/financialStatistics/logStatistics/page=1&&type=' + this.type + '&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id=&&operate_type=')
     },
     getList () {
       this.checkAll = false
@@ -2798,7 +2805,8 @@ export default {
           client_id: this.client_id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
+          operate_user: this.operate_user,
+          type: this.operate_type
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
