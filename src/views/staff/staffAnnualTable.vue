@@ -206,11 +206,11 @@ export default {
         item.geshuiPrice ? item.geshuiPrice.price : 0,
         item.qitaPrice ? item.qitaPrice.price : 0
       ]
-      return arr.map(value => Number(value) || 0).reduce((a, b) => {
+      return this.$toFixed(arr.map(value => Number(value) || 0).reduce((a, b) => {
         return a + b
       }, 0) - deductArr.map(value => Number(value) || 0).reduce((a, b) => {
         return a + b
-      }, 0)
+      }, 0))
     }
   },
   computed: {

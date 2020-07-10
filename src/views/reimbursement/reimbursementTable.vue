@@ -84,7 +84,7 @@ export default {
       })
     ]).then(res => {
       this.companyName = res[0].data.data.company_name
-      this.apply_user = res[1].data.data.apply_user
+      this.apply_user = res[1].data.data.reimburse_user
       this.apply_code = res[1].data.data.code
       this.apply_text = res[1].data.data.apply_text
       this.detailList = res[1].data.data.detail_data ? JSON.parse(res[1].data.data.detail_data).map(itemM => {
