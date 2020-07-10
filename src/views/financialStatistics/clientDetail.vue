@@ -49,10 +49,6 @@
                 :key="item"
                 :class="{'active':item===type}"
                 @click="type=item">{{item|filterType}}</span>
-              <!-- <span class="tab"
-                v-if="typeArr.indexOf(2) !== -1"
-                :class="{'active':type === '预定购纱线'}"
-                @click="type='预定购纱线'">预定购纱线</span> -->
             </div>
             <!-- <el-date-picker class="inputs"
               v-model="date"
@@ -205,64 +201,6 @@
             </el-collapse>
           </div>
         </template>
-        <!-- 预定购纱线单位 -->
-        <!-- <template v-if="type==='预定购纱线'">
-          <div class="tableCtnLv2">
-            <div class="tb_header bigPadding">
-              <span class="tb_row"
-                style="flex:0.2">
-                <el-checkbox v-model="checkAll"></el-checkbox>
-              </span>
-              <span class="tb_row">关联单号</span>
-              <span class="tb_row">下单日期</span>
-              <span class="tb_row">合计金额</span>
-              <span class="tb_row">扣款记录</span>
-              <span class="tb_row">结算记录</span>
-              <span class="tb_row">操作</span>
-            </div>
-            <el-collapse accordion>
-              <el-collapse-item v-for="(item,index) in list"
-                :key="index">
-                <div slot="title"
-                  class="tb_collapse tb_content bigPadding">
-                  <span class="tb_row"
-                    style="flex:0.2">
-                    <el-checkbox v-model="item.check"></el-checkbox>
-                  </span>
-                  <span class="tb_row">{{item.order_code}}</span>
-                  <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.total_price}}</span>
-                  <span class="tb_row"
-                    :class="{'red':item.deduct_log>0}"
-                    style="line-height:30px"
-                    @click.stop="getLog(item.deduct_log,'扣款',item.order_id)">{{item.deduct_log}}</span>
-                  <span class="tb_row"
-                    :class="{'blue':item.settle_log>0}"
-                    style="line-height:30px"
-                    @click.stop="getLog(item.settle_log,'结算',item.order_id)">{{item.settle_log}}</span>
-                  <span class="tb_row blue"
-                    @click="order_type===1?$router.push('/order/orderDetail/' + item.order_id):$router.push('/sample/sampleOrderDetail/' + item.order_id)">详情</span>
-                </div>
-                <div class="tableCtnLv2">
-                  <div class="tb_header noBgColor bigPadding">
-                    <span class="tb_row">纱线名称</span>
-                    <span class="tb_row">纱线颜色</span>
-                    <span class="tb_row">单价</span>
-                    <span class="tb_row">订购数量</span>
-                  </div>
-                  <div class="tb_collapse tb_content bigPadding smallHeight"
-                    v-for="(itemChild,indexChild) in item.child_data"
-                    :key="indexChild">
-                    <span class="tb_row">{{itemChild.material_name}}</span>
-                    <span class="tb_row">{{itemChild.color}}</span>
-                    <span class="tb_row">{{itemChild.price}}</span>
-                    <span class="tb_row">{{itemChild.total_weight}}</span>
-                  </div>
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
-        </template> -->
         <!-- 物料加工单位 -->
         <template v-if="type===3">
           <div class="tableCtnLv2">
@@ -984,7 +922,7 @@ export default {
   },
   computed: {
     clientType () {
-      return this.type === '预定购纱线' ? '原料纱线单位' : companyType.find((item) => item.value === Number(this.type)).name
+      return companyType.find((item) => item.value === Number(this.type)).name
     },
     // 勾选订单
     checkOrder () {

@@ -33,14 +33,14 @@
         </svg>
         <span class="name">物料使用统计</span>
       </div>
-      <!-- <div class="cut_item"
+      <div class="cut_item"
         @click="$router.push('/financialStatistics/annualStatistics?year=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
         </svg>
         <span class="name">年度财务统计</span>
-      </div> -->
+      </div>
       <div class="cut_item"
         @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
         <svg class="iconFont"
@@ -170,18 +170,17 @@
                 @change="changeRouter(1)"
                 clearable
                 filterable
-                :filter-method="searchClient"
                 placeholder="筛选公司">
-                <el-option v-for="item in clientArrReal"
-                  :key="item.id"
-                  :value="item.id"
-                  :label="item.name"></el-option>
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"></el-option>
               </el-select>
               <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
                 clearable
-                placeholder="小组">
+                placeholder="筛选小组">
                 <el-option v-for="(item,index) in groupArr"
                   :key="index"
                   :label="item.name"
@@ -243,11 +242,11 @@
             <div class="col">{{item.order_time}}</div>
             <div class="col">{{item.client_name}}</div>
             <div class="col">{{item.group_name}}</div>
-            <div class="col">{{item.order_number}}</div>
-            <div class="col">{{item.total_price}}</div>
+            <div class="col">{{parseInt(item.order_number)}}</div>
+            <div class="col">{{parseInt(item.total_price)}}</div>
             <div class="col">{{item.pack_number}}</div>
             <div class="col">{{item.reality_number}}</div>
-            <div class="col">{{item.company_cost}}</div>
+            <div class="col">{{parseInt(item.company_cost)}}</div>
             <div class="col">
               <span class="opr"
                 @click="$router.push('/order/orderDetail/' + item.id)">详情</span>
@@ -273,7 +272,6 @@ import { group, client, statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      clientArrReal: [],
       loading: true,
       loadingTop: true,
       date: '',
@@ -310,6 +308,7 @@ export default {
           stock_out: ''
         },
         update_time: '0000-00-00'
+
       }
     }
   },
@@ -324,36 +323,6 @@ export default {
     }
   },
   methods: {
-    searchClient (query) {
-      this.clientArrReal = []
-      if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
-        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.companyArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
-        } else {
-          const queryArr = query.split('')
-          this.companyArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
-            }
-          })
-        }
-      } else {
-        this.clientArrReal = this.$clone(this.companyArr)
-      }
-    },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
@@ -434,10 +403,6 @@ export default {
       this.companyArr = res[1].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
-      this.companyArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.companyArr)
     })
   }
 }
