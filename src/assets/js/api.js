@@ -376,7 +376,8 @@ const statistics = {
   clientList: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/list`, params),
   clientStatistics: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/total`, params),
   clientDetailList: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/list`, params),
-  clientDetailStatistics: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/total`, params)
+  clientDetailStatistics: (params) => http.get(`${baseUrl}/financial/cooperate/client/count/total`, params),
+  yearDetail: (params) => http.get(`${baseUrl}/financial/year/detail`, params)
 }
 // 订单结算
 const settle = {
