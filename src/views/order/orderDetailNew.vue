@@ -550,6 +550,16 @@
                   v-if="item.price_info[0].number && index===8">{{showFlag.showOutStock?'收起列表':'展开详情'}}</div>
                 <div style="color:#ccc;cursor:not-allowed"
                   v-if="!item.price_info[0].number && index===8">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.replenish.length>0?showFlag.showReplenish = !showFlag.showReplenish : activeFinanceTitle = 'replenish'"
+                  v-if="item.price_info[0].number && index===9">{{showFlag.showReplenish?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===9">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.deductPrice.length>0?showFlag.showDeductPrice = !showFlag.showDeductPrice : activeFinanceTitle = 'deductPrice'"
+                  v-if="item.price_info[0].total_price && index===10">{{showFlag.showDeductPrice?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].total_price && index===10">暂无数据</div>
               </span>
               <div class="hideTbCtn">
                 <template v-if="index===1 && showFlag.showYarnOrder">
@@ -566,7 +576,6 @@
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
-                        <span class="tcolumn">总价</span>
                       </span>
                     </div>
                     <div class="tbody">
@@ -574,21 +583,19 @@
                         v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
                         :key="index">
                         <span class="tcolumn">
-                          <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
                           {{item.client_name || item.stock_name}}
                         </span>
                         <span class="tcolumn noPad flex5">
                           <span class="trow"
-                            v-for="(itemMa,indexMa) in item.material_info"
+                            v-for="(itemMa,indexMa) in item.childrenMergeInfo"
                             :key="indexMa">
                             <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn">{{itemMa.material_color}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                            <span class="tcolumn green">{{itemMa.total_weight ? itemMa.total_weight + 'kg' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.complete_time}}</span>
                           </span>
                         </span>
-                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                       </span>
                     </div>
                   </div>
@@ -647,7 +654,6 @@
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
-                        <span class="tcolumn">总价</span>
                       </span>
                     </div>
                     <div class="tbody">
@@ -655,21 +661,19 @@
                         v-for="(item,index) in orderDetailInfo.finance.materialOrder"
                         :key="index">
                         <span class="tcolumn">
-                          <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
-                          {{item.client_name|| item.stock_name}}
+                          {{item.client_name || item.stock_name}}
                         </span>
                         <span class="tcolumn noPad flex5">
                           <span class="trow"
-                            v-for="(itemMa,indexMa) in item.material_info"
+                            v-for="(itemMa,indexMa) in item.childrenMergeInfo"
                             :key="indexMa">
                             <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn">{{itemMa.material_color}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                            <span class="tcolumn green">{{itemMa.total_weight ? itemMa.total_weight + 'kg' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.complete_time}}</span>
                           </span>
                         </span>
-                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
                       </span>
                     </div>
                   </div>
@@ -860,6 +864,63 @@
                             <span class="tcolumn">{{itemOut.compiled_time}}</span>
                           </span>
                         </span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===9 && showFlag.showReplenish">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">补纱单位</span>
+                        <span class="tcolumn noPad flex5">
+                          <span class="trow">
+                            <span class="tcolumn">纱线名称</span>
+                            <span class="tcolumn">纱线颜色</span>
+                            <span class="tcolumn">补纱数量</span>
+                            <span class="tcolumn">承担单位</span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.replenish"
+                        :key="index">
+                        <span class="tcolumn">{{item.replenish_name}}</span>
+                        <span class="tcolumn noPad flex5">
+                          <span class="trow"
+                            v-for="(itemOut,indexOut) in item.childrenMergeInfo"
+                            :key='indexOut'>
+                            <span class="tcolumn">{{itemOut.material_name}}</span>
+                            <span class="tcolumn green">{{itemOut.material_color}}</span>
+                            <span class="tcolumn green">{{itemOut.need_weight}}</span>
+                            <span class="tcolumn green">
+                              <span v-for="(itemChild,indexChild) in itemOut.client_info"
+                                :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}元)</span>
+                            </span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===10 && showFlag.showDeductPrice">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">扣款单位</span>
+                        <span class="tcolumn">扣款金额</span>
+                        <span class="tcolumn">扣款原因</span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.deductPrice"
+                        :key="index">
+                        <span class="tcolumn">{{item.client_name}}</span>
+                        <span class="tcolumn">{{item.deduct_price}}元</span>
+                        <span class="tcolumn">{{item.reason_text}}</span>
                       </span>
                     </div>
                   </div>
@@ -1154,7 +1215,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1202,6 +1263,12 @@ export default {
             }, {
               name: '出库运输',
               key: 'outStock'
+            }, {
+              name: '补纱信息',
+              key: 'replenish'
+            }, {
+              name: '扣款信息',
+              key: 'deductPrice'
             }
           ],
           finance: [],
@@ -1212,7 +1279,9 @@ export default {
           weave: [],
           process: [],
           packOrder: [],
-          outStock: []
+          outStock: [],
+          replenish: [],
+          deductPrice: []
         }
       },
       activeDetailTitle: '',
@@ -1252,7 +1321,9 @@ export default {
         showWeave: false,
         showProcess: false,
         showPackOrder: false,
-        showOutStock: false
+        showOutStock: false,
+        showReplenish: false,
+        showDeductPrice: false
       },
       showFlag2: {
         showMaterial: false,
@@ -1876,6 +1947,24 @@ export default {
                 total_price: data.stock_out.total_value,
                 pre_price: data.stock_out.pre_value
               }]
+            },
+            {
+              name: '补纱信息',
+              unit: 'kg',
+              price_info: [{
+                number: data.yarn_replenish_weight,
+                total_price: 0,
+                pre_price: 0
+              }]
+            },
+            {
+              name: '扣款金额',
+              unit: '元',
+              price_info: [{
+                number: 0,
+                total_price: data.deduct_price,
+                pre_price: 0
+              }]
             }
           ]
         }
@@ -1885,28 +1974,15 @@ export default {
     // 财务概述-原料采购-辅料采购
     getMaterialOrderDetail () {
       this.loading = true
-      materialManage.detail({
+      materialStock.detail({
         order_id: this.$route.params.id,
         order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: ['client_name', 'type_source/type', 'stock_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
-            return {
-              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
-              ...item
-            }
-          })
-          this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: ['client_name', 'type_source/type', 'sotck_name'], childrenName: 'material_info', childrenRule: { mainRule: ['price', 'material_name', 'color_code/color'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time/compiled_time' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
-            return {
-              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
-              ...item
-            }
-          })
-        }
-        this.loading = false
+      }).then((res) => {
+        console.log(res)
+        this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 1 && item.type === 3), { mainRule: 'client_name' })
+        this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 2 && item.type === 3), { mainRule: 'client_name' })
       })
+      this.loading = false
     },
     // 财务概述-原料加工-辅料加工
     getMaterialProcessDetail () {
@@ -2011,6 +2087,33 @@ export default {
       }).then(res => {
         if (res.data.stauts !== false) {
           this.orderDetailInfo.finance.outStock = this.$mergeData(res.data.data, { mainRule: 'client_name', childrenName: 'out_info', childrenRule: { mainRule: ['price', 'complete_time/compiled_time'], otherRule: [{ name: 'number', type: 'add' }, { name: 'cubic_number/cube_number', type: 'add' }, { name: 'total_price', type: 'add' }] } })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-补纱日志
+    getReplenish () {
+      this.loading = true
+      replenish.list({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.orderDetailInfo.finance.replenish = this.$mergeData(res.data.data, { mainRule: 'replenish_name' })
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-扣款金额
+    getChargebacks () {
+      this.loading = true
+      chargebacks.log({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res)
+          this.orderDetailInfo.finance.deductPrice = res.data.data
         }
         this.loading = false
       })
@@ -2478,6 +2581,12 @@ export default {
         } else if (newVal === 'outStock') {
           this.getOutStockFinanceDetail()
           this.showFlag.showOutStock = true
+        } else if (newVal === 'replenish') {
+          this.getReplenish()
+          this.showFlag.showReplenish = true
+        } else if (newVal === 'deductPrice') {
+          this.getChargebacks()
+          this.showFlag.showDeductPrice = true
         } else {
           this.$message.error('未知操作')
         }
