@@ -444,7 +444,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">原料入库信息</span>
+        <span class="title">客供纱入库信息</span>
       </div>
       <div class="editCtn hasBorderTop"
         v-if="materialStockInfo.length>0">
@@ -475,7 +475,7 @@
                       v-for="(itemColor,indexColor) in item.childrenMergeInfo"
                       :key="indexColor">
                       <div class="tcolumn">{{itemColor.material_color}}</div>
-                      <span class="tcolumn green">{{$toFixed(itemColor.weight || 0)}}kg</span>
+                      <span class="tcolumn green">{{$toFixed(itemColor.total_weight || 0)}}kg</span>
                     </div>
                   </div>
                 </div>
@@ -821,6 +821,48 @@
         </div>
         <div class="content"
           style="padding:20px">
+          <div class="editCtn hasBorderTop"
+            style="margin:20px 0"
+            v-if="materialStockInfo.length>0">
+            <div class="rowCtn">
+              <div class="colCtn"
+                style="margin-right:0">
+                <span style="color:#1a95ff;margin-left:32px;padding-bottom:20px;display:block">客供纱信息</span>
+                <div class="flexTb">
+                  <div class="thead">
+                    <div class="trow">
+                      <div class="tcolumn">客供纱原料名称</div>
+                      <div class="tcolumn noPad"
+                        style="flex:2">
+                        <div class="trow">
+                          <div class="tcolumn">原料颜色</div>
+                          <span class="tcolumn">已入库数量</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tbody">
+                    <div class="trow"
+                      v-for="(item,index) in materialStockInfo"
+                      :key="index">
+                      <div class="tcolumn">{{item.material_name}}</div>
+                      <div class="tcolumn noPad"
+                        style="flex:2">
+                        <div class="trow"
+                          v-for="(itemColor,indexColor) in item.childrenMergeInfo"
+                          :key="indexColor">
+                          <div class="tcolumn">{{itemColor.material_color}}</div>
+                          <span class="tcolumn green">{{$toFixed(itemColor.total_weight || 0)}}kg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:block;height:1px;background:#ccc;margin:20px  24px"></div>
+          <span style="color:#E6A23C;margin-left:32px;padding-bottom:20px;display:block">原料分配填写表</span>
           <div class="flexTb">
             <div class="thead">
               <div class="trow">
@@ -1568,32 +1610,29 @@ export default {
     ]).then((res) => {
       this.orderInfo = res[0].data.data
       let productInfo = []
+      console.log(this.orderInfo.batch_info)
       this.orderInfo.batch_info.forEach((item) => {
         item.product_info.forEach((itemPro) => {
-          itemPro.all_color.forEach((itemColor) => {
-            itemPro.all_size.forEach((itemSize) => {
-              let finded = productInfo.find((itemFind) => {
-                return itemFind.size_id === itemSize.size_id && itemFind.color_id === itemColor.color_id && itemFind.product_id === itemPro.product_id
-              })
-              if (!finded) {
-                productInfo.push({
-                  color_name: itemColor.color_name,
-                  color_id: itemColor.color_id,
-                  size_name: itemSize.size_name,
-                  size_id: itemSize.size_id,
-                  product_id: itemPro.product_id,
-                  production_number: parseInt(itemPro.numbers),
-                  category_name: itemPro.category_info.category_name,
-                  style_name: itemPro.category_info.style_name,
-                  type_name: itemPro.category_info.type_name,
-                  unit: itemPro.category_info.unit,
-                  product_code: itemPro.product_code
-                })
-              } else {
-                finded.production_number += parseInt(itemPro.numbers)
-              }
-            })
+          let finded = productInfo.find((itemFind) => {
+            return itemFind.size_id === itemPro.size_id && itemFind.color_id === itemPro.color_id && itemFind.product_id === itemPro.product_id
           })
+          if (!finded) {
+            productInfo.push({
+              color_name: itemPro.color_name,
+              color_id: itemPro.color_id,
+              size_name: itemPro.size_name,
+              size_id: itemPro.size_id,
+              product_id: itemPro.product_id,
+              production_number: parseInt(itemPro.numbers),
+              category_name: itemPro.category_info.category_name,
+              style_name: itemPro.category_info.style_name,
+              type_name: itemPro.category_info.type_name,
+              unit: itemPro.category_info.unit,
+              product_code: itemPro.product_code
+            })
+          } else {
+            finded.production_number += parseInt(itemPro.numbers)
+          }
         })
       })
       this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_id' }] })
