@@ -353,7 +353,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="$router.push('/product/productUpdate/'+$route.params.id)">修改</div>
+            @click="updatePro">修改</div>
           <div class="btn btnBlue"
             @click="$router.push('/product/productCreate?productId='+$route.params.id)">复制此产品</div>
         </div>
@@ -528,6 +528,28 @@ export default {
         return
       }
       this.$openUrl('/tagProductPrint/' + this.$route.params.id + '/' + this.checkedSize.join('&') + '&&' + this.checkedColor.join('&'))
+    },
+    // 修改产品判断是否新建订单
+    updatePro () {
+      if (this.detail.order_info.length === 0) {
+        this.$router.push('/product/productUpdate/' + this.$route.params.id)
+      } else {
+        this.$confirm('该产品已有订单信息，请问您修改此产品的目的是?', '提示', {
+          confirmButtonText: '修改已有订单的产品',
+          cancelButtonText: '创建新订单',
+          showClose: false,
+          type: 'warning'
+        }).then(() => {
+          this.$router.push('/product/productUpdate/' + this.$route.params.id)
+        }).catch(() => {
+          this.$router.push('/product/productCreate?productId=' + this.$route.params.id)
+          this.$message({
+            showClose: true,
+            type: 'success',
+            message: '创建新订单需要创建一个新的产品以便后续操作，已为您复制了原有的产品信息'
+          })
+        })
+      }
     }
   },
   mounted () {
