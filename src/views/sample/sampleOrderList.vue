@@ -197,6 +197,12 @@
               </el-dropdown>
             </div>
           </div>
+          <div class="rightCtn"
+            @click="openHiddleFilter = !openHiddleFilter">
+            {{openHiddleFilter ? '收起' : '展开'}}
+            <span class="el-icon-arrow-down openIcon"
+              :class="openHiddleFilter ? 'active' : false"></span>
+          </div>
         </div>
         <div class="addCtn">
           <div class="btn btnBlue"
