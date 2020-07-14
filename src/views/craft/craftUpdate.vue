@@ -2715,18 +2715,18 @@ export default {
         return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
       })
       if (data.warp_data.back_status === 1) {
-        this.$refs.warpBack.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        }))
+        // this.$refs.warpBack.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
+        //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        // }))
         this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
         this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
           return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
         })
       }
       if (data.weft_data.back_status === 1) {
-        this.$refs.weftBack.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        }))
+        // this.$refs.weftBack.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
+        //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        // }))
 
         this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
         this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
