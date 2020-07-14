@@ -882,7 +882,8 @@
               <div class="trow"
                 v-for="item in weaving_mat"
                 :key="item.company_id">
-                <div class="tcolumn">{{item.client_name}}
+                <div class="tcolumn"
+                  v-show="item.material_merge.length>0">{{item.client_name}}
                   <span></span>
                 </div>
                 <div class="tcolumn noPad"
@@ -898,7 +899,7 @@
                     <div class="tcolumn">
                       <el-input style="height:40px"
                         v-model="itemChild.material_attribute"
-                        placeholder="请输入原料名称"></el-input>
+                        placeholder="请输入物料颜色"></el-input>
                     </div>
                     <div class="tcolumn">
                       <el-input style="height:40px"
@@ -1303,10 +1304,6 @@ export default {
       })
     },
     deleteMat (item, matIndex) {
-      if (item[matIndex].material_push_status === 1) {
-        this.$message.error('该物料已经出库,不能删除')
-        return
-      }
       // 不能编辑说明是修改操作
       if (item[matIndex].canbeEdit) {
         this.$confirm('该工序是否不需要此物料, 删除后将无法恢复?', '提示', {
@@ -1350,7 +1347,7 @@ export default {
           material_merge: item.childrenMergeInfo.map((itemChild) => {
             return {
               id: itemChild.id,
-              canbeEdit: false,
+              canbeEdit: true, // 这个状态用于标记物料是否是原有的，原有的删除会调删除接口
               material_name: itemChild.material_name,
               material_attribute: itemChild.material_attribute,
               number: itemChild.weight
@@ -1418,6 +1415,7 @@ export default {
                 type: 'success',
                 message: '删除成功,请重新确认物料信息!'
               })
+              this.updateMat()
             }
           })
         } else {
