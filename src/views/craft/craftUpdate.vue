@@ -2742,10 +2742,6 @@ export default {
       this.desc = data.desc
       this.weight = data.weight
       this.coefficient = data.yarn_coefficient.map((item) => item.value)
-      setTimeout(() => {
-        this.$forceUpdate()
-      }, 1000);
-
       this.loading = false
     })
   }
