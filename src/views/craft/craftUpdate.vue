@@ -2700,52 +2700,39 @@ export default {
           number: ''
         }]
       }
-      // this.$refs.warp.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
-      //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      // }))
-      // this.$refs.weft.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
-      //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      // }))
-      this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
-      this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
-      this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
-        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      })
-      this.tableData.weft.data = JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
-        return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-      })
-      if (data.warp_data.back_status === 1) {
-        // this.$refs.warpBack.hotInstance.loadData(JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
-        //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        // }))
-        this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
-        this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-      }
-      if (data.weft_data.back_status === 1) {
-        // this.$refs.weftBack.hotInstance.loadData(JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
-        //   return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        // }))
-
-        this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
-        this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
-          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
-        })
-      }
-
-      this.tableData.warp.number = JSON.parse(this.warpInfo.warp_rank)[0].length
-      this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
-      this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
-      this.tableData.weftBack.number = JSON.parse(this.weftInfo.weft_rank_back)[0].length
-
-      this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
-      this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
-      this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
-      this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
-
       this.ifDouble.warp = data.warp_data.back_status
       this.ifDouble.weft = data.weft_data.back_status
+      this.$nextTick(() => {
+        this.tableData.warp.mergeCells = JSON.parse(this.warpInfo.merge_data)
+        this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
+        this.tableData.warp.data = JSON.parse(this.warpInfo.warp_rank).map((item, index) => {
+          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        })
+        this.tableData.weft.data = JSON.parse(this.weftInfo.weft_rank).map((item, index) => {
+          return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+        })
+        if (data.warp_data.back_status === 1) {
+          this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
+          this.tableData.warpBack.data = JSON.parse(this.warpInfo.warp_rank_back).map((item, index) => {
+            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+          })
+        }
+        if (data.weft_data.back_status === 1) {
+          this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
+          this.tableData.weftBack.data = JSON.parse(this.weftInfo.weft_rank_back).map((item, index) => {
+            return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
+          })
+        }
+        this.tableData.warp.number = JSON.parse(this.warpInfo.warp_rank)[0].length
+        this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
+        this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
+        this.tableData.weftBack.number = JSON.parse(this.weftInfo.weft_rank_back)[0].length
+
+        this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
+        this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
+        this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
+        this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
+      })
 
       this.GL = data.draft_method.GL
       this.GLFlag = data.draft_method.GLFlag
@@ -2755,6 +2742,10 @@ export default {
       this.desc = data.desc
       this.weight = data.weight
       this.coefficient = data.yarn_coefficient.map((item) => item.value)
+      setTimeout(() => {
+        this.$forceUpdate()
+      }, 1000);
+
       this.loading = false
     })
   }
