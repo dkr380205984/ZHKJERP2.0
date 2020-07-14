@@ -965,7 +965,8 @@ export default {
           value: 5
         }
       ],
-      stockArr: []
+      stockArr: [],
+      orderLog: []
     }
   },
   watch: {
@@ -1276,7 +1277,10 @@ export default {
                 desc: item.remark
               })
             } else {
+              let finded = this.orderLog.find((itemFind) => itemFind.material_name === itemMa.material_name && itemFind.color_code === itemMa.material_attribute && itemFind.type_source !== 2)
               data.push({
+                order_client: finded ? finded.client_id : '', // 物料订购单位
+                price: finded ? finded.price : 0, // 单价
                 order_id: this.$route.params.id,
                 client_id: item.client_name,
                 material_name: itemMa.material_name,
@@ -1585,8 +1589,13 @@ export default {
           replenish.list({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
+          }),
+          materialManage.detail({
+            order_type: this.$route.params.orderType,
+            order_id: this.$route.params.id
           })
         ]).then(res => {
+          this.orderLog = res[4].data.data
           // 初始化原料出入库数据
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1).concat(res[3].data.data.filter(item => +item.type === 1).map(item => {
             return {
