@@ -52,7 +52,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料出入库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料入库</span>
       </div>
       <template v-if="materialStockInfo.length > 0">
         <div class="editCtn hasBorderTop">
@@ -324,7 +324,7 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}出库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料出库</span>
       </div>
       <template v-if="weaveInfo.length !== 0">
         <div class="editCtn hasBorderTop">
@@ -549,7 +549,7 @@
         </div>
       </template>
       <template v-else>
-        <div class="normalCtn hasBorderTop">暂无任何织造加工信息</div>
+        <div class="normalCtn hasBorderTop">暂无任何工序加工信息</div>
       </template>
     </div>
     <div class="module">
@@ -624,7 +624,7 @@
             <span class="tb_row flex08">{{itemLog.material_color}}</span>
             <span class="tb_row flex08">{{itemLog.total_weight}}</span>
             <span class="tb_row flex08"
-              :class="itemLog.type === 1 ? 'blue' : itemLog.type === 2 ? 'green' : itemLog.type === 3 ? 'green' : 'orange'">{{itemLog.type === 1 ? '出库' : itemLog.type === 2 ? '入库' : itemLog.type === 3 ? '最终入库' : '织造出库'}}</span>
+              :class="itemLog.type === 1 ? 'blue' : itemLog.type === 2 ? 'green' : itemLog.type === 3 ? 'green' : 'orange'">{{itemLog.type === 1 ? '出库' : itemLog.type === 2 ? '入库' : itemLog.type === 3 ? '最终入库' : '工序出库'}}</span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn red"
@@ -945,7 +945,7 @@ export default {
           label: '最终入库'
         }, {
           value: 4,
-          label: '织造出库'
+          label: '工序出库'
         }
       ],
       showFilterClientBox: false,
@@ -1132,7 +1132,7 @@ export default {
         })
       }
     },
-    // 织造加工module点击批量操作时
+    // 工序加工module点击批量操作时
     batchBtnClickWeave () {
       let checkedData = this.weaveInfo.filter(item => item.checked)
       if (checkedData.length === 0) {
@@ -1332,7 +1332,7 @@ export default {
             })
           })
         })
-        // 检测织造出库数量书否超出已入库数量
+        // 检测工序出库数量书否超出已入库数量
         let outStockInfo = []
         this.weaveInfo.forEach(item => {
           item.material_info.forEach(itemMa => {
@@ -1368,7 +1368,7 @@ export default {
       if (exceedMaterialInfo.length > 0) {
         this.$message.error({
           dangerouslyUseHTMLString: true,
-          message: '检测到您所织造出库的原料大于已入库数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
+          message: '检测到您所工序出库的原料大于已入库数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
         })
         return
       }
@@ -1494,7 +1494,7 @@ export default {
         this.$goElView('handleMaterial')
       })
     },
-    // 织造加工module点击表格内操作时
+    // 工序加工module点击表格内操作时
     handleClickProcess (item, itemMa, itemColor) {
       console.log(item, itemMa, itemColor)
       let num = this.$toFixed((itemColor.type === 1 ? (+itemColor.weight + +itemColor.replenish_weight) / 1000 : (+itemColor.weight + +itemColor.replenish_weight)) - (+itemColor.outStockNum || 0))
@@ -1525,11 +1525,11 @@ export default {
         }
       })
     },
-    // 织造加工module改变出库单位时
+    // 工序加工module改变出库单位时
     changeMaterialInfo (eve, item) {
       item.materialInfo = this.weaveInfo.find(items => items.client_id === eve).material_info
     },
-    // 织造加工module改变原料时
+    // 工序加工module改变原料时
     changeAttrInfo (eve, item, itemInner) {
       itemInner.color_info = item.materialInfo.find(items => items.material_name === eve).color_info.map(value => {
         return {
@@ -1618,7 +1618,7 @@ export default {
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           console.log(this.materialStockInfo)
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
-          // 初始化织造出入库数据
+          // 初始化工序出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
           this.weaveInfo.forEach((item) => {
             item.material_info = this.$mergeData(item.childrenMergeInfo, { mainRule: ['material_name'], childrenName: 'color_info' })
@@ -1634,7 +1634,7 @@ export default {
               })
             })
           })
-          // 合并补纱信息入织造出入库
+          // 合并补纱信息入工序出入库
           res[3].data.data.filter(item => +item.type === 1).forEach(item => {
             let flag = this.weaveInfo.find(items => items.client_name === item.replenish_name)
             if (flag) {
@@ -1654,7 +1654,7 @@ export default {
               }
             }
           })
-          console.log(this.weaveInfo)
+          // console.log(this.weaveInfo)
           // 初始化统计数据
           this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
             return {
@@ -1794,7 +1794,7 @@ export default {
         })
       }
     },
-    // 监听织造不能同时选择
+    // 监听工序不能同时选择
     watchCheckedNum (eve, item) {
       if (eve && this.weaveInfo.filter(items => items.checked).length > 1) {
         this.$message.warning('单次只能对一个单位进行批量操作')

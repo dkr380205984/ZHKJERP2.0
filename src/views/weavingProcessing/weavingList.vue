@@ -142,13 +142,13 @@
               style="flex:2">
               <span class="opr"
                 v-if="itemOrder.has_plan !== 0"
-                @click="$router.push('/weavingProcessing/weavingDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
+                @click="$router.push('/weavingProcessing/processesDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
                 织造分配
               </span>
               <!-- 客供纱 -->
               <span class="opr"
                 v-if="itemOrder.material_status === 1 && itemOrder.has_plan === 0"
-                @click="$router.push('/weavingProcessing/weavingNoMat/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
+                @click="$router.push('/weavingProcessing/processesDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
                 织造分配
               </span>
               <span class="opr"

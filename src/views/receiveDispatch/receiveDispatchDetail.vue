@@ -2,6 +2,38 @@
   <div id="receiveDispatchDetail"
     class="indexMain"
     v-loading="loading">
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':weave_type==='全部'}"
+        @click="weave_type='全部'">
+        <span class="icon packPlan"></span>
+        <span class="name">所有工序</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='织片'}"
+        @click="weave_type='织片'">
+        <span class="icon packOrder"></span>
+        <span class="name">织片收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='整烫'}"
+        @click="weave_type='整烫'">
+        <span class="icon packOut"></span>
+        <span class="name">整烫收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='套缝'}"
+        @click="weave_type='套缝'">
+        <span class="icon packOut"></span>
+        <span class="name">套缝收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='其他'}"
+        @click="weave_type='其他'">
+        <span class="icon packOut"></span>
+        <span class="name">其他工序</span>
+      </div>
+    </div>
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">订单信息</span>
@@ -52,9 +84,26 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">织造入库</span>
+        <span class="title">产品收发</span>
       </div>
       <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <div class="btn btnWhiteBlue"
+              @click="editFlag='out'"
+              v-if="!editFlag">批量出库</div>
+            <div class="btn btnWhiteBlue"
+              @click="editFlag='in'"
+              v-if="!editFlag">批量入库</div>
+            <div class="btn btnGray"
+              v-if="editFlag"
+              @click="editFlag=false">取消操作</div>
+            <div class="btn btnBlue"
+              v-if="editFlag"
+              @click="saveEdit">确认{{editFlag==='in'?'入':'出'}}库</div>
+          </div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
@@ -72,6 +121,7 @@
                           <div class="tcolumn">尺码颜色</div>
                           <div class="tcolumn">分配数量</div>
                           <div class="tcolumn">入库数量</div>
+                          <div class="tcolumn">出库数量</div>
                           <div class="tcolumn">截止日期</div>
                           <div class="tcolumn">操作</div>
                         </div>
@@ -102,13 +152,30 @@
                           v-for="(itemSon,indexSon) in itemChild.colorSize"
                           :key="indexSon">
                           <div class="tcolumn">{{itemSon.size_name}}/{{itemSon.color_name}}</div>
-                          <div class="tcolumn">{{itemSon.number}}</div>
-                          <div class="tcolumn">{{itemSon.inNum}}</div>
+                          <div class="tcolumn"
+                            style="color:#1a95ff">{{itemSon.number}}</div>
+                          <div class="tcolumn"
+                            :style="{'color':itemSon.inNum!==0?'#E6A23C':'#ccc'}">{{itemSon.inNum}}</div>
+                          <div class="tcolumn"
+                            :style="{'color':itemSon.outNum!==0?'#01B48C':'#ccc'}">{{itemSon.outNum}}</div>
                           <div class="tcolumn">{{itemSon.complete_time.slice(0,10)}}</div>
-                          <div class="tcolumn">
+                          <div class="tcolumn"
+                            style="flex-direction:row;align-items: center;justify-content: flex-start;">
+                            <el-input style="height:32px"
+                              v-if="item.editFlag"
+                              v-model="itemSon.editNum"
+                              @input="$forceUpdate()"
+                              placeholder="数量">
+                              <template slot="append">件</template>
+                            </el-input>
+                            <span class="btn noBorder"
+                              style="padding:0;margin:0 12px 0 0"
+                              v-if="!item.editFlag"
+                              @click="normalWeave(item.client_id,itemChild.product_id,itemSon.size_id + '/' + itemSon.color_id,itemSon.number,item.process,'in')">入库</span>
                             <span class="btn noBorder"
                               style="padding:0;margin:0"
-                              @click="normalWeave(item.client_id,itemChild.product_id,itemSon.size_id + '/' + itemSon.color_id,itemSon.number)">入库</span>
+                              v-if="!item.editFlag"
+                              @click="normalWeave(item.client_id,itemChild.product_id,itemSon.size_id + '/' + itemSon.color_id,itemSon.number,item.process,'out')">出库</span>
                           </div>
                         </div>
                       </div>
@@ -131,7 +198,7 @@
                     </div>
                     <div class="content">
                       <el-select v-model="item.product_id"
-                        placeholder="请选择入库产品"
+                        placeholder="请选择产品"
                         @change="selectProduct($event,index,'weave_data','weave_product')">
                         <el-option v-for="item in weave_product"
                           :key="item.product_id"
@@ -142,19 +209,32 @@
                   </div>
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">织造单位</span>
+                      <span class="text">{{item.flag==='in'?'入':'出'}}库单位</span>
                       <span class="explanation">(选填，没有选项时可以在备注栏填写)</span>
                     </div>
                     <div class="content">
                       <div class="content">
                         <el-select v-model="item.client_id"
-                          placeholder="请选择织造单位"
+                          placeholder="请选择单位"
                           filterable>
                           <el-option v-for="item in weave_company"
                             :key="item.id"
                             :value="Number(item.id)"
                             :label="item.name"></el-option>
                         </el-select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="colCtn flex3">
+                    <div class="label">
+                      <span class="text">工序</span>
+                      <span class="explanation">(必填，一般为默认填写)</span>
+                    </div>
+                    <div class="content">
+                      <div class="content">
+                        <el-cascader placeholder="选择工序"
+                          v-model="item.process"
+                          :options="processArr"></el-cascader>
                       </div>
                     </div>
                   </div>
@@ -182,12 +262,12 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">入库数量</span>
+                      <span class="text">{{item.flag==='in'?'入':'出'}}库数量</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库数量"
+                        placeholder="请输入数量"
                         v-model="itemChild.number">
                       </zh-input>
                     </div>
@@ -199,7 +279,7 @@
                     </div>
                     <div class="content">
                       <zh-input type="number"
-                        placeholder="请输入入库捆数"
+                        placeholder="请输入捆数"
                         v-model="itemChild.count">
                         <template slot="append">捆</template>
                       </zh-input>
@@ -215,7 +295,7 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3">
                     <div class="label">
-                      <span class="text">入库日期</span>
+                      <span class="text">{{item.flag==='in'?'入':'出'}}库日期</span>
                       <span class="explanation">(默认今天)</span>
                     </div>
                     <div class="content">
@@ -224,7 +304,7 @@
                           value-format="yyyy-MM-dd"
                           style="width:100%"
                           type="date"
-                          placeholder="选择入库日期">
+                          placeholder="选择日期">
                         </el-date-picker>
                       </div>
                     </div>
@@ -243,26 +323,34 @@
               <div class="addRows">
                 <span class="once"
                   v-if="!weave_flag"
-                  @click="normalWeave()">普通入库</span>
+                  @click="normalWeave('', '', '', '', '','in')">入库</span>
                 <span class="once"
                   v-if="!weave_flag"
-                  @click="easyWeave">一键入库</span>
+                  @click="easyWeave('in')">一键入库</span>
+                <span class="once"
+                  v-if="!weave_flag"
+                  @click="normalWeave('', '', '', '', '','out')">出库</span>
+                <span class="once"
+                  v-if="!weave_flag"
+                  @click="easyWeave('out')">一键出库</span>
                 <span class="once cancle"
                   v-if="weave_flag"
-                  @click="cancleWeave">取消入库</span>
+                  @click="cancleWeave">取消{{weave_data[0].flag==='in'?'入':'出'}}库</span>
                 <span class="once normal"
                   v-if="weave_flag"
-                  @click="addWeave">添加织造单位</span>
+                  @click="addWeave(weave_data[0].flag)">添加{{weave_data[0].flag==='in'?'入':'出'}}库</span>
                 <span class="once ok"
                   v-if="weave_flag"
-                  @click="saveWeave">确认入库</span>
+                  @click="saveWeave(weave_data[0].flag)">确认{{weave_data[0].flag==='in'?'入':'出'}}库</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="module">
+    <!-- 这个模块不要了 , 现在没有半成品加工-->
+    <div class="module"
+      v-if="false">
       <div class="titleCtn">
         <span class="title">半成品加工出入库</span>
       </div>
@@ -489,7 +577,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="log.length>0">
       <div class="titleCtn">
         <span class="title">产品出入库日志</span>
       </div>
@@ -515,15 +604,16 @@
                 </span>
                 <span class="tb_row"
                   style="flex:1.2">操作日期</span>
-                <span class="tb_row">加工单位</span>
+                <span class="tb_row">出/入库单位</span>
                 <span class="tb_row">收发类型</span>
+                <span class="tb_row">工序</span>
                 <span class="tb_row"
                   style="flex:1.8">产品信息</span>
                 <span class="tb_row">尺码颜色</span>
                 <span class="tb_row">捆数</span>
                 <span class="tb_row">数量</span>
-                <span class="tb_row">备注</span>
-                <span class="tb_row">操作人</span>
+                <!-- <span class="tb_row">备注</span>
+                <span class="tb_row">操作人</span> -->
                 <span class="tb_row middle">操作</span>
               </span>
               <span class="tb_content"
@@ -536,7 +626,10 @@
                 <span class="tb_row"
                   style="flex:1.2">{{$getTime(item.complete_time)}}</span>
                 <span class="tb_row">{{item.client_name}}</span>
-                <span class="tb_row">{{item.flag}}</span>
+                <span class="tb_row"
+                  :style="{'color':item.flag==='入库'?'#1a95ff':'#E6A23C'}">{{item.flag}}</span>
+                <span class="tb_row"
+                  style="color:#1a95ff">{{item.production_type}}</span>
                 <span class="tb_row"
                   style="flex:1.8">
                   {{item.product_code.code}}
@@ -550,8 +643,8 @@
                 </span>
                 <span class="tb_row">{{item.count}}</span>
                 <span class="tb_row">{{item.number}}</span>
-                <span class="tb_row">{{item.desc}}</span>
-                <span class="tb_row">{{item.user_name}}</span>
+                <!-- <span class="tb_row">{{item.desc}}</span>
+                <span class="tb_row">{{item.user_name}}</span> -->
                 <span class="tb_row middle">
                   <span class="tb_handle_btn red"
                     @click="deleteLog(item.id,item.flag,index)">删除</span>
@@ -579,6 +672,7 @@ import { order, weave, processing, client, receive, dispatch, process } from '@/
 export default {
   data () {
     return {
+      editFlag: false,
       checkAll: false,
       loading: true,
       msgSwitch: false,
@@ -593,6 +687,8 @@ export default {
         order_batch: [],
         desc: ''
       },
+      weave_type: '全部',
+      weave_old: [], // 原始数组备份
       weave_detail: [],
       process_detail: [],
       weave_data: [],
@@ -605,7 +701,21 @@ export default {
       easyWeave_flag: false,
       process_flag: false,
       process_type: '入库',
-      log: []
+      log: [],
+      processArr: [{
+        value: '织片',
+        label: '织片'
+      }, {
+        value: '套缝',
+        label: '套缝'
+      }, {
+        value: '整烫',
+        label: '整烫'
+      }, {
+        value: '其它',
+        label: '其它',
+        children: []
+      }]
     }
   },
   watch: {
@@ -617,6 +727,25 @@ export default {
     weave_data (val) {
       this.$nextTick(() => {
         this.$fuckSelect()
+      })
+    },
+    weave_type (val) {
+      if (val === '全部') {
+        this.weave_detail = this.$clone(this.weave_old)
+      } else if (val === '其他') {
+        this.weave_detail = this.weave_old.filter((item) => item.process !== '织片' && item.process !== '整烫' && item.process !== '套缝')
+      } else {
+        this.weave_detail = this.weave_old.filter((item) => item.process === val)
+      }
+    },
+    editFlag (val) {
+      this.weave_detail.forEach((item) => {
+        item.editFlag = val
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.colorSize.forEach((itemColor) => {
+            itemColor.editNum = ''
+          })
+        })
       })
     }
   },
@@ -666,10 +795,12 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
-    normalWeave (client, product, colorSize, number) {
-      console.log(client)
+    // 织造普通入库
+    normalWeave (client, product, colorSize, number, process, flag) {
       this.weave_flag = true
       this.weave_data.push({
+        flag: flag,
+        process: process ? process.split('/') : ['织片'],
         product_id: product || '',
         colorSizeArr: product ? this.weave_product.find((item) => {
           return item.product_id === product
@@ -689,7 +820,7 @@ export default {
         desc: ''
       })
     },
-    easyWeave () {
+    easyWeave (flag) {
       this.weave_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           let productInfo = itemChild.colorSize.map((itemSon) => {
@@ -700,6 +831,8 @@ export default {
             }
           })
           this.weave_data.push({
+            flag: flag,
+            process: item.process.split('/'),
             product_id: itemChild.product_id,
             colorSizeArr: this.weave_product.find((item) => {
               return item.product_id === itemChild.product_id
@@ -718,8 +851,9 @@ export default {
       })
       this.weave_flag = true
     },
-    addWeave () {
+    addWeave (flag) {
       this.weave_data.push({
+        flag: flag,
         product_id: '',
         colorSizeArr: [],
         product_info: [{
@@ -742,7 +876,7 @@ export default {
       this.weave_data = []
       this.weave_flag = false
     },
-    saveWeave () {
+    saveWeave (flag) {
       let errorFlag = false
       let errorMsg = ''
       this.weave_data.forEach((item) => {
@@ -751,7 +885,7 @@ export default {
           errorMsg = '请选择产品信息'
         } else if (!item.date) {
           errorFlag = true
-          errorMsg = '请选择入库日期'
+          errorMsg = '请选择日期'
         }
         item.product_info.forEach((itemChild) => {
           if (!itemChild.colorSize) {
@@ -759,88 +893,33 @@ export default {
             errorMsg = '请选择尺码颜色'
           } else if (!itemChild.number) {
             errorFlag = true
-            errorMsg = '请输入入库数量'
+            errorMsg = '请输入数量'
           }
         })
       })
-      let errorFlag2 = false
-      if (this.weave_detail.length > 0) {
-        this.weave_data.forEach((item) => {
-          let finded = this.weave_detail.find((itemFind) => itemFind.client_id === item.client_id)
-          if (!finded) {
-            errorFlag2 = true
-          }
-        })
-      }
       if (errorFlag) {
         this.$message.error(errorMsg)
       }
-      if (errorFlag2) {
-        this.$confirm('检测到入库公司没有分配织造,请确认是否要继续入库?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let formData = []
-          this.weave_data.forEach((item) => {
-            item.product_info.forEach((itemChild) => {
-              formData.push({
-                order_id: this.$route.params.id,
-                // order_type: 1,
-                product_id: item.product_id,
-                type: 1, // 类型，1 织造 2 加工
-                client_id: item.client_id,
-                size_id: itemChild.colorSize.split('/')[0],
-                color_id: itemChild.colorSize.split('/')[1],
-                count: itemChild.count,
-                number: itemChild.number,
-                complete_time: item.date,
-                production_type: '织造',
-                desc: item.desc
-              })
-            })
-          })
-          receive.create({ data: formData }).then((res) => {
-            if (res.data.status) {
-              this.$message.success('入库成功，刷新页面后更新入库数量')
-              this.weave_data = []
-              this.weave_flag = false
-              if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-                this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
-                this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-                this.msgSwitch = true
-              } else {
-                this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
-                this.$winReload()
-              }
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消入库'
+      let formData = []
+      this.weave_data.forEach((item) => {
+        item.product_info.forEach((itemChild) => {
+          formData.push({
+            order_id: this.$route.params.id,
+            product_id: item.product_id,
+            type: 1, // 类型，1 织造 2 加工
+            client_id: item.client_id,
+            size_id: itemChild.colorSize.split('/')[0],
+            color_id: itemChild.colorSize.split('/')[1],
+            count: itemChild.count,
+            number: itemChild.number,
+            complete_time: item.date,
+            production_type: item.process.join('/'),
+            desc: item.desc
           })
         })
-      } else {
-        let formData = []
-        this.weave_data.forEach((item) => {
-          item.product_info.forEach((itemChild) => {
-            formData.push({
-              order_id: this.$route.params.id,
-              // order_type: 1,
-              product_id: item.product_id,
-              type: 1, // 类型，1 织造 2 加工
-              client_id: item.client_id,
-              size_id: itemChild.colorSize.split('/')[0],
-              color_id: itemChild.colorSize.split('/')[1],
-              count: itemChild.count,
-              number: itemChild.number,
-              complete_time: item.date,
-              production_type: '织造',
-              desc: item.desc
-            })
-          })
-        })
+      })
+      // 先确认下入库还是出库，再调接口
+      if (this.weave_data[0].flag === 'in') {
         receive.create({ data: formData }).then((res) => {
           if (res.data.status) {
             this.$message.success('入库成功，刷新页面后更新入库数量')
@@ -848,7 +927,86 @@ export default {
             this.weave_flag = false
             if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
               this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个工序入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              this.$winReload()
+            }
+          }
+        })
+      } else {
+        dispatch.create({ data: formData }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('出库成功，刷新页面后更新出库数量')
+            this.weave_data = []
+            this.weave_flag = false
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个工序出库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              this.$winReload()
+            }
+          }
+        })
+      }
+    },
+    // 批量出入库保存
+    saveEdit () {
+      let formData = []
+      this.weave_detail.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.colorSize.forEach((itemColor) => {
+            if (Number(itemColor.editNum) && Number(itemColor.editNum) > 0) {
+              formData.push({
+                order_id: this.$route.params.id,
+                product_id: itemChild.product_id,
+                type: 1, // 类型，1 织造 2 加工
+                client_id: item.client_id,
+                size_id: itemColor.size_id,
+                color_id: itemColor.color_id,
+                count: 0,
+                number: itemColor.editNum,
+                complete_time: this.$getTime(new Date()),
+                production_type: item.process,
+                desc: ''
+              })
+            }
+          })
+        })
+      })
+      if (formData.length === 0) {
+        this.$message.error('请输入数量')
+        return
+      }
+      this.loading = true
+      if (this.weave_detail[0].editFlag === 'in') {
+        receive.create({ data: formData }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('入库成功，刷新页面后更新入库数量')
+            this.editFlag = false
+            this.loading = false
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个工序入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+              this.msgSwitch = true
+            } else {
+              this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
+              this.$winReload()
+            }
+          }
+        })
+      } else {
+        dispatch.create({ data: formData }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('出库成功，刷新页面后更新出库数量')
+            this.editFlag = false
+            this.loading = false
+            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+              this.msgUrl = '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id
+              this.msgContent = '<span style="color:#1A95FF">添加</span>了一个工序出库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
               this.msgSwitch = true
             } else {
               this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
@@ -1238,7 +1396,6 @@ export default {
       order_type: 1
     }), process.list()]).then((res) => {
       this.orderInfo = res[0].data.data
-      console.log(res[1].data.data)
       res[1].data.data.forEach((item) => {
         let finded = this.weave_detail.find((itemFind) => {
           return itemFind.client_name === item.client_name && itemFind.process === item.process
@@ -1296,7 +1453,7 @@ export default {
       this.weave_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.process_product = this.$mergeData(res[2].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.weave_company = res[3].data.data.filter((item) => {
-        return item.type.indexOf(4) !== -1
+        return item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
       })
       this.process_company = res[3].data.data.filter((item) => {
         return item.type.indexOf(5) !== -1
@@ -1312,16 +1469,25 @@ export default {
         this.log.push(item)
       })
       this.weave_detail.forEach((item) => {
+        item.editFlag = false
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.colorSize.forEach((itemSon) => {
             itemSon.inNum = res[4].data.data.filter((itemFilter) => {
-              return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemSon.size_id && itemFilter.color_id === itemSon.color_id && itemFilter.client_name === item.client_name && Number(itemFilter.type) === 1
+              return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemSon.size_id && itemFilter.color_id === itemSon.color_id && itemFilter.client_name === item.client_name && item.process === itemFilter.production_type && Number(itemFilter.type) === 1
             }).reduce((total, current) => {
               return total + current.number
             }, 0)
+            itemSon.outNum = res[5].data.data.filter((itemFilter) => {
+              return itemChild.product_id === itemFilter.product_id && itemFilter.size_id === itemSon.size_id && itemFilter.color_id === itemSon.color_id && itemFilter.client_name === item.client_name && item.process === itemFilter.production_type && Number(itemFilter.type) === 1
+            }).reduce((total, current) => {
+              return total + current.number
+            }, 0)
+            itemSon.editNum = '' // 在编辑模式下记录出入库的值
           })
         })
       })
+      this.weave_old = this.$clone(this.weave_detail)
+      console.log(this.weave_old, res[4].data.data)
       this.process_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = res[4].data.data.filter((itemFilter) => {
@@ -1340,9 +1506,10 @@ export default {
           }, 0)
         })
       })
-      this.processTypeList = res[6].data.data.filter(item => item.type === 2).map(item => {
+      this.processArr[3].children = res[6].data.data.filter(item => item.type === 2).map((item) => {
         return {
-          value: item.name
+          value: item.name,
+          label: item.name
         }
       })
       if (this.$route.query.logId && this.$route.query.type === '1') {
@@ -1386,7 +1553,6 @@ export default {
           this.selectProduct(flag.product_id, 0, 'process_data', 'process_product')
         }
       }
-      console.log(this.log)
       this.loading = false
     })
   }
@@ -1395,4 +1561,32 @@ export default {
 
 <style scoped lang='less'>
 @import "~@/assets/less/receiveDispatch/receiveDispatchDetail.less";
+#receiveDispatchDetail {
+  .tabCtn {
+    display: flex;
+    margin: 0 32px 18px 32px;
+    border-top: 1px solid #e9e9e9;
+    border-bottom: 1px solid #e9e9e9;
+    .tab {
+      flex: 1;
+      text-align: center;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 30px;
+      border-left: 1px solid #e9e9e9;
+      cursor: pointer;
+      &.active {
+        background: #1a95ff;
+        color: #fff;
+      }
+      &:hover {
+        background: #1a95ff;
+        color: #fff;
+      }
+      &:nth-last-child(1) {
+        border-right: 1px solid #e9e9e9;
+      }
+    }
+  }
+}
 </style>

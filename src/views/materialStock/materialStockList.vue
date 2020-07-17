@@ -2,6 +2,20 @@
   <div id='yarnStockList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':material_type==='1'}"
+        @click="material_type='1'">
+        <span class="icon packOut"></span>
+        <span class="name">原料出入库</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':material_type==='2'}"
+        @click="material_type='2'">
+        <span class="icon packOut"></span>
+        <span class="name">辅料出入库</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn2">
@@ -150,42 +164,19 @@
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                v-if="itemOrder.has_plan!==0 && itemOrder.material_status === 2"
-                style="padding-right:0">
-                <el-dropdown>
-                  <span class="el-dropdown-link">
-                    物料出入库<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="$router.push('/materialStock/materialStockDetail/'+itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2'))">
-                      <span class="detail">原料</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/materialStock/materialStockDetail/'+itemOrder.id+'/2' + '/' + (orderType ? '1' : '2'))">
-                      <span class="detail">辅料</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                v-if="itemOrder.has_plan !== 0"
+                @click="$router.push('/materialStock/materialStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
+                {{material_type==='1'?'原':'辅'}}料出入库
               </span>
+              <!-- 客供纱 -->
               <span class="opr"
-                v-if="itemOrder.material_status === 1"
-                style="padding-right:0">
-                <el-dropdown>
-                  <span class="el-dropdown-link">
-                    物料出入库<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="$router.push('/materialStock/easyMaterialStockDetail/'+itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2'))">
-                      <span class="detail">原料</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/materialStock/easyMaterialStockDetail/'+itemOrder.id+'/2' + '/' + (orderType ? '1' : '2'))">
-                      <span class="detail">辅料</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                v-if="itemOrder.material_status === 1 && itemOrder.has_plan === 0"
+                @click="$router.push('/materialStock/easyMaterialStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
+                {{material_type==='1'?'原':'辅'}}料出入库
               </span>
               <span class="opr"
                 style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.has_plan===0 && itemOrder.material_status === 2">暂无物料计划</span>
+                v-if="itemOrder.material_status === 2 && itemOrder.has_plan===0">暂无物料计划</span>
             </div>
           </div>
         </div>
@@ -232,6 +223,7 @@ import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      material_type: '1',
       openHiddleFilter: false,
       searchOrderOrProduct: 'order',
       loading: true,
