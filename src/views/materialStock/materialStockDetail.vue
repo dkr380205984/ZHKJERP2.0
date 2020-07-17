@@ -903,7 +903,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock } from '@/assets/js/api.js'
+import { materialStock, weave, replenish, materialManage, materialProcess, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {

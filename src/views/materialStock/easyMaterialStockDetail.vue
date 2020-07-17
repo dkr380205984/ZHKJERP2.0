@@ -672,7 +672,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialStock, weave, processing, replenish, stock, yarn, yarnColor, pantongList } from '@/assets/js/api.js'
+import { order, materialStock, weave, replenish, stock, yarn, yarnColor, pantongList } from '@/assets/js/api.js'
 export default {
   data () {
     return {
