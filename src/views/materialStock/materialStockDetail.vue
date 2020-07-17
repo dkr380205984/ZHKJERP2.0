@@ -1627,7 +1627,7 @@ export default {
                 return {
                   attr: itemColor.material_attribute,
                   weight: itemColor.weight * 1000,
-                  unit: itemColor.unit,
+                  unit: 'g',
                   type: itemColor.material_type,
                   id: itemColor.id
                 }
@@ -1730,7 +1730,6 @@ export default {
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-          console.log(this.materialStockInfo)
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
           // 初始化工序出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data.filter(itemF => itemF.material_type === 2), { mainRule: ['client_id', 'product_flow'], otherRule: [{ name: 'client_name' }] })
