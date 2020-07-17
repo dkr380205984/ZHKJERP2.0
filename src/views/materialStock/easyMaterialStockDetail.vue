@@ -1046,7 +1046,7 @@ export default {
         outStockInfo.forEach(item => {
           let flag = this.materialStockInfo.find(items => items.material_name === item.material_name)
           if (flag) {
-            let innerFlag = flag.color_info.find(items => items.attr === item.material_color)
+            let innerFlag = flag.attr_info.find(items => items.attr === item.material_color)
             if (innerFlag) {
               if (this.$toFixed(innerFlag.goStockNumEnd || 0) < this.$toFixed(item.outStockNum)) {
                 exceedMaterialInfo.push('物料:“' + item.material_name + '”，颜色/属性：“' + item.material_color + '”')
@@ -1110,7 +1110,6 @@ export default {
       }
       // 订单结余入库
       if (surplusData.length > 0) {
-        console.log(surplusData)
         materialStock.surplusCreate({ data: surplusData }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('保存成功')
@@ -1295,7 +1294,7 @@ export default {
           }), 5)
           this.stockLogTotal = this.stockLog.length
           // 初始化织造出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }], childrenName: 'material_info', childrenRule: { mainRule: 'material_name', otherRule: [{ name: 'material_attribute' }, { name: 'material_type' }, { name: 'unit' }, { name: 'weight', type: 'add' }] } }).map(items => {
+          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }], childrenName: 'material_info' }).map(items => {
             return {
               checked: false,
               client_name: items.client_name,

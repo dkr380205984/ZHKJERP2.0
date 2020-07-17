@@ -241,8 +241,12 @@ const routes = [
       name: '织造分配详情',
       component: () => import('../views/weavingProcessing/weavingDetail.vue')
     }, {
+      path: '/weavingProcessing/processesDetail/:id/:orderType',
+      name: '工序分配详情',
+      component: () => import('../views/weavingProcessing/processesDetail.vue')
+    }, {
       path: '/weavingProcessing/weavingNoMat/:id/:orderType',
-      name: '织造分配',
+      name: '织造分配-客供纱',
       component: () => import('../views/weavingProcessing/weavingNoMat.vue')
     }, {
       path: '/weavingProcessing/weavingList/:params/:type',
@@ -594,8 +598,10 @@ router.beforeEach((to, from, next) => {
     '物料出入库详情-客供版': ['织为云', '物料出入库列表', '物料出入库详情-客供版'],
     '物料批量出入库详情': ['织为云', '物料订购列表', '物料批量出入库详情'],
     '织造分配列表': ['织为云', '织造分配列表'],
+    '工序分配详情': ['织为云', '工序分配列表', '工序分配详情'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '织造分配': ['织为云', '织造分配列表', '织造分配详情'],
+    '织造分配-客供纱': ['织为云', '织造分配列表', '织造分配-客供纱'],
     '半成品加工分配列表': ['织为云', '半成品加工分配列表'],
     '半成品加工分配详情': ['织为云', '半成品加工分配详情'],
     '装箱管理列表': ['织为云', '装箱管理列表'],

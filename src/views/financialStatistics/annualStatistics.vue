@@ -1,6 +1,7 @@
 <template>
   <div id='annualStatistics'
-    class='indexMain'>
+    class='indexMain'
+    v-loading="loading">
     <div class="listCutCtn">
       <div class="cut_item"
         @click="$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')">
@@ -119,26 +120,14 @@
                     </el-dropdown>
                   </span>
                   <span class="tb_row"
-                    v-else-if="item.name === '样单'">
-                    <el-dropdown @command='handleOrderCommand($event,itemI)'>
-                      <span class="el-dropdown-link">
-                        {{itemI.name}}<i class="el-icon-arrow-down el-icon--right"></i>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(itemD,indexD) in sampleSelectArr"
-                          :key='indexD'
-                          :command='itemD'>{{itemD.name}}</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </span>
-                  <span class="tb_row"
                     v-else>{{itemI.name}}</span>
                   <span class="tb_row">{{itemI.income ? '+' + itemI.income : ''}}</span>
                   <span class="tb_row">{{itemI.expend ? '-' + itemI.expend : ''}}</span>
                   <span class="tb_row flex04 middle">
-                    <span class="tb_handle_btn blue">详情</span>
                     <span class="tb_handle_btn blue"
-                      @click="itemI.show = !itemI.show">{{itemI.show ? '隐藏' : '显示'}}</span>
+                      @click="goUrl(itemI.url)">详情</span>
+                    <span class="tb_handle_btn blue"
+                      @click="itemI.show = !itemI.show">{{itemI.show ? '不计入合计' : '计入合计'}}</span>
                   </span>
                 </span>
               </span>
@@ -165,10 +154,11 @@
 </template>
 
 <script>
+import { statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      loading: false,
+      loading: true,
       start_time: '2019/01/01',
       end_time: '2020/12/31',
       detail: [
@@ -361,10 +351,210 @@ export default {
     }
   },
   methods: {
+    goUrl (url) {
+      console.log(url)
+      if (url) {
+        this.$router.push(url)
+      } else {
+        this.$message.warning('暂无该统计模块')
+      }
+    },
     handleOrderCommand (event, item) {
       item.name = event.name
       item.income = event.income
       item.expend = event.expend
+      item.url = event.url
+    },
+    getData () {
+      this.loading = true
+      statistics.yearDetail({
+        year: this.year
+      }).then((res) => {
+        console.log(res)
+        let data = res.data.data
+        this.orderSelectArr = [
+          {
+            name: '下单总值',
+            income: data.order.order_price,
+            expend: 0
+          },
+          {
+            name: '实际出库总值',
+            income: data.order.real_price,
+            expend: 0
+          },
+          {
+            name: '实际结算总值',
+            income: data.order.settle_price,
+            expend: 0
+          }
+        ]
+        this.detail = [
+          {
+            name: '订单',
+            info: [
+              {
+                name: '下单总值',
+                income: data.order.order_price,
+                expend: 0,
+                show: true,
+                url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=' + this.start_time + ',' + this.end_time + '&&group_id=&&company_id='
+              }
+            ]
+          },
+          {
+            name: '样单',
+            info: [
+              {
+                name: '客户付费总值',
+                income: data.sample_order.client_pay,
+                expend: 0,
+                show: true,
+                url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=' + this.start_time + ',' + this.end_time + '&&group_id=&&company_id='
+              }
+            ]
+          },
+          {
+            name: '原料纱线',
+            info: [
+              {
+                name: '订单原料采购',
+                income: 0,
+                expend: data.material.material_order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单原料采购',
+                income: 0,
+                expend: data.material.material_sample_order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '订单原料加工',
+                income: 0,
+                expend: data.material.order_process,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单原料加工',
+                income: 0,
+                expend: data.material.sample_order_process,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '装饰辅料',
+            info: [
+              {
+                name: '订单辅料采购',
+                income: 0,
+                expend: data.assist_material.order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单辅料采购',
+                income: 0,
+                expend: data.assist_material.sample_order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '生产织造',
+            info: [
+              {
+                name: '订单织造',
+                income: 0,
+                expend: data.production_weave.order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单织造',
+                income: 0,
+                expend: data.production_weave.sample_order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '半成品加工',
+            info: [
+              {
+                name: '订单半成品加工',
+                income: 0,
+                expend: data.semi_product.order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=半成品加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单半成品加工',
+                income: 0,
+                expend: data.semi_product.sample_order,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=半成品加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '包装',
+            info: [
+              {
+                name: '订单包装辅料',
+                income: 0,
+                expend: data.pack,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=包装订购&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=0&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '运输',
+            info: [
+              {
+                name: '订单出库运输',
+                income: 0,
+                expend: data.sotck_out,
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=装箱出库&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=0&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '人工',
+            info: [
+              {
+                name: '人员工资',
+                income: 0,
+                expend: data.user,
+                show: true,
+                url: ''
+              }
+            ]
+          },
+          {
+            name: '其他',
+            info: [
+              {
+                name: '报销费用',
+                income: 0,
+                expend: data.others.reimburse_price,
+                show: true,
+                url: ''
+              }
+            ]
+          }
+        ]
+        this.loading = false
+      })
     },
     changeYear (type, year) {
       if (type === 'before') {
@@ -374,6 +564,9 @@ export default {
       } else {
         this.year = year
       }
+      this.start_time = this.year - 1 + '-01-01'
+      this.end_time = this.year + '-12-31'
+      this.getData()
       return false
     }
   },
@@ -393,7 +586,10 @@ export default {
   },
   created () {
     this.year = new Date().getFullYear()
+    this.start_time = this.year + '-01-01'
+    this.end_time = this.year + '-12-31'
     this.yearArr = Math.floor(this.year / 10) - 1
+    this.getData()
   }
 }
 </script>
