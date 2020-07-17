@@ -1619,7 +1619,7 @@ export default {
           console.log(this.materialStockInfo)
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
           // 初始化工序出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+          this.weaveInfo = this.$mergeData(res[2].data.data.filter(itemF => itemF.material_type === 1), { mainRule: ['client_id', 'product_flow'], otherRule: [{ name: 'client_name' }] })
           this.weaveInfo.forEach((item) => {
             item.material_info = this.$mergeData(item.childrenMergeInfo, { mainRule: ['material_name'], childrenName: 'color_info' })
             item.material_info.forEach((item) => {
@@ -1716,30 +1716,37 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           }),
-          processing.detail({
+          weave.getDressMat({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
+          }),
+          materialManage.detail({
+            order_type: this.$route.params.orderType,
+            order_id: this.$route.params.id
           })
         ]).then(res => {
-          // 初始化辅料出入库数据
+          // 初始化原料出入库数据
+          this.orderLog = res[3].data.data
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
           this.orderInfo = res[0].data.data.order_info
-          this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-          this.materialClient = this.$mergeData(res[0].data.data.material_process_client.concat(res[0].data.data.material_order_client), { mainRule: ['client_name', 'client_id'] })
-          // 初始化加工出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
-            return {
-              checked: false,
-              client_name: items.client_name,
-              client_id: items.client_id,
-              material_info: this.$mergeData(items.material_info, { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'number/weight', type: 'add' }] } }).map(value => {
-                value.color_info.forEach(val => {
-                  val.type = 2
-                  val.unit = '个'
-                })
-                return value
+          this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
+          console.log(this.materialStockInfo)
+          this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
+          // 初始化工序出入库数据
+          this.weaveInfo = this.$mergeData(res[2].data.data.filter(itemF => itemF.material_type === 2), { mainRule: ['client_id', 'product_flow'], otherRule: [{ name: 'client_name' }] })
+          this.weaveInfo.forEach((item) => {
+            item.material_info = this.$mergeData(item.childrenMergeInfo, { mainRule: ['material_name'], childrenName: 'color_info' })
+            item.material_info.forEach((item) => {
+              item.color_info = item.color_info.map((itemColor) => {
+                return {
+                  attr: itemColor.material_attribute,
+                  weight: itemColor.weight,
+                  unit: itemColor.unit,
+                  type: itemColor.material_type,
+                  id: itemColor.id
+                }
               })
-            }
+            })
           })
           // 初始化统计数据
           this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
@@ -1753,7 +1760,7 @@ export default {
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
           this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 2))
-          this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
+          this.handleClientArr = this.$mergeData(this.cloneStockLog, { mainRule: 'client_name' }).map(item => {
             return {
               client_name: item.client_name
             }

@@ -279,7 +279,7 @@ const routes = [
     }, {
       path: '/packPlan/packPlanCreate/:id',
       name: '装箱计划单详情',
-      component: () => import('../views/packPlan/packPlanCreate.vue')
+      component: () => import('../views/packPlan/packPlanDetailNew.vue')
     }, {
       path: '/packPlan/packStockList/:params',
       name: '装箱出库列表',
