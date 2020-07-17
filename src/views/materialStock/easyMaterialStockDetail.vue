@@ -321,7 +321,7 @@
                       <el-checkbox v-model="item.checked"
                         @change="watchCheckedNum($event,item)"></el-checkbox>
                     </div>
-                    <div class="tcolumn">{{item.client_name}}</div>
+                    <div class="tcolumn">{{item.client_name}}-{{item.product_flow}}</div>
                     <div class="tcolumn noPad"
                       style="flex:6">
                       <div class="trow"
@@ -1294,11 +1294,12 @@ export default {
           }), 5)
           this.stockLogTotal = this.stockLog.length
           // 初始化织造出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }], childrenName: 'material_info' }).map(items => {
+          this.weaveInfo = this.$mergeData(res[2].data.data.filter(itemF => itemF.material_type === 1), { mainRule: ['client_id', 'product_flow'], otherRule: [{ name: 'client_name' }], childrenName: 'material_info' }).map(items => {
             return {
               checked: false,
               client_name: items.client_name,
               client_id: items.client_id,
+              product_flow: items.product_flow,
               material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'material_type/type' }] } })
             }
           })
@@ -1333,17 +1334,17 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           }),
-          processing.detail({
+          weave.getDressMat({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           })
         ]).then(res => {
-          // 初始化辅料出入库数据
+          // 初始化订单信息
           this.orderInfo = res[0].data.data
           // 初始化日志信息
           this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 2))
           this.materialStockInfo = this.$mergeData(this.cloneStockLog, { mainRule: 'material_name', childrenName: 'attr_info', childrenRule: { mainRule: 'material_color/attr', otherRule: [{ name: 'material_type/type' }, { name: 'total_weight/weight' }, { name: 'unit' }] } })
-          this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
+          this.handleClientArr = this.$mergeData(this.cloneStockLog, { mainRule: 'client_name' }).map(item => {
             return {
               client_name: item.client_name
             }
@@ -1355,19 +1356,14 @@ export default {
             }
           }), 5)
           this.stockLogTotal = this.stockLog.length
-          // 初始化加工出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
+          // 初始化织造出入库数据
+          this.weaveInfo = this.$mergeData(res[2].data.data.filter(itemF => itemF.material_type === 2), { mainRule: ['client_id', 'product_flow'], otherRule: [{ name: 'client_name' }], childrenName: 'material_info' }).map(items => {
             return {
               checked: false,
               client_name: items.client_name,
               client_id: items.client_id,
-              material_info: this.$mergeData(items.material_info, { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'number/weight', type: 'add' }] } }).map(value => {
-                value.color_info.forEach(val => {
-                  val.type = 2
-                  val.unit = '个'
-                })
-                return value
-              })
+              product_flow: items.product_flow,
+              material_info: this.$mergeData(items.material_info, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'material_type/type' }] } })
             }
           })
           this.loading = false
