@@ -194,10 +194,10 @@
                       <div class="label"
                         v-if="indexSon===0">
                         <span class="text">次品原因</span>
-                        <span class="explanation">(多选)</span>
+                        <!-- <span class="explanation">(多选)</span> -->
                       </div>
                       <div class="content">
-                        <el-select v-model="itemSon.reason"
+                        <!-- <el-select v-model="itemSon.reason"
                           filterable
                           allow-create
                           default-first-option
@@ -207,7 +207,10 @@
                             :key="index"
                             :label="item"
                             :value="item"></el-option>
-                        </el-select>
+                        </el-select> -->
+                        <el-autocomplete v-model="itemSon.reason"
+                          :fetch-suggestions="querySearchDefective"
+                          placeholder="请选择次品原因"></el-autocomplete>
                       </div>
                     </div>
                     <div class="colCtn flex3">
@@ -497,7 +500,38 @@ export default {
       msgSwitch: false,
       msgUrl: '',
       msgContent: '',
-      defectiveType: ['跳线', '污迹', '经纬断线', '严重破损', '边型问题', '流苏问题', '颜色问题', '花型问题', '款型问题', '克重问题', '长度问题', '工序问题', '质量问题', '加工问题', '其他问题'],
+      defectiveType: [
+        {
+          value: '织造原因'
+        },
+        {
+          value: '捻须原因'
+        },
+        {
+          value: '拉毛原因'
+        },
+        {
+          value: '刺毛原因'
+        },
+        {
+          value: '水洗原因'
+        },
+        {
+          value: '车缝原因'
+        },
+        {
+          value: '套口原因'
+        },
+        {
+          value: '整烫原因'
+        },
+        {
+          value: '手工原因'
+        },
+        {
+          value: '其它原因'
+        }
+      ],
       orderInfo: {
         order_code: '',
         client_name: '',
@@ -535,6 +569,12 @@ export default {
     }
   },
   methods: {
+    // 次品原因建议
+    querySearchDefective (queryString, cb) {
+      let list = this.defectiveType
+      let returnList = queryString ? list.filter(item => item.value.indexOf(queryString) !== -1) : list
+      cb(returnList)
+    },
     // 扣款提交
     clientDeduct () {
       if (!this.deductInfo.client_id) {
@@ -587,7 +627,8 @@ export default {
           item.rejects_infos = ''
           item.rejects_client = ''
           item.rejects_info.forEach((val, key) => {
-            item.rejects_infos += val.reason.join(',')
+            // item.rejects_infos += val.reason.join(',')
+            item.rejects_infos += val.reason
             item.rejects_client += val.client_id + '<br />'
           })
         } else {
@@ -889,7 +930,6 @@ export default {
           itemChild.inspectionNum = findArr.reduce((total, current) => {
             return total + current.number
           }, 0)
-          console.log(findArr)
           itemChild.rejectNum = findArr.reduce((total, current) => {
             return total + (current.rejects_info === 0 ? 0 : current.rejects_info.reduce((total2, current2) => {
               return total2 + Number(current2.number)

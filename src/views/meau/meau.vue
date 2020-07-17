@@ -82,12 +82,12 @@ export default {
           }
         ],
         other: [
-          // {
-          //   name: '报价单管理',
-          //   id: 2,
-          //   path: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id=',
-          //   icon: 'icon-baojiadan'
-          // },
+          {
+            name: '预订购列表',
+            id: 5,
+            path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
+            icon: 'icon-wuliaodinggou'
+          },
           {
             name: '报销单管理',
             id: 18,

@@ -1,0 +1,93 @@
+@import '../common.less';
+#packPlanDetailNew{
+  .flex14{
+    flex: 8;
+  }
+  .flex5{
+    flex: 5;
+  }
+  .flex08{
+    flex: 0.8;
+  }
+  .flex18{
+    flex: 1.8;
+  }
+  .scroll_row{
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    .scroll_item{
+      min-width: 2000px!important;
+      max-width: 2000px!important;
+      display: flex;
+      position: relative;
+      top: 0;
+      left: 0px;
+      transition: left 0.1s linear;
+    }
+  }
+  .w120{
+    min-width: 120px;
+    max-width: 120px;
+    box-sizing: border-box;
+  }
+  .flexTb{
+    width: 100%;
+    position: relative;
+    margin: 0;
+    user-select: none;
+    .leftBtn,
+    .rightBtn{
+      position: absolute;
+      height: 100%;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      color: @blue;
+      border: 1px solid #D8D8D8;
+      background-color: rgba(0,145,255,0.2);
+      cursor: pointer;
+      z-index: 99;
+    }
+    .leftBtn{
+      left: 120px;
+    }
+    .rightBtn{
+      right: 0;
+    }
+    .tcolumn{
+      &.right{
+        text-align: right;
+      }
+      &.row{
+        flex-direction: row;
+        align-items: center;
+      }
+    }
+  }
+  .rowCtn{
+    &.col{
+      display: flex;
+      flex-direction: column;
+      .label{
+        line-height: 60px;
+        font-size: 18px;
+      }
+    }
+  }
+  .tbBtn{
+    cursor: pointer;
+    margin: 4px;
+  }
+  .blue{
+    color: @blue;
+  }
+  .red{
+    color: @red;
+  }
+  .green{
+    color: @green;
+  }
+}

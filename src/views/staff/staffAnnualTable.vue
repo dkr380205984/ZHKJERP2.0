@@ -74,7 +74,7 @@
               <span class="row_item center">{{item.qitaPrice ? item.qitaPrice.price : 0}}</span>
             </div>
           </span>
-          <span class="row_item center">{{item|filterTotal}}</span>
+          <span class="row_item center">{{filterTotal(item)}}</span>
           <span class="row_item center"></span>
         </div>
         <div class="print_row bgGray"
@@ -168,29 +168,7 @@ export default {
           }, 1000)
         }
       })
-    }
-  },
-  created () {
-    Promise.all([
-      company.detail(),
-      station.list({
-        type: 2
-      })
-    ]).then(res => {
-      this.companyName = res[0].data.data.company_name
-      this.departmentName = res[1].data.data.find(item => +item.id === +this.$route.query.departmentId)
-      this.getAllData()
-    })
-  },
-  mounted () {
-    // const QRCode = require('qrcode')
-    // QRCode.toDataURL(window.location.origin + '/materialOrder/materialOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
-    //   if (!err) {
-    //     this.qrCodeUrl = url
-    //   }
-    // })
-  },
-  filters: {
+    },
     filterTotal (item) {
       let arr = [
         item.jijianPrice || 0,
@@ -212,6 +190,26 @@ export default {
         return a + b
       }, 0))
     }
+  },
+  created () {
+    Promise.all([
+      company.detail(),
+      station.list({
+        type: 2
+      })
+    ]).then(res => {
+      this.companyName = res[0].data.data.company_name
+      this.departmentName = res[1].data.data.find(item => +item.id === +this.$route.query.departmentId)
+      this.getAllData()
+    })
+  },
+  mounted () {
+    // const QRCode = require('qrcode')
+    // QRCode.toDataURL(window.location.origin + '/materialOrder/materialOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
+    //   if (!err) {
+    //     this.qrCodeUrl = url
+    //   }
+    // })
   },
   computed: {
     totalPrice () {
