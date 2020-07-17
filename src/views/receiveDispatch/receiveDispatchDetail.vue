@@ -6,31 +6,31 @@
       <div class="cut_item"
         :class="{'active':weave_type==='全部'}"
         @click="weave_type='全部'">
-        <span class="icon packPlan"></span>
+        <span class="font_family icon">&#xe62f;</span>
         <span class="name">所有工序</span>
       </div>
       <div class="cut_item"
         :class="{'active':weave_type==='织片'}"
         @click="weave_type='织片'">
-        <span class="icon packOrder"></span>
+        <span class="font_family icon">&#xe63a;</span>
         <span class="name">织片收发</span>
-      </div>
-      <div class="cut_item"
-        :class="{'active':weave_type==='整烫'}"
-        @click="weave_type='整烫'">
-        <span class="icon packOut"></span>
-        <span class="name">整烫收发</span>
       </div>
       <div class="cut_item"
         :class="{'active':weave_type==='套缝'}"
         @click="weave_type='套缝'">
-        <span class="icon packOut"></span>
+        <span class="font_family icon">&#xe63c;</span>
         <span class="name">套缝收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='整烫'}"
+        @click="weave_type='整烫'">
+        <span class="font_family icon">&#xe63b;</span>
+        <span class="name">整烫收发</span>
       </div>
       <div class="cut_item"
         :class="{'active':weave_type==='其他'}"
         @click="weave_type='其他'">
-        <span class="icon packOut"></span>
+        <span class="font_family icon">&#xe63d;</span>
         <span class="name">其他工序</span>
       </div>
     </div>

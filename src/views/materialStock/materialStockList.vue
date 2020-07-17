@@ -6,13 +6,13 @@
       <div class="cut_item"
         :class="{'active':material_type==='1'}"
         @click="material_type='1'">
-        <span class="icon packOut"></span>
+        <span class="icon matStock"></span>
         <span class="name">原料出入库</span>
       </div>
       <div class="cut_item"
         :class="{'active':material_type==='2'}"
         @click="material_type='2'">
-        <span class="icon packOut"></span>
+        <span class="icon matStock"></span>
         <span class="name">辅料出入库</span>
       </div>
     </div>
