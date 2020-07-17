@@ -15,7 +15,7 @@
       <div class="cut_item"
         @click="$router.push('/packPlan/packStock/' + $route.params.id)">
         <span class="icon packOut"></span>
-        <span class="name">装箱出库</span>
+        <span class="name">销售出库</span>
       </div>
     </div>
     <div class="module">
@@ -68,26 +68,20 @@
         <div class="title">包装辅料统计</div>
       </div>
       <div class="detailCtn">
-        <div class="swichCtn"
-          v-if="planTb.length>0">
-          <div class="swichCtnBox"
-            style="left: 32px;">
-            <span v-for="(item,index) in planTb"
-              :key="index"
-              :class="{'swich':true,'active':item.id === activePlanId}"
-              @click="cutPlanTb(item.id)">装箱计划单{{chinaNum[index]}}</span>
-          </div>
-          <span class="handleBtn left"></span>
-          <span class="handleBtn right"></span>
-        </div>
+        <el-tabs v-model="activePlanId"
+          @tab-click='cutPlanTb(activePlanId)'
+          style="width:100%">
+          <el-tab-pane :label="'装箱计划单' + chinaNum[indexTb]"
+            v-for="(itemTb,indexTb) in planTb"
+            :key="indexTb"
+            :name="itemTb.id.toString()"></el-tab-pane>
+        </el-tabs>
         <div class="flexTb">
           <div class="thead">
             <span class="trow">
-              <span class="tcolumn">产品/包装</span>
+              <span class="tcolumn">包装</span>
               <span class="tcolumn">包装规格</span>
-              <span class="tcolumn">属性</span>
               <span class="tcolumn">计划数量</span>
-              <span class="tcolumn">已订购数量</span>
               <span class="tcolumn center">操作</span>
             </span>
           </div>
@@ -95,59 +89,15 @@
             <span class="trow"
               v-for="(item,index) in activePlanInfo"
               :key="index">
-              <span class="tcolumn">{{item.pack_name || '/'}}</span>
-              <span class="tcolumn">{{item.size_info ? item.size_info + 'cm' : '/'}}</span>
-              <span class="tcolumn">{{item.attr || '/'}}</span>
-              <span class="tcolumn">{{item.number ? item.number + item.unit : '/'}}</span>
-              <span class="tcolumn">{{item.orderNum ? item.orderNum + item.unit : '/'}}</span>
+              <span class="tcolumn">{{item.name}}</span>
+              <span class="tcolumn">{{item.size.length>0 ? item.size.join('*') + 'cm' : '/'}}</span>
+              <span class="tcolumn">{{item.plan_number ? item.plan_number + item.unit : '/'}}</span>
               <span class="tcolumn center">
                 <div class="btn noBorder noMargin"
                   @click="orderPack(item)">订购</div>
               </span>
             </span>
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title">调取包装辅料</span>
-      </div>
-      <div class="listCtn hasBorderTop"
-        v-loading='stockLoading'>
-        <zh-transition :list="stockTitleInfo"
-          showKey='name'
-          @changed="catFilterConditions"></zh-transition>
-        <div class="tableCtnLv2">
-          <div class="tb_header">
-            <span class="tb_row">仓库名称</span>
-            <span class="tb_row">包装名称</span>
-            <span class="tb_row">包装规格</span>
-            <span class="tb_row">包装属性</span>
-            <span class="tb_row">库存数量</span>
-            <span class="tb_row middle">操作</span>
-          </div>
-          <div class="tb_content"
-            v-for="(item,index) in stockList"
-            :key="index">
-            <span class="tb_row">{{item.stock_name}}</span>
-            <span class="tb_row">{{item.material_name}}</span>
-            <span class="tb_row">{{item.size ? item.size + 'cm' : ''}}</span>
-            <span class="tb_row">{{item.attribute}}</span>
-            <span class="tb_row">{{item.total_number}}</span>
-            <span class="tb_row middle">
-              <span class="tb_handle_btn blue"
-                @click="showStockPopup(item)">调取</span>
-            </span>
-          </div>
-        </div>
-        <div class="pageCtn">
-          <el-pagination background
-            :page-size="5"
-            layout="prev, pager, next"
-            :total="stockTotal"
-            :current-page.sync="stockPages">
-          </el-pagination>
         </div>
       </div>
     </div>
@@ -235,6 +185,19 @@
           </div>
           <div class="rowCtn">
             <div class="colCtn flex3">
+              <span class="label">
+                <span class="text">计价方式</span>
+              </span>
+              <span class="content">
+                <el-radio-group v-model="itemOrder.computed_method"
+                  @change="computedPrice(itemOrder)">
+                  <el-radio label="1">箱子</el-radio>
+                  <el-radio label="2">袋子</el-radio>
+                  <el-radio label="3">其他</el-radio>
+                </el-radio-group>
+              </span>
+            </div>
+            <div class="colCtn flex3">
               <div class="label">
                 <span class="text">包装辅料</span>
                 <span class="explanation">（必填）</span>
@@ -257,89 +220,87 @@
               </div>
             </div>
           </div>
-          <div class="rowCtn">
-            <div class="colCtn">
-              <span class="label">
-                <span class="text">计价方式</span>
-              </span>
-              <span class="content">
-                <el-radio-group v-model="itemOrder.computed_method"
-                  @change="computedPrice(itemOrder)">
-                  <el-radio label="1">箱子</el-radio>
-                  <el-radio label="2">袋子</el-radio>
-                  <el-radio label="3">其他</el-radio>
-                </el-radio-group>
-              </span>
-            </div>
-            <div class="colCtn">
-              <span class="label">
+          <div class="rowCtn"
+            v-for="(itemSize,indexSize) in itemOrder.size_info"
+            :key="indexSize">
+            <div class="colCtn flex3">
+              <span class="label"
+                v-if="indexSize === 0">
                 <span class="text">包装规格</span>
               </span>
               <span class="content"
                 v-if="itemOrder.computed_method === '1' || itemOrder.computed_method === '2' ">
                 <zh-input placeholder="长"
                   class="elInput"
-                  v-model="itemOrder.long_box"
-                  @input="computedPrice(itemOrder)"
+                  v-model="itemSize.long_box"
+                  @input="computedPrice(itemOrder,itemSize)"
                   type='number'></zh-input>
                 <zh-input placeholder="宽"
                   class="elInput"
-                  v-model="itemOrder.width_box"
-                  @input="computedPrice(itemOrder)"
+                  v-model="itemSize.width_box"
+                  @input="computedPrice(itemOrder,itemSize)"
                   type='number'></zh-input>
                 <zh-input placeholder="高"
                   v-if="itemOrder.computed_method !== '2'"
                   class="elInput"
-                  v-model="itemOrder.height_box"
-                  @input="computedPrice(itemOrder)"
+                  v-model="itemSize.height_box"
+                  @input="computedPrice(itemOrder,itemSize)"
                   type='number'></zh-input>
               </span>
               <span class="content"
                 v-else>
                 <zh-input placeholder="请输入包装规格"
-                  v-model="itemOrder.size_info">
+                  v-model="itemSize.size_info">
                   <template slot="append">cm</template>
                 </zh-input>
               </span>
             </div>
-            <div class="colCtn">
-              <span class="label">
-                <span class="text">单价信息</span>
-              </span>
-              <span class="content">
-                <zh-input placeholder="单价"
-                  v-if="itemOrder.computed_method === '1' || itemOrder.computed_method === '2'"
-                  class="elInput"
-                  v-model="itemOrder.price"
-                  @input="computedPrice(itemOrder)"
-                  type='number'>
-                  <template slot="append">㎡/元</template>
-                </zh-input>
-                <zh-input placeholder="单价"
-                  class="elInput"
-                  :disabled="itemOrder.computed_method === '1' || itemOrder.computed_method === '2'"
-                  v-model="itemOrder.one_price"
-                  @input="computedTotalPrice(itemOrder)"
-                  type='number'>
-                  <template slot="append">{{'元/'+ (itemOrder.unit || '个') }}</template>
-                </zh-input>
-              </span>
-            </div>
-          </div>
-          <div class="rowCtn">
             <div class="colCtn flex3">
-              <span class="label">
+              <span class="label"
+                v-if="indexSize === 0">
                 <span class="text">订购数量</span>
               </span>
               <span class="content">
                 <zh-input placeholder='请输入订购数量'
-                  v-model="itemOrder.number"
+                  v-model="itemSize.number"
                   @input="computedTotalPrice(itemOrder)"
                   type='number'>
                   <template slot="append">{{itemOrder.unit || '个'}}</template>
                 </zh-input>
               </span>
             </div>
+            <div class="colCtn flex3">
+              <span class="label"
+                v-if="indexSize === 0">
+                <span class="text">单价信息</span>
+              </span>
+              <span class="content">
+                <zh-input placeholder="单价"
+                  v-if="itemOrder.computed_method === '1' || itemOrder.computed_method === '2'"
+                  class="elInput"
+                  v-model="itemSize.price"
+                  @input="computedPrice(itemOrder,itemSize)"
+                  type='number'>
+                  <template slot="append">㎡/元</template>
+                </zh-input>
+                <zh-input placeholder="单价"
+                  class="elInput"
+                  :disabled="itemOrder.computed_method === '1' || itemOrder.computed_method === '2'"
+                  v-model="itemSize.one_price"
+                  @input="computedTotalPrice(itemOrder)"
+                  type='number'>
+                  <template slot="append">{{'元/'+ (itemOrder.unit || '个') }}</template>
+                </zh-input>
+              </span>
+              <span class="editBtn addBtn"
+                v-if="indexSize === 0"
+                @click="addItem(itemOrder.size_info,'sizeInfo')">添加</span>
+              <span class="editBtn deleteBtn"
+                v-else
+                @click="deleteItem(itemOrder.size_info,indexSize)">删除</span>
+            </div>
+          </div>
+          <div class="rowCtn">
             <div class="colCtn flex3">
               <span class="label">
                 <span class="text">总价</span>
@@ -352,8 +313,6 @@
                 </zh-input>
               </span>
             </div>
-          </div>
-          <div class="rowCtn">
             <div class="colCtn flex3">
               <span class="label">
                 <span class="text">完成日期</span>
@@ -367,7 +326,7 @@
                 </el-date-picker>
               </span>
             </div>
-            <div class="colCtn">
+            <div class="colCtn flex3">
               <span class="label">
                 <span class="text">备注信息</span>
               </span>
@@ -381,7 +340,7 @@
         <div class="btnCtn_page right marginTop20">
           <div class="btn btnDashed"
             v-show="packOrderEdit.length > 0"
-            @click="resetEditInfo('order')">重置</div>
+            @click="packOrderEdit = []">取消</div>
           <div class="btn btnDashed bgBlue_page"
             v-if="packOrderEdit.length === 0"
             @click="addItem(packOrderEdit,'order')">+添加订购</div>
@@ -458,6 +417,48 @@
             layout="prev, pager, next"
             :total="totalLog"
             :current-page.sync="pageLog">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">调取包装辅料</span>
+      </div>
+      <div class="listCtn hasBorderTop"
+        v-loading='stockLoading'>
+        <zh-transition :list="stockTitleInfo"
+          showKey='name'
+          @changed="catFilterConditions"></zh-transition>
+        <div class="tableCtnLv2">
+          <div class="tb_header">
+            <span class="tb_row">仓库名称</span>
+            <span class="tb_row">包装名称</span>
+            <span class="tb_row">包装规格</span>
+            <span class="tb_row">包装属性</span>
+            <span class="tb_row">库存数量</span>
+            <span class="tb_row middle">操作</span>
+          </div>
+          <div class="tb_content"
+            v-for="(item,index) in stockList"
+            :key="index">
+            <span class="tb_row">{{item.stock_name}}</span>
+            <span class="tb_row">{{item.material_name}}</span>
+            <span class="tb_row">{{item.size ? item.size + 'cm' : ''}}</span>
+            <span class="tb_row">{{item.attribute}}</span>
+            <span class="tb_row">{{item.total_number}}</span>
+            <span class="tb_row middle">
+              <span class="tb_handle_btn blue"
+                @click="showStockPopup(item)">调取</span>
+            </span>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="stockTotal"
+            :current-page.sync="stockPages">
           </el-pagination>
         </div>
       </div>
@@ -735,42 +736,71 @@ export default {
         }),
         client.list()
       ]).then(res => {
+        // 初始化包装列表
         this.packList = res[1].data.data
+        // 初始化订单信息
         this.orderInfo = res[2].data.data
+        // 初始化订购单位
         this.clientList = res[3].data.data.filter(item => item.type.indexOf(7) !== -1)
-        this.planTb = res[0].data.data.map(item => {
-          let planInfo = JSON.parse(item.material_info).map(itemInner => {
-            let flag = this.packList.find(items => items.name === itemInner.pack_name)
-            itemInner.unit = flag ? flag.unit : '个'
-            return itemInner
+        // 初始化计划单数据
+        this.planTb = res[0].data.data.map(itemM => {
+          let bagsNumber = itemM.pack_info.map(itemP => ((itemP.quantity_chest * itemP.chest_quantity) || 0)).reduce((a, b) => {
+            return a + b
+          }, 0)
+          let boxArr = this.$mergeData(this.$mergeData(itemM.pack_info, { mainRule: ['pack_type'], otherRule: [{ name: 'chest_quantity' }, { name: 'extent_width_height' }] }), { mainRule: 'extent_width_height', otherRule: [{ name: 'chest_quantity', type: 'add' }] }).map(itemB => {
+            return {
+              name: '箱子',
+              size: itemB.extent_width_height.split(','),
+              plan_number: itemB.chest_quantity,
+              unit: '箱'
+            }
           })
           return {
-            id: item.id,
-            planInfo: planInfo
+            id: itemM.id,
+            planInfo: [
+              ...boxArr,
+              {
+                name: '袋子',
+                size: [],
+                plan_number: bagsNumber,
+                unit: '袋'
+              }
+            ]
           }
         })
+        // this.planTb = res[0].data.data.map(item => {
+        //   let planInfo = JSON.parse(item.material_info).map(itemInner => {
+        //     let flag = this.packList.find(items => items.name === itemInner.pack_name)
+        //     itemInner.unit = flag ? flag.unit : '个'
+        //     return itemInner
+        //   })
+        //   return {
+        //     id: item.id,
+        //     planInfo: planInfo
+        //   }
+        // })
         if (this.planTb.length > 0) {
           if (activePlanId) {
-            this.activePlanId = activePlanId
-            this.activePlanInfo = this.planTb.find(item => item.id === activePlanId).planInfo
+            this.activePlanId = activePlanId.toString()
+            this.activePlanInfo = this.planTb.find(item => +item.id === +activePlanId).planInfo
           } else {
-            this.activePlanId = this.planTb[0].id
+            this.activePlanId = this.planTb[0].id.toString()
             this.activePlanInfo = this.planTb[0].planInfo
           }
         }
-        this.stockTitleInfo = this.activePlanInfo.map(item => {
-          return {
-            name: item.pack_name,
-            value: item.pack_name
-          }
-        }).concat({
-          name: '所有包装库存',
-          value: ''
-        })
-        if (!this.activeFilterKeyword) {
-          this.activeFilterKeyword = this.stockTitleInfo[0]
-        }
-        this.getPackStockList(this.stockTitleInfo[0].value)
+        // this.stockTitleInfo = this.activePlanInfo.map(item => {
+        //   return {
+        //     name: item.pack_name,
+        //     value: item.pack_name
+        //   }
+        // }).concat({
+        //   name: '所有包装库存',
+        //   value: ''
+        // })
+        // if (!this.activeFilterKeyword) {
+        //   this.activeFilterKeyword = this.stockTitleInfo[0]
+        // }
+        this.getPackStockList()
         this.getLog()
         this.loading = false
       })
@@ -840,9 +870,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let flag = this.planTb.find(items => items.id === id)
+        let flag = this.planTb.find(items => +items.id === +id)
         if (flag) {
-          this.activePlanId = id
+          this.activePlanId = id.toString()
           this.activePlanInfo = flag.planInfo
         } else {
           this.$message.error('未获取到该计划单信息，请尝试刷新页面')
@@ -855,58 +885,58 @@ export default {
       })
     },
     deleteItem (item, index, flag) {
-      this.$confirm('此操作将删除该项, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        item.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '已删除'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
-      })
+      item.splice(index, 1)
     },
     addItem (item, type) {
       if (type === 'order') {
         item.push({
           order_client: '',
-          pack_name: '',
-          size_info: '',
-          attr: '',
           computed_method: '3',
-          long_box: '',
-          width_box: '',
-          height_box: '',
-          price: '',
-          one_price: '',
-          number: '',
+          pack_name: '',
+          attr: '',
+          size_info: [
+            {
+              size_info: '',
+              long_box: '',
+              width_box: '',
+              height_box: '',
+              number: '',
+              price: '',
+              one_price: ''
+            }
+          ],
           total_price: '',
           compile_time: this.$getTime(),
           remark: ''
         })
+      } else if (type === 'sizeInfo') {
+        item.push({
+          size_info: '',
+          long_box: '',
+          width_box: '',
+          height_box: '',
+          number: '',
+          price: '',
+          one_price: ''
+        })
       }
     },
     orderPack (item) {
-      let sizeInfo = item.size_info.split('*')
       this.packOrderEdit.push({
         order_client: '',
-        pack_name: item.pack_name,
-        size_info: item.size_info,
+        pack_name: '',
         attr: item.attr,
         unit: item.unit,
         computed_method: '3',
-        long_box: sizeInfo[0] || '',
-        width_box: sizeInfo[1] || '',
-        height_box: sizeInfo[2] || '',
-        price: '',
-        one_price: '',
-        number: item.number,
+        size_info: [{
+          size_info: item.size.join('*'),
+          long_box: item.size[0] || '',
+          width_box: item.size[1] || '',
+          height_box: item.size[2] || '',
+          price: '',
+          one_price: '',
+          number: item.plan_number
+        }],
         total_price: '',
         compile_time: this.$getTime(),
         remark: ''
@@ -925,6 +955,7 @@ export default {
           totalPrice: true,
           time: true
         }
+        let data = []
         this.packOrderEdit.forEach(item => {
           if (!item.order_client) {
             flag.client = false
@@ -935,18 +966,38 @@ export default {
           if (!item.computed_method) {
             flag.type = false
           }
-          if (!item.one_price) {
-            flag.price = false
-          }
-          if (!item.number) {
-            flag.number = false
-          }
           if (!item.total_price) {
             flag.totalPrice = false
           }
           if (!item.compile_time) {
             flag.time = false
           }
+          item.size_info.forEach(itemI => {
+            if (!itemI.one_price) {
+              flag.price = false
+            }
+            if (!itemI.number) {
+              flag.number = false
+            }
+            data.push({
+              pack_plan_id: this.activePlanId,
+              price_square: itemI.price,
+              desc: item.remark,
+              order_time: item.compile_time,
+              total_price: item.total_price,
+              attribute: item.attr,
+              pack_size: itemI.size_info,
+              price_type: item.computed_method,
+              size: JSON.stringify([itemI.long_box, itemI.width_box, itemI.height_box]),
+              price: itemI.one_price,
+              number: itemI.number,
+              client_id: item.order_client,
+              material_name: item.pack_name,
+              // order_type: 1,
+              order_id: this.$route.params.id,
+              unit: item.unit || '个'
+            })
+          })
         })
         if (!flag.client) {
           this.$message.error('检测到未选择订购公司，请选择')
@@ -976,26 +1027,6 @@ export default {
           this.$message.error('检测到未选择完成时间，请选择')
           return
         }
-        let data = this.packOrderEdit.map(item => {
-          return {
-            pack_plan_id: this.activePlanId,
-            price_square: item.price,
-            desc: item.remark,
-            order_time: item.compile_time,
-            total_price: item.total_price,
-            attribute: item.attr,
-            pack_size: item.size_info,
-            price_type: item.computed_method,
-            size: JSON.stringify([item.long_box, item.width_box, item.height_box]),
-            price: item.one_price,
-            number: item.number,
-            client_id: item.order_client,
-            material_name: item.pack_name,
-            // order_type: 1,
-            order_id: this.$route.params.id,
-            unit: item.unit || '个'
-          }
-        })
         this.lock = false
         packPlan.packOrder({
           data: {
@@ -1019,26 +1050,6 @@ export default {
         })
       } else {
         this.$message.warning('请勿频繁点击')
-      }
-    },
-    resetEditInfo (type) {
-      if (type === 'order') {
-        this.packOrderEdit = [{
-          order_client: '',
-          pack_name: '',
-          size_info: '',
-          attr: '',
-          computed_method: '3',
-          long_box: '',
-          with_box: '',
-          height_box: '',
-          price: '',
-          one_price: '',
-          number: '',
-          total_price: '',
-          compile_time: '',
-          remark: ''
-        }]
       }
     },
     getLog () {
@@ -1102,22 +1113,25 @@ export default {
         this.loading = false
       })
     },
-    computedPrice (item) {
-      let long = item.long_box ? item.long_box / 100 : 0
-      let width = item.width_box ? item.width_box / 100 : 0
-      let height = item.height_box ? item.height_box / 100 : 0
-      let price = item.price || 0
-      let orderNum = item.number || 0
+    computedPrice (item, itemS) {
+      let long = itemS.long_box ? itemS.long_box / 100 : 0
+      let width = itemS.width_box ? itemS.width_box / 100 : 0
+      let height = itemS.height_box ? itemS.height_box / 100 : 0
+      let price = itemS.price || 0
       if (item.computed_method === '1') {
-        item.one_price = this.$toFixed((long + width + 0.08) * (width + height + 0.04) * price)
+        itemS.one_price = this.$toFixed((long + width + 0.08) * (width + height + 0.04) * price)
         // item.total_price = this.$toFixed(item.one_price * orderNum)
       } else if (item.computed_method === '2') {
-        item.one_price = this.$toFixed(long * width * 1.08 * price)
+        itemS.one_price = this.$toFixed(long * width * 1.08 * price)
       }
-      item.total_price = this.$toFixed(item.one_price * orderNum)
+      this.computedTotalPrice(item)
     },
     computedTotalPrice (item) {
-      item.total_price = this.$toFixed((item.one_price || 0) * (item.number || 0))
+      item.total_price = this.$toFixed(item.size_info.map(itemM => {
+        return (itemM.one_price || 0) * (itemM.number || 0)
+      }).reduce((a, b) => {
+        return a + b
+      }, 0))
     },
     querySearchPack (queryString, cb) {
       var restaurants = this.packList.map(item => { return { value: item.name, unit: item.unit } })

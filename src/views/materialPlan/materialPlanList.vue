@@ -42,6 +42,22 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="openHiddleFilter ? false : 'hiddle'">
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -54,22 +70,6 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
-              <div class="resetBtn"
-                @click="reset">重置</div>
-            </div>
-            <div class="filter_line"
-              :class="openHiddleFilter ? false : 'hiddle'">
-              <el-select v-model="group_id"
-                class="filter_item"
-                @change="changeRouter(1)"
-                clearable
-                placeholder="小组">
-                <el-option v-for="(item,index) in groupArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
               <el-select v-model="has_materialPlan"
                 class="filter_item"
                 @change="changeRouter(1)"

@@ -384,13 +384,15 @@ const settle = {
   create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/settle/check`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/financial/settle/list`, params),
-  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params)
+  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params),
+  deleteLog: (params) => http.get(`${baseUrl}/financial/settle/delete`, params)
 }
 // 订单扣款
 const chargebacks = {
   create: (params) => http.post(`${baseUrl}/financial/deduct/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/deduct/check`, params, 'application/json'),
-  log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params)
+  log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params),
+  deleteLog: (params) => http.get(`${baseUrl}/financial/deduct/delete`, params)
 }
 // 打印设置
 const print = {
@@ -483,7 +485,23 @@ const reimbursement = {
   delete: (params) => http.post(`${baseUrl}/reimburse/delete`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/reimburse/check`, params, 'application/json')
 }
+// 进仓单
+const warehouse = {
+  create: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/stock/card/detail`, params),
+  list: (params) => http.get(`${baseUrl}/stock/card/list`, params),
+  delete: (params) => http.post(`${baseUrl}/stock/card/delete`, params, 'application/json')
+}
+// 运输单
+const transport = {
+  create: (params) => http.post(`${baseUrl}/stock/out/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/stock/out/detail`, params),
+  list: (params) => http.get(`${baseUrl}/stock/out/list`, params),
+  delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
+}
 export {
+  transport,
+  warehouse,
   reimbursement,
   echartsApi,
   assignCraftOrPlan,

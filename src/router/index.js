@@ -259,7 +259,7 @@ const routes = [
     }, {
       path: '/packPlan/packPlanCreate/:id',
       name: '装箱计划单详情',
-      component: () => import('../views/packPlan/packPlanCreate.vue')
+      component: () => import('../views/packPlan/packPlanDetailNew.vue')
     }, {
       path: '/packPlan/packStockList/:params',
       name: '装箱出库列表',
@@ -424,6 +424,22 @@ const routes = [
       path: '/reimbursement/reimbursementUpdate/:id',
       name: '报销单修改',
       component: () => import('../views/reimbursement/reimbursementUpdate.vue')
+    }, {
+      path: '/warehouse/warehouseList/:params',
+      name: '进仓单列表',
+      component: () => import('../views/warehouse/warehouseList.vue')
+    }, {
+      path: '/warehouse/warehouseDetail/:id',
+      name: '进仓单详情',
+      component: () => import('../views/warehouse/warehouseDetail.vue')
+    }, {
+      path: '/transport/transportList/:params',
+      name: '运输货款列表',
+      component: () => import('../views/transport/transportList.vue')
+    }, {
+      path: '/transport/transportDetail/:id',
+      name: '运输货款详情',
+      component: () => import('../views/transport/transportDetail.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -616,7 +632,11 @@ router.beforeEach((to, from, next) => {
     '添加报销单': ['织为云', '添加报销单'],
     '报销单详情': ['织为云', '报销单列表', '报销单详情'],
     '报销单修改': ['织为云', '报销单列表', '报销单修改'],
-    '报销单列表': ['织为云', '报销单列表']
+    '报销单列表': ['织为云', '报销单列表'],
+    '进仓单列表': ['织为云', '进仓单列表'],
+    '进仓单详情': ['织为云', '进仓单列表', '进仓单详情'],
+    '运输货款列表': ['织为云', '运输货款列表'],
+    '运输货款详情': ['织为云', '运输货款列表', '运输货款详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

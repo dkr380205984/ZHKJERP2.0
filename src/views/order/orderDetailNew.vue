@@ -545,11 +545,11 @@
                   v-if="item.price_info[0].number && index===7">{{showFlag.showPackOrder?'收起列表':'展开详情'}}</div>
                 <div style="color:#ccc;cursor:not-allowed"
                   v-if="!item.price_info[0].number && index===7">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
+                <!-- <div style="color:#1a95ff;cursor:pointer"
                   @click="orderDetailInfo.finance.outStock.length>0?showFlag.showOutStock = !showFlag.showOutStock : activeFinanceTitle = 'outStock'"
-                  v-if="item.price_info[0].number && index===8">{{showFlag.showOutStock?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===8">暂无数据</div>
+                  v-if="item.price_info[0].number && index===8">{{showFlag.showOutStock?'收起列表':'展开详情'}}</div> -->
+                <!-- <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===8">暂无数据</div> -->
                 <div style="color:#1a95ff;cursor:pointer"
                   @click="orderDetailInfo.finance.replenish.length>0?showFlag.showReplenish = !showFlag.showReplenish : activeFinanceTitle = 'replenish'"
                   v-if="item.price_info[0].number && index===9">{{showFlag.showReplenish?'收起列表':'展开详情'}}</div>
@@ -832,7 +832,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="index===8 && showFlag.showOutStock">
+                <!-- <template v-if="index===8 && showFlag.showOutStock">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -867,7 +867,7 @@
                       </span>
                     </div>
                   </div>
-                </template>
+                </template> -->
                 <template v-if="index===9 && showFlag.showReplenish">
                   <div class="flexTb">
                     <div class="thead">
@@ -1200,6 +1200,139 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showOkPopup">
+      <div class="main"
+        style="width:600px">
+        <div class="title">
+          <span class="text">确认完成</span>
+          <span class="el-icon-close"
+            @click="showOkPopup = false,isCommit = 'before'"></span>
+        </div>
+        <div class="content steps">
+          <el-steps :active="showOkPopup-1"
+            finish-status="success"
+            align-center>
+            <el-step title="实际装箱出库"></el-step>
+            <el-step title="完成"></el-step>
+          </el-steps>
+        </div>
+        <div class="content"
+          v-if="showOkPopup === 1">
+          <template v-for="(itemP,indexP) in actualProductInfo">
+            <div class="row"
+              :key="'product-' + indexP">
+              <span class="label">产品信息：</span>
+              <span class="info rowInfo">
+                <el-select v-model="itemP.product_id"
+                  disabled
+                  placeholder="请选择产品">
+                  <el-option v-for="item in itemP.productList"
+                    :key="item.product_id"
+                    :label="item.product_code"
+                    :value="item.product_id">
+                  </el-option>
+                </el-select>
+                <el-cascader v-model="itemP.sizeColor"
+                  disabled
+                  style="margin-left:16px"
+                  :options="itemP.sizeColorArr"
+                  :props="{ expandTrigger: 'hover' }"></el-cascader>
+              </span>
+            </div>
+            <div class="row"
+              :key='"number-" + indexP'>
+              <span class="label">数量：</span>
+              <span class="info rowInfo">
+                <zh-input v-model="itemP.number"
+                  disabled
+                  placeholder="计划数量">
+                  <template slot="append">{{itemP.unit}}</template>
+                </zh-input>
+                <zh-input v-model="itemP.actual_number"
+                  style="margin-left:16px"
+                  placeholder="实际装箱数量"
+                  type='number'>
+                  <template slot="append">{{itemP.unit}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+          <template v-for="(itemMa,indexMa) in cancleYarn">
+            <div class="row"
+              :key="indexMa + 'info'">
+              <span class="label">原料信息{{indexMa + 1}}：</span>
+              <span class="info popup_info_page">
+                <!-- <zh-input v-model="itemMa.material_name"
+                  placeholder="请填写原料"
+                  class="elInput" /> -->
+                <el-autocomplete v-model="itemMa.material_name"
+                  :fetch-suggestions="querySearchYarn"
+                  placeholder="请填写原料"></el-autocomplete>
+              </span>
+              <span class="editBtn blue"
+                v-if="indexMa === 0"
+                @click="addItem(cancleYarn,'yarn')">添加</span>
+              <span class="editBtn red"
+                v-if="indexMa !== 0"
+                @click="deleteItem(cancleYarn,indexMa)">删除</span>
+            </div>
+            <div class="row"
+              :key="indexMa + 'number'">
+              <span class="label">属性/数量：</span>
+              <span class="info popup_info_page">
+                <zh-input v-model="itemMa.color"
+                  placeholder="属性"
+                  class="elInput" />
+                <zh-input v-model="itemMa.weight"
+                  placeholder="数量"
+                  type='number'
+                  class="elInput">
+                  <template slot="append">kg</template>
+                </zh-input>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="content center"
+          v-if="showOkPopup === 2 || showOkPopup === 3">
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为已完成，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
+        <div class="opr">
+          <div style="display:flex">
+            <div class="btn btnGray"
+              v-if="showOkPopup === 1 && isCommit"
+              @click="showOkPopup = false,isCommit = 'before'">取消</div>
+            <div class="btn btnGray"
+              v-if="showOkPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
+              @click="showOkPopup--">上一步</div>
+            <div class="btn btnBlue"
+              v-if="showOkPopup < 2"
+              @click="showOkPopup++">下一步</div>
+            <div class="btn btnBlue"
+              v-if="showOkPopup === 2 && isCommit === 'before'"
+              @click="changeOrderStatus('okSubmit')">确定</div>
+            <div class="btn btnBlue"
+              v-if="showOkPopup === 2 && isCommit === 'error'"
+              @click="changeOrderStatus('okSubmit')">重试<em class="el-icon-refresh-left"></em></div>
+            <div class="btn btnBlue"
+              v-if="showOkPopup === 2  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            <div class="btn btnBlue"
+              v-if="showOkPopup === 3 && isCommit === 'compiled'"
+              @click="showOkPopup = false,isCommit = 'before'">完成</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1330,7 +1463,10 @@ export default {
         showWeave: false,
         showIns: false,
         showOut: false
-      }
+      },
+      // 确认完成修改数据
+      showOkPopup: false,
+      actualProductInfo: []
     }
   },
   methods: {
@@ -1362,9 +1498,6 @@ export default {
           name: '成品装箱'
         }
       ]
-    },
-    saveWarning () {
-
     },
     // 取消订单时跳过结余操作
     jumpGoStock () {
@@ -1939,15 +2072,15 @@ export default {
                 pre_price: data.pack_order.pre_value
               }]
             },
-            {
-              name: '出库运输',
-              unit: '次',
-              price_info: [{
-                number: data.stock_out.number,
-                total_price: data.stock_out.total_value,
-                pre_price: data.stock_out.pre_value
-              }]
-            },
+            // {
+            //   name: '出库运输',
+            //   unit: '次',
+            //   price_info: [{
+            //     number: data.stock_out.number,
+            //     total_price: data.stock_out.total_value,
+            //     pre_price: data.stock_out.pre_value
+            //   }]
+            // },
             {
               name: '补纱信息',
               unit: 'kg',
@@ -2126,27 +2259,82 @@ export default {
     },
     // 修改订单状态
     changeOrderStatus (type) {
-      if (type === 'ok') {
-        this.$confirm('此操作将永久修改订单状态, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          order.changeStatus({
-            order_id: this.$route.params.id,
-            type: 3
-          }).then(res => {
-            if (res.data.status !== false) {
-              this.$message.success('确认完成')
-              this.init()
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消'
+      if (type === 'okSubmit') {
+        let flag = {
+          product: true,
+          sizeColor: true,
+          number: true
+        }
+        let data = this.actualProductInfo.map(item => {
+          if (!item.product_id) {
+            flag.product = false
+          }
+          if (!item.sizeColor[0] || !item.sizeColor[1]) {
+            flag.sizeColor = false
+          }
+          if (!item.actual_number && item.actual_number !== 0) {
+            flag.number = false
+          }
+          return {
+            product_id: item.product_id,
+            size_id: item.sizeColor[0],
+            color_id: item.sizeColor[1],
+            number: item.actual_number
+          }
+        })
+        if (!flag.product || !flag.sizeColor) {
+          this.$message.error('出现未知错误，请尝试刷新页面')
+          return
+        }
+        if (!flag.number) {
+          this.$message.error('请输入实际装箱数量')
+          return
+        }
+        this.isCommit = 'commit'
+        order.changeStatus({
+          order_id: this.$route.params.id,
+          pack_real: data,
+          type: 3
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('确认完成')
+            this.init()
+            this.showOkPopup++
+            this.isCommit = 'compiled'
+          } else {
+            this.isCommit = 'error'
+          }
+        })
+      } else if (type === 'ok') {
+        this.actualProductInfo = []
+        this.orderInfo.batch_info.forEach(itemB => {
+          itemB.product_info.forEach(itemP => {
+            this.actualProductInfo.push({
+              product_id: itemP.product_id,
+              productList: [{
+                product_id: itemP.product_id,
+                product_code: itemP.product_code
+              }],
+              sizeColorArr: itemP.all_size.map(itemS => {
+                return {
+                  value: itemS.size_id,
+                  label: itemS.size_name,
+                  children: itemP.all_color.map(itemC => {
+                    return {
+                      value: itemC.color_id,
+                      label: itemC.color_name
+                    }
+                  })
+                }
+              }),
+              sizeColor: [itemP.size_id, itemP.color_id],
+              number: itemP.numbers,
+              actual_number: '',
+              unit: itemP.category_info.unit || '件'
+            })
           })
         })
+        this.showOkPopup = 1
       } else if (type === 'change') {
         this.$router.push('/order/orderUpdate/' + this.$route.params.id)
       } else if (type === 'showCanclePopup') {

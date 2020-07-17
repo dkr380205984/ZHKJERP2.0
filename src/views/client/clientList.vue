@@ -114,17 +114,48 @@
             <div class="col flex08">
               <span class="text">联系电话</span>
             </div>
-            <div class="col flex08">
-              <span class="text">已结算(已开票)</span>
+            <div class="col">
+              <span class="text">已结算(已开票)
+                <span class="iconCtn"
+                  @click="sortFn('YJSYKP')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':YJSYKP === '1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':YJSYKP === '2'}"></i>
+                </span>
+              </span>
+            </div>
+            <div class="col">
+              <span class="text">已结算(未开票)
+                <span class="iconCtn"
+                  @click="sortFn('YJSWKP')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':YJSWKP === '1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':YJSWKP === '2'}"></i>
+                </span></span>
             </div>
             <div class="col flex08">
-              <span class="text">已结算(未开票)</span>
+              <span class="text">待结算
+                <span class="iconCtn"
+                  @click="sortFn('DJS')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':DJS === '1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':DJS === '2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col flex08">
-              <span class="text">待结算</span>
-            </div>
-            <div class="col flex08">
-              <span class="text">已扣款</span>
+              <span class="text">已扣款
+                <span class="iconCtn"
+                  @click="sortFn('YKK')">
+                  <i class="el-icon-caret-top"
+                    :class="{'green':YKK === '1'}"></i>
+                  <i class="el-icon-caret-bottom"
+                    :class="{'green':YKK === '2'}"></i>
+                </span>
+              </span>
             </div>
             <div class="col middle flex12">
               <span class="text">操作</span>
@@ -137,8 +168,8 @@
             <div class="col">{{itemClient.abbreviation}}</div>
             <div class="col flex12">{{computedType(itemClient.type)}}</div>
             <div class="col flex08">{{itemClient.phone}}</div>
-            <div class="col flex08">{{itemClient.financial_data.settle_price_invoice}}元</div>
-            <div class="col flex08">{{itemClient.financial_data.settle_price}}元</div>
+            <div class="col">{{itemClient.financial_data.settle_price_invoice}}元</div>
+            <div class="col">{{itemClient.financial_data.settle_price}}元</div>
             <div class="col flex08">{{itemClient.financial_data.wait_settle_price}}元</div>
             <div class="col flex08">{{itemClient.financial_data.deduct_price}}元</div>
             <div class="col middle flex12">
@@ -270,10 +301,24 @@ export default {
             ]
           }
         ]
-      }
+      },
+      YJSYKP: '',
+      YJSWKP: '',
+      DJS: '',
+      YKK: ''
     }
   },
   methods: {
+    sortFn (item) {
+      ['YJSYKP', 'YJSWKP', 'DJS', 'YKK'].forEach(itemF => {
+        if (itemF !== item) {
+          this[itemF] = ''
+        } else {
+          this[itemF] = !this[itemF] ? '1' : this[itemF] === '1' ? '2' : '1'
+        }
+      })
+      this.changeRouter(1)
+    },
     disableClient (id) {
       this.$confirm('此操作将禁用该客户, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -300,10 +345,14 @@ export default {
       this.pages = Number(params.page)
       this.keyword = params.keyword
       this.client_type = Number(params.clientType) || ''
+      this.YJSYKP = params.YJSYKP
+      this.YJSWKP = params.YJSWKP
+      this.DJS = params.DJS
+      this.YKK = params.YKK
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type)
+      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type + '&&YJSYKP=' + this.YJSYKP + '&&YJSWKP=' + this.YJSWKP + '&&DJS=' + this.DJS + '&&YKK=' + this.YKK)
     },
     getClientList () {
       this.loading = true

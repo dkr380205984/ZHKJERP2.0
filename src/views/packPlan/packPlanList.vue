@@ -79,7 +79,7 @@
             <div class="col flex08">
               <span class="text">负责小组</span>
             </div>
-            <div class="col flex16">
+            <div class="col flex16 middle">
               <span class="text">装箱计划状态</span>
             </div>
             <div class="col">
@@ -104,7 +104,7 @@
             <div class="col flex08">
               {{itemOrder.group_name}}
             </div>
-            <div class="col">
+            <div class="col middle">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_pack_plan>0}">
                 <div class="state"></div>
@@ -115,11 +115,11 @@
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
-              <div class="stateCtn"
+              <!-- <div class="stateCtn"
                 :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>
                 <span class="name">库</span>
-              </div>
+              </div> -->
             </div>
             <div class="col">
               {{itemOrder.order_time}}
