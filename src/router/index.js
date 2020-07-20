@@ -413,7 +413,7 @@ const routes = [
       name: '添加报销单',
       component: () => import('../views/reimbursement/reimbursementCreate.vue')
     }, {
-      path: '/reimbursement/reimbursementList',
+      path: '/reimbursement/reimbursementList/:params',
       name: '报销单列表',
       component: () => import('../views/reimbursement/reimbursementList.vue')
     }, {

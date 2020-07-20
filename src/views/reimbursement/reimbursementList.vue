@@ -4,34 +4,59 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入编号按回车键查询">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              style="margin-left:0"
-              @click="reset">重置</div>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入编号按回车键查询">
+              </el-input>
+              <el-select v-model="user_name"
+                class="filter_item"
+                filterable
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选申请人">
+                <el-option v-for="(item,index) in userArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-select v-model="status"
+                class="filter_item"
+                @change="changeRouter(1)"
+                filterable
+                clearable
+                placeholder="筛选审核状态">
+                <el-option v-for="(item,index) in statusArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
-          <div class="rightCtn">
-            <div class="btn btnBlue"
-              @click="$router.push('/reimbursement/reimbursementCreate')">添加报销单</div>
-          </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/reimbursement/reimbursementCreate')">添加报销单</div>
         </div>
         <div class="list">
           <div class="title">
@@ -42,29 +67,7 @@
               <span class="text">创建时间</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchUserFlag">申请人
-                  <i class="el-icon-search iconBtn"
-                    @click="searchUserFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchUserFlag"
-                    class="filterBox">
-                    <el-select v-model="user_name"
-                      filterable
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="筛选申请人">
-                      <el-option v-for="(item,index) in userArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">申请人</span>
             </div>
             <div class="col">
               <span class="text">申请报销(元)</span>
@@ -73,29 +76,7 @@
               <span class="text">实际报销(元)</span>
             </div>
             <div class="col">
-              <transition v-show="!searchStatusFlag"
-                name="el-zoom-in-bottom">
-                <span class="text">审核状态
-                  <i class="el-icon-search iconBtn"
-                    @click="searchStatusFlag=true"></i>
-                </span>
-              </transition>
-              <transition name="el-zoom-in-top">
-                <div v-show="searchStatusFlag"
-                  class="filterBox">
-                  <el-select v-model="status"
-                    @change="changeRouter(1)"
-                    filterable
-                    clearable
-                    placeholder="筛选审核状态">
-                    <el-option v-for="(item,index) in statusArr"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                </div>
-              </transition>
+              <span class="text">审核状态</span>
             </div>
             <div class="col">
               <span class="text">审核人</span>
@@ -136,7 +117,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="page">
+            :current-page.sync="pages">
           </el-pagination>
         </div>
       </div>
@@ -146,27 +127,26 @@
 
 <script>
 import { auth, reimbursement } from '@/assets/js/api.js'
+import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
       loading: true,
       keyword: '',
       date: '',
-      searchUserFlag: false,
       user_name: '',
       userArr: [],
-      searchStatusFlag: false,
       status: '',
       statusArr: [
         {
           name: '待审核',
-          id: 1
+          id: '1'
         }, {
           name: '通过',
-          id: 2
+          id: '2'
         }, {
           name: '驳回',
-          id: 3
+          id: '3'
         }
       ],
       list: [],
@@ -198,11 +178,11 @@ export default {
         }]
       },
       total: 1,
-      page: 1
+      pages: 1
     }
   },
   watch: {
-    page (newVal) {
+    pages (newVal) {
       this.changeRouter(newVal)
     },
     $route (newVal) {
@@ -213,13 +193,29 @@ export default {
   },
   methods: {
     reset () {
-      this.$router.push('/reimbursement/reimbursementList?keyword=&date=&applyUser=&status=')
+      this.$router.push('/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=')
+    },
+    getFilters () {
+      let params = getHash(this.$route.params.params)
+      this.pages = Number(params.page)
+      this.keyword = params.keyword
+      if (params.date !== 'null' && params.date !== '') {
+        this.date = params.date.split(',')
+      } else {
+        this.date = ''
+      }
+      this.user_name = params.applyUser
+      this.status = params.status
+    },
+    changeRouter (page) {
+      let pages = page || 1
+      this.$router.push('/reimbursement/reimbursementList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&applyUser=' + this.user_name + '&&status=' + this.status)
     },
     getList () {
       this.loading = true
       reimbursement.list({
         limit: 10,
-        page: this.page
+        page: this.pages
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data
@@ -251,6 +247,7 @@ export default {
     }
   },
   created () {
+    this.getFilters()
     this.getList()
     Promise.all([
       auth.list()

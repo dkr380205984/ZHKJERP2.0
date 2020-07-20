@@ -90,14 +90,14 @@ export default {
         other: [
           {
             name: '预订购管理',
-            id: 5,
+            id: 7,
             path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
             icon: 'icon-wuliaoyudinggou'
           },
           {
             name: '报销单管理',
             id: 18,
-            path: '/reimbursement/reimbursementList',
+            path: '/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=',
             icon: 'icon-baoxiaodanguanli'
           },
           {

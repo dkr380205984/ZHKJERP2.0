@@ -70,7 +70,7 @@
       <div class="detailCtn">
         <el-tabs v-model="activePlanId"
           @tab-click='cutPlanTb(activePlanId)'
-          style="width:100%">
+          style="width:100%;padding:0 32px;box-sizing:border-box">
           <el-tab-pane :label="'装箱计划单' + chinaNum[indexTb]"
             v-for="(itemTb,indexTb) in planTb"
             :key="indexTb"

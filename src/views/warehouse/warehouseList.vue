@@ -77,6 +77,9 @@
             <div class="col">
               <span class="text">订单号</span>
             </div>
+            <div class="col middle">
+              <span class="text">图片</span>
+            </div>
             <div class="col flex12">
               <span class="text">运输地址</span>
             </div>
@@ -106,6 +109,9 @@
             <div class="col middle">{{itemOrder.complete_time}}</div>
             <div class="col">{{itemOrder.code}}</div>
             <div class="col">{{itemOrder.order_code}}</div>
+            <div class="col middle">
+              <zh-img-list :list='itemOrder.image'></zh-img-list>
+            </div>
             <div class="col flex12">{{itemOrder.address ? JSON.parse(itemOrder.address).join(',') : ''}}</div>
             <div class="col flex08">{{itemOrder.total_number}}</div>
             <div class="col flex08">{{itemOrder.total_gross_weight}}</div>

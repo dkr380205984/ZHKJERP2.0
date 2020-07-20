@@ -135,7 +135,7 @@
                     <span class="tcolumn flex08 right">箱数<br />(箱)</span>
                     <span class="tcolumn flex08 right">每箱毛重<br />(kg)</span>
                     <span class="tcolumn flex08 right">总毛重<br />(kg)</span>
-                    <span class="tcolumn flex08 right">每箱净数<br />(kg)</span>
+                    <span class="tcolumn flex08 right">每箱净重<br />(kg)</span>
                     <span class="tcolumn flex08 right">总净重<br />(kg)</span>
                     <span class="tcolumn flex18">长*宽*高<br />(cm)</span>
                     <span class="tcolumn flex08 right">单箱体积<br />(m³)</span>
@@ -1129,17 +1129,15 @@ export default {
     createPopupData () {
       let checkedData = this.totalPlanPackInfo.filter(itemF => itemF.checked).map(itemM => {
         return {
-          number: itemM.product_info.map(itemMP => (+itemMP.total_number || 0)).reduce((a, b) => {
-            return a + b
-          }, 0),
+          number: itemM.total_box_number,
           gross_weight: (+itemM.total_gross_weight || 0),
           vol_number: (+itemM.total_vol || 0)
         }
       })
-      if (checkedData.length === 0) {
-        this.$message.warning('请先勾选最少一项')
-        return
-      }
+      // if (checkedData.length === 0) {
+      //   this.$message.warning('请先勾选最少一项')
+      //   return
+      // }
       this.popupData = {
         order_code: this.orderInfo.order_code,
         order_id: this.orderInfo.id,
