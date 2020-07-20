@@ -1048,7 +1048,7 @@ export default {
           if (flag) {
             let innerFlag = flag.attr_info.find(items => items.attr === item.material_color)
             if (innerFlag) {
-              if (this.$toFixed(innerFlag.goStockNumEnd || 0) < this.$toFixed(item.outStockNum)) {
+              if (this.$toFixed(innerFlag.weight || 0) < this.$toFixed(item.outStockNum)) {
                 exceedMaterialInfo.push('物料:“' + item.material_name + '”，颜色/属性：“' + item.material_color + '”')
               }
             }
