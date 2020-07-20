@@ -526,7 +526,7 @@ export default {
               {
                 name: '订单出库运输',
                 income: 0,
-                expend: data.sotck_out,
+                expend: data.stock_out,
                 show: true,
                 url: '/financialStatistics/logStatistics/page=1&&type=装箱出库&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=0&&production_type=&&operate_user=&&material_name=&&stock_id='
               }

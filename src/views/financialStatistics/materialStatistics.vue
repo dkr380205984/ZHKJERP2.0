@@ -63,7 +63,6 @@
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <div class="filter_line">
-
               <div class="tabCtn">
                 <span class="tab"
                   :class="{'active':type===1}"

@@ -4,26 +4,39 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="right"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              style="margin-left:0"
-              @click="reset">重置</div>
+            <span class="filter_line">
+              <el-select v-model="company_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                filterable
+                placeholder="筛选公司">
+                <el-option v-for="(item,index) in companyArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </span>
           </div>
-          <div class="rightCtn">
+          <div class="addCtn">
             <span class="btn btnWhiteBlue"
               @click="getLogList(1)">查看预定购日志</span>
           </div>
@@ -34,29 +47,7 @@
               <span class="text">订购日期</span>
             </div>
             <div class="col">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">外贸公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">外贸公司</span>
             </div>
             <div class="col">
               <span class="text">包含纱线</span>

@@ -1,4 +1,4 @@
-const chinaNum = ['一', '二', '三', '四', '五', '六', '七', '八', '九']
+const chinaNum = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五']
 const letterArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z']
 const permissions = [{
   module: '样品管理',
@@ -54,6 +54,9 @@ const permissions = [{
 }, {
   module: '报销单管理',
   id: 18
+}, {
+  module: '进仓运输管理',
+  id: 19
 }]
 const moneyArr = [{
   name: '元',

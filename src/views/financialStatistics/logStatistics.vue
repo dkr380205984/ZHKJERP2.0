@@ -723,7 +723,7 @@
               </div>
               <div class="oneBox">
                 <div class="label">数量:</div>
-                <div class="content">{{$formatNum(statistics.production_weave.total_number)}}kg</div>
+                <div class="content">{{$formatNum(statistics.production_weave.total_number)}}</div>
               </div>
               <div class="oneBox">
                 <div class="label">总价:</div>
@@ -1885,12 +1885,12 @@
                 <div class="col">
                   <span class="text">装箱总数</span>
                 </div>
-                <div class="col">
+                <!-- <div class="col">
                   <span class="text">箱数</span>
                 </div>
                 <div class="col">
                   <span class="text">备注</span>
-                </div>
+                </div> -->
                 <div class="col">
                   <span class="text">创建人</span>
                 </div>
@@ -1921,14 +1921,14 @@
                   {{item.color_name}}
                 </div>
                 <div class="col">
-                  <span class="text">{{item.pack_number}}</span>
+                  <span class="text">{{item.number}}</span>
                 </div>
-                <div class="col">
+                <!-- <div class="col">
                   <span class="text">{{item.total_box?item.total_box:0}}箱</span>
-                </div>
-                <div class="col">
+                </div> -->
+                <!-- <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
-                </div>
+                </div> -->
                 <div class="col">
                   <span class="text">{{item.user_name}}</span>
                 </div>
@@ -1940,13 +1940,13 @@
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.pack_real.total_number)}}</div>
               </div>
-              <div class="oneBox">
+              <!-- <div class="oneBox">
                 <div class="label">箱数:</div>
                 <div class="content">{{$formatNum(statistics.pack_real.total_box)}}箱</div>
-              </div>
+              </div> -->
             </div>
           </el-tab-pane>
-          <el-tab-pane label="装箱出库"
+          <!-- <el-tab-pane label="装箱出库"
             name="装箱出库">
             <div class="filterCtn">
               <div class="leftCtn">
@@ -2093,7 +2093,7 @@
                 <div class="content">{{$formatNum(statistics.stock_out.total_price)}}元</div>
               </div>
             </div>
-          </el-tab-pane>
+          </el-tab-pane> -->
           <el-tab-pane label="销售出库"
             name="销售出库">
             <div class="filterCtn">

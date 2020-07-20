@@ -855,7 +855,7 @@
               </div>
               <div class="oneBox">
                 <div class="label">数量:</div>
-                <div class="content">{{$formatNum(statistics.production_weave.total_number)}}kg</div>
+                <div class="content">{{$formatNum(statistics.production_weave.total_number)}}</div>
               </div>
               <div class="oneBox">
                 <div class="label">总价:</div>

@@ -1,0 +1,39 @@
+@import '../common.less';
+#warehouseDetail{
+  .text-warp{
+    display: flex;
+    flex-wrap: wrap;
+    .linkBox{
+      margin: 4px 16px 0 0;
+      line-height: 34px;
+      &:hover{
+        color: @blue;
+      }
+      a{      
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+  }
+  .popup{
+    .info{
+      display: flex;
+      align-items: center;
+      .label{
+        width:4em;
+        margin-left: 8px;
+      }
+    }
+  }
+  .uploadBtn{
+    font-size: 14px;
+    color: @font65;
+    border:1px solid #D9D9D9;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  .blueLink{
+    color: @blue;
+    cursor: pointer;
+  }
+}

@@ -75,23 +75,29 @@ export default {
             icon: 'icon-chanpinjianyan'
           },
           {
-            name: '装箱管理',
+            name: '装箱计划',
             id: 11,
             path: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
+            icon: 'icon-jincangdan'
+          },
+          {
+            name: '进仓运输',
+            id: 19,
+            path: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address=',
             icon: 'icon-zhuangxiangchuku'
           }
         ],
         other: [
-          // {
-          //   name: '报价单管理',
-          //   id: 2,
-          //   path: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id=',
-          //   icon: 'icon-baojiadan'
-          // },
+          {
+            name: '预订购管理',
+            id: 7,
+            path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
+            icon: 'icon-wuliaoyudinggou'
+          },
           {
             name: '报销单管理',
             id: 18,
-            path: '/reimbursement/reimbursementList',
+            path: '/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=',
             icon: 'icon-baoxiaodanguanli'
           },
           {

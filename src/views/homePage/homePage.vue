@@ -482,8 +482,20 @@ export default {
         id: 18,
         isChecked: false,
         opr: '报销单列表',
-        icon: 'icon-baoxiaodanguanli',
+        icon: 'icon-baoxiaodanliebiao',
         url: '/reimbursement/reimbursementList'
+      }, {
+        id: 19,
+        isChecked: false,
+        opr: '进仓单列表',
+        icon: 'icon-jincangdan',
+        url: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address='
+      }, {
+        id: 19,
+        isChecked: false,
+        opr: '运输货款列表',
+        icon: 'icon-yunshuhuokuan',
+        url: '/transport/transportList/page=1&&keyword=&&date=&&clientId='
       }],
       userEasyOpr: window.localStorage.getItem('userEasyOpr') ? JSON.parse(window.localStorage.getItem('userEasyOpr')) : [],
       dispatchCount: {

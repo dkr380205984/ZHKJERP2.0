@@ -182,11 +182,11 @@ export default {
         if (res.data.status !== false) {
           this.$message.success('提交成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-            this.msgUrl = '/reimbursement/reimbursementList'
+            this.msgUrl = '/reimbursement/reimbursementDetail/' + this.$route.params.id
             this.msgContent = '<span style="color:#E6A23C">修改</span>了一个报销单'
             this.msgSwitch = true
           } else {
-            this.$router.push('/reimbursement/reimbursementList')
+            this.$router.push('/reimbursement/reimbursementDetail/' + this.$route.params.id)
           }
         }
       })
