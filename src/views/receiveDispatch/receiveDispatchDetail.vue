@@ -1379,6 +1379,7 @@ export default {
     }
   },
   mounted () {
+    this.weave_type = this.$route.query.weave_type
     Promise.all([order.detail({
       id: this.$route.params.id
     }), weave.detail({
@@ -1553,6 +1554,7 @@ export default {
           this.selectProduct(flag.product_id, 0, 'process_data', 'process_product')
         }
       }
+      this.weave_detail = this.weave_old.filter((item) => item.process === this.weave_type)
       this.loading = false
     })
   }

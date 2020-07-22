@@ -2,6 +2,38 @@
   <div id='receiveDispatchList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':weave_type==='全部'}"
+        @click="weave_type='全部'">
+        <span class="font_family icon">&#xe62f;</span>
+        <span class="name">所有工序</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='织片'}"
+        @click="weave_type='织片'">
+        <span class="font_family icon">&#xe63a;</span>
+        <span class="name">织片收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='套缝'}"
+        @click="weave_type='套缝'">
+        <span class="font_family icon">&#xe63c;</span>
+        <span class="name">套缝收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='整烫'}"
+        @click="weave_type='整烫'">
+        <span class="font_family icon">&#xe63b;</span>
+        <span class="name">整烫收发</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':weave_type==='其他'}"
+        @click="weave_type='其他'">
+        <span class="font_family icon">&#xe63d;</span>
+        <span class="name">其他工序</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn2">
@@ -116,7 +148,7 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + itemOrder.id)">产品收发</span>
+                @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + itemOrder.id + '?weave_type=' +weave_type)">产品收发</span>
             </div>
           </div>
         </div>
@@ -140,6 +172,7 @@ import { order, group, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      weave_type: '全部',
       searchOrderOrProduct: 'order',
       loading: true,
       list: [],
@@ -176,6 +209,9 @@ export default {
     }
   },
   watch: {
+    weave_type (newVal) {
+      this.changeRouter()
+    },
     pages (newVal) {
       this.changeRouter(newVal)
     },
@@ -196,6 +232,7 @@ export default {
       } else {
         this.date = ''
       }
+      this.weave_type = params.weave_type || '全部'
       this.has_materialPlan = params.has_materialPlan
       this.has_materialOrder = params.has_materialOrder
       this.has_materialStock = params.has_materialStock
@@ -218,10 +255,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/receiveDispatch/receiveDispatchList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/receiveDispatch/receiveDispatchList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '&&weave_type=' + this.weave_type)
     },
     reset () {
-      this.$router.push('/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
+      this.$router.push('/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=&&weave_type=')
     },
     getOrderList () {
       this.loading = true

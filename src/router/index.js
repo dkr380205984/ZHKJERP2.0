@@ -237,29 +237,13 @@ const routes = [
       name: '辅料出入库详情',
       component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
-      path: '/weavingProcessing/weavingDetail/:id/:orderType',
-      name: '织造分配详情',
-      component: () => import('../views/weavingProcessing/weavingDetail.vue')
-    }, {
       path: '/weavingProcessing/processesDetail/:id/:orderType',
       name: '工序分配详情',
-      component: () => import('../views/weavingProcessing/processesDetail.vue')
-    }, {
-      path: '/weavingProcessing/weavingNoMat/:id/:orderType',
-      name: '织造分配-客供纱',
-      component: () => import('../views/weavingProcessing/weavingNoMat.vue')
+      component: () => import('../views/process/processesDetail.vue')
     }, {
       path: '/weavingProcessing/weavingList/:params/:type',
       name: '织造分配列表',
-      component: () => import('../views/weavingProcessing/weavingList.vue')
-    }, {
-      path: '/weavingProcessing/processingDetail/:id/:orderType',
-      name: '半成品加工分配详情',
-      component: () => import('../views/weavingProcessing/processingDetail.vue')
-    }, {
-      path: '/weavingProcessing/processingList/:params/:type',
-      name: '半成品加工分配列表',
-      component: () => import('../views/weavingProcessing/processingList.vue')
+      component: () => import('../views/process/weavingList.vue')
     }, {
       path: '/setting/setting',
       name: '系统设置',
@@ -476,7 +460,7 @@ const routes = [
   }, {
     path: '/replenishTable/:id/:type',
     name: '补纱单',
-    component: () => import('../views/weavingProcessing/replenishTable.vue')
+    component: () => import('../views/process/replenishTable.vue')
   }, {
     path: '/materialTable/:id/:orderType/:type',
     name: '物料订购调取单',
@@ -492,7 +476,7 @@ const routes = [
   }, {
     path: '/weaveTable/:id/:orderType',
     name: '生产加工单',
-    component: () => import('../views/weavingProcessing/weaveTable.vue')
+    component: () => import('../views/process/weaveTable.vue')
   }, {
     path: '/receiveDispatchTable/:id',
     name: '产品收发标签',

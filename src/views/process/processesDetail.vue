@@ -304,9 +304,20 @@
       v-if="weaving_detail.length>0">
       <div class="titleCtn">
         <span class="title">工序分配详情</span>
+        <span style="float:right;font-size:26px">
+          <i class="el-icon-s-fold"
+            style="cursor:pointer;margin-right:12px"
+            @click="tableType='normal'"
+            :style="{'color':tableType==='normal'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+          <i class="el-icon-menu"
+            style="cursor:pointer"
+            @click="tableType='table'"
+            :style="{'color':tableType==='table'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+        </span>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
+        <div class="rowCtn"
+          v-if="tableType==='normal'">
           <div class="colCtn"
             style="margin-right:0">
             <div class="flexTb">
@@ -354,6 +365,83 @@
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn"
+          v-if="tableType==='table'">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="zh_batch_item"
+              v-for="(item,index) in new_weave_detail"
+              :key="index">
+              <div class="line">
+                <span class="line_item">单位名称：{{item.client_name}}</span>
+                <span class="line_item">工序：<span style="color:#1a95ff">{{item.process}}</span></span>
+              </div>
+              <div class="line">
+                <div class="batchTable"
+                  v-for="(itemPro,indexPro) in item.childrenMergeInfo"
+                  :key="indexPro">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn w180 noPad">产品</span>
+                      <span class="tcolumn twoTitleItem noPad">
+                        <span class="leftBottom">颜色</span>
+                        <span class="obliqueLine"></span>
+                        <span class="rightTop">尺码</span>
+                      </span>
+                      <span class="tcolumn noPad"
+                        v-for="itemSize in itemPro.sizeArr"
+                        :key="itemSize">{{itemSize}}</span>
+                      <span class="tcolumn noPad">总数</span>
+                    </span>
+                  </div>
+                  <div class="tbody">
+                    <span class="trow">
+                      <span class="tcolumn w180 noPad">
+                        <span>{{itemPro.product_info.product_code}}</span>
+                        <span>{{itemPro.product_info.category_name?itemPro.product_info.category_name+'/'+ itemPro.product_info.type_name+'/'+ itemPro.product_info.style_name:itemPro.product_info.product_title}}</span>
+                      </span>
+                      <span class="tcolumn noPad">
+                        <span class="trow"
+                          v-for="itemColor in itemPro.colorArr"
+                          :key="itemColor">
+                          <span class="tcolumn noPad">{{itemColor}}</span>
+                        </span>
+                        <span class="trow">
+                          <span class="tcolumn noPad">总数</span>
+                        </span>
+                      </span>
+                      <span class="tcolumn noPad"
+                        v-for="itemSize in itemPro.sizeArr"
+                        :key="itemSize">
+                        <span class="trow"
+                          v-for="itemColor in itemPro.colorArr"
+                          :key="itemColor">
+                          <span class="tcolumn noPad">
+                            <span style="color:#1a95ff">{{itemPro.colorSize[itemSize][itemColor].number}}</span>
+                            <span style="color:#E6A23C">(+{{itemPro.colorSize[itemSize][itemColor].motorise_number}})</span>
+                          </span>
+                        </span>
+                        <span class="trow">
+                          <span class="tcolumn noPad">{{itemPro.colorSize[itemSize].total_number}}</span>
+                        </span>
+                      </span>
+                      <span class="tcolumn noPad">
+                        <span class="trow"
+                          v-for="itemColor in itemPro.colorArr"
+                          :key="itemColor">
+                          <span class="tcolumn noPad">{{itemPro.colorSize[itemColor].total_number}}</span>
+                        </span>
+                        <span class="trow">
+                          <span class="tcolumn noPad">{{itemPro.colorSize.total_number}}</span>
+                        </span>
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1089,6 +1177,7 @@ export default {
       loading: true,
       checkAll: false,
       msgSwitch: false,
+      tableType: 'table',
       msgUrl: '',
       msgContent: '',
       orderInfo: {
@@ -1106,6 +1195,7 @@ export default {
       clientArrReal: [],
       weaving_data: [],
       weaving_detail: [],
+      new_weave_detail: [],
       weaving_mat: [], // 这个参数和weaving_deitai都是织造分配物料信息,这个参数用于被修改提交
       weaving_log: [],
       weaving_flag: false,
@@ -1795,7 +1885,6 @@ export default {
       }
     },
     updateMat () {
-      console.log(this.material_detail)
       if (this.material_detail.length === 0) {
         return
       }
@@ -2093,6 +2182,46 @@ export default {
         return item
       })
       this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: ['client_id', 'process'], otherRule: [{ name: 'client_name' }] })
+      // 表格形式的分配信息整合
+      this.new_weave_detail = this.$mergeData(this.weaving_log, { mainRule: ['client_id', 'process'], otherRule: [{ name: 'client_name' }], childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
+      this.new_weave_detail.forEach((itemClient) => {
+        itemClient.childrenMergeInfo.forEach((itemPro) => {
+          itemPro.colorSize = {}
+          itemPro.sizeArr = []
+          itemPro.colorArr = []
+          itemPro.childrenMergeInfo.forEach((itemColorSize) => {
+            itemPro.sizeArr.push(itemColorSize.size_name)
+            itemPro.colorArr.push(itemColorSize.color_name)
+          })
+          itemPro.sizeArr = [...new Set(itemPro.sizeArr)]
+          itemPro.colorArr = [...new Set(itemPro.colorArr)]
+          itemPro.sizeArr.forEach((itemSize) => {
+            itemPro.colorArr.forEach((itemColor) => {
+              itemPro.colorSize[itemSize] = itemPro.colorSize[itemSize] || {}
+              itemPro.colorSize[itemColor] = itemPro.colorSize[itemColor] || {}
+              itemPro.colorSize[itemSize][itemColor] = {
+                'number': 0,
+                'motorise_number': 0,
+                'total_price': 0
+              }
+            })
+          })
+          itemPro.childrenMergeInfo.forEach((itemColorSize) => {
+            itemPro.colorSize[itemColorSize.size_name][itemColorSize.color_name].number += Number(itemColorSize.number)
+            itemPro.colorSize[itemColorSize.size_name][itemColorSize.color_name].motorise_number += Number(itemColorSize.motorise_number)
+            itemPro.colorSize[itemColorSize.size_name][itemColorSize.color_name].total_price += (Number(itemColorSize.motorise_number) + Number(itemColorSize.number)) * itemColorSize.price
+          })
+          itemPro.childrenMergeInfo.forEach((itemColorSize) => {
+            itemPro.colorSize[itemColorSize.size_name].total_number = itemPro.colorSize[itemColorSize.size_name].total_price || 0
+            itemPro.colorSize[itemColorSize.color_name].total_number = itemPro.colorSize[itemColorSize.color_name].total_number || 0
+            itemPro.colorSize.total_number = itemPro.colorSize.total_number || 0
+            itemPro.colorSize[itemColorSize.size_name].total_number += (Number(itemColorSize.motorise_number) + Number(itemColorSize.number))
+            itemPro.colorSize[itemColorSize.color_name].total_number += (Number(itemColorSize.motorise_number) + Number(itemColorSize.number))
+            itemPro.colorSize.total_number += (Number(itemColorSize.motorise_number) + Number(itemColorSize.number))
+          })
+        })
+      })
+      console.log(this.new_weave_detail)
       this.materialStockInfo = this.$mergeData(res[8].data.data, { mainRule: 'material_name', childrenRule: { mainRule: 'material_color', otherRule: [{ name: 'material_type' }, { name: 'total_weight' }, { name: 'unit' }] } })
       this.materialStockInfo.forEach((item) => {
         item.childrenMergeInfo.forEach((itemColor) => {
@@ -2104,7 +2233,6 @@ export default {
           })
         })
       })
-      console.log(this.flatMaterialStockInfo)
       this.material_detail = this.$mergeData(res[7].data.data, { mainRule: ['client_id', 'product_flow/process'], otherRule: [{ name: 'client_name' }, { name: 'material_type' }] })
       this.replenishClientArr = this.$mergeData(res[6].data.data.material_process_client.concat(res[6].data.data.material_order_client).concat(res[6].data.data.order_weave_client).concat(res[6].data.data.order_semi_product_client).concat([{ client_name: '本厂', client_id: null }]), { mainRule: ['client_name', 'client_id'] })
       this.loading = false
@@ -2118,7 +2246,8 @@ export default {
 </style>
 <style lang="less">
 #processesDetail {
-  .popup {
+  .popup,
+  .editCtn {
     .zh_batch_item {
       background-color: rgba(0, 0, 0, 0.05);
       display: flex;
@@ -2248,19 +2377,19 @@ export default {
       }
     }
   }
-  .fuckUnit {
-    .el-input-group__append {
-      padding: 0;
-      width: 70px;
-      border: 0;
-    }
-    .fuck {
-      .el-input__inner {
-        border-radius: 0;
-        border-left: 1px solid rgba(0, 0, 0, 0) !important;
-        &:focus {
-          border-left: 1px solid #1a94ff !important;
-        }
+}
+.fuckUnit {
+  .el-input-group__append {
+    padding: 0;
+    width: 70px;
+    border: 0;
+  }
+  .fuck {
+    .el-input__inner {
+      border-radius: 0;
+      border-left: 1px solid rgba(0, 0, 0, 0) !important;
+      &:focus {
+        border-left: 1px solid #1a94ff !important;
       }
     }
   }
