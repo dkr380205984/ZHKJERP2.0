@@ -794,16 +794,16 @@
         {{craftDetail.draft_method|filterThroughMethod}}
       </div>
       <div class="outItem"
-        v-for="(items,indexs) in craftDetail.draft_method.GL"
+        v-for="(items,indexs) in craftDetail.draft_method.GLShow"
         :key="indexs">
         <span class="label">纹版图{{letterArr[indexs]}}：</span>
         <div class="print_body noBorder">
           <span class="print_row maxHeight noBorder canWarp">
             <span class="row_item noBorder"
               style="flex:auto"
-              v-for="(item,index) in craftDetail.draft_method.GL[indexs]"
+              v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
-              <span class="index">{{index+1}}</span>
+              <span class="index">{{craftDetail.draft_method.GLXuhao[indexs][index]}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>
@@ -811,6 +811,17 @@
               </span>
             </span>
           </span>
+        </div>
+      </div>
+      <div class="outItem"
+        v-for="(item,index) in craftDetail.draft_method.GLRepeat"
+        :key="index">
+        <span class="label">纹版图{{letterArr[index]}}：</span>
+        <div style="display:block;padding-left:32px;margin:12px 0"
+          v-for="(itemChild,indexChild) in item"
+          :key="indexChild">
+          <span style="margin:0 20px;color:#666">{{itemChild.start}}到{{itemChild.end}}<span style="margin:0 5px"></span>✖{{itemChild.repeat}}遍</span>
+          <span style="margin:0 20px;color:#666"></span>
         </div>
       </div>
     </div>
@@ -832,7 +843,11 @@ export default {
           materials: []
         },
         draft_method: {
-          GL: []
+          GL: [],
+          GLShow: [],
+          GLFlag: '',
+          GLRepeat: [],
+          GLXuhao: []
         }
       },
       warp_data: {
@@ -968,6 +983,64 @@ export default {
         data.weft_data.weft_rank = JSON.parse(data.weft_data.weft_rank)
         data.weft_data.weft_rank_back = JSON.parse(data.weft_data.weft_rank_back)
         this.craftDetail = this.$clone(data)
+        this.craftDetail.draft_method.GLShow = this.$clone(data.draft_method.GL)
+        this.craftDetail.draft_method.GLRepeat = this.$clone(data.draft_method.GLRepeat) || []
+        this.craftDetail.draft_method.GLXuhao = []
+        this.craftDetail.draft_method.GLRepeat.forEach((item) => {
+          let addNum = 0
+          item.forEach((itemChild) => {
+            itemChild.start += addNum
+            itemChild.end += addNum
+            addNum += (itemChild.end - itemChild.start + 1) * (itemChild.repeat - 1)
+          })
+        })
+        // 将纹版图循环补充完整
+        // 例如1-2循环2次，5-6循环两次，补充3-4循环1次进去
+        let GLRepeatComplete = []
+        data.draft_method.GLRepeat.forEach((item, index) => {
+          GLRepeatComplete.push([])
+          let start = 1
+          item.forEach((itemChild) => {
+            if (itemChild.start - start > 0) {
+              GLRepeatComplete[index].push({
+                start: start,
+                end: itemChild.start - 1,
+                repeat: 1
+              })
+            }
+            GLRepeatComplete[index].push(itemChild)
+            start = itemChild.end + 1
+          })
+          if (this.craftDetail.draft_method.GLShow[index].length >= start) {
+            GLRepeatComplete[index].push({
+              start: start,
+              end: this.craftDetail.draft_method.GLShow[index].length,
+              repeat: 1
+            })
+          }
+        })
+        // 序号计算
+        GLRepeatComplete.forEach((item, index) => {
+          this.craftDetail.draft_method.GLXuhao.push([])
+          let addNum = 0
+          item.forEach((itemChild) => {
+            for (let i = itemChild.start; i <= itemChild.end; i++) {
+              this.craftDetail.draft_method.GLXuhao[index].push(i + addNum)
+            }
+            addNum += (itemChild.end - itemChild.start + 1) * (itemChild.repeat - 1)
+          })
+        })
+        GLRepeatComplete.forEach((item, index) => {
+          this.craftDetail.draft_method.GL[index] = []
+          item.forEach((itemChild) => {
+            for (let j = 0; j < itemChild.repeat; j++) {
+              for (let i = itemChild.start; i <= itemChild.end; i++) {
+                this.craftDetail.draft_method.GL[index].push(this.craftDetail.draft_method.GLShow[index][i - 1])
+              }
+            }
+          })
+        })
+        console.log(this.craftDetail.draft_method)
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
         this.warp_data.length_back = this.warp_data.warp_rank_back[0].length
