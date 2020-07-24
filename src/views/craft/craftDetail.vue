@@ -260,19 +260,19 @@
             style="display:block">
             <div class="label">纹版图：</div>
             <div class="GLCtn"
-              v-for="(item1,index1) in GL"
+              v-for="(item1,index1) in GLShow"
               :key="index1"
               style="overflow:hidden">
               <div class="mark"
                 style="position:relative">{{alphabet[index1]}}：
                 <span style="position:absolute;color:#1a95ff;font-size:12px;bottom:-1.3em;left:0em;cursor:pointer"
-                  @click="showGL(item1)">预览</span>
+                  @click="showGL(index1)">预览</span>
               </div>
               <div v-for="(item2,index2) in item1"
                 :key="index2"
                 class="deltaCtn">
                 <div class="leftCtn">
-                  <span>{{index2+1}}</span>
+                  <span>{{GLXuhao[index1][index2]}}</span>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"
@@ -285,6 +285,26 @@
                     v-model="item2[2]"
                     disabled></el-input>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn"
+          v-if="GLRepeat.length>0">
+          <div class="colCtn"
+            style="display:block">
+            <div class="label">
+              <span class="text">纹版图循环</span>
+            </div>
+            <div style="position:relative"
+              v-for="(item,index) in GLRepeat"
+              :key="index">
+              <div style="position:absolute;line-height:32px;color:rgba(0,0,0,0.65)">{{alphabet[index]}}：</div>
+              <div style="display:block;padding-left:32px;margin:12px 0"
+                v-for="(itemChild,indexChild) in item"
+                :key="indexChild">
+                <span style="margin:0 20px;color:#666">{{itemChild.start}}到{{itemChild.end}}<span style="margin:0 5px"></span>✖{{itemChild.repeat}}遍</span>
+                <span style="margin:0 20px;color:#666"></span>
               </div>
             </div>
           </div>
@@ -1013,6 +1033,13 @@ export default {
       // GL:graphic layout 纹版图缩写
       GL: [[['', '', '']]],
       GLFlag: 'normal',
+      GLRepeat: [[{
+        start: '',
+        end: '',
+        repeat: ''
+      }]],
+      GLShow: [], // 原先的纹版图复制到这里了，原先的纹版图被结合GLRepeat改造掉了
+      GLXuhao: [],
       alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
       romanNum: ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'],
       canvasHeight: 0, // 图像高度
@@ -1135,9 +1162,10 @@ export default {
       return new File([u8arr], filename, { type: mime })
     },
     // 预览纹版图
-    showGL (GL) {
+    showGL (GLIndex) {
+      console.log(this.GL[GLIndex])
       let GLArr = []
-      GL.forEach((item) => {
+      this.GL[GLIndex].forEach((item) => {
         item.forEach((itemChild) => {
           if (itemChild) {
             GLArr.push(itemChild.split(','))
@@ -1574,11 +1602,71 @@ export default {
       this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
       this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
       this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
-      this.GL = data.draft_method.GL
+      // this.GL = data.draft_method.GL
+      this.GLShow = this.$clone(data.draft_method.GL)
       this.GLFlag = data.draft_method.GLFlag
       this.PM = data.draft_method.PM
       this.PMFlag = data.draft_method.PMFlag
       this.remarkPM = data.draft_method.desc
+      this.GLRepeat = this.$clone(data.draft_method.GLRepeat) || []
+      this.GLRepeat.forEach((item) => {
+        let addNum = 0
+        item.forEach((itemChild) => {
+          itemChild.start += addNum
+          itemChild.end += addNum
+          addNum += (itemChild.end - itemChild.start + 1) * (itemChild.repeat - 1)
+        })
+      })
+      // 将纹版图循环补充完整
+      // 例如1-2循环2次，5-6循环两次，补充3-4循环1次进去
+      let GLRepeatComplete = []
+      data.draft_method.GLRepeat.forEach((item, index) => {
+        GLRepeatComplete.push([])
+        let start = 1
+        item.forEach((itemChild) => {
+          if (itemChild.start - start > 0) {
+            GLRepeatComplete[index].push({
+              start: start,
+              end: itemChild.start - 1,
+              repeat: 1
+            })
+          }
+          GLRepeatComplete[index].push(itemChild)
+          start = itemChild.end + 1
+        })
+        if (this.GLShow[index].length >= start) {
+          GLRepeatComplete[index].push({
+            start: start,
+            end: this.GLShow[index].length,
+            repeat: 1
+          })
+        }
+      })
+      // 序号计算
+      GLRepeatComplete.forEach((item, index) => {
+        this.GLXuhao.push([])
+        let addNum = 0
+        item.forEach((itemChild) => {
+          for (let i = itemChild.start; i <= itemChild.end; i++) {
+            this.GLXuhao[index].push(i + addNum)
+          }
+          addNum += (itemChild.end - itemChild.start + 1) * (itemChild.repeat - 1)
+        })
+      })
+      GLRepeatComplete.forEach((item, index) => {
+        this.GL[index] = []
+        item.forEach((itemChild) => {
+          for (let j = 0; j < itemChild.repeat; j++) {
+            for (let i = itemChild.start; i <= itemChild.end; i++) {
+              this.GL[index].push(this.GLShow[index][i - 1])
+            }
+          }
+        })
+      })
+      console.log(this.GLXuhao)
+      console.log(this.GL)
+      console.log(this.GLRepeat)
+      console.log(GLRepeatComplete)
       // 计算克重信息
       let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
       this.tableData.warp.mergeCells.forEach((item) => {

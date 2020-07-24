@@ -568,6 +568,49 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
+              <span class="text">纹版图循环</span>
+              <span class="explanation">(序号填写请以纹版图的序号为准))</span>
+            </div>
+            <div style="position:relative"
+              v-for="(item,index) in GLRepeat"
+              :key="index">
+              <div style="position:absolute;line-height:32px;color:rgba(0,0,0,0.65)">{{alphabet[index]}}：</div>
+              <div style="display:block;padding-left:32px;margin:12px 0"
+                v-for="(itemChild,indexChild) in item"
+                :key="indexChild">
+                <zh-input style="width:70px;text-align:center"
+                  placeholder="序号"
+                  type="number"
+                  v-model="itemChild.start">
+                </zh-input>
+                <span style="margin:0 20px;color:#666">到</span>
+                <zh-input style="width:70px;text-align:center"
+                  placeholder="序号"
+                  type="number"
+                  v-model="itemChild.end">
+                </zh-input>
+                <span style="margin:0 20px;color:#666">✖</span>
+                <zh-input style="width:100px;text-align:center"
+                  placeholder="遍数"
+                  type="number"
+                  v-model="itemChild.repeat">
+                  <template slot="append">遍</template>
+                </zh-input>
+                <div class="specialBtn position"
+                  @click="addGLrepeat(index)">
+                  <i class="el-icon-plus"></i>
+                </div>
+                <div class="specialBtn position"
+                  @click="deleteGLrepeat(index,indexChild)">
+                  <i class="el-icon-minus"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
               <span class="text">穿综循环</span>
               <i class="sliderCtn">
                 <span class="text"
@@ -1499,7 +1542,6 @@ export default {
       scene: null,
       renderer: null,
       mesh: null,
-
       ZDYMC: '',//新增字段，自定义名称
       DSGG: '',//新增字段，大身规格
       DSKZ: '',//新增值字段，大身克重
@@ -2086,6 +2128,11 @@ export default {
       // GL:graphic layout 纹版图缩写
       GL: [[['', '', '']]],
       GLFlag: 'normal',
+      GLRepeat: [[{
+        start: '',
+        end: '',
+        repeat: ''
+      }]],
       alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
       romanNum: ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'],
       // 是否为双面巾
@@ -2597,6 +2644,7 @@ export default {
   methods: {
     // 预览纹版图
     showGL (GL) {
+      this.$message.warning('纹版图预览暂不支持结合纹版图循环预览，如果填写纹版图循环信息，可在详情页预览完整纹版图')
       let GLArr = []
       GL.forEach((item) => {
         item.forEach((itemChild) => {
@@ -2749,10 +2797,16 @@ export default {
     },
     addGL () {
       this.GL.push([['', '', '']])
+      this.GLRepeat.push([{
+        start: '',
+        end: '',
+        repeat: ''
+      }])
     },
     deleteGL (index) {
       if (this.GL.length > 1) {
         this.GL.splice(index, 1)
+        this.GLRepeat.splice(index, 1)
       } else {
         this.$message.error({
           message: '至少有一个纹版'
@@ -2832,6 +2886,16 @@ export default {
           message: '至少有一行'
         })
       }
+    },
+    addGLrepeat (index) {
+      this.GLRepeat[index].push({
+        start: '',
+        end: '',
+        repeat: ''
+      })
+    },
+    deleteGLrepeat (index, indexChild) {
+      this.GLRepeat[index].splice(indexChild, 1)
     },
     // 插入列操作
     addCol (type) {
@@ -3811,7 +3875,8 @@ export default {
             })
           }),
           GLFlag: this.GLFlag,
-          desc: this.remarkPM
+          desc: this.remarkPM,
+          GLRepeat: this.GLRepeat
         }
       }
       // this.loading = true
