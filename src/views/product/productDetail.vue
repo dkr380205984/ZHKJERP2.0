@@ -174,7 +174,7 @@
                   <span v-if="!detail.craft_info &&detail.order_info.length === 0"
                     class="text"
                     style="color:#ccc">请先给产品添加订单</span>
-                  <span v-if="!detail.craft_info &&detail.order_info.length>1"
+                  <span v-if="!detail.craft_info && detail.order_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                   <span v-if="detail.craft_info"
