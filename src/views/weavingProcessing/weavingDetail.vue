@@ -635,7 +635,8 @@
     </div>
     <div class="popup"
       v-show="replenish_flag">
-      <div class="main">
+      <div class="main"
+        style="width:800px">
         <div class="title">
           <div class="text">补纱</div>
           <i class="el-icon-close"
@@ -683,7 +684,7 @@
                 placeholder="请输入承担金额">
                 <template slot="append">元</template>
                 <template slot="prepend">
-                  <el-select style="width:120px"
+                  <el-select style="width:200px"
                     placeholder="单位"
                     v-model="item.id">
                     <el-option v-for="(item) in replenishClientArr"

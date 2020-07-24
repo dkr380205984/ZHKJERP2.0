@@ -193,9 +193,10 @@ export default {
       },
       searchList: {}, // 筛选条件
       company_name: '',
-      loopTime: 30000,
+      loopTime: 3000,
       timer: null, // 定时器标识
-      getNewDataTimer: null
+      getNewDataTimer: null,
+      userCut: false // 是否为用户点击切换类型
 
     }
   },
@@ -294,6 +295,7 @@ export default {
           'group_id': this.searchList.group,
           'start_time': this.searchList.start_time || this.start_time,
           'end_time': this.searchList.end_time || this.end_time
+          // 'is_dispatch': 1
         }).then(res => {
           data.push(...res.data.data)
           this.filterList.orderCount = res.data.meta.total
@@ -375,6 +377,7 @@ export default {
     },
     cutOrderType () {
       this.orderType = !this.orderType
+      this.userCut = true
     }
   },
   created () {
@@ -409,12 +412,12 @@ export default {
   },
   watch: {
     pages (newVal) {
-      clearInterval(this.getNewDataTimer)
+      clearTimeout(this.getNewDataTimer)
       if (newVal === 1) {
         this.$setInterval(this.loopTime)
       }
       this.$refs.carousel.setActiveItem(this.pages - 1) // 页码改变时改变走马灯展示视图
-      if (newVal === Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10)) { // 当页面为最后一页时添加定时任务，重新拉取最新数据
+      if (newVal === Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10) || this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] === 0) { // 当页面为最后一页时添加定时任务，重新拉取最新数据
         this.getNewDataTimer = setTimeout(() => {
           clearInterval(this.timer) // 优化，清除页面在拉取最新数据时 页码一直在改变
           this.timer = null
@@ -426,7 +429,9 @@ export default {
       }
     },
     orderType (newVal) {
-      clearInterval(this.getNewDataTimer)
+      if (this.userCut) {
+        clearTimeout(this.getNewDataTimer)
+      }
       if (this.filterList[newVal ? 'order' : 'sample'].length === 0) {
         this.loading = true
       }
@@ -440,7 +445,7 @@ export default {
 <style scoped lang='less'>
 @import "~@/assets/less/order/screenShipments.less";
 </style>
-<style lang="less" scope>
+<style lang="less">
 #screenShipments {
   .el-progress {
     position: relative;

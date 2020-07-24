@@ -1,0 +1,38 @@
+@import '../common.less';
+#settleChargebacks{
+  .tabCtn{
+    height: 30px;
+    font-size: @fontMiddle;
+    color: @font65;
+    margin-right: 16px;
+    .tab{
+      border:1px solid #D9D9D9;
+      line-height: 30px;
+      display: inline-block;
+      padding: 0 12px;
+      cursor: pointer;
+      &:nth-child(1){
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        border-right-color: transparent;
+      }
+      &:nth-last-child(1){
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+      }
+      &.active{
+        border-color: @blue!important;
+        color: @blue;
+      }
+    }
+  }
+  .green{
+    color: @green;
+  }
+  .orange{
+    color: @orange;
+  }
+  .red{
+    color: @red;
+  }
+}

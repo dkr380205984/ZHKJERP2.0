@@ -4,7 +4,7 @@
     <div class="printTable crosswise">
       <div class="print_head row">
         <div class="left">
-          <span class="title">{{companyName}}装箱计划单{{chinaNum[index]}}</span>
+          <span class="title">{{companyName}}装箱计划单{{chinaNum[index]}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">创建人：</span>
             {{user_name}}

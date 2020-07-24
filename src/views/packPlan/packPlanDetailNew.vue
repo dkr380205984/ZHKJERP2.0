@@ -612,12 +612,12 @@ export default {
       let long = item.long / 100
       let width = item.width / 100
       let height = item.height / 100
-      item.vol_number = this.$toFixed(long * width * height || 0)
+      item.vol_number = (long * width * height || 0).toFixed(4)
       this.compTotalVol(item)
     },
     // 计算总体积
     compTotalVol (item) {
-      item.total_vol = this.$toFixed(item.vol_number * item.total_box_number || 0)
+      item.total_vol = (item.vol_number * item.total_box_number || 0).toFixed(4)
     },
     // 改变总箱数
     changeTotalBoxNumber (item) {

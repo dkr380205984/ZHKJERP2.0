@@ -964,7 +964,8 @@ export default {
         has_quotation: this.has_quotation,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        type: 1
+        type: 1,
+        has_order: 0 // 筛选出未添加过订单的产品
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -1291,88 +1292,88 @@ export default {
         this.exchange_rate = orderInfo.exchange_rate
         this.tax_prop = orderInfo.tax_rate
         this.order_time = orderInfo.order_time
-        let orderBatch = []
-        let arr = [] // 存储产品id
-        orderInfo.order_batch.forEach(itemBatch => {
-          let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
-            items.id = items.product_id.toString()
-            items.unit = items.category_info.unit
-            items.sizeColor = items.all_size.map(valSize => {
-              return {
-                value: valSize.size_id,
-                label: valSize.size_name,
-                children: items.all_color.map(valColor => {
-                  return {
-                    value: valColor.color_id,
-                    label: valColor.color_name
-                  }
-                })
-              }
-            })
-            delete items.product_info
-            delete items.image
-            return items
-          }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
-          orderBatch.push({
-            time: itemBatch.delivery_time,
-            remark: itemBatch.desc,
-            name: itemBatch.batch_title,
-            type: itemBatch.order_type,
-            batch_info: productInfo
-          })
-          itemBatch.product_info.forEach(itemPro => {
-            let flag = arr.find(itemId => itemId.id === itemPro.product_id.toString())
-            if (!flag) {
-              arr.push({
-                category_info: {
-                  name: itemPro.category_info.unit,
-                  product_category: itemPro.category_info.category_name
-                },
-                checked: true,
-                color: itemPro.all_color,
-                flower_id: itemPro.category_info.flower_name,
-                id: itemPro.product_id.toString(),
-                product_code: itemPro.product_code,
-                sizeColor: itemPro.all_size.map(valSize => {
-                  return {
-                    value: valSize.size_id,
-                    label: valSize.size_name,
-                    children: itemPro.all_color.map(valColor => {
-                      return {
-                        value: valColor.color_id,
-                        label: valColor.color_name
-                      }
-                    })
-                  }
-                }),
-                size: itemPro.all_size
-              })
-            }
-          })
-        })
-        this.checkedProList = arr
-        this.batchDate = orderBatch.map(itemBatch => {
-          return {
-            time: itemBatch.time,
-            batch_info: itemBatch.batch_info.map(itemPro => {
-              return {
-                id: itemPro.id,
-                product_info: itemPro.product_info.map(itemSize => {
-                  return {
-                    size_color: [itemSize.size_id, itemSize.color_id],
-                    number: itemSize.number,
-                    price: ''
-                  }
-                }),
-                sizeColor: itemPro.sizeColor,
-                unit: itemPro.unit
-              }
-            }),
-            name: itemBatch.name,
-            remark: itemBatch.remark,
-            type: itemBatch.type
-          }
-        })
+        // let orderBatch = []
+        // let arr = [] // 存储产品id
+        // orderInfo.order_batch.forEach(itemBatch => {
+        //   let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
+        //     items.id = items.product_id.toString()
+        //     items.unit = items.category_info.unit
+        //     items.sizeColor = items.all_size.map(valSize => {
+        //       return {
+        //         value: valSize.size_id,
+        //         label: valSize.size_name,
+        //         children: items.all_color.map(valColor => {
+        //           return {
+        //             value: valColor.color_id,
+        //             label: valColor.color_name
+        //           }
+        //         })
+        //       }
+        //     })
+        //     delete items.product_info
+        //     delete items.image
+        //     return items
+        //   }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
+        //   orderBatch.push({
+        //     time: itemBatch.delivery_time,
+        //     remark: itemBatch.desc,
+        //     name: itemBatch.batch_title,
+        //     type: itemBatch.order_type,
+        //     batch_info: productInfo
+        //   })
+        //   itemBatch.product_info.forEach(itemPro => {
+        //     let flag = arr.find(itemId => itemId.id === itemPro.product_id.toString())
+        //     if (!flag) {
+        //       arr.push({
+        //         category_info: {
+        //           name: itemPro.category_info.unit,
+        //           product_category: itemPro.category_info.category_name
+        //         },
+        //         checked: true,
+        //         color: itemPro.all_color,
+        //         flower_id: itemPro.category_info.flower_name,
+        //         id: itemPro.product_id.toString(),
+        //         product_code: itemPro.product_code,
+        //         sizeColor: itemPro.all_size.map(valSize => {
+        //           return {
+        //             value: valSize.size_id,
+        //             label: valSize.size_name,
+        //             children: itemPro.all_color.map(valColor => {
+        //               return {
+        //                 value: valColor.color_id,
+        //                 label: valColor.color_name
+        //               }
+        //             })
+        //           }
+        //         }),
+        //         size: itemPro.all_size
+        //       })
+        //     }
+        //   })
+        // })
+        // this.checkedProList = arr
+        // this.batchDate = orderBatch.map(itemBatch => {
+        //   return {
+        //     time: itemBatch.time,
+        //     batch_info: itemBatch.batch_info.map(itemPro => {
+        //       return {
+        //         id: itemPro.id,
+        //         product_info: itemPro.product_info.map(itemSize => {
+        //           return {
+        //             size_color: [itemSize.size_id, itemSize.color_id],
+        //             number: itemSize.number,
+        //             price: ''
+        //           }
+        //         }),
+        //         sizeColor: itemPro.sizeColor,
+        //         unit: itemPro.unit
+        //       }
+        //     }),
+        //     name: itemBatch.name,
+        //     remark: itemBatch.remark,
+        //     type: itemBatch.type
+        //   }
+        // })
         this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
           return {
             name: items.replace('https://zhihui.tlkrzf.com/', ''),

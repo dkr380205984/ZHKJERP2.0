@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{title}}</span>
+          <span class="title">{{title}}{{inside_order_code_com}}</span>
           <span class="item"><span class="label">联系人：</span>{{user_name}}</span>
           <span class="item"><span class="label">联系电话：</span>{{user_tel}}</span>
           <span class="item"><span class="label">创建时间：</span>{{$getTime()}}</span>
@@ -80,7 +80,7 @@ export default {
       user_name: window.sessionStorage.getItem('user_name'),
       user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
-      orderInfo: {},
+      orderInfo: [],
       materialInfo: [],
       total_price: '',
       title: '',
@@ -151,6 +151,12 @@ export default {
           }, 1000)
         })
       }
+    }
+  },
+  computed: {
+    inside_order_code_com () {
+      let orderInsideCode = this.orderInfo.map(itemM => itemM.inside_order_code).filter(itemF => itemF)
+      return orderInsideCode.length > 0 ? '-' + orderInsideCode.join(';') : ''
     }
   },
   created () {

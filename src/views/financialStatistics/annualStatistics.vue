@@ -27,13 +27,21 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <div class="cut_item"
+      <!-- <div class="cut_item"
         @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">物料使用统计</span>
+      </div> -->
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item active">
         <svg class="iconFont"
@@ -48,7 +56,7 @@
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
         </svg>
-        <span class="name">操作记录统计</span>
+        <span class="name">生产记录统计</span>
       </div>
     </div>
     <div class="module">
@@ -421,6 +429,13 @@ export default {
           {
             name: '原料纱线',
             info: [
+              {
+                name: '纱线预定购',
+                income: 0,
+                expend: data.material.material_reserve_order,
+                show: true,
+                url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
+              },
               {
                 name: '订单原料采购',
                 income: 0,
