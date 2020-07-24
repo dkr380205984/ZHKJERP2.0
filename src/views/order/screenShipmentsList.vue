@@ -193,7 +193,7 @@ export default {
       },
       searchList: {}, // 筛选条件
       company_name: '',
-      loopTime: 3000,
+      loopTime: 30000,
       timer: null, // 定时器标识
       getNewDataTimer: null,
       userCut: false // 是否为用户点击切换类型
@@ -227,6 +227,8 @@ export default {
       if (this.$getTime() === this.$getTime(time)) {
         return '#1A94FF'
       } else if (new Date().getTime() > new Date(time).getTime()) {
+        return '#F5222D'
+      } else if (((new Date(time).getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24) <= 3) {
         return '#E6A23C'
       } else if (new Date().getTime() < new Date(time).getTime()) {
         return false
@@ -245,6 +247,8 @@ export default {
         return 'complete'
       } else if (new Date(this.$getTime()).getTime() > new Date(this.$getTime(time)).getTime()) {
         return 'overdue'
+      } else if ((new Date(this.$getTime(time)).getTime() - new Date(this.$getTime()).getTime()) / 1000 / 60 / 60 / 24 <= 3) {
+        return 'shipment'
       } else {
         return 'running'
       }

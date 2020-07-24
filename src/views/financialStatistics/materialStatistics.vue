@@ -26,21 +26,21 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <!-- <div class="cut_item active">
+      <div class="cut_item active">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">物料使用统计</span>
-      </div> -->
-      <div class="cut_item"
+      </div>
+      <!-- <div class="cut_item"
         @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">结算扣款统计</span>
-      </div>
+      </div> -->
       <div class="cut_item"
         @click="$router.push('/financialStatistics/annualStatistics?year=')">
         <svg class="iconFont"
