@@ -272,7 +272,7 @@
                 :key="index2"
                 class="deltaCtn">
                 <div class="leftCtn">
-                  <span>{{GLXuhao[index1][index2]}}</span>
+                  <span>{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"
@@ -1620,7 +1620,8 @@ export default {
       // 将纹版图循环补充完整
       // 例如1-2循环2次，5-6循环两次，补充3-4循环1次进去
       let GLRepeatComplete = []
-      data.draft_method.GLRepeat.forEach((item, index) => {
+      let GLRepeat = data.draft_method.GLRepeat || []
+      GLRepeat.forEach((item, index) => {
         GLRepeatComplete.push([])
         let start = 1
         item.forEach((itemChild) => {

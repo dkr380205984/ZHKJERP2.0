@@ -184,7 +184,7 @@
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length>1"
+                  <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length > 0"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/2')">添加</span>
                   <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length === 0"

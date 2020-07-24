@@ -435,6 +435,7 @@ export default {
     orderType (newVal) {
       if (this.userCut) {
         clearTimeout(this.getNewDataTimer)
+        this.userCut = false
       }
       if (this.filterList[newVal ? 'order' : 'sample'].length === 0) {
         this.loading = true
