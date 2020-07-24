@@ -252,7 +252,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getOrderList">
+            @current-change="changeRouter(pages)">
           </el-pagination>
         </div>
       </div>
@@ -553,6 +553,8 @@ export default {
         let status = +item[1]
         if (status === 2004) {
           return ['已完成', 'green']
+        } else if (((compileTime - nowTime) / 1000 / 60 / 60 / 24) <= 3 && ((compileTime - nowTime) / 1000 / 60 / 60 / 24) >= 0) {
+          return ['即将发货', 'orange']
         } else if (compileTime >= nowTime) {
           return ['进行中', 'blue']
         } else if (nowTime > compileTime) {

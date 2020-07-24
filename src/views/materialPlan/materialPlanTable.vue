@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{company_name}}{{$route.query.type === '1' ? '原' : '辅'}}料计划单</span>
+          <span class="title">{{company_name}}{{$route.query.type === '1' ? '原' : '辅'}}料计划单{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">联系人：</span>
             <span>{{contact_name}}</span>
@@ -132,6 +132,7 @@ export default {
       }
       let data = res[0].data.data
       this.orderInfo = data.order_info
+      if (this.$route.params.type === '1') { this.orderInfo.inside_order_code = res[1].data.data.inside_order_code }
       // if (this.params.proId) {
       //   this.productInfo = this.$mergeData(data.production_data.filter(item => Number(item.product_id) === Number(this.params.proId)), { mainRule: 'product_id', otherRule: [{ name: 'order_number', type: 'add' }, { name: 'category_info' }, { name: 'product_code' }] })
       // } else

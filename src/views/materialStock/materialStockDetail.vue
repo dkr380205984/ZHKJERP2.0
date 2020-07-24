@@ -563,7 +563,7 @@
           <div class="btn noBorder noMargin"
             @click="download">批量导出excel</div>
         </div>
-        <div class="tableCtnLv2 minHeight5">
+        <div class="tableCtnLv2">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
             <span class="tb_row">出入库时间</span>
@@ -612,7 +612,7 @@
             <span class="tb_row middle flex08">操作</span>
           </div>
           <div class="tb_content"
-            v-for="(itemLog,indexLog) in stockLog[stockLogPages-1]"
+            v-for="(itemLog,indexLog) in stockLog"
             :key="indexLog">
             <span class="tb_row flex04">
               <el-checkbox v-model="itemLog.checked"></el-checkbox>
@@ -631,14 +631,14 @@
             </span>
           </div>
         </div>
-        <div class="pageCtn">
+        <!-- <div class="pageCtn">
           <el-pagination background
             :page-size="1"
             layout="prev, pager, next"
             :total="stockLogTotal"
             :current-page.sync="stockLogPages">
           </el-pagination>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="module">
@@ -973,76 +973,72 @@ export default {
     filterHandleType (newVal) {
       if (newVal) {
         if (this.filterHandleClient) {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +newVal && item.client_name === this.filterHandleClient).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => +item.type === +newVal && item.client_name === this.filterHandleClient).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         } else {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +newVal).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => +item.type === +newVal).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         }
       } else {
         if (this.filterHandleClient) {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => item.client_name === this.filterHandleClient).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => item.client_name === this.filterHandleClient).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         } else {
-          this.stockLog = this.$newSplice(this.cloneStockLog.map(item => {
+          this.stockLog = this.cloneStockLog.map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         }
       }
-      this.stockLogPages = 1
-      this.stockLogTotal = this.stockLog.length
     },
     filterHandleClient (newVal) {
       if (newVal) {
         if (this.filterHandleType) {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +this.filterHandleType && item.client_name === newVal).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => +item.type === +this.filterHandleType && item.client_name === newVal).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         } else {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => item.client_name === newVal).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => item.client_name === newVal).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         }
       } else {
         if (this.filterHandleType) {
-          this.stockLog = this.$newSplice(this.cloneStockLog.filter(item => +item.type === +this.filterHandleType).map(item => {
+          this.stockLog = this.cloneStockLog.filter(item => +item.type === +this.filterHandleType).map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         } else {
-          this.stockLog = this.$newSplice(this.cloneStockLog.map(item => {
+          this.stockLog = this.cloneStockLog.map(item => {
             return {
               checked: false,
               ...item
             }
-          }), 5)
+          })
         }
       }
-      this.stockLogPages = 1
-      this.stockLogTotal = this.stockLog.length
     },
     stockEditInfo (val) {
       this.$nextTick(() => {
@@ -1175,10 +1171,7 @@ export default {
     },
     // 批量导出excel
     download () {
-      let data = []
-      this.stockLog.forEach(item => {
-        data.push(...item.filter(value => value.checked))
-      })
+      let data = this.stockLog.filter(value => value.checked)
       if (data.length === 0) {
         this.$message.error('请选择需要导出的日志')
         return
@@ -1205,11 +1198,7 @@ export default {
       }).then(() => {
         let checkedArr = []
         if (type === 'all') {
-          let deleteItem = []
-          item.forEach(itemInner => {
-            deleteItem = deleteItem.concat(itemInner)
-          })
-          checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
+          checkedArr = item.filter(value => value.checked).map(value => value.id)
         } else {
           checkedArr.push(item)
         }
@@ -1656,37 +1645,35 @@ export default {
               client_name: item.client_name
             }
           })
-          this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 1).map(item => {
+          this.stockLog = res[1].data.data.filter(item => Number(item.material_type) === 1).map(item => {
             return {
               ...item,
               checked: false
             }
-          }), 5)
-          this.stockLogTotal = this.stockLog.length
+          })
+          // this.stockLogTotal = this.stockLog.length
           this.stockLog.forEach(item => {
-            item.forEach(itemInner => {
-              let materialFlag = this.materialStockInfo.find(value => value.material_name === itemInner.material_name)
+            let materialFlag = this.materialStockInfo.find(value => value.material_name === item.material_name)
+            if (materialFlag) {
+              let colorFlag = materialFlag.color_info.find(value => value.attr === item.material_color)
+              if (colorFlag) {
+                if (item.type === 3) {
+                  colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(item.total_weight)
+                }
+              }
+            }
+            let clientFlag = this.weaveInfo.find(value => value.client_name === item.client_name)
+            if (clientFlag) {
+              let materialFlag = clientFlag.material_info.find(value => value.material_name === item.material_name)
               if (materialFlag) {
-                let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
+                let colorFlag = materialFlag.color_info.find(value => (value.attr === item.material_color || (value.attr === undefined && item.material_color === '')))
                 if (colorFlag) {
-                  if (itemInner.type === 3) {
-                    colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
+                  if (item.type === 4) {
+                    colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(item.total_weight)
                   }
                 }
               }
-              let clientFlag = this.weaveInfo.find(value => value.client_name === itemInner.client_name)
-              if (clientFlag) {
-                let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
-                if (materialFlag) {
-                  let colorFlag = materialFlag.color_info.find(value => (value.attr === itemInner.material_color || (value.attr === undefined && itemInner.material_color === '')))
-                  if (colorFlag) {
-                    if (itemInner.type === 4) {
-                      colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
-                    }
-                  }
-                }
-              }
-            })
+            }
           })
           this.loading = false
         })
@@ -1742,37 +1729,35 @@ export default {
               client_name: item.client_name
             }
           })
-          this.stockLog = this.$newSplice(res[1].data.data.filter(item => Number(item.material_type) === 2).map(item => {
+          this.stockLog = res[1].data.data.filter(item => Number(item.material_type) === 2).map(item => {
             return {
               ...item,
               checked: false
             }
-          }), 5)
-          this.stockLogTotal = this.stockLog.length
+          })
+          // this.stockLogTotal = this.stockLog.length
           this.stockLog.forEach(item => {
-            item.forEach(itemInner => {
-              let materialFlag = this.materialStockInfo.find(value => value.material_name === itemInner.material_name)
+            let materialFlag = this.materialStockInfo.find(value => value.material_name === item.material_name)
+            if (materialFlag) {
+              let colorFlag = materialFlag.color_info.find(value => value.attr === item.material_color)
+              if (colorFlag) {
+                if (item.type === 3) {
+                  colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(item.total_weight)
+                }
+              }
+            }
+            let clientFlag = this.weaveInfo.find(value => value.client_name === item.client_name)
+            if (clientFlag) {
+              let materialFlag = clientFlag.material_info.find(value => value.material_name === item.material_name)
               if (materialFlag) {
-                let colorFlag = materialFlag.color_info.find(value => value.attr === itemInner.material_color)
+                let colorFlag = materialFlag.color_info.find(value => (value.attr === item.material_color || (value.attr === undefined && item.material_color === '')))
                 if (colorFlag) {
-                  if (itemInner.type === 3) {
-                    colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(itemInner.total_weight)
+                  if (item.type === 4) {
+                    colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(item.total_weight)
                   }
                 }
               }
-              let clientFlag = this.weaveInfo.find(value => value.client_name === itemInner.client_name)
-              if (clientFlag) {
-                let materialFlag = clientFlag.material_info.find(value => value.material_name === itemInner.material_name)
-                if (materialFlag) {
-                  let colorFlag = materialFlag.color_info.find(value => (value.attr === itemInner.material_color || (value.attr === undefined && itemInner.material_color === '')))
-                  if (colorFlag) {
-                    if (itemInner.type === 4) {
-                      colorFlag.outStockNum = Number(colorFlag.outStockNum || 0) + Number(itemInner.total_weight)
-                    }
-                  }
-                }
-              }
-            })
+            }
           })
           this.loading = false
         })

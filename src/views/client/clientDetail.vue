@@ -1611,34 +1611,68 @@
     <!-- 操作记录 -->
     <div class="popup"
       v-show="oprFlag">
-      <div class="main">
+      <div class="main"
+        style="width:800px">
         <div class="title">
           <div class="text">操作记录</div>
           <i class="el-icon-close"
             @click="oprFlag=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height:600px">
+          <div class="row">
+            <span class="label">筛选条件：</span>
+            <span class="info">
+              <el-select v-model="log_type"
+                clearable
+                style="width:200px"
+                placeholder="请选择类型">
+                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'结算'}]"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="log_date"
+                clearable
+                style="margin-left:16px;width:300px"
+                value-format="yyyy-MM-dd"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+            </span>
+          </div>
           <el-timeline>
-            <el-timeline-item v-for="(item, index) in oprList"
+            <el-timeline-item v-for="(item, index) in oprListCom.list"
               :key="index">
               <el-collapse>
                 <el-collapse-item>
                   <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
-                      style="margin-left:20px">{{item.methods}}</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}</span>
+                    <span class="title_box"
+                      style="width:100%;display:flex;justify-content: space-between;align-items:center">
+                      <div>
+                        <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?$getTime(item.complete_time):'有问题'}}</span>
+                        <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
+                          style="margin-left:20px">{{item.methods}}</span>
+                        <span style="margin-left:20px">金额：
+                          <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}元</span>
+                        </span>
+                      </div>
+                      <div class="blue"
+                        style="margin-right:20px"
+                        @click.stop="goSettleDeductDetail(item)">查看详情</div>
                     </span>
                   </template>
                   <template v-if="item.methods==='结算'">
-                    <div class="collapseBox">
+                    <!-- <div class="collapseBox">
                       <span class="label">操作：</span>
                       <span class="info">
                         <div class="blue"
                           @click="goSettleDeductDetail(item)">查看详情</div>
                       </span>
-                    </div>
+                    </div> -->
                     <div class="collapseBox">
                       <span class="label">是否开票：</span>
                       <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
@@ -1663,13 +1697,13 @@
                     </div>
                   </template>
                   <template v-if="item.methods==='扣款'">
-                    <div class="collapseBox">
+                    <!-- <div class="collapseBox">
                       <span class="label">操作：</span>
                       <span class="info">
                         <div class="blue"
                           @click="goSettleDeductDetail(item)">查看详情</div>
                       </span>
-                    </div>
+                    </div> -->
                     <div class="collapseBox">
                       <span class="label">包含订单：</span>
                       <span class="info">
@@ -1686,6 +1720,12 @@
               </el-collapse>
             </el-timeline-item>
           </el-timeline>
+          <div class="row">
+            <span class="label">合计结算：</span>
+            <span class="info green">{{oprListCom.settle}}元</span>
+            <span class="label">合计扣款：</span>
+            <span class="info red">{{oprListCom.chargebacks}}元</span>
+          </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -1850,6 +1890,8 @@ export default {
         desc: ''
       },
       oprFlag: false,
+      log_type: '',
+      log_date: '',
       oprList: [],
       orderOprFlag: false,
       orderOprList: []
@@ -2205,6 +2247,16 @@ export default {
         if (res.data.status) {
           this.$message.success('结算成功')
           this.settleFlag = false
+          this.settle = {
+            date: this.$getTime(),
+            price: '',
+            ifInvoice: 2,
+            invoiceDetail: [{
+              invoiceNum: '',
+              invoicePrice: ''
+            }],
+            desc: ''
+          }
           this.init()
         }
       })
@@ -2226,6 +2278,11 @@ export default {
         if (res.data.status) {
           this.$message.success('扣款成功')
           this.chargebacksFlag = false
+          this.chargebacks = {
+            date: this.$getTime(),
+            price: '',
+            desc: ''
+          }
           this.init()
         }
       })
@@ -2347,6 +2404,26 @@ export default {
         return 9
       } else {
         return null
+      }
+    },
+    oprListCom () {
+      let list = this.oprList
+      if (this.log_type) {
+        list = list.filter(itemF => itemF.methods === this.log_type)
+      }
+      if (this.log_date && this.log_date.length === 2) {
+        list = list.filter(itemF => (new Date(this.$getTime(itemF.complete_time)).getTime() >= new Date(this.log_date[0]).getTime()) && (new Date(this.log_date[1]).getTime() >= new Date(this.$getTime(itemF.complete_time)).getTime()))
+      }
+      let settle = list.map(itemM => (+itemM.settle_price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0)
+      let chargebacks = list.map(itemM => (+itemM.deduct_price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0)
+      return {
+        list,
+        settle,
+        chargebacks
       }
     }
   },

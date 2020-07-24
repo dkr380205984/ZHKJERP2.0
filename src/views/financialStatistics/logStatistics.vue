@@ -27,13 +27,21 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <div class="cut_item"
+      <!-- <div class="cut_item"
         @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">物料使用统计</span>
+      </div> -->
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item"
         @click="$router.push('/financialStatistics/annualStatistics?year=')">
@@ -48,7 +56,7 @@
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
         </svg>
-        <span class="name">操作记录统计</span>
+        <span class="name">生产记录统计</span>
       </div>
     </div>
     <div class="module">
@@ -564,6 +572,14 @@
               <div class="oneBox">
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.material_push.total_number)}}kg</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">平均单价:</div>
+                <div class="content">{{$formatNum(statistics.material_push.avg_price)}}元</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">总价:</div>
+                <div class="content">{{$formatNum(statistics.material_push.total_price)}}元</div>
               </div>
             </div>
           </el-tab-pane>
@@ -2279,9 +2295,19 @@
         </div>
       </div>
     </div>
+    <!-- 导所有数据蒙层 -->
+    <div class="popup"
+      v-if="downloading"
+      style="display:flex;flex-direction:column;align-items:center;justify-content: center;color:#1A95FF;font-size:40px">
+      <span>当前进度：{{propgress || 0}}%
+        <span class="el-icon-loading"></span></span>
+      <span>正在下载，请勿刷新页面或关闭页面</span>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnBlue"
+            @click="downloadAllLog()">导出所有数据</div>
           <div class="btn btnBlue"
             @click="downloadLog">导出勾选数据</div>
         </div>
@@ -2345,7 +2371,9 @@ export default {
           total_weight: 0
         },
         material_push: {
-          total_number: 0
+          total_number: 0,
+          avg_price: 0,
+          total_price: 0
         },
         production_weave: {
           avg_price: 0,
@@ -2395,7 +2423,9 @@ export default {
           total_price: 0
         }
       },
-      operate_type: ''
+      operate_type: '',
+      downloading: '',
+      propgress: 0
     }
   },
   computed: {
@@ -2811,7 +2841,9 @@ export default {
           this.list = res.data.data
           this.total = res.data.meta.total
           this.statistics.material_push = {
-            total_number: res.data.total_number
+            total_number: res.data.total_number,
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price
           }
           this.loading = false
         })
@@ -3077,19 +3109,574 @@ export default {
           this.loading = false
         })
       }
-      // logStatistics.detail({
-      //   start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-      //   end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-      //   client_id: this.client_id,
-      //   product_code: this.product_code,
-      //   order_type: this.order_type,
-      //   production_type: this.production_type,
-      //   operate_user: this.operate_user,
-      //   material_name: this.material_name
-      // }).then((res) => {
-      //   this.statistics = res.data.data
-      //   this.loadingStatistics = false
-      // })
+    },
+    downloadAllLog (data = [], total, page = 1, limit = 50) {
+      this.downloading = true
+      this.propgress = this.$toFixed(page / Math.ceil(total / limit) * 100)
+      if (this.type === '物料订购调取') {
+        materialManage.detail({
+          order_id: null,
+          limit: limit,
+          page: page,
+          stock_id: this.stock_id,
+          order_type: this.order_type,
+          material_name: this.material_name,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
+            item.total_price = this.$toFixed(item.price * item.weight)
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '创建日期', key: 'create_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '物料名称', key: 'material_name' },
+              { title: '属性', key: 'color_code' },
+              { title: '来源类型', key: 'type_source_name' },
+              { title: '公司名称', key: 'client_name' },
+              { title: '单价(元)', key: 'price' },
+              { title: '数量', key: 'weight' },
+              { title: '总价(元)', key: 'total_price' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' },
+              { title: '完成日期', key: 'complete_time' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '物料加工') {
+        materialProcess.detail({
+          order_type: this.order_type,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          material_name: this.material_name,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            item.total_price = this.$toFixed(item.price * item.weight)
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '创建日期', key: 'create_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '加工单位', key: 'client_name' },
+              { title: '物料名称', key: 'material_name' },
+              { title: '属性', key: 'material_color' },
+              { title: '工序', key: 'process_type' },
+              { title: '单价(元)', key: 'price' },
+              { title: '数量', key: 'weight' },
+              { title: '总价(元)', key: 'total_price' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' },
+              { title: '完成日期', key: 'complete_time' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '物料出入库') {
+        materialStock.detail({
+          order_type: this.order_type,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          material_name: this.material_name,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user,
+          type: this.operate_type
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            item.type_name = item.type === 1 ? '出库' : item.type === 2 ? '入库' : '最终入库'
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '出入库时间', key: 'complete_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '物料名称', key: 'material_name' },
+              { title: '属性', key: 'material_color' },
+              { title: '数量', key: 'total_weight' },
+              { title: '单价', key: 'price' },
+              { title: '操作类型', key: 'type_name' },
+              { title: '出入库单位', key: 'client_name' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '织造分配') {
+        weave.detail({
+          order_type: this.order_type,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map((item) => {
+            item.product_code = item.product_info.code
+            item.sizeColor = item.size_name + '/' + item.color_name
+            item.total_price = this.$toFixed(item.price * item.number)
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '分配日期', key: 'created_at' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '出入库单位', key: 'client_name' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '尺码颜色', key: 'sizeColor' },
+              { title: '单价(元)', key: 'price' },
+              { title: '数量', key: 'number' },
+              { title: '总价(元)', key: 'total_price' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' },
+              { title: '完成日期', key: 'complete_time' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '补纱日志') {
+        replenish.list({
+          order_type: this.order_type,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          material_name: this.material_name,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data)
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '补纱日期', key: 'created_at' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '补纱单位', key: 'replenish_name' },
+              { title: '原料名称', key: 'material_name' },
+              { title: '颜色', key: 'material_color' },
+              { title: '补纱数量', key: 'need_weight' },
+              { title: '订购数量', key: 'order_weight' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '半成品加工') {
+        processing.detail({
+          order_type: this.order_type,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map((item) => {
+            item.product_code = item.product_info.code
+            item.sizeColor = item.size_name + '/' + item.color_name
+            item.total_price = this.$toFixed(item.price * item.number)
+            item.part = item.part_assign.map((item) => item.name).join('/')
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '分配日期', key: 'created_at' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '出入库单位', key: 'client_name' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '尺码颜色', key: 'sizeColor' },
+              { title: '所需辅料', key: 'part' },
+              { title: '单价(元)', key: 'price' },
+              { title: '数量', key: 'number' },
+              { title: '总价(元)', key: 'total_price' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' },
+              { title: '完成日期', key: 'complete_time' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '产品入库') {
+        receive.detail({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          production_type: this.production_type,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map((item) => {
+            item.product_code = item.product_code.code
+            item.sizeColor = item.size_name + '/' + item.color_name
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '入库日期', key: 'complete_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '单位名称', key: 'client_name' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '尺码颜色', key: 'sizeColor' },
+              { title: '入库类型', key: 'production_type' },
+              { title: '数量', key: 'number' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '产品出库') {
+        dispatch.detail({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          production_type: this.production_type,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map((item) => {
+            item.product_code = item.product_code.code
+            item.sizeColor = item.size_name + '/' + item.color_name
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '出库日期', key: 'complete_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '单位名称', key: 'client_name' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '尺码颜色', key: 'sizeColor' },
+              { title: '出库类型', key: 'production_type' },
+              { title: '数量', key: 'number' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '半成品检验') {
+        inspection.semiFinishedDetail({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            let flag = false
+            // 检查是否有次品
+            item.rejects_info && JSON.parse(item.rejects_info).forEach((itemChild) => {
+              if (Number(itemChild.number) > 0) {
+                flag = true
+              }
+            })
+            if (flag) {
+              item.rejects_info = JSON.parse(item.rejects_info)
+            } else {
+              item.rejects_info = 0
+            }
+            if (item.rejects_info !== 0) {
+              item.rejects_number = item.rejects_info.reduce((total, current) => {
+                return total + Number(current.number)
+              }, 0)
+              item.rejects_infos = ''
+              item.rejects_client = ''
+              item.rejects_info.forEach((val, key) => {
+                item.rejects_infos += val.reason.join(',')
+                item.rejects_client += val.client_id + '<br />'
+              })
+            } else {
+              item.rejects_number = 0
+              item.rejects_infos = ''
+              item.rejects_client = ''
+            }
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '检验日期', key: 'complete_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '织造单位', key: 'client_name' },
+              { title: '产品名称', key: 'product_name' },
+              { title: '尺码', key: 'size_name' },
+              { title: '颜色', key: 'color_name' },
+              { title: '检验数量', key: 'number' },
+              { title: '次品数量', key: 'rejects_number' },
+              { title: '次品原因', key: 'rejects_infos' },
+              { title: '备注', key: 'desc' },
+              { title: '操作人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '成品检验') {
+        inspection.finishedDetail({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map((item) => {
+            let flag = false
+            // 检查是否有次品
+            item.rejects_info && JSON.parse(item.rejects_info).forEach((itemChild) => {
+              if (Number(itemChild.number) > 0) {
+                flag = true
+              }
+            })
+            if (flag) {
+              item.rejects_info = JSON.parse(item.rejects_info)
+            } else {
+              item.rejects_info = 0
+            }
+            if (item.rejects_info !== 0) {
+              item.rejects_number = item.rejects_info.reduce((total, current) => {
+                return total + Number(current.number)
+              }, 0)
+              item.rejects_infos = ''
+              item.rejects_client = ''
+              item.rejects_info.forEach((val, key) => {
+                item.rejects_infos += val.reason.join(',')
+                item.rejects_client += val.client_id + '<br />'
+              })
+            } else {
+              item.rejects_number = 0
+              item.rejects_infos = ''
+              item.rejects_client = ''
+            }
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '检验日期', key: 'complete_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '产品品类', key: 'product_types' },
+              { title: '尺码', key: 'size_name' },
+              { title: '颜色', key: 'color_name' },
+              { title: '检验数量', key: 'number' },
+              { title: '次品数量', key: 'rejects_number' },
+              { title: '次品原因', key: 'rejects_infos' },
+              { title: '承担单位', key: 'rejects_client' },
+              { title: '备注', key: 'desc' },
+              { title: '操作人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '包装订购') {
+        packPlan.packOrderLog({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          material_name: this.material_name,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            item.pack_size = item.price_square ? JSON.parse(item.size).join('*') : item.pack_size
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '创建日期', key: 'order_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '订购单位', key: 'client_name' },
+              { title: '包装辅料', key: 'material_name' },
+              { title: '单价', key: 'price' },
+              { title: '数量', key: 'number' },
+              { title: '总价', key: 'total_price' },
+              { title: '规格', key: 'pack_size' },
+              { title: '属性', key: 'attribute' },
+              { title: '备注', key: 'desc' },
+              { title: '创建人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '实际装箱') {
+        packPlan.packActualLog({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            // item.product_type = item.type.join('/')
+            item.product_code = item.product_info.product_code
+            item.product_type = item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '创建日期', key: 'create_time' },
+              { title: '关联单号', key: 'order_code' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '产品品类', key: 'product_type' },
+              { title: '尺码', key: 'size_name' },
+              { title: '颜色', key: 'color_name' },
+              { title: '实际装箱数', key: 'number' },
+              { title: '箱数', key: 'total_box' },
+              { title: '备注', key: 'desc' },
+              { title: '操作人', key: 'user_name' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else if (this.type === '销售出库') {
+        packPlan.outMarketLog({
+          order_type: null,
+          order_id: null,
+          limit: limit,
+          page: page,
+          product_code: this.product_code,
+          client_id: this.client_id,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user
+        }).then((res) => {
+          data.push(...res.data.data.map(item => {
+            item.category_type = [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/')
+            return item
+          }))
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '出库日期', key: 'complete_time' },
+              { title: '销售单位', key: 'client_name' },
+              { title: '销售产品', key: 'product_code' },
+              { title: '产品类型', key: 'category_type' },
+              { title: '尺码', key: 'size_name' },
+              { title: '颜色', key: 'color_name' },
+              { title: '销售数量', key: 'number' },
+              { title: '销售单价', key: 'price' },
+              { title: '价格说明', key: 'price_remark' },
+              { title: '总价', key: 'total_price' },
+              { title: '备注', key: 'desc' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      }
     }
   },
   created () {

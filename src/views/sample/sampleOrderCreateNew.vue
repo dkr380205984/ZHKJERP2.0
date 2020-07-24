@@ -601,7 +601,8 @@ export default {
         has_quotation: this.has_quotation,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        type: 1
+        type: 1,
+        has_order: 0 // 筛选出未添加过样单的产品
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -805,30 +806,30 @@ export default {
           this.client_id = sampleOrderInfo.client_id.toString()
           this.getContact(this.client_id)
           this.contact_id = sampleOrderInfo.contacts_id
-          this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/size' }, { name: 'color_name/color' }] } })
-          this.checkedProList = this.checkedProList.map(itemPro => {
-            itemPro.sample_product_code = itemPro.product_info.product_code
-            itemPro.sizeColor = itemPro.product_info.size_measurement.map(itemSize => {
-              return {
-                value: itemSize.size_id,
-                label: itemSize.size_name,
-                children: itemPro.product_info.color.map(itemColor => {
-                  return {
-                    value: itemColor.color_id,
-                    label: itemColor.color_name
-                  }
-                })
-              }
-            })
-            itemPro.sizeInfo = itemPro.sizeInfo.map(items => {
-              return {
-                size_color: [items.size_id, items.color_id],
-                number: items.number
-              }
-            })
-            itemPro.unit = itemPro.product_info.unit
-            return itemPro
-          })
+          // this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/size' }, { name: 'color_name/color' }] } })
+          // this.checkedProList = this.checkedProList.map(itemPro => {
+          //   itemPro.sample_product_code = itemPro.product_info.product_code
+          //   itemPro.sizeColor = itemPro.product_info.size_measurement.map(itemSize => {
+          //     return {
+          //       value: itemSize.size_id,
+          //       label: itemSize.size_name,
+          //       children: itemPro.product_info.color.map(itemColor => {
+          //         return {
+          //           value: itemColor.color_id,
+          //           label: itemColor.color_name
+          //         }
+          //       })
+          //     }
+          //   })
+          //   itemPro.sizeInfo = itemPro.sizeInfo.map(items => {
+          //     return {
+          //       size_color: [items.size_id, items.color_id],
+          //       number: items.number
+          //     }
+          //   })
+          //   itemPro.unit = itemPro.product_info.unit
+          //   return itemPro
+          // })
           this.compiled_time = sampleOrderInfo.deliver_time
           this.remark = sampleOrderInfo.desc
           this.loading = false

@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{companyName}}补纱单</span>
+          <span class="title">{{companyName}}补纱单{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item"><span class="label">联系人：</span>{{user_name}}</span>
           <span class="item"><span class="label">联系电话：</span></span>
           <span class="item"><span class="label">创建日期：</span>{{$getTime()}}</span>

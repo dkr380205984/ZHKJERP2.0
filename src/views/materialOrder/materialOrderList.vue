@@ -38,6 +38,8 @@
           </div>
           <div class="addCtn">
             <span class="btn btnWhiteBlue"
+              @click="$router.push('/materialOrder/materialOrderCreate')">添加预定购</span>
+            <span class="btn btnWhiteBlue"
               @click="getLogList(1)">查看预定购日志</span>
           </div>
         </div>

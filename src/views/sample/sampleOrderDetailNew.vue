@@ -1196,8 +1196,8 @@
           <div class="btn btnOrange"
             v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002"
             @click="changeOrderStatus('change')">修改</div>
-          <div class="btn btnBlue"
-            @click="$router.push('/sample/sampleOrderCreate?orderId=' + $route.params.id)">复制此样单</div>
+          <!-- <div class="btn btnBlue"
+            @click="$router.push('/sample/sampleOrderCreate?orderId=' + $route.params.id)">复制此样单</div> -->
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@
               @click="changeOrderStatus('change')">修改订单</div>
             <div class="btn btnBlue"
               style="padding:0 8px;font-size:14px"
-              v-if="orderInfo.status !== 2002 || orderInfo.status !== 2004"
+              v-if="orderInfo.status === 2002 || orderInfo.status === 2005"
               @click="changeOrderStatus('ok')">确认完成</div>
           </div>
           <div class="otherInfo"
@@ -1338,8 +1338,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <div class="btn btnBlue"
-            @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div>
+          <!-- <div class="btn btnBlue"
+            @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div> -->
         </div>
       </div>
     </div>
@@ -2165,7 +2165,7 @@ export default {
               compiled_time: this.$getTime(item.complete_time)
             }
           })
-          this.orderDetailInfo.finance.weave = this.$mergeData(data, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+          this.orderDetailInfo.finance.weave = this.$mergeData(data, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
         }
         this.loading = false
       })
@@ -2193,7 +2193,7 @@ export default {
               compiled_time: this.$getTime(item.complete_time)
             }
           })
-          this.orderDetailInfo.finance.process = this.$mergeData(processInfo, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'process_type', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
+          this.orderDetailInfo.finance.process = this.$mergeData(processInfo, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'process_type', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
         }
         this.loading = false
       })
@@ -2783,7 +2783,7 @@ export default {
   },
   filters: {
     filterType (item) {
-      return item.is_part === 2 ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
+      return item.is_part !== 1 ? item.name : [item.category_name, item.type_name, item.style_name].join('/')
     },
     filterStatus (status) {
       if (status === 2001) {

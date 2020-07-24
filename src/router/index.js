@@ -370,8 +370,12 @@ const routes = [
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
       path: '/financialStatistics/logStatistics/:params',
-      name: '操作记录统计',
+      name: '生产记录统计',
       component: () => import('../views/financialStatistics/logStatistics.vue')
+    }, {
+      path: '/financialStatistics/settleChargebacks/:params',
+      name: '结算扣款统计',
+      component: () => import('../views/financialStatistics/settleChargebacks.vue')
     }, {
       path: '/tutorialSystem/tutorialSystemDetail/:id',
       name: '系统教程详情',

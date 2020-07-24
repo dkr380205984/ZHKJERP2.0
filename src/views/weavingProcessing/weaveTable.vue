@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{title}}</span>
+          <span class="title">{{title}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">联系人：</span>
             {{user_name}}
@@ -276,7 +276,7 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.product_info.size.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
@@ -327,7 +327,7 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.product_info.size.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
@@ -376,7 +376,7 @@ export default {
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
             let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
-              let flag = item.product_info.size.find(itemPro => itemPro.size_name === item.size)
+              let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
                 ...item.product_info,
