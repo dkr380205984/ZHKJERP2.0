@@ -803,7 +803,7 @@
               style="flex:auto"
               v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
-              <span class="index">{{craftDetail.draft_method.GLXuhao[indexs][index]}}</span>
+              <span class="index">{{craftDetail.draft_method.GLXuhao[indexs] ? craftDetail.draft_method.GLXuhao[indexs][index] : ''}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>
@@ -815,7 +815,7 @@
       </div>
       <div class="outItem"
         v-for="(item,index) in craftDetail.draft_method.GLRepeat"
-        :key="index">
+        :key="'xunhuan-' + index">
         <span class="label">纹版图{{letterArr[index]}}：</span>
         <div style="display:block;padding-left:32px;margin:12px 0"
           v-for="(itemChild,indexChild) in item"
@@ -840,7 +840,8 @@ export default {
         product_info: {
           category_info: {},
           size: [],
-          materials: []
+          materials: [],
+          img: []
         },
         draft_method: {
           GL: [],
@@ -997,7 +998,8 @@ export default {
         // 将纹版图循环补充完整
         // 例如1-2循环2次，5-6循环两次，补充3-4循环1次进去
         let GLRepeatComplete = []
-        data.draft_method.GLRepeat.forEach((item, index) => {
+        let GLRepeat = data.draft_method.GLRepeat || []
+        GLRepeat.forEach((item, index) => {
           GLRepeatComplete.push([])
           let start = 1
           item.forEach((itemChild) => {
