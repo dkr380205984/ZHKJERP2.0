@@ -164,19 +164,9 @@
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                v-if="itemOrder.has_plan !== 0"
-                @click="$router.push('/materialStock/materialStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
-                {{material_type==='1'?'原':'辅'}}料出入库
-              </span>
-              <!-- 客供纱 -->
-              <span class="opr"
-                v-if="itemOrder.material_status === 1 && itemOrder.has_plan === 0"
                 @click="$router.push('/materialStock/easyMaterialStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
                 {{material_type==='1'?'原':'辅'}}料出入库
               </span>
-              <span class="opr"
-                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.material_status === 2 && itemOrder.has_plan===0">暂无物料计划</span>
             </div>
           </div>
         </div>

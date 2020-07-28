@@ -383,12 +383,12 @@
                     </span>
                     <span class="extra">
                       <div class="label">相关页面：</div>
-                      <div class="link"
+                      <!-- <div class="link"
                         style="margin-left:4px">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/materialPlan/materialPlanDetail/'+ $route.params.id +'/1')">物料计划</span>
-                      </div>
+                      </div> -->
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>

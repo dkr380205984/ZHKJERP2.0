@@ -38,12 +38,12 @@ export default {
     return {
       meauList: {
         production: [
-          {
-            name: '物料计划生产',
-            id: 6,
-            path: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1',
-            icon: 'icon-wuliaojihua'
-          },
+          // {
+          //   name: '物料计划生产',
+          //   id: 6,
+          //   path: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1',
+          //   icon: 'icon-wuliaojihua'
+          // },
           {
             name: '物料订购',
             id: 7,
