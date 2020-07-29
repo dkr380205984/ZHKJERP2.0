@@ -127,7 +127,7 @@
                   <span class="tb_row">{{itemMa.material_loss ? itemMa.material_loss + '%' : '0%'}}</span>
                   <span class="tb_row">{{itemMa.end_num ? itemMa.type === 1 ? $toFixed(itemMa.end_num/1000) + 'kg' : $toFixed(itemMa.end_num) + '' +itemMa.unit : '-'}}</span>
                   <span class="tb_row flex08">
-                    {{itemMa.number ? itemMa.number + '' + itemMa.unit : '-'}}
+                    {{itemMa.number ? $toFixed(itemMa.number) + '' + itemMa.unit : '-'}}
                   </span>
                 </div>
               </div>

@@ -27,22 +27,22 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <div class="cut_item"
+      <!-- <div class="cut_item"
         @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">物料使用统计</span>
-      </div>
-      <!-- <div class="cut_item"
+      </div> -->
+      <div class="cut_item"
         @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">结算扣款统计</span>
-      </div> -->
+      </div>
       <div class="cut_item"
         @click="$router.push('/financialStatistics/annualStatistics?year=')">
         <svg class="iconFont"
@@ -573,14 +573,14 @@
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.material_push.total_number)}}kg</div>
               </div>
-              <!-- <div class="oneBox">
+              <div class="oneBox">
                 <div class="label">平均单价:</div>
                 <div class="content">{{$formatNum(statistics.material_push.avg_price)}}元</div>
               </div>
               <div class="oneBox">
                 <div class="label">总价:</div>
                 <div class="content">{{$formatNum(statistics.material_push.total_price)}}元</div>
-              </div> -->
+              </div>
             </div>
           </el-tab-pane>
           <el-tab-pane label="织造分配"
@@ -1790,7 +1790,7 @@
                   <span class="text">{{item.material_name}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.price}}元</span>
+                  <span class="text">{{$toFixed(item.price || 0)}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.number}}</span>

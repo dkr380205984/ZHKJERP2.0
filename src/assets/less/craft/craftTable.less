@@ -59,11 +59,14 @@
   .print_row,
   .row_item,
   .col_title,
-  .row_item_span{
+  .row_item_span,
+  .print_remark{
     border-color: rgba(1,1,1,1) !important;
   }
   .print_body{  //  新增2020-06-01
-    border-bottom: none;
+    &:last-child{
+      border-bottom: none;
+    }
   }
   .row_item{
     .index{
