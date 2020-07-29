@@ -57,9 +57,9 @@ export default {
             icon: 'icon-wuliaochuruku'
           },
           {
-            name: '织造加工',
+            name: '织片管理',
             id: 8,
-            path: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
+            path: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/1',
             icon: 'icon-zhizaojiagong'
           },
           {

@@ -102,7 +102,15 @@ const companyType = [
     name: '销售客户'
   }
 ]
+const processType = [{
+  value: 1,
+  name: '织片'
+}, {
+  value: 2,
+  name: '套口'
+}]
 export {
+  processType,
   companyType,
   moneyArr,
   permissions,
