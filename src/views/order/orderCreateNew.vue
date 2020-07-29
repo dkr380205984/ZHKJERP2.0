@@ -338,6 +338,10 @@
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>
+              <div :class="{'stateCtn':true, 'green':item.has_order === 1}">
+                <div class="state"></div>
+                <span class="name">订</span>
+              </div>
             </div>
             <div class="col">
               <el-checkbox v-model="item.checked"
@@ -965,7 +969,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         type: 1,
-        has_order: 0 // 筛选出未添加过订单的产品
+        has_order: 1 // 筛选出未添加过订单的产品
       }).then(res => {
         if (res.data.status === false) {
           this.$message({

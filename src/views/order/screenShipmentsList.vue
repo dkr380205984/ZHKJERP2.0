@@ -122,8 +122,8 @@
                 <span class="tb_row"
                   style="flex-direction:column;justify-content: center;align-items: flex-start;">
                   <span>{{computedTime(item.delivery_time,item.order_time)[0]+'天'}}</span>
-                  <span v-if="computedTime(item.delivery_time,item.order_time)[1] && setType(item.delivery_time,item.status) === 'overdue'"
-                    style="color:#FF4D4D">{{computedTime(item.delivery_time,item.order_time)[1]}}</span>
+                  <span v-if="computedTime(item.delivery_time,item.order_time)[1]"
+                    :style="{color:setType(item.delivery_time,item.status) === 'overdue' ? '#FF4D4D' : '#E6A23C'}">{{computedTime(item.delivery_time,item.order_time)[1]}}</span>
                 </span>
                 <span class="tb_row middle">
                   <div :class="['nowType',setType(item.delivery_time,item.status)]"></div>
@@ -238,7 +238,8 @@ export default {
     computedTime (time, orderTime) {
       let useDay = Math.ceil((new Date().getTime() - new Date(orderTime).getTime()) / 1000 / 60 / 60 / 24)
       let dayNumber = Math.floor((new Date().getTime() - new Date(time).getTime()) / 1000 / 60 / 60 / 24)
-      let str = dayNumber > 0 ? '逾期' + dayNumber + '天' : false
+      let str = dayNumber > 0 ? '逾期' + dayNumber + '天' : dayNumber === 0 ? `今日发货` : `${-dayNumber}天后发货`
+      console.log(str)
       return [useDay, str]
     },
     // 判断是否逾期

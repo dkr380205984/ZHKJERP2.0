@@ -679,7 +679,7 @@
                   <span class="tcolumn">{{item.type === 1 ? $toFixed(itemColor.number/1000 || 0) + 'kg' : $toFixed(itemColor.number|| 0 ) + item.unit}}</span>
                 </span>
               </span>
-              <span class="tcolumn">{{item.color_info.map(items=>item.type === 1 ? items.number/1000 : items.number).reduce((a,b)=>{return Number(a)+Number(b)})}}{{item.type === 1 ? 'kg' : item.unit}}</span>
+              <span class="tcolumn">{{$toFixed(item.color_info.map(items=>item.type === 1 ? items.number/1000 : items.number).reduce((a,b)=>{return Number(a)+Number(b)}))}}{{item.type === 1 ? 'kg' : item.unit}}</span>
             </span>
           </div>
         </div>

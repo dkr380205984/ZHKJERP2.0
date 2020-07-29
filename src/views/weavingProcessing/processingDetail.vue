@@ -360,8 +360,8 @@
                         <span v-for="(itemIng,indexIng) in itemChild.part_assign"
                           :key="indexIng">{{itemIng.name}}</span>
                       </div>
-                      <div class="tcolumn">{{itemChild.price}}</div>
-                      <div class="tcolumn">{{itemChild.number}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.price)}}</div>
+                      <div class="tcolumn">{{$toFixed(itemChild.number)}}</div>
                       <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
                       <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
                     </div>
@@ -445,8 +445,8 @@
                     <span v-for="(itemIng,indexIng) in item.part_assign"
                       :key="indexIng">{{itemIng.name}}</span>
                   </div>
-                  <div class="tcolumn">{{item.price}}</div>
-                  <div class="tcolumn">{{item.number}}</div>
+                  <div class="tcolumn">{{$toFixed(item.price)}}</div>
+                  <div class="tcolumn">{{$toFixed(item.number)}}</div>
                   <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                   <div class="tcolumn">{{item.desc}}</div>
                   <div class="tcolumn">{{item.user_name}}</div>

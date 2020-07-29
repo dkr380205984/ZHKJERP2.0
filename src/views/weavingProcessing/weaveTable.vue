@@ -106,7 +106,7 @@
       v-if="!(materialInfo.length === 0 && $route.query.type === '2')">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{titles}}</span>
+          <span class="title">{{titles}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">联系人：</span>
             {{user_name}}
@@ -143,7 +143,7 @@
         </div>
         <div class="print_row has_marginBottom">
           <div class="row_item center w180">生产单位</div>
-          <div class="row_item left">{{weaveInfo[0] ? weaveInfo[0].client_name : ''}}</div>
+          <div class="row_item left">{{filterClientTel(weaveInfo[0] ? weaveInfo[0].client_name : '')}}</div>
           <div class="row_item center w180">总重</div>
           <div class="row_item left flex08">{{materialInfo|filterialWeight}}{{$route.query.type === '1' ? 'kg' : '个'}}</div>
         </div>

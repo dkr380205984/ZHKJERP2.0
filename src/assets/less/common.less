@@ -237,7 +237,9 @@
               .main{
                 padding: 24px;
                 display: flex;
-                height: 90px;
+                height: 138px;
+                width: 100%;
+                box-sizing: border-box;
                 .icon{
                   width: 18px;
                   height: 18px;
@@ -266,11 +268,15 @@
                   display: flex;
                   flex-direction: column;
                   justify-content: flex-start;
+                  overflow: hidden;
                   .text{
                     margin-bottom: 16px;
                     min-height: 20px;
                     line-height: 20px;
                     color: @font45;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                     &.title{
                       font-size: @fontBig;
                       color: @font85;

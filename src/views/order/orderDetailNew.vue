@@ -499,11 +499,11 @@
                   v-for="(itemPrice,indexPrice) in item.price_info"
                   :key="indexPrice">
                   <span class="tcolumn"
-                    :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.name}}{{itemPrice.number ? itemPrice.number + item.unit : ''}}</span>
+                    :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.name}}{{itemPrice.number ? $toFixed(itemPrice.number) + item.unit : ''}}</span>
                   <span class="tcolumn green"
-                    :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? itemPrice.total_price + (item.priceUnit ? item.priceUnit : '元') : ''}}</span>
+                    :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? $toFixed(itemPrice.total_price) + (item.priceUnit ? item.priceUnit : '元') : ''}}</span>
                   <span class="tcolumn"
-                    :class="{'noData':!itemPrice.pre_price}">{{itemPrice.pre_price ? itemPrice.pre_price + (item.priceUnit ? item.priceUnit : '元') + '' + item.unit: ''}}</span>
+                    :class="{'noData':!itemPrice.pre_price}">{{itemPrice.pre_price ? $toFixed(itemPrice.pre_price) + (item.priceUnit ? item.priceUnit : '元') + '' + item.unit: ''}}</span>
                 </span>
               </span>
               <span class="tcolumn"

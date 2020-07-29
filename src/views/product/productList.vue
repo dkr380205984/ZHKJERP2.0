@@ -184,6 +184,11 @@
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>
+              <div class="stateCtn"
+                :class="{'green':item.has_order===1}">
+                <div class="state"></div>
+                <span class="name">订</span>
+              </div>
             </div>
             <div class="col">
               <span class="opr"
@@ -313,6 +318,7 @@ export default {
         has_plan: this.has_plan,
         has_craft: this.has_craft,
         has_quotation: this.has_quotation,
+        has_order: 0,
         user_name: this.user_id,
         type: 1,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',

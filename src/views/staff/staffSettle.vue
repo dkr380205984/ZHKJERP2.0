@@ -112,7 +112,7 @@
                 <div class="label">{{item.department_name}}</div>
               </div>
               <div class="box">
-                <div class="label">{{item.price}}</div>
+                <div class="label">{{$toFixed(item.price || 0)}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.extra_price}}</div>
@@ -121,7 +121,7 @@
                 <div class="label">{{item.deduct_price}}</div>
               </div>
               <div class="box">
-                <div class="label">{{item.realityTotal}}</div>
+                <div class="label">{{$toFixed(item.realityTotal || 0)}}</div>
               </div>
               <div class="box">
                 <div class="label">{{item.child_data.length>0?item.child_data[0].complete_time:"-"}}</div>
