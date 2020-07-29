@@ -998,8 +998,10 @@ export default {
         // 将纹版图循环补充完整
         // 例如1-2循环2次，5-6循环两次，补充3-4循环1次进去
         let GLRepeatComplete = []
-        let GLRepeat = data.draft_method.GLRepeat || []
-        GLRepeat.forEach((item, index) => {
+        if (this.craftDetail.draft_method.GLRepeat.length > 0 && !this.craftDetail.draft_method.GLRepeat[0][0].start) {
+          this.craftDetail.draft_method.GLRepeat = []
+        }
+        this.craftDetail.draft_method.GLRepeat.forEach((item, index) => {
           GLRepeatComplete.push([])
           let start = 1
           item.forEach((itemChild) => {
@@ -1021,6 +1023,16 @@ export default {
             })
           }
         })
+        // 如果没有纹板图循环，直接生成一个GLRepeatComplete
+        if (this.craftDetail.draft_method.GLRepeat.length === 0) {
+          this.craftDetail.draft_method.GLShow.forEach((item) => {
+            GLRepeatComplete.push([{
+              start: 1,
+              end: item.length,
+              repeat: 1
+            }])
+          })
+        }
         // 序号计算
         GLRepeatComplete.forEach((item, index) => {
           this.craftDetail.draft_method.GLXuhao.push([])
