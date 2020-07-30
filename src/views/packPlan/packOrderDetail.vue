@@ -308,6 +308,7 @@
               <span class="content">
                 <zh-input placeholder='总价'
                   v-model="itemOrder.total_price"
+                  disabled
                   type='number'>
                   <template slot="append">元</template>
                 </zh-input>
@@ -383,7 +384,7 @@
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
-            v-for="(item,index) in orderLog[pageLog-1]"
+            v-for="(item,index) in orderLog"
             :key="index">
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
@@ -411,14 +412,14 @@
             </span>
           </div>
         </div>
-        <div class="pageCtn">
+        <!-- <div class="pageCtn">
           <el-pagination background
             :page-size="1"
             layout="prev, pager, next"
             :total="totalLog"
             :current-page.sync="pageLog">
           </el-pagination>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="module">
@@ -648,8 +649,8 @@ export default {
       activePlanInfo: [],
       orderLog: [],
       packOrderInfo: [],
-      pageLog: 1,
-      totalLog: 1,
+      // pageLog: 1,
+      // totalLog: 1,
       lock: true,
       // 库存调取数据
       stockLoading: true,
@@ -807,10 +808,7 @@ export default {
     },
     // 批量导出excel
     download () {
-      let data = []
-      this.orderLog.forEach(item => {
-        data.push(...item.filter(value => value.checked))
-      })
+      let data = this.orderLog.filter(value => value.checked)
       if (data.length === 0) {
         this.$message.error('请选择需要导出的日志')
         return
@@ -841,10 +839,7 @@ export default {
       }).then(() => {
         let checkedArr = []
         if (type === 'all') {
-          let deleteItem = []
-          item.forEach(itemInner => {
-            deleteItem = deleteItem.concat(itemInner)
-          })
+          let deleteItem = item
           checkedArr = deleteItem.filter(value => value.checked).map(value => value.id)
         } else {
           checkedArr.push(item)
@@ -984,7 +979,7 @@ export default {
               price_square: itemI.price,
               desc: item.remark,
               order_time: item.compile_time,
-              total_price: item.total_price,
+              total_price: itemI.one_price * itemI.number,
               attribute: item.attr,
               pack_size: itemI.size_info,
               price_type: item.computed_method,
@@ -1102,14 +1097,14 @@ export default {
             type: 6
           }
         }))
-        this.orderLog = this.$newSplice(this.$clone(res[1].data.data).concat(stockLog).map(item => {
+        this.orderLog = this.$clone(res[1].data.data).concat(stockLog).map(item => {
           return {
             ...item,
             checked: false
           }
-        }), 5)
-        this.totalLog = this.orderLog.length
-        this.packOrderInfo = this.$mergeData(this.$clone(res[1].data.data), { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
+        })
+        // this.totalLog = this.orderLog.length
+        this.packOrderInfo = this.$mergeData(res[1].data.data, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
         this.loading = false
       })
     },
@@ -1220,10 +1215,7 @@ export default {
   },
   computed: {
     isNoStockInfo () {
-      let data = []
-      this.orderLog.forEach(item => {
-        data.push(...item.filter(items => items.checked && items.action_type === 3))
-      })
+      let data = this.orderLog.filter(items => items.checked && items.action_type === 3)
       return data.length
     }
   }

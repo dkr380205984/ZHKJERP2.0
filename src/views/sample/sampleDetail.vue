@@ -184,12 +184,12 @@
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length > 0"
+                  <span v-if="(!detail.craft_info||detail.craft_info.length===0)"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/2')">添加</span>
-                  <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length === 0"
+                  <!-- <span v-if="(!detail.craft_info||detail.craft_info.length===0) &&detail.order_info.length === 0"
                     class="text"
-                    style="color:#ccc">请先给样品添加样单</span>
+                    style="color:#ccc">请先给样品添加样单</span> -->
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/2')">预览</span>
