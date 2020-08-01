@@ -102,8 +102,7 @@
             <div class="col">
               <span class="text">下单时间</span>
             </div>
-            <div class="col middle"
-              style="flex:2">
+            <div class="col middle">
               <span class="text">操作</span>
             </div>
           </div>
@@ -124,36 +123,16 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col flex12">
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
-                <div class="state"></div>
-                <span class="name">织</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.semi_product>0,'green':itemOrder.product_weave_progress.semi_product>=100}">
-                <div class="state"></div>
-                <span class="name">加</span>
-              </div>
+              算不了
             </div>
             <div class="col">
               {{itemOrder.order_time}}
             </div>
-            <div class="col middle"
-              style="flex:2">
+            <div class="col middle">
               <span class="opr"
-                v-if="itemOrder.has_plan !== 0"
-                @click="$router.push('/weavingProcessing/processesDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
-                织造分配
+                @click="$router.push('/process/processCommon/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
+                {{processType}}详情
               </span>
-              <!-- 客供纱 -->
-              <span class="opr"
-                v-if="itemOrder.material_status === 1 && itemOrder.has_plan === 0"
-                @click="$router.push('/weavingProcessing/processesDetail/'+itemOrder.id +'/' + (orderType ? '1' : '2'))">
-                织造分配
-              </span>
-              <span class="opr"
-                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.material_status === 2 && itemOrder.has_plan===0">暂无物料计划</span>
             </div>
           </div>
         </div>
@@ -172,11 +151,13 @@
 </template>
 
 <script>
+import { processType } from '@/assets/js/dictionary.js'
 import { order, group, client, sampleOrder } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
+      processType: '',
       openHiddleFilter: false,
       searchOrderOrProduct: 'order',
       loading: true,
@@ -315,6 +296,7 @@ export default {
     }
   },
   created () {
+    this.processType = processType.find((item) => item.value === Number(this.$route.params.processType)).name
     this.getFilters()
     this.getOrderList()
     Promise.all([group.list(), client.list()]).then((res) => {

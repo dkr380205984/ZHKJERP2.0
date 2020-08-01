@@ -59,7 +59,19 @@ export default {
           {
             name: '织片管理',
             id: 8,
-            path: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/1',
+            path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/1',
+            icon: 'icon-zhizaojiagong'
+          },
+          {
+            name: '套口管理',
+            id: 19,
+            path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/2',
+            icon: 'icon-zhizaojiagong'
+          },
+          {
+            name: '其他工序管理',
+            id: 20,
+            path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/3',
             icon: 'icon-zhizaojiagong'
           },
           {

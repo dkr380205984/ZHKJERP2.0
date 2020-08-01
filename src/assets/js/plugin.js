@@ -328,12 +328,14 @@ const plugin = {
   // 修复el-select readonly样式导致移动端不能弹出软键盘的bug
   fuckSelect () {
     Array.from(document.getElementsByClassName('el-select')).forEach((item) => {
-      item.children[0].children[0].removeAttribute('readOnly')
-      item.children[0].children[0].onblur = function () {
-        let _this = this
-        setTimeout(() => {
-          _this.removeAttribute('readOnly')
-        }, 200)
+      if (item.children[0].children[0]) {
+        item.children[0].children[0].removeAttribute('readOnly')
+        item.children[0].children[0].onblur = function () {
+          let _this = this
+          setTimeout(() => {
+            _this.removeAttribute('readOnly')
+          }, 200)
+        }
       }
     })
   },

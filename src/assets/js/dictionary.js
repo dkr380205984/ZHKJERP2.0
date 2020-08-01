@@ -28,6 +28,12 @@ const permissions = [{
   module: '织造加工管理',
   id: 8
 }, {
+  module: '套口管理',
+  id: 19
+}, {
+  module: '工序管理',
+  id: 20
+}, {
   module: '产品收发管理',
   id: 9
 }, {
@@ -108,6 +114,9 @@ const processType = [{
 }, {
   value: 2,
   name: '套口'
+}, {
+  value: 3,
+  name: '工序'
 }]
 export {
   processType,

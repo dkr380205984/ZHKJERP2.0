@@ -1,5 +1,5 @@
 import http from './http.js'
-const baseUrl = '/dress'
+const baseUrl = '/api'
 // 登录
 const login = (params) => http.post(`${baseUrl}/auth/login`, params, 'application/json')
 // 注销
@@ -330,7 +330,7 @@ const dispatch = {
 const materialStock = {
   init: (params) => http.get(`${baseUrl}/order/material/push/init`, params),
   create: (params) => http.post(`${baseUrl}/order/material/push`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/order/material/push/detail`, params),
+  detail: (params) => http.get(`${baseUrl}/order/material/push/log`, params),
   delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json'),
   surplusCreate: (params) => http.post(`${baseUrl}/order/material/surplus/push`, params, 'application/json')
 }
