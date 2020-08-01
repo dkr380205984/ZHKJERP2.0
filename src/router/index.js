@@ -7,7 +7,6 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function (location) {
   return originalPush.call(this, location).catch(err => err)
 }
-
 const routes = [
   {
     path: '/',
@@ -220,13 +219,19 @@ const routes = [
       path: '/materialStock/materialStockList/:params/:type',
       name: '物料出入库列表',
       component: () => import('../views/materialStock/materialStockList.vue')
-    },
-    // , {
-    //   path: '/materialStock/materialStockDetail/:id/:type/:orderType',
-    //   name: '物料出入库详情',
-    //   component: () => import('../views/materialStock/materialStockDetail.vue')
-    // }
-    {
+    }, {
+      path: '/materialStock/materialGoStockDetail/:id/:type/:orderType',
+      name: '物料入库详情',
+      component: () => import('../views/materialStock/materialGoStockDetail.vue')
+    }, {
+      path: '/materialStock/materialOutStockDetail/:id/:type/:orderType',
+      name: '物料出库详情',
+      component: () => import('../views/materialStock/materialOutStockDetail.vue')
+    }, {
+      path: '/materialStock/materialBackStockDetail/:id/:type/:orderType',
+      name: '物料回库详情',
+      component: () => import('../views/materialStock/materialBackStockDetail.vue')
+    }, {
       path: '/materialStock/easyMaterialStockDetail/:id/:type/:orderType',
       name: '物料出入库详情',
       component: () => import('../views/materialStock/easyMaterialStockDetail.vue')
@@ -234,10 +239,10 @@ const routes = [
       path: '/materialStock/materialStockBatchDetail/:id/:orderType/:type',
       name: '物料批量出入库详情',
       component: () => import('../views/materialStock/materialStockBatchDetail.vue')
-    }, {
-      path: '/materialStock/materialStockDetail/:id/:type',
-      name: '辅料出入库详情',
-      component: () => import('../views/materialStock/materialStockDetail.vue')
+      // }, {
+      //   path: '/materialStock/materialStockDetail/:id/:type',
+      //   name: '辅料出入库详情',
+      //   component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
       path: '/process/processCommon/:id/:orderType/:processType',
       name: '工序分配详情',

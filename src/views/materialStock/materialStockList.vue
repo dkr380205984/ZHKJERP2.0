@@ -164,7 +164,7 @@
             </div>
             <div class="col middle flex08">
               <span class="opr"
-                @click="$router.push('/materialStock/easyMaterialStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
+                @click="$router.push('/materialStock/materialGoStockDetail/'+ itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
                 {{material_type==='1'?'原':'辅'}}料出入库
               </span>
             </div>
@@ -198,9 +198,11 @@
           <div class="btn btnGray"
             @click="cancelChecked">取消</div>
           <div class="btn btnWhiteBlue"
-            @click="$router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2')">辅料批量入库</div>
+            @click="$message.warning('该功能暂未开放')">辅料批量入库</div>
+          <!-- $router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2') -->
           <div class="btn btnWhiteBlue"
-            @click="$router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1')">原料批量入库</div>
+            @click="$message.warning('该功能暂未开放')">原料批量入库</div>
+          <!-- $router.push('/materialStock/materialStockBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1') -->
         </div>
       </div>
     </div>

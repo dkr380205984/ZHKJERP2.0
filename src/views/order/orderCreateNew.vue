@@ -1282,7 +1282,8 @@ export default {
         has_quotation: this.has_quotation,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        type: 1
+        type: 1,
+        has_order: 1
       }).then(res => {
         if (res.data.status === false) {
           this.$message({

@@ -1,194 +1,64 @@
 @import '../common.less';
-#materialStockDetail{
-  a{
-    text-decoration: none;
-  }
-  .swichCtn{
-    border-top: 0;
-    margin-top: 0;
-    margin-bottom: 0px;
-    position: relative;
-    height: 46px;
-    overflow: hidden;
-    .swich{
-      margin: 0;
-      padding: 0 16px;      
-      &:hover{
-        background-color: rgba(26, 149, 255, 0.25);
-      }
-    }
-    .handleBtn{
-      position: absolute;
-      top: 50%;
-      width: 32px;
-      height: 46px;
-      line-height: 46px;
-      text-align: center;
-      background-color: #FFF;
-      transform: translateY(-50%);
-      cursor: pointer;
-      &::after{
-        content: '';
-        display: block;
-        border: 9px solid transparent;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%,-50%);
-      }
-      &.right{
-        right: 0;
-        &:after{
-          border-left-color: @blue;
-        }
-      }
-      &.left{
-        left: 0;
-        &:after{
-          border-right-color: @blue;
-        }
-      }
-    }
-    .swichCtnBox{      
-      display: flex;
-      flex-wrap: nowrap;
-      transition: all 0.3s linear;
-      position: absolute;
-    }
-  }
-  .bgGary_page{
+#materialStockDetail{  
+  .bgGray_page{
     background-color: #FBFBFB;
     margin: 16px 0;
-  }
-  .bgBlue_page{
-    &:hover{
-      background-color: @blue;
-      color: #FFF;
-    }
-  }
-  .closeIcon_page{
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    color: @red;
-    z-index: 3;
-    cursor: pointer;
-    font-size: 20px;
-  }
-  .btnCtn_page{
-    display: flex;
-    &.right{
-      justify-content: flex-end;
-    }
-    &.marginTop20{        
-      margin-top: 20px;
-    }
-    .noMargin{
-      margin: 0!important;
-    }
-  }
-  .noPadding{
-    padding: 0!important;
-  }
-  .content{
-    display: flex;
-    align-items: center;
-  }
-  .flex3{
-    max-width: 320px;
   }
   .flex5{
     flex: 5;
   }
-  .flex04{
-    flex: 0.4;
-  }
-  .flex08{
-    flex: 0.8;
-  }
-  .flex20{
-    flex: 2;
-  }
-  .flex40{
+  .flex4{
     flex: 4;
   }
-  .flex50{
-    flex: 5;
+  .flex30{
+    flex:3
   }
-  .elInput{
-    width: 100%;
-  }  
-  .popup{
-    .tips{
-      color: @font65;
-      background: #f4f4f4;
-      padding: 12px;
-      font-size: @fontMiddle;
-    }
-    .content{
-      max-height: 800px;
-      border-bottom: 0;
+  .flex2{
+    flex: 2;
+  }
+  .flex15{
+    flex: 1.5;
+  }
+  .flex06{
+    flex: 0.8;
+  }
+  .max40{
+    max-width: 40px;
+  }
+  .editCtn{
+    .colCtn{
       display: flex;
       flex-direction: column;
-      &:nth-last-child(2){
-        border-bottom: 1px solid #E9E9E9;
+      &.flex3{
+        max-width: 341px;
       }
-      .text{
-        line-height: 32px;
-        font-size: @fontMiddle;
-        color: @font65;
-        margin-right: 16px;
-        &.blue{
-          color: @blue;
-        }
-      }
-      .info{
-        &.elInputInfo{
-          display: flex;
-          align-items: center;
-          .elInput{
-            flex: 1;
-            margin-right: 16px;
-            &:last-child{
-              margin-right: 0;
-            }
+      .content{
+        display: flex;
+        .colCtn{
+          margin-right: 0;
+          margin-left: 24px;
+          &:first-of-type{
+            margin: 0;
           }
         }
-
       }
     }
   }
-  .filterIcon{
-    margin-left: 8px;
+  .rowCtn{
+    &.col{
+      flex-direction: column;
+      margin: 0;
+    }
+    .btnCtn_page{
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
   }
   .green{
-    color: @green;
+    color:@green
   }
   .orange{
-    color: @orange;
-  }
-  .order{
-    &::before{
-      content: '订购';
-      font-size: 14px;
-      margin-right: 8px;
-      color: @green;
-    }
-  }
-  .replenish{
-    &::before{
-      content: '补纱';
-      font-size: 14px;
-      margin-right: 8px;
-      color: @orange;
-    }
-  }
-  .distribution{
-    &::before{
-      content: '分配';
-      font-size: 14px;
-      margin-right: 8px;
-      color: @green;
-    }
+    color:@orange
   }
 }

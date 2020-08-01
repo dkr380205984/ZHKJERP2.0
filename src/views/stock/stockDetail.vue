@@ -64,6 +64,8 @@
             <div class="tb_header">
               <span class="tb_row">原料名称</span>
               <span class="tb_row">原料属性</span>
+              <span class="tb_row">色号</span>
+              <span class="tb_row">批/缸号</span>
               <span class="tb_row">库存数量（kg）</span>
               <span class="tb_row middle">操作</span>
             </div>
@@ -72,6 +74,8 @@
               :key="indexMa">
               <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.material_color}}</span>
+              <span class="tb_row">{{itemMa.color_code || '/'}}</span>
+              <span class="tb_row">{{itemMa.vat_code || '/'}}</span>
               <span class="tb_row">{{itemMa.total_weight}}</span>
               <span class="tb_row middle">
                 <span class="tb_handle_btn blue"
@@ -142,26 +146,55 @@
               </div>
             </div>
             <div class="rowCtn">
-              <div class="colCtn flex3">
-                <div class="label">
-                  <span class="text">原料属性</span>
-                  <span class="explanation">（必填）</span>
+              <div class="colCtn flex3"
+                style="flex-direction:row;display:flex">
+                <div class="colCtn"
+                  style="margin-right:24px">
+                  <div class="label">
+                    <span class="text">原料属性</span>
+                    <span class="explanation">（必填）</span>
+                  </div>
+                  <div class="content">
+                    <el-autocomplete v-model="itemYarn.attr"
+                      :fetch-suggestions="handleSelect"
+                      placeholder="请输入原料属性"></el-autocomplete>
+                  </div>
+
                 </div>
-                <div class="content">
-                  <el-autocomplete v-model="itemYarn.attr"
-                    :fetch-suggestions="handleSelect"
-                    placeholder="请输入原料属性"></el-autocomplete>
+                <div class="colCtn"
+                  style="margin-right:0">
+                  <div class="label">
+                    <span class="text">色号</span>
+                  </div>
+                  <div class="content">
+                    <zh-input placeholder="色号"
+                      v-model="itemYarn.color_code"></zh-input>
+                  </div>
                 </div>
               </div>
-              <div class="colCtn flex3">
-                <div class="label">
-                  <span class="text">操作数量</span>
-                  <span class="explanation">（必填）</span>
+              <div class="colCtn flex3"
+                style="flex-direction:row;display:flex">
+                <div class="colCtn"
+                  style="margin-right:24px">
+                  <div class="label">
+                    <span class="text">批/缸号</span>
+                  </div>
+                  <div class="content">
+                    <zh-input placeholder="批/缸号"
+                      v-model="itemYarn.vat_code"></zh-input>
+                  </div>
                 </div>
-                <div class="content">
-                  <zh-input placeholder="请输入操作数量"
-                    v-model="itemYarn.number"
-                    type='number'></zh-input>
+                <div class="colCtn"
+                  style="margin-right:0">
+                  <div class="label">
+                    <span class="text">操作数量</span>
+                    <span class="explanation">（必填）</span>
+                  </div>
+                  <div class="content">
+                    <zh-input placeholder="请输入操作数量"
+                      v-model="itemYarn.number"
+                      type='number'></zh-input>
+                  </div>
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -257,6 +290,8 @@
               <span class="tb_row">操作时间</span>
               <span class="tb_row">原料名称</span>
               <span class="tb_row flex08">原料属性</span>
+              <span class="tb_row flex08">色号</span>
+              <span class="tb_row flex08">批/缸号</span>
               <span class="tb_row">关联订单号</span>
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量（kg）</span>
@@ -272,7 +307,9 @@
               </span>
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
-              <span class="tb_row flex08">{{itemLog.color_code}}</span>
+              <span class="tb_row flex08">{{itemLog.material_color}}</span>
+              <span class="tb_row flex08">{{itemLog.color_code || '/'}}</span>
+              <span class="tb_row flex08">{{itemLog.vat_code || '/'}}</span>
               <span class="tb_row">{{itemLog.order_code || '无'}}</span>
               <span class="tb_row">{{itemLog.action|filterAction}}</span>
               <span class="tb_row flex08">{{itemLog.weight}}</span>
@@ -292,12 +329,12 @@
                 </template>
               </span>
             </div>
-            <div class="tb_content">
+            <!-- <div class="tb_content">
               <span class="tb_row"></span>
               <span class="tb_row"></span>
               <span class="tb_row right">合计：</span>
               <span class="tb_row flex04">{{this.yarnTotalNumber || 0}}kg</span>
-            </div>
+            </div> -->
           </div>
           <div class="pageCtn">
             <el-pagination background
@@ -1330,7 +1367,7 @@ export default {
       yarnStock.list({
         limit: 5,
         stock_id: this.$route.params.id,
-        type: 1,
+        material_type: 1,
         material_name: this.searchYarn,
         page: this.yarnPages,
         weight: this.weight
@@ -1350,7 +1387,7 @@ export default {
       Promise.all([
         yarnStock.log({
           stock_id: this.$route.params.id,
-          type: 1,
+          material_type: 1,
           material_name: this.searchYarnLog,
           action: this.yarnAction,
           page: this.yarnLogPages,
@@ -1358,16 +1395,16 @@ export default {
           start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
           end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
           order_code: this.searchYarnLogCode
-        }),
-        yarnStock.logCount({
-          stock_id: this.$route.params.id,
-          type: 1,
-          start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
-          end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
-          order_code: this.searchYarnLogCode,
-          material_name: this.searchYarnLog,
-          action: this.yarnAction
         })
+        // yarnStock.logCount({
+        //   stock_id: this.$route.params.id,
+        //   type: 1,
+        //   start_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[0] : '') : '',
+        //   end_time: this.searchYarnLogDate ? (this.searchYarnLogDate.length ? this.searchYarnLogDate[1] : '') : '',
+        //   order_code: this.searchYarnLogCode,
+        //   material_name: this.searchYarnLog,
+        //   action: this.yarnAction
+        // })
       ]).then(res => {
         this.yarnLog = []
         this.yarnLog = res[0].data.data.map(item => {
@@ -1375,7 +1412,7 @@ export default {
           return item
         })
         this.yarnLogTotal = res[0].data.meta.total
-        this.yarnTotalNumber = res[1].data.data
+        // this.yarnTotalNumber = res[1].data.data
         this.loading = false
       })
     },
@@ -1420,7 +1457,7 @@ export default {
         limit: 5,
         page: this.materialPages,
         stock_id: this.$route.params.id,
-        type: 2,
+        material_type: 2,
         material_name: this.searchMaterial
       }).then(res => {
         if (res.data.status === false) {
@@ -1437,14 +1474,14 @@ export default {
       this.materialLogPages = page || this.materialLogPages
       yarnStock.log({
         stock_id: this.$route.params.id,
-        type: 2,
+        material_type: 2,
         material_name: this.searchMaterialLog,
         action: this.materialAction,
         page: this.materialLogPages,
         limit: 5
       }).then(res => {
         if (res.data.status === false) {
-          this.$message.error('获取原料日志失败，' + res.data.message)
+          this.$message.error('获取辅料日志失败，' + res.data.message)
         } else {
           this.materialLog = []
           this.materialLog = res.data.data.map(item => {
@@ -1664,6 +1701,8 @@ export default {
       if (type === 'yarn') {
         item.push({
           attr: '',
+          color_code: '',
+          vat_code: '',
           yarnName: '',
           editType: 'go',
           number: '',
@@ -1835,6 +1874,11 @@ export default {
       if (this.$submitLock()) {
         return
       }
+      let editType = this.$unique(this.yarnEditInfo, 'editType')
+      if (editType.length > 1) {
+        this.$message.warning('请勿同时提交入库以及出库')
+        return
+      }
       let flag = {
         name: true,
         attr: true,
@@ -1882,18 +1926,17 @@ export default {
       let data = this.yarnEditInfo.map(item => {
         return {
           material_name: item.yarnName,
-          type: 1,
-          color_code: item.attr,
-          vat_code: '',
-          attribute: '',
-          stock_id: this.$route.params.id,
-          weight: (item.editType === 'go' ? Number(item.number) : -Number(item.number)),
-          desc: item.remark,
-          company_id: window.sessionStorage.getItem('company_id'),
-          user_id: window.sessionStorage.getItem('user_id')
+          material_color: item.attr,
+          material_type: 1,
+          color_code: item.color_code,
+          vat_code: item.vat_code,
+          store_id: this.$route.params.id,
+          total_weight: item.number,
+          desc: item.remark
         }
       })
-      stock.yarnStock({
+      const api = editType[0].editType === 'go' ? stock.yarnGoStock : stock.yarnOutStock
+      api({
         data: data
       }).then(res => {
         if (res.data.status === false) {
@@ -1908,6 +1951,11 @@ export default {
     },
     saveMaterial () {
       if (this.$submitLock()) {
+        return
+      }
+      let editType = this.$unique(this.materialEditInfo, 'editType')
+      if (editType.length > 1) {
+        this.$message.warning('请勿同时提交入库以及出库')
         return
       }
       let flag = {
@@ -1957,18 +2005,17 @@ export default {
       let data = this.materialEditInfo.map(item => {
         return {
           material_name: item.materialName,
-          type: 2,
-          color_code: item.attr,
+          material_type: 2,
+          material_color: item.attr,
           vat_code: '',
-          attribute: '',
-          stock_id: this.$route.params.id,
-          weight: (item.editType === 'go' ? Number(item.number) : -Number(item.number)),
-          desc: item.remark,
-          company_id: window.sessionStorage.getItem('company_id'),
-          user_id: window.sessionStorage.getItem('user_id')
+          color_code: '',
+          store_id: this.$route.params.id,
+          total_weight: item.number,
+          desc: item.remark
         }
       })
-      stock.materialStock({
+      const api = editType[0].editType === 'go' ? stock.yarnGoStock : stock.yarnOutStock
+      api({
         data: data
       }).then(res => {
         if (res.data.status === false) {
@@ -2157,6 +2204,8 @@ export default {
       if (type === 'yarn') {
         this.yarnEditInfo.push({
           attr: item.material_color,
+          color_code: item.color_code,
+          vat_code: item.vat_code,
           editType: editType,
           yarnName: item.material_name,
           remark: '',

@@ -309,11 +309,13 @@
             :endTime='warnData.endTime'
             style="width:100%"></zh-time-process>
         </div>
-        <div class="rowCtn"
+        <!-- <div class="rowCtn"
           v-if="warnData.isOpenWarn">
           <div style="height:1px;background:#E9E9E9;width:100%;margin:25px 0"></div>
-        </div>
-        <div class="processCtn">
+        </div> -->
+        <!-- 暂时隐藏 -->
+        <div class="processCtn"
+          v-if="false">
           <div class="processOnce showAll"
             v-for="(item,index) in productProgInfo"
             :key='index'>
@@ -356,10 +358,9 @@
                       <span class="tcolumn flex5 noPad">
                         <span class="trow">
                           <span class="tcolumn">颜色属性</span>
-                          <span class="tcolumn">计划数量</span>
                           <span class="tcolumn">采购数量</span>
-                          <span class="tcolumn">最终入库</span>
-                          <span class="tcolumn">最终出库</span>
+                          <span class="tcolumn">入库数量</span>
+                          <span class="tcolumn">出库数量</span>
                         </span>
                       </span>
                     </span>
@@ -374,7 +375,6 @@
                           v-for="(itemAttr,indexAttr) in item.attr_info"
                           :key="indexAttr">
                           <span class="tcolumn">{{itemAttr.attr}}</span>
-                          <span class="tcolumn green">{{itemAttr.plan_number}}{{item.unit}}</span>
                           <span class="tcolumn green">{{itemAttr.order_number}}{{item.unit}}</span>
                           <span class="tcolumn green">{{itemAttr.go_stock_number || 0}}{{item.unit}}</span>
                           <span class="tcolumn green">{{itemAttr.out_stock_number || 0}}{{item.unit}}</span>
@@ -383,31 +383,25 @@
                     </span>
                     <span class="extra">
                       <div class="label">相关页面：</div>
-                      <!-- <div class="link"
-                        style="margin-left:4px">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/materialPlan/materialPlanDetail/'+ $route.params.id +'/1')">物料计划</span>
-                      </div> -->
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/1/normal')">原料订购加工</span>
+                        <span @click="$router.push('/material/materialDetail/'+ $route.params.id +'/1/1/normal')">原料订购</span>
                       </div>
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/1/1')">原料出入库</span>
+                        <span @click="$router.push('/materialStock/materialGoStockDetail/'+ $route.params.id +'/1/1')">原料出入库</span>
                       </div>
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/1/normal')">辅料订购加工</span>
+                        <span @click="$router.push('/material/materialDetail/'+ $route.params.id +'/2/1/normal')">辅料订购</span>
                       </div>
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/1')">辅料出入库</span>
+                        <span @click="$router.push('/materialStock/materialGoStockDetail/'+ $route.params.id +'/2/1')">辅料出入库</span>
                       </div>
                     </span>
                   </div>
@@ -579,7 +573,9 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <!-- 暂时隐藏 -->
+    <div class="module"
+      v-if="false">
       <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
       </div>
@@ -1328,7 +1324,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { order, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1776,59 +1772,45 @@ export default {
     getMaterialDetail () {
       this.loading = true
       Promise.all([
-        materialPlan.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
+        materialManage.detail({
+          order_type: this.$route.params.orderType,
+          order_id: this.$route.params.id
         }),
         materialStock.detail({
           order_id: this.$route.params.id,
-          order_type: 1
+          order_type: this.$route.params.order_type
         })
       ]).then(res => {
-        let materialDetail = res[0].data.data.total_data
-        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
-        this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
+        let data = res[0].data.data.map(itemM => {
           return {
-            material_name: item.material_name,
-            material_type: item.material_type,
-            unit: Number(item.material_type) === 1 ? 'kg' : (item.unit || '个'),
-            attr_info: item.attr_info.map(itemAttr => {
-              return {
-                attr: itemAttr.attr,
-                plan_number: this.$toFixed((Number(item.material_type) === 1 ? (itemAttr.plan_number / 1000) : itemAttr.plan_number) || 0),
-                order_number: this.$toFixed(itemAttr.order_number || 0),
-                process_number: this.$toFixed(itemAttr.process_number || 0)
-              }
-            })
+            material_name: itemM.material_name,
+            material_color: itemM.color_code,
+            order_weight: itemM.weight,
+            push_weight: itemM.push_weight,
+            out_weight: 0,
+            unit: itemM.unit || 'kg'
           }
-        })
-        materialStock.forEach(itemMa => {
-          let flag = this.orderDetailInfo.material.find(item => item.material_name === itemMa.material_name && Number(item.material_type) === Number(itemMa.material_type))
-          if (flag) {
-            let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
-            if (attrFlag) {
-              if (Number(itemMa.type) === 1) {
-                attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
-              } else if (Number(itemMa.type) === 3) {
-                attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
-              }
-            }
-          } else {
-            this.orderDetailInfo.material.push({
-              material_name: itemMa.material_name,
-              material_type: itemMa.material_type,
-              unit: Number(itemMa.material_type) === 1 ? 'kg' : (itemMa.unit || '个'),
-              attr_info: [
-                {
-                  attr: itemMa.material_color,
-                  plan_number: 0,
-                  order_number: 0,
-                  process_number: 0,
-                  go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
-                  out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
-                }
-              ]
-            })
+        }).concat(res[1].data.data.map(itemM => {
+          return {
+            material_name: itemM.material_name,
+            material_color: itemM.material_color,
+            order_weight: 0,
+            push_weight: 0,
+            out_weight: itemM.total_weight,
+            unit: itemM.unit || 'kg'
+          }
+        }))
+        this.orderDetailInfo.material = this.$mergeData(data, {
+          mainRule: 'material_name',
+          childrenName: 'attr_info',
+          childrenRule: {
+            mainRule: 'material_color/attr',
+            otherRule: [
+              { name: 'order_weight/order_number', type: 'add' },
+              { name: 'push_weight/go_stock_number', type: 'add' },
+              { name: 'out_weight/out_stock_number', type: 'add' },
+              { name: 'unit' }
+            ]
           }
         })
         this.showFlag2.showMaterial = true
@@ -1837,6 +1819,53 @@ export default {
           this.$message.error('暂无物料信息')
         }
         this.loading = false
+
+        // let materialDetail = res[0].data.data.total_data
+        // let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
+        // this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
+        //   return {
+        //     material_name: item.material_name,
+        //     material_type: item.material_type,
+        //     unit: Number(item.material_type) === 1 ? 'kg' : (item.unit || '个'),
+        //     attr_info: item.attr_info.map(itemAttr => {
+        //       return {
+        //         attr: itemAttr.attr,
+        //         plan_number: this.$toFixed((Number(item.material_type) === 1 ? (itemAttr.plan_number / 1000) : itemAttr.plan_number) || 0),
+        //         order_number: this.$toFixed(itemAttr.order_number || 0),
+        //         process_number: this.$toFixed(itemAttr.process_number || 0)
+        //       }
+        //     })
+        //   }
+        // })
+        // materialStock.forEach(itemMa => {
+        //   let flag = this.orderDetailInfo.material.find(item => item.material_name === itemMa.material_name && Number(item.material_type) === Number(itemMa.material_type))
+        //   if (flag) {
+        //     let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
+        //     if (attrFlag) {
+        //       if (Number(itemMa.type) === 1) {
+        //         attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
+        //       } else if (Number(itemMa.type) === 3) {
+        //         attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
+        //       }
+        //     }
+        //   } else {
+        //     this.orderDetailInfo.material.push({
+        //       material_name: itemMa.material_name,
+        //       material_type: itemMa.material_type,
+        //       unit: Number(itemMa.material_type) === 1 ? 'kg' : (itemMa.unit || '个'),
+        //       attr_info: [
+        //         {
+        //           attr: itemMa.material_color,
+        //           plan_number: 0,
+        //           order_number: 0,
+        //           process_number: 0,
+        //           go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
+        //           out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
+        //         }
+        //       ]
+        //     })
+        //   }
+        // })
       })
     },
     // 生产概述

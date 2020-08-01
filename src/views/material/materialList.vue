@@ -216,9 +216,11 @@
           <div class="btn btnGray"
             @click="cancelChecked">取消</div>
           <div class="btn btnWhiteBlue"
-            @click="$router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2')">批量订辅料</div>
+            @click="$message.warning('该功能暂未开放')">批量订辅料</div>
+          <!-- $router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2') -->
           <div class="btn btnWhiteBlue"
-            @click="$router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1')">批量订原料</div>
+            @click="$message.warning('该功能暂未开放')">批量订原料</div>
+          <!-- $router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1') -->
         </div>
       </div>
     </div>
