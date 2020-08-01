@@ -248,9 +248,9 @@ const routes = [
       name: '工序分配详情',
       component: () => import('../views/process/processesDetail.vue')
     }, {
-      path: '/weavingProcessing/weavingList/:params/:type',
-      name: '织造分配列表',
-      component: () => import('../views/process/weavingList.vue')
+      path: '/process/processList/:params/:type/:processType',
+      name: '工序列表',
+      component: () => import('../views/process/processList.vue')
     }, {
       path: '/setting/setting',
       name: '系统设置',
@@ -588,8 +588,8 @@ router.beforeEach((to, from, next) => {
     '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
     '物料出入库详情-客供版': ['织为云', '物料出入库列表', '物料出入库详情'],
     '物料批量出入库详情': ['织为云', '物料订购列表', '物料批量出入库详情'],
-    '织造分配列表': ['织为云', '织造分配列表'],
-    '工序分配详情': ['织为云', '工序分配列表', '工序分配详情'],
+    '工序列表': ['织为云', '工序列表'],
+    '工序分配详情': ['织为云', '工序列表', '工序分配详情'],
     '织造分配详情': ['织为云', '织造分配列表', '织造分配详情'],
     '织造分配': ['织为云', '织造分配列表', '织造分配详情'],
     '织造分配-客供纱': ['织为云', '织造分配列表', '织造分配-客供纱'],
