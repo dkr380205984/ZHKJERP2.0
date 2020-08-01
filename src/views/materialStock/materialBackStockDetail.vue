@@ -55,7 +55,7 @@
         @click="$router.push(`/materialStock/materialGoStockDetail/${$route.params.id}/${$route.params.type}/${$route.params.orderType}`)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-dingdancaiwutongji"></use>
+          <use xlink:href="#icon-wuliaoruku"></use>
         </svg>
         <span class="name">物料入库</span>
       </div>
@@ -63,14 +63,14 @@
         @click="$router.push(`/materialStock/materialOutStockDetail/${$route.params.id}/${$route.params.type}/${$route.params.orderType}`)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-dingdancaiwutongji"></use>
+          <use xlink:href="#icon-wuliaochuku"></use>
         </svg>
         <span class="name">物料出库</span>
       </div>
       <div class="cut_item active">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-dingdancaiwutongji"></use>
+          <use xlink:href="#icon-wuliaohuiku"></use>
         </svg>
         <span class="name">物料回库</span>
       </div>
