@@ -130,8 +130,12 @@
     </div> -->
     <div class="module"
       id="order">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">{{type==='1'?'原':'辅'}}料订购</span>
+        <span class="btn btnWhiteBlue"
+          @click="getStockInfo">查看库存数据
+          <span class="el-icon-d-arrow-right"></span>
+        </span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -583,12 +587,86 @@
         </div>
       </div>
     </div>
+    <!-- 库存信息 -->
+    <el-drawer :visible.sync="showStockInfoFlag"
+      custom-class="materialDetail_drawer"
+      title="查看库存"
+      :destroy-on-close='true'
+      :with-header="false">
+      <div class="drawerCtn">
+        <!-- <div class="header">
+          <span class="title">库存调取</span>
+          <span class="el-icon-close close_icon"></span>
+        </div> -->
+        <div class="content">
+          <div class="modules">
+            <div class="title">
+              <span class="text">库存信息</span>
+            </div>
+            <div class="rowCtn">
+              <zh-input v-model="searchWord"
+                clearable
+                style="width:200px"
+                placeholder='筛选物料名称'
+                @change="getStockList(1)"></zh-input>
+            </div>
+            <div class="rowCtn">
+              <div class="tableCtnLv2"
+                v-loading='stockLoading'>
+                <span class="tb_header">
+                  <span class="tb_row"
+                    style="flex:1.5">仓库</span>
+                  <span class="tb_row"
+                    style="flex:1.2">纱线名称</span>
+                  <span class="tb_row">颜色</span>
+                  <span class="tb_row"
+                    style="flex:0.8">色号</span>
+                  <span class="tb_row"
+                    style="flex:0.8">批/缸号</span>
+                  <span class="tb_row"
+                    style="flex:0.8">库存数量</span>
+                </span>
+                <span class="tb_content"
+                  v-for="(itemLog,indexLog) in stockList"
+                  :key="indexLog">
+                  <span class="tb_row"
+                    style="flex:1.5">{{itemLog.store_name}}</span>
+                  <span class="tb_row"
+                    style="flex:1.2">{{itemLog.material_name}}</span>
+                  <span class="tb_row">{{itemLog.material_color}}</span>
+                  <span class="tb_row"
+                    style="flex:0.8">{{itemLog.color_code || '/'}}</span>
+                  <span class="tb_row"
+                    style="flex:0.8">{{itemLog.vat_code || '/'}}</span>
+                  <span class="tb_row"
+                    style="flex:0.8">{{itemLog.total_weight}}</span>
+                </span>
+                <span class="tb_content"
+                  v-if="stockList.length === 0">
+                  <span class="tb_row">暂无库存数据</span>
+                </span>
+              </div>
+            </div>
+            <div class="rowCtn"
+              style="justify-content:flex-end">
+              <el-pagination background
+                :page-size="5"
+                layout="prev, pager, next"
+                :total="stockTotal"
+                :current-page.sync="stockPage"
+                @current-change="getStockList">
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, sampleOrder, client, yarn, material, yarnColor, chargebacks, materialManage } from '@/assets/js/api.js'
+import { order, sampleOrder, client, yarn, material, yarnColor, chargebacks, materialManage, yarnStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -617,10 +695,38 @@ export default {
         remark: ''
       },
       deductLogPopupFlag: false,
-      deductLogList: []
+      deductLogList: [],
+      // 抽屉数据
+      showStockInfoFlag: false,
+      stockLoading: false,
+      searchWord: '',
+      stockList: [],
+      stockTotal: 1,
+      stockPage: 1
     }
   },
   methods: {
+    getStockList (page) {
+      this.stockPage = page || this.stockPage
+      this.stockLoading = true
+      yarnStock.list({
+        limit: 5,
+        page: this.stockPage,
+        type: this.$route.params.type,
+        material_name: this.searchWord || '',
+        material_type: this.$route.params.type
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.stockList = res.data.data
+          this.stockTotal = res.data.meta.total
+          this.stockLoading = false
+        }
+      })
+    },
+    getStockInfo () {
+      this.showStockInfoFlag = true
+      this.getStockList(1)
+    },
     // 扣款提交
     clientDeduct () {
       if (!this.deductInfo.client_id) {
@@ -1033,5 +1139,8 @@ export default {
       margin: 12px;
     }
   }
+}
+.materialDetail_drawer {
+  min-width: 900px !important;
 }
 </style>

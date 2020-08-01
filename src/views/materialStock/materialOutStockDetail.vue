@@ -717,7 +717,8 @@ export default {
         limit: 5,
         page: this.stockPage,
         type: this.$route.params.type,
-        material_name: this.searchWord || ''
+        material_name: this.searchWord || '',
+        material_type: this.$route.params.type
       }).then(res => {
         if (res.data.status !== false) {
           this.stockList = res.data.data
