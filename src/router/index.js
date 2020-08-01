@@ -244,9 +244,9 @@ const routes = [
       //   name: '辅料出入库详情',
       //   component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
-      path: '/weavingProcessing/processesDetail/:id/:orderType',
+      path: '/process/processCommon/:id/:orderType/:processType',
       name: '工序分配详情',
-      component: () => import('../views/process/processesDetail.vue')
+      component: () => import('../views/process/processCommon.vue')
     }, {
       path: '/process/processList/:params/:type/:processType',
       name: '工序列表',
