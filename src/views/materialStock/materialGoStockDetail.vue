@@ -217,7 +217,8 @@
                         </template>
                       </span>
                     </div>
-                    <div class="colCtn">
+                    <div class="colCtn"
+                      v-if="$route.params.type === '1'">
                       <span class="label"
                         v-if="indexM === 0">
                         <span class="text">色号</span>
@@ -231,7 +232,8 @@
                 </div>
                 <div class="colCtn flex3">
                   <span class="content">
-                    <div class="colCtn">
+                    <div class="colCtn"
+                      v-if="$route.params.type === '1'">
                       <span class="label"
                         v-if="indexM === 0">
                         <span class="text">批/缸号</span>
@@ -249,7 +251,7 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">kg</template>
+                          <template slot="append">{{itemM.unit || ($route.params.type === '1' ? 'kg' : '个')}}</template>
                         </zh-input>
                       </span>
                     </div>
@@ -332,7 +334,7 @@
                   <span class="tb_row">{{itemA.material_color}}</span>
                   <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                   <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                  <span class="tb_row green flex06">{{$toFixed(itemA.total_weight || 0)}}kg</span>
+                  <span class="tb_row green flex06">{{$toFixed(itemA.total_weight || 0)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
                 </span>
               </span>
             </span>
@@ -403,7 +405,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, sampleOrder, materialStock, materialManage, yarn, yarnColor, pantongList } from '@/assets/js/api.js'
+import { order, sampleOrder, materialStock, materialManage, yarn, material, yarnColor, pantongList } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -558,7 +560,8 @@ export default {
         }),
         materialStock.detail({
           order_type: this.$route.params.orderType,
-          order_id: this.$route.params.id
+          order_id: this.$route.params.id,
+          material_type: this.$route.params.type
         })
       ]).then(res => {
         this.orderInfo = res[0].data.data
@@ -584,7 +587,7 @@ export default {
           })), 'value')
         }
         // 初始化订购数据
-        this.materialOrderInfo = this.$mergeData(res[1].data.data, {
+        this.materialOrderInfo = this.$mergeData(res[1].data.data.filter(itemF => +itemF.type === +this.$route.params.type), {
           mainRule: 'client_id',
           otherRule: [
             { name: 'client_name' }
@@ -695,14 +698,15 @@ export default {
     },
     querySearchMaterial (queryString, callback) {
       if (this.materialList.length === 0) {
-        yarn.list().then(res => {
+        const api = this.$route.params.type === '1' ? yarn : material
+        api.list().then(res => {
           if (res.data.status !== false) {
-            this.materialList = res.data.data.map(itemM => ({ value: itemM.name }))
+            this.materialList = res.data.data.map(itemM => ({ value: itemM.name, unit: (this.$route.params.type === '1' ? 'kg' : itemM.unit) }))
             this.querySearchMaterial(queryString, callback)
           }
         })
       } else {
-        let list = queryString ? this.materialList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.productMatArr
+        let list = queryString ? this.materialList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : (this.$route.params.type === '1' ? this.productMatArr : this.materialList)
         callback(list)
       }
     },
@@ -716,13 +720,17 @@ export default {
         })
       } else {
         let list = queryString ? this.attrList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.attrList
-        pantongList({
-          keyword: queryString
-        }).then(res => {
-          if (res.data.status !== false) {
-            cb(list.concat(res.data.data.map(itemM => ({ value: itemM.name }))))
-          }
-        })
+        if (this.$route.params.type === '1') {
+          pantongList({
+            keyword: queryString
+          }).then(res => {
+            if (res.data.status !== false) {
+              cb(list.concat(res.data.data.map(itemM => ({ value: itemM.name }))))
+            }
+          })
+        } else {
+          cb(list)
+        }
       }
     },
     // 编辑module改变单位时

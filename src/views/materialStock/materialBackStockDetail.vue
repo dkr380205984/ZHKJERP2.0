@@ -115,7 +115,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row right flex06 green">{{itemA.total_weight}}kg</span>
+                      <span class="tb_row right flex06 green">{{itemA.total_weight}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
                       <span class="tb_row middle flex06">
                         <span class="tb_handle_btn blue"
                           @click="goBatckStock(itemC,itemM,itemA)">回库</span>
@@ -266,7 +266,7 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">kg</template>
+                          <template slot="append">{{$route.params.type === '1' ? 'kg' : '个'}}</template>
                         </zh-input>
                       </span>
                     </div>
@@ -360,7 +360,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row flex06 right green">{{$toFixed(itemA.total_weight)}}kg</span>
+                      <span class="tb_row flex06 right green">{{$toFixed(itemA.total_weight)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
                     </span>
                   </span>
                 </span>

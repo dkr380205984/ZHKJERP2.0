@@ -118,8 +118,8 @@
                   <span class="tb_row">{{itemA.material_color}}</span>
                   <span class="tb_row">{{itemA.color_code}}</span>
                   <span class="tb_row">{{itemA.vat_code}}</span>
-                  <span class="tb_row green">{{itemA.goStockNum}}kg</span>
-                  <span class="tb_row orange">{{itemA.outStockNum || 0}}kg</span>
+                  <span class="tb_row green">{{itemA.goStockNum}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                  <span class="tb_row orange">{{itemA.outStockNum || 0}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
                   <span class="tb_row">
                     <span class="tb_handle_btn blue"
                       @click="outStock(itemM,itemA)">出库</span>
@@ -243,7 +243,7 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">kg</template>
+                          <template slot="append">{{$route.params.type === '1' ? 'kg' : '个'}}</template>
                         </zh-input>
                       </span>
                     </div>
@@ -336,7 +336,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row green">{{$toFixed(itemA.total_weight)}}kg</span>
+                      <span class="tb_row green">{{$toFixed(itemA.total_weight)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
                     </span>
                   </span>
                 </span>
