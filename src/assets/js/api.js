@@ -1,5 +1,5 @@
 import http from './http.js'
-const baseUrl = '/dress'
+const baseUrl = '/api'
 // 登录
 const login = (params) => http.post(`${baseUrl}/auth/login`, params, 'application/json')
 // 注销
@@ -202,15 +202,16 @@ const stock = {
   update: (params) => http.post(`${baseUrl}/factory/store/edit`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/factory/store/list`, params),
   detail: (params) => http.get(`${baseUrl}/factory/store/one`, params),
-  yarnStock: (params) => http.post(`${baseUrl}/material/push`, params, 'application/json'),
-  materialStock: (params) => http.post(`${baseUrl}/material/push`, params, 'application/json'),
+  yarnGoStock: (params) => http.post(`${baseUrl}/stock/material/push`, params, 'application/json'),
+  yarnOutStock: (params) => http.post(`${baseUrl}/stock/material/reduce`, params, 'application/json'),
+  // materialStock: (params) => http.post(`${baseUrl}/material/push`, params, 'application/json'),
   packStock: (params) => http.post(`${baseUrl}/pack/material/stock/save`, params, 'application/json'),
   productStock: (params) => http.post(`${baseUrl}/product/stock/save`, params, 'application/json')
 }
 // 物料库存（原料辅料都在这）
 const yarnStock = {
   list: (params) => http.get(`${baseUrl}/stock/material/list`, params),
-  log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
+  log: (params) => http.get(`${baseUrl}/stock/material/log`, params),
   logCount: (params) => http.get(`${baseUrl}/stock/material/detail/count`, params)
 }
 // 包装库存
@@ -330,8 +331,10 @@ const dispatch = {
 const materialStock = {
   init: (params) => http.get(`${baseUrl}/order/material/push/init`, params),
   create: (params) => http.post(`${baseUrl}/order/material/push`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/order/material/push/detail`, params),
-  delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json'),
+  // detail: (params) => http.get(`${baseUrl}/order/material/push/detail`, params),
+  detail: (params) => http.get(`${baseUrl}/order/material/push/log`, params),
+  // delete: (params) => http.post(`${baseUrl}/order/material/push/delete`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/order/material/push/log/delete`, params, 'application/json'),
   surplusCreate: (params) => http.post(`${baseUrl}/order/material/surplus/push`, params, 'application/json')
 }
 // 装箱计划

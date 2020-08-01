@@ -222,11 +222,12 @@
             :endTime='warnData.endTime'
             style="width:100%"></zh-time-process>
         </div>
-        <div class="rowCtn"
+        <!-- 暂时隐藏 -->
+        <!-- <div class="rowCtn"
           v-if="warnData.isOpenWarn">
           <div style="height:1px;background:#E9E9E9;width:100%;margin:25px 0"></div>
-        </div>
-        <div class="processCtn">
+        </div> -->
+        <!-- <div class="processCtn">
           <div class="processOnce showAll"
             v-for="(item,index) in productProgInfo"
             :key='index'>
@@ -375,10 +376,11 @@
               </template>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
-    <div class="module">
+    <!-- 暂时隐藏 -->
+    <!-- <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
       </div>
@@ -694,7 +696,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- 转产品窗口 -->
     <div class="popup"
       v-show="changeSampleForProductPopup">

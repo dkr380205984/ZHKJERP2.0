@@ -254,23 +254,6 @@ export default {
           ]
         },
         {
-          name: '半成品加工',
-          info: [
-            {
-              name: '订单半成品加工',
-              income: 0,
-              expend: 80,
-              show: true
-            },
-            {
-              name: '样单半成品加工',
-              income: 0,
-              expend: 40,
-              show: true
-            }
-          ]
-        },
-        {
           name: '包装',
           info: [
             {
@@ -482,25 +465,6 @@ export default {
                 expend: data.production_weave.sample_order,
                 show: true,
                 url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
-              }
-            ]
-          },
-          {
-            name: '半成品加工',
-            info: [
-              {
-                name: '订单半成品加工',
-                income: 0,
-                expend: data.semi_product.order,
-                show: true,
-                url: '/financialStatistics/logStatistics/page=1&&type=半成品加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
-              },
-              {
-                name: '样单半成品加工',
-                income: 0,
-                expend: data.semi_product.sample_order,
-                show: true,
-                url: '/financialStatistics/logStatistics/page=1&&type=半成品加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
               }
             ]
           },

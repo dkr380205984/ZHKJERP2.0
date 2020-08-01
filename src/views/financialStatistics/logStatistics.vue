@@ -237,171 +237,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="物料加工"
-            name="物料加工">
-            <div class="filterCtn">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <el-select v-model="order_type"
-                  @change="changeRouter(1)"
-                  class="inputs">
-                  <el-option label="所有日志"
-                    :value="0"></el-option>
-                  <el-option label="订单"
-                    :value="1"></el-option>
-                  <el-option label="样单"
-                    :value="2"></el-option>
-                </el-select>
-                <el-input class="inputs"
-                  v-model="material_name"
-                  @change="changeRouter(1)"
-                  placeholder="输入物料名称查询">
-                </el-input>
-                <el-select class="inputs"
-                  v-model="operate_user"
-                  @change="changeRouter(1)"
-                  placeholder="搜索创建人查询"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in authList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
-                  placeholder="搜索加工单位名称查询"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matProcess"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
-                <el-date-picker v-model="date"
-                  style="width:290px"
-                  class="inputs"
-                  type="daterange"
-                  align="right"
-                  unlink-panels
-                  value-format="yyyy-MM-dd"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="changeRouter(1)">
-                </el-date-picker>
-                <div class="btn btnGray"
-                  style="margin-left:0"
-                  @click="reset">重置</div>
-              </div>
-            </div>
-            <div class="list"
-              v-if="type==='物料加工'">
-              <div class="title">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="checkAll">全选</el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">创建日期</span>
-                </div>
-                <div class="col">
-                  <span class="text">关联单号</span>
-                </div>
-                <div class="col">
-                  <span class="text">物料名称</span>
-                </div>
-                <div class="col">
-                  <span class="text">属性</span>
-                </div>
-                <div class="col">
-                  <span class="text">工序</span>
-                </div>
-                <div class="col">
-                  <span class="text">加工单位</span>
-                </div>
-                <div class="col">
-                  <span class="text">单价</span>
-                </div>
-                <div class="col">
-                  <span class="text">数量</span>
-                </div>
-                <div class="col">
-                  <span class="text">总价</span>
-                </div>
-                <div class="col">
-                  <span class="text">备注</span>
-                </div>
-                <div class="col">
-                  <span class="text">创建人</span>
-                </div>
-                <div class="col">
-                  <span class="text">截止日期</span>
-                </div>
-              </div>
-              <div class="row"
-                v-for="(item,index) in list"
-                :key="index">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="item.checked"
-                    @change="$forceUpdate()"></el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.create_time.slice(0,10)}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.order_code}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.material_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.material_color}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.process_type}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.client_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.price}}元</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.weight}}kg</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{Math.round(item.price*item.weight)}}元</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.desc?item.desc:'暂无'}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.user_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.complete_time.slice(0,10)}}</span>
-                </div>
-              </div>
-            </div>
-            <div class="statistics"
-              v-if="type==='物料加工'">
-              <div class="oneBox">
-                <div class="label">平均价格:</div>
-                <div class="content">{{statistics.material_process.avg_price}}元</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">数量:</div>
-                <div class="content">{{$formatNum(statistics.material_process.total_weight)}}kg</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">总价:</div>
-                <div class="content">{{$formatNum(statistics.material_process.total_price)}}元</div>
-              </div>
-            </div>
-          </el-tab-pane>
           <el-tab-pane label="物料出入库"
             name="物料出入库">
             <div class="filterCtn">
@@ -434,9 +269,9 @@
                     value="1"></el-option>
                   <el-option label="入库"
                     value="2"></el-option>
-                  <el-option label="最终入库"
+                  <el-option label="回库"
                     value="3"></el-option>
-                  <el-option label="织造出库"
+                  <el-option label="调取出库"
                     value="4"></el-option>
                 </el-select>
                 <el-select style="width:170px"
@@ -537,7 +372,7 @@
                 </div>
                 <div class="col">
                   <span class="text"
-                    :class="item.type === 1 ? 'blue' : item.type === 2 ? 'green' : item.type === 3 ? 'green' : 'orange'">{{item.type === 1 ? '出库' : item.type === 2 ? '入库' : item.type === 3 ? '最终入库' : '织造出库'}}</span>
+                    :class="item.type === 1 ? 'blue' : item.type === 2 ? 'green' : item.type === 3 ? 'green' : 'orange'">{{item.type === 1 ? '出库' : item.type === 2 ? '入库' : item.type === 3 ? '回库' : '调取出库'}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.client_name}}</span>
@@ -868,183 +703,6 @@
               <div class="oneBox">
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.yarn_replenish.total_number)}}kg</div>
-              </div>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="半成品加工"
-            name="半成品加工">
-            <div class="filterCtn">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <el-select v-model="order_type"
-                  @change="changeRouter(1)"
-                  class="inputs">
-                  <el-option label="所有日志"
-                    :value="0"></el-option>
-                  <el-option label="订单"
-                    :value="1"></el-option>
-                  <el-option label="样单"
-                    :value="2"></el-option>
-                </el-select>
-                <el-input class="inputs"
-                  v-model="product_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入产品编号查询">
-                </el-input>
-                <el-select class="inputs"
-                  v-model="operate_user"
-                  @change="changeRouter(1)"
-                  placeholder="搜索创建人查询"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in authList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proProcess"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
-                <el-date-picker v-model="date"
-                  style="width:290px"
-                  class="inputs"
-                  type="daterange"
-                  align="right"
-                  unlink-panels
-                  value-format="yyyy-MM-dd"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="changeRouter(1)">
-                </el-date-picker>
-                <div class="btn btnGray"
-                  style="margin-left:0"
-                  @click="reset">重置</div>
-              </div>
-            </div>
-            <div class="list"
-              v-if="type==='半成品加工'">
-              <div class="title">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="checkAll">全选</el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">创建日期</span>
-                </div>
-                <div class="col">
-                  <span class="text">关联单号</span>
-                </div>
-                <div class="col">
-                  <span class="text">加工单位</span>
-                </div>
-                <div class="col">
-                  <span class="text">加工类型</span>
-                </div>
-                <div class="col"
-                  style="flex:1.5">
-                  <span class="text">产品信息</span>
-                </div>
-                <div class="col">
-                  <span class="text">尺码颜色</span>
-                </div>
-                <div class="col">
-                  <span class="text">所需辅料</span>
-                </div>
-                <div class="col">
-                  <span class="text">单价(元)</span>
-                </div>
-                <div class="col">
-                  <span class="text">数量(件)</span>
-                </div>
-                <div class="col">
-                  <span class="text">总价</span>
-                </div>
-                <div class="col">
-                  <span class="text">备注</span>
-                </div>
-                <div class="col">
-                  <span class="text">创建人</span>
-                </div>
-                <div class="col">
-                  <span class="text">完成时间</span>
-                </div>
-              </div>
-              <div class="row"
-                v-for="(item,index) in list"
-                :key="index">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="item.checked"
-                    @change="$forceUpdate()"></el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.created_at.slice(0,10)}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.order_code}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.client_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.type}}</span>
-                </div>
-                <div class="col"
-                  style="flex:1.5">
-                  <span>{{item.product_info.product_code}}</span>
-                  <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
-                </div>
-                <div class="col">
-                  {{item.size_name}}
-                  <br />
-                  {{item.color_name}}
-                </div>
-                <div class="col">
-                  <span v-for="(itemIng,indexIng) in item.part_assign"
-                    :key="indexIng">{{itemIng.name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.price}}元</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.number}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{Math.round(item.number*item.price)}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.desc?item.desc:'暂无'}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.user_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.complete.slice(0,10)}}</span>
-                </div>
-              </div>
-            </div>
-            <div class="statistics"
-              v-if="type==='半成品加工'">
-              <div class="oneBox">
-                <div class="label">平均价格:</div>
-                <div class="content">{{statistics.semi_product.avg_price}}元</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">数量:</div>
-                <div class="content">{{$formatNum(statistics.semi_product.total_number)}}</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">总价:</div>
-                <div class="content">{{$formatNum(statistics.semi_product.total_price)}}元</div>
               </div>
             </div>
           </el-tab-pane>
@@ -2088,149 +1746,6 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="销售出库"
-            name="销售出库">
-            <div class="filterCtn">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <el-input class="inputs"
-                  v-model="product_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入产品编号查询">
-                </el-input>
-                <!-- <el-select class="inputs"
-                  v-model="operate_user"
-                  @change="changeRouter(1)"
-                  placeholder="搜索创建人查询"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in authList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select> -->
-                <el-date-picker v-model="date"
-                  style="width:290px"
-                  class="inputs"
-                  type="daterange"
-                  align="right"
-                  unlink-panels
-                  value-format="yyyy-MM-dd"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="changeRouter(1)">
-                </el-date-picker>
-                <div class="btn btnGray"
-                  style="margin-left:0"
-                  @click="reset">重置</div>
-              </div>
-            </div>
-            <div class="list"
-              v-if="type==='销售出库'">
-              <div class="title">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="checkAll">全选</el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">出库日期</span>
-                </div>
-                <div class="col">
-                  <span class="text">销售单位</span>
-                </div>
-                <div class="col">
-                  <span class="text">销售产品</span>
-                </div>
-                <div class="col">
-                  <span class="text">尺码/颜色</span>
-                </div>
-                <div class="col right">
-                  <span class="text">销售数量</span>
-                </div>
-                <div class="col center">
-                  <span class="text">出库时间</span>
-                </div>
-                <div class="col right">
-                  <span class="text">销售单价</span>
-                </div>
-                <div class="col">
-                  <span class="text">价格说明</span>
-                </div>
-                <div class="col right">
-                  <span class="text">总价(元)</span>
-                </div>
-                <div class="col">
-                  <span class="text">备注</span>
-                </div>
-                <!-- <div class="col">
-                  <span class="text">创建人</span>
-                </div> -->
-              </div>
-              <div class="row"
-                v-for="(item,index) in list"
-                :key="index">
-                <div class="col"
-                  style="flex:0.7">
-                  <el-checkbox v-model="item.checked"
-                    @change="$forceUpdate()"></el-checkbox>
-                </div>
-                <div class="col">
-                  <span class="text">{{$getTime(item.complete_time)}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.client_name}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">
-                    {{item.product_code}}
-                    <br />
-                    {{item.category_info.category_name}}/{{item.category_info.type_name}}/{{item.category_info.style_name}}
-                  </span>
-                </div>
-                <div class="col">
-                  <span class="text">
-                    {{item.size_name}}
-                    <br />
-                    {{item.color_name}}
-                  </span>
-                </div>
-                <div class="col right">
-                  <span class="text">{{item.number}}{{item.category_info.unit}}</span>
-                </div>
-                <div class="col center">
-                  <span class="text">{{item.complete_time}}</span>
-                </div>
-                <div class="col right">
-                  <span class="text">{{item.price}}{{'元/' + item.category_info.unit}}</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.price_remakr}}</span>
-                </div>
-                <div class="col right">
-                  <span class="text">{{item.total_price}}元</span>
-                </div>
-                <div class="col">
-                  <span class="text">{{item.desc}}</span>
-                </div>
-              </div>
-            </div>
-            <div class="statistics"
-              v-if="type==='销售出库'">
-              <div class="oneBox">
-                <div class="label">销售数量:</div>
-                <div class="content">{{$formatNum(statistics.out_market.total_number)}}件</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">平均单价:</div>
-                <div class="content">{{statistics.out_market.avg_price}}元</div>
-              </div>
-              <div class="oneBox">
-                <div class="label">总价:</div>
-                <div class="content">{{$formatNum(statistics.out_market.total_price)}}元</div>
-              </div>
-            </div>
-          </el-tab-pane>
         </el-tabs>
         <div class="pageCtn">
           <el-pagination background
@@ -2286,7 +1801,7 @@
 
 <script>
 import { downloadExcel, getHash } from '@/assets/js/common.js'
-import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, client, auth, process, stock } from '@/assets/js/api.js'
+import { materialManage, materialStock, weave, replenish, receive, dispatch, inspection, packPlan, client, auth, process, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2726,10 +2241,11 @@ export default {
       this.material_name = this.$strToAscII(params.material_name, true)
       this.stock_id = Number(params.stock_id) || ''
       this.type = params.type
+      this.operate_type = params.operate_type || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id + '&&operate_type=' + this.operate_type)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
@@ -2765,31 +2281,9 @@ export default {
           }
           this.loading = false
         })
-      } else if (this.type === '物料加工') {
-        materialProcess.detail({
-          order_type: this.order_type,
-          order_id: null,
-          limit: 10,
-          page: this.pages,
-          order_code: this.order_code,
-          material_name: this.material_name,
-          client_id: this.client_id,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
-        }).then((res) => {
-          this.list = res.data.data
-          this.total = res.data.meta.total
-          this.statistics.material_process = {
-            avg_price: res.data.avg_price,
-            total_price: res.data.total_price,
-            total_weight: res.data.total_weight
-          }
-          this.loading = false
-        })
       } else if (this.type === '物料出入库') {
         materialStock.detail({
-          order_type: this.order_type,
+          order_type: null,
           order_id: null,
           limit: 10,
           page: this.pages,
@@ -2798,7 +2292,8 @@ export default {
           client_id: this.client_id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
+          operate_user: this.operate_user,
+          type: this.operate_type
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
@@ -2845,28 +2340,6 @@ export default {
           this.list = res.data.data
           this.total = res.data.meta.total
           this.statistics.yarn_replenish = {
-            total_number: res.data.total_number
-          }
-          this.loading = false
-        })
-      } else if (this.type === '半成品加工') {
-        processing.detail({
-          order_type: this.order_type,
-          order_id: null,
-          limit: 10,
-          page: this.pages,
-          order_code: this.order_code,
-          product_code: this.product_code,
-          client_id: this.client_id,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
-        }).then((res) => {
-          this.list = res.data.data
-          this.total = res.data.meta.total
-          this.statistics.semi_product = {
-            avg_price: res.data.avg_price,
-            total_price: res.data.total_price,
             total_number: res.data.total_number
           }
           this.loading = false
@@ -3047,41 +2520,7 @@ export default {
           }
           this.loading = false
         })
-      } else if (this.type === '销售出库') {
-        packPlan.outMarketLog({
-          order_type: null,
-          order_id: null,
-          limit: 10,
-          page: this.pages,
-          product_code: this.product_code,
-          client_id: this.client_id,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
-        }).then((res) => {
-          this.list = res.data.data
-          this.total = res.data.meta.total
-          this.statistics.out_market = {
-            avg_price: res.data.avg_price,
-            total_number: res.data.total_number,
-            total_price: res.data.total_price
-          }
-          this.loading = false
-        })
       }
-      // logStatistics.detail({
-      //   start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-      //   end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-      //   client_id: this.client_id,
-      //   product_code: this.product_code,
-      //   order_type: this.order_type,
-      //   production_type: this.production_type,
-      //   operate_user: this.operate_user,
-      //   material_name: this.material_name
-      // }).then((res) => {
-      //   this.statistics = res.data.data
-      //   this.loadingStatistics = false
-      // })
     }
   },
   created () {

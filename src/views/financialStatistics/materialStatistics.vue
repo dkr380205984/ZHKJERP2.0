@@ -56,14 +56,13 @@
         <div class="addCtn">
           <div style="color:#1a95ff;font-size:14px"
             v-if="update_time.date!=='0000-00-00'">
-            更新日期：{{update_time.date.slice(0,16)}}
+            更新日期：{{$getTime(update_time)}}
           </div>
         </div>
         <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <div class="filter_line">
-
               <div class="tabCtn">
                 <span class="tab"
                   :class="{'active':type===1}"

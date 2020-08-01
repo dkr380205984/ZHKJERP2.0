@@ -78,28 +78,40 @@ const companyType = [
     name: '订单公司'
   }, {
     value: 2,
-    name: '原料纱线单位'
+    name: '原料订购单位'
   }, {
     value: 3,
-    name: '物料加工单位'
+    name: '辅料订购单位'
   }, {
     value: 4,
-    name: '生产织造单位'
+    name: '包装订购单位'
   }, {
     value: 5,
-    name: '半成品加工单位'
+    name: '织片单位'
+  }, {
+    value: 6,
+    name: '套口单位'
   }, {
     value: 7,
-    name: '包装辅料单位'
+    name: '车缝单位'
   }, {
     value: 8,
-    name: '运输单位'
+    name: '整烫单位'
+  }, {
+    value: 9,
+    name: '钉扣单位'
   }, {
     value: 10,
-    name: '装饰辅料单位'
+    name: '烫钻单位'
   }, {
     value: 11,
-    name: '销售客户'
+    name: '手工单位'
+  }, {
+    value: 12,
+    name: '运输单位'
+  }, {
+    value: 13,
+    name: '其它单位'
   }
 ]
 export {
