@@ -587,7 +587,7 @@ export default {
           })), 'value')
         }
         // 初始化订购数据
-        this.materialOrderInfo = this.$mergeData(res[1].data.data.filter(itemF => +itemF.type === +this.$route.params.type), {
+        this.materialOrderInfo = this.$mergeData(res[1].data.data.filter(itemF => +itemF.material_type === +this.$route.params.type), {
           mainRule: 'client_id',
           otherRule: [
             { name: 'client_name' }
@@ -599,12 +599,12 @@ export default {
             childrenRule: {
               mainRule: 'id',
               otherRule: [
-                { name: 'before_color' },
+                // { name: 'before_color' },
                 { name: 'color_code' },
                 { name: 'weight' },
                 { name: 'push_weight' },
-                { name: 'price' },
-                { name: 'type_source' }
+                { name: 'price' }
+                // { name: 'type_source' }
               ]
             }
           }

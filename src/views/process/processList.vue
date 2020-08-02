@@ -122,8 +122,9 @@
             <div class="col flex08">
               {{itemOrder.group_name}}
             </div>
-            <div class="col flex12">
-              算不了
+            <div class="col flex12"
+              style="color:#ccc">
+              暂无
             </div>
             <div class="col">
               {{itemOrder.order_time}}
@@ -210,10 +211,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/weavingProcessing/weavingList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2') + '/' + this.$route.params.processType)
+      this.$router.push('/process/processList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2') + '/' + this.$route.params.processType)
     },
     reset () {
-      this.$router.push('/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/' + this.$route.params.processType)
+      this.$router.push('/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/' + this.$route.params.processType)
     },
     getOrderList () {
       this.loading = true
