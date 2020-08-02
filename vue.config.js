@@ -4,9 +4,9 @@ if (process.env.NODE_ENV === 'development') {
   TARGET = 'https://dress_beta.zwyknit.com'
 } else {
   // 正式环境
-  TARGET = 'https://dress_api.zwyknit.com'
+  // TARGET = 'https://dress_api.zwyknit.com'
   // 测试环境
-  // TARGET = 'https://beta.zwyknit.com'
+  TARGET = 'https://dress_beta.zwyknit.com'
 }
 module.exports = {
   devServer: {
