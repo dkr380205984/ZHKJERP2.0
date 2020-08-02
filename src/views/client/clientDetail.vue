@@ -1874,6 +1874,9 @@ export default {
           let flag = this.companyType.find(value => value.value === item)
           return flag ? flag.name : ''
         })
+        if (!this.clientInfo.contacts) {
+          this.clientInfo.contacts = []
+        }
         if (this.clientInfo.type.indexOf(1) !== -1) {
           this.type = '所有订单'
         } else if (this.clientInfo.type.indexOf(2) !== -1 || this.clientInfo.type.indexOf(10) !== -1) {
@@ -1902,7 +1905,7 @@ export default {
         })
         // 初始化仓库筛选数据
         this.stockList = res[3].data.data
-        this.getList()
+        // this.getList()
         this.getSettleChargbacksLog()
         this.loading = false
       })
