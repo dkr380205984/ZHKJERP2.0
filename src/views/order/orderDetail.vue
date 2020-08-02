@@ -573,7 +573,6 @@
         </div>
       </div>
     </div>
-    <!-- 暂时隐藏 -->
     <div class="module"
       v-if="false">
       <div class="titleCtn">
@@ -2072,7 +2071,7 @@ export default {
               }]
             },
             {
-              name: '原料采购',
+              name: '原料入库信息',
               unit: 'kg',
               price_info: [
                 {
@@ -2082,24 +2081,24 @@ export default {
                   pre_price: 0
                 },
                 {
-                  name: '最终入库',
+                  name: '入库',
                   number: data.material_order.order_number.number,
                   total_price: data.material_order.order_number.total_value,
                   pre_price: data.material_order.order_number.pre_value
                 }
               ]
             },
+            // {
+            //   name: '原料加工',
+            //   unit: 'kg',
+            //   price_info: [{
+            //     number: data.material_process.number,
+            //     total_price: data.material_process.total_value,
+            //     pre_price: data.material_process.pre_value
+            //   }]
+            // },
             {
-              name: '原料加工',
-              unit: 'kg',
-              price_info: [{
-                number: data.material_process.number,
-                total_price: data.material_process.total_value,
-                pre_price: data.material_process.pre_value
-              }]
-            },
-            {
-              name: '辅料采购',
+              name: '辅料入库信息',
               unit: '件',
               price_info: [{
                 number: data.assist_material_order.number,
@@ -2107,17 +2106,17 @@ export default {
                 pre_price: data.assist_material_order.pre_value
               }]
             },
+            // {
+            //   name: '辅料加工',
+            //   unit: '件',
+            //   price_info: [{
+            //     number: data.assist_material_process.number,
+            //     total_price: data.assist_material_process.total_value,
+            //     pre_price: data.assist_material_process.pre_value
+            //   }]
+            // },
             {
-              name: '辅料加工',
-              unit: '件',
-              price_info: [{
-                number: data.assist_material_process.number,
-                total_price: data.assist_material_process.total_value,
-                pre_price: data.assist_material_process.pre_value
-              }]
-            },
-            {
-              name: '生产织造',
+              name: '工序管理',
               unit: '件',
               price_info: [{
                 number: data.product_weave.number,
@@ -2125,15 +2124,15 @@ export default {
                 pre_price: data.product_weave.pre_value
               }]
             },
-            {
-              name: '半成品加工',
-              unit: '件',
-              price_info: [{
-                number: data.semi_product.number,
-                total_price: data.semi_product.total_value,
-                pre_price: data.semi_product.pre_value
-              }]
-            },
+            // {
+            //   name: '半成品加工',
+            //   unit: '件',
+            //   price_info: [{
+            //     number: data.semi_product.number,
+            //     total_price: data.semi_product.total_value,
+            //     pre_price: data.semi_product.pre_value
+            //   }]
+            // },
             {
               name: '包装辅料订购',
               unit: '个',
@@ -2143,15 +2142,15 @@ export default {
                 pre_price: data.pack_order.pre_value
               }]
             },
-            {
-              name: '出库运输',
-              unit: '次',
-              price_info: [{
-                number: data.stock_out.number,
-                total_price: data.stock_out.total_value,
-                pre_price: data.stock_out.pre_value
-              }]
-            },
+            // {
+            //   name: '出库运输',
+            //   unit: '次',
+            //   price_info: [{
+            //     number: data.stock_out.number,
+            //     total_price: data.stock_out.total_value,
+            //     pre_price: data.stock_out.pre_value
+            //   }]
+            // },
             {
               name: '补纱信息',
               unit: 'kg',
@@ -2182,6 +2181,7 @@ export default {
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
+        console.log(res.data.data)
         if (res.data.status !== false) {
           this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 1 && item.type === 3), { mainRule: 'client_name' })
           this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 2 && item.type === 3), { mainRule: 'client_name' })

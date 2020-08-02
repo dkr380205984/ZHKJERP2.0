@@ -74,18 +74,18 @@ export default {
             path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/3',
             icon: 'icon-zhizaojiagong'
           },
-          {
-            name: '产品收发',
-            id: 9,
-            path: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
-            icon: 'icon-chanpinshoufa'
-          },
-          {
-            name: '产品检验',
-            id: 10,
-            path: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
-            icon: 'icon-chanpinjianyan'
-          },
+          // {
+          //   name: '产品收发',
+          //   id: 9,
+          //   path: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
+          //   icon: 'icon-chanpinshoufa'
+          // },
+          // {
+          //   name: '产品检验',
+          //   id: 10,
+          //   path: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
+          //   icon: 'icon-chanpinjianyan'
+          // },
           {
             name: '装箱管理',
             id: 11,

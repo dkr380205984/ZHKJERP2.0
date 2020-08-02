@@ -815,27 +815,18 @@ export default {
           order_type: this.$route.params.orderType,
           desc: item.desc,
           complete_time: item.complete_time,
-          total_price: 0,
           price: item.price,
           total_weight: item.number,
           color_code: item.color,
           material_name: item.name,
-          plan_id: item.replenishFlag ? null : item.id,
-          type: this.type,
-          vat_code: null,
+          material_type: this.type,
           replenish_id: item.replenishFlag ? item.id : null,
-          type_source: 2, // 1调取，2订购
-          attribute: null,
-          stock_id: null,
           client_id: item.company_id,
           order_id: this.$route.params.id
         }
       })
       materialManage.create({
-        data: {
-          order_data: formData,
-          stock_data: []
-        }
+        data: formData
       }).then((res) => {
         if (res.data.status) {
           this.reset('order')
@@ -990,7 +981,7 @@ export default {
             item.client_name = item.stock_name
           }
           return item
-        }).filter(item => (item.type === Number(this.type) && Number(item.type_source) === 2))
+        }).filter(item => (item.material_type === Number(this.type)))
         this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
         this.order_stock_info.forEach((item) => {
           item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
