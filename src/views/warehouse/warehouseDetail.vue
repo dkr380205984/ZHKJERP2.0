@@ -298,7 +298,7 @@ export default {
       })
     },
     submit () {
-      this.$submitLock()
+      if (this.$submitLock()) return
       if (!this.popupData.out_time) {
         this.$message.error('请选择出货时间')
         return

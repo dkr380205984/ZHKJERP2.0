@@ -1338,8 +1338,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <!-- <div class="btn btnBlue"
-            @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div> -->
+          <div class="btn btnBlue"
+            @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div>
         </div>
       </div>
     </div>

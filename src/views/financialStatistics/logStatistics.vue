@@ -1793,10 +1793,10 @@
                   <span class="text">{{$toFixed(item.price || 0)}}元</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.number}}</span>
+                  <span class="text">{{$toFixed(item.number)}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.total_price}}</span>
+                  <span class="text">{{$toFixed(item.total_price || 0)}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>

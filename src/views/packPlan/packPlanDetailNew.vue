@@ -774,7 +774,9 @@ export default {
       }
     },
     savePackPlan () {
-      this.$submitLock()
+      if (this.$submitLock()) {
+        return
+      }
       let flag = {
         product_id: true,
         size_id: true,
@@ -1159,7 +1161,9 @@ export default {
       this.showPopup = true
     },
     createWarehouse () {
-      this.$submitLock()
+      if (this.$submitLock()) {
+        return
+      }
       if (!this.popupData.out_time) {
         this.$message.error('请选择出货时间')
         return

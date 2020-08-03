@@ -142,9 +142,9 @@
                       v-for="(itemMa,indexMa) in itemTime.material_info"
                       :key="indexMa">
                       <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.price ? itemMa.price + '元/' + itemMa.unit :'/'}}</span>
+                      <span class="tcolumn">{{itemMa.price ? $toFixed(itemMa.price) + '元/' + itemMa.unit :'/'}}</span>
                       <span class="tcolumn">{{itemMa.number ? itemMa.number + itemMa.unit : '/'}}</span>
-                      <span class="tcolumn">{{itemMa.total_price ? itemMa.total_price + '元' : '/'}}</span>
+                      <span class="tcolumn">{{itemMa.total_price ? $toFixed(itemMa.total_price) + '元' : '/'}}</span>
                     </span>
                   </span>
                   <span class="tcolumn center">{{$getTime(itemTime.compiled_time)}}</span>
@@ -391,9 +391,9 @@
             </span>
             <span class="tb_row">{{item.client_name}}</span>
             <span class="tb_row">{{item.material_name}}</span>
-            <span class="tb_row">{{item.price}}元/{{item.unit}}</span>
-            <span class="tb_row">{{item.number}}{{item.unit}}</span>
-            <span class="tb_row">{{item.total_price}}元</span>
+            <span class="tb_row">{{$toFixed(item.price || 0)}}元/{{item.unit}}</span>
+            <span class="tb_row">{{$toFixed(item.number)}}{{item.unit}}</span>
+            <span class="tb_row">{{$toFixed(item.total_price || 0)}}元</span>
             <span class="tb_row middle">{{$getTime(item.order_time)}}</span>
             <span class="tb_row middle">
               <el-tooltip placement="top">
