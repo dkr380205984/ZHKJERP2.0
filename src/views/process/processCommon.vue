@@ -48,6 +48,44 @@
         </div>
       </div>
     </div>
+    <div class="module progress">
+      <div class="progressCtn"
+        v-if="otherData.processType!=='织片'">
+        <el-progress type="circle"
+          :width="80"
+          color="#01B48C"
+          :percentage="renderData.progress.allocation===0?0:Number((100*renderData.progress.stockIn/renderData.progress.allocation).toFixed(2))">
+        </el-progress>
+        <div class="infoCtn">
+          <span class="line1">{{otherData.processType}}入库</span>
+          <span class="line2">{{renderData.progress.stockIn}}/{{renderData.progress.allocation}}</span>
+          <span class="line3">进度{{renderData.progress.allocation===0?0:Number(100*renderData.progress.stockIn/renderData.progress.allocation).toFixed(2)}}%</span>
+        </div>
+      </div>
+      <div class="progressCtn">
+        <el-progress type="circle"
+          :width="80"
+          :percentage="Number(otherData.processType==='织片'?(renderData.progress.allocation>renderData.progress.orderNumber?100:100*renderData.progress.allocation/renderData.progress.orderNumber).toFixed(2):(100*renderData.progress.allocation/renderData.progress.commonAllocation).toFixed(2))">
+        </el-progress>
+        <div class="infoCtn">
+          <span class="line1">{{otherData.processType}}分配</span>
+          <span class="line2">{{renderData.progress.allocation}}/{{otherData.processType==='织片'?renderData.progress.orderNumber:renderData.progress.commonAllocation}}</span>
+          <span class="line3">进度{{otherData.processType==='织片'?Number(100*renderData.progress.allocation/renderData.progress.orderNumber).toFixed(2):Number(100*renderData.progress.allocation/renderData.progress.commonAllocation).toFixed(2)}}%</span>
+        </div>
+      </div>
+      <div class="progressCtn">
+        <el-progress type="circle"
+          color="#E6A23C"
+          :width="80"
+          :percentage="renderData.progress.allocation===0?0:Number((100*renderData.progress.inspection/renderData.progress.allocation).toFixed(2))">
+        </el-progress>
+        <div class="infoCtn">
+          <span class="line1">{{otherData.processType}}检验</span>
+          <span class="line2">{{renderData.progress.inspection}}/{{renderData.progress.allocation}}</span>
+          <span class="line3">进度{{renderData.progress.allocation===0?0:Number(100*renderData.progress.inspection/renderData.progress.allocation).toFixed(2)}}%</span>
+        </div>
+      </div>
+    </div>
     <div class="listCutCtn"
       v-if="otherData.processType!=='织片'&&otherData.processType!=='套口'">
       <div class="cut_item"
@@ -146,7 +184,11 @@
                           <span style="color:#E6A23C">(+{{itemChild.motorise_number}})</span>
                         </div>
                         <div class="tcolumn"
-                          :style="{color:itemChild.allocation===0?'#ccc':'#E6A23C'}">{{itemChild.allocation}}</div>
+                          style="flex-direction: row;align-items: center;justify-content: flex-start;"
+                          :style="{color:itemChild.allocation===0?'#ccc':'#E6A23C'}">{{itemChild.allocation}}
+                          <span style="color:#E6A23C"
+                            v-if="itemChild.allocation!==0 && otherData.processType==='织片'">(+{{itemChild.motorise_number}})</span>
+                        </div>
                         <div class="tcolumn">
                           <span class="btn noBorder"
                             style="padding:0;margin:0"
@@ -378,6 +420,8 @@
                   style="padding-top:0;padding-bottom:0;line-height:38px">
                   <span class="line_item">单位名称：{{item.client_name}}</span>
                   <span class="line_item">单价：<span style="color:#01B48C">{{item.price}}元/件</span></span>
+                  <span class="line_item">操作：<span style="color:#1a95ff;cursor:pointer"
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span></span>
                 </div>
                 <div class="line"
                   v-for="(itemPro,indexPro) in item.childrenMergeInfo"
@@ -954,8 +998,53 @@
                   :props="otherData.props"
                   collapse-tags
                   clearable></el-cascader>
+                <span>
+                  <el-tooltip class="item"
+                    effect="dark"
+                    content="常用人员设置"
+                    placement="top">
+                    <i class="el-icon-setting"
+                      @click="otherData.inspectionSetting.flag=true"></i>
+                  </el-tooltip>
+                  <div class="selfSelect"
+                    style="transform: translate(calc(8px - 50%), 15px);"
+                    v-show="otherData.inspectionSetting.flag">
+                    <div class="checkBoxCtn"
+                      style="height:auto">
+                      <el-checkbox @change="filterSettingAuthArr($event,item.name)"
+                        v-model="item.checked"
+                        v-for="item in selectData.departmentArr"
+                        :key="item.id"
+                        :value="item.name"
+                        :label="item.name">
+                        <span>{{item.name}}</span>
+                      </el-checkbox>
+                    </div>
+                    <!-- <div class="searchCtn">
+                      <el-input v-model="otherData.inspectionSetting.search"
+                        placeholder="输入名字搜索"
+                        @input="getSettingAuthArr"></el-input>
+                    </div> -->
+                    <div class="checkBoxCtn">
+                      <el-checkbox v-model="item.checked"
+                        v-for="item in selectData.settingAuthArr"
+                        :key="item.id"
+                        :value="item.id"
+                        :label="item.name">
+                        <span>{{item.name}}</span>
+                      </el-checkbox>
+                    </div>
+                    <div class="oprCtn">
+                      <div class="btnCancle"
+                        @click="otherData.inspectionSetting.flag=false">取消</div>
+                      <div class="btnConfirm"
+                        @click="saveInspectionSetting">保存常用人员</div>
+                    </div>
+                  </div>
+                </span>
+
               </div>
-              <div class="filterCtn"
+              <!-- <div class="filterCtn"
                 v-show="otherData.processType==='工序'">
                 <div class="label">选择工序：</div>
                 <el-select class="inputs"
@@ -966,6 +1055,14 @@
                     :value="item.value"
                     :label="item.label"></el-option>
                 </el-select>
+              </div> -->
+              <div class="filterCtn">
+                <div class="label">结算单价：</div>
+                <el-input class="inputs"
+                  v-model="formData.inspectionForm.price"
+                  placeholder="请输入人员结算单价">
+                  <template slot="append">元</template>
+                </el-input>
               </div>
               <div style="float:right">
                 <div class="btn btnWhiteBlue"
@@ -1490,7 +1587,7 @@
 
 <script>
 import { processType } from '@/assets/js/dictionary.js'
-import { order, sampleOrder, client, process, materialStock, yarn, weave, auth, inspection, receive } from '@/assets/js/api.js'
+import { order, sampleOrder, client, process, materialStock, yarn, weave, inspection, receive, staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1505,7 +1602,15 @@ export default {
           order_batch: [],
           desc: ''
         },
-        processChoose: [],
+        // 进度初始化成1，防止初始化的时候0除以0报错
+        progress: {
+          orderNumber: 1,
+          stockIn: 1,
+          allocation: 1,
+          commonAllocation: 1,
+          inspection: 1
+        },
+        processChoose: ['水洗', '平车', '整烫'],
         module: [],
         processModule: [],
         allocationList: [], // 分配列表
@@ -1527,6 +1632,7 @@ export default {
         },
         cmpMaterialData: [],
         allocationMaterialData: [],
+        price: '',
         inspectionForm: {
           process: '',
           product_id: '',
@@ -1538,7 +1644,6 @@ export default {
               showCheck: false,
               colorSize: '',
               number: '',
-              price: '',
               substandard: '',
               reason: []
             }]
@@ -1568,6 +1673,8 @@ export default {
         processArr: [],
         inspectionProArr: [],
         authArr: [],
+        departmentArr: [],
+        settingAuthArr: [], // 保存人员设置的人员列表，主要是用于筛选后的结果
         clientAuthArr: []// 人员单位二级选择框
       },
       // 其他数据，一般是控制页面显隐的锁
@@ -1579,9 +1686,13 @@ export default {
           flag: '',
           ifUpdate: false
         },
+        inspectionSetting: {
+          flag: false,
+          authArr: []
+        },
         batchAllocation_flag: false,
         processType: '',
-        whichModule: 'allocation',
+        whichModule: 'inspection',
         checkAllAllocationLog: false,
         checkAllInspectionLog: false,
         checkAllStockInLog: false,
@@ -1610,8 +1721,12 @@ export default {
           },
           type: 'common'
         }, {
-          api: auth.list,
+          api: staff.list,
           params: {},
+          type: 'common'
+        }, {
+          api: station.list,
+          params: { type: '2' },
           type: 'common'
         }],
         otherApi: [{
@@ -1647,16 +1762,27 @@ export default {
     }
   },
   watch: {
-    'otherData.whichModule': function (newVal) {
-      if (newVal === 'inspection') {
-        this.selectData.clientArr = this.nativeData.clientArr.filter((item) => {
-          return item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
-        })
-      } else if (newVal === 'inspection') {
-        this.selectData.clientArr = this.nativeData.clientArr.filter((item) => {
-          return item.type.indexOf(1) !== -1
-        })
-      }
+    'otherData.processType': function (newVal) {
+      // 初始化单位为工序分配单位
+      this.selectData.clientArr = this.$clone(this.nativeData.clientArr.filter((item) => {
+        if (newVal === '织片') {
+          return item.type.indexOf(5) !== -1
+        } else if (newVal === '套口') {
+          return item.type.indexOf(6) !== -1
+        } else if (newVal === '车缝') {
+          return item.type.indexOf(7) !== -1
+        } else if (newVal === '整烫') {
+          return item.type.indexOf(8) !== -1
+        } else if (newVal === '钉扣') {
+          return item.type.indexOf(9) !== -1
+        } else if (newVal === '烫钻') {
+          return item.type.indexOf(10) !== -1
+        } else if (newVal === '手工') {
+          return item.type.indexOf(11) !== -1
+        } else {
+          return item.type.indexOf(13) !== -1
+        }
+      }))
     },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
@@ -2324,7 +2450,7 @@ export default {
       let error = ''
       this.formData.inspectionForm.detail.forEach((item) => {
         if (item.client_auth.length === 0) {
-          error = '请选择检验人员/单位'
+          error = '请选择来源工序人员/单位'
         }
         item.colorSize.forEach((itemChild) => {
           if (!itemChild.colorSize) {
@@ -2351,7 +2477,7 @@ export default {
             size_id: itemChild.colorSize.split('/')[1],
             color_id: itemChild.colorSize.split('/')[0],
             client_id: item.client_auth[0] === '检验单位' ? item.client_auth[1] : '',
-            inspection_user: item.client_auth[0] === '检验人员' ? item.client_auth[1] : '',
+            inspection_user: item.client_auth[0] === '来源工序人员' || item.client_auth[0] === '常用人员' ? item.client_auth[1] : '',
             count: itemChild.substandard,
             number: itemChild.number,
             rejects_info: JSON.stringify(itemChild.reason),
@@ -2362,20 +2488,57 @@ export default {
       })
       inspection.semiFinishedCreate({ data: formData }).then((res) => {
         if (res.data.status) {
-          this.$message.success('检验成功')
-          this.formData.inspectionForm.detail = [{
-            client_auth: '',
-            colorSize: [{
-              showCheck: false,
-              colorSize: '',
-              number: '',
-              price: '',
-              substandard: '',
-              reason: []
+          let payArr = formData.filter((item) => item.inspection_user).map((item) => {
+            return {
+              id: null,
+              staff_id: item.inspection_user,
+              complete_time: this.$getTime(new Date()),
+              work_type: this.otherData.processType,
+              year: this.$getTime(new Date()).split('-')[0],
+              month: Number(this.$getTime(new Date()).split('-')[1]),
+              settle_type: this.renderData.orderInfo.order_code || this.renderData.orderInfo.title,
+              price: this.formData.inspectionForm.price,
+              number: item.number,
+              unit: '件',
+              total_price: this.formData.inspectionForm.price * item.number,
+              desc: item.desc
+            }
+          })
+          if (payArr.length > 0) {
+            staff.createPay({ data: payArr }).then((res) => {
+              if (res.data.status) {
+                this.$message.success('检验成功')
+                this.formData.inspectionForm.detail = [{
+                  client_auth: '',
+                  colorSize: [{
+                    showCheck: false,
+                    colorSize: '',
+                    number: '',
+                    price: '',
+                    substandard: '',
+                    reason: []
+                  }]
+                }]
+                this.otherData.loading = false
+                this.init()
+              }
+            })
+          } else {
+            this.$message.success('检验成功')
+            this.formData.inspectionForm.detail = [{
+              client_auth: '',
+              colorSize: [{
+                showCheck: false,
+                colorSize: '',
+                number: '',
+                price: '',
+                substandard: '',
+                reason: []
+              }]
             }]
-          }]
-          this.otherData.loading = false
-          this.init()
+            this.otherData.loading = false
+            this.init()
+          }
         }
       })
     },
@@ -2490,6 +2653,27 @@ export default {
         })
       })
     },
+    // 搜索常用人员
+    getSettingAuthArr (ev) {
+      if (ev) {
+        this.selectData.settingAuthArr = this.selectData.authArr.filter((item) => item.name.search(ev) !== -1)
+      } else {
+        this.selectData.settingAuthArr = this.$clone(this.selectData.authArr)
+      }
+    },
+    filterSettingAuthArr (ev, type) {
+      this.selectData.settingAuthArr.forEach((item) => {
+        if (item.department_name === type) {
+          item.checked = ev
+        }
+      })
+    },
+    // 设置常用人员
+    saveInspectionSetting () {
+      window.localStorage.setItem('inspectionUser', JSON.stringify(this.selectData.settingAuthArr.filter((item) => item.checked)))
+      this.otherData.inspectionSetting.flag = false
+      this.$message.success('保存常用人员成功,刷新页面后才能生效')
+    },
     // 处理公共信息
     getCommon (resArr) {
       this.renderData.orderInfo = resArr[0].data.data
@@ -2500,7 +2684,23 @@ export default {
       })
       // 初始化单位为工序分配单位
       this.selectData.clientArr = this.$clone(this.nativeData.clientArr.filter((item) => {
-        return item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
+        if (this.otherData.processType === '织片') {
+          return item.type.indexOf(5) !== -1
+        } else if (this.otherData.processType === '套口') {
+          return item.type.indexOf(6) !== -1
+        } else if (this.otherData.processType === '车缝') {
+          return item.type.indexOf(7) !== -1
+        } else if (this.otherData.processType === '整烫') {
+          return item.type.indexOf(8) !== -1
+        } else if (this.otherData.processType === '钉扣') {
+          return item.type.indexOf(9) !== -1
+        } else if (this.otherData.processType === '烫钻') {
+          return item.type.indexOf(10) !== -1
+        } else if (this.otherData.processType === '手工') {
+          return item.type.indexOf(11) !== -1
+        } else {
+          return item.type.indexOf(13) !== -1
+        }
       }))
       this.selectData.processArr = resArr[2].data.data.filter(item => item.type === 2).map((item) => {
         return {
@@ -2534,9 +2734,19 @@ export default {
         })
       })
       this.selectData.authArr = resArr[5].data.data
+      this.selectData.settingAuthArr = this.$clone(resArr[5].data.data)
       this.selectData.clientAuthArr = [{
-        value: '检验人员',
-        label: '检验人员',
+        value: '常用人员',
+        label: '常用人员',
+        children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
+          return {
+            value: item.id,
+            label: item.name
+          }
+        }) : []
+      }, {
+        value: '来源工序人员',
+        label: '来源工序人员',
         children: resArr[5].data.data.map((item) => {
           return {
             value: item.id,
@@ -2544,17 +2754,39 @@ export default {
           }
         })
       }, {
-        value: '检验单位',
-        label: '检验单位',
-        children: resArr[1].data.data.filter((item) => {
-          return item.type.indexOf(1) !== -1
-        }).map((item) => {
-          return {
-            value: item.id,
-            label: item.name
-          }
-        })
+        value: '织片单位',
+        label: '织片单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(5)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '套口单位',
+        label: '套口单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(6)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '车缝单位',
+        label: '车缝单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(7)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '整烫单位',
+        label: '整烫单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(8)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '钉扣单位',
+        label: '钉扣单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(9)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '烫钻单位',
+        label: '烫钻单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(10)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '手工单位',
+        label: '手工单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(11)).map(itemM => ({ value: itemM.id, label: itemM.name }))
+      }, {
+        value: '其它单位',
+        label: '其它单位',
+        children: resArr[1].data.data.filter(itemF => itemF.type.includes(13)).map(itemM => ({ value: itemM.id, label: itemM.name }))
       }]
+      this.selectData.departmentArr = resArr[6].data.data
     },
     // 处理入库信息
     getStockIn (resArr) {
@@ -2570,6 +2802,11 @@ export default {
           })
         })
       })
+      this.renderData.progress.stockIn = this.renderData.allocationDetailCommon.reduce((total, current) => {
+        return total + current.childrenMergeInfo.reduce((totalChild, currentChild) => {
+          return totalChild + currentChild.stockIn
+        }, 0)
+      }, 0)
     },
     // 处理分配信息
     getAllocation (resArr) {
@@ -2607,9 +2844,11 @@ export default {
       this.renderData.allocationList.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.allocation = 0
+          itemChild.motorise_number = 0
           resArr[0].data.data.filter((item) => item.process === this.otherData.processType).forEach((itemLog) => {
             if (item.product_id === itemLog.product_id && itemChild.size_id === itemLog.size_id && itemChild.color_id === itemLog.color_id) {
               itemChild.allocation += Number(itemLog.number)
+              itemChild.motorise_number += Number(itemLog.motorise_number)
             }
           })
         })
@@ -2678,6 +2917,35 @@ export default {
           this.$router.go(-1)
         })
       }
+      let allocationClient = []
+      this.nativeData.allocationLog.forEach((item) => {
+        this.commonFind(allocationClient, item, ['client_id'], [])
+      })
+      if (this.selectData.clientAuthArr[0].value === '已分配单位') {
+        this.selectData.clientAuthArr.splice(0, 1)
+      }
+
+      this.selectData.clientAuthArr.unshift({
+        value: '已分配单位',
+        label: '已分配单位',
+        children: allocationClient.map(itemM => ({ value: itemM.client_id, label: itemM.client_name }))
+      })
+      // 统计下分配数和订单数
+      this.renderData.progress.orderNumber = this.renderData.allocationList.reduce((total, current) => {
+        return total + current.childrenMergeInfo.reduce((totalChild, currentChild) => {
+          return totalChild + currentChild.numbers
+        }, 0)
+      }, 0)
+      this.renderData.progress.allocation = this.renderData.allocationList.reduce((total, current) => {
+        return total + current.childrenMergeInfo.reduce((totalChild, currentChild) => {
+          return totalChild + currentChild.allocation + currentChild.motorise_number
+        }, 0)
+      }, 0)
+      this.renderData.progress.commonAllocation = this.renderData.allocationList.reduce((total, current) => {
+        return total + current.childrenMergeInfo.reduce((totalChild, currentChild) => {
+          return totalChild + currentChild.number
+        }, 0)
+      }, 0)
     },
     // 处理检验信息
     getInspection (resArr) {
@@ -2691,8 +2959,7 @@ export default {
         this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from'], ['number', 'count'])
       })
       this.renderData.inspectionList = this.$mergeData(inspectionList, { mainRule: 'from', childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
-      // 统计下已分配数量
-
+      // 统计下已检验数量
       this.renderData.allocationDetailCommon.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inspection = 0
@@ -2703,6 +2970,12 @@ export default {
           })
         })
       })
+
+      this.renderData.progress.inspection = this.renderData.allocationDetailCommon.reduce((total, current) => {
+        return total + current.childrenMergeInfo.reduce((totalChild, currentChild) => {
+          return totalChild + currentChild.inspection
+        }, 0)
+      }, 0)
     },
     // 根据工序类型处理模块信息
     getModule (type) {
@@ -2835,6 +3108,21 @@ export default {
     }
     .inputs {
       height: 32px;
+    }
+  }
+  .el-icon-setting {
+    color: #ccc;
+    cursor: pointer;
+    margin-left: 8px;
+    &:hover {
+      color: #1a95ff;
+    }
+  }
+}
+.selfSelect {
+  .searchCtn {
+    .el-input__inner {
+      border-radius: 20px !important;
     }
   }
 }

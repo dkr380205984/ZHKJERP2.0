@@ -225,7 +225,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="false">
       <div class="titleCtn">
         <span class="title">配件信息</span>
         <el-switch class="atTitle"
@@ -726,34 +727,34 @@ export default {
         this.$message.error('请输入配件名称')
         return
       }
-      let partData = this.fittingInfo.map((item) => {
-        return {
-          unit: item.unit,
-          part_title: item.fitting_name,
-          part_category: '',
-          part_color: this.colour.map((item) => {
-            return {
-              color_name: item.colour,
-              color_id: null
-            }
-          }),
-          part_size: item.size.map((itemSize) => {
-            return {
-              size_id: null,
-              weight: itemSize.weight,
-              size_name: itemSize.size,
-              size_info: itemSize.desc,
-              number: itemSize.number
-            }
-          }),
-          part_component: item.ingredient.map((item) => {
-            return {
-              component_name: item.ingredient_name,
-              number: item.ingredient_value
-            }
-          })
-        }
-      })
+      // let partData = this.fittingInfo.map((item) => {
+      //   return {
+      //     unit: item.unit,
+      //     part_title: item.fitting_name,
+      //     part_category: '',
+      //     part_color: this.colour.map((item) => {
+      //       return {
+      //         color_name: item.colour,
+      //         color_id: null
+      //       }
+      //     }),
+      //     part_size: item.size.map((itemSize) => {
+      //       return {
+      //         size_id: null,
+      //         weight: itemSize.weight,
+      //         size_name: itemSize.size,
+      //         size_info: itemSize.desc,
+      //         number: itemSize.number
+      //       }
+      //     }),
+      //     part_component: item.ingredient.map((item) => {
+      //       return {
+      //         component_name: item.ingredient_name,
+      //         number: item.ingredient_value
+      //       }
+      //     })
+      //   }
+      // })
       // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         product_code: this.product_code.join(''),
@@ -794,8 +795,8 @@ export default {
               }
             }))
           }
-        }),
-        part_data: this.hasFitting ? partData : []
+        })
+        // part_data: this.hasFitting ? partData : []
       }
       product.create(formData).then((res) => {
         if (res.data.status) {
