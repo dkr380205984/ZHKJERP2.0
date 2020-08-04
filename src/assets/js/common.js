@@ -15,15 +15,11 @@ const downloadExcel = (data, titles, orderInfo, excelName) => {
       return `<table>
                 <tr>
                   <td style="text-align:left">订单号：</td>
-                  <td style="text-align:left">${itemOrder.order_code}</td>
+                  <td style="text-align:left">${itemOrder.order_code || itemOrder.title}</td>
                 </tr>
                 <tr>
                   <td style="text-align:left">订单公司：</td>
                   <td style="text-align:left">${itemOrder.client_name}</td>
-                </tr>
-                <tr>
-                  <td style="text-align:left">负责小组：</td>
-                  <td style="text-align:left">${itemOrder.group_name}</td>
                 </tr>
                 <tr>
                   <td style="text-align:left">下单日期：</td>

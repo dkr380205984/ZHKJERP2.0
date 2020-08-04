@@ -888,7 +888,7 @@ export default {
     return {
       // ifKegong: '否',
       tableType: 'table',
-      lock: true,
+      // lock: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -1577,10 +1577,7 @@ export default {
       }
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1770,7 +1767,7 @@ export default {
         others_info: JSON.stringify(otherInfo)
         // time_progress: warnData
       }
-      this.lock = false
+      // this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('添加成功')

@@ -32,10 +32,10 @@
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.user_name}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>

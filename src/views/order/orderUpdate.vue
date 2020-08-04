@@ -883,7 +883,7 @@ export default {
     return {
       // ifKegong: '',
       clientArrReal: [],
-      lock: true,
+      // lock: true,
       canSeePriceFlag: false,
       loading: true,
       tableType: 'normal',
@@ -1569,10 +1569,7 @@ export default {
       }
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1763,7 +1760,7 @@ export default {
         others_info: JSON.stringify(otherInfo)
         // time_progress: warnData
       }
-      this.lock = false
+      // this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('修改成功')

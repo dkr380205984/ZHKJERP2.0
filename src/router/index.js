@@ -50,7 +50,7 @@ const routes = [
     }, {
       path: '/sample/sampleCreate',
       name: '样品添加',
-      component: () => import('../views/sample/sampleCreateNew.vue')
+      component: () => import('../views/sample/sampleCreate.vue')
     }, {
       path: '/sample/sampleDetail/:id',
       name: '样品详情',
@@ -66,7 +66,7 @@ const routes = [
     }, {
       path: '/sample/sampleOrderCreate',
       name: '样品订单添加',
-      component: () => import('../views/sample/sampleOrderCreateNew.vue')
+      component: () => import('../views/sample/sampleOrderCreate.vue')
     }, {
       path: '/sample/sampleOrderUpdate/:id',
       name: '样品订单修改',

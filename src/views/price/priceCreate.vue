@@ -667,18 +667,10 @@
               <span class="text">织造明细</span>
             </span>
             <span class="content">
-              <el-select v-model="item.name"
+              <el-autocomplete v-model="item.name"
                 clearable
-                filterable
-                allow-create
-                default-first-option
-                placeholder="请选择织造明细">
-                <el-option v-for="item in weave_list"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+                :fetch-suggestions="querySearchWeave"
+                placeholder="请输入内容"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -693,7 +685,7 @@
                 errorMsg="请输入数字"
                 placeholder="明细"
                 v-model="item.number">
-                <template slot="append">{{item.name ? item.name[0] : '针'}}</template>
+                <template slot="append">针</template>
               </zh-input>
               <zh-input type="number"
                 :class="{hasMarginLeft:item.name !== '制版费'}"
@@ -722,19 +714,10 @@
               <span class="text">半成品加工</span>
             </span>
             <span class="content">
-              <el-select v-model="item.name"
+              <el-autocomplete v-model="item.name"
                 clearable
-                filterable
-                multiple
-                allow-create
-                default-first-option
-                placeholder="请选择半成品加工工序">
-                <el-option v-for="item in semi_list"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+                :fetch-suggestions="querySearchSemi"
+                placeholder="请输入内容"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -769,19 +752,10 @@
               <span class="text">成品加工</span>
             </span>
             <span class="content">
-              <el-select v-model="item.name"
+              <el-autocomplete v-model="item.name"
                 clearable
-                filterable
-                multiple
-                allow-create
-                default-first-option
-                placeholder="请选择成品加工工序">
-                <el-option v-for="item in finished_list"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+                :fetch-suggestions="querySearchFinished"
+                placeholder="请输入内容"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -816,18 +790,10 @@
               <span class="text">包装辅料</span>
             </span>
             <span class="content">
-              <el-select v-model="item.name"
+              <el-autocomplete v-model="item.name"
                 clearable
-                filterable
-                allow-create
-                default-first-option
-                placeholder="请选择包装辅料">
-                <el-option v-for="item in packag_list"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+                :fetch-suggestions="querySearchPack"
+                placeholder="请输入内容"></el-autocomplete>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -893,7 +859,7 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
-              <span class="text">非生产费用</span>
+              <span class="text">管理费用</span>
             </span>
             <span class="content">
               <zh-input type="number"
@@ -1075,9 +1041,18 @@ export default {
       priceInfo: {
         raw_material: [{ name: '', weight: '', price: '', prop: '', total_price: '' }],
         other_material: [{ name: '', weight: '', price: '', prop: '', total_price: '', unit: '个' }],
-        weave: [{ name: '', number: '', total_price: '' }],
-        semi_process: [{ name: '', total_price: '' }],
-        finished_process: [{ name: '', total_price: '' }],
+        weave: [{ name: '织片', number: '', total_price: '' }],
+        semi_process: [
+          { name: '套口', total_price: '' },
+          { name: '水洗', total_price: '' },
+          { name: '车缝', total_price: '' },
+          { name: '整烫', total_price: '' }
+        ],
+        finished_process: [
+          { name: '检验', total_price: '' },
+          { name: '车标', total_price: '' },
+          { name: '包装', total_price: '' }
+        ],
         packag: [{ name: '', total_price: '' }],
         other_fee: [{ name: '', total_price: '' }],
         no_production_fee: { total_price: '' },
@@ -1112,15 +1087,12 @@ export default {
       material_list: [],
       weave_list: [
         { value: '针织织造' },
-        { value: '梭织织造' },
         { value: '制版费' }
       ],
       finished_list: [
         { value: '车标' },
         { value: '包装' },
-        { value: '人工' },
-        { value: '检验' },
-        { value: '水洗' }
+        { value: '检验' }
       ],
       semi_list: [],
       packag_list: [
@@ -1788,6 +1760,18 @@ export default {
       if (!this.priceInfo.other_fee || this.priceInfo.other_fee.length === 0) {
         this.priceInfo.other_fee = [{ name: '', total_price: '' }]
       }
+    },
+    querySearchWeave (queryString, cb) {
+      cb(queryString ? this.weave_list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.weave_list)
+    },
+    querySearchSemi (queryString, cb) {
+      cb(queryString ? this.semi_list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.semi_list)
+    },
+    querySearchFinished (queryString, cb) {
+      cb(queryString ? this.finished_list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.finished_list)
+    },
+    querySearchPack (queryString, cb) {
+      cb(queryString ? this.packag_list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.packag_list)
     }
   },
   created () {

@@ -1775,7 +1775,9 @@ export default {
             rejects_number: itemM.count
           }
         })).sort((a, b) => {
-          return a.color_name.localeCompare(b.color_name)
+          let aStr = a.color_name + '/' + a.size_name
+          let bStr = b.color_name + '/' + b.size_name
+          return aStr.localeCompare(bStr)
         }), {
           mainRule: 'process',
           childrenName: 'children_info',

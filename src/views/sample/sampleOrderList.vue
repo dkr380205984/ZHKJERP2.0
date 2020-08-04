@@ -124,7 +124,7 @@
             </div>
             <div class="filter_line"
               :class="!openHiddleFilter ? 'hiddle' : false">
-              <el-select v-model="group_id"
+              <!-- <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
                 clearable
@@ -134,7 +134,7 @@
                   :label="item.name"
                   :value="item.id">
                 </el-option>
-              </el-select>
+              </el-select> -->
               <el-select v-model="state"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -222,9 +222,9 @@
             <div class="col">
               <span class="text">样单数量(件)</span>
             </div>
-            <div class="col">
+            <!-- <div class="col">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col">
               <span class="text">流程进度</span>
             </div>
@@ -249,7 +249,7 @@
                 order_type='sample'></zh-img-list>
             </div>
             <div class="col">{{itemOrder.number}}</div>
-            <div class="col">{{itemOrder.group_name}}</div>
+            <!-- <div class="col">{{itemOrder.group_name}}</div> -->
             <div class="col">
               <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
                 <div class="state"></div>
@@ -313,7 +313,7 @@
 </template>
 
 <script>
-import { sampleOrder, group, client, chartsAPI } from '@/assets/js/api.js'
+import { sampleOrder, client, chartsAPI } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -468,8 +468,8 @@ export default {
       has_materialStock: '',
       has_weave: '',
       state: '',
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       company_id: '',
       companyArr: [],
       pickerOptions: {
@@ -540,7 +540,7 @@ export default {
       this.has_materialStock = params.has_materialStock
       this.has_weave = params.has_weave
       this.has_materialPlan = params.has_materialPlan
-      this.group_id = params.group_id ? Number(params.group_id) : ''
+      // this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id
       this.state = params.state
     },
@@ -561,7 +561,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        group_id: this.group_id,
+        // group_id: this.group_id,
         status: this.state,
         status_material_plan: this.has_materialPlan,
         status_material_order: this.has_material,
@@ -597,7 +597,7 @@ export default {
               return total + item
             }),
             status: item.status,
-            group_name: item.group_name,
+            // group_name: item.group_name,
             deliver_time: item.deliver_time,
             has_plan: item.has_plan,
             material_order_progress: item.material_order_progress,
@@ -648,9 +648,12 @@ export default {
   created () {
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
-      this.groupArr = res[0].data.data
-      this.companyArr = res[1].data.data.filter((item) => {
+    Promise.all([
+      // group.list(),
+      client.list()
+    ]).then((res) => {
+      // this.groupArr = res[0].data.data
+      this.companyArr = res[0].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
     })
