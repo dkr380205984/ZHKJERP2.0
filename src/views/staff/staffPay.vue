@@ -213,7 +213,7 @@
                     <div class="once">{{Math.round(itemChild.price * itemChild.number)}}</div>
                     <div class="once">{{itemChild.desc}}</div>
                     <div class="once">{{itemChild.user_name?itemChild.user_name:'-'}}</div>
-                    <div class="once">{{itemChild.create_time?itemChild.create_time.date.slice(0,10):'-'}}</div>
+                    <div class="once">{{itemChild.create_time?itemChild.create_time.slice(0,10):'-'}}</div>
                     <div class="once"></div>
                   </template>
                 </div>
@@ -659,20 +659,42 @@ export default {
         this.$message.warning('请输入数量单位')
         return
       }
-      staff.createPay({
-        id: item.id,
-        staff_id: item.staff_id,
-        complete_time: item.complete_time,
-        work_type: item.work_type,
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1]),
-        settle_type: item.settle_type,
-        price: item.price,
-        number: item.number,
-        unit: item.unit,
-        total_price: item.price * item.number,
-        desc: item.desc
-      }).then((res) => {
+      let api = staff.createPay
+      let formData = {
+        data: [{
+          id: item.id,
+          staff_id: item.staff_id,
+          complete_time: item.complete_time,
+          work_type: item.work_type,
+          year: this.date.split('-')[0],
+          month: Number(this.date.split('-')[1]),
+          settle_type: item.settle_type,
+          price: item.price,
+          number: item.number,
+          unit: item.unit,
+          total_price: item.price * item.number,
+          desc: item.desc
+        }]
+      }
+      if (item.id) {
+        api = staff.updatePay
+        formData = {
+          id: item.id,
+          staff_id: item.staff_id,
+          complete_time: item.complete_time,
+          work_type: item.work_type,
+          year: this.date.split('-')[0],
+          month: Number(this.date.split('-')[1]),
+          settle_type: item.settle_type,
+          price: item.price,
+          number: item.number,
+          unit: item.unit,
+          total_price: item.price * item.number,
+          desc: item.desc
+        }
+      }
+      console.log(formData)
+      api(formData).then((res) => {
         if (res.data.status) {
           this.$message.success('操作成功')
           item.addFlag = false

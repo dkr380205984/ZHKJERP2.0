@@ -430,6 +430,7 @@ const staff = {
   create: (params) => http.post(`${baseUrl}/company/staff/save`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/company/staff/list`, params),
   createPay: (params) => http.post(`${baseUrl}/staff/wage/settle/save`, params, 'application/json'),
+  updatePay: (params) => http.post(`${baseUrl}/staff/wage/settle/edit`, params, 'application/json'),
   deletePay: (params) => http.post(`${baseUrl}/staff/wage/settle/delete`, params, 'application/json'),
   createOtherPay: (params) => http.post(`${baseUrl}/staff/wage/settle/deduct/save`, params, 'application/json'),
   deleteOtherPay: (params) => http.post(`${baseUrl}/staff/wage/settle/deduct/delete`, params, 'application/json'),
