@@ -93,9 +93,6 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div>
             <div class="col flex12">
               <span class="text">状态</span>
             </div>
@@ -119,9 +116,6 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div>
             <div class="col flex12"
               style="color:#ccc">
               暂无
@@ -134,6 +128,14 @@
                 @click="$router.push('/process/processCommon/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
                 {{processType}}详情
               </span>
+              <!-- <span class="opr"
+                @click="$router.push('/process/processForSize/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
+                尺码
+              </span>
+              <span class="opr"
+                @click="$router.push('/process/processForColor/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
+                配色
+              </span> -->
             </div>
           </div>
         </div>
