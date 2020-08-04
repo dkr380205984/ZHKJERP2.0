@@ -72,7 +72,7 @@ export default {
             name: '其他工序管理',
             id: 20,
             path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/3',
-            icon: 'icon-zhizaojiagong'
+            icon: 'icon-gongxuguanli'
           },
           // {
           //   name: '产品收发',
