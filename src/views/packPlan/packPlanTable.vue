@@ -2,65 +2,92 @@
   <div class='printHtml'
     id='packPlanTable'>
     <div class="printTable crosswise">
-      <div class="print_head">
-        <div class="top">
-          <span class="title">{{companyName}}装箱计划单{{chinaNum[index]}}</span>
+      <div class="print_head row">
+        <div class="left">
+          <span class="title">{{companyName}}装箱计划单{{chinaNum[index]}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
+          <span class="item">
+            <span class="label">创建人：</span>
+            {{user_name}}
+          </span>
+          <span class="item">
+            <span class="label">创建时间：</span>
+            {{$getTime()}}
+          </span>
         </div>
-        <div class="bottom">
-          <span>创建人：{{user_name}}</span><span>创建时间：{{$getTime()}}</span>
+        <div class="right">
+          <div class="qrCode_box"
+            style="margin-right:8px">
+            <img :src="proImage.image_url || errImg"
+              alt="产品图片">
+          </div>
+          <div class="qrCode_box">
+            <img :src="qrCodeUrl || errImg"
+              alt="二维码">
+          </div>
         </div>
       </div>
       <div class="print_body">
-        <div class="print_row">
+        <div class="print_row has_marginBottom">
           <span class="row_item center w180">订单号</span>
           <span class="row_item left">{{orderInfo.order_code}}</span>
           <span class="row_item center w180">订单公司</span>
           <span class="row_item left">{{orderInfo.client_name}}</span>
-        </div>
-        <div class="print_row has_marginBottom">
           <span class="row_item center w180">下单日期</span>
           <span class="row_item left">{{orderInfo.order_time}}</span>
-          <span class="row_item center w180">联系人</span>
-          <span class="row_item left">{{orderInfo.contacts}}</span>
         </div>
-        <div class="print_row bgGray">
-          <span class="row_item left">包装类型</span>
-          <span class="row_item flex28">
+        <div class="print_row bgGray"
+          style="font-size:16px">
+          <span class="row_item center flex06">装箱类型</span>
+          <span class="row_item flex4">
             <span class="print_row noBorder">
-              <span class="row_item left flex12">产品/包装</span>
-              <span class="row_item left flex08">尺码/颜色</span>
-              <span class="row_item left flex08">产品数量</span>
+              <span class="row_item left flex15">产品</span>
+              <span class="row_item left">尺码/颜色</span>
+              <span class="row_item left flex08">袋装<br />件/袋</span>
+              <span class="row_item left flex08">箱装<br />袋/箱</span>
+              <span class="row_item left flex08">总数量</span>
             </span>
           </span>
-          <span class="row_item left flex08">包装数量</span>
-          <span class="row_item left flex08">总量</span>
-          <span class="row_item center flex08">序号</span>
+          <span class="row_item left flex04">箱号</span>
+          <span class="row_item right flex04">箱数</span>
+          <span class="row_item left flex04">毛重</span>
+          <span class="row_item left flex04">净重</span>
+          <span class="row_item left">长*宽*高</span>
+          <span class="row_item right flex04">体积</span>
+          <span class="row_item left flex08">备注</span>
         </div>
         <div class="print_row"
           v-for="(item,index) in planInfo"
-          :key="index">
-          <span class="row_item left">{{item.pack_code}}<br />{{item.pack_name}}{{item.size_info ? (item.size_info.size_info ? ',' + item.size_info.size_info + 'cm' : '') + (item.size_info.attr ? ',' + item.size_info.attr : '') : ''}}</span>
-          <span class="row_item flex28 col">
-            <span v-for="(itemInner,indexInner) in item.pack_info"
+          :key="index"
+          style="font-size:16px">
+          <span class="row_item center flex06">{{chinaNum[index]}}</span>
+          <span class="row_item flex4 col">
+            <span v-for="(itemInner,indexInner) in item.product_info"
               :class="['print_row',indexInner === 0 ? 'noBorder' : '']"
               :key="indexInner">
-              <span class="row_item left flex12">
+              <span class="row_item left flex15">
                 {{itemInner.product_info ? itemInner.product_info.product_code : itemInner.name}}<br />
                 {{itemInner|filterName}}
               </span>
-              <span class="row_item left flex08">{{itemInner.size_color? itemInner.size_color.join('/') : '/'}}</span>
-              <span class="row_item left flex08">{{itemInner.number ? itemInner.number + (itemInner.product_info ? itemInner.product_info.unit : itemInner.packInfo ? itemInner.packInfo.unit : '') + '/' + (item.unit ? item.unit : '') : '/'}}</span>
+              <span class="row_item left">{{itemInner.size_name + '/' + itemInner.color_name}}</span>
+              <span class="row_item left flex08">{{itemInner.quantity_bag}}</span>
+              <span class="row_item left flex08">{{itemInner.quantity_chest}}</span>
+              <span class="row_item left flex08">{{itemInner.quantity_total}}</span>
             </span>
           </span>
-          <span class="row_item left flex08">{{item.packNum ? item.packNum + (item.unit ? item.unit : '') : '/'}}</span>
-          <span class="row_item left flex08"
-            v-if="item.gross_weight || item.net_weight">毛重：{{item.gross_weight + 'kg'}}<br />净重：{{item.net_weight + 'kg'}}</span>
-          <span class="row_item left flex08"
-            v-else>/</span>
-          <span class="row_item center flex08"
-            v-if="item.start_box || item.end_box">{{[item.start_box,item.end_box].join('-')}}</span>
-          <span class="row_item center flex08"
-            v-else>/</span>
+          <span class="row_item left flex04">{{item.chest_number ? item.chest_number.split(',').join('-') : '/'}}</span>
+          <span class="row_item right flex04">{{item.chest_quantity || 0}}</span>
+          <span class="row_item left flex04">{{item.gross_weight_chest || 0}}kg</span>
+          <span class="row_item left flex04">{{item.net_weight_chest || 0}}kg</span>
+          <span class="row_item left">{{item.extent_width_height.split(',').join('*')}}</span>
+          <span class="row_item right flex04">{{item.bulk || 0}}m³</span>
+          <span class="row_item left flex08">{{item.remark || '/'}}</span>
+        </div>
+      </div>
+      <div class="print_remark">
+        <div class="print_row noBorder">
+          <span class="row_item center w180">备注</span>
+          <span class="row_item left remark_span"
+            v-html='remark'></span>
         </div>
       </div>
     </div>
@@ -78,17 +105,17 @@ export default {
       user_name: window.sessionStorage.getItem('user_name'),
       index: 0,
       qrCodeUrl: '',
+      proImage: '',
+      errImg: require('@/assets/image/index/noPic.jpg'),
       orderInfo: {
       },
-      planInfo: []
+      planInfo: [],
+      remark: ''
     }
-  },
-  methods: {
-
   },
   created () {
     Promise.all([
-      order.editDetail({
+      order.detail({
         id: this.$route.params.id
       }),
       packPlan.detail({
@@ -101,61 +128,14 @@ export default {
       let planInfo = res[1].data.data
       this.index = planInfo.map(item => Number(item.id)).indexOf(Number(this.$route.params.planId))
       let planFlag = planInfo[this.index]
-      console.log(planFlag)
       if (planFlag) {
-        let productList = this.orderInfo.order_batch.map(itemBatch => {
-          return itemBatch.product_info.map(itemPro => itemPro.product_info)
-        })
-        let newProductList = []
-        productList.forEach(item => {
-          item.forEach(itemPro => {
-            if (!(newProductList.find(value => value.product_id === itemPro.product_id))) {
-              newProductList.push(itemPro)
-            }
+        this.planInfo = this.$mergeData(planFlag.pack_info, { mainRule: 'pack_type', otherRule: [{ name: 'chest_number' }, { name: 'chest_quantity' }, { name: 'gross_weight_chest' }, { name: 'gross_weight_total' }, { name: 'net_weight_chest' }, { name: 'net_weight_total' }, { name: 'extent_width_height' }, { name: 'bulk' }, { name: 'total_bulk' }, { name: 'desc' }], childrenName: 'product_info' })
+        this.remark = planFlag.desc
+        this.proImage = this.$flatten(this.planInfo.map(itemM => {
+          return itemM.product_info.map(itemP => {
+            return itemP.product_info.image
           })
-        })
-        let data = []
-        this.$clone(JSON.parse(planFlag.pack_info)).forEach(item => {
-          data = data.concat(item)
-        })
-        data.forEach(item => {
-          item.unit = res[2].data.data.find(items => items.name === item.pack_name) ? res[2].data.data.find(items => items.name === item.pack_name).unit : ''
-          item.size_info = this.$clone(JSON.parse(planFlag.material_info)).find(items => items.item_id.indexOf(item.pack_code) !== -1)
-          item.pack_info.forEach(itemInner => {
-            itemInner.product_info = newProductList.find(items => items.product_id === itemInner.name)
-            let flag = data.find(items => items.pack_code === itemInner.name)
-            itemInner.packInfo = flag || ''
-          })
-        })
-        // 自动计算包装数量
-        let newData = this.$clone(JSON.parse(planFlag.pack_info)).reverse()
-        let packNumArr = [] // 数据存放
-        newData.forEach((item, key) => {
-          item.forEach(value => {
-            if (key === 0) { // 当最后一级时直接加箱数
-              packNumArr.push({
-                pack_id: value.pack_code,
-                number: Number(value.total_box || 0)
-              })
-            }
-            value.pack_info.forEach(val => {
-              if (key !== newData.length - 1) {
-                packNumArr.push({
-                  pack_id: val.name,
-                  number: Number(val.number || 0) * Number(value.total_box || 1)
-                })
-              }
-            })
-          })
-        })
-        // 将计算结果合并进数据
-        packNumArr.forEach(item => {
-          let flag = data.find(value => value.pack_code === item.pack_id)
-          if (flag) {
-            flag.packNum = Number(flag.packNum || 0) + Number(item.number || 0)
-          }
-        })
-        this.planInfo = data
+        }))[0]
         setTimeout(() => {
           window.print()
         }, 1000)
@@ -164,7 +144,7 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/materialOrder/materialOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
+    QRCode.toDataURL(window.location.origin + '/packPlan/packPlanCreate/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
       if (!err) {
         this.qrCodeUrl = url
       }
@@ -172,7 +152,7 @@ export default {
   },
   filters: {
     filterName (item) {
-      return item.product_info ? [item.product_info.category_name, item.product_info.type_name, item.product_info.style_name].filter(items => items).join('/') : item.packInfo ? item.packInfo.pack_name : ''
+      return item.product_info ? [item.product_info.category_name, item.product_info.type_name, item.product_info.style_name].filter(items => items).join('/') : ''
     }
   }
 }

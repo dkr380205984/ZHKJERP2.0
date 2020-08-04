@@ -50,7 +50,7 @@ const routes = [
     }, {
       path: '/sample/sampleCreate',
       name: '样品添加',
-      component: () => import('../views/sample/sampleCreateNew.vue')
+      component: () => import('../views/sample/sampleCreate.vue')
     }, {
       path: '/sample/sampleDetail/:id',
       name: '样品详情',
@@ -66,7 +66,7 @@ const routes = [
     }, {
       path: '/sample/sampleOrderCreate',
       name: '样品订单添加',
-      component: () => import('../views/sample/sampleOrderCreateNew.vue')
+      component: () => import('../views/sample/sampleOrderCreate.vue')
     }, {
       path: '/sample/sampleOrderUpdate/:id',
       name: '样品订单修改',
@@ -146,7 +146,7 @@ const routes = [
     }, {
       path: '/order/orderCreate',
       name: '订单添加',
-      component: () => import('../views/order/orderCreateNew.vue')
+      component: () => import('../views/order/orderCreate.vue')
     }, {
       path: '/order/orderUpdate/:id',
       name: '订单修改',
@@ -167,22 +167,6 @@ const routes = [
       path: '/productPlan/productPlanDetail/:id/:type',
       name: '配料单详情',
       component: () => import('../views/productPlan/productPlanDetail.vue')
-    }, {
-      path: '/materialPlan/materialPlanCreate/:id/:type',
-      name: '物料计划单添加',
-      component: () => import('../views/materialPlan/materialPlanCreate.vue')
-    }, {
-      path: '/materialPlan/materialPlanUpdate/:id/:type',
-      name: '物料计划单修改',
-      component: () => import('../views/materialPlan/materialPlanUpdate.vue')
-    }, {
-      path: '/materialPlan/materialPlanDetail/:id/:type',
-      name: '物料计划单详情',
-      component: () => import('../views/materialPlan/materialPlanDetail.vue')
-    }, {
-      path: '/materialPlan/materialPlanList/:params/:type',
-      name: '物料计划单列表',
-      component: () => import('../views/materialPlan/materialPlanList.vue')
     }, {
       path: '/materialOrder/materialOrderCreate',
       name: '物料预订购',
@@ -271,18 +255,6 @@ const routes = [
       path: '/packPlan/packPlanCreate/:id',
       name: '装箱计划单详情',
       component: () => import('../views/packPlan/packPlanDetailNew.vue')
-    }, {
-      path: '/packPlan/packStockList/:params',
-      name: '装箱出库列表',
-      component: () => import('../views/packPlan/packStockList.vue')
-    }, {
-      path: '/packPlan/packStock/:id',
-      name: '装箱出库详情',
-      component: () => import('../views/packPlan/packStock.vue')
-    }, {
-      path: '/packPlan/packOrderList/:params',
-      name: '包装订购列表',
-      component: () => import('../views/packPlan/packOrderList.vue')
     }, {
       path: '/packPlan/packOrderDetail/:id',
       name: '包装订购详情',
@@ -431,6 +403,22 @@ const routes = [
       path: '/reimbursement/reimbursementUpdate/:id',
       name: '报销单修改',
       component: () => import('../views/reimbursement/reimbursementUpdate.vue')
+    }, {
+      path: '/warehouse/warehouseList/:params',
+      name: '进仓单列表',
+      component: () => import('../views/warehouse/warehouseList.vue')
+    }, {
+      path: '/warehouse/warehouseDetail/:id',
+      name: '进仓单详情',
+      component: () => import('../views/warehouse/warehouseDetail.vue')
+    }, {
+      path: '/transport/transportList/:params',
+      name: '运输货款列表',
+      component: () => import('../views/transport/transportList.vue')
+    }, {
+      path: '/transport/transportDetail/:id',
+      name: '运输货款详情',
+      component: () => import('../views/transport/transportDetail.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -448,10 +436,6 @@ const routes = [
     path: '/productPlanTable/:id/:type/:index',
     name: '配料单打印',
     component: () => import('../views/productPlan/productPlanTable.vue')
-  }, {
-    path: '/materialPlanTable/:id/:type',
-    name: '物料计划单',
-    component: () => import('../views/materialPlan/materialPlanTable.vue')
   }, {
     path: '/materialOrderTable/:id',
     name: '物料预定购单',
@@ -472,10 +456,6 @@ const routes = [
     path: '/materialTable/:id/:orderType/:type',
     name: '物料订购调取单',
     component: () => import('../views/material/materialTable.vue')
-  }, {
-    path: '/materialProcessTable/:id/:orderType/:type',
-    name: '物料加工单',
-    component: () => import('../views/material/materialProcessTable.vue')
   }, {
     path: '/packPlanTable/:id/:planId',
     name: '包装计划单',
@@ -585,8 +565,10 @@ router.beforeEach((to, from, next) => {
     '物料批量订购': ['织为云', '物料订购列表', '物料批量订购'],
     '系统设置': ['织为云', '系统设置'],
     '物料出入库列表': ['织为云', '物料出入库列表'],
-    '物料出入库详情': ['织为云', '物料出入库列表', '物料出入库详情'],
-    '物料出入库详情-客供版': ['织为云', '物料出入库列表', '物料出入库详情'],
+    '物料入库详情': ['织为云', '物料出入库列表', '物料入库详情'],
+    '物料出库详情': ['织为云', '物料出入库列表', '物料出库详情'],
+    '物料回库详情': ['织为云', '物料回入库列表', '物料回库详情'],
+    // '物料出入库详情-客供版': ['织为云', '物料出入库列表', '物料出入库详情'],
     '物料批量出入库详情': ['织为云', '物料订购列表', '物料批量出入库详情'],
     '工序列表': ['织为云', '工序列表'],
     '工序分配详情': ['织为云', '工序列表', '工序分配详情'],
@@ -604,8 +586,8 @@ router.beforeEach((to, from, next) => {
     '产品检验列表': ['织为云', '产品检验列表'],
     '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
     '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情'],
-    '装箱出库列表': ['织为云', '装箱出库列表'],
-    '装箱出库详情': ['织为云', '装箱管理列表', '装箱出库详情'],
+    // '装箱出库列表': ['织为云', '装箱出库列表'],
+    // '装箱出库详情': ['织为云', '装箱管理列表', '装箱出库详情'],
     '设备管理': ['织为云', '设备管理'],
     '客户列表': ['织为云', '客户列表'],
     '客户添加': ['织为云', '客户列表', '客户添加'],
@@ -633,7 +615,11 @@ router.beforeEach((to, from, next) => {
     '添加报销单': ['织为云', '添加报销单'],
     '报销单详情': ['织为云', '报销单列表', '报销单详情'],
     '报销单修改': ['织为云', '报销单列表', '报销单修改'],
-    '报销单列表': ['织为云', '报销单列表']
+    '报销单列表': ['织为云', '报销单列表'],
+    '进仓单列表': ['织为云', '进仓单列表'],
+    '进仓单详情': ['织为云', '进仓单列表', '进仓单详情'],
+    '运输货款列表': ['织为云', '运输货款列表'],
+    '运输货款详情': ['织为云', '运输货款列表', '运输货款详情']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

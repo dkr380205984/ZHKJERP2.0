@@ -91,6 +91,12 @@ export default {
             id: 11,
             path: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
             icon: 'icon-zhuangxiangchuku'
+          },
+          {
+            name: '进仓运输',
+            id: 19,
+            path: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address=',
+            icon: 'icon-zhuangxiangchuku'
           }
         ],
         other: [

@@ -32,10 +32,10 @@
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.user_name}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>
@@ -118,8 +118,8 @@
                   <span class="tb_row">{{itemA.material_color}}</span>
                   <span class="tb_row">{{itemA.color_code}}</span>
                   <span class="tb_row">{{itemA.vat_code}}</span>
-                  <span class="tb_row green">{{itemA.goStockNum}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
-                  <span class="tb_row orange">{{itemA.outStockNum || 0}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                  <span class="tb_row green">{{itemA.goStockNum}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
+                  <span class="tb_row orange">{{itemA.outStockNum || 0}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                   <span class="tb_row">
                     <span class="tb_handle_btn blue"
                       @click="outStock(itemM,itemA)">出库</span>
@@ -143,7 +143,8 @@
                       clearable
                       :props="{ expandTrigger: 'hover' }"
                       placeholder="请选择出库单位"
-                      :options="clientList"></el-cascader>
+                      :options="clientList"
+                      @change="getDistributionMaterial($event,itemC)"></el-cascader>
                   </span>
                 </div>
               </div>
@@ -153,7 +154,7 @@
                 <div class="colCtn flex3">
                   <span class="label"
                     v-if="indexM === 0">
-                    <span class="text">原料名称</span>
+                    <span class="text">{{$route.params.type === '1' ? 'kg' : '个'}}料名称</span>
                   </span>
                   <span class="content">
                     <el-select v-model="itemM.material_name"
@@ -175,7 +176,7 @@
                     <div class="colCtn">
                       <span class="label"
                         v-if="indexM === 0">
-                        <span class="text">原料颜色</span>
+                        <span class="text">{{$route.params.type === '1' ? 'kg' : '个'}}料颜色</span>
                       </span>
                       <span class="content">
                         <el-select v-model="itemM.attr_name"
@@ -243,7 +244,12 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">{{$route.params.type === '1' ? 'kg' : '个'}}</template>
+                          <template slot="append">
+                            <input type="text"
+                              style="width:20px;border:none;outline:none;background:inherit;"
+                              v-model="itemM.unit"
+                              :placeholder="`${$route.params.type === '1' ? 'kg' : '个'}`">
+                          </template>
                         </zh-input>
                       </span>
                     </div>
@@ -336,7 +342,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row green">{{$toFixed(itemA.total_weight)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                      <span class="tb_row green">{{$toFixed(itemA.total_weight)}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                     </span>
                   </span>
                 </span>
@@ -353,8 +359,10 @@
       <div class="detailCtn">
         <div class="rowCtn col">
           <div class="btnCtn_page">
-            <div class="btn btnWhiteBlue"
+            <div class="btn btnWhiteRed"
               @click="deleteLog(materialOutStockLog,'all')">批量删除</div>
+            <div class="btn btnWhiteBlue"
+              @click="download">导出Excel</div>
           </div>
           <div class="tableCtnLv2">
             <span class="tb_header">
@@ -387,7 +395,7 @@
               <span class="tb_row">{{itemLog.material_color}}</span>
               <span class="tb_row flex06">{{itemLog.color_code || '/'}}</span>
               <span class="tb_row flex06">{{itemLog.vat_code || '/'}}</span>
-              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}</span>
+              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}{{itemLog.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
               <span class="tb_row flex06">{{itemLog.user_name}}</span>
               <span class="tb_row flex06 middle">
                 <span class="tb_handle_btn red"
@@ -602,6 +610,28 @@ export default {
     }
   },
   methods: {
+    // 改变出库单位判断为分配单位时自动填充分配物料
+    getDistributionMaterial (e, item) {
+      if (e[0] === '0') { // 判断是否选择分配单位
+        let flag = this.clientList.find(itemF => itemF.value === '0').children.find(itemF => itemF.value === e[1])
+        if (flag) {
+          item.material_info = flag.material_info.map(itemM => {
+            let flag = this.materialGoStockInfo.find(itemF => itemF.material_name === itemM.material_name)
+            return {
+              material_name: itemM.material_name,
+              attrArr: flag ? this.$unique(flag.attr_info, 'material_color') : [],
+              colorArr: flag ? this.$unique(flag.attr_info.filter(itemF => itemF.material_color === itemM.attr_name), 'color_code') : [],
+              vatArr: [],
+              attr_name: itemM.attr_name,
+              vat_code: '',
+              color_code: '',
+              weight: itemM.weight,
+              unit: itemM.unit || (this.$route.params.type === '1' ? 'kg' : '个')
+            }
+          })
+        }
+      }
+    },
     closeDrawer (key) {
       this[key] = false
     },
@@ -645,7 +675,6 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
             client_id: itemC.client_id[1]
-
           }
         })
       }))
@@ -757,16 +786,17 @@ export default {
             desc: itemC.remark,
             total_weight: itemM.weight,
             store_id: null,
-            color_code: itemM.color_code,
+            color_code: itemM.color_code || null,
             material_name: itemM.material_name,
             material_type: this.$route.params.type,
-            vat_code: itemM.vat_code,
+            vat_code: itemM.vat_code || null,
             material_order_id: null,
             material_color: itemM.attr_name,
             complete_time: itemC.time,
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
-            client_id: itemC.client_id[1]
+            client_id: itemC.client_id[1],
+            unit: itemM.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         })
       }))
@@ -858,7 +888,7 @@ export default {
       })
     },
     checkedAllLog (e) {
-      this.materialStockLog.forEach(itemF => {
+      this.materialOutStockLog.forEach(itemF => {
         itemF.checked = e
       })
       this.$forceUpdate()
@@ -890,7 +920,8 @@ export default {
           childrenRule: {
             mainRule: ['material_color', 'color_code', 'vat_code'],
             otherRule: [
-              { name: 'total_weight/goStockNum', type: 'add' }
+              { name: 'total_weight/goStockNum', type: 'add' },
+              { name: 'unit' }
             ]
           }
         })
@@ -909,7 +940,8 @@ export default {
             childrenRule: {
               mainRule: ['material_color', 'color_code', 'vat_code'],
               otherRule: [
-                { name: 'total_weight', type: 'add' }
+                { name: 'total_weight', type: 'add' },
+                { name: 'unit' }
               ]
             }
           }
@@ -922,12 +954,26 @@ export default {
             }, 0)
           })
         })
+        // 初始化已分配单位及分配物料
+        let clientInfo = this.$mergeData(res[3].data.data.filter(itemF => +itemF.material_type === +this.$route.params.type), {
+          mainRule: 'client_id/value',
+          otherRule: [
+            { name: 'client_name/label' }
+          ],
+          childrenName: 'material_info',
+          childrenRule: {
+            mainRule: ['material_name', 'material_attribute/attr_name', 'weight'],
+            otherRule: [
+              { name: 'unit' }
+            ]
+          }
+        })
         // 初始化出库单位
         this.clientList = [
           {
             value: '0',
             label: '已分配单位',
-            children: this.$unique(res[3].data.data.map(itemM => ({ value: itemM.client_id, label: itemM.client_name })), 'value')
+            children: clientInfo
           }, {
             value: '1',
             label: '织片单位',
@@ -967,10 +1013,7 @@ export default {
     },
     // 批量导出excel
     download () {
-      let data = []
-      this.stockLog.forEach(item => {
-        data.push(...item.filter(value => value.checked))
-      })
+      let data = this.materialOutStockLog.filter(value => value.checked)
       if (data.length === 0) {
         this.$message.error('请选择需要导出的日志')
         return
@@ -980,12 +1023,14 @@ export default {
         return item
       })
       downloadExcel(data, [
-        { title: '出入库时间', key: 'complete_time' },
-        { title: '出入库单位', key: 'client_name' },
+        { title: '出库时间', key: 'complete_time' },
+        { title: '出库单位', key: 'client_name' },
+        { title: '出库仓库', key: 'store_name' },
         { title: this.$route.params.type === '1' ? '原料名称' : '辅料名称', key: 'material_name' },
         { title: '颜色', key: 'material_color' },
+        { title: '色号', key: 'color_code' },
+        { title: '批/缸号', key: 'vat_code' },
         { title: '数量', key: 'total_weight' },
-        { title: '操作类型', key: 'type_name' },
         { title: '操作人', key: 'user_name' }
       ], this.orderInfo)
     },
@@ -999,7 +1044,8 @@ export default {
           attr_name: '',
           vat_code: '',
           color_code: '',
-          weight: ''
+          weight: '',
+          unit: this.$route.params.type === '1' ? 'kg' : '个'
         })
       } else if (type === 'out') {
         data.push({
@@ -1013,7 +1059,8 @@ export default {
               attr_name: '',
               vat_code: '',
               color_code: '',
-              weight: ''
+              weight: '',
+              unit: this.$route.params.type === '1' ? 'kg' : '个'
             }
           ],
           time: this.$getTime(),
@@ -1046,7 +1093,8 @@ export default {
             attr_name: itemA.material_color,
             vat_code: itemA.vat_code,
             color_code: itemA.color_code,
-            weight: this.$toFixed(itemA.goStockNum - (itemA.outStockNum || 0))
+            weight: this.$toFixed(itemA.goStockNum - (itemA.outStockNum || 0)),
+            unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         ],
         time: this.$getTime(),
@@ -1072,7 +1120,8 @@ export default {
             attr_name: itemA.material_color,
             vat_code: itemA.vat_code,
             color_code: itemA.color_code,
-            weight: this.$toFixed(itemA.goStockNum - (itemA.outStockNum || 0))
+            weight: this.$toFixed(itemA.goStockNum - (itemA.outStockNum || 0)),
+            unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         }))
       })

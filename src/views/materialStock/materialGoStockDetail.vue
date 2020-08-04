@@ -32,10 +32,10 @@
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.user_name}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>
@@ -81,12 +81,22 @@
       </div>
       <div class="detailCtn">
         <div class="rowCtn col">
+          <div class="btnCtn_page">
+            <div class="btn btnWhiteBlue"
+              @click="goStockBatch">批量入库</div>
+          </div>
           <div class="tableCtnLv2">
             <span class="tb_header">
+              <span class="tb_row max40">
+                <el-checkbox @change="(e)=>{
+                    materialOrderInfo.forEach(itemF=>itemF.checked = e);
+                    $forceUpdate()
+                  }" />
+              </span>
               <span class="tb_row">订购公司</span>
               <span class="tb_row tb_col flex5">
                 <span class="tb_col_item">
-                  <span class="tb_row">原料名称</span>
+                  <span class="tb_row">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                   <span class="tb_row tb_col flex30">
                     <span class="tb_col_item">
                       <span class="tb_row">颜色</span>
@@ -102,6 +112,10 @@
             <span class="tb_content"
               v-for="(itemC,indexC) in materialOrderInfo"
               :key="indexC">
+              <span class="tb_row max40">
+                <el-checkbox v-model="itemC.checked"
+                  @change="$forceUpdate()" />
+              </span>
               <span class="tb_row">{{itemC.client_name}}</span>
               <span class="tb_row tb_col flex5">
                 <span class="tb_col_item"
@@ -113,9 +127,9 @@
                       v-for="(itemA,indexA) in itemM.attr_info"
                       :key="indexA">
                       <span class="tb_row ">{{itemA.color_code}}</span>
-                      <span class="tb_row right flex06">{{itemA.weight}}kg</span>
-                      <span class="tb_row right green flex06">{{$toFixed(itemA.push_weight) || 0}}kg</span>
-                      <span class="tb_row right orange flex06">{{$toFixed(itemA.weight - (itemA.push_weight || 0) > 0 ? itemA.weight - (itemA.push_weight || 0) : 0)}}kg</span>
+                      <span class="tb_row right flex06">{{itemA.weight}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
+                      <span class="tb_row right green flex06">{{$toFixed(itemA.push_weight) || 0}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
+                      <span class="tb_row right orange flex06">{{$toFixed(itemA.weight - (itemA.push_weight || 0) > 0 ? itemA.weight - (itemA.push_weight || 0) : 0)}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                       <span class="tb_row middle flex06">
                         <span class="tb_handle_btn blue"
                           @click="goStock(itemC,itemM,itemA)">入库</span>
@@ -159,7 +173,7 @@
                 <div class="colCtn flex3">
                   <span class="label"
                     v-if="indexM === 0">
-                    <span class="text">原料名称</span>
+                    <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                   </span>
                   <span class="content">
                     <template v-if="itemC.isCustomerSupplied">
@@ -191,7 +205,7 @@
                     <div class="colCtn">
                       <span class="label"
                         v-if="indexM === 0">
-                        <span class="text">原料颜色</span>
+                        <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
                       </span>
                       <span class="content">
                         <template v-if="itemC.isCustomerSupplied">
@@ -251,7 +265,15 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">{{itemM.unit || ($route.params.type === '1' ? 'kg' : '个')}}</template>
+                          <template slot="append">
+                            <!-- <template v-if="$route.params.type === '1'">kg</template>
+                            <template v-else> -->
+                            <input type="text"
+                              style="width:20px;border:none;outline:none;background:inherit;"
+                              v-model="itemM.unit"
+                              :placeholder="`${$route.params.type === '1' ? 'kg' : '个'}`">
+                            <!-- </template> -->
+                          </template>
                         </zh-input>
                       </span>
                     </div>
@@ -318,7 +340,7 @@
                 <span class="tb_col_item">
                   <span class="tb_row">颜色</span>
                   <span class="tb_row flex06">色号</span>
-                  <span class="tb_row flex06">批号</span>
+                  <span class="tb_row flex06">批/缸号</span>
                   <span class="tb_row flex06">入库数量</span>
                 </span>
               </span>
@@ -334,7 +356,7 @@
                   <span class="tb_row">{{itemA.material_color}}</span>
                   <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                   <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                  <span class="tb_row green flex06">{{$toFixed(itemA.total_weight || 0)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                  <span class="tb_row green flex06">{{$toFixed(itemA.total_weight || 0)}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                 </span>
               </span>
             </span>
@@ -349,8 +371,10 @@
       <div class="detailCtn">
         <div class="rowCtn col">
           <div class="btnCtn_page">
-            <div class="btn btnWhiteBlue"
+            <div class="btn btnWhiteRed"
               @click="deleteLog(materialStockLog,'all')">批量删除</div>
+            <div class="btn btnWhiteBlue"
+              @click="download">导出Excel</div>
           </div>
           <div class="tableCtnLv2">
             <span class="tb_header">
@@ -363,7 +387,7 @@
               <span class="tb_row flex15">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
               <span class="tb_row">颜色</span>
               <span class="tb_row flex06">色号</span>
-              <span class="tb_row flex06">批号</span>
+              <span class="tb_row flex06">批/缸号</span>
               <span class="tb_row flex06">入库数量</span>
               <span class="tb_row flex06">操作人</span>
               <span class="tb_row flex06 middle">操作</span>
@@ -381,7 +405,7 @@
               <span class="tb_row">{{itemLog.material_color}}</span>
               <span class="tb_row flex06">{{itemLog.color_code || '/'}}</span>
               <span class="tb_row flex06">{{itemLog.vat_code || '/'}}</span>
-              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}</span>
+              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}{{itemLog.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
               <span class="tb_row flex06">{{itemLog.user_name}}</span>
               <span class="tb_row flex06 middle">
                 <span class="tb_handle_btn red"
@@ -475,7 +499,8 @@ export default {
             complete_time: itemE.time,
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
-            client_id: itemE.client_id
+            client_id: itemE.client_id,
+            unit: itemM.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         })
       }))
@@ -603,7 +628,8 @@ export default {
                 { name: 'color_code' },
                 { name: 'weight' },
                 { name: 'push_weight' },
-                { name: 'price' }
+                { name: 'price' },
+                { name: 'unit' }
                 // { name: 'type_source' }
               ]
             }
@@ -611,15 +637,16 @@ export default {
         })
         this.clientList = [...this.clientList, ...this.materialOrderInfo]
         // 初始化日志
-        this.materialStockLog = res[2].data.data
+        this.materialStockLog = res[2].data.data.filter(itemF => +itemF.type === 2)
         // 初始化入库数据
-        this.materialStockInfo = this.$mergeData(res[2].data.data, {
+        this.materialStockInfo = this.$mergeData(this.materialStockLog, {
           mainRule: 'material_name',
           childrenName: 'attr_info',
           childrenRule: {
             mainRule: ['material_color', 'color_code', 'vat_code'],
             otherRule: [
-              { name: 'total_weight', type: 'add' }
+              { name: 'total_weight', type: 'add' },
+              { name: 'unit' }
             ]
           }
         })
@@ -652,7 +679,8 @@ export default {
           attr_name: '',
           vat_code: '',
           color_code: '',
-          weight: ''
+          weight: '',
+          unit: this.$route.params.type === '1' ? 'kg' : '个'
         })
       } else if (type === 'go') {
         data.push({
@@ -665,10 +693,11 @@ export default {
               attr_name: '',
               vat_code: '',
               color_code: '',
-              weight: ''
+              weight: '',
+              unit: this.$route.params.type === '1' ? 'kg' : '个'
             }
           ],
-          time: '',
+          time: this.$getTime(),
           remark: ''
         })
       }
@@ -688,7 +717,8 @@ export default {
             attr_name: itemA.color_code + '-' + itemA.id,
             vat_code: '',
             color_code: '',
-            weight: this.$toFixed(itemA.weight - (itemA.push_weight || 0) > 0 ? itemA.weight - (itemA.push_weight || 0) : 0)
+            weight: this.$toFixed(itemA.weight - (itemA.push_weight || 0) > 0 ? itemA.weight - (itemA.push_weight || 0) : 0),
+            unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         ],
         time: this.$getTime(),
@@ -696,13 +726,45 @@ export default {
       })
       this.$goElView('goStock')
     },
-    querySearchMaterial (queryString, callback) {
-      if (this.materialList.length === 0) {
+    // 入库module点击批量入库按钮操作时
+    goStockBatch () {
+      let checkData = this.materialOrderInfo.filter(itemF => itemF.checked)
+      if (checkData.length === 0) {
+        this.$message.warning('请选择最少一项入库信息')
+        return
+      }
+      checkData.forEach(itemC => {
+        let obj = {
+          client_id: itemC.client_id,
+          materialArr: itemC.material_info,
+          time: this.$getTime(),
+          remark: '',
+          material_info: []
+        }
+        itemC.material_info.forEach(itemM => {
+          obj.material_info.push(...itemM.attr_info.map(itemA => {
+            return {
+              material_name: itemM.material_name,
+              attrArr: itemM.attr_info,
+              attr_name: itemA.color_code + '-' + itemA.id,
+              vat_code: '',
+              color_code: '',
+              weight: this.$toFixed(itemA.weight - (itemA.push_weight || 0) > 0 ? itemA.weight - (itemA.push_weight || 0) : 0),
+              unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个')
+            }
+          }))
+        })
+        this.editInfo.push(obj)
+      })
+      this.$goElView('goStock')
+    },
+    querySearchMaterial (queryString, callback, flag = true) { // flag用来规避接口返回空数组时一直回调
+      if (this.materialList.length === 0 && flag) {
         const api = this.$route.params.type === '1' ? yarn : material
         api.list().then(res => {
           if (res.data.status !== false) {
             this.materialList = res.data.data.map(itemM => ({ value: itemM.name, unit: (this.$route.params.type === '1' ? 'kg' : itemM.unit) }))
-            this.querySearchMaterial(queryString, callback)
+            this.querySearchMaterial(queryString, callback, false)
           }
         })
       } else {
@@ -710,12 +772,12 @@ export default {
         callback(list)
       }
     },
-    querySearchAttr (queryString, cb) {
-      if (this.attrList.length === 0) {
+    querySearchAttr (queryString, cb, flag = true) { // flag用来规避接口返回空数组时一直回调
+      if (this.attrList.length === 0 && flag) {
         yarnColor.list().then(res => {
           if (res.data.status !== false) {
             this.attrList = res.data.data.map(itemM => ({ value: itemM.name }))
-            this.querySearchAttr(queryString, cb)
+            this.querySearchAttr(queryString, cb, false)
           }
         })
       } else {

@@ -32,10 +32,10 @@
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.user_name}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>
@@ -115,7 +115,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row right flex06 green">{{itemA.total_weight}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                      <span class="tb_row right flex06 green">{{itemA.total_weight}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                       <span class="tb_row middle flex06">
                         <span class="tb_handle_btn blue"
                           @click="goBatckStock(itemC,itemM,itemA)">回库</span>
@@ -266,7 +266,12 @@
                       <span class="contetn">
                         <zh-input v-model="itemM.weight"
                           placeholder='请输入数量'>
-                          <template slot="append">{{$route.params.type === '1' ? 'kg' : '个'}}</template>
+                          <template slot="append">
+                            <input type="text"
+                              style="width:20px;border:none;outline:none;background:inherit;"
+                              v-model="itemM.unit"
+                              :placeholder="`${$route.params.type === '1' ? 'kg' : '个'}`">
+                          </template>
                         </zh-input>
                       </span>
                     </div>
@@ -360,7 +365,7 @@
                       <span class="tb_row">{{itemA.material_color}}</span>
                       <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                       <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
-                      <span class="tb_row flex06 right green">{{$toFixed(itemA.total_weight)}}{{$route.params.type === '1' ? 'kg' : '个'}}</span>
+                      <span class="tb_row flex06 right green">{{$toFixed(itemA.total_weight)}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
                     </span>
                   </span>
                 </span>
@@ -377,7 +382,7 @@
       <div class="detailCtn">
         <div class="rowCtn col">
           <div class="btnCtn_page">
-            <div class="btn btnWhiteBlue"
+            <div class="btn btnWhiteRed"
               @click="deleteLog(materialBackStockLog,'all')">批量删除</div>
           </div>
           <div class="tableCtnLv2">
@@ -411,7 +416,7 @@
               <span class="tb_row">{{itemLog.material_color}}</span>
               <span class="tb_row flex06">{{itemLog.color_code || '/'}}</span>
               <span class="tb_row flex06">{{itemLog.vat_code || '/'}}</span>
-              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}</span>
+              <span class="tb_row flex06">{{$toFixed(itemLog.total_weight)}}{{itemLog.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
               <span class="tb_row flex06">{{itemLog.user_name}}</span>
               <span class="tb_row flex06 middle">
                 <span class="tb_handle_btn red"
@@ -496,7 +501,8 @@ export default {
             complete_time: itemC.time,
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
-            client_id: itemC.client_id
+            client_id: itemC.client_id,
+            unit: itemM.unit || (this.$route.params.type === '1' ? 'kg' : '个')
           }
         })
       }))
@@ -600,7 +606,8 @@ export default {
             childrenRule: {
               mainRule: ['material_color', 'color_code', 'vat_code'],
               otherRule: [
-                { name: 'total_weight', type: 'add' }
+                { name: 'total_weight', type: 'add' },
+                { name: 'unit' }
               ]
             }
           }
@@ -620,7 +627,8 @@ export default {
             childrenRule: {
               mainRule: ['material_color', 'color_code', 'vat_code'],
               otherRule: [
-                { name: 'total_weight', type: 'add' }
+                { name: 'total_weight', type: 'add' },
+                { name: 'unit' }
               ]
             }
           }
@@ -662,7 +670,8 @@ export default {
           attr_name: '',
           vat_code: '',
           color_code: '',
-          weight: ''
+          weight: '',
+          unit: this.$route.params.type === '1' ? 'kg' : '个'
         })
       } else if (type === 'goBack') {
         data.push({
@@ -678,7 +687,8 @@ export default {
               attr_name: '',
               vat_code: '',
               color_code: '',
-              weight: ''
+              weight: '',
+              unit: this.$route.params.type === '1' ? 'kg' : '个'
             }
           ],
           time: this.$getTime(),
@@ -713,7 +723,9 @@ export default {
             attr_name: itemA.material_color,
             vat_code: itemA.vat_code,
             color_code: itemA.color_code,
-            weight: ''
+            weight: '',
+            unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个'
+            )
           }
         ],
         time: this.$getTime(),

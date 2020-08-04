@@ -70,7 +70,7 @@
               </el-select>
             </span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">
               <span class="text">负责小组</span>
               <span class="explanation">(必填)</span>
@@ -85,7 +85,7 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -128,6 +128,19 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">
+              <span class="text">下单日期</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content">
+              <el-date-picker v-model="order_time"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择下单日期">
+              </el-date-picker>
+            </span>
+          </div>
+          <!-- <div class="colCtn flex3">
+            <span class="label">
               <span class="text">税率</span>
               <span class="explanation">(必填)</span>
             </span>
@@ -140,9 +153,9 @@
                 <template slot="append">%</template>
               </zh-input>
             </span>
-          </div>
+          </div> -->
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">下单日期</span>
@@ -172,7 +185,7 @@
                 label="否">否</el-radio>
             </span>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="module">
@@ -344,6 +357,10 @@
               <div :class="{'stateCtn':true, 'green':item.quotation_id === 1}">
                 <div class="state"></div>
                 <span class="name">报</span>
+              </div>
+              <div :class="{'stateCtn':true, 'green':item.has_order === 1}">
+                <div class="state"></div>
+                <span class="name">订</span>
               </div>
             </div>
             <div class="col">
@@ -665,7 +682,7 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <!-- <div class="module">
       <div class="titleCtn"
         style="display:flex;justify-content: space-between">
         <span class="title">预警设置
@@ -713,7 +730,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title">其他信息</span>
@@ -860,13 +877,13 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
+import { product, client, order, getToken, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      ifKegong: '',
+      // ifKegong: '',
       clientArrReal: [],
-      lock: true,
+      // lock: true,
       canSeePriceFlag: false,
       loading: true,
       tableType: 'normal',
@@ -879,12 +896,12 @@ export default {
       clientArr: [],
       contact_id: '',
       contactArr: [],
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       unit: '元',
       unitArr: moneyArr,
       exchange_rate: 100,
-      tax_prop: 12,
+      // tax_prop: 12,
       order_time: this.$getTime(),
       searchCode: '',
       date: '',
@@ -930,13 +947,13 @@ export default {
       order_file_arr: [],
       packag_file_arr: [],
       box_file_arr: [],
-      other_file_arr: [],
+      other_file_arr: []
       // 预警数据
-      isOpenWarn: false,
-      warnType: '',
-      warnList: [],
-      timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }],
-      orderTypeArr: []
+      // isOpenWarn: false,
+      // warnType: '',
+      // warnList: [],
+      // timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '半成品入库' }, { percent: 0.2, name: '成品入库' }, { percent: 0.2, name: '成品装箱' }],
+      // orderTypeArr: []
     }
   },
   methods: {
@@ -1127,31 +1144,31 @@ export default {
         this.tableType = 'normal'
       }
     },
-    checkedWarn (item) {
-      this.warnType = item.title
-      this.timeData = [
-        {
-          percent: this.$toFixed(item.material_plan / 100),
-          name: '物料计划'
-        }, {
-          percent: this.$toFixed(item.material_push / 100),
-          name: '物料入库'
-        }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
-        }, {
-          percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
-        }, {
-          percent: this.$toFixed(item.product_pack / 100),
-          name: '成品装箱'
-        }
-      ]
-    },
-    getWarnEndTime () {
-      let data = this.batchDate[0].time
-      return data || this.$getTime()
-    },
+    // checkedWarn (item) {
+    //   this.warnType = item.title
+    //   this.timeData = [
+    //     {
+    //       percent: this.$toFixed(item.material_plan / 100),
+    //       name: '物料计划'
+    //     }, {
+    //       percent: this.$toFixed(item.material_push / 100),
+    //       name: '物料入库'
+    //     }, {
+    //       percent: this.$toFixed(item.semi_product_push / 100),
+    //       name: '半成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_push / 100),
+    //       name: '成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_pack / 100),
+    //       name: '成品装箱'
+    //     }
+    //   ]
+    // },
+    // getWarnEndTime () {
+    //   let data = this.batchDate[0].time
+    //   return data || this.$getTime()
+    // },
     querySearchOrder (querystring, cb) {
       order.list({
         page: 1,
@@ -1290,7 +1307,8 @@ export default {
         has_quotation: this.has_quotation,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        type: 1
+        type: 1,
+        has_order: 1
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -1551,10 +1569,7 @@ export default {
       }
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1569,18 +1584,18 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.group_id) {
-        this.$message.error('请选择负责小组')
-        return
-      }
+      // if (!this.group_id) {
+      //   this.$message.error('请选择负责小组')
+      //   return
+      // }
       if (!this.unit) {
         this.$message.error('请选择结算单位')
         return
       }
-      if (Number(this.tax_prop) !== 0 && !this.tax_prop) {
-        this.$message.error('请输入税率')
-        return
-      }
+      // if (Number(this.tax_prop) !== 0 && !this.tax_prop) {
+      //   this.$message.error('请输入税率')
+      //   return
+      // }
       if (!this.order_time) {
         this.$message.error('请选择下单日期')
         return
@@ -1654,22 +1669,22 @@ export default {
       const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
-      let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
-      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
-      let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
-      let warnData = this.isOpenWarn ? {
-        order_time: this.order_time,
-        end_time: this.getWarnEndTime(),
-        progress_data: {
-          material_plan: this.$toFixed(materialPlanFlag.percent * 100),
-          material_push: this.$toFixed(materialPushFlag.percent * 100),
-          semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
-          product_push: this.$toFixed(productPushFlag.percent * 100),
-          product_pack: this.$toFixed(productPackFlag.percent * 100)
-        }
-      } : null
+      // let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      // let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
+      // let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      // let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      // let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      // let warnData = this.isOpenWarn ? {
+      //   order_time: this.order_time,
+      //   end_time: this.getWarnEndTime(),
+      //   progress_data: {
+      //     material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+      //     material_push: this.$toFixed(materialPushFlag.percent * 100),
+      //     semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+      //     product_push: this.$toFixed(productPushFlag.percent * 100),
+      //     product_pack: this.$toFixed(productPackFlag.percent * 100)
+      //   }
+      // } : null
       let orderInfo = []
       if (this.tableType === 'normal') {
         orderInfo = this.batchDate.map((item, index) => {
@@ -1723,7 +1738,7 @@ export default {
         })
       }
       let data = {
-        material_status: this.ifKegong === '是' ? 1 : 2,
+        // material_status: this.ifKegong === '是' ? 1 : 2,
         id: this.$route.params.id,
         order_code: this.order_code.map(item => {
           return item.code
@@ -1731,9 +1746,9 @@ export default {
         client_id: this.client_id,
         contacts: this.contact_id,
         account_unit: this.unit,
-        group_id: this.group_id,
+        // group_id: this.group_id,
         exchange_rate: this.exchange_rate || moneyArr.find((item) => item.name === this.unit).default,
-        tax_rate: this.tax_prop,
+        // tax_rate: this.tax_prop,
         order_time: this.order_time,
         order_info: orderInfo,
         total_price: this.total_price,
@@ -1742,10 +1757,10 @@ export default {
         order_contract: JSON.stringify(orderContract),
         pack_means: JSON.stringify(packMeans),
         store_means: JSON.stringify(storeMeans),
-        others_info: JSON.stringify(otherInfo),
-        time_progress: warnData
+        others_info: JSON.stringify(otherInfo)
+        // time_progress: warnData
       }
-      this.lock = false
+      // this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('修改成功')
@@ -1771,12 +1786,12 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list(),
+      // group.list(),
       getToken(),
       order.editDetail({
         id: this.$route.params.id
       }),
-      warnSetting.list(),
+      // warnSetting.list(),
       orderType.typeList({
         order_type: 1
       })
@@ -1787,16 +1802,16 @@ export default {
         item.name_pinyin = item.name_pinyin.join('')
       })
       this.clientArrReal = this.$clone(this.clientArr)
-      this.groupArr = res[1].data.data
-      this.postData.token = res[2].data.data
-      this.warnList = res[4].data.data.filter(item => item.order_type === 1)
-      this.orderTypeArr = res[5].data.data.map(item => {
+      // this.groupArr = res[1].data.data
+      this.postData.token = res[1].data.data
+      // this.warnList = res[4].data.data.filter(item => item.order_type === 1)
+      this.orderTypeArr = res[3].data.data.map(item => {
         return {
           value: item.name
         }
       })
       // 初始化修改订单数据
-      let orderInfo = res[3].data.data
+      let orderInfo = res[2].data.data
       if (window.sessionStorage.getItem('user_id') === orderInfo.user_id || +window.sessionStorage.getItem('has_check') > 0) {
         this.canSeePriceFlag = true
       }
@@ -1808,12 +1823,12 @@ export default {
       this.client_id = orderInfo.client_id.toString()
       this.getContact(this.client_id)
       this.contact_id = orderInfo.contacts_id
-      this.group_id = orderInfo.group_id
+      // this.group_id = orderInfo.group_id
       this.unit = orderInfo.account_unit
       this.exchange_rate = orderInfo.exchange_rate
-      this.tax_prop = orderInfo.tax_rate
+      // this.tax_prop = orderInfo.tax_rate
       this.order_time = orderInfo.order_time
-      this.ifKegong = orderInfo.material_status === 1 ? '是' : '否'
+      // this.ifKegong = orderInfo.material_status === 1 ? '是' : '否'
       let orderBatch = []
       let arr = [] // 存储产品id
       orderInfo.order_batch.forEach(itemBatch => {
@@ -1929,27 +1944,27 @@ export default {
       }) : []
       // this.total_price = orderInfo.total_price
       this.remark = orderInfo.remark
-      if (orderInfo.time_progress) {
-        this.isOpenWarn = true
-        this.timeData = [
-          {
-            percent: this.$toFixed(orderInfo.time_progress.progress_data.material_plan / 100),
-            name: '物料计划'
-          }, {
-            percent: this.$toFixed(orderInfo.time_progress.progress_data.material_push / 100),
-            name: '物料入库'
-          }, {
-            percent: this.$toFixed(orderInfo.time_progress.progress_data.semi_product_push / 100),
-            name: '半成品入库'
-          }, {
-            percent: this.$toFixed(orderInfo.time_progress.progress_data.product_push / 100),
-            name: '成品入库'
-          }, {
-            percent: this.$toFixed(orderInfo.time_progress.progress_data.product_pack / 100),
-            name: '成品装箱'
-          }
-        ]
-      }
+      // if (orderInfo.time_progress) {
+      //   this.isOpenWarn = true
+      //   this.timeData = [
+      //     {
+      //       percent: this.$toFixed(orderInfo.time_progress.progress_data.material_plan / 100),
+      //       name: '物料计划'
+      //     }, {
+      //       percent: this.$toFixed(orderInfo.time_progress.progress_data.material_push / 100),
+      //       name: '物料入库'
+      //     }, {
+      //       percent: this.$toFixed(orderInfo.time_progress.progress_data.semi_product_push / 100),
+      //       name: '半成品入库'
+      //     }, {
+      //       percent: this.$toFixed(orderInfo.time_progress.progress_data.product_push / 100),
+      //       name: '成品入库'
+      //     }, {
+      //       percent: this.$toFixed(orderInfo.time_progress.progress_data.product_pack / 100),
+      //       name: '成品装箱'
+      //     }
+      //   ]
+      // }
       this.changeTableType()
       this.computedTotalPrice()
       this.loading = false

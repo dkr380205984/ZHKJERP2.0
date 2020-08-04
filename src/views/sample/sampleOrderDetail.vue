@@ -95,10 +95,10 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{sampleOrderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <!-- <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{sampleOrderInfo.order_time}}</span>
@@ -1954,7 +1954,7 @@ export default {
           title: title,
           pid: this.$route.params.id,
           order_time: this.$getTime(),
-          group_id: this.sampleOrderInfo.group_id,
+          // group_id: this.sampleOrderInfo.group_id,
           client_id: this.sampleOrderInfo.client_id,
           contacts_id: this.sampleOrderInfo.contacts_id,
           deliver_time: this.continueSampleInfo.time,

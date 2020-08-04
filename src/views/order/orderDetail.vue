@@ -38,10 +38,10 @@
             <span class="label">订单号：</span>
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">是否客供：</span>
             <span class="text">{{orderInfo.material_status===2?'非客供纱':'客供纱'}}</span>
-          </div>
+          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -55,16 +55,6 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">负责小组：</span>
-            <span class="text">{{orderInfo.group_name}}</span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">下单日期：</span>
-            <span class="text">{{orderInfo.order_time}}</span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
             <span class="label">结算单位：</span>
             <span class="text">{{orderInfo.account_unit}}</span>
           </div>
@@ -72,9 +62,19 @@
             <span class="label">汇率：</span>
             <span class="text">{{orderInfo.exchange_rate}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">税率：</span>
             <span class="text">{{orderInfo.tax_rate}}</span>
+          </div> -->
+        </div>
+        <div class="rowCtn">
+          <!-- <div class="colCtn flex3">
+            <span class="label">负责小组：</span>
+            <span class="text">{{orderInfo.group_name}}</span>
+          </div> -->
+          <div class="colCtn flex3">
+            <span class="label">下单日期：</span>
+            <span class="text">{{orderInfo.order_time}}</span>
           </div>
         </div>
         <div class="rowCtn">
@@ -314,8 +314,7 @@
           <div style="height:1px;background:#E9E9E9;width:100%;margin:25px 0"></div>
         </div> -->
         <!-- 暂时隐藏 -->
-        <div class="processCtn"
-          v-if="false">
+        <div class="processCtn">
           <div class="processOnce showAll"
             v-for="(item,index) in productProgInfo"
             :key='index'>
@@ -336,21 +335,15 @@
                 <div class="text">{{itemChild.name}}</div>
                 <div class="rate">({{itemChild.prog}}%)</div>
               </div>
-              <div class="opr"
+              <!-- <div class="opr"
                 v-if="index===0"
-                @click="orderDetailInfo.material.length>0?(showFlag2.showMaterial=!showFlag2.showMaterial):getMaterialDetail()">{{showFlag2.showMaterial?'收起列表':'展开详情'}}</div>
+                @click="orderDetailInfo.material.length>0?(showFlag2.showMaterial=!showFlag2.showMaterial):getMaterialDetail()">{{showFlag2.showMaterial?'收起列表':'展开详情'}}</div> -->
               <div class="opr"
-                v-if="index===1"
-                @click="orderDetailInfo.production.length>0?(showFlag2.showWeave=!showFlag2.showWeave):getProductionDetail()">{{showFlag2.showWeave?'收起列表':'展开详情'}}</div>
-              <div class="opr"
-                v-if="index===2"
-                @click="orderDetailInfo.inspection.length>0?(showFlag2.showIns=!showFlag2.showIns):getInspectionDetail()">{{showFlag2.showIns?'收起列表':'展开详情'}}</div>
-              <div class="opr"
-                v-if="index===3"
-                @click="orderDetailInfo.outStock.length>0?(showFlag2.showOut=!showFlag2.showOut):getOutStockDetail()">{{showFlag2.showOut?'收起列表':'展开详情'}}</div>
+                @click="useCallback(item)">{{item.show?'收起列表':'展开详情'}}</div>
             </div>
-            <div class="hideCtn">
-              <template v-if="index===0&&showFlag2.showMaterial">
+            <div class="hideCtn"
+              v-if="item.show">
+              <template v-if="item.key === 'material'">
                 <div class="flexTb">
                   <div class="thead">
                     <span class="trow">
@@ -361,6 +354,7 @@
                           <span class="tcolumn">采购数量</span>
                           <span class="tcolumn">入库数量</span>
                           <span class="tcolumn">出库数量</span>
+                          <span class="tcolumn">回库数量</span>
                         </span>
                       </span>
                     </span>
@@ -378,6 +372,7 @@
                           <span class="tcolumn green">{{itemAttr.order_number}}{{item.unit}}</span>
                           <span class="tcolumn green">{{itemAttr.go_stock_number || 0}}{{item.unit}}</span>
                           <span class="tcolumn green">{{itemAttr.out_stock_number || 0}}{{item.unit}}</span>
+                          <span class="tcolumn green">{{itemAttr.back_stock_number || 0}}{{item.unit}}</span>
                         </span>
                       </span>
                     </span>
@@ -407,75 +402,17 @@
                   </div>
                 </div>
               </template>
-              <template v-if="index===1&&showFlag2.showWeave">
+              <template v-else>
                 <div class="flexTb">
                   <div class="thead">
                     <span class="trow">
-                      <span class="tcolumn">生产单位</span>
-                      <span class="tcolumn flex5 noPad">
+                      <span class="tcolumn">产品信息</span>
+                      <span class="tcolumn noPad"
+                        style="flex:3">
                         <span class="trow">
-                          <span class="tcolumn">产品信息</span>
                           <span class="tcolumn">尺码颜色</span>
-                          <span class="tcolumn">生产工序</span>
                           <span class="tcolumn">分配数量</span>
-                          <span class="tcolumn">收发数量</span>
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                  <div class="tbody">
-                    <span class="trow"
-                      v-for="(item,index) in orderDetailInfo.production"
-                      :key="index">
-                      <span class="tcolumn">{{item.client_name}}</span>
-                      <span class="tcolumn noPad flex5">
-                        <span class="trow"
-                          v-for="(itemPro,indexPro) in item.product_info"
-                          :key="indexPro">
-                          <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                          <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                          <span class="tcolumn">{{itemPro.process_type}}</span>
-                          <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
-                          <span class="tcolumn">
-                            <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
-                            <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
-                          </span>
-                        </span>
-                      </span>
-                    </span>
-                    <span class="extra">
-                      <div class="label">相关页面：</div>
-                      <div class="link"
-                        style="margin-left:4px">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/weavingProcessing/weavingDetail/'+ $route.params.id +'/1')">生产织造</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/weavingProcessing/processingDetail/'+ $route.params.id +'/1')">半成品加工</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/receiveDispatch/receiveDispatchDetail/'+ $route.params.id)">产品收发</span>
-                      </div>
-                    </span>
-                  </div>
-                </div>
-              </template>
-              <template v-if="index===2&&showFlag2.showIns">
-                <div class="flexTb">
-                  <div class="thead">
-                    <span class="trow">
-                      <span class="tcolumn">产品信息</span>
-                      <span class="tcolumn flex5 noPad">
-                        <span class="trow">
-                          <span class="tcolumn">尺码颜色</span>
-                          <span class="tcolumn">半成品检验</span>
-                          <span class="tcolumn">次品数量</span>
-                          <span class="tcolumn">成品检验</span>
+                          <span class="tcolumn">检验数量</span>
                           <span class="tcolumn">次品数量</span>
                         </span>
                       </span>
@@ -483,18 +420,18 @@
                   </div>
                   <div class="tbody">
                     <span class="trow"
-                      v-for="(item,index) in orderDetailInfo.inspection"
+                      v-for="(item,index) in orderDetailInfo[item.key]"
                       :key="index">
-                      <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
-                      <span class="tcolumn noPad flex5">
+                      <span class="tcolumn">{{item.product_code}}<br />{{item.product_type}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:3">
                         <span class="trow"
-                          v-for="(itemSize,indexSize) in item.color_info"
-                          :key="indexSize">
-                          <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                          <span class="tcolumn green">{{itemSize.semi_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn">{{itemSize.semi_rejects_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn green">{{itemSize.finished_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn">{{itemSize.finished_rejects_number || 0}}{{item.unit || '件'}}</span>
+                          v-for="(itemSC,indexSC) in item.size_color_info"
+                          :key="indexSC">
+                          <span class="tcolumn">{{itemSC.size_name + '/' + itemSC.color_name}}</span>
+                          <span class="tcolumn green">{{itemSC.number || 0}}{{itemSC.unit || '件'}}</span>
+                          <span class="tcolumn orange">{{itemSC.inspection_number || 0}}{{itemSC.unit || '件'}}</span>
+                          <span class="tcolumn red">{{itemSC.rejects_number || 0}}{{itemSC.unit || '件'}}</span>
                         </span>
                       </span>
                     </span>
@@ -504,65 +441,7 @@
                         style="margin-left:4px">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/inspection/semiFinishedDetail/'+ $route.params.id )">半成品检验</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/inspection/finishedDetail/'+ $route.params.id )">成品检验</span>
-                      </div>
-                    </span>
-                  </div>
-                </div>
-              </template>
-              <template v-if="index===3&&showFlag2.showOut">
-                <div class="flexTb">
-                  <div class="thead">
-                    <span class="trow">
-                      <span class="tcolumn">产品信息</span>
-                      <span class="tcolumn flex4 noPad">
-                        <span class="trow">
-                          <span class="tcolumn">尺码颜色</span>
-                          <span class="tcolumn">下单数量</span>
-                          <span class="tcolumn">出库数量</span>
-                          <span class="tcolumn">出库差值</span>
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                  <div class="tbody">
-                    <span class="trow"
-                      v-for="(item,index) in orderDetailInfo.outStock"
-                      :key="index">
-                      <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
-                      <span class="tcolumn noPad flex4">
-                        <span class="trow"
-                          v-for="(itemSize,indexSize) in item.color_info"
-                          :key="indexSize">
-                          <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                          <span class="tcolumn">{{itemSize.order_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn green">{{itemSize.number || 0}}{{item.unit || '件'}}</span>
-                          <span :class="['tcolumn',(Number(itemSize.number) || 0) < (Number(itemSize.order_number) || 0) ? 'red' : 'green']">{{$toFixed((Number(itemSize.number) || 0) - (Number(itemSize.order_number) || 0))}}{{item.unit || '件'}}</span>
-                        </span>
-                      </span>
-                    </span>
-                    <span class="extra">
-                      <div class="label">相关页面：</div>
-                      <div class="link"
-                        style="margin-left:4px">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/packPlan/packPlanCreate/'+ $route.params.id)">装箱计划</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/packPlan/packOrderDetail/'+ $route.params.id)">包装辅料订购</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/packPlan/packStock/'+ $route.params.id)">装箱出库</span>
+                        <span @click="$router.push(`/process/processCommon/${$route.params.id}/1/${item.key === '织片' ? 1 : item.key === '套口' ? 2 : 3}`)">{{`${item.key}详情`}}</span>
                       </div>
                     </span>
                   </div>
@@ -1323,7 +1202,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { order, materialStock, weave, processing, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1416,7 +1295,6 @@ export default {
       timeData: [{ percent: 0.25, name: '织造' }, { percent: 0.15, name: '织造' }, { percent: 0.6, name: '织造' }],
       isOpenWarn: false,
       warnType: '',
-      warnList: [],
       warnData: {
         isOpenWarn: false,
         startTime: this.$getTime(),
@@ -1434,49 +1312,22 @@ export default {
         showOutStock: false,
         showReplenish: false,
         showDeductPrice: false
-      },
-      showFlag2: {
-        showMaterial: false,
-        showWeave: false,
-        showIns: false,
-        showOut: false
       }
       // 批次完成状态
       // showCompletePopup: false
     }
   },
   methods: {
-    // 获取预警列表
-    getWarnList () {
-      warnSetting.list().then(res => {
-        if (res.data.status !== false) {
-          this.warnList = res.data.data.filter(item => item.order_type === 1)
-        }
-      })
-    },
-    checkedWarn (item) {
-      this.warnType = item.title
-      this.timeData = [
-        {
-          percent: this.$toFixed(item.material_plan / 100),
-          name: '物料计划'
-        }, {
-          percent: this.$toFixed(item.material_push / 100),
-          name: '物料入库'
-        }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
-        }, {
-          percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
-        }, {
-          percent: this.$toFixed(item.product_pack / 100),
-          name: '成品装箱'
-        }
-      ]
-    },
-    saveWarning () {
-
+    //
+    useCallback (item) {
+      if ((this.orderDetailInfo[item.key] && this.orderDetailInfo[item.key].length > 0) || item.show) {
+        item.show = !item.show
+      } else {
+        this[item.callback](item, (e = [], key = item.key, showFlag = true) => {
+          this.orderDetailInfo[key] = e
+          showFlag && (item.show = !item.show)
+        })
+      }
     },
     // 取消订单时跳过结余操作
     jumpGoStock () {
@@ -1685,56 +1536,88 @@ export default {
                 prog: orderData.material_order_progress.y_percent > 100 ? 100 : orderData.material_order_progress.y_percent,
                 class: 'blueProg'
               }
-            ]
+            ],
+            key: 'material',
+            show: false,
+            callback: 'getMaterialDetail'
           },
           {
-            name: '织造进度',
-            isCompiled: orderData.product_weave_progress.product > 100,
+            name: '织片进度',
+            isCompiled: false,
             info: [
               {
-                name: '分配',
-                prog: orderData.product_weave_progress.product > 100 ? 100 : orderData.product_weave_progress.product,
+                name: '进度',
+                prog: 100,
                 class: 'blueProg'
               }
-            ]
+            ],
+            key: '织片',
+            show: false,
+            callback: 'getProductionDetail'
           },
           {
-            name: '收发进度',
-            isCompiled: orderData.product_push_progress > 100,
+            name: '套口进度',
+            isCompiled: false,
             info: [
               {
-                name: '收发',
-                prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
+                name: '进度',
+                prog: 100,
                 class: 'blueProg'
               }
-            ]
-          },
-          {
-            name: '检验进度',
-            isCompiled: orderData.product_inspection_progress.r_product > 100 && orderData.product_inspection_progress.r_semi_product > 100,
-            info: [
-              {
-                name: '成品',
-                prog: orderData.product_inspection_progress.r_product > 100 ? 100 : orderData.product_inspection_progress.r_product,
-                class: 'greenProg'
-              }, {
-                name: '半成品',
-                prog: orderData.product_inspection_progress.r_semi_product > 100 ? 100 : orderData.product_inspection_progress.r_semi_product,
-                class: 'blueProg'
-              }
-            ]
-          },
-          {
-            name: '装箱进度',
-            isCompiled: orderData.order_pack_progress > 100,
-            info: [
-              {
-                name: '装箱',
-                prog: orderData.order_pack_progress > 100 ? 100 : orderData.order_pack_progress,
-                class: 'blueProg'
-              }
-            ]
-          })
+            ],
+            key: '套口',
+            show: false,
+            callback: 'getProductionDetail'
+          }
+          // {
+          //   name: '织造进度',
+          //   isCompiled: orderData.product_weave_progress.product > 100,
+          //   info: [
+          //     {
+          //       name: '分配',
+          //       prog: orderData.product_weave_progress.product > 100 ? 100 : orderData.product_weave_progress.product,
+          //       class: 'blueProg'
+          //     }
+          //   ]
+          // },
+          // {
+          //   name: '收发进度',
+          //   isCompiled: orderData.product_push_progress > 100,
+          //   info: [
+          //     {
+          //       name: '收发',
+          //       prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
+          //       class: 'blueProg'
+          //     }
+          //   ]
+          // },
+          // {
+          //   name: '检验进度',
+          //   isCompiled: orderData.product_inspection_progress.r_product > 100 && orderData.product_inspection_progress.r_semi_product > 100,
+          //   info: [
+          //     {
+          //       name: '成品',
+          //       prog: orderData.product_inspection_progress.r_product > 100 ? 100 : orderData.product_inspection_progress.r_product,
+          //       class: 'greenProg'
+          //     }, {
+          //       name: '半成品',
+          //       prog: orderData.product_inspection_progress.r_semi_product > 100 ? 100 : orderData.product_inspection_progress.r_semi_product,
+          //       class: 'blueProg'
+          //     }
+          //   ]
+          // },
+          // {
+          //   name: '装箱进度',
+          //   isCompiled: orderData.order_pack_progress > 100,
+          //   info: [
+          //     {
+          //       name: '装箱',
+          //       prog: orderData.order_pack_progress > 100 ? 100 : orderData.order_pack_progress,
+          //       class: 'blueProg'
+          //     }
+          //   ]
+          // }
+        )
         this.catDetail('material')
         if (this.orderInfo.time_progress) {
           this.warnData = {
@@ -1768,16 +1651,16 @@ export default {
       })
     },
     // 物料概述
-    getMaterialDetail () {
+    getMaterialDetail (item, cb) {
       this.loading = true
       Promise.all([
         materialManage.detail({
-          order_type: this.$route.params.orderType,
+          order_type: 1,
           order_id: this.$route.params.id
         }),
         materialStock.detail({
           order_id: this.$route.params.id,
-          order_type: this.$route.params.order_type
+          order_type: 1
         })
       ]).then(res => {
         let data = res[0].data.data.map(itemM => {
@@ -1785,21 +1668,43 @@ export default {
             material_name: itemM.material_name,
             material_color: itemM.color_code,
             order_weight: itemM.weight,
-            push_weight: itemM.push_weight,
+            push_weight: 0,
             out_weight: 0,
+            back_weight: 0,
             unit: itemM.unit || 'kg'
           }
-        }).concat(res[1].data.data.map(itemM => {
+        }).concat(res[1].data.data.filter(itemF => +itemF.type === 2).map(itemM => {
+          return {
+            material_name: itemM.material_name,
+            material_color: itemM.material_color,
+            order_weight: 0,
+            push_weight: itemM.total_weight,
+            out_weight: 0,
+            back_weight: 0,
+            unit: itemM.unit || 'kg'
+          }
+        })).concat(res[1].data.data.filter(itemF => +itemF.type === 1 || +itemF.type === 4).map(itemM => {
           return {
             material_name: itemM.material_name,
             material_color: itemM.material_color,
             order_weight: 0,
             push_weight: 0,
             out_weight: itemM.total_weight,
+            back_weight: 0,
+            unit: itemM.unit || 'kg'
+          }
+        })).concat(res[1].data.data.filter(itemF => +itemF.type === 3).map(itemM => {
+          return {
+            material_name: itemM.material_name,
+            material_color: itemM.material_color,
+            order_weight: 0,
+            push_weight: 0,
+            out_weight: 0,
+            back_weight: itemM.total_weight,
             unit: itemM.unit || 'kg'
           }
         }))
-        this.orderDetailInfo.material = this.$mergeData(data, {
+        let returnData = this.$mergeData(data, {
           mainRule: 'material_name',
           childrenName: 'attr_info',
           childrenRule: {
@@ -1808,137 +1713,107 @@ export default {
               { name: 'order_weight/order_number', type: 'add' },
               { name: 'push_weight/go_stock_number', type: 'add' },
               { name: 'out_weight/out_stock_number', type: 'add' },
+              { name: 'back_weight/back_stock_number', type: 'add' },
               { name: 'unit' }
             ]
           }
         })
-        this.showFlag2.showMaterial = true
-        if (this.orderDetailInfo.material.length > 0) {
+        if (returnData.length > 0) {
         } else {
           this.$message.error('暂无物料信息')
         }
+        cb(returnData)
         this.loading = false
-
-        // let materialDetail = res[0].data.data.total_data
-        // let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
-        // this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
-        //   return {
-        //     material_name: item.material_name,
-        //     material_type: item.material_type,
-        //     unit: Number(item.material_type) === 1 ? 'kg' : (item.unit || '个'),
-        //     attr_info: item.attr_info.map(itemAttr => {
-        //       return {
-        //         attr: itemAttr.attr,
-        //         plan_number: this.$toFixed((Number(item.material_type) === 1 ? (itemAttr.plan_number / 1000) : itemAttr.plan_number) || 0),
-        //         order_number: this.$toFixed(itemAttr.order_number || 0),
-        //         process_number: this.$toFixed(itemAttr.process_number || 0)
-        //       }
-        //     })
-        //   }
-        // })
-        // materialStock.forEach(itemMa => {
-        //   let flag = this.orderDetailInfo.material.find(item => item.material_name === itemMa.material_name && Number(item.material_type) === Number(itemMa.material_type))
-        //   if (flag) {
-        //     let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
-        //     if (attrFlag) {
-        //       if (Number(itemMa.type) === 1) {
-        //         attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
-        //       } else if (Number(itemMa.type) === 3) {
-        //         attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
-        //       }
-        //     }
-        //   } else {
-        //     this.orderDetailInfo.material.push({
-        //       material_name: itemMa.material_name,
-        //       material_type: itemMa.material_type,
-        //       unit: Number(itemMa.material_type) === 1 ? 'kg' : (itemMa.unit || '个'),
-        //       attr_info: [
-        //         {
-        //           attr: itemMa.material_color,
-        //           plan_number: 0,
-        //           order_number: 0,
-        //           process_number: 0,
-        //           go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
-        //           out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
-        //         }
-        //       ]
-        //     })
-        //   }
-        // })
       })
     },
     // 生产概述
-    getProductionDetail () {
+    getProductionDetail (item, cb) {
       this.loading = true
       Promise.all([
         weave.detail({
           order_id: this.$route.params.id,
           order_type: 1
         }),
-        processing.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        }),
-        receive.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        }),
-        dispatch.detail({
+        inspection.semiFinishedDetail({
           order_id: this.$route.params.id,
           order_type: 1
         })
       ]).then(res => {
-        let productionDetail = res[0].data.data.map(item => {
+        let data = this.$mergeData(res[0].data.data.map(itemM => {
           return {
-            ...item.product_info,
-            client_name: item.client_name,
-            number: item.number,
-            size: item.size_name,
-            color: item.color_name,
-            is_part: item.is_part,
-            process_type: '织造'
+            process: itemM.process,
+            product_id: itemM.product_id,
+            product_type: [itemM.product_info.category_name, itemM.product_info.type_name, itemM.product_info.style_name].join('/'),
+            image: itemM.product_info.image,
+            product_code: itemM.product_info.product_code,
+            product_title: itemM.product_info.product_title,
+            size_id: itemM.size_id,
+            size_name: itemM.size_name,
+            color_id: itemM.color_id,
+            color_name: itemM.color_name,
+            price: itemM.price,
+            number: itemM.number,
+            motorise_number: itemM.motorise_number,
+            rejects_number: 0
           }
-        }).concat(res[1].data.data.map(item => {
+        }).concat(res[1].data.data.map(itemM => {
           return {
-            ...item.product_info,
-            client_name: item.client_name,
-            number: item.number,
-            size: item.size_name,
-            color: item.color_name,
-            is_part: item.is_part,
-            process_type: item.type
-          }
-        }), res[2].data.data.map(item => {
-          return {
-            ...item.product_code,
-            ...item.category_info,
-            client_name: item.client_name,
-            process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
-            size: item.size_name,
-            color: item.color_name,
-            is_part: item.is_part,
+            process: itemM.product_flow,
+            product_id: itemM.product_id,
+            product_type: [itemM.product_info.category_name, itemM.product_info.type_name, itemM.product_info.style_name].join('/'),
+            image: itemM.product_info.image,
+            product_code: itemM.product_info.product_code,
+            product_title: itemM.product_info.product_title,
+            size_id: itemM.size_id,
+            size_name: itemM.size_name,
+            color_id: itemM.color_id,
+            color_name: itemM.color_name,
+            price: null,
             number: 0,
-            go_number: item.number
+            motorise_number: 0,
+            inspection_number: itemM.number,
+            rejects_number: itemM.count
           }
-        }), res[3].data.data.map(item => {
-          return {
-            ...item.product_code,
-            ...item.category_info,
-            client_name: item.client_name,
-            process_type: (Number(item.type) === 1 ? '织造' : item.production_type),
-            size: item.size_name,
-            color: item.color_name,
-            is_part: item.is_part,
-            number: 0,
-            out_number: item.number
+        })).sort((a, b) => {
+          let aStr = a.color_name + '/' + a.size_name
+          let bStr = b.color_name + '/' + b.size_name
+          return aStr.localeCompare(bStr)
+        }), {
+          mainRule: 'process',
+          childrenName: 'children_info',
+          childrenRule: {
+            mainRule: 'product_id',
+            otherRule: [
+              { name: 'product_type' },
+              { name: 'image' },
+              { name: 'product_code' },
+              { name: 'product_title' }
+            ],
+            childrenName: 'size_color_info',
+            childrenRule: {
+              mainRule: ['size_id', 'color_id'],
+              otherRule: [
+                { name: 'size_name' },
+                { name: 'color_name' },
+                { name: 'number', type: 'add' },
+                { name: 'motorise_number', type: 'add' },
+                { name: 'inspection_number', type: 'add' },
+                { name: 'rejects_number', type: 'add' }
+              ]
+            }
           }
-        }))
-        this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
-        this.showFlag2.showWeave = true
-        if (this.orderDetailInfo.production.length > 0) {
-        } else {
-          this.$message.error('暂无生产信息')
+        })
+        if (data.length === 0) {
+          this.$message.error(`暂无${item.key}信息`)
+          cb()
         }
+        data.forEach(itemF => {
+          if (item.key === itemF.process && itemF.children_info.length <= 0) {
+            this.$message.error(`暂无${item.key}信息`)
+          }
+          cb(itemF.children_info, itemF.process, item.key === itemF.process)
+          // this.orderDetailInfo[itemF.process] = itemF.children_info
+        })
         this.loading = false
       })
     },
@@ -2751,7 +2626,6 @@ export default {
   },
   created () {
     this.init()
-    this.getWarnList()
     this.activeFinanceTitle = 'finance'
   },
   watch: {

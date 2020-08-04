@@ -165,7 +165,7 @@
                   v-for="(item,index) in order_stock_info"
                   :key="index">
                   <div class="tcolumn"
-                    style="flex:1.7"><span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>{{item.client_name}}</div>
+                    style="flex:1.7">{{item.client_name}}</div>
                   <div class="tcolumn noPad"
                     style="flex:5">
                     <div class="trow"
@@ -378,12 +378,10 @@
             <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
             <span class="tb_row flex2">
               <span>
-                <span :class="{'blue':item.replenish_id,'green':!item.replenish_id}">{{item.replenish_id?'补纱':'订购'}}</span>
-                <br />
                 {{item.client_name}}
               </span>
             </span>
-            <span class="tb_row flex2">{{item.material_name + '/' + item.before_color}}</span>
+            <span class="tb_row flex2">{{item.material_name}}</span>
             <span class="tb_row">{{item.color_code}}</span>
             <span class="tb_row flex08">{{item.price}}</span>
             <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
@@ -1015,13 +1013,11 @@ export default {
         return
       }
       data = data.map(item => {
-        item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
         item.total_price = this.$toFixed(item.price * item.weight)
         return item
       })
       downloadExcel(data, [
         { title: '完成日期', key: 'complete_time' },
-        { title: '来源类型', key: 'type_source_name' },
         { title: '来源', key: 'client_name' },
         { title: '物料名称', key: 'material_name' },
         { title: '属性', key: 'color_code' },

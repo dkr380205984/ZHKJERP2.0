@@ -12,6 +12,11 @@
   .flex18{
     flex: 1.8;
   }
+  .w40{
+    min-width: 40px;
+    max-width: 40px;
+    box-sizing: border-box;
+  }
   .scroll_row{
     display: flex;
     position: relative;
@@ -44,7 +49,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 20px;
+      width: 40px;
       color: @blue;
       border: 1px solid #D8D8D8;
       background-color: rgba(0,145,255,0.2);
@@ -89,5 +94,22 @@
   }
   .green{
     color: @green;
+  }
+  .uploadBtn{
+    font-size: 14px;
+    color: @font65;
+    border:1px solid #D9D9D9;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  .popup{
+    .info{
+      display: flex;
+      align-items: center;
+      .label{
+        width:4em;
+        margin-left: 8px;
+      }
+    }
   }
 }

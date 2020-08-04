@@ -260,9 +260,9 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col flex16">
               <span class="text">流程进度 </span>
             </div>
@@ -288,9 +288,9 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               {{itemOrder.group_name}}
-            </div>
+            </div> -->
             <div class="col flex16">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_plan>0}">

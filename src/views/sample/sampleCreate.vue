@@ -3,23 +3,30 @@
     id="sampleCreate"
     v-loading="loading">
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <span class="sampleCode">{{sampleCode}}</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display:flex;align-items:center;justify-content: space-between;">
+        <span class="title">
+          基本信息
+          <span class="sampleCode">{{sampleCode}}</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <el-autocomplete v-model="importKeyword"
+          style="width:200px;height:32px"
+          :fetch-suggestions="querySearchSample"
+          placeholder="输入样品编号导入样品"
+          :trigger-on-focus="false"
+          @select="importSample"></el-autocomplete>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="content">
-              <zh-input errorMsg="样品名称不能超过10个字"
-                placeholder="请输入样品名称"
-                maxLength="10"
+              <zh-input placeholder="请输入样品名称或款号"
                 v-model="name">
               </zh-input>
             </div>
@@ -43,7 +50,6 @@
             </div>
             <div class="content">
               <el-select placeholder="请选择样品花型"
-                filterable
                 v-model="flower">
                 <el-option v-for="(item,index) in flowerArr"
                   :key="index"
@@ -74,78 +80,111 @@
           <div class="colCtn flex3">
             <div class="label"
               v-show="index===0">
-              <span class="text">样品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
+              <span class="text">样品纱线</span>
             </div>
             <div class="content">
               <el-autocomplete class="inline-input"
                 v-model="item.ingredient_name"
                 :fetch-suggestions="searchIngredient"
-                placeholder="请输入成分信息">
+                placeholder="请输入纱线信息">
               </el-autocomplete>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="index===0">
-            </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入比例"
-                v-model="item.ingredient_value">
-                <template slot="append">%</template>
-              </zh-input>
             </div>
             <div class="editBtn"
               :class="{'addBtn':index===0,'deleteBtn':index>0}"
               @click="index===0?addIngredient():deleteIngredient(index)">{{index===0?'添加':'删除'}}</div>
           </div>
         </div>
-        <div class="rowCtn"
-          v-for="(item,index) in size"
-          :key="'size'+ index">
+        <div class="rowCtn">
           <div class="colCtn">
-            <div class="label"
-              v-show="index===0">
+            <div class="label">
               <span class="text">样品规格</span>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-select v-model="item.size"
-                placeholder="请选择样品规格">
-                <el-option v-for="(item,index) in sizeArr"
+              <el-select style="width:360px"
+                placeholder="可选择常用衣服类型"
+                filterable
+                v-model="part"
+                @change="getPart">
+                <el-option v-for="(item,index) in partArr"
                   :key="index"
                   :label="item.name"
-                  :value="item.name">
+                  :value="item.part_info">
                 </el-option>
               </el-select>
             </div>
-          </div>
-          <div class="colCtn">
-            <div class="label"
-              v-show="index===0">
+            <div class="content"
+              style="height:auto">
+              <div class="tableCtn">
+                <div class="line">
+                  <div class="once">
+                    <div class="biaotou rightTop">规格</div>
+                    <div class="xiexian"></div>
+                    <div class="biaotou leftBottom">部位</div>
+                  </div>
+                  <div class="once"
+                    v-for="(item,index) in size"
+                    :key="index">
+                    <el-select v-model="item.size"
+                      filterable
+                      placeholder="选规格"
+                      @change="selectSize(item)">
+                      <el-option v-for="(item,index) in sizeArr"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.name"></el-option>
+                    </el-select>
+                  </div>
+                  <div class="once">
+                    <span style="color:#1a95ff;cursor:pointer"
+                      @click="addSize">新增</span>
+                    <span style="margin:0 5px;color:#e9e9e9;vertical-align: 1px;">|</span>
+                    <span style="color:#F5222D;cursor:pointer"
+                      @click="deleteSize">删除</span>
+                  </div>
+                </div>
+                <div class="line"
+                  v-for="(item,index) in sizePartArr"
+                  :key="index">
+                  <div class="once">
+                    <el-input v-model="item.part"
+                      placeholder="部位名称"></el-input>
+                  </div>
+                  <div class="once"
+                    v-for="(itemNum,indexNum) in item.size"
+                    :key="indexNum">
+                    <el-input placeholder="部位信息"
+                      v-model="itemNum.number"></el-input>
+                  </div>
+                  <div class="once"></div>
+                </div>
+                <div class="line">
+                  <div class="once">
+                    <span style="color:#1a95ff;cursor:pointer"
+                      @click="addPart">新增</span>
+                    <span style="margin:0 5px;color:#e9e9e9;vertical-align: 1px;">|</span>
+                    <span style="color:#F5222D;cursor:pointer"
+                      @click="deletePart">删除</span>
+                  </div>
+                  <div class="once"
+                    v-for="(item,index) in size"
+                    :key="index"></div>
+                  <div class="once"></div>
+                </div>
+                <div class="line">
+                  <div class="once">
+                    总克重
+                  </div>
+                  <div class="once"
+                    v-for="(item,index) in size"
+                    :key="index">
+                    <el-input v-model="item.total"
+                      placeholder="输入克重"></el-input>
+                  </div>
+                  <div class="once"></div>
+                </div>
+              </div>
             </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入克重信息"
-                v-model="item.weight">
-                <template slot="append">g</template>
-              </zh-input>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label"
-              v-show="index===0">
-            </div>
-            <div class="content">
-              <zh-input placeholder="请输入尺寸信息"
-                v-model="item.desc">
-                <template slot="append">cm</template>
-              </zh-input>
-            </div>
-            <div class="editBtn"
-              :class="{'addBtn':index===0,'deleteBtn':index>0}"
-              @click="index===0?addSize():deleteSize(index)">{{index===0?'添加':'删除'}}</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -161,6 +200,7 @@
               <el-autocomplete class="inline-input"
                 v-model="item.colour"
                 :fetch-suggestions="searchColour"
+                @select="changeColor(item)"
                 placeholder="请输入配色信息">
               </el-autocomplete>
             </div>
@@ -170,137 +210,6 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title">配件信息</span>
-        <el-switch class="atTitle"
-          style="margin-bottom:3px"
-          v-model="hasFitting"
-          active-color="#1A95FF"
-          inactive-color="#dcdfe6">
-        </el-switch>
-      </div>
-      <div v-show="hasFitting"
-        class="editCtn hasBorderTop"
-        v-for="(item,index) in fittingInfo"
-        :key="index">
-        <div class="titleNum">配件{{chinaNum[index]}}</div>
-        <div class="deleteIcon el-icon-close"
-          @click="deleteFitting(index)"></div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">配件名称</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <el-autocomplete class="inline-input"
-                v-model="item.fitting_name"
-                :fetch-suggestions="searchMaterial"
-                placeholder="请输入配件名称">
-              </el-autocomplete>
-            </span>
-          </div>
-        </div>
-        <div class="rowCtn"
-          v-for="(itemIngredient,indexIngredient) in item.ingredient"
-          :key="'ingredient' + indexIngredient">
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="indexIngredient===0">
-              <span class="text">样品成分</span>
-              <span class="explanation">(必填,成分比例相加为100%)</span>
-            </div>
-            <div class="content">
-              <el-autocomplete class="inline-input"
-                v-model="itemIngredient.ingredient_name"
-                :fetch-suggestions="searchIngredient"
-                placeholder="请输入成分信息">
-              </el-autocomplete>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="indexIngredient===0">
-            </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入比例"
-                v-model="itemIngredient.ingredient_value">
-                <template slot="append">%</template>
-              </zh-input>
-            </div>
-            <div class="editBtn"
-              :class="{'addBtn':indexIngredient===0,'deleteBtn':indexIngredient>0}"
-              @click="indexIngredient===0?addFittingIngredient(index):deleteFittingIngredient(index,indexIngredient)">{{indexIngredient===0?'添加':'删除'}}</div>
-          </div>
-        </div>
-        <div class="rowCtn"
-          v-for="(itemSize,indexSize) in item.size"
-          :key="'size'+indexSize">
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text">配件规格</span>
-              <span class="explanation">(配件个数必填,不填默认为1个)</span>
-            </span>
-            <span class="content">
-              <el-select v-model="itemSize.size"
-                disabled
-                placeholder="请选择样品规格">
-                <el-option v-for="item in sizeArr"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.name">
-                </el-option>
-              </el-select>
-            </span>
-          </div>
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </span>
-            <span class="content">
-              <zh-input v-model="itemSize.weight"
-                type="number"
-                placeholder="请输入克重">
-                <template slot="append">g</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </span>
-            <span class="content">
-              <zh-input v-model="itemSize.desc"
-                placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="colCtn">
-            <div class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </div>
-            <div class="content">
-              <zh-input v-model="itemSize.number"
-                placeholder="请输入个数信息">
-                <template slot="append">
-                  <span>个</span>
-                </template>
-              </zh-input>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-show="hasFitting"
-        class="btn btnWhiteBlue add_fitting_btn"
-        @click="addFitting">添加配件</div>
     </div>
     <div class="module">
       <div class="titleCtn">
@@ -319,6 +228,7 @@
                 :before-upload="beforeAvatarUpload"
                 :before-remove="beforeRemove"
                 :file-list="fileArr"
+                :on-success="successFile"
                 :data="postData"
                 ref="uploada"
                 list-type="picture">
@@ -353,9 +263,16 @@
         <div class="title">
           <span class="text">快速添加样单</span>
           <span class="el-icon-close"
-            @click="showSampleOrderCreatePopup = false"></span>
+            @click="$router.push('/sample/sampleDetail/' + orderInfo.product_info[0].product_id)"></span>
         </div>
         <div class="content">
+          <div class="row">
+            <span class="label">样单标题：</span>
+            <span class="info">
+              <zh-input v-model="orderInfo.title"
+                placeholder="请输入样单标题"></zh-input>
+            </span>
+          </div>
           <div class="row">
             <span class="label">订单公司：</span>
             <span class="info">
@@ -388,6 +305,7 @@
             <span class="label">打样类型：</span>
             <span class="info">
               <el-select v-model="orderInfo.type"
+                filterable
                 placeholder="请选择打样类型">
                 <el-option v-for="item in sampleTypeArr"
                   :key="item.id"
@@ -403,24 +321,24 @@
                 :key="index + 'size_color' + indexSize">
                 <span class="label">尺码颜色{{indexSize + 1}}：</span>
                 <span class="info info_page">
-                  <el-select v-model="itemSize.size"
+                  <el-select v-model="itemSize.size_id"
                     placeholder="请选择尺码"
                     class="elInput"
                     disabled>
                     <el-option v-for="item in sizeInfo"
                       :key="item.id"
                       :label="item.size_name"
-                      :value="item.size_name">
+                      :value="item.size_id">
                     </el-option>
                   </el-select>
-                  <el-select v-model="itemSize.color"
+                  <el-select v-model="itemSize.color_id"
                     class="elInput"
                     placeholder="请选择颜色"
                     disabled>
                     <el-option v-for="item in colorInfo"
                       :key="item.id"
                       :label="item.color_name"
-                      :value="item.color_name">
+                      :value="item.color_id">
                     </el-option>
                   </el-select>
                 </span>
@@ -451,7 +369,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showSampleOrderCreatePopup = false">取消</div>
+            @click="$router.push('/sample/sampleDetail/' + orderInfo.product_info[0].product_id)">取消</div>
           <div class="btn btnBlue"
             @click="createSampleOrder">确定</div>
         </div>
@@ -472,10 +390,13 @@
 
 <script>
 import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, deleteFile, client, auth, sampleOrder } from '@/assets/js/api.js'
+import { productType, flower, yarn, colour, getToken, material, sample, client, sampleOrder, productPart, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      addArr: [],
+      deleteArr: [],
+      lock: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -493,38 +414,22 @@ export default {
         ingredient_name: '',
         ingredient_value: 100
       }],
-      size: [{
-        size: '',
-        weight: '',
-        desc: ''
-      }],
+      size: [{ size: '' }],
       sizeArr: [],
       colour: [{ colour: '' }],
       colourArr: [],
       desc: '',
       postData: { token: '' },
       fileArr: [],
-      hasFitting: false,
-      fittingInfo: [{
-        fitting_name: '',
-        type: [],
-        fitting_number: '',
-        ingredient: [{
-          ingredient_name: '',
-          ingredient_value: ''
-        }],
-        size: [{ size: '', weight: '', desc: '', number: '' }]
-      }],
       // 配件类型从辅料里面选
       materialArr: [],
       // 快速添加样单窗口数据
       showSampleOrderCreatePopup: false,
       orderInfo: {
         client_id: '',
-        type: 0,
+        type: '',
         title: '',
         order_time: this.$getTime(),
-        group_id: '',
         contacts_id: '',
         deliver_time: '',
         desc: '',
@@ -535,75 +440,33 @@ export default {
       clientList: [],
       colorInfo: [],
       sizeInfo: [],
-      sampleTypeArr: [// 继续打样信息
-        {
-          id: 0,
-          name: '开发样'
-        }, {
-          id: 1,
-          name: '修改样'
-        }, {
-          id: 2,
-          name: '销售样'
-        }, {
-          id: 3,
-          name: '确认样'
-        }, {
-          id: 4,
-          name: '产前样'
-        }, {
-          id: 5,
-          name: '大货样'
-        }
-      ]
+      sampleTypeArr: [], // 继续打样信息
+      importKeyword: '',
+      sizePartArr: [{
+        type: '',
+        size: [{ number: '' }]
+      }],
+      partArr: [],
+      part: ''
     }
   },
   methods: {
-    addFitting () {
-      this.fittingInfo.push({
-        fitting_name: '',
-        type: [],
-        ingredient: [{
-          ingredient_name: '',
-          ingredient_value: ''
-        }],
-        size: this.size.map((itemPro) => {
-          return {
-            size: itemPro.size,
-            weight: '',
-            desc: '',
-            number: ''
-          }
-        })
-      })
-    },
-    deleteFitting (index) {
-      if (this.fittingInfo.length === 1) {
-        this.$message.error('配件数量不能小于1,如不需要配件可以直接关闭配件选项')
-        return
+    selectSize (item) {
+      let filterList = this.size.filter(itemF => itemF.size === item.size)
+      if (filterList.length > 1) {
+        this.$message.warning('请勿选择重复的尺码信息')
+        item.size = ''
       }
-      this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.fittingInfo.splice(index)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
-      })
     },
-    addFittingIngredient (index) {
-      this.fittingInfo[index].ingredient.push({ ingredient_name: '', ingredient_value: '' })
+    changeColor (item) {
+      let filterList = this.colour.filter(itemF => itemF.colour === item.colour)
+      if (filterList.length > 1) {
+        this.$message.warning('请勿输入重复的配色信息')
+        item.colour = ''
+      }
     },
-    deleteFittingIngredient (index, indexIngredient) {
-      this.fittingInfo[index].ingredient.splice(indexIngredient, 1)
+    getUnit (ev, item) {
+      item.unit = ev.unit
     },
     addIngredient () {
       this.ingredient.push({ ingredient_name: '', ingredient_value: '' })
@@ -612,10 +475,39 @@ export default {
       this.ingredient.splice(index, 1)
     },
     addSize () {
-      this.size.push({ size: '', weight: '', desc: '', number: '' })
+      this.size.push({ size: '', total: '' })
+      this.sizePartArr.forEach((item) => {
+        item.size.push({
+          number: ''
+        })
+      })
     },
-    deleteSize (index) {
-      this.size.splice(index, 1)
+    deleteSize () {
+      if (this.size.length === 1) {
+        this.$message.error('至少有一种规格')
+        return
+      }
+      this.size.pop()
+      this.sizePartArr.forEach((item) => {
+        item.size.pop()
+      })
+    },
+    addPart () {
+      this.sizePartArr.push({
+        part: '',
+        size: this.size.map((item) => {
+          return {
+            number: ''
+          }
+        })
+      })
+    },
+    deletePart (index) {
+      if (this.sizePartArr.length === 1) {
+        this.$message.error('至少有一个部位')
+        return
+      }
+      this.sizePartArr.pop()
     },
     addColour () {
       this.colour.push({ colour: '' })
@@ -634,6 +526,9 @@ export default {
     searchMaterial (queryString, cb) {
       let result = queryString ? this.materialArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialArr
       cb(result)
+    },
+    successFile (response, file, fileList) {
+      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
     },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
@@ -658,29 +553,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteFile({
+        this.deleteArr.push({
           id: file.id ? file.id : null,
           file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
-        }).then((res) => {
-          if (res.data.status) {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
-            let deleteIndex = 0
-            fileList.forEach((item, index) => {
-              if (file.response) {
-                if (item.response && (item.response.key === file.response.key)) {
-                  deleteIndex = index
-                }
-              } else {
-                if (item.url === file.url) {
-                  deleteIndex = index
-                }
-              }
-            })
-            fileList.splice(deleteIndex, 1)
+        })
+        let deleteIndex = 0
+        fileList.forEach((item, index) => {
+          if (file.response) {
+            if (item.response && (item.response.key === file.response.key)) {
+              deleteIndex = index
+            }
+          } else {
+            if (item.url === file.url) {
+              deleteIndex = index
+            }
           }
+        })
+        fileList.splice(deleteIndex, 1)
+        this.$forceUpdate()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         })
       }).catch(() => {
         this.$message({
@@ -692,6 +585,7 @@ export default {
       return false
     },
     submit () {
+      if (this.$submitLock()) return
       let error = false
       if (this.type.length <= 0) {
         this.$message.error('请选择样品品类')
@@ -701,28 +595,22 @@ export default {
         this.$message.error('请选择样品花型')
         return
       }
-      error = this.ingredient.some((item) => {
-        return !item.ingredient_name || !item.ingredient_value
-      })
-      if (error) {
-        this.$message.error('请将样品成分信息填写完整')
-        return
-      }
-      let arr = this.ingredient.map(item => {
-        return item.ingredient_value
-      })
-      let total = arr.reduce((total, item) => {
-        return Number(total) + Number(item)
-      })
-      if (Number(total) !== 100) {
-        this.$message.error('样品成分比例总和不等于100%，请检查比例')
-        return
-      }
       error = this.size.some((item) => {
-        return !item.size || !item.weight || !item.desc
+        return !item.size
       })
       if (error) {
         this.$message.error('请将样品规格信息填写完整')
+        return
+      }
+      this.size.forEach((item, index) => {
+        this.size.forEach((itemFind, indexFind) => {
+          if (indexFind !== index && item.size === itemFind.size) {
+            error = true
+          }
+        })
+      })
+      if (error) {
+        this.$message.error('请不要选择重复的尺码信息')
         return
       }
       error = this.colour.some((item) => !item.colour)
@@ -734,37 +622,7 @@ export default {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
-      // error = this.colour.some((item) => item.colour.length > 8)
-      // if (error) {
-      //   this.$message.error('配色信息长度不得超过8个字符')
-      //   return
-      // }
-      if (this.hasFitting) {
-        error = this.fittingInfo.some((item) => !item.fitting_name)
-      }
-      if (error) {
-        this.$message.error('请输入配件名称')
-        return
-      }
-      let partData = this.fittingInfo.map((item) => {
-        return {
-          name: item.fitting_name,
-          // part_category: '',
-          // part_color: this.colour.map((item) => {
-          //   return { color_name: item.colour }
-          // }),
-          data_size: item.size.map((itemSize) => {
-            return {
-              weight: itemSize.weight,
-              size_name: itemSize.size,
-              size_info: itemSize.desc,
-              number: itemSize.number
-            }
-          }),
-          data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
-        }
-      })
-      let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
+      // let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         sample_product_code: this.sample_code.join(''),
         name: this.name,
@@ -774,20 +632,34 @@ export default {
         flower_id: this.flower,
         needle_type: this.needleType,
         description: this.desc,
-        data_image: imgArr,
-        data_color: this.colour.map((item) => { return { color_name: item.colour } }),
-        data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
-        data_size: this.size.map(item => {
+        data_image: {
+          file_data: this.addArr,
+          delete_data: this.deleteArr
+        },
+        data_color: this.colour.map((item) => {
           return {
-            weight: item.weight,
-            size_name: item.size,
-            size_info: item.desc
+            color_name: item.colour,
+            color_id: null
           }
         }),
-        part_data: this.hasFitting ? partData : []
+        data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
+        data_size: this.size.map((item, index) => {
+          return {
+            size_id: null,
+            weight: item.total,
+            size_name: item.size,
+            size_info: item.desc,
+            part_info: JSON.stringify(this.sizePartArr.map((item) => {
+              return {
+                part: item.part,
+                size: item.size[index].number
+              }
+            }))
+          }
+        })
       }
       sample.create(formData).then((res) => {
-        if (res.data.status) {
+        if (res.data.status !== false) {
           this.$message.success('保存成功')
           this.$confirm('是否快速添加样单?', '提示', {
             confirmButtonText: '是',
@@ -809,14 +681,13 @@ export default {
     },
     initCreateOrder (info) {
       this.showSampleOrderCreatePopup = true
-      console.log(info)
       this.loading = true
       let sizeInfo = []
       info.size.forEach(itemSize => {
         info.color.forEach(itemColor => {
           sizeInfo.push({
-            size: itemSize.size_name,
-            color: itemColor.color_name,
+            size_id: itemSize.size_id,
+            color_id: itemColor.color_id,
             numbers: ''
           })
         })
@@ -832,14 +703,9 @@ export default {
       this.colorInfo = info.color
       this.activeId = info.id
       Promise.all([
-        client.list(),
-        auth.list()
+        client.list()
       ]).then(res => {
         this.clientList = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
-        let flag = res[1].data.data.find(item => item.id === window.sessionStorage.getItem('user_id'))
-        if (flag) {
-          this.orderInfo.group_id = flag.group_id
-        }
         this.loading = false
       })
     },
@@ -847,10 +713,6 @@ export default {
       let orderInfo = this.$clone(this.orderInfo)
       if (!orderInfo.client_id) {
         this.$message.error('请选择订单公司')
-        return
-      }
-      if (!orderInfo.contacts_id) {
-        this.$message.error('请选择联系人')
         return
       }
       if (!orderInfo.type && orderInfo.type !== 0) {
@@ -880,31 +742,124 @@ export default {
           this.$router.push('/sample/sampleDetail/' + this.activeId)
         }
       })
-      console.log('验证完成')
     },
     changeContacts ($event) {
       let flag = this.clientList.find(item => item.id === $event)
       if (flag) {
         this.contacts = flag.contacts
       }
-    }
-  },
-  watch: {
-    size: {
-      deep: true,
-      handler (newVal) {
-        this.fittingInfo.forEach(items => {
-          items.size = newVal.map((item, key) => {
+    },
+    querySearchSample (queryString, cb) {
+      sample.list({
+        limit: 9999,
+        page: 1,
+        product_code: queryString
+      }).then(res => {
+        if (res.data.status !== false) {
+          cb(res.data.data.map(item => {
             return {
-              size: item.size,
-              weight: items.size[key] ? items.size[key].weight : '',
-              fitting_number: items.size[key] ? items.size[key].fitting_number : 1,
-              desc: items.size[key] ? items.size[key].desc : ''
+              value: item.sample_product_code,
+              id: item.id
             }
+          }))
+        }
+      })
+    },
+    importSample (eve) {
+      this.sizePartArr = []
+      this.loading = true
+      sample.editDetail({
+        id: eve.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          let productInfo = res.data.data
+          this.sample_product_code = productInfo.product_code
+          this.sampleName = productInfo.name
+          this.fileArr = productInfo.image.map(item => {
+            return {
+              url: item.image_url
+            }
+          })
+          this.size = productInfo.size.map(item => {
+            return {
+              size: item.size_name,
+              total: item.weight
+            }
+          })
+          productInfo.size.forEach((itemSize, indexSize) => {
+            if (itemSize.part_info) {
+              JSON.parse(itemSize.part_info).forEach((itemPart, indexPart) => {
+                if (!this.sizePartArr[indexPart]) {
+                  this.sizePartArr[indexPart] = {
+                    part: '',
+                    size: []
+                  }
+                }
+                this.sizePartArr[indexPart].part = itemPart.part
+                this.sizePartArr[indexPart].size.push({ number: itemPart.size })
+              })
+            }
+          })
+          this.colour = productInfo.color.map(item => {
+            return {
+              colour: item.color_name
+            }
+          })
+          this.name = productInfo.name
+          this.type = [productInfo.category_id.toString(), productInfo.type_id.toString(), productInfo.style_id.toString()]
+          this.sizeArr = this.typeArr.find(item => item.value === this.type[0]).child_size
+          this.flower = productInfo.flower_id
+          this.ingredient = productInfo.component.map((item) => {
+            return {
+              ingredient_name: item.component_name,
+              ingredient_value: item.number
+            }
+          })
+          this.needleType = productInfo.needle_type
+          this.loading = false
+        }
+      })
+    },
+    getPart (part) {
+      if (this.sizePartArr.length > 1) {
+        this.$confirm('此操作将重置已填写的信息?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.sizePartArr = []
+          JSON.parse(part).forEach((item) => {
+            this.sizePartArr.push({
+              part: item.value,
+              size: this.size.map((item) => {
+                return {
+                  number: ''
+                }
+              })
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      } else {
+        this.sizePartArr = []
+        JSON.parse(part).forEach((item) => {
+          this.sizePartArr.push({
+            part: item.value,
+            size: this.size.map((item) => {
+              return {
+                number: ''
+              }
+            })
           })
         })
       }
-    },
+    }
+  },
+  watch: {
     type (newVal) {
       this.sample_code[2] = 'X'
       this.sample_code[3] = 'X'
@@ -956,10 +911,14 @@ export default {
     Promise.all([
       productType.list(),
       flower.list(),
-      ingredient.list(),
+      yarn.list(),
       colour.list(),
       getToken(),
-      material.list()
+      material.list(),
+      productPart.list(),
+      orderType.typeList({
+        order_type: 2
+      })
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
         return {
@@ -995,6 +954,11 @@ export default {
       this.materialArr.forEach((item) => {
         item.value = item.name
       })
+      this.partArr = res[6].data.data
+      this.sampleTypeArr = res[7].data.data
+      if (this.$route.query.sampleId) {
+        this.importSample({ id: this.$route.query.sampleId })
+      }
       this.loading = false
     })
   }

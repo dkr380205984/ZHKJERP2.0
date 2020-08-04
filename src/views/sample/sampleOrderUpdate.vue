@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">
               <span class="text">负责小组</span>
               <span class="explanation">(必填)</span>
@@ -68,7 +68,7 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">订单公司</span>
@@ -345,7 +345,7 @@
                     <zh-input placeholder="请输入打样数量"
                       type="number"
                       v-model="itemSize.number">
-                      <span slot="append">{{itemCheck.unit}}</span>
+                      <span slot="append">{{itemCheck.unit || '件'}}</span>
                     </zh-input>
                     <div class="editBtn addBtn"
                       v-if="indexSize === 0"
@@ -386,7 +386,7 @@
         </div>
       </div>
     </div>
-    <div class="module"
+    <!-- <div class="module"
       :style="{'margin-bottom': isOpenWarn ? '0px' : '120px'}">
       <div class="titleCtn"
         style="display:flex;justify-content: space-between">
@@ -435,7 +435,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -450,7 +450,7 @@
 </template>
 
 <script>
-import { sample, client, group, sampleOrder, warnSetting, orderType } from '@/assets/js/api.js'
+import { sample, client, sampleOrder, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -463,8 +463,8 @@ export default {
       sample_type: '',
       sampleTypeArr: [],
       order_time: this.$getTime(),
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       client_id: '',
       clientArr: [],
       clientArrReal: [],
@@ -488,13 +488,13 @@ export default {
       checkedProList: [],
       compiled_time: '',
       remark: '',
-      isResouceShow: 0, // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
-      lock: true,
+      isResouceShow: 0 // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
+      // lock: true,
       // 预警数据
-      isOpenWarn: false,
-      warnType: '',
-      warnList: [],
-      timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '半成品入库' }, { percent: 0.25, name: '成品入库' }]
+      // isOpenWarn: false,
+      // warnType: '',
+      // warnList: [],
+      // timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '半成品入库' }, { percent: 0.25, name: '成品入库' }]
     }
   },
   methods: {
@@ -528,24 +528,24 @@ export default {
         this.clientArrReal = this.$clone(this.clientArr)
       }
     },
-    checkedWarn (item) {
-      this.warnType = item.title
-      this.timeData = [
-        {
-          percent: this.$toFixed(item.material_plan / 100),
-          name: '物料计划'
-        }, {
-          percent: this.$toFixed(item.material_push / 100),
-          name: '物料入库'
-        }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
-        }, {
-          percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
-        }
-      ]
-    },
+    // checkedWarn (item) {
+    //   this.warnType = item.title
+    //   this.timeData = [
+    //     {
+    //       percent: this.$toFixed(item.material_plan / 100),
+    //       name: '物料计划'
+    //     }, {
+    //       percent: this.$toFixed(item.material_push / 100),
+    //       name: '物料入库'
+    //     }, {
+    //       percent: this.$toFixed(item.semi_product_push / 100),
+    //       name: '半成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_push / 100),
+    //       name: '成品入库'
+    //     }
+    //   ]
+    // },
     addItem (item, type) {
       if (type === 'size_color') {
         item.push({
@@ -656,10 +656,7 @@ export default {
       this.isResouceShow++
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       if (!this.sample_order_title) {
         this.$message.error('请输入样单标题')
         return
@@ -672,10 +669,10 @@ export default {
         this.$message.error('请选择下单日期')
         return
       }
-      if (!this.group_id) {
-        this.$message.error('请选择负责小组')
-        return
-      }
+      // if (!this.group_id) {
+      //   this.$message.error('请选择负责小组')
+      //   return
+      // }
       if (!this.client_id) {
         this.$message.error('请选择外贸公司')
         return
@@ -707,26 +704,26 @@ export default {
         this.$message.error('请选择交货时间')
         return
       }
-      let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
-      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
-      let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
-      let warnData = this.isOpenWarn ? {
-        order_time: this.order_time,
-        end_time: this.compiled_time,
-        progress_data: {
-          material_plan: this.$toFixed(materialPlanFlag.percent * 100),
-          material_push: this.$toFixed(materialPushFlag.percent * 100),
-          semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
-          product_push: this.$toFixed(productPushFlag.percent * 100)
-        }
-      } : null
+      // let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      // let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      // let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      // let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      // let warnData = this.isOpenWarn ? {
+      //   order_time: this.order_time,
+      //   end_time: this.compiled_time,
+      //   progress_data: {
+      //     material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+      //     material_push: this.$toFixed(materialPushFlag.percent * 100),
+      //     semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+      //     product_push: this.$toFixed(productPushFlag.percent * 100)
+      //   }
+      // } : null
       let data = {
         id: this.$route.params.id,
         title: this.sample_order_title,
         type: this.sample_type,
         order_time: this.order_time,
-        group_id: this.group_id,
+        // group_id: this.group_id,
         client_id: this.client_id,
         contacts_id: this.contact_id,
         product_info: this.checkedProList.map(itemPro => {
@@ -742,12 +739,12 @@ export default {
           }
         }),
         deliver_time: this.compiled_time,
-        desc: this.remark,
-        time_progress: warnData
+        desc: this.remark
+        // time_progress: warnData
       }
-      this.lock = false
+      // this.lock = false
       sampleOrder.create(data).then(res => {
-        this.lock = true
+        // this.lock = true
         if (res.data.status) {
           this.$message.success('修改成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
@@ -772,11 +769,11 @@ export default {
     this.getList()
     Promise.all([
       client.list(),
-      group.list(),
+      // group.list(),
       sampleOrder.editDetail({
         id: this.$route.params.id
       }),
-      warnSetting.list(),
+      // warnSetting.list(),
       orderType.typeList({
         order_type: 2
       })
@@ -786,14 +783,14 @@ export default {
         item.name_pinyin = item.name_pinyin.join('')
       })
       this.clientArrReal = this.$clone(this.clientArr)
-      this.groupArr = res[1].data.data
-      this.warnList = res[3].data.data.filter(item => item.order_type === 2)
+      // this.groupArr = res[1].data.data
+      // this.warnList = res[3].data.data.filter(item => item.order_type === 2)
       // 数据初始化
-      let sampleOrderInfo = res[2].data.data
+      let sampleOrderInfo = res[1].data.data
       this.sample_order_title = sampleOrderInfo.title
       this.sample_type = sampleOrderInfo.type
       this.order_time = sampleOrderInfo.order_time
-      this.group_id = sampleOrderInfo.group_id
+      // this.group_id = sampleOrderInfo.group_id
       this.client_id = sampleOrderInfo.client_id.toString()
       this.getContact(this.client_id)
       this.contact_id = sampleOrderInfo.contacts_id
@@ -824,26 +821,26 @@ export default {
       })
       this.compiled_time = sampleOrderInfo.deliver_time
       this.remark = sampleOrderInfo.desc
-      sampleOrderInfo.time_progress = JSON.parse(sampleOrderInfo.time_progress)
-      if (sampleOrderInfo.time_progress) {
-        this.isOpenWarn = true
-        this.timeData = [
-          {
-            percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.material_plan / 100),
-            name: '物料计划'
-          }, {
-            percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.material_push / 100),
-            name: '物料入库'
-          }, {
-            percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.semi_product_push / 100),
-            name: '半成品入库'
-          }, {
-            percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.product_push / 100),
-            name: '成品入库'
-          }
-        ]
-      }
-      this.sampleTypeArr = res[4].data.data
+      // sampleOrderInfo.time_progress = JSON.parse(sampleOrderInfo.time_progress)
+      // if (sampleOrderInfo.time_progress) {
+      //   this.isOpenWarn = true
+      //   this.timeData = [
+      //     {
+      //       percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.material_plan / 100),
+      //       name: '物料计划'
+      //     }, {
+      //       percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.material_push / 100),
+      //       name: '物料入库'
+      //     }, {
+      //       percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.semi_product_push / 100),
+      //       name: '半成品入库'
+      //     }, {
+      //       percent: this.$toFixed(sampleOrderInfo.time_progress.progress_data.product_push / 100),
+      //       name: '成品入库'
+      //     }
+      //   ]
+      // }
+      this.sampleTypeArr = res[2].data.data
       this.loading = false
     })
   },

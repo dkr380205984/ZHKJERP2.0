@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{title}}</span>
+          <span class="title">{{title}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">创建人：</span>
             {{user_name}}
