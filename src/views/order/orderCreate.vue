@@ -1,12 +1,22 @@
 <template>
   <div id='orderCreate'
-    class='indexMain'>
+    class='indexMain'
+    v-loading='loading'>
     <div class="module">
-      <div class="titleCtn">
-        <span class="title">基本信息</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
+      <div class="titleCtn"
+        style="display: flex;justify-content: space-between;align-items: center;">
+        <span class="title">
+          基本信息
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </span>
+        <el-autocomplete style="width:200px;height:32px"
+          v-model="importKeyword"
+          :fetch-suggestions="querySearchOrder"
+          placeholder="导入产品订单"
+          :trigger-on-focus="false"
+          @select="importOrder"></el-autocomplete>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -42,10 +52,11 @@
             </span>
             <span class="content">
               <el-select v-model="client_id"
-                placeholder="请选择订单公司"
                 filterable
+                placeholder="请选择订单公司"
+                :filter-method="searchClient"
                 @change="getContact($event)">
-                <el-option v-for="item in clientArr"
+                <el-option v-for="item in clientArrReal"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id">
@@ -56,7 +67,6 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">联系人</span>
-              <span class="explanation">(必填)</span>
             </span>
             <span class="content">
               <el-select v-model="contact_id"
@@ -69,7 +79,7 @@
               </el-select>
             </span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">
               <span class="text">负责小组</span>
               <span class="explanation">(必填)</span>
@@ -84,7 +94,7 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -94,6 +104,7 @@
             </span>
             <span class="content">
               <el-select v-model="unit"
+                @change="getUnit"
                 placeholder="请选择结算单位">
                 <el-option v-for="item in unitArr"
                   :key="item.name"
@@ -105,7 +116,15 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">
-              <span class="text">汇率</span>
+              <span class="text">汇率
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="点击查看实时汇率"
+                  placement="top-start">
+                  <em class="el-icon-question"
+                    @click="$openUrl('http://forex.hexun.com/rmbhl/#zkRate')"></em>
+                </el-tooltip>
+              </span>
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">
@@ -119,6 +138,19 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">
+              <span class="text">下单日期</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content">
+              <el-date-picker v-model="order_time"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择下单日期">
+              </el-date-picker>
+            </span>
+          </div>
+          <!-- <div class="colCtn flex3">
+            <span class="label">
               <span class="text">税率</span>
               <span class="explanation">(必填)</span>
             </span>
@@ -131,9 +163,9 @@
                 <template slot="append">%</template>
               </zh-input>
             </span>
-          </div>
+          </div> -->
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">下单日期</span>
@@ -147,7 +179,23 @@
               </el-date-picker>
             </span>
           </div>
-        </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">是否客供纱</span>
+              <span class="explanation">(必填)</span>
+            </span>
+            <span class="content"
+              style="display: flex;
+                align-items: center;">
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="是">是</el-radio>
+              <el-radio styel="line-height:32px"
+                v-model="ifKegong"
+                label="否">否</el-radio>
+            </span>
+          </div>
+        </div> -->
       </div>
     </div>
     <div class="module">
@@ -225,7 +273,7 @@
               </transition>
             </div>
             <div class="col">
-              <span class="text">名称</span>
+              <span class="text">名称/款号</span>
             </div>
             <div class="col middle">
               <span class="text">图片</span>
@@ -319,6 +367,10 @@
                 <div class="state"></div>
                 <span class="name">报</span>
               </div>
+              <div :class="{'stateCtn':true, 'green':item.has_order === 1}">
+                <div class="state"></div>
+                <span class="name">订</span>
+              </div>
             </div>
             <div class="col">
               <el-checkbox v-model="item.checked"
@@ -366,6 +418,16 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">添加订单</span>
+        <span style="float:right;font-size:26px">
+          <i class="el-icon-s-fold"
+            style="cursor:pointer;margin-right:12px"
+            @click="changeTableType"
+            :style="{'color':tableType==='normal'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+          <i class="el-icon-menu"
+            style="cursor:pointer"
+            @click="changeTableType"
+            :style="{'color':tableType==='table'?'#1a95ff':'rgba(0,0,0,0.45)'}"></i>
+        </span>
       </div>
       <div class="editCtn hasBorderTop"
         v-for="(itemBatch,indexBatch) in batchDate"
@@ -376,6 +438,21 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="content timeCtn">
+              <span class="label">批次名称</span>
+              <zh-input v-model="itemBatch.name"
+                placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
+              <span class="label">批次类型</span>
+              <el-autocomplete v-model="itemBatch.type"
+                :fetch-suggestions="querySearchType"
+                placeholder="请输入批次类型"></el-autocomplete>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
               <span class="label">交货日期</span>
               <el-date-picker v-model="itemBatch.time"
                 value-format="yyyy-MM-dd"
@@ -383,9 +460,139 @@
                 placeholder="请选择交货日期">
               </el-date-picker>
             </span>
+            <span style="position: absolute;right: -5em;font-size: 14px;color: #1a95ff;top: 0;line-height: 32px;cursor: pointer;"
+              v-if="tableType==='table'"
+              @click="addItem(itemBatch,'product')">新增产品</span>
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn">
+            <span class="content timeCtn">
+              <span class="label">批次备注</span>
+              <zh-input v-model="itemBatch.remark"
+                placeholder="请输入批次备注"></zh-input>
+            </span>
+          </div>
+        </div>
+        <template v-if="tableType==='table'">
+          <div class="tableCtnNew"
+            v-for="(itemPro,indexPro) in itemBatch.batch_info_new"
+            :key="indexPro">
+            <div class="line">
+              <div class="once gray bigWidth">产品</div>
+              <div class="once gray">
+                <div class="biaotou rightTop">尺码</div>
+                <div class="xiexian"></div>
+                <div class="biaotou leftBottom">配色</div>
+              </div>
+              <div class="once gray"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <el-select v-model="itemSize.size"
+                  placeholder="选择尺码"
+                  @change="selectTableSize($event,itemPro.product_info,indexSize)">
+                  <el-option v-for="item in itemPro.size"
+                    :key="item.name"
+                    :value="item.name"
+                    :label="item.label"></el-option>
+                </el-select>
+              </div>
+              <div class="once gray blue">
+                <span class="opr"
+                  @click="addItem(itemPro,'size')">新增尺码</span>
+              </div>
+            </div>
+            <div class="line">
+              <div class="once gray middle bigWidth">
+                <div class="inputs">
+                  <el-select v-model="itemPro.id"
+                    placeholder="请选择产品"
+                    @change="selectPro($event,itemBatch.batch_info_new,indexPro)">
+                    <el-option v-for="item in checkedProList"
+                      :key="item.id"
+                      :label="item.product_code"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="inputs"
+                  style="margin-top:12px">
+                  <zh-input type='number'
+                    v-model="itemPro.price"
+                    placeholder="输入单价"
+                    @input="computedTotalPrice">
+                    <template slot="append">{{unit}}</template>
+                  </zh-input>
+                </div>
+              </div>
+              <div class="lineChildCtn">
+                <div class="lineChild"
+                  v-for="(itemColor,indexColor) in itemPro.product_info[0].color"
+                  :key="indexColor">
+                  <div class="once middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <div class="inputs">
+                      <el-select v-model="itemColor.color"
+                        @change="selectTableColor($event, itemPro,indexColor)"
+                        placeholder="选择配色">
+                        <el-option v-for="item in itemPro.color"
+                          :key="item.name"
+                          :value="item.name"
+                          :label="item.label"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lineChildCtn"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <div class="lineChild"
+                  v-for="(itemColor,indexColor) in itemSize.color"
+                  :key="indexColor + '/' + indexSize">
+                  <div class="once middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <div class="inputs">
+                      <zh-input placeholder="输入数量"
+                        v-model="itemColor.number"
+                        @input="computedTotalPrice"></zh-input>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lineChildCtn">
+                <div class="lineChild"
+                  v-for="(valueColor,keyColor) in itemPro.product_info[0].color"
+                  :key="keyColor">
+                  <div class="once gray red middle"
+                    :class="{'justOne': itemPro.product_info[0].color.length===1}">
+                    <span class="opr"
+                      @click="deleteTableColor(itemPro,keyColor)">删除配色</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="line">
+              <div class="once gray bigWidth red">
+                <span class="opr"
+                  @click="deleteItem(itemBatch.batch_info_new,indexPro)">删除产品</span>
+              </div>
+              <div class="once gray blue"><span class="opr"
+                  @click="addItem(itemPro,'color')">新增配色</span></div>
+              <div class="once gray red"
+                v-for="(itemSize,indexSize) in itemPro.product_info"
+                :key="indexSize">
+                <span class="opr"
+                  @click="deleteItem(itemPro.product_info,indexSize)">删除尺码</span>
+              </div>
+              <div class="once gray">
+                <div class="xiexian"></div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <div class="rowCtn"
+          v-if="tableType==='normal'">
           <div class="tableCtnLv2">
             <div class="tb_header">
               <span class="tb_row">产品</span>
@@ -398,7 +605,8 @@
             <div class="tb_content"
               v-for="(itemPro,indexPro) in itemBatch.batch_info"
               :key="indexPro">
-              <span class="tb_row">
+              <span class="tb_row"
+                style="position:relative">
                 <el-select v-model="itemPro.id"
                   class="editInput"
                   placeholder="请选择产品"
@@ -409,6 +617,16 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
+                <span v-if="itemPro.product_info&&itemPro.product_info.length>1"
+                  class="oprText"
+                  @click="syncPirce(itemPro)">同步单价信息
+                  <el-tooltip class="item"
+                    effect="dark"
+                    content="点击按钮可以将本款产品的其他尺码配色组同步第一组尺码配色的单价"
+                    placement="bottom">
+                    <i class="el-icon-question"></i>
+                  </el-tooltip>
+                </span>
               </span>
               <span class="flex40 tb_row tb_col">
                 <span class="tb_col_item"
@@ -427,7 +645,9 @@
                       class="editInput"
                       v-model="itemSize.price"
                       type='number'
-                      @input="computedTotalPrice"></zh-input>
+                      @input="computedTotalPrice">
+                      <template slot="append">{{unit}}</template>
+                    </zh-input>
                   </span>
                   <span class="tb_row">
                     <zh-input placeholder="请输入数量"
@@ -440,13 +660,13 @@
                     style="user-select: none;">
                     <span class="tb_handle_btn blue"
                       @click="addItem(itemPro.product_info,'sizeColor')">添加色组</span>
-                    <span class="tb_handle_btn blue"
+                    <span class="tb_handle_btn red"
                       @click="deleteItem(itemPro.product_info,indexSize)">删除色组</span>
                   </span>
                 </span>
               </span>
               <span class="tb_row middle flex06">
-                <span class="tb_handle_btn blue"
+                <span class="tb_handle_btn red"
                   @click="deleteItem(itemBatch.batch_info,indexPro)">删除产品</span>
               </span>
             </div>
@@ -467,6 +687,55 @@
         </div>
       </div>
     </div>
+    <!-- <div class="module">
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between">
+        <span class="title">预警设置
+          <el-tooltip class="item"
+            effect="dark"
+            content="设置订单流程到期预警"
+            placement="top-start">
+            <em class="el-icon-question"></em>
+          </el-tooltip>
+        </span>
+        <span class="right"
+          style="display:flex;align-items:center">
+          <div class="btn noBorder"
+            :style="{'color': isOpenWarn ? '' : '#BBB'}">流程预警</div>
+          <el-switch v-model="isOpenWarn" />
+        </span>
+      </div>
+      <div class="detailCtn"
+        v-if="isOpenWarn">
+        <div class="rowCtn">
+          <div class="warn_setting">
+            <div class="warn_setting_top">
+              <div class="warn_setting_top_left">
+                <el-dropdown>
+                  <span class="el-dropdown-link">
+                    {{warnType || '选择类型'}}<i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item v-for="(item,index) in warnList"
+                      :key="index">
+                      <div @click="checkedWarn(item)">{{item.title}}</div>
+                    </el-dropdown-item>
+                    <el-dropdown-item disabled
+                      v-if="warnList.length===0">暂无数据 </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </div>
+            <div class="warn_setting_bottom">
+              <zh-time-process :processData="timeData"
+                :startTime="order_time"
+                :endTime='getWarnEndTime()'
+                style="width:100%"></zh-time-process>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title">其他信息</span>
@@ -482,7 +751,7 @@
               <zh-input placeholder="请输入总价"
                 v-model="total_price"
                 disabled>
-                <template slot="append">元</template>
+                <template slot="append">{{unit}}</template>
               </zh-input>
             </span>
           </div>
@@ -494,11 +763,12 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
-                multiple
                 ref="orderUpload"
+                :file-list="order_file_arr"
                 list-type="picture">
                 <div class="uploadBtn">
                   <i class="el-icon-upload"></i>
@@ -517,11 +787,12 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
-                multiple
                 ref="packagUpload"
+                :file-list="packag_file_arr"
                 list-type="picture">
                 <div class="uploadBtn">
                   <i class="el-icon-upload"></i>
@@ -540,11 +811,12 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
-                multiple
                 ref="boxUpload"
+                :file-list="box_file_arr"
                 list-type="picture">
                 <div class="uploadBtn">
                   <i class="el-icon-upload"></i>
@@ -563,11 +835,12 @@
             </span>
             <span class="content autoHeight">
               <el-upload class="upload"
+                multiple
                 action="https://upload.qiniup.com/"
                 :before-upload="beforeAvatarUpload"
                 :data="postData"
-                multiple
                 ref="otherUpload"
+                :file-list="other_file_arr"
                 list-type="picture">
                 <div class="uploadBtn">
                   <i class="el-icon-upload"></i>
@@ -600,7 +873,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="saveAll">提交</div>
+            @click="saveAll">添加</div>
         </div>
       </div>
     </div>
@@ -609,10 +882,13 @@
 
 <script>
 import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
-import { product, client, group, order, getToken, productType, flower } from '@/assets/js/api.js'
+import { product, client, order, getToken, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      // ifKegong: '否',
+      tableType: 'table',
+      lock: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -620,14 +896,15 @@ export default {
       order_code: [{ code: '' }],
       client_id: '',
       clientArr: [],
+      clientArrReal: [],
       contact_id: '',
       contactArr: [],
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       unit: '元',
       unitArr: moneyArr,
       exchange_rate: 100,
-      tax_prop: 12,
+      // tax_prop: 12,
       order_time: this.$getTime(),
       searchCode: '',
       date: '',
@@ -649,6 +926,9 @@ export default {
       batchDate: [
         {
           time: '',
+          name: '',
+          remark: '',
+          type: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -659,22 +939,225 @@ export default {
                 number: ''
               }
             ]
-          }]
+          }],
+          batch_info_new: []
         }
       ],
       postData: { token: '' },
       total_price: '',
       remark: '',
-      isResouceShow: 0 // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
+      isResouceShow: 0, // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
+      order_file_arr: [],
+      packag_file_arr: [],
+      box_file_arr: [],
+      other_file_arr: [],
+      importKeyword: ''
+      // 预警数据
+      // isOpenWarn: true,
+      // warnType: '',
+      // warnList: [],
+      // timeData: [{ percent: 0.1, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.35, name: '半成品入库' }, { percent: 0.15, name: '成品入库' }, { percent: 0.15, name: '成品装箱' }],
+      // orderTypeArr: []
     }
   },
   methods: {
+    searchClient (query) {
+      this.clientArrReal = []
+      if (query) {
+        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          this.clientArrReal = this.clientArr.filter(item => {
+            return item.name.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1
+          })
+        } else {
+          const queryArr = query.split('')
+          this.clientArr.forEach((item) => {
+            let flag = true
+            let indexPinyin = 0
+            queryArr.forEach((itemQuery) => {
+              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
+              if (indexPinyin === -1) {
+                flag = false
+                // 可以通过throw new Error('')终止循环,如果需要优化的话
+              }
+            })
+            if (flag) {
+              this.clientArrReal.push(item)
+            }
+          })
+        }
+      } else {
+        this.clientArrReal = this.$clone(this.clientArr)
+      }
+    },
+    // 批次类型输入建议函数
+    querySearchType (queryString, cb) {
+      let restaurants = this.orderTypeArr
+      let results = queryString ? restaurants.filter(itemF => itemF.value.indexOf(queryString) !== -1) : restaurants
+      cb(results)
+    },
+    // 切换订单批次填写类型
+    changeTableType () {
+      if (this.tableType === 'normal') {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info_new = []
+          itemBatch.batch_info.forEach((itemPro) => {
+            if (!itemPro.id) {
+              return
+            }
+            // 展开数据
+            let flatData = []
+            itemPro.product_info.forEach((itemChild) => {
+              flatData.push({
+                id: itemPro.id,
+                unit: itemPro.unit,
+                color: itemChild.size_color[1],
+                size: itemChild.size_color[0],
+                number: itemChild.number
+              })
+            })
+            let productInfo = []
+            let colorInfo = []
+            let findPro = this.checkedProList.find((itemFind) => itemFind.id === itemPro.id)
+            findPro.color.forEach((itemColor) => {
+              colorInfo.push({
+                color: itemColor.color_id,
+                number: ''
+              })
+            })
+            findPro.size.forEach((itemSize) => {
+              productInfo.push({
+                size: itemSize.size_id,
+                color: this.$clone(colorInfo)
+              })
+            })
+            productInfo.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                let find = flatData.find((itemFind) => itemFind.size === itemSize.size && itemFind.color === itemColor.color)
+                itemColor.number = !find ? '' : find.number
+              })
+            })
+            itemBatch.batch_info_new.push({
+              id: itemPro.id,
+              unit: itemPro.unit,
+              price: '',
+              size: findPro.size.map(itemSize => {
+                return {
+                  label: itemSize.size_name,
+                  name: itemSize.size_id
+                }
+              }),
+              color: findPro.color.map(itemColor => {
+                return {
+                  label: itemColor.color_name,
+                  name: itemColor.color_id
+                }
+              }),
+              product_info: productInfo
+            })
+          })
+        })
+        this.tableType = 'table'
+      } else {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info = []
+          itemBatch.batch_info_new.forEach((itemPro) => {
+            let productInfo = []
+            itemPro.product_info.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                productInfo.push({
+                  size_color: [itemSize.size, itemColor.color],
+                  price: itemPro.price,
+                  number: itemColor.number
+                })
+              })
+            })
+            itemBatch.batch_info.push({
+              id: itemPro.id,
+              unit: itemPro.unit,
+              sizeColor: itemPro.size.map((itemSize) => {
+                return {
+                  value: itemSize.name,
+                  label: itemSize.label,
+                  children: itemPro.color.map((itemColor) => {
+                    return {
+                      value: itemColor.name,
+                      label: itemColor.label
+                    }
+                  })
+                }
+              }),
+              product_info: productInfo
+            })
+          })
+        })
+
+        this.tableType = 'normal'
+      }
+    },
+    // 获取汇率
+    getUnit (ev) {
+      this.exchange_rate = moneyArr.find((item) => item.name === ev).default
+      this.tax_prop = moneyArr.find((item) => item.name === ev).tax_prop
+    },
+    // 同步单价信息
+    syncPirce (pro) {
+      let price = this.$clone(pro.product_info[0]).price
+      pro.product_info.forEach((item) => {
+        item.price = price
+      })
+    },
+    // checkedWarn (item) {
+    //   this.warnType = item.title
+    //   this.timeData = [
+    //     {
+    //       percent: this.$toFixed(item.material_plan / 100),
+    //       name: '物料计划'
+    //     }, {
+    //       percent: this.$toFixed(item.material_push / 100),
+    //       name: '物料入库'
+    //     }, {
+    //       percent: this.$toFixed(item.semi_product_push / 100),
+    //       name: '半成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_push / 100),
+    //       name: '成品入库'
+    //     }, {
+    //       percent: this.$toFixed(item.product_pack / 100),
+    //       name: '成品装箱'
+    //     }
+    //   ]
+    // },
+    getWarnEndTime () {
+      let data = this.batchDate[0].time
+      return data || this.$getTime()
+    },
+    querySearchOrder (querystring, cb) {
+      order.list({
+        page: 1,
+        limit: 9999,
+        keyword: querystring
+      }).then(res => {
+        if (res.data.status !== false) {
+          cb(res.data.data.map(item => {
+            return {
+              value: item.order_code,
+              id: item.id
+            }
+          }))
+        }
+      })
+    },
     addItem (item, type) {
       if (type === 'code') {
         item.push({ code: '' })
       } else if (type === 'batch') {
         item.push({
           time: '',
+          name: '',
+          remark: '',
+          type: '',
           batch_info: [{
             id: '',
             unit: '个',
@@ -685,7 +1168,36 @@ export default {
                 number: ''
               }
             ]
-          }]
+          }],
+          batch_info_new: this.checkedProList.map(itemPro => {
+            return {
+              color: itemPro.color.map(itemColor => {
+                return {
+                  name: itemColor.color_id,
+                  label: itemColor.color_name
+                }
+              }),
+              id: itemPro.id,
+              product_info: itemPro.size.map(itemSize => {
+                return {
+                  size: itemSize.size_id,
+                  color: itemPro.color.map(itemColor => {
+                    return {
+                      color: itemColor.color_id,
+                      number: ''
+                    }
+                  })
+                }
+              }),
+              size: itemPro.size.map(itemSize => {
+                return {
+                  name: itemSize.size_id,
+                  label: itemSize.size_name
+                }
+              }),
+              unit: itemPro.category_info.name
+            }
+          })
         })
       } else if (type === 'batch_pro') {
         item.push({
@@ -705,7 +1217,40 @@ export default {
           price: '',
           number: ''
         })
+      } else if (type === 'size') {
+        item.product_info.push({
+          size: '',
+          color: item.product_info[0].color.map((itemColor) => {
+            return {
+              color: itemColor.color,
+              number: ''
+            }
+          })
+        })
+      } else if (type === 'color') {
+        item.product_info.forEach((itemColor) => {
+          itemColor.color.push({
+            color: '',
+            number: ''
+          })
+        })
+      } else if (type === 'product') {
+        item.batch_info_new.push({
+          id: '',
+          unit: '',
+          price: '',
+          size: [],
+          color: [],
+          product_info: [{
+            size: '',
+            color: [{
+              color: '',
+              number: ''
+            }]
+          }]
+        })
       }
+      this.$forceUpdate()
     },
     deleteItem (item, index) {
       if (item.length === 1) {
@@ -715,12 +1260,24 @@ export default {
       item.splice(index, 1)
       this.isResouceShow++
       this.computedTotalPrice()
+      this.$forceUpdate()
+    },
+    // 表格形式删除配色
+    deleteTableColor (item, index) {
+      if (item.product_info[0].color.length === 1) {
+        this.$message.warning('至少存在一项')
+        return
+      }
+      item.product_info.forEach((itemPro) => {
+        itemPro.color.splice(index, 1)
+      })
+      this.$forceUpdate()
     },
     beforeAvatarUpload (file) {
-      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
-      let fileNameLength = file.name.length// 取到文件名长度
-      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
-      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      // let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      // let fileNameLength = file.name.length// 取到文件名长度
+      // let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = file.name
       const isLt2M = file.size / 1024 / 1024 < 10
       if (!isLt2M) {
         this.$message.error('文件大小不能超过 10MB!')
@@ -742,7 +1299,8 @@ export default {
         has_quotation: this.has_quotation,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        type: 1
+        type: 1,
+        has_order: 1
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -773,11 +1331,11 @@ export default {
         }
         item.sizeColor = item.size.map(valSize => {
           return {
-            value: valSize.size_name,
+            value: valSize.size_id,
             label: valSize.size_name,
             children: item.color.map(valColor => {
               return {
-                value: valColor.color_name,
+                value: valColor.color_id,
                 label: valColor.color_name
               }
             })
@@ -786,29 +1344,83 @@ export default {
         this.checkedProList.push(item)
         this.batchDate.forEach(itemBatch => {
           this.checkedProList.forEach((itemPro, indexPro) => {
-            let arr = []
-            itemPro.size.forEach(itemSize => {
-              itemPro.color.forEach(itemColor => {
-                arr.push({
-                  size_color: [itemSize.size_name, itemColor.color_name],
-                  price: '',
+            if (this.tableType === 'normal') {
+              let arr = []
+              itemPro.size.forEach(itemSize => {
+                itemPro.color.forEach(itemColor => {
+                  arr.push({
+                    size_color: [itemSize.size_id, itemColor.color_id],
+                    price: '',
+                    number: ''
+                  })
+                })
+              })
+              if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
+                if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
+                  itemBatch.batch_info[0].id = itemPro.id
+                  itemBatch.batch_info[0].unit = itemPro.category_info.name
+                  itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
+                  itemBatch.batch_info[0].product_info = arr
+                } else {
+                  itemBatch.batch_info.push({
+                    id: itemPro.id,
+                    unit: itemPro.category_info.name,
+                    sizeColor: itemPro.sizeColor,
+                    product_info: arr
+                  })
+                }
+              }
+            } else {
+              let productInfo = []
+              let colorInfo = []
+              itemPro.color.forEach((itemColor) => {
+                colorInfo.push({
+                  color: itemColor.color_id,
                   number: ''
                 })
               })
-            })
-            if (!itemBatch.batch_info.find(val => val.id === itemPro.id)) {
-              if (itemBatch.batch_info[0] && !itemBatch.batch_info[0].id) {
-                itemBatch.batch_info[0].id = itemPro.id
-                itemBatch.batch_info[0].unit = itemPro.category_info.name
-                itemBatch.batch_info[0].sizeColor = itemPro.sizeColor
-                itemBatch.batch_info[0].product_info = arr
-              } else {
-                itemBatch.batch_info.push({
-                  id: itemPro.id,
-                  unit: itemPro.category_info.name,
-                  sizeColor: itemPro.sizeColor,
-                  product_info: arr
+              itemPro.size.forEach((itemSize) => {
+                productInfo.push({
+                  size: itemSize.size_id,
+                  color: this.$clone(colorInfo)
                 })
+              })
+              if (!itemBatch.batch_info_new.find(val => val.id === itemPro.id)) {
+                if (itemBatch.batch_info_new[0] && !itemBatch.batch_info_new[0].id) {
+                  itemBatch.batch_info_new[0].id = itemPro.id
+                  itemBatch.batch_info_new[0].unit = itemPro.category_info.name
+                  itemBatch.batch_info_new[0].size = itemPro.size.map((item) => {
+                    return {
+                      name: item.size_id,
+                      label: item.size_name
+                    }
+                  })
+                  itemBatch.batch_info_new[0].color = itemPro.color.map((item) => {
+                    return {
+                      name: item.color_id,
+                      label: item.color_name
+                    }
+                  })
+                  itemBatch.batch_info_new[0].product_info = productInfo
+                } else {
+                  itemBatch.batch_info_new.push({
+                    id: itemPro.id,
+                    unit: itemPro.category_info.name,
+                    size: itemPro.size.map(itemSize => {
+                      return {
+                        name: itemSize.size_id,
+                        label: itemSize.size_name
+                      }
+                    }),
+                    color: itemPro.color.map((itemColor) => {
+                      return {
+                        name: itemColor.color_id,
+                        label: itemColor.color_name
+                      }
+                    }),
+                    product_info: productInfo
+                  })
+                }
               }
             }
             this.isResouceShow++
@@ -818,9 +1430,16 @@ export default {
       } else {
         // 产品取消选中时，批次内删除该产品
         this.batchDate.forEach(itemBatch => {
-          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-          if (index !== -1) {
-            itemBatch.batch_info.splice(index, 1)
+          if (this.tableType === 'normal') {
+            let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+            if (index !== -1) {
+              itemBatch.batch_info.splice(index, 1)
+            }
+          } else {
+            let newIndex = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+            if (newIndex !== -1) {
+              itemBatch.batch_info_new.splice(newIndex, 1)
+            }
           }
         })
         let cancleProFlag = this.checkedProList.find(items => items.id === item.id)
@@ -833,10 +1452,18 @@ export default {
     cancleChecked (item) {
       // 产品取消选中时，批次内删除该产品
       this.batchDate.forEach(itemBatch => {
-        let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
-        if (index !== -1) {
-          itemBatch.batch_info.splice(index, 1)
-          this.isResouceShow++
+        if (this.tableType === 'normal') {
+          let index = itemBatch.batch_info.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info.splice(index, 1)
+            this.isResouceShow++
+          }
+        } else {
+          let index = itemBatch.batch_info_new.map(itemPro => itemPro.id).indexOf(item.id)
+          if (index !== -1) {
+            itemBatch.batch_info_new.splice(index, 1)
+            this.isResouceShow++
+          }
         }
       })
       item.checked = false
@@ -854,7 +1481,7 @@ export default {
         return
       }
       let selectFlag = this.checkedProList.find(val => val.id === event)
-      if (selectFlag) {
+      if (selectFlag && this.tableType === 'normal') {
         itemPro.sizeColor = selectFlag.sizeColor
         this.isResouceShow++
         itemPro.product_info = []
@@ -862,12 +1489,43 @@ export default {
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
-              size_color: [itemSize.size_name, itemColor.color_name],
+              size_color: [itemSize.size_id, itemColor.color_id],
               price: '',
               number: ''
             })
           })
         })
+      }
+      if (selectFlag && this.tableType === 'table') {
+        itemPro.size = selectFlag.size.map(itemSize => {
+          return {
+            label: itemSize.size_name,
+            name: itemSize.size_id
+          }
+        })
+        itemPro.color = selectFlag.color.map(itemColor => {
+          return {
+            label: itemColor.color_name,
+            name: itemColor.color_id
+          }
+        })
+        itemPro.product_info = []
+        itemPro.unit = selectFlag.category_info.name || '个'
+        let productInfo = []
+        let colorInfo = []
+        itemPro.color.forEach((itemColor) => {
+          colorInfo.push({
+            color: itemColor.name,
+            number: ''
+          })
+        })
+        itemPro.size.forEach((itemSize) => {
+          productInfo.push({
+            size: itemSize.name,
+            color: this.$clone(colorInfo)
+          })
+        })
+        itemPro.product_info = productInfo
       }
     },
     selectSize (event, item, index) {
@@ -876,19 +1534,53 @@ export default {
         item[index].size_color = ''
       }
     },
+    selectTableColor (event, item, index) {
+      if (item.product_info[0].color.filter((itemFind) => itemFind.color === event).length > 1) {
+        this.$message.warning('检测到该批次中该产品已选中该配色，不可重复选择')
+        item.product_info[0].color[index].color = ''
+      } else {
+        item.product_info.forEach((itemPro) => {
+          itemPro.color[index].color = event
+        })
+      }
+    },
+    selectTableSize (event, item, index) {
+      if (item.filter((itemFind) => itemFind.size === event).length > 1) {
+        this.$message.warning('检测到该批次中该产品已选中该尺码，不可重复选择')
+        item[index].size = ''
+      }
+    },
     computedTotalPrice () { // 计算总价
       this.total_price = 0
-      this.batchDate.forEach(itemBtach => {
-        itemBtach.batch_info.forEach(itemPro => {
-          itemPro.product_info.forEach(itemSize => {
-            if (itemSize.price && itemSize.number) {
-              this.total_price += (itemSize.price * itemSize.number)
-            }
+      if (this.tableType === 'normal') {
+        this.batchDate.forEach(itemBtach => {
+          itemBtach.batch_info.forEach(itemPro => {
+            itemPro.product_info.forEach(itemSize => {
+              if (itemSize.price && itemSize.number) {
+                this.total_price += (itemSize.price * itemSize.number)
+              }
+            })
           })
         })
-      })
+      } else {
+        this.batchDate.forEach((itemBatch) => {
+          itemBatch.batch_info_new.forEach((itemPro) => {
+            itemPro.product_info.forEach((itemSize) => {
+              itemSize.color.forEach((itemColor) => {
+                if (itemPro.price && itemColor.number) {
+                  this.total_price += (itemPro.price * itemColor.number)
+                }
+              })
+            })
+          })
+        })
+      }
     },
     saveAll () {
+      if (!this.lock) {
+        this.$message.warning('请勿频繁点击')
+        return
+      }
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -903,26 +1595,18 @@ export default {
         this.$message.error('请选择外贸公司')
         return
       }
-      if (!this.contact_id) {
-        this.$message.error('请选择联系人')
-        return
-      }
-      if (!this.group_id) {
-        this.$message.error('请选择负责小组')
-        return
-      }
+      // if (!this.group_id) {
+      //   this.$message.error('请选择负责小组')
+      //   return
+      // }
       if (!this.unit) {
         this.$message.error('请选择结算单位')
         return
       }
-      if (!this.exchange_rate) {
-        this.$message.error('请输入汇率')
-        return
-      }
-      if (!this.tax_prop) {
-        this.$message.error('请输入税率')
-        return
-      }
+      // if (Number(this.tax_prop) !== 0 && !this.tax_prop) {
+      //   this.$message.error('请输入税率')
+      //   return
+      // }
       if (!this.order_time) {
         this.$message.error('请选择下单日期')
         return
@@ -936,24 +1620,53 @@ export default {
         if (!item.time) {
           timeFlag = false
         }
-        if (item.batch_info.length < 1) {
-          this.$message.error('检测到批次内没有产品信息，请添加')
-          flag = false
-        }
-        item.batch_info.forEach(itemBtach => {
-          if (!itemBtach.id) {
+        if (this.tableType === 'normal') {
+          if (item.batch_info.length < 1) {
+            this.$message.error('检测到批次内没有产品信息，请添加')
             flag = false
           }
-          if (itemBtach.product_info.length < 1) {
-            this.$message.error('检测到产品内没有尺码颜色信息，请添加')
-            flag = false
-          }
-          itemBtach.product_info.forEach(itemPro => {
-            if (itemPro.size_color.length === 0 || !itemPro.price || !itemPro.number) {
+          item.batch_info.forEach(itemBtach => {
+            if (!itemBtach.id) {
               flag = false
             }
+            if (itemBtach.product_info.length < 1) {
+              this.$message.error('检测到产品内没有尺码颜色信息，请添加')
+              flag = false
+            }
+            itemBtach.product_info.forEach(itemPro => {
+              if (itemPro.size_color.length === 0 || !itemPro.number) {
+                flag = false
+              }
+            })
           })
-        })
+        } else {
+          if (item.batch_info_new.length < 1) {
+            this.$message.error('检测到批次内没有产品信息，请添加')
+            flag = false
+          }
+          item.batch_info_new.forEach(itemBtach => {
+            if (!itemBtach.id) {
+              flag = false
+            }
+            // if (!itemBtach.price) {
+            //   flag = false
+            // }
+            if (itemBtach.product_info.length < 1) {
+              this.$message.error('检测到产品内没有尺码颜色信息，请添加')
+              flag = false
+            }
+            itemBtach.product_info.forEach(itemPro => {
+              if (!itemPro.size) {
+                flag = false
+              }
+              itemPro.color.forEach(itemColor => {
+                if (!itemColor.color || !itemColor.number) {
+                  flag = false
+                }
+              })
+            })
+          })
+        }
       })
       if (!timeFlag) {
         this.$message.error('请选择交货日期')
@@ -963,44 +1676,91 @@ export default {
         this.$message.error('检测到批次信息内有还未填写项，请检查批次内是否填写完成')
         return
       }
-      if (!this.total_price) {
-        this.$message.error('请输入总价')
-        return
-      }
-      const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
-      const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
-      const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
-      const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return 'https://zhihui.tlkrzf.com/' + item.response.key })
-      let data = {
-        order_code: this.order_code.map(item => {
-          return item.code
-        }).join(';'),
-        client_id: this.client_id,
-        contacts: this.contact_id,
-        account_unit: this.unit,
-        group_id: this.group_id,
-        exchange_rate: this.exchange_rate,
-        tax_rate: this.tax_prop,
-        order_time: this.order_time,
-        order_info: this.batchDate.map((item, index) => {
+      const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      // let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
+      // let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
+      // let productPushFlag = this.timeData.find(item => item.name === '成品入库')
+      // let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      // let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
+      // let warnData = this.isOpenWarn ? {
+      //   order_time: this.order_time,
+      //   end_time: this.getWarnEndTime(),
+      //   progress_data: {
+      //     material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+      //     material_push: this.$toFixed(materialPushFlag.percent * 100),
+      //     semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
+      //     product_push: this.$toFixed(productPushFlag.percent * 100),
+      //     product_pack: this.$toFixed(productPackFlag.percent * 100)
+      //   }
+      // } : null
+      let orderInfo = []
+      if (this.tableType === 'normal') {
+        orderInfo = this.batchDate.map((item, index) => {
           return {
             batch_info: item.batch_info.map(itemPro => {
               return {
                 product_id: itemPro.id,
                 product_info: itemPro.product_info.map(itemSize => {
                   return {
-                    size_name: itemSize.size_color[0],
-                    color_name: itemSize.size_color[1],
+                    size_id: itemSize.size_color[0],
+                    color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
-                    unit_price: itemSize.price
+                    unit_price: itemSize.price || null
                   }
                 })
               }
             }),
             delivery_time: item.time,
-            batch_id: parseInt(index + 1)
+            batch_id: parseInt(index + 1),
+            batch_title: item.name,
+            order_type: item.type,
+            desc: item.remark
           }
-        }),
+        })
+      } else {
+        orderInfo = this.batchDate.map((item, index) => {
+          return {
+            batch_info: item.batch_info_new.map((itemPro) => {
+              let productInfo = []
+              itemPro.product_info.forEach((itemSize) => {
+                itemSize.color.forEach((itemColor) => {
+                  productInfo.push({
+                    size_id: itemSize.size,
+                    color_id: itemColor.color,
+                    numbers: itemColor.number,
+                    unit_price: itemPro.price || null
+                  })
+                })
+              })
+              return {
+                product_id: itemPro.id,
+                product_info: productInfo
+              }
+            }),
+            delivery_time: item.time,
+            batch_id: parseInt(index + 1),
+            batch_title: item.name,
+            order_type: item.type,
+            desc: item.remark
+          }
+        })
+      }
+      let data = {
+        order_code: this.order_code.map(item => {
+          return item.code
+        }).join(';'),
+        // material_status: this.ifKegong === '是' ? 1 : 2,
+        client_id: this.client_id,
+        contacts: this.contact_id,
+        account_unit: this.unit,
+        // group_id: this.group_id,
+        exchange_rate: this.exchange_rate || moneyArr.find((item) => item.name === this.unit).default,
+        // tax_rate: this.tax_prop,
+        order_time: this.order_time,
+        order_info: orderInfo,
         total_price: this.total_price,
         remark: this.remark,
         total_price_RMB: this.total_price * this.exchange_rate / 100,
@@ -1008,13 +1768,15 @@ export default {
         pack_means: JSON.stringify(packMeans),
         store_means: JSON.stringify(storeMeans),
         others_info: JSON.stringify(otherInfo)
+        // time_progress: warnData
       }
+      this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('添加成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/order/orderDetail/' + res.data.data.id
-            this.msgContent = '<span style="color:#1A95FF">添加</span>了一个新订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
+            this.msgContent = '<span style="color:#E6A23C">添加</span>了一个订单<span style="color:#1A95FF">' + res.data.data.order_code + '</span>'
             this.msgSwitch = true
           } else {
             this.$router.push('/order/orderDetail/' + res.data.data.id)
@@ -1028,39 +1790,233 @@ export default {
       if (flag) {
         this.contactArr = flag.contacts
       }
-    }
-  },
-  created () {
-    this.getList()
-    Promise.all([
-      client.list(),
-      group.list(),
-      getToken(),
-      productType.list(),
-      flower.list()
-    ]).then(res => {
-      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
-      this.groupArr = res[1].data.data
-      this.postData.token = res[2].data.data
-      this.typeArr = res[3].data.data.map(item => {
-        return {
-          label: item.name,
-          value: item.id,
-          children: item.child.map(itemChild => {
-            return {
-              label: itemChild.name,
-              value: itemChild.id,
-              children: itemChild.child.map(itemChilds => {
-                return {
-                  label: itemChilds.name,
-                  value: itemChilds.id
-                }
+    },
+    importOrder (event) {
+      this.loading = true
+      order.editDetail({
+        id: event.id
+      }).then(res => {
+        if (res.data.status === false) {
+          return
+        }
+        // 初始化修改订单数据
+        let orderInfo = res.data.data
+        this.order_code = orderInfo.order_code.split(';').map(item => {
+          return {
+            code: item
+          }
+        })
+        this.client_id = orderInfo.client_id.toString()
+        this.getContact(this.client_id)
+        this.contact_id = orderInfo.contacts_id
+        // this.group_id = orderInfo.group_id
+        this.unit = orderInfo.account_unit
+        this.exchange_rate = orderInfo.exchange_rate
+        // this.tax_prop = orderInfo.tax_rate
+        this.order_time = orderInfo.order_time
+        let orderBatch = []
+        let arr = [] // 存储产品id
+        orderInfo.order_batch.forEach(itemBatch => {
+          let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
+            items.id = items.product_id.toString()
+            items.unit = items.category_info.unit
+            items.sizeColor = items.all_size.map(valSize => {
+              return {
+                value: valSize.size_id,
+                label: valSize.size_name,
+                children: items.all_color.map(valColor => {
+                  return {
+                    value: valColor.color_id,
+                    label: valColor.color_name
+                  }
+                })
+              }
+            })
+            delete items.product_info
+            delete items.image
+            return items
+          }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
+          orderBatch.push({
+            time: itemBatch.delivery_time,
+            remark: itemBatch.desc,
+            name: itemBatch.batch_title,
+            type: itemBatch.order_type,
+            batch_info: productInfo
+          })
+          itemBatch.product_info.forEach(itemPro => {
+            let flag = arr.find(itemId => itemId.id === itemPro.product_id.toString())
+            if (!flag) {
+              arr.push({
+                category_info: {
+                  name: itemPro.category_info.unit,
+                  product_category: itemPro.category_info.category_name
+                },
+                checked: true,
+                color: itemPro.all_color,
+                flower_id: itemPro.category_info.flower_name,
+                id: itemPro.product_id.toString(),
+                product_code: itemPro.product_code,
+                sizeColor: itemPro.all_size.map(valSize => {
+                  return {
+                    value: valSize.size_id,
+                    label: valSize.size_name,
+                    children: itemPro.all_color.map(valColor => {
+                      return {
+                        value: valColor.color_id,
+                        label: valColor.color_name
+                      }
+                    })
+                  }
+                }),
+                size: itemPro.all_size
               })
             }
           })
+        })
+        this.checkedProList = arr
+        this.batchDate = orderBatch.map(itemBatch => {
+          return {
+            time: itemBatch.time,
+            batch_info: itemBatch.batch_info.map(itemPro => {
+              return {
+                id: itemPro.id,
+                product_info: itemPro.product_info.map(itemSize => {
+                  return {
+                    size_color: [itemSize.size_id, itemSize.color_id],
+                    number: itemSize.number,
+                    price: ''
+                  }
+                }),
+                sizeColor: itemPro.sizeColor,
+                unit: itemPro.unit
+              }
+            }),
+            name: itemBatch.name,
+            remark: itemBatch.remark,
+            type: itemBatch.type
+          }
+        })
+        this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
+          return {
+            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            url: items
+          }
+        }) : []
+        this.total_price = orderInfo.total_price
+        this.remark = orderInfo.remark
+        this.tableType = 'normal'
+        this.changeTableType()
+        this.loading = false
+      })
+    }
+  },
+  created () {
+    if (this.$route.query.productId) { // 产品详情进入直接勾选上该产品的优化
+      product.detail({
+        id: this.$route.query.productId
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          let data = res.data.data
+          this.checkedProList.push({
+            id: data.id,
+            product_code: data.product_code,
+            size: data.size,
+            color: data.color,
+            checked: true,
+            sizeColor: data.size.map(itemSize => {
+              return {
+                value: itemSize.size_id,
+                label: itemSize.size_name,
+                children: data.color.map(itemColor => {
+                  return {
+                    value: itemColor.color_id,
+                    label: itemColor.color_name
+                  }
+                })
+              }
+            }),
+            category_info: {
+              name: data.category_info.name
+            }
+          })
+          this.batchDate.forEach(itemBatch => {
+            itemBatch.batch_info_new.push({
+              color: data.color.map(itemColor => {
+                return {
+                  label: itemColor.color_name,
+                  name: itemColor.color_id
+                }
+              }),
+              id: data.id.toString(),
+              product_info: data.size.map(itemSize => {
+                return {
+                  size: itemSize.size_id,
+                  color: data.color.map(itemColor => {
+                    return {
+                      color: itemColor.color_id,
+                      number: ''
+                    }
+                  })
+                }
+              }),
+              size: data.size.map(itemSize => {
+                return {
+                  label: itemSize.size_name,
+                  name: itemSize.size_id
+                }
+              }),
+              unit: data.category_info.name
+            })
+          })
         }
       })
-      this.flowerArr = res[4].data.data
+    }
+    if (this.$route.query.orderId) { // 复制订单直接导入某个订单
+      this.importOrder({ id: this.$route.query.orderId })
+    }
+    this.getList()
+    Promise.all([
+      client.list(),
+      // group.list(),
+      getToken(),
+      // warnSetting.list(),
+      orderType.typeList({
+        order_type: 1
+      })
+    ]).then(res => {
+      this.loading = true
+      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
+      this.clientArr.forEach((item) => {
+        item.name_pinyin = item.name_pinyin.join('')
+      })
+      this.clientArrReal = this.$clone(this.clientArr)
+      // this.groupArr = res[1].data.data
+      this.postData.token = res[1].data.data
+      // this.warnList = res[3].data.data.filter(item => item.order_type === 1)
+      this.orderTypeArr = res[2].data.data.map(item => {
+        return {
+          value: item.name
+        }
+      })
+      this.loading = false
     })
   },
   filters: {
@@ -1087,7 +2043,6 @@ export default {
       }
     },
     flower_id (newVal) {
-      console.log(newVal)
       this.pages = 1
       this.getList()
     },
@@ -1127,6 +2082,20 @@ export default {
   }
   .el-input__inner {
     height: 32px !important;
+  }
+  .oprText {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+    position: absolute;
+    top: 40px;
+    left: 4px;
+    cursor: pointer;
+    &:hover {
+      color: #1a95ff;
+    }
+  }
+  .el-input__icon {
+    height: auto !important;
   }
 }
 </style>

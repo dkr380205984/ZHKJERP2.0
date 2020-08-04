@@ -487,7 +487,23 @@ const reimbursement = {
   delete: (params) => http.post(`${baseUrl}/reimburse/delete`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/reimburse/check`, params, 'application/json')
 }
+// 进仓单
+const warehouse = {
+  create: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/stock/card/detail`, params),
+  list: (params) => http.get(`${baseUrl}/stock/card/list`, params),
+  delete: (params) => http.post(`${baseUrl}/stock/card/delete`, params, 'application/json')
+}
+// 运输单
+const transport = {
+  create: (params) => http.post(`${baseUrl}/stock/out/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/stock/out/detail`, params),
+  list: (params) => http.get(`${baseUrl}/stock/out/list`, params),
+  delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
+}
 export {
+  transport,
+  warehouse,
   reimbursement,
   assignCraftOrPlan,
   orderType,
