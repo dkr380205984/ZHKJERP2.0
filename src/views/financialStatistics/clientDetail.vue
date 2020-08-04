@@ -84,7 +84,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -101,7 +101,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -151,7 +151,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -168,7 +168,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -211,7 +211,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -228,7 +228,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -273,7 +273,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -290,7 +290,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -338,7 +338,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -355,7 +355,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -405,7 +405,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -422,7 +422,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -467,7 +467,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -484,7 +484,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"
@@ -529,7 +529,7 @@
               </span>
               <span class="tb_row">关联单号</span>
               <span class="tb_row">下单日期</span>
-              <span class="tb_row">负责小组</span>
+              <!-- <span class="tb_row">负责小组</span> -->
               <span class="tb_row">合计金额</span>
               <span class="tb_row">扣款记录</span>
               <span class="tb_row">结算记录</span>
@@ -546,7 +546,7 @@
                   </span>
                   <span class="tb_row">{{item.order_code}}</span>
                   <span class="tb_row">{{item.order_time}}</span>
-                  <span class="tb_row">{{item.group_name}}</span>
+                  <!-- <span class="tb_row">{{item.group_name}}</span> -->
                   <span class="tb_row">{{item.total_price}}</span>
                   <span class="tb_row"
                     :class="{'red':item.deduct_log>0}"

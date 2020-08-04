@@ -34,7 +34,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <el-select v-model="group_id"
+              <!-- <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
                 clearable
@@ -44,7 +44,7 @@
                   :label="item.name"
                   :value="item.id">
                 </el-option>
-              </el-select>
+              </el-select> -->
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -76,9 +76,9 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col flex16 middle">
               <span class="text">装箱计划状态</span>
             </div>
@@ -101,9 +101,9 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               {{itemOrder.group_name}}
-            </div>
+            </div> -->
             <div class="col middle">
               <div class="stateCtn"
                 :class="{'green':itemOrder.has_pack_plan>0}">
@@ -146,7 +146,7 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
-import { order, group, client } from '@/assets/js/api.js'
+import { order, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -158,8 +158,8 @@ export default {
       pages: 1,
       total: 0,
       state: '',
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       company_id: '',
       companyArr: [],
       has_materialPlan: '', // 物料计划
@@ -209,7 +209,7 @@ export default {
       this.has_productInOut = params.has_productInOut
       this.has_inspection = params.has_inspection
       this.has_boxing = params.has_boxing
-      this.group_id = params.group_id ? Number(params.group_id) : ''
+      // this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id
       this.state = params.state
     },
@@ -230,7 +230,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id,
-        group_id: this.group_id,
+        // group_id: this.group_id,
         status: this.state
       }).then(res => {
         this.list = res.data.data
@@ -292,9 +292,9 @@ export default {
   created () {
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
-      this.groupArr = res[0].data.data
-      this.companyArr = res[1].data.data.filter((item) => {
+    Promise.all([client.list()]).then((res) => {
+      // this.groupArr = res[0].data.data
+      this.companyArr = res[0].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
     })

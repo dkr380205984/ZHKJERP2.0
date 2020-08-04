@@ -28,10 +28,10 @@
             <span class="label">联系人：</span>
             <span class="text">{{renderData.orderInfo.user_name}}</span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{renderData.orderInfo.group_name}}</span>
-          </div>
+          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{renderData.orderInfo.order_time}}

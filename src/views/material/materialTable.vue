@@ -30,8 +30,8 @@
             :key="indexOrder + 'client'">
             <span class="row_item center w180">订单公司</span>
             <span class="row_item left">{{itemOrder.client_name}}</span>
-            <span class="row_item center w180">负责小组</span>
-            <span class="row_item left flex08">{{itemOrder.group_name}}</span>
+            <!-- <span class="row_item center w180">负责小组</span>
+            <span class="row_item left flex08">{{itemOrder.group_name}}</span> -->
           </div>
         </template>
         <div class="print_row has_marginBottom">

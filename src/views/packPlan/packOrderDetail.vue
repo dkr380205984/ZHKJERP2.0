@@ -41,6 +41,12 @@
             <span class="text">{{orderInfo.client_name}}</span>
           </div>
           <div class="colCtn flex3">
+            <span class="label">联系人：</span>
+            <span class="text">{{orderInfo.contacts}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>
           </div>
@@ -50,16 +56,10 @@
               <zh-batch :data='orderInfo.order_batch'></zh-batch>
             </span>
           </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">联系人：</span>
-            <span class="text">{{orderInfo.contacts}}</span>
-          </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="label">负责小组：</span>
             <span class="text">{{orderInfo.group_name}}</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
