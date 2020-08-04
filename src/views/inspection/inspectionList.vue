@@ -76,9 +76,9 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col">
               <span class="text">半成品检验进度</span>
             </div>

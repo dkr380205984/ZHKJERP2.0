@@ -71,7 +71,7 @@
               <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
-            <div class="filter_line"
+            <!-- <div class="filter_line"
               :class="openHiddleFilter ? false : 'hiddle'">
               <el-select v-model="group_id"
                 class="filter_item"
@@ -84,14 +84,14 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-            </div>
+            </div> -->
           </div>
-          <div class="rightCtn"
+          <!-- <div class="rightCtn"
             @click="openHiddleFilter = !openHiddleFilter">
             {{openHiddleFilter ? '收起' : '展开'}}
             <span class="el-icon-arrow-down openIcon"
               :class="openHiddleFilter ? 'active' : false"></span>
-          </div>
+          </div> -->
         </div>
         <div class="list">
           <div class="title">
@@ -110,9 +110,9 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col flex12">
               <span class="text">入库进度(原)</span>
             </div>
@@ -142,9 +142,9 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               {{itemOrder.group_name}}
-            </div>
+            </div> -->
             <div class="col flex12">
               <div class="stateCtn rowFlex"
                 :class="itemOrder.material_push_progress.r_push<100?'orange':'green'">
@@ -210,13 +210,13 @@
 </template>
 
 <script>
-import { order, group, client, sampleOrder } from '@/assets/js/api.js'
+import { order, client, sampleOrder } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
     return {
       material_type: '1',
-      openHiddleFilter: false,
+      // openHiddleFilter: false,
       searchOrderOrProduct: 'order',
       loading: true,
       list: [],
@@ -225,8 +225,8 @@ export default {
       pages: 1,
       total: 0,
       orderType: true,
-      group_id: '',
-      groupArr: [],
+      // group_id: '',
+      // groupArr: [],
       company_id: '',
       companyArr: [],
       // 批量订购勾选数据
@@ -277,14 +277,8 @@ export default {
         this.date = ''
       }
       this.has_materialPlan = params.has_materialPlan
-      this.group_id = params.group_id ? Number(params.group_id) : ''
-      if (this.group_id) {
-        this.searchGroupFlag = true
-      }
+      // this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id
-      if (this.company_id) {
-        this.searchCompanyFlag = true
-      }
       this.orderType = this.$route.params.type === '1'
     },
     changeRouter (page) {
@@ -305,7 +299,7 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id,
-          group_id: this.group_id,
+          // group_id: this.group_id,
           status: this.state
         }).then(res => {
           this.list = res.data.data.map(item => {
@@ -344,8 +338,8 @@ export default {
           keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          client_id: this.company_id,
-          group_id: this.group_id
+          client_id: this.company_id
+          // group_id: this.group_id
         }).then(res => {
           this.list = res.data.data
           this.list.forEach((item) => {
@@ -382,9 +376,9 @@ export default {
   created () {
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
-      this.groupArr = res[0].data.data
-      this.companyArr = res[1].data.data.filter((item) => {
+    Promise.all([client.list()]).then((res) => {
+      // this.groupArr = res[0].data.data
+      this.companyArr = res[0].data.data.filter((item) => {
         return item.type.indexOf(1) !== -1
       })
     })

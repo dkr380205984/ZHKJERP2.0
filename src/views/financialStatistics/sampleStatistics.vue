@@ -192,9 +192,9 @@
             <div class="col">
               <span class="text">订单公司</span>
             </div>
-            <div class="col">
+            <!-- <div class="col">
               <span class="text">负责小组</span>
-            </div>
+            </div> -->
             <div class="col">
               <span class="text">打样数量</span>
             </div>
@@ -214,7 +214,7 @@
             <div class="col">{{item.order_code}}</div>
             <div class="col">{{item.order_time}}</div>
             <div class="col">{{item.client_name}}</div>
-            <div class="col">{{item.group_name}}</div>
+            <!-- <div class="col">{{item.group_name}}</div> -->
             <div class="col">{{item.numbers}}</div>
             <div class="col">{{item.client_pay}}</div>
             <div class="col">{{item.company_cost}}</div>
