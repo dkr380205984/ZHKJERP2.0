@@ -918,6 +918,9 @@
           </div>
           <div class="opr">
             <div class="btn btnGray"
+              @click="otherData.material.step=0"
+              v-if="otherData.material.step===1">上一步</div>
+            <div class="btn btnGray"
               @click="cancleMaterial">取消</div>
             <div class="btn btnBlue"
               @click="otherData.material.step===0?nextStep():saveMaterial()">{{otherData.material.step===0?'计算所需物料':'确认分配'}}</div>
@@ -2997,6 +3000,19 @@ export default {
           return totalChild + currentChild.inspection
         }, 0)
       }, 0)
+      // 初始化已检验人员
+      this.formData.inspectionForm.detail = Array.from(new Set(this.nativeData.inspectionLog.filter((item) => item.inspection_user_id).map((item) => item.inspection_user_id))).map((item) => {
+        return {
+          client_auth: ['来源工序人员', Number(item)],
+          colorSize: [{
+            showCheck: false,
+            colorSize: '',
+            number: '',
+            substandard: '',
+            reason: []
+          }]
+        }
+      })
     },
     // 根据工序类型处理模块信息
     getModule (type) {
