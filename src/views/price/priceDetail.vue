@@ -512,13 +512,13 @@ export default {
             }),
             ...JSON.parse(data.semi_product_info).map(item => {
               return {
-                name: item.name && item.name.length !== 0 ? item.name.join('/') : '半成品加工',
+                name: item.name,
                 totalPrice: item.total_price || item.price
               }
             }),
             ...JSON.parse(data.production_info).map(item => {
               return {
-                name: item.name && item.name.length !== 0 ? item.name.join('/') : '成品加工',
+                name: item.name,
                 totalPrice: item.total_price || item.price
               }
             }),

@@ -225,150 +225,6 @@
         </div>
       </div>
     </div>
-    <div class="module"
-      v-if="false">
-      <div class="titleCtn">
-        <span class="title">配件信息</span>
-        <el-switch class="atTitle"
-          style="margin-bottom:3px"
-          v-model="hasFitting"
-          active-color="#1A95FF"
-          inactive-color="#dcdfe6">
-        </el-switch>
-      </div>
-      <div v-show="hasFitting"
-        class="editCtn hasBorderTop"
-        v-for="(item,index) in fittingInfo"
-        :key="index">
-        <div class="titleNum">配件{{chinaNum[index]}}</div>
-        <div class="deleteIcon el-icon-close"
-          @click="deleteFitting(index,item.part_id)"></div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">配件名称</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <el-autocomplete class="inline-input"
-                v-model="item.fitting_name"
-                @select="getUnit($event,item)"
-                :fetch-suggestions="searchMaterial"
-                placeholder="请输入配件名称">
-              </el-autocomplete>
-            </span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">单位名称</span>
-              <span class="explanation">(必填，默认为个)</span>
-            </span>
-            <span class="content">
-              <el-input class="inline-input"
-                v-model="item.unit"
-                placeholder="请输入单位"></el-input>
-            </span>
-          </div>
-        </div>
-        <div class="rowCtn"
-          v-for="(itemIngredient,indexIngredient) in item.ingredient"
-          :key="'ingredient' + indexIngredient"
-          v-show="false">
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="indexIngredient===0">
-              <span class="text">配件成分</span>
-            </div>
-            <div class="content">
-              <el-autocomplete class="inline-input"
-                v-model="itemIngredient.ingredient_name"
-                :fetch-suggestions="searchIngredient"
-                placeholder="请输入成分信息">
-              </el-autocomplete>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label"
-              v-show="indexIngredient===0">
-            </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入比例"
-                v-model="itemIngredient.ingredient_value">
-                <template slot="append">%</template>
-              </zh-input>
-            </div>
-            <div class="editBtn"
-              :class="{'addBtn':indexIngredient===0,'deleteBtn':indexIngredient>0}"
-              @click="indexIngredient===0?addFittingIngredient(index):deleteFittingIngredient(index,indexIngredient)">{{indexIngredient===0?'添加':'删除'}}</div>
-          </div>
-        </div>
-        <div class="rowCtn"
-          v-for="(itemSize,indexSize) in item.size"
-          :key="'size'+indexSize">
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text">配件规格</span>
-              <span class="explanation">(配件个数必填,不填默认为1个)</span>
-            </span>
-            <span class="content">
-              <el-select v-model="itemSize.size"
-                disabled
-                placeholder="请选择产品规格">
-                <el-option v-for="item in sizeArr"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.name">
-                </el-option>
-              </el-select>
-            </span>
-          </div>
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </span>
-            <span class="content">
-              <zh-input v-model="itemSize.weight"
-                type="number"
-                placeholder="请输入克重">
-                <template slot="append">g</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="colCtn">
-            <span class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </span>
-            <span class="content">
-              <zh-input v-model="itemSize.desc"
-                placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="colCtn">
-            <div class="label"
-              v-show="indexSize === 0">
-              <span class="text"></span>
-            </div>
-            <div class="content">
-              <zh-input v-model="itemSize.number"
-                placeholder="请输入个数信息">
-                <template slot="append">
-                  <span>{{item.unit}}</span>
-                </template>
-              </zh-input>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-show="hasFitting"
-        class="btn btnWhiteBlue add_fitting_btn"
-        @click="addFitting">添加配件</div>
-    </div>
     <div class="module">
       <div class="titleCtn">
         <span class="title">其他信息</span>
@@ -430,7 +286,7 @@
 
 <script>
 import { chinaNum, letterArr } from '@/assets/js/dictionary.js'
-import { productType, flower, yarn, colour, getToken, material, product, productPart } from '@/assets/js/api.js'
+import { productType, flower, yarn, colour, getToken, product, productPart } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -464,18 +320,7 @@ export default {
       desc: '',
       postData: { token: '' },
       fileArr: [],
-      hasFitting: false,
-      fittingInfo: [{
-        fitting_name: '',
-        ingredient: [{
-          ingredient_name: '',
-          ingredient_value: ''
-        }],
-        size: [{ size: '', weight: '', desc: '', number: '1' }],
-        unit: '个'
-      }],
       // 配件类型从辅料里面选
-      materialArr: [],
       needleType: '',
       importKeyword: '',
       sizePartArr: [{
@@ -503,63 +348,6 @@ export default {
     },
     getUnit (ev, item) {
       item.unit = ev.unit
-    },
-    addFitting () {
-      this.fittingInfo.push({
-        unit: '个',
-        fitting_name: '',
-        type: [],
-        ingredient: [{
-          ingredient_name: '',
-          ingredient_value: ''
-        }],
-        size: this.size.map((itemPro) => {
-          return {
-            size: itemPro.size,
-            weight: '',
-            desc: '',
-            number: '1'
-          }
-        })
-      })
-    },
-    deleteFitting (index, id) {
-      this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        if (id) {
-          product.delete({
-            id: id
-          }).then((res) => {
-            if (res.data.status) {
-              this.fittingInfo.splice(index)
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-            }
-          })
-        } else {
-          this.fittingInfo.splice(index)
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
-      })
-    },
-    addFittingIngredient (index) {
-      this.fittingInfo[index].ingredient.push({ ingredient_name: '', ingredient_value: '' })
-    },
-    deleteFittingIngredient (index, indexIngredient) {
-      this.fittingInfo[index].ingredient.splice(indexIngredient, 1)
     },
     addIngredient () {
       this.ingredient.push({ ingredient_name: '', ingredient_value: '' })
@@ -715,47 +503,6 @@ export default {
         this.$message.error('配色信息里面不得包含斜杠字符')
         return
       }
-      // error = this.colour.some((item) => item.colour.length > 8)
-      // if (error) {
-      //   this.$message.error('配色信息长度不得超过8个字符')
-      //   return
-      // }
-      if (this.hasFitting) {
-        error = this.fittingInfo.some((item) => !item.fitting_name)
-      }
-      if (error) {
-        this.$message.error('请输入配件名称')
-        return
-      }
-      // let partData = this.fittingInfo.map((item) => {
-      //   return {
-      //     unit: item.unit,
-      //     part_title: item.fitting_name,
-      //     part_category: '',
-      //     part_color: this.colour.map((item) => {
-      //       return {
-      //         color_name: item.colour,
-      //         color_id: null
-      //       }
-      //     }),
-      //     part_size: item.size.map((itemSize) => {
-      //       return {
-      //         size_id: null,
-      //         weight: itemSize.weight,
-      //         size_name: itemSize.size,
-      //         size_info: itemSize.desc,
-      //         number: itemSize.number
-      //       }
-      //     }),
-      //     part_component: item.ingredient.map((item) => {
-      //       return {
-      //         component_name: item.ingredient_name,
-      //         number: item.ingredient_value
-      //       }
-      //     })
-      //   }
-      // })
-      // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         product_code: this.product_code.join(''),
         name: this.name,
@@ -796,7 +543,6 @@ export default {
             }))
           }
         })
-        // part_data: this.hasFitting ? partData : []
       }
       product.create(formData).then((res) => {
         if (res.data.status) {
@@ -874,27 +620,6 @@ export default {
             return {
               ingredient_name: item.component_name,
               ingredient_value: item.number
-            }
-          })
-          this.hasFitting = productInfo.part_data.length > 0
-          this.fittingInfo = productInfo.part_data.map((item) => {
-            return {
-              fitting_name: item.part_title,
-              ingredient: item.part_component.map((item) => {
-                return {
-                  ingredient_name: item.component_name,
-                  ingredient_value: item.number
-                }
-              }),
-              size: item.size.map((itemSize) => {
-                return {
-                  size: itemSize.size_name,
-                  weight: itemSize.weight,
-                  desc: itemSize.size_info,
-                  number: itemSize.number
-                }
-              }),
-              unit: item.unit
             }
           })
           this.needleType = productInfo.needle_type
@@ -981,22 +706,6 @@ export default {
           this.$set(this.product_code, 5, code)
         }
       })
-    },
-    size: {
-      deep: true,
-      handler: function (newVal) {
-        this.fittingInfo.forEach((item) => {
-          let size = this.size.map((itemPro, indexPro) => {
-            return {
-              size: itemPro.size,
-              weight: item.size[indexPro] ? item.size[indexPro].weight : '',
-              desc: item.size[indexPro] ? item.size[indexPro].desc : '',
-              number: item.size[indexPro] ? item.size[indexPro].number : '1'
-            }
-          })
-          item.size = size
-        })
-      }
     }
   },
   mounted () {
@@ -1007,7 +716,6 @@ export default {
       yarn.list(),
       colour.list(),
       getToken(),
-      material.list(),
       productPart.list()
     ]).then((res) => {
       this.typeArr = res[0].data.data.map((item) => {
@@ -1040,11 +748,7 @@ export default {
         item.value = item.name
       })
       this.postData.token = res[4].data.data
-      this.materialArr = res[5].data.data
-      this.materialArr.forEach((item) => {
-        item.value = item.name
-      })
-      this.partArr = res[6].data.data
+      this.partArr = res[5].data.data
       if (this.$route.query.productId) {
         this.importPorduct({ id: this.$route.query.productId })
       }

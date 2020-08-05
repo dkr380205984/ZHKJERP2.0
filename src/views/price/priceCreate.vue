@@ -364,8 +364,7 @@
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
-                placeholder="请选择尺码颜色"
-                @change="getProductPlan(item.id,product_type ? 1 : 2,$event)">
+                placeholder="请选择尺码颜色">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -1021,7 +1020,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample, priceLoading } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
 import { moneyArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1118,19 +1117,6 @@ export default {
       if (!e.target.value) {
         item.unit = '个'
       }
-    },
-    // 获取配料单信息
-    getProductPlan (id, type, sizeInfo) {
-      productPlan.getByProduct({
-        product_type: type,
-        product_id: id
-      }).then(res => {
-        if (res.data.status !== false) {
-          let flag = res.data.data.find(item => item.is_default)
-          let data = res.data.data.length === 1 ? res.data.data[0] : (flag || [])
-          console.log(data)
-        }
-      })
     },
     getPriceList (queryString, cb) {
       price.list({

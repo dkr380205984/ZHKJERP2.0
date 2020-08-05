@@ -1065,21 +1065,32 @@ export default {
                 number: itemChild.number
               })
             })
-            let productInfo = []
-            let colorInfo = []
-            let findPro = this.checkedProList.find((itemFind) => itemFind.id === itemPro.id)
-            findPro.color.forEach((itemColor) => {
-              colorInfo.push({
-                color: itemColor.color_id,
+            let colorInfo = this.$unique(flatData, 'color').map(item => {
+              return {
+                color: item.color,
                 number: ''
-              })
+              }
             })
-            findPro.size.forEach((itemSize) => {
-              productInfo.push({
-                size: itemSize.size_id,
+            let productInfo = this.$unique(flatData, 'size').map(item => {
+              return {
+                size: item.size,
                 color: this.$clone(colorInfo)
-              })
+              }
             })
+            // let colorInfo = []
+            let findPro = this.checkedProList.find((itemFind) => itemFind.id === itemPro.id)
+            // findPro.color.forEach((itemColor) => {
+            //   colorInfo.push({
+            //     color: itemColor.color_id,
+            //     number: ''
+            //   })
+            // })
+            // findPro.size.forEach((itemSize) => {
+            //   productInfo.push({
+            //     size: itemSize.size_id,
+            //     color: this.$clone(colorInfo)
+            //   })
+            // })
             productInfo.forEach((itemSize) => {
               itemSize.color.forEach((itemColor) => {
                 let find = flatData.find((itemFind) => itemFind.size === itemSize.size && itemFind.color === itemColor.color)
