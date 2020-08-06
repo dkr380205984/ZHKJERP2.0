@@ -267,6 +267,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnRed"
+            @click="deleteLog">删除</div>
           <div class="btn btnOrange"
             @click="updateFlag=true">修改</div>
           <div class="btn btnBlue"
@@ -491,6 +493,44 @@ export default {
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           })
         }
+      })
+    },
+    deleteLog () {
+      this.$confirm(`此操作将永久删除该${this.$route.params.oprType}记录, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.$route.params.oprType === '扣款') {
+          chargebacks.deleteLog({
+            id: this.$route.params.oprId
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$router.go(-1)
+            }
+          })
+        } else if (this.$route.params.oprType === '结算') {
+          settle.deleteLog({
+            id: this.$route.params.oprId
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.$router.go(-1)
+            }
+          })
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     }
   },
