@@ -25,13 +25,21 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <div class="cut_item"
+      <!-- <div class="cut_item"
         @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
         </svg>
         <span class="name">物料使用统计</span>
+      </div> -->
+      <div class="cut_item"
+        @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
+        </svg>
+        <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item"
         @click="$router.push('/financialStatistics/annualStatistics?year=')">
@@ -42,12 +50,12 @@
         <span class="name">年度财务统计</span>
       </div>
       <div class="cut_item "
-        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
         </svg>
-        <span class="name">操作记录统计</span>
+        <span class="name">生产记录统计</span>
       </div>
     </div>
     <div class="module"

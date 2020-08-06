@@ -419,7 +419,7 @@
             </div>
           </el-tab-pane>
           <!-- 物料预订购 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(2) !== -1"
+          <!-- <el-tab-pane v-if="clientInfo.type.indexOf(2) !== -1"
             label="物料预订购"
             name="物料预订购">
             <div class="filterCtn">
@@ -555,7 +555,7 @@
                 <div class="content">{{$formatNum(statistics.material_order_order.total_price)}}元</div>
               </div>
             </div>
-          </el-tab-pane>
+          </el-tab-pane> -->
           <!-- 织造分配 -->
           <el-tab-pane v-if="clientInfo.type.indexOf(5) !== -1 || clientInfo.type.indexOf(6) !== -1 || clientInfo.type.indexOf(7) !== -1 || clientInfo.type.indexOf(8) !== -1 || clientInfo.type.indexOf(9) !== -1 || clientInfo.type.indexOf(10) !== -1 || clientInfo.type.indexOf(11) !== -1 || clientInfo.type.indexOf(13) !== -1"
             label="织造分配"

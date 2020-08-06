@@ -394,13 +394,15 @@ const settle = {
   create: (params) => http.post(`${baseUrl}/financial/settle/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/settle/check`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/financial/settle/list`, params),
-  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params)
+  changeLog: (params) => http.get(`${baseUrl}/user/operate/logs`, params),
+  deleteLog: (params) => http.post(`${baseUrl}/financial/settle/delete`, params)
 }
 // 订单扣款
 const chargebacks = {
   create: (params) => http.post(`${baseUrl}/financial/deduct/save`, params, 'application/json'),
   check: (params) => http.post(`${baseUrl}/financial/deduct/check`, params, 'application/json'),
-  log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params)
+  log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params),
+  deleteLog: (params) => http.post(`${baseUrl}/financial/deduct/delete`, params)
 }
 // 打印设置
 const print = {

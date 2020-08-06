@@ -357,8 +357,12 @@ const routes = [
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
       path: '/financialStatistics/logStatistics/:params',
-      name: '操作记录统计',
+      name: '生产记录统计',
       component: () => import('../views/financialStatistics/logStatistics.vue')
+    }, {
+      path: '/financialStatistics/settleChargebacks/:params',
+      name: '结算扣款统计',
+      component: () => import('../views/financialStatistics/settleChargebacks.vue')
     }, {
       path: '/tutorialSystem/tutorialSystemDetail/:id',
       name: '系统教程详情',
@@ -620,7 +624,8 @@ router.beforeEach((to, from, next) => {
     '日常工资结算表': ['织为云', '员工列表', '日常工资结算表'],
     '修改员工': ['织为云', '员工列表', '修改员工'],
     '合计工资结算单': ['织为云', '合计工资结算单'],
-    '操作记录统计': ['织为云', '操作记录统计'],
+    '生产记录统计': ['织为云', '生产记录统计'],
+    '结算扣款统计': ['织为云', '结算扣款统计'],
     '数据可视化': ['织为云', '数据可视化'],
     '添加报销单': ['织为云', '添加报销单'],
     '报销单详情': ['织为云', '报销单列表', '报销单详情'],

@@ -154,7 +154,7 @@
                 <div class="colCtn flex3">
                   <span class="label"
                     v-if="indexM === 0">
-                    <span class="text">{{$route.params.type === '1' ? 'kg' : '个'}}料名称</span>
+                    <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
                   </span>
                   <span class="content">
                     <el-select v-model="itemM.material_name"
@@ -176,7 +176,7 @@
                     <div class="colCtn">
                       <span class="label"
                         v-if="indexM === 0">
-                        <span class="text">{{$route.params.type === '1' ? 'kg' : '个'}}料颜色</span>
+                        <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
                       </span>
                       <span class="content">
                         <el-select v-model="itemM.attr_name"

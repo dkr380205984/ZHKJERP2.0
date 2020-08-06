@@ -983,7 +983,7 @@ export default {
           }, 0))
         })
         // 初始化扣款单位数据
-        this.clientArr = this.$unique(res[2].data.data.filter(itemF => itemF.client_name && itemF.type === Number(this.type)).map(itemM => {
+        this.clientArr = this.$unique(res[2].data.data.filter(itemF => itemF.client_name && itemF.material_type === Number(this.type)).map(itemM => {
           return {
             client_name: itemM.client_name,
             client_id: itemM.client_id,

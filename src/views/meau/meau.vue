@@ -100,18 +100,12 @@ export default {
           }
         ],
         other: [
-          {
-            name: '财务管理',
-            id: 16,
-            path: '/financialStatistics/orderStatistics/page=1&&client_id=&&date=',
-            icon: 'icon-wuliaodinggou'
-          },
-          {
-            name: '预订购列表',
-            id: 5,
-            path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
-            icon: 'icon-wuliaodinggou'
-          },
+          // {
+          //   name: '预订购列表',
+          //   id: 5,
+          //   path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
+          //   icon: 'icon-wuliaodinggou'
+          // },
           {
             name: '报销单管理',
             id: 18,
