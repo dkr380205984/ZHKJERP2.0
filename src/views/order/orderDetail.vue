@@ -218,7 +218,8 @@
               <div class="line">
                 <span class="line_item">批次备注：{{itemBatch.remark || '暂无备注信息'}}</span>
               </div>
-              <div class="line">
+              <div class="line"
+                style="flex-direction:column">
                 <div class="flexTb noMargin"
                   v-for="(itemInner,indexInner) in itemBatch.product_info"
                   :key="indexInner">
@@ -295,7 +296,62 @@
         </div>
       </template>
     </div>
-    <div class="module">
+    <!-- <div class="module">
+      <div class="titleCtn">
+        <span class="title hasBorder">流程详情页面</span>
+      </div>
+    </div> -->
+    <div class="listCutCtn">
+      <div class="cut_item"
+        @click="$router.push(`/material/materialDetail/${$route.params.id}/1/1/normal`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaodinggou"></use>
+        </svg>
+        <span class="name">物料采购</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push(`/materialStock/materialGoStockDetail/${$route.params.id}/1/1`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaochuruku"></use>
+        </svg>
+        <span class="name">物料出入库</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push(`/process/processCommon/${$route.params.id}/1/1`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-zhizaojiagong"></use>
+        </svg>
+        <span class="name">织片详情</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push(`/process/processCommon/${$route.params.id}/1/2`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-gongxufenpei"></use>
+        </svg>
+        <span class="name">套口详情</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push(`/process/processCommon/${$route.params.id}/1/3`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-gongxuguanli"></use>
+        </svg>
+        <span class="name">其他工序</span>
+      </div>
+      <div class="cut_item"
+        @click="$router.push(`/packPlan/packPlanCreate/${$route.params.id}`)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-zhuangxiangchuku"></use>
+        </svg>
+        <span class="name">装箱详情</span>
+      </div>
+    </div>
+    <!-- <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">流程进度</span>
       </div>
@@ -309,11 +365,6 @@
             :endTime='warnData.endTime'
             style="width:100%"></zh-time-process>
         </div>
-        <!-- <div class="rowCtn"
-          v-if="warnData.isOpenWarn">
-          <div style="height:1px;background:#E9E9E9;width:100%;margin:25px 0"></div>
-        </div> -->
-        <!-- 暂时隐藏 -->
         <div class="processCtn">
           <div class="processOnce showAll"
             v-for="(item,index) in productProgInfo"
@@ -335,9 +386,6 @@
                 <div class="text">{{itemChild.name}}</div>
                 <div class="rate">({{itemChild.prog}}%)</div>
               </div>
-              <!-- <div class="opr"
-                v-if="index===0"
-                @click="orderDetailInfo.material.length>0?(showFlag2.showMaterial=!showFlag2.showMaterial):getMaterialDetail()">{{showFlag2.showMaterial?'收起列表':'展开详情'}}</div> -->
               <div class="opr"
                 @click="useCallback(item)">{{item.show?'收起列表':'展开详情'}}</div>
             </div>
@@ -451,9 +499,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="module"
-      v-if="false">
+    </div> -->
+    <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
       </div>
@@ -475,7 +522,7 @@
           <div class="tbody">
             <span class="trow"
               style="flex-wrap: wrap;"
-              v-for="(item,index) in orderDetailInfo.finance.finance"
+              v-for="(item,index) in orderFinanceDetail"
               :key="index">
               <span class="tcolumn">{{item.name}}</span>
               <span class="tcolumn noPad flex30">
@@ -483,7 +530,7 @@
                   v-for="(itemPrice,indexPrice) in item.price_info"
                   :key="indexPrice">
                   <span class="tcolumn"
-                    :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.name}}{{itemPrice.number ? itemPrice.number + item.unit : ''}}</span>
+                    :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.number ? itemPrice.number + item.unit : ''}}</span>
                   <span class="tcolumn green"
                     :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? itemPrice.total_price + (item.priceUnit ? item.priceUnit : '元') : ''}}</span>
                   <span class="tcolumn"
@@ -492,61 +539,15 @@
               </span>
               <span class="tcolumn"
                 style="border-right:0">
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="index===0">暂无操作</div>
                 <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.yarnOrder.length>0?showFlag.showYarnOrder = !showFlag.showYarnOrder : activeFinanceTitle = 'yarnOrder'"
-                  v-if="item.price_info.length>1 && (item.price_info[0].number || item.price_info[1].number) && index===1">{{showFlag.showYarnOrder?'收起列表':'展开详情'}}</div>
+                  v-if="(item.hasDetail && (item.price_info.length > 0) && (item.price_info[0].number)) || (item.hasDetail === 'deduct' && (item.price_info.length > 0) && (item.price_info[0].total_price))"
+                  @click="useCallback(item)">{{item.showDetail ? '收起列表' : '展开详情'}}</div>
                 <div style="color:#ccc;cursor:not-allowed"
-                  v-if="item.price_info.length>1 && !item.price_info[0].number && !item.price_info[1].number&& index===1">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.yarnProcess.length>0?showFlag.showYarnProcess = !showFlag.showYarnProcess : activeFinanceTitle = 'yarnProcess'"
-                  v-if="item.price_info[0].number  && index===2">{{showFlag.showYarnProcess?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===2">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.materialOrder.length>0?showFlag.showMaterialOrder = !showFlag.showMaterialOrder : activeFinanceTitle = 'materialOrder'"
-                  v-if="item.price_info[0].number && index===3">{{showFlag.showMaterialOrder?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===3">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.materialProcess.length>0?showFlag.showMaterialProcess = !showFlag.showMaterialProcess : activeFinanceTitle = 'materialProcess'"
-                  v-if="item.price_info[0].number && index===4">{{showFlag.showMaterialProcess?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===4">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.weave.length>0?showFlag.showWeave = !showFlag.showWeave : activeFinanceTitle = 'weave'"
-                  v-if="item.price_info[0].number && index===5">{{showFlag.showWeave?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===5">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.process.length>0?showFlag.showProcess = !showFlag.showProcess : activeFinanceTitle = 'process'"
-                  v-if="item.price_info[0].number && index===6">{{showFlag.showProcess?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===6">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.packOrder.length>0?showFlag.showPackOrder = !showFlag.showPackOrder : activeFinanceTitle = 'packOrder'"
-                  v-if="item.price_info[0].number && index===7">{{showFlag.showPackOrder?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===7">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.outStock.length>0?showFlag.showOutStock = !showFlag.showOutStock : activeFinanceTitle = 'outStock'"
-                  v-if="item.price_info[0].number && index===8">{{showFlag.showOutStock?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===8">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.replenish.length>0?showFlag.showReplenish = !showFlag.showReplenish : activeFinanceTitle = 'replenish'"
-                  v-if="item.price_info[0].number && index===9">{{showFlag.showReplenish?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].number && index===9">暂无数据</div>
-                <div style="color:#1a95ff;cursor:pointer"
-                  @click="orderDetailInfo.finance.deductPrice.length>0?showFlag.showDeductPrice = !showFlag.showDeductPrice : activeFinanceTitle = 'deductPrice'"
-                  v-if="item.price_info[0].total_price && index===10">{{showFlag.showDeductPrice?'收起列表':'展开详情'}}</div>
-                <div style="color:#ccc;cursor:not-allowed"
-                  v-if="!item.price_info[0].total_price && index===10">暂无数据</div>
+                  v-else>暂无操作</div>
               </span>
-              <div class="hideTbCtn">
-                <template v-if="index===1 && showFlag.showYarnOrder">
+              <div class="hideTbCtn"
+                v-if="item.showDetail">
+                <template v-if="item.hasDetail === 'material'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -554,10 +555,14 @@
                         <span class="tcolumn flex5 noPad">
                           <span class="trow">
                             <span class="tcolumn">原料名称</span>
-                            <span class="tcolumn">颜色</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">完成时间</span>
+                            <span class="tcolumn flex4 noPad">
+                              <span class="trow">
+                                <span class="tcolumn">颜色</span>
+                                <span class="tcolumn">单价</span>
+                                <span class="tcolumn">采购数量</span>
+                                <span class="tcolumn">入库数量</span>
+                              </span>
+                            </span>
                           </span>
                         </span>
                         <span class="tcolumn">总价</span>
@@ -565,21 +570,24 @@
                     </div>
                     <div class="tbody">
                       <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
+                        v-for="(item,index) in item.detailInfo"
                         :key="index">
-                        <span class="tcolumn">
-                          <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
-                          {{item.client_name || item.stock_name}}
-                        </span>
+                        <span class="tcolumn"> {{item.client_name}} </span>
                         <span class="tcolumn noPad flex5">
                           <span class="trow"
                             v-for="(itemMa,indexMa) in item.material_info"
                             :key="indexMa">
                             <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.color}}</span>
-                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                            <span class="tcolumn noPad flex4">
+                              <span class="trow"
+                                v-for="(itemAttr,indexAttr) in itemMa.attr_info"
+                                :key="indexAttr">
+                                <span class="tcolumn">{{itemAttr.attr}}</span>
+                                <span class="tcolumn green">{{itemAttr.price ? itemAttr.price + '元' : '/'}}</span>
+                                <span class="tcolumn green">{{itemAttr.order_number ? itemAttr.order_number + itemAttr.unit : '/'}}</span>
+                                <span class="tcolumn green">{{itemAttr.push_weight ? itemAttr.push_weight + itemAttr.unit : '/'}}</span>
+                              </span>
+                            </span>
                           </span>
                         </span>
                         <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
@@ -587,125 +595,7 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="index===2 && showFlag.showYarnProcess">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">加工单位</span>
-                        <span class="tcolumn flex6 noPad">
-                          <span class="trow">
-                            <span class="tcolumn">原料名称</span>
-                            <span class="tcolumn">颜色</span>
-                            <span class="tcolumn">工序</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">完成时间</span>
-                          </span>
-                        </span>
-                        <span class="tcolumn">总价</span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.yarnProcess"
-                        :key="index">
-                        <span class="tcolumn">{{item.client_name}}</span>
-                        <span class="tcolumn noPad flex6">
-                          <span class="trow"
-                            v-for="(itemMa,indexMa) in item.material_info"
-                            :key="indexMa">
-                            <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.color}}</span>
-                            <span class="tcolumn">{{itemMa.process_type}}</span>
-                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                          </span>
-                        </span>
-                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                      </span>
-                    </div>
-                  </div>
-                </template>
-                <template v-if="index===3 && showFlag.showMaterialOrder">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">订购公司</span>
-                        <span class="tcolumn flex5 noPad">
-                          <span class="trow">
-                            <span class="tcolumn">原料名称</span>
-                            <span class="tcolumn">颜色</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">完成时间</span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.materialOrder"
-                        :key="index">
-                        <span class="tcolumn">
-                          {{item.client_name || item.stock_name}}
-                        </span>
-                        <span class="tcolumn noPad flex5">
-                          <span class="trow"
-                            v-for="(itemMa,indexMa) in item.childrenMergeInfo"
-                            :key="indexMa">
-                            <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.material_color}}</span>
-                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.total_weight ? itemMa.total_weight + 'kg' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.complete_time}}</span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </template>
-                <template v-if="index===4 && showFlag.showMaterialProcess">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">加工单位</span>
-                        <span class="tcolumn flex6 noPad">
-                          <span class="trow">
-                            <span class="tcolumn">原料名称</span>
-                            <span class="tcolumn">颜色</span>
-                            <span class="tcolumn">工序</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">完成时间</span>
-                          </span>
-                        </span>
-                        <span class="tcolumn">总价</span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.materialProcess"
-                        :key="index">
-                        <span class="tcolumn">{{item.client_name}}</span>
-                        <span class="tcolumn noPad flex6">
-                          <span class="trow"
-                            v-for="(itemMa,indexMa) in item.material_info"
-                            :key="indexMa">
-                            <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.color}}</span>
-                            <span class="tcolumn">{{itemMa.process_type}}</span>
-                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
-                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                          </span>
-                        </span>
-                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                      </span>
-                    </div>
-                  </div>
-                </template>
-                <template v-if="index===5 && showFlag.showWeave">
+                <template v-if="item.hasDetail === 'production'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -713,77 +603,46 @@
                         <span class="tcolumn flex6 noPad">
                           <span class="trow">
                             <span class="tcolumn">产品信息</span>
-                            <span class="tcolumn">尺码颜色</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">总价</span>
-                            <span class="tcolumn">完成时间</span>
+                            <span class="tcolumn noPad flex5">
+                              <span class="trow">
+                                <span class="tcolumn">尺码颜色</span>
+                                <span class="tcolumn">单价</span>
+                                <span class="tcolumn">数量</span>
+                                <span class="tcolumn">总价</span>
+                              </span>
+                            </span>
                           </span>
                         </span>
                       </span>
                     </div>
                     <div class="tbody">
                       <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.weave"
+                        v-for="(item,index) in item.detailInfo"
                         :key="index">
                         <span class="tcolumn">{{item.client_name}}</span>
                         <span class="tcolumn noPad flex6">
                           <span class="trow"
                             v-for="(itemPro,indexPro) in item.product_info"
                             :key="indexPro">
-                            <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                            <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                            <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
-                            <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
-                            <span class="tcolumn">{{itemPro.compiled_time}}</span>
+                            <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro.product_type}}</span>
+                            <span class="tcolumn flex5 noPad">
+                              <span class="trow"
+                                v-for="(itemSC,indexSC) in itemPro.size_color_info"
+                                :key="indexSC">
+                                <span class="tcolumn">{{itemSC.size_name + '/' + itemSC.color_name}}</span>
+                                <span class="tcolumn green">{{itemSC.price ? itemSC.price + '元' : '/'}}</span>
+                                <span class="tcolumn green">{{itemSC.number ? itemSC.number + (itemSC.unit || '条') : '/'}}</span>
+                                <span class="tcolumn green">{{itemSC.total_price ? $toFixed(itemSC.total_price) + '元' : '/'}}</span>
+
+                              </span>
+                            </span>
                           </span>
                         </span>
                       </span>
                     </div>
                   </div>
                 </template>
-                <template v-if="index===6 && showFlag.showProcess">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">加工单位</span>
-                        <span class="tcolumn flex7 noPad">
-                          <span class="trow">
-                            <span class="tcolumn">产品信息</span>
-                            <span class="tcolumn">尺码颜色</span>
-                            <span class="tcolumn">工序</span>
-                            <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
-                            <span class="tcolumn">总价</span>
-                            <span class="tcolumn">完成时间</span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.process"
-                        :key="index">
-                        <span class="tcolumn">{{item.client_name}}</span>
-                        <span class="tcolumn noPad flex7">
-                          <span class="trow"
-                            v-for="(itemPro,indexPro) in item.product_info"
-                            :key="indexPro">
-                            <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                            <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                            <span class="tcolumn">{{itemPro.process_type}}</span>
-                            <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
-                            <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
-                            <span class="tcolumn">{{itemPro.compiled_time}}</span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </template>
-                <template v-if="index===7 && showFlag.showPackOrder">
+                <template v-if="item.hasDetail === 'pack'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -801,7 +660,7 @@
                     </div>
                     <div class="tbody">
                       <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.packOrder"
+                        v-for="(item,index) in item.detailInfo"
                         :key="index">
                         <span class="tcolumn">{{item.client_name}}</span>
                         <span class="tcolumn noPad flex5">
@@ -819,43 +678,31 @@
                     </div>
                   </div>
                 </template>
-                <template v-if="index===8 && showFlag.showOutStock">
+                <template v-if="item.hasDetail === 'deduct'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
-                        <span class="tcolumn">运输单位</span>
-                        <span class="tcolumn noPad flex5">
-                          <span class="trow">
-                            <span class="tcolumn">运输箱数(箱)</span>
-                            <span class="tcolumn">出库立方数(m³)</span>
-                            <span class="tcolumn">单价(元/m³)</span>
-                            <span class="tcolumn">总价(元)</span>
-                            <span class="tcolumn">完成时间</span>
-                          </span>
-                        </span>
+                        <span class="tcolumn"
+                          style="flex:1.8">扣款单位</span>
+                        <span class="tcolumn">扣款金额</span>
+                        <span class="tcolumn"
+                          style="flex:1.8">扣款原因</span>
                       </span>
                     </div>
                     <div class="tbody">
                       <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.outStock"
-                        :key="index">
-                        <span class="tcolumn">{{item.client_name}}</span>
-                        <span class="tcolumn noPad flex5">
-                          <span class="trow"
-                            v-for="(itemOut,indexOut) in item.out_info"
-                            :key='indexOut'>
-                            <span class="tcolumn">{{itemOut.number}}</span>
-                            <span class="tcolumn green">{{itemOut.cube_number}}</span>
-                            <span class="tcolumn green">{{itemOut.price}}</span>
-                            <span class="tcolumn green">{{itemOut.total_price}}</span>
-                            <span class="tcolumn">{{itemOut.compiled_time}}</span>
-                          </span>
-                        </span>
+                        v-for="(itemD,indexD) in item.detailInfo"
+                        :key="indexD">
+                        <span class="tcolumn"
+                          style="flex:1.8">{{itemD.client_name}}</span>
+                        <span class="tcolumn">{{itemD.deduct_price}}元</span>
+                        <span class="tcolumn"
+                          style="flex:1.8">{{itemD.desc || '/'}}</span>
                       </span>
                     </div>
                   </div>
                 </template>
-                <template v-if="index===9 && showFlag.showReplenish">
+                <!-- <template v-if="item.hasDetail === 'replenish'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -891,8 +738,8 @@
                       </span>
                     </div>
                   </div>
-                </template>
-                <template v-if="index===10 && showFlag.showDeductPrice">
+                </template> -->
+                <!-- <template v-if="item.hasDetail === 'deduct'">
                   <div class="flexTb">
                     <div class="thead">
                       <span class="trow">
@@ -911,7 +758,7 @@
                       </span>
                     </div>
                   </div>
-                </template>
+                </template> -->
               </div>
             </span>
           </div>
@@ -1202,7 +1049,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialStock, weave, processing, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, replenish, chargebacks } from '@/assets/js/api.js'
+import { order, weave, packPlan, finance, materialManage, yarn, material, packag, stock, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1218,63 +1065,6 @@ export default {
       productList: [],
       timeProgressInfo: [],
       productProgInfo: [],
-      orderDetailInfo: {
-        'material': [],
-        'production': [],
-        'inspection': [],
-        'outStock': [],
-        'finance': {
-          title: [
-            {
-              name: '财务总览',
-              key: 'finance'
-            }, {
-              name: '原料采购',
-              key: 'yarnOrder'
-            }, {
-              name: '原料加工',
-              key: 'yarnProcess'
-            }, {
-              name: '辅料订购',
-              key: 'materialOrder'
-            }, {
-              name: '辅料加工',
-              key: 'materialProcess'
-            }, {
-              name: '生产织造',
-              key: 'weave'
-            }, {
-              name: '半成品加工',
-              key: 'process'
-            }, {
-              name: '包装辅料订购',
-              key: 'packOrder'
-            }, {
-              name: '出库运输',
-              key: 'outStock'
-            }, {
-              name: '补纱信息',
-              key: 'replenish'
-            }, {
-              name: '扣款信息',
-              key: 'deductPrice'
-            }
-          ],
-          finance: [],
-          yarnOrder: [],
-          yarnProcess: [],
-          materialOrder: [],
-          materialProcess: [],
-          weave: [],
-          process: [],
-          packOrder: [],
-          outStock: [],
-          replenish: [],
-          deductPrice: []
-        }
-      },
-      activeDetailTitle: '',
-      activeFinanceTitle: '',
       product_order_total_number: '',
       showCanclePopup: false,
       cancleYarn: [],
@@ -1291,41 +1081,28 @@ export default {
       packStockId: '',
       productStockId: '',
       unitArr: moneyArr,
-      // 预警数据
-      timeData: [{ percent: 0.25, name: '织造' }, { percent: 0.15, name: '织造' }, { percent: 0.6, name: '织造' }],
-      isOpenWarn: false,
-      warnType: '',
-      warnData: {
-        isOpenWarn: false,
-        startTime: this.$getTime(),
-        endTime: this.$getTime(),
-        warnArr: []
-      },
-      showFlag: {
-        showYarnOrder: false,
-        showYarnProcess: false,
-        showMaterialOrder: false,
-        showMaterialProcess: false,
-        showWeave: false,
-        showProcess: false,
-        showPackOrder: false,
-        showOutStock: false,
-        showReplenish: false,
-        showDeductPrice: false
-      }
-      // 批次完成状态
-      // showCompletePopup: false
+      // 财务详情数据
+      orderFinanceDetail: []
     }
   },
   methods: {
     //
     useCallback (item) {
-      if ((this.orderDetailInfo[item.key] && this.orderDetailInfo[item.key].length > 0) || item.show) {
-        item.show = !item.show
+      console.log(item)
+      // if ((this.orderDetailInfo[item.key] && this.orderDetailInfo[item.key].length > 0) || item.show) {
+      //   item.show = !item.show
+      // } else {
+      //   this[item.callback](item, (e = [], key = item.key, showFlag = true) => {
+      //     this.orderDetailInfo[key] = e
+      //     showFlag && (item.show = !item.show)
+      //   })
+      // }
+      if ((item.detailInfo && item.detailInfo.length > 0) || item.showDetail) {
+        item.showDetail = !item.showDetail
       } else {
         this[item.callback](item, (e = [], key = item.key, showFlag = true) => {
-          this.orderDetailInfo[key] = e
-          showFlag && (item.show = !item.show)
+          item.detailInfo = e
+          item.showDetail = !item.showDetail
         })
       }
     },
@@ -1520,409 +1297,10 @@ export default {
           time: nowDate,
           prog: prog
         })
-        // 处理流程进度
+        // 处理是否有权限查看价格
         let orderData = res[0].data.data
-        this.productProgInfo.push(
-          {
-            name: '物料进度',
-            isCompiled: orderData.material_push_progress.r_push > 100 && orderData.material_order_progress.y_percent > 100,
-            info: [
-              {
-                name: '入库',
-                prog: orderData.material_push_progress.r_push > 100 ? 100 : orderData.material_push_progress.r_push,
-                class: 'greenProg'
-              }, {
-                name: '订购',
-                prog: orderData.material_order_progress.y_percent > 100 ? 100 : orderData.material_order_progress.y_percent,
-                class: 'blueProg'
-              }
-            ],
-            key: 'material',
-            show: false,
-            callback: 'getMaterialDetail'
-          },
-          {
-            name: '织片进度',
-            isCompiled: false,
-            info: [
-              {
-                name: '进度',
-                prog: 100,
-                class: 'blueProg'
-              }
-            ],
-            key: '织片',
-            show: false,
-            callback: 'getProductionDetail'
-          },
-          {
-            name: '套口进度',
-            isCompiled: false,
-            info: [
-              {
-                name: '进度',
-                prog: 100,
-                class: 'blueProg'
-              }
-            ],
-            key: '套口',
-            show: false,
-            callback: 'getProductionDetail'
-          }
-          // {
-          //   name: '织造进度',
-          //   isCompiled: orderData.product_weave_progress.product > 100,
-          //   info: [
-          //     {
-          //       name: '分配',
-          //       prog: orderData.product_weave_progress.product > 100 ? 100 : orderData.product_weave_progress.product,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // },
-          // {
-          //   name: '收发进度',
-          //   isCompiled: orderData.product_push_progress > 100,
-          //   info: [
-          //     {
-          //       name: '收发',
-          //       prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // },
-          // {
-          //   name: '检验进度',
-          //   isCompiled: orderData.product_inspection_progress.r_product > 100 && orderData.product_inspection_progress.r_semi_product > 100,
-          //   info: [
-          //     {
-          //       name: '成品',
-          //       prog: orderData.product_inspection_progress.r_product > 100 ? 100 : orderData.product_inspection_progress.r_product,
-          //       class: 'greenProg'
-          //     }, {
-          //       name: '半成品',
-          //       prog: orderData.product_inspection_progress.r_semi_product > 100 ? 100 : orderData.product_inspection_progress.r_semi_product,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // },
-          // {
-          //   name: '装箱进度',
-          //   isCompiled: orderData.order_pack_progress > 100,
-          //   info: [
-          //     {
-          //       name: '装箱',
-          //       prog: orderData.order_pack_progress > 100 ? 100 : orderData.order_pack_progress,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // }
-        )
-        this.catDetail('material')
-        if (this.orderInfo.time_progress) {
-          this.warnData = {
-            isOpenWarn: true,
-            startTime: this.orderInfo.time_progress.order_time,
-            endTime: this.orderInfo.time_progress.end_time,
-            warnArr: [
-              {
-                percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_plan / 100),
-                name: '物料计划'
-              }, {
-                percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_push / 100),
-                name: '物料入库'
-              }, {
-                percent: this.$toFixed(this.orderInfo.time_progress.progress_data.semi_product_push / 100),
-                name: '半成品入库'
-              }, {
-                percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_push / 100),
-                name: '成品入库'
-              }, {
-                percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_pack / 100),
-                name: '成品包装'
-              }
-            ]
-          }
-        }
         if (window.sessionStorage.getItem('user_id') === orderData.user_id || +window.sessionStorage.getItem('has_check') > 0) {
           this.canSeePriceFlag = true
-        }
-        this.loading = false
-      })
-    },
-    // 物料概述
-    getMaterialDetail (item, cb) {
-      this.loading = true
-      Promise.all([
-        materialManage.detail({
-          order_type: 1,
-          order_id: this.$route.params.id
-        }),
-        materialStock.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        })
-      ]).then(res => {
-        let data = res[0].data.data.map(itemM => {
-          return {
-            material_name: itemM.material_name,
-            material_color: itemM.color_code,
-            order_weight: itemM.weight,
-            push_weight: 0,
-            out_weight: 0,
-            back_weight: 0,
-            unit: itemM.unit || 'kg'
-          }
-        }).concat(res[1].data.data.filter(itemF => +itemF.type === 2).map(itemM => {
-          return {
-            material_name: itemM.material_name,
-            material_color: itemM.material_color,
-            order_weight: 0,
-            push_weight: itemM.total_weight,
-            out_weight: 0,
-            back_weight: 0,
-            unit: itemM.unit || 'kg'
-          }
-        })).concat(res[1].data.data.filter(itemF => +itemF.type === 1 || +itemF.type === 4).map(itemM => {
-          return {
-            material_name: itemM.material_name,
-            material_color: itemM.material_color,
-            order_weight: 0,
-            push_weight: 0,
-            out_weight: itemM.total_weight,
-            back_weight: 0,
-            unit: itemM.unit || 'kg'
-          }
-        })).concat(res[1].data.data.filter(itemF => +itemF.type === 3).map(itemM => {
-          return {
-            material_name: itemM.material_name,
-            material_color: itemM.material_color,
-            order_weight: 0,
-            push_weight: 0,
-            out_weight: 0,
-            back_weight: itemM.total_weight,
-            unit: itemM.unit || 'kg'
-          }
-        }))
-        let returnData = this.$mergeData(data, {
-          mainRule: 'material_name',
-          childrenName: 'attr_info',
-          childrenRule: {
-            mainRule: 'material_color/attr',
-            otherRule: [
-              { name: 'order_weight/order_number', type: 'add' },
-              { name: 'push_weight/go_stock_number', type: 'add' },
-              { name: 'out_weight/out_stock_number', type: 'add' },
-              { name: 'back_weight/back_stock_number', type: 'add' },
-              { name: 'unit' }
-            ]
-          }
-        })
-        if (returnData.length > 0) {
-        } else {
-          this.$message.error('暂无物料信息')
-        }
-        cb(returnData)
-        this.loading = false
-      })
-    },
-    // 生产概述
-    getProductionDetail (item, cb) {
-      this.loading = true
-      Promise.all([
-        weave.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        }),
-        inspection.semiFinishedDetail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        })
-      ]).then(res => {
-        let data = this.$mergeData(res[0].data.data.map(itemM => {
-          return {
-            process: itemM.process,
-            product_id: itemM.product_id,
-            product_type: [itemM.product_info.category_name, itemM.product_info.type_name, itemM.product_info.style_name].join('/'),
-            image: itemM.product_info.image,
-            product_code: itemM.product_info.product_code,
-            product_title: itemM.product_info.product_title,
-            size_id: itemM.size_id,
-            size_name: itemM.size_name,
-            color_id: itemM.color_id,
-            color_name: itemM.color_name,
-            price: itemM.price,
-            number: itemM.number,
-            motorise_number: itemM.motorise_number,
-            rejects_number: 0
-          }
-        }).concat(res[1].data.data.map(itemM => {
-          return {
-            process: itemM.product_flow,
-            product_id: itemM.product_id,
-            product_type: [itemM.product_info.category_name, itemM.product_info.type_name, itemM.product_info.style_name].join('/'),
-            image: itemM.product_info.image,
-            product_code: itemM.product_info.product_code,
-            product_title: itemM.product_info.product_title,
-            size_id: itemM.size_id,
-            size_name: itemM.size_name,
-            color_id: itemM.color_id,
-            color_name: itemM.color_name,
-            price: null,
-            number: 0,
-            motorise_number: 0,
-            inspection_number: itemM.number,
-            rejects_number: itemM.count
-          }
-        })).sort((a, b) => {
-          let aStr = a.color_name + '/' + a.size_name
-          let bStr = b.color_name + '/' + b.size_name
-          return aStr.localeCompare(bStr)
-        }), {
-          mainRule: 'process',
-          childrenName: 'children_info',
-          childrenRule: {
-            mainRule: 'product_id',
-            otherRule: [
-              { name: 'product_type' },
-              { name: 'image' },
-              { name: 'product_code' },
-              { name: 'product_title' }
-            ],
-            childrenName: 'size_color_info',
-            childrenRule: {
-              mainRule: ['size_id', 'color_id'],
-              otherRule: [
-                { name: 'size_name' },
-                { name: 'color_name' },
-                { name: 'number', type: 'add' },
-                { name: 'motorise_number', type: 'add' },
-                { name: 'inspection_number', type: 'add' },
-                { name: 'rejects_number', type: 'add' }
-              ]
-            }
-          }
-        })
-        if (data.length === 0) {
-          this.$message.error(`暂无${item.key}信息`)
-          cb()
-        }
-        data.forEach(itemF => {
-          if (item.key === itemF.process && itemF.children_info.length <= 0) {
-            this.$message.error(`暂无${item.key}信息`)
-          }
-          cb(itemF.children_info, itemF.process, item.key === itemF.process)
-          // this.orderDetailInfo[itemF.process] = itemF.children_info
-        })
-        this.loading = false
-      })
-    },
-    // 检验概述
-    getInspectionDetail () {
-      this.loading = true
-      Promise.all([
-        inspection.semiFinishedDetail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        }),
-        inspection.finishedDetail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        })
-      ]).then(res => {
-        let inspectionDetail = res[0].data.data.map(item => {
-          return {
-            product_id: item.product_id,
-            size: item.size_name,
-            color: item.color_name,
-            semi_number: item.number,
-            semi_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
-          }
-        }).concat(res[1].data.data.map(item => {
-          return {
-            product_id: item.product_id,
-            size: item.size_name,
-            color: item.color_name,
-            finished_number: item.number,
-            finished_rejects_number: JSON.parse(item.rejects_info).map(value => value.number).length > 0 ? JSON.parse(item.rejects_info).map(value => Number(value.number)).reduce((a, b) => a + b) : 0
-          }
-        }))
-        this.orderDetailInfo.inspection = this.$mergeData(inspectionDetail, { mainRule: 'product_id', childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'semi_number', type: 'add' }, { name: 'semi_rejects_number', type: 'add' }, { name: 'finished_number', type: 'add' }, { name: 'finished_rejects_number', type: 'add' }] } }).map(item => {
-          let proFlag = this.productList.find(itemPro => Number(itemPro.product_id) === Number(item.product_id))
-          return {
-            product_id: item.product_id,
-            product_code: proFlag ? proFlag.product_code : '',
-            type: proFlag ? [proFlag.category_info.category_name, proFlag.category_info.type_name, proFlag.category_info.style_name] : [],
-            unit: proFlag ? proFlag.category_info.unit : '件',
-            color_info: item.color_info.map(itemColor => {
-              return {
-                size: itemColor.size,
-                color: itemColor.color,
-                semi_number: itemColor.semi_number,
-                semi_rejects_number: itemColor.semi_rejects_number,
-                finished_number: itemColor.finished_number,
-                finished_rejects_number: itemColor.finished_rejects_number
-              }
-            })
-          }
-        })
-        this.showFlag2.showIns = true
-        if (this.orderDetailInfo.inspection.length > 0) {
-        } else {
-          this.$message.error('暂无检验信息')
-        }
-        this.loading = false
-      })
-    },
-    // 出库概述
-    getOutStockDetail () {
-      this.loading = true
-      packPlan.packActualLog({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          let orderProductInfo = []
-          this.orderInfo.batch_info.forEach(itemBatch => {
-            orderProductInfo.push(...itemBatch.product_info.map(itemPro => {
-              return {
-                product_id: itemPro.product_id,
-                color: itemPro.color_name,
-                size: itemPro.size_name,
-                order_number: itemPro.numbers
-              }
-            }))
-          })
-          let outStockDetail = res.data.data.map(item => {
-            return {
-              product_id: item.product_id,
-              size: item.size_name,
-              color: item.color_name,
-              number: item.number
-            }
-          })
-          this.orderDetailInfo.outStock = this.$mergeData(orderProductInfo.concat(outStockDetail), { mainRule: 'product_id', childrenName: 'color_info', childrenRule: { mainRule: ['size', 'color'], otherRule: [{ name: 'number', type: 'add' }, { name: 'order_number', type: 'add' }] } }).map(item => {
-            let proFlag = this.productList.find(itemPro => Number(itemPro.product_id) === Number(item.product_id))
-            return {
-              product_id: item.product_id,
-              product_code: proFlag ? proFlag.product_code : '',
-              type: proFlag ? [proFlag.category_info.category_name, proFlag.category_info.type_name, proFlag.category_info.style_name] : [],
-              unit: proFlag ? proFlag.category_info.unit : '件',
-              color_info: item.color_info.map(itemColor => {
-                return {
-                  size: itemColor.size,
-                  color: itemColor.color,
-                  number: itemColor.number,
-                  order_number: itemColor.order_number
-                }
-              })
-            }
-          })
-        }
-        this.showFlag2.showOut = true
-        if (this.orderDetailInfo.outStock.length > 0) {
-        } else {
-          this.$message.error('暂无检验信息')
         }
         this.loading = false
       })
@@ -1935,7 +1313,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let data = res.data.data
-          this.orderDetailInfo.finance.finance = [
+          this.orderFinanceDetail = [
             {
               name: '订单产值',
               unit: '件',
@@ -1943,35 +1321,28 @@ export default {
                 number: data.order.total_number,
                 total_price: data.order.order_total_value,
                 pre_price: data.order.order_pre_value
-              }]
+              }],
+              showDetail: false,
+              hasDetail: null,
+              detailInfo: []
             },
             {
               name: '原料入库信息',
               unit: 'kg',
               price_info: [
                 {
-                  name: '调取',
-                  number: data.material_order.stock_number,
-                  total_price: 0,
-                  pre_price: 0
-                },
-                {
                   name: '入库',
                   number: data.material_order.order_number.number,
                   total_price: data.material_order.order_number.total_value,
                   pre_price: data.material_order.order_number.pre_value
                 }
-              ]
+              ],
+              showDetail: false,
+              hasDetail: 'material',
+              callback: 'getMaterialOrderDetail',
+              type: 1,
+              detailInfo: []
             },
-            // {
-            //   name: '原料加工',
-            //   unit: 'kg',
-            //   price_info: [{
-            //     number: data.material_process.number,
-            //     total_price: data.material_process.total_value,
-            //     pre_price: data.material_process.pre_value
-            //   }]
-            // },
             {
               name: '辅料入库信息',
               unit: '件',
@@ -1979,35 +1350,40 @@ export default {
                 number: data.assist_material_order.number,
                 total_price: data.assist_material_order.total_value,
                 pre_price: data.assist_material_order.pre_value
-              }]
+              }],
+              showDetail: false,
+              hasDetail: 'material',
+              callback: 'getMaterialOrderDetail',
+              type: 2,
+              detailInfo: []
             },
             // {
-            //   name: '辅料加工',
+            //   name: '工序管理',
             //   unit: '件',
             //   price_info: [{
-            //     number: data.assist_material_process.number,
-            //     total_price: data.assist_material_process.total_value,
-            //     pre_price: data.assist_material_process.pre_value
+            //     number: data.product_weave.number,
+            //     total_price: data.product_weave.total_value,
+            //     pre_price: data.product_weave.pre_value
             //   }]
             // },
-            {
-              name: '工序管理',
-              unit: '件',
-              price_info: [{
-                number: data.product_weave.number,
-                total_price: data.product_weave.total_value,
-                pre_price: data.product_weave.pre_value
-              }]
-            },
-            // {
-            //   name: '半成品加工',
-            //   unit: '件',
-            //   price_info: [{
-            //     number: data.semi_product.number,
-            //     total_price: data.semi_product.total_value,
-            //     pre_price: data.semi_product.pre_value
-            //   }]
-            // },
+            ...Object.entries(data.product_weave.detail_data).map(itemM => {
+              return {
+                name: `${itemM[0]}信息`,
+                unit: '件',
+                price_info: [
+                  {
+                    number: itemM[1] && itemM[1].total_number,
+                    total_price: itemM[1] && itemM[1].total_value,
+                    pre_price: itemM[1] && itemM[1].pre_value
+                  }
+                ],
+                showDetail: false,
+                hasDetail: 'production',
+                callback: 'getProductionDetail',
+                type: itemM[0],
+                detailInfo: []
+              }
+            }),
             {
               name: '包装辅料订购',
               unit: '个',
@@ -2015,26 +1391,22 @@ export default {
                 number: data.pack_order.number,
                 total_price: data.pack_order.total_value,
                 pre_price: data.pack_order.pre_value
-              }]
+              }],
+              showDetail: false,
+              hasDetail: 'pack',
+              callback: 'getPackOrderDetail',
+              type: null,
+              detailInfo: []
             },
             // {
-            //   name: '出库运输',
-            //   unit: '次',
+            //   name: '补纱信息',
+            //   unit: 'kg',
             //   price_info: [{
-            //     number: data.stock_out.number,
-            //     total_price: data.stock_out.total_value,
-            //     pre_price: data.stock_out.pre_value
+            //     number: data.yarn_replenish_weight,
+            //     total_price: 0,
+            //     pre_price: 0
             //   }]
             // },
-            {
-              name: '补纱信息',
-              unit: 'kg',
-              price_info: [{
-                number: data.yarn_replenish_weight,
-                total_price: 0,
-                pre_price: 0
-              }]
-            },
             {
               name: '扣款金额',
               unit: '元',
@@ -2042,24 +1414,185 @@ export default {
                 number: 0,
                 total_price: data.deduct_price,
                 pre_price: 0
-              }]
+              }],
+              showDetail: false,
+              hasDetail: 'deduct',
+              callback: 'getChargebacks',
+              type: null,
+              detailInfo: []
             }
           ]
         }
         this.loading = false
       })
     },
-    // 财务概述-原料采购-辅料采购
-    getMaterialOrderDetail () {
+    // 财务概述-物料概述
+    getMaterialOrderDetail (item, cb) {
       this.loading = true
-      materialStock.detail({
+      materialManage.detail({
+        order_type: 1,
+        order_id: this.$route.params.id
+      }).then(res => {
+        let data = res.data.data.filter(itemF => +itemF.material_type === +item.type).map(itemM => {
+          return {
+            client_id: itemM.client_id,
+            client_name: itemM.client_name,
+            material_name: itemM.material_name,
+            material_color: itemM.color_code,
+            order_weight: itemM.weight,
+            push_weight: itemM.push_weight,
+            price: itemM.price,
+            unit: itemM.unit || (+item.type === 1 ? 'kg' : '个')
+          }
+        })
+        let returnData = this.$mergeData(data, {
+          mainRule: 'client_id',
+          otherRule: [
+            { name: 'client_name' }
+          ],
+          childrenName: 'material_info',
+          childrenRule: {
+            mainRule: 'material_name',
+            childrenName: 'attr_info',
+            childrenRule: {
+              mainRule: ['material_color/attr', 'price'],
+              otherRule: [
+                { name: 'order_weight/order_number', type: 'add' },
+                { name: 'push_weight', type: 'add' },
+                { name: 'unit' }
+              ]
+            }
+          }
+        })
+        returnData.forEach(itemC => {
+          itemC.total_price = this.$toFixed(itemC.material_info.map(itemM => {
+            return itemM.attr_info.map(itemA => ((itemA.price * itemA.push_weight) || 0)).reduce((a, b) => {
+              return a + b
+            }, 0)
+          }).reduce((a, b) => {
+            return a + b
+          }, 0))
+        })
+        if (returnData.length > 0) {
+        } else {
+          this.$message.error('暂无物料信息')
+        }
+        cb(returnData)
+        this.loading = false
+      })
+    },
+    // 财务概述-生产概述
+    getProductionDetail (item, cb) {
+      this.loading = true
+      Promise.all([
+        weave.detail({
+          order_id: this.$route.params.id,
+          order_type: 1
+        })
+      ]).then(res => {
+        let data = this.$mergeData(res[0].data.data.filter(itemF => itemF.process === item.type).map(itemM => {
+          return {
+            client_id: itemM.client_id,
+            client_name: itemM.client_name,
+            product_id: itemM.product_id,
+            product_type: [itemM.product_info.category_name, itemM.product_info.type_name, itemM.product_info.style_name].join('/'),
+            image: itemM.product_info.image,
+            product_code: itemM.product_info.product_code,
+            product_title: itemM.product_info.product_title,
+            size_id: itemM.size_id,
+            size_name: itemM.size_name,
+            color_id: itemM.color_id,
+            color_name: itemM.color_name,
+            price: itemM.price,
+            number: itemM.number,
+            total_price: itemM.price * itemM.number,
+            motorise_number: itemM.motorise_number,
+            rejects_number: 0
+          }
+        }).sort((a, b) => {
+          let aStr = a.color_name + '/' + a.size_name
+          let bStr = b.color_name + '/' + b.size_name
+          return aStr.localeCompare(bStr)
+        }), {
+          mainRule: 'client_id',
+          otherRule: [
+            { name: 'client_name' }
+          ],
+          childrenName: 'product_info',
+          childrenRule: {
+            mainRule: 'product_id',
+            otherRule: [
+              { name: 'product_type' },
+              { name: 'image' },
+              { name: 'product_code' },
+              { name: 'product_title' }
+            ],
+            childrenName: 'size_color_info',
+            childrenRule: {
+              mainRule: ['size_id', 'color_id', 'price'],
+              otherRule: [
+                { name: 'size_name' },
+                { name: 'color_name' },
+                { name: 'number', type: 'add' },
+                { name: 'total_price', type: 'add' },
+                { name: 'motorise_number', type: 'add' }
+              ]
+            }
+          }
+        })
+        if (data.length === 0) {
+          this.$message.error(`暂无${item.key}信息`)
+        }
+        cb(data)
+        this.loading = false
+      })
+    },
+    // 财务概述-包装辅料订购
+    getPackOrderDetail (item, cb) {
+      this.loading = true
+      packPlan.packOrderLog({
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
-        console.log(res.data.data)
         if (res.data.status !== false) {
-          this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 1 && item.type === 3), { mainRule: 'client_name' })
-          this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 2 && item.type === 3), { mainRule: 'client_name' })
+          let returnData = this.$mergeData(res.data.data, {
+            mainRule: 'client_id',
+            otherRule: [
+              { name: 'client_name' }
+            ],
+            childrenName: 'pack_info',
+            childrenRule: {
+              mainRule: ['material_name/pack_name', 'price'],
+              otherRule: [
+                { name: 'number/order_number', type: 'add' },
+                { name: 'total_price', type: 'add' },
+                { name: 'order_time/compiled_time' },
+                { name: 'unit' }
+              ]
+            }
+          })
+          if (returnData.length === 0) {
+            this.$message.error('暂无包装订购信息')
+          }
+          cb(returnData)
+        }
+        this.loading = false
+      })
+    },
+    // 财务概述-扣款金额
+    getChargebacks (item, cb) {
+      this.loading = true
+      chargebacks.log({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          console.log(res)
+          let returnData = res.data.data
+          if (returnData.length === 0) {
+            this.$message.error('暂无扣款信息')
+          }
+          cb(returnData)
         }
         this.loading = false
       })
@@ -2077,146 +1610,9 @@ export default {
         this.loading = false
       })
     },
-    // 财务概述-扣款金额
-    getChargebacks () {
-      this.loading = true
-      chargebacks.log({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          console.log(res)
-          this.orderDetailInfo.finance.deductPrice = res.data.data
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-原料加工-辅料加工
-    getMaterialProcessDetail () {
-      this.loading = true
-      materialProcess.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.orderDetailInfo.finance.yarnProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
-            return {
-              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
-              ...item
-            }
-          })
-          this.orderDetailInfo.finance.materialProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
-            return {
-              total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
-              ...item
-            }
-          })
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-生产织造
-    getWeaveDetail () {
-      this.loading = true
-      weave.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          let data = res.data.data.map(item => {
-            return {
-              ...item.product_info,
-              ...item.category_info,
-              client_name: item.client_name,
-              number: item.number,
-              size: item.size_name,
-              color: item.color_name,
-              is_part: item.is_part,
-              price: item.price,
-              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
-              compiled_time: this.$getTime(item.complete_time)
-            }
-          })
-          this.orderDetailInfo.finance.weave = this.$mergeData(data, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-半成品加工
-    getProcessDetail () {
-      this.loading = true
-      processing.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.stauts !== false) {
-          let processInfo = res.data.data.map(item => {
-            return {
-              ...item.product_info,
-              ...item.category_info,
-              client_name: item.client_name,
-              price: item.price,
-              number: item.number,
-              total_price: this.$toFixed((Number(item.price) || 0) * (Number(item.number) || 0)),
-              size: item.size_name,
-              color: item.color_name,
-              is_part: item.is_part,
-              process_type: item.type,
-              compiled_time: this.$getTime(item.complete_time)
-            }
-          })
-          this.orderDetailInfo.finance.process = this.$mergeData(processInfo, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'name', 'category_name', 'type_name', 'style_name', 'size', 'color', 'process_type', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'unit' }, { name: 'is_part' }, { name: 'compiled_time' }] } })
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-包装辅料订购
-    getPackOrderDetail () {
-      this.loading = true
-      packPlan.packOrderLog({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.orderDetailInfo.finance.packOrder = this.$mergeData(res.data.data, { mainRule: ['client_name', 'client_id'], childrenName: 'pack_info', childrenRule: { mainRule: ['material_name/pack_name', 'price'], otherRule: [{ name: 'number/order_number', type: 'add' }, { name: 'total_price', type: 'add' }, { name: 'order_time/compiled_time' }, { name: 'unit' }] } })
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-出库运输
-    getOutStockFinanceDetail () {
-      this.loading = true
-      packPlan.packOutLog({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.stauts !== false) {
-          this.orderDetailInfo.finance.outStock = this.$mergeData(res.data.data, { mainRule: 'client_name', childrenName: 'out_info', childrenRule: { mainRule: ['price', 'complete_time/compiled_time'], otherRule: [{ name: 'number', type: 'add' }, { name: 'cubic_number/cube_number', type: 'add' }, { name: 'total_price', type: 'add' }] } })
-        }
-        this.loading = false
-      })
-    },
-    catDetail (type) {
-      this.activeDetailTitle = type
-    },
-    changeFinance (item) {
-      this.activeFinanceTitle = item.key
-    },
     // 修改订单状态
     changeOrderStatus (type) {
-      // if (type === 'beforeOk') {
-      //   this.showCompletePopup = 1
-      // } else
       if (type === 'ok') {
-        // let checkedBatch = this.orderInfo.batch_info.filter(item => item.checked).map(item => item.batch_id)
-        // if (checkedBatch.length === 0) {
-        //   this.$message.warning('请最少勾选一项需要修改状态的批次')
-        //   return
-        // }
-        // return
-        // this.isCommit = 'commit'
         this.$confirm('此操作将永久修改订单状态, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2227,11 +1623,9 @@ export default {
             type: 3
           }).then(res => {
             if (res.data.status !== false) {
-              // this.isCommit = 'compiled'
               this.$message.success('确认完成')
               this.init()
             } else {
-              // this.isCommit = 'error'
             }
           })
         }).catch(() => {
@@ -2626,65 +2020,7 @@ export default {
   },
   created () {
     this.init()
-    this.activeFinanceTitle = 'finance'
-  },
-  watch: {
-    // activeDetailTitle (newVal) {
-    //   if (this.orderDetailInfo[newVal].length === 0) {
-    //     if (newVal === 'material') {
-    //       this.getMaterialDetail()
-    //     } else if (newVal === 'production') {
-    //       this.getProductionDetail()
-    //     } else if (newVal === 'inspection') {
-    //       this.getInspectionDetail()
-    //     } else if (newVal === 'outStock') {
-    //       this.getOutStockDetail()
-    //     } else {
-    //       this.$message.error('未知操作')
-    //     }
-    //   } else if (newVal === 'finance') {
-    //     this.changeFinance({ key: 'finance' })
-    //   }
-    // },
-    activeFinanceTitle (newVal) {
-      if (this.orderDetailInfo.finance[newVal].length === 0) {
-        if (newVal === 'finance') {
-          this.getFinanceDetail()
-        } else if (newVal === 'yarnOrder') {
-          this.getMaterialOrderDetail()
-          this.showFlag.showYarnOrder = true
-        } else if (newVal === 'yarnProcess') {
-          this.getMaterialProcessDetail()
-          this.showFlag.showYarnProcess = true
-        } else if (newVal === 'materialOrder') {
-          this.getMaterialOrderDetail()
-          this.showFlag.showMaterialOrder = true
-        } else if (newVal === 'materialProcess') {
-          this.getMaterialProcessDetail()
-          this.showFlag.showMaterialProcess = true
-        } else if (newVal === 'weave') {
-          this.getWeaveDetail()
-          this.showFlag.showWeave = true
-        } else if (newVal === 'process') {
-          this.getProcessDetail()
-          this.showFlag.showProcess = true
-        } else if (newVal === 'packOrder') {
-          this.getPackOrderDetail()
-          this.showFlag.showPackOrder = true
-        } else if (newVal === 'outStock') {
-          this.getOutStockFinanceDetail()
-          this.showFlag.showOutStock = true
-        } else if (newVal === 'replenish') {
-          this.getReplenish()
-          this.showFlag.showReplenish = true
-        } else if (newVal === 'deductPrice') {
-          this.getChargebacks()
-          this.showFlag.showDeductPrice = true
-        } else {
-          this.$message.error('未知操作')
-        }
-      }
-    }
+    this.getFinanceDetail()
   },
   filters: {
     filterType (item) {
