@@ -50,12 +50,12 @@
         <span class="name">年度财务统计</span>
       </div>
       <div class="cut_item "
-        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
         </svg>
-        <span class="name">操作记录统计</span>
+        <span class="name">生产记录统计</span>
       </div>
     </div>
     <div class="module"

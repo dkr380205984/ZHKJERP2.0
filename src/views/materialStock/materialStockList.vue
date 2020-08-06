@@ -114,10 +114,7 @@
               <span class="text">负责小组</span>
             </div> -->
             <div class="col flex12">
-              <span class="text">入库进度(原)</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">出库进度(原)</span>
+              <span class="text">入库状态(原)</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
@@ -145,18 +142,18 @@
             <!-- <div class="col flex08">
               {{itemOrder.group_name}}
             </div> -->
-            <div class="col flex12">
+            <!-- <div class="col flex12">
               <div class="stateCtn rowFlex"
-                :class="itemOrder.material_push_progress.r_push<100?'orange':'green'">
+                :class="itemOrder.material_order_progress.y_percent>0?'green':'orange'">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.material_push_progress.r_push}}%</span>
+                <span class="name">{{itemOrder.material_order_progress.y_percent>0?'已采购':'未采购'}}</span>
               </div>
-            </div>
+            </div> -->
             <div class="col flex12">
               <div class="stateCtn rowFlex"
-                :class="itemOrder.material_push_progress.r_pop<100?'orange':'green'">
+                :class="itemOrder.material_push_progress > 0?'green':'orange'">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.material_push_progress.r_pop}}%</span>
+                <span class="name">{{itemOrder.material_push_progress>0?'已添加':'未添加'}}</span>
               </div>
             </div>
             <div class="col">

@@ -360,7 +360,7 @@
               </div>
             </span>
           </div>
-          <div class="colCtn flex3">
+          <!-- <div class="colCtn flex3">
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
@@ -372,7 +372,7 @@
                 </el-option>
               </el-select>
             </span>
-          </div>
+          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -1387,63 +1387,6 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
-        // planList.detail_code({
-        //   product_id: item.id
-        // }).then(res => {
-        //   // if (res.data.status) {
-        //   //   res.data.data.material_data.forEach(item => {
-        //   //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-        //   //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-        //   //     let number = item.colour.reduce((totalColour, currentColour) => {
-        //   //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-        //   //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-        //   //           return totalSize + Number(currentSize.number)
-        //   //         }, 0)
-        //   //       }, 0)
-        //   //     }, 0)
-        //   //     if (!findedYarn && item.type === 0) {
-        //   //       if (this.priceInfo.raw_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.checkedYarn(obj)
-        //   //         this.priceInfo.raw_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.raw_material[0].name = item.material
-        //   //         this.priceInfo.raw_material[0].weight = number
-        //   //         this.priceInfo.raw_material[0].disabled = true
-        //   //         this.checkedYarn(this.priceInfo.raw_material[0])
-        //   //       }
-        //   //     } else if (findedYarn && item.type === 0) {
-        //   //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //     if (!findedOther && item.type === 1) {
-        //   //       if (this.priceInfo.other_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.priceInfo.other_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.other_material[0].name = item.material
-        //   //         this.priceInfo.other_material[0].weight = number
-        //   //         this.priceInfo.other_material[0].disabled = true
-        //   //       }
-        //   //     } else if (findedOther && item.type === 1) {
-        //   //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //   })
-        //   // }
-        // })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -1550,62 +1493,61 @@ export default {
       }
     },
     verifyData () {
-      if (this.lock) {
-        if (!this.client_id) {
-          this.$message({ type: 'error', message: '请选择外贸公司' })
-          return
-        }
-        if (!this.unit) {
-          this.$message({ type: 'error', message: '请选择结算单位' })
-          return
-        }
-        if (!this.exchangeRate) {
-          this.$message({ type: 'error', message: '请输入汇率' })
-          return
-        }
-        if (!this.priceInfo.product_cost) {
-          this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
-          return
-        }
-        if (!this.priceInfo.basic_fee.prop) {
-          this.$message({ type: 'error', message: '请输入基本佣金占比' })
-          return
-        }
-        if (!this.priceInfo.basic_tax.prop) {
-          this.$message({ type: 'error', message: '请输入基本税费占比' })
-          return
-        }
-        if (!this.priceInfo.basic_profits.prop) {
-          this.$message({ type: 'error', message: '请输入基本利润占比' })
-          return
-        }
-        if (this.checkedProList.length === 0) {
-          this.$confirm('检测到未选择产品, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.saveAll()
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消提交'
-            })
+      if (this.$submitLock()) {
+        return
+      }
+      if (!this.client_id) {
+        this.$message({ type: 'error', message: '请选择外贸公司' })
+        return
+      }
+      if (!this.unit) {
+        this.$message({ type: 'error', message: '请选择结算单位' })
+        return
+      }
+      if (!this.exchangeRate) {
+        this.$message({ type: 'error', message: '请输入汇率' })
+        return
+      }
+      if (!this.priceInfo.product_cost) {
+        this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
+        return
+      }
+      if (!this.priceInfo.basic_fee.prop) {
+        this.$message({ type: 'error', message: '请输入基本佣金占比' })
+        return
+      }
+      if (!this.priceInfo.basic_tax.prop) {
+        this.$message({ type: 'error', message: '请输入基本税费占比' })
+        return
+      }
+      if (!this.priceInfo.basic_profits.prop) {
+        this.$message({ type: 'error', message: '请输入基本利润占比' })
+        return
+      }
+      if (this.checkedProList.length === 0) {
+        this.$confirm('检测到未选择产品, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.saveAll()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消提交'
           })
-        } else {
-          let flag = true
-          this.checkedProList.forEach(items => {
-            if (!items.sizeColor) {
-              this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
-              flag = false
-            }
-          })
-          if (flag) {
-            this.saveAll()
-          }
-        }
+        })
       } else {
-        this.$message({ type: 'warning', message: '请勿频繁点击' })
+        // let flag = true
+        // this.checkedProList.forEach(items => {
+        //   if (!items.sizeColor) {
+        //     this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
+        //     flag = false
+        //   }
+        // })
+        // if (flag) {
+        this.saveAll()
+        // }
       }
     },
     saveAll () {
@@ -1627,7 +1569,7 @@ export default {
         product_info: JSON.stringify(this.checkedProList.map(item => {
           return {
             id: item.id,
-            colorSize: item.sizeColor,
+            // colorSize: item.sizeColor,
             product_type: item.product_type
           }
         })),

@@ -51,12 +51,12 @@
         <span class="name">年度财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
         </svg>
-        <span class="name">操作记录统计</span>
+        <span class="name">生产记录统计</span>
       </div>
     </div>
     <div class="module">
@@ -211,18 +211,6 @@ export default {
               name: '原料预定购',
               income: 0,
               expend: 400,
-              show: true
-            },
-            {
-              name: '订单原料加工',
-              income: 0,
-              expend: 160,
-              show: true
-            },
-            {
-              name: '样单原料加工',
-              income: 0,
-              expend: 80,
               show: true
             }
           ]
@@ -421,20 +409,6 @@ export default {
                 expend: data.material.material_sample_order,
                 show: true,
                 url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
-              },
-              {
-                name: '订单原料加工',
-                income: 0,
-                expend: data.material.order_process,
-                show: true,
-                url: '/financialStatistics/logStatistics/page=1&&type=物料加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
-              },
-              {
-                name: '样单原料加工',
-                income: 0,
-                expend: data.material.sample_order_process,
-                show: true,
-                url: '/financialStatistics/logStatistics/page=1&&type=物料加工&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
               }
             ]
           },
