@@ -834,6 +834,7 @@ export default {
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
+          id: item.id,
           url: item.image_url
         }
       })

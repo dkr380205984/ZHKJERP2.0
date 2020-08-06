@@ -217,15 +217,15 @@
                 @click="deleteLog(item.id)">删除</span>
             </span>
           </div>
-        </div>
-        <div class="pageCtn">
-          <el-pagination background
-            :page-size="5"
-            layout="prev, pager, next"
-            :total="total"
-            :current-page.sync="page"
-            @current-change="getLogList">
-          </el-pagination>
+          <div class="pageCtn">
+            <el-pagination background
+              :page-size="5"
+              layout="prev, pager, next"
+              :total="total"
+              :current-page.sync="page"
+              @current-change="getLogList">
+            </el-pagination>
+          </div>
         </div>
       </div>
     </div>
