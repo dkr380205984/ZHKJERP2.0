@@ -70,18 +70,13 @@
               @change="changeRouter(1)"
               placeholder="输入编号按回车键查询">
             </el-input>
-            <el-select v-model="client_type"
-              class="inputs"
+            <el-cascader class="inputs"
+              v-model="client_type"
+              :options="companyType"
               @change="changeRouter(1)"
-              filterable
-              clearable
-              placeholder="筛选公司类型">
-              <el-option v-for="(item,index) in companyType"
-                :key="index"
-                :label="item.name"
-                :value="item.value">
-              </el-option>
-            </el-select>
+              collapse-tags
+              placeholder="请选择客户类型"
+              clearable></el-cascader>
             <el-select v-model="clientStatus"
               placeholder="筛选状态"
               class="inputs">
@@ -207,11 +202,15 @@ export default {
       loading: true,
       list: [],
       keyword: '',
-      client_type: '',
+      client_type: [],
       searchTypeFlag: false,
       pages: 1,
       total: 0,
-      companyType: companyType,
+      companyType: [{
+        label: '加工单位',
+        value: '加工单位',
+        children: []
+      }],
       clientStatus: 1,
       statusArr: [
         {
@@ -344,23 +343,27 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
-      this.client_type = Number(params.clientType) || ''
+      if (params.clientType) {
+        this.client_type = params.clientType.split(',')
+      }
       this.YJSYKP = params.YJSYKP
       this.YJSWKP = params.YJSWKP
       this.DJS = params.DJS
       this.YKK = params.YKK
+      console.log(this.client_type)
     },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type + '&&YJSYKP=' + this.YJSYKP + '&&YJSWKP=' + this.YJSWKP + '&&DJS=' + this.DJS + '&&YKK=' + this.YKK)
     },
     getClientList () {
+      console.log(this.client_type)
       this.loading = true
       client.list({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
-        type: this.client_type,
+        type: this.client_type.length > 1 ? this.client_type[1] : this.client_type[0],
         status: this.clientStatus
       }).then(res => {
         if (res.data.status !== false) {
@@ -383,6 +386,19 @@ export default {
   created () {
     this.getFilters()
     this.getClientList()
+    this.$clone(companyType).forEach((item) => {
+      if (item.value >= 12 && item.value <= 25) {
+        this.companyType[0].children.push({
+          value: item.value,
+          label: item.name
+        })
+      } else {
+        this.companyType.push({
+          value: item.value,
+          label: item.name
+        })
+      }
+    })
   },
   watch: {
     pages (newVal) {

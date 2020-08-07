@@ -103,6 +103,48 @@ const companyType = [
   }, {
     value: 11,
     name: '销售客户'
+  }, {
+    value: 12,
+    name: '拉毛、刺毛、轧光单位'
+  }, {
+    value: 13,
+    name: '水洗、纱洗、烘干单位'
+  }, {
+    value: 14,
+    name: '抽顶、剪球、吊球单位'
+  }, {
+    value: 15,
+    name: '捻须、穿线、打结单位'
+  }, {
+    value: 16,
+    name: '压皱、整烫单位'
+  }, {
+    value: 17,
+    name: '车缝、开片单位'
+  }, {
+    value: 18,
+    name: '绣花、印花单位'
+  }, {
+    value: 20,
+    name: '钉扣、烫钻单位'
+  }, {
+    value: 21,
+    name: '接指、麻缝单位'
+  }, {
+    value: 22,
+    name: '套口、套缝单位'
+  }, {
+    value: 23,
+    name: '成品染色单位'
+  }, {
+    value: 24,
+    name: '毛料切割单位'
+  }, {
+    value: 25,
+    name: '手工单位'
+  }, {
+    value: 25,
+    name: '其它单位'
   }
 ]
 export {
