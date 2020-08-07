@@ -2553,7 +2553,7 @@ export default {
               year: this.$getTime(new Date()).split('-')[0],
               month: Number(this.$getTime(new Date()).split('-')[1]),
               settle_type: this.renderData.orderInfo.order_code || this.renderData.orderInfo.title,
-              price: this.formData.inspectionForm.price,
+              price: this.formData.inspectionForm.price || 0,
               number: item.number,
               unit: '件',
               total_price: this.formData.inspectionForm.price * item.number,
