@@ -76,20 +76,13 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <!-- <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div> -->
             <div class="col">
-              <span class="text">半成品检验进度</span>
-            </div>
-            <div class="col">
-              <span class="text">成品检验进度</span>
+              <span class="text">检验状态</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
             </div>
-            <div class="col"
-              style="flex:1.6">
+            <div class="col">
               <span class="text">操作</span>
             </div>
           </div>
@@ -105,32 +98,19 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.product_inspection_progress.r_semi_product>=100,'orange':itemOrder.product_inspection_progress.r_semi_product<100}">
+                :class="{'green':itemOrder.product_inspection_progress.r_product===1,'orange':itemOrder.product_inspection_progress.r_product!==1}">
                 <div class="state">
-                </div><span class="name">{{itemOrder.product_inspection_progress.r_semi_product}}%</span>
-              </div>
-            </div>
-            <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.product_inspection_progress.r_product>=100,'orange':itemOrder.product_inspection_progress.r_product<100}">
-                <div class="state">
-                </div><span class="name">{{itemOrder.product_inspection_progress.r_product}}%</span>
+                </div><span class="name">{{itemOrder.product_inspection_progress.r_product===1?'已检验':'未检验'}}</span>
               </div>
             </div>
             <div class="col">
               {{itemOrder.order_time}}
             </div>
-            <div class="col"
-              style="flex:1.6">
+            <div class="col">
               <span class="opr"
-                @click="$router.push('/inspection/semiFinishedDetail/' + itemOrder.id)">半成品检验</span>
-              <span class="opr"
-                style="color:#01B48C"
+                style="color:#1a95ff"
                 @click="$router.push('/inspection/finishedDetail/' + itemOrder.id)">成品检验</span>
             </div>
           </div>

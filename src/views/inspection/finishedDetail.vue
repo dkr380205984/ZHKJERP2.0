@@ -32,10 +32,6 @@
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.user_name}}</span>
           </div>
-          <!-- <div class="colCtn flex3">
-            <span class="label">负责小组：</span>
-            <span class="text">{{orderInfo.group_name}}</span>
-          </div> -->
           <div class="colCtn flex3">
             <span class="label">下单日期：</span>
             <span class="text">{{orderInfo.order_time}}</span>
@@ -58,14 +54,27 @@
         <div class="rowCtn">
           <div class="colCtn"
             style="margin-right:0">
-            <div class="flexTb">
+            <div class="btnCtn_page"
+              style="float:right;margin-bottom:0px">
+              <div class="btn btnWhiteBlue"
+                @click="easyInspection">批量检验</div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb"
+              style="margin:0">
               <div class="thead">
                 <div class="trow">
-                  <div class="tcolumn">产品编号</div>
+                  <div class="tcolumn"
+                    style="flex:2">产品编号</div>
                   <div class="tcolumn noPad"
                     style="flex:7">
                     <div class="trow">
-                      <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn"
+                        style="flex:1.7">颜色尺码</div>
                       <div class="tcolumn">发货数量</div>
                       <div class="tcolumn">检验数量</div>
                       <div class="tcolumn">次品数量</div>
@@ -79,23 +88,36 @@
                 <div class="trow"
                   v-for="(item,index) in inspection_detail"
                   :key="index">
-                  <div class="tcolumn">
-                    <span>{{item.product_code}}</span>
-                    <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
+                  <div class="tcolumn"
+                    style="flex:2">
+                    <el-checkbox v-model="item.checked"
+                      @change="getAllColorSize($event,item)">
+                      <span>{{item.product_code}}</span>
+                      <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
+                    </el-checkbox>
                   </div>
                   <div class="tcolumn noPad"
                     style="flex:7">
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
-                      <div class="tcolumn">{{itemChild.production_number}}</div>
-                      <div class="tcolumn">{{itemChild.inspectionNum}}</div>
-                      <div class="tcolumn">{{itemChild.rejectNum}}</div>
-                      <div class="tcolumn">{{itemChild.rejectNum>0?(itemChild.rejectNum/itemChild.inspectionNum*100).toFixed(2):0}}%</div>
+                      <div class="tcolumn"
+                        style="flex:1.7">
+                        <el-checkbox v-model="itemChild.checked"
+                          @change="$forceUpdate()">
+                          {{itemChild.color_name}}/{{itemChild.size_name}}
+                        </el-checkbox>
+                      </div>
+                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.inspectionNum===0?'#ccc':'#01B48C'}">{{itemChild.inspectionNum}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.rejectNum===0?'#ccc':'#F5222D'}">{{itemChild.rejectNum}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.rejectNum===0?'#ccc':'#F5222D'}">{{itemChild.rejectNum>0?(itemChild.rejectNum/itemChild.inspectionNum*100).toFixed(2):0}}%</div>
                       <div class="tcolumn">
                         <span class="blue"
-                          @click="normalInspection(item.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.production_number - itemChild.inspectionNum)">检验</span>
+                          @click="normalInspection(item.product_id,itemChild.size_id + '/' + itemChild.color_id,itemChild.numbers)">检验</span>
                       </div>
                     </div>
                   </div>
@@ -127,11 +149,11 @@
                   </div>
                 </div>
                 <div class="rowCtn"
-                  style="background:#f0f0f0"
                   v-for="(itemChild,indexChild) in item.product_info"
                   :key="indexChild">
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">尺码颜色</span>
                       <span class="explanation">(必填)</span>
                     </div>
@@ -147,7 +169,8 @@
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
+                    <div class="label"
+                      v-if="indexChild===0">
                       <span class="text">检验数量</span>
                       <span class="explanation">(必填)</span>
                     </div>
@@ -159,126 +182,41 @@
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
-                      <span class="text">捆数</span>
+                    <div class="label"
+                      v-if="indexChild===0">
+                      <span class="text">次品数量/原因</span>
                     </div>
-                    <div class="content">
+                    <div class="content"
+                      style="display:flex;justify-content: space-between;">
                       <zh-input type="number"
-                        placeholder="请输入检验捆数"
-                        v-model="itemChild.count">
-                        <template slot="append">捆</template>
+                        placeholder="数量"
+                        v-model="itemChild.substandard"
+                        style="width:154px">
                       </zh-input>
+                      <el-autocomplete style="width:154px"
+                        v-model="itemChild.reason"
+                        :fetch-suggestions="querySearchDefective"
+                        placeholder="原因"></el-autocomplete>
                     </div>
                     <div class="editBtn addBtn"
                       v-if="indexChild===0"
-                      @click="addProduct(index)">添加产品</div>
+                      @click="addProduct(index)">添加尺码</div>
                     <div class="editBtn deleteBtn"
                       v-if="indexChild>0"
-                      @click="deleteProduct(index,indexChild)">删除产品</div>
-                  </div>
-                  <div class="rowCtn width100"
-                    v-for="(itemSon,indexSon) in itemChild.substandard"
-                    :key="indexSon">
-                    <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexSon===0">
-                        <span class="text">次品数量</span>
-                      </div>
-                      <div class="content">
-                        <zh-input type="number"
-                          placeholder="请输入次品数量"
-                          v-model="itemSon.number"></zh-input>
-                      </div>
-                    </div>
-                    <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexSon===0">
-                        <span class="text">次品原因</span>
-                        <!-- <span class="explanation">(多选)</span> -->
-                      </div>
-                      <div class="content">
-                        <!-- <el-select v-model="itemSon.reason"
-                          filterable
-                          allow-create
-                          default-first-option
-                          placeholder="请选择次品原因"
-                          multiple>
-                          <el-option v-for="(item,index) in defectiveType"
-                            :key="index"
-                            :label="item"
-                            :value="item"></el-option>
-                        </el-select> -->
-                        <el-autocomplete v-model="itemSon.reason"
-                          :fetch-suggestions="querySearchDefective"
-                          placeholder="请选择次品原因"></el-autocomplete>
-                      </div>
-                    </div>
-                    <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexSon===0">
-                        <span class="text">承担单位</span>
-                        <span class="explanation">(不填则为本厂)</span>
-                      </div>
-                      <div class="content">
-                        <el-select v-model="itemSon.client_id"
-                          placeholder="请选择承担单位"
-                          filterable>
-                          <el-option v-for="item in companyArr"
-                            :key="item.id"
-                            :value="item.name"
-                            :label="item.name"></el-option>
-                        </el-select>
-                      </div>
-                      <div class="editBtn addBtn"
-                        v-if="indexSon===0"
-                        @click="addSubstandard(index,indexChild)">添加次品</div>
-                      <div class="editBtn deleteBtn"
-                        v-if="indexSon>0"
-                        @click="deleteSubstandard(index,indexChild,indexSon)">删除次品</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="rowCtn">
-                  <div class="colCtn flex3">
-                    <div class="label">
-                      <span class="text">检验日期</span>
-                      <span class="explanation">(默认今天)</span>
-                    </div>
-                    <div class="content">
-                      <div class="content">
-                        <el-date-picker v-model="item.date"
-                          value-format="yyyy-MM-dd"
-                          style="width:100%"
-                          type="date"
-                          placeholder='选择检验日期'>
-                        </el-date-picker>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="colCtn">
-                    <div class="label">
-                      <span class="text">备注信息</span>
-                    </div>
-                    <div class="content">
-                      <el-input placeholder="请输入备注信息"
-                        v-model="item.desc"></el-input>
-                    </div>
+                      @click="deleteProduct(index,indexChild)">删除尺码</div>
                   </div>
                 </div>
               </div>
               <div class="addRows">
                 <span class="once"
                   v-if="!inspection_flag"
-                  @click="normalInspection()">普通检验</span>
-                <span class="once"
-                  v-if="!inspection_flag"
-                  @click="easyInspection">一键检验</span>
+                  @click="normalInspection()">添加检验</span>
                 <span class="once cancle"
                   v-if="inspection_flag"
                   @click="cancleInspection">取消检验</span>
                 <span class="once normal"
                   v-if="inspection_flag"
-                  @click="addInspection">添加产品</span>
+                  @click="addInspection">添加检验</span>
                 <span class="once ok"
                   v-if="inspection_flag"
                   @click="saveInspection">确认检验
@@ -289,15 +227,17 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="inspection_log.length>0">
       <div class="titleCtn">
         <span class="title">成品检验日志</span>
       </div>
       <div class="listCtn hasBorderTop">
-        <div class="btnCtn_page">
-          <div class="btn noBorder noMargin"
+        <div class="btnCtn_page"
+          style="float:right;margin-bottom:16px">
+          <div class="btn btnWhiteBlue"
             @click="deleteLog('all')">批量删除</div>
-          <div class="btn noBorder noMargin"
+          <div class="btn btnWhiteBlue"
             @click="download">批量导出excel</div>
         </div>
         <div class="tableCtnLv2 minHeight5">
@@ -305,12 +245,12 @@
             <span class="tb_row flex04"></span>
             <span class="tb_row">检验日期</span>
             <span class="tb_row flex12">产品名称</span>
-            <span class="tb_row">尺码颜色</span>
-            <span class="tb_row flex08">检验数量</span>
-            <span class="tb_row flex12">次品信息</span>
-            <span class="tb_row flex08">备注</span>
-            <span class="tb_row flex08 middle">操作人</span>
-            <span class="tb_row flex08 middle">操作</span>
+            <span class="tb_row">配色尺码</span>
+            <span class="tb_row">检验数量</span>
+            <span class="tb_row">次品数量</span>
+            <span class="tb_row">次品原因</span>
+            <span class="tb_row">操作人</span>
+            <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
             v-for="(item,index) in inspection_log"
@@ -319,19 +259,16 @@
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
             <span class="tb_row">{{item.complete_time}}</span>
-            <span class="tb_row flex12">{{item.product_code}}<br />{{item.product_types}}</span>
-            <span class="tb_row">{{item.size_name}}/{{item.color_name}}</span>
-            <span class="tb_row flex08">{{item.number}}</span>
-            <span class="tb_row flex12">
-              <span class="green"
-                v-if="item.rejects_info===0">无次品</span>
-              <span class="blue"
-                v-if="item.rejects_info!==0"
-                @click="rejectsDetail(item.rejects_info)">有次品(查看)</span>
+            <span class="tb_row flex12">{{item.product_info.product_code}}<br />{{item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name}}</span>
+            <span class="tb_row">{{item.color_name}}/{{item.size_name}}</span>
+            <span class="tb_row">{{item.number}}</span>
+            <span class="tb_row"
+              :style="{'color':JSON.parse(item.rejects_info).substandard>0?'#F5222D':'#ccc'}">
+              {{JSON.parse(item.rejects_info).substandard}}
             </span>
-            <span class="tb_row flex08">{{item.desc}}</span>
-            <span class="tb_row flex08 middle">{{item.user_name}}</span>
-            <span class="tb_row flex08 middle">
+            <span class="tb_row">{{JSON.parse(item.rejects_info).reason}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteLog(item.id,index)">删除</span>
             </span>
@@ -492,7 +429,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, inspection, chargebacks, weave, processing } from '@/assets/js/api.js'
+import { order, inspection, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -671,49 +608,48 @@ export default {
         product_info: [{
           colorSize: colorSize || '',
           number: number || '',
-          count: '',
-          substandard: [{
-            number: 0,
-            reason: [],
-            client_id: ''
-          }]
+          substandard: 0,
+          reason: ''
         }],
         date: this.$getTime(new Date())
       })
     },
     easyInspection () {
+      if (this.inspection_data.length > 0) {
+        this.$message.error('请提交已填写的信息再操作')
+        return
+      }
       this.inspection_detail.forEach((item) => {
-        item.childrenMergeInfo.forEach((itemChild) => {
-          if ((itemChild.production_number) > 0) {
-            this.inspection_data.push({
-              product_id: item.product_id,
-              colorSizeArr: this.inspection_detail.find((itemFind) => {
-                return item.product_id === itemFind.product_id
-              }).childrenMergeInfo.map((item) => {
-                return {
-                  name: item.size_name + '/' + item.color_name,
-                  id: item.size_id + '/' + item.color_id
-                }
-              }),
-              product_info: [{
+        let filterArr = item.childrenMergeInfo.filter((itemChild) => itemChild.checked)
+        if (filterArr.length > 0) {
+          this.inspection_data.push({
+            product_id: item.product_id,
+            colorSizeArr: this.inspection_detail.find((itemFind) => {
+              return item.product_id === itemFind.product_id
+            }).childrenMergeInfo.map((item) => {
+              return {
+                name: item.size_name + '/' + item.color_name,
+                id: item.size_id + '/' + item.color_id
+              }
+            }),
+            product_info: filterArr.map((itemChild) => {
+              return {
                 colorSize: itemChild.size_id + '/' + itemChild.color_id,
-                number: itemChild.production_number - itemChild.inspectionNum > 0 ? itemChild.production_number - itemChild.inspectionNum : 0,
+                number: '',
                 count: '',
-                substandard: [{
-                  number: 0,
-                  reason: [],
-                  client_id: ''
-                }]
-              }],
-              date: this.$getTime(new Date())
-            })
-          }
-        })
+                substandard: 0,
+                reason: ''
+              }
+            }),
+            date: this.$getTime(new Date())
+          })
+        }
       })
       if (this.inspection_data.length > 0) {
         this.inspection_flag = true
+        this.$message.success('请填写检验数量')
       } else {
-        this.$message.warning('产品已全部检验完毕')
+        this.$message.warning('请选择至少一个配色尺码')
       }
     },
     addInspection () {
@@ -770,7 +706,6 @@ export default {
       this.inspection_data.forEach((item) => {
         item.product_info.forEach((itemChild) => {
           formData.push({
-            // order_type: 1,
             order_id: this.$route.params.id,
             product_id: item.product_id,
             size_id: itemChild.colorSize.split('/')[0],
@@ -778,7 +713,10 @@ export default {
             count: itemChild.count,
             number: itemChild.number,
             complete_time: item.date,
-            rejects_info: JSON.stringify(itemChild.substandard),
+            rejects_info: JSON.stringify({
+              substandard: itemChild.substandard,
+              reason: itemChild.reason
+            }),
             desc: item.desc
           })
         })
@@ -803,12 +741,8 @@ export default {
       this.inspection_data[index].product_info.push({
         colorSize: '',
         number: '',
-        count: '',
-        substandard: [{
-          number: '',
-          reason: [],
-          reasonDesc: '' // 次品备注
-        }]
+        substandard: 0,
+        reason: ''
       })
     },
     deleteProduct (index, indexChild) {
@@ -870,6 +804,39 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    commonFind (findArr, compare, findWhich, addWhich) {
+      if (typeof (findWhich) === 'string') {
+        return findArr.find((itemFind) => {
+          return itemFind[findWhich] === compare[itemFind]
+        })
+      } else if (findWhich.constructor === Array) {
+        let finded = findArr.find((itemFind) => {
+          let flag = true
+          findWhich.forEach((item) => {
+            if (compare[item] !== itemFind[item]) {
+              flag = false
+            }
+          })
+          return flag
+        })
+        if (!finded) {
+          findArr.push(compare)
+        } else {
+          if (addWhich.constructor === Array) {
+            addWhich.forEach((item) => {
+              finded[item] += Number(compare[item])
+            })
+          }
+        }
+      } else {
+        console.error('第三个参数必须为字符串或数组格式')
+      }
+    },
+    getAllColorSize (ev, item) {
+      item.childrenMergeInfo.forEach((itemChild) => {
+        itemChild.checked = ev
+      })
     }
   },
   mounted () {
@@ -878,50 +845,64 @@ export default {
       order.detail({
         id: this.$route.params.id
       }),
-      materialPlan.init({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }),
-      client.list(),
       inspection.finishedDetail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }),
-      weave.detail({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }),
-      processing.detail({
         order_id: this.$route.params.id,
         order_type: 1
       })
     ]).then((res) => {
       this.orderInfo = res[0].data.data
-      this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
-      this.companyArr = res[2].data.data.filter((item) => {
-        return item.type.indexOf(5) !== -1
-      })
-      this.inspection_log = res[3].data.data.map(item => {
-        let flag = false
-        // 检查是否有次品
-        JSON.parse(item.rejects_info).forEach((itemChild) => {
-          if (Number(itemChild.number) > 0) {
-            flag = true
-          }
+      // this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
+      // this.companyArr = res[1].data.data.filter((item) => {
+      //   return item.type.indexOf(5) !== -1
+      // })
+      // this.inspection_log = res[3].data.data.map(item => {
+      //   let flag = false
+      //   // 检查是否有次品
+      //   JSON.parse(item.rejects_info).forEach((itemChild) => {
+      //     if (Number(itemChild.number) > 0) {
+      //       flag = true
+      //     }
+      //   })
+      //   if (flag) {
+      //     item.rejects_info = JSON.parse(item.rejects_info)
+      //   } else {
+      //     item.rejects_info = 0
+      //   }
+      //   let productInfo = this.inspection_detail.find(value => value.product_id === item.product_id)
+      //   return {
+      //     ...item,
+      //     product_code: productInfo ? productInfo.product_code : '',
+      //     product_types: productInfo ? [productInfo.category_name, productInfo.type_name, productInfo.style_name].join('/') : '',
+      //     checked: false
+      //   }
+      // })
+      // this.clientArr = this.$unique(res[4].data.data.map(item => {
+      //   return {
+      //     client_name: item.client_name,
+      //     client_id: item.client_id,
+      //     type: 4
+      //   }
+      // }), 'client_id').concat(this.$unique(res[5].data.data.map(item => {
+      //   return {
+      //     client_name: item.client_name,
+      //     client_id: item.client_id,
+      //     type: 5
+      //   }
+      // }), 'client_id'))
+      let allocationList = []
+      this.orderInfo.batch_info.forEach((itemBatch) => {
+        itemBatch.product_info.forEach((itemPro) => {
+          this.commonFind(allocationList, itemPro, ['color_id', 'size_id', 'product_id'], ['numbers'])
         })
-        if (flag) {
-          item.rejects_info = JSON.parse(item.rejects_info)
-        } else {
-          item.rejects_info = 0
-        }
-        let productInfo = this.inspection_detail.find(value => value.product_id === item.product_id)
-        return {
-          ...item,
-          product_code: productInfo ? productInfo.product_code : '',
-          product_types: productInfo ? [productInfo.category_name, productInfo.type_name, productInfo.style_name].join('/') : '',
-          checked: false
-        }
       })
+      allocationList = allocationList.sort((a, b) => (a.color_id - b.color_id))
+      this.inspection_detail = this.$mergeData(allocationList.map((item) => {
+        item.category_name = item.category_info.category_name
+        item.type_name = item.category_info.type_name
+        item.style_name = item.category_info.style_name
+        return item
+      }), { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'category_info' }, { name: 'product_code' }] })
+      this.inspection_log = res[1].data.data
       this.inspection_detail.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
           let findArr = this.inspection_log.filter((itemFilter) => {
@@ -931,25 +912,10 @@ export default {
             return total + current.number
           }, 0)
           itemChild.rejectNum = findArr.reduce((total, current) => {
-            return total + (current.rejects_info === 0 ? 0 : current.rejects_info.reduce((total2, current2) => {
-              return total2 + Number(current2.number)
-            }, 0))
+            return total + (JSON.parse(current.rejects_info).substandard === 0 ? 0 : JSON.parse(current.rejects_info).substandard)
           }, 0)
         })
       })
-      this.clientArr = this.$unique(res[4].data.data.map(item => {
-        return {
-          client_name: item.client_name,
-          client_id: item.client_id,
-          type: 4
-        }
-      }), 'client_id').concat(this.$unique(res[5].data.data.map(item => {
-        return {
-          client_name: item.client_name,
-          client_id: item.client_id,
-          type: 5
-        }
-      }), 'client_id'))
       this.loading = false
     })
   }

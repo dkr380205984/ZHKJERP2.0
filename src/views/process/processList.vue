@@ -122,26 +122,32 @@
             <!-- <div class="col flex08">
               {{itemOrder.group_name}}
             </div> -->
-            <div class="col flex12"
-              style="color:#ccc">
-              暂无
+            <div class="col flex12">
+              <div class="stateCtn rowFlex"
+                :class="itemOrder.product_weave_progress===1?'green':'orange'">
+                <div class="state"></div>
+                <span class="name">{{itemOrder.product_weave_progress===1?'已分配':'未分配'}}</span>
+              </div>
             </div>
             <div class="col">
               {{itemOrder.order_time}}
             </div>
             <div class="col middle">
               <span class="opr"
-                @click="$router.push('/process/processCommon/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
+                v-if="$route.params.processType==='1'"
+                @click="$router.push('/process/processCommon/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType + '?whichModule=allocation&processType=织片')">
                 {{processType}}详情
               </span>
-              <!-- <span class="opr"
-                @click="$router.push('/process/processForSize/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
-                尺码
+              <span class="opr"
+                v-if="$route.params.processType==='3'"
+                @click="$router.push('/process/processForColor/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=stockIn&processType=工序')">
+                {{processType}}详情
               </span>
               <span class="opr"
-                @click="$router.push('/process/processForColor/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType)">
-                配色
-              </span> -->
+                v-if="$route.params.processType==='2'"
+                @click="$router.push('/process/processForColor/' + itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=stockIn&processType=套口')">
+                {{processType}}详情
+              </span>
             </div>
           </div>
         </div>
