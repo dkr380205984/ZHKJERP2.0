@@ -226,7 +226,7 @@ export default {
             // 处理订单信息
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId) && item.process === this.$route.query.process).map(item => {
               // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               // let sizeInfo = flag || {}
               return {
@@ -346,7 +346,7 @@ export default {
             // 处理订单信息
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId) && item.process === this.$route.query.process).map(item => {
               // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               // let sizeInfo = flag || {}
               return {
@@ -471,7 +471,7 @@ export default {
             // 处理订单信息
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId) && item.process === this.$route.query.process).map(item => {
               // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               // let sizeInfo = flag || {}
               return {
@@ -591,7 +591,7 @@ export default {
             // 处理订单信息
             this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[2].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId) && item.process === this.$route.query.process).map(item => {
               // let flag = item.category_info.size_measurement.find(itemPro => itemPro.size_id === item.size_id)
               // let sizeInfo = flag || {}
               return {
@@ -790,19 +790,11 @@ export default {
   },
   mounted () {
     const QRCode = require('qrcode')
-    if (+this.$route.query.type === 1) {
-      QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl = url
-        }
-      })
-    } else {
-      QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl = url
-        }
-      })
-    }
+    QRCode.toDataURL(window.location.origin + '/process/processCommon/' + this.$route.params.id + '/' + this.$route.params.type + '/' + (this.$route.query.process === '织片' ? 1 : this.$route.query.process === '套口' ? 2 : 3) + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
+      if (!err) {
+        this.qrCodeUrl = url
+      }
+    })
   },
   filters: {
     filterType (item) {

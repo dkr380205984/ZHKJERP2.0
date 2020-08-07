@@ -456,7 +456,7 @@
                   <span class="line_item">单位名称：{{item.client_name}}</span>
                   <span class="line_item">单价：<span style="color:#01B48C">{{item.price}}元/件</span></span>
                   <span class="line_item">操作：<span style="color:#1a95ff;cursor:pointer;padding:6px 12px;border:1px solid #1a95ff;border-radius:4px"
-                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印分配单</span></span>
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id + '&process=' + otherData.processType)">打印分配单</span></span>
                 </div>
                 <div class="line"
                   v-for="(itemPro,indexPro) in item.childrenMergeInfo"

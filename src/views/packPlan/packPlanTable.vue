@@ -17,7 +17,7 @@
         <div class="right">
           <div class="qrCode_box"
             style="margin-right:8px">
-            <img :src="proImage.image_url || errImg"
+            <img :src="proImage ? proImage.image_url : errImg"
               alt="产品图片">
           </div>
           <div class="qrCode_box">

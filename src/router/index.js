@@ -168,22 +168,6 @@ const routes = [
       name: '配料单详情',
       component: () => import('../views/productPlan/productPlanDetail.vue')
     }, {
-      path: '/materialOrder/materialOrderCreate',
-      name: '物料预订购',
-      component: () => import('../views/materialOrder/materialOrderCreate.vue')
-    }, {
-      path: '/materialOrder/materialOrderUpdate/:id',
-      name: '物料预订购修改',
-      component: () => import('../views/materialOrder/materialOrderUpdate.vue')
-    }, {
-      path: '/materialOrder/materialOrderDetail/:id',
-      name: '物料预订购入库',
-      component: () => import('../views/materialOrder/materialOrderDetail.vue')
-    }, {
-      path: '/materialOrder/materialOrderList/:params',
-      name: '物料预订购列表',
-      component: () => import('../views/materialOrder/materialOrderList.vue')
-    }, {
       path: '/material/materialDetail/:id/:type/:orderType/:easyOrder',
       name: '物料订购',
       component: () => import('../views/material/materialDetail.vue')
@@ -449,14 +433,6 @@ const routes = [
     name: '配料单打印',
     component: () => import('../views/productPlan/productPlanTable.vue')
   }, {
-    path: '/materialOrderTable/:id',
-    name: '物料预定购单',
-    component: () => import('../views/materialOrder/materialOrderTable.vue')
-  }, {
-    path: '/materialStockLogTable/:id',
-    name: '物料出入库日志单',
-    component: () => import('../views/materialOrder/materialStockLogTable.vue')
-  }, {
     path: '/packOrderTable/:id',
     name: '包装订购单',
     component: () => import('../views/packPlan/packOrderTable.vue')
@@ -561,10 +537,6 @@ router.beforeEach((to, from, next) => {
     '物料计划单列表': ['织为云', '物料计划单列表'],
     '物料计划单修改': ['织为云', '物料计划单列表', '物料计划单修改'],
     '物料计划单详情': ['织为云', '物料计划单列表', '物料计划单详情'],
-    '物料预定购': ['织为云', '物料预定购'],
-    '物料预定购列表': ['织为云', '物料预定购列表'],
-    '物料预定购入库': ['织为云', '物料预定购列表', '物料预定购入库'],
-    '物料预定购修改': ['织为云', '物料预定购列表', '物料预定购修改'],
     '仓库列表': ['织为云', '仓库列表'],
     '仓库详情': ['织为云', '仓库列表', '仓库详情'],
     '物料预订购': ['织为云', '物料预订购'],
