@@ -386,12 +386,12 @@ export default {
           icon: 'price',
           url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
         },
-        // {
-        //   name: '财务管理',
-        //   id: 16,
-        //   icon: 'financial',
-        //   url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
-        // },
+        {
+          name: '财务管理',
+          id: 16,
+          icon: 'financial',
+          url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+        },
         {
           name: '其他管理',
           id: null,

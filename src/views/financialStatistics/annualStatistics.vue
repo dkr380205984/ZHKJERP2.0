@@ -167,164 +167,10 @@ export default {
   data () {
     return {
       loading: true,
-      start_time: '2019/01/01',
-      end_time: '2020/12/31',
-      detail: [
-        {
-          name: '订单',
-          info: [
-            {
-              name: '下单总值',
-              income: 20000,
-              expend: 1000,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '样单',
-          info: [
-            {
-              name: '客户付费总值',
-              income: 2000,
-              expend: 0,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '原料纱线',
-          info: [
-            {
-              name: '订单原料采购',
-              income: 0,
-              expend: 1000,
-              show: true
-            },
-            {
-              name: '样单原料采购',
-              income: 0,
-              expend: 100,
-              show: true
-            },
-            {
-              name: '原料预定购',
-              income: 0,
-              expend: 400,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '装饰辅料',
-          info: [
-            {
-              name: '订单辅料采购',
-              income: 0,
-              expend: 80,
-              show: true
-            },
-            {
-              name: '样单辅料采购',
-              income: 0,
-              expend: 40,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '生产织造',
-          info: [
-            {
-              name: '订单织造',
-              income: 0,
-              expend: 80,
-              show: true
-            },
-            {
-              name: '样单织造',
-              income: 0,
-              expend: 40,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '包装',
-          info: [
-            {
-              name: '订单包装辅料',
-              income: 0,
-              expend: 2000,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '运输',
-          info: [
-            {
-              name: '订单出库运输',
-              income: 0,
-              expend: 1000,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '人工',
-          info: [
-            {
-              name: '人员工资',
-              income: 0,
-              expend: 4000,
-              show: true
-            }
-          ]
-        },
-        {
-          name: '其他',
-          info: [
-            {
-              name: '报销费用',
-              income: 0,
-              expend: 200,
-              show: true
-            }
-          ]
-        }
-      ],
-      orderSelectArr: [
-        {
-          name: '下单总值',
-          income: 20000,
-          expend: 1000
-        },
-        {
-          name: '实际出库总值',
-          income: 38000,
-          expend: 2000
-        },
-        {
-          name: '实际结算总值',
-          income: 30600,
-          expend: 1600
-        }
-      ],
-      sampleSelectArr: [
-        {
-          name: '客户付费总值',
-          income: 2000,
-          expend: 0,
-          show: true
-        },
-        {
-          name: '实际付费总值',
-          income: 1800,
-          expend: 0,
-          show: true
-        }
-      ],
+      start_time: '',
+      end_time: '',
+      detail: [],
+      orderSelectArr: [],
       year: '',
       yearArr: []
     }
@@ -481,6 +327,18 @@ export default {
                 name: '人员工资',
                 income: 0,
                 expend: data.user,
+                show: true,
+                url: ''
+              }
+            ]
+          },
+          {
+            name: '扣款',
+            info: [
+              {
+                name: '扣款费用',
+                income: data.deduct,
+                expend: 0,
                 show: true,
                 url: ''
               }
