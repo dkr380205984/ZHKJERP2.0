@@ -316,7 +316,19 @@ export default {
     Promise.all([group.list(), client.list()]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = res[1].data.data.filter((item) => {
-        return item.type.indexOf(1) !== -1
+        let flag = false
+        item.type.forEach((itemChild) => {
+          if (itemChild === 1) {
+            flag = true
+          }
+          if (itemChild === 5) {
+            flag = true
+          }
+          if (itemChild >= 12 && itemChild <= 25) {
+            flag = true
+          }
+        })
+        return flag
       })
     })
   }

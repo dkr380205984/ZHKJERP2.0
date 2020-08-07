@@ -152,7 +152,7 @@
                     <div class="content">
                       <el-select v-model="item.product_id"
                         filterable
-                        placeholder="请选择加工单位"
+                        placeholder="请选择产品"
                         @change="selectProduct($event,index)">
                         <el-option v-for="item in process_info"
                           :key="item.product_id"
@@ -999,7 +999,19 @@ export default {
       this.orderInfo = res[0].data.data
       this.process_info = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_id' }] })
       this.companyArr = res[2].data.data.filter((item) => {
-        return item.type.indexOf(5) !== -1
+        let flag = false
+        item.type.forEach((itemChild) => {
+          if (itemChild === 1) {
+            flag = true
+          }
+          if (itemChild === 5) {
+            flag = true
+          }
+          if (itemChild >= 12 && itemChild <= 25) {
+            flag = true
+          }
+        })
+        return flag
       })
       this.companyArr.forEach((item) => {
         item.name_pinyin = item.name_pinyin.join('')

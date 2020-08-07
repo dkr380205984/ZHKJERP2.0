@@ -57,17 +57,12 @@
               <span class="text">客户类型</span>
             </span>
             <span class="content content_middle">
-              <el-select v-model="client_type"
-                multiple
-                clearable
-                filterable
-                placeholder="请选择">
-                <el-option v-for="item in companyType"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+              <el-cascader v-model="client_type"
+                :options="companyType"
+                collapse-tags
+                :props="{ multiple: true }"
+                placeholder="请选择客户类型"
+                clearable></el-cascader>
             </span>
           </div>
         </div>
@@ -170,7 +165,11 @@ export default {
   data () {
     return {
       loading: true,
-      companyType: companyType,
+      companyType: [{
+        label: '加工单位',
+        value: '加工单位',
+        children: []
+      }],
       type: true,
       client_name: '',
       client_abb: '',
@@ -203,19 +202,15 @@ export default {
       if (this.lock) {
         if (!this.client_name) {
           this.$message.error('检测到未填写客户名称，请填写')
-          return
         }
-        if (!this.client_type) {
+        if (this.client_type.length < 0) {
           this.$message.error('检测到未选择客户类型，请选择')
-          return
         }
         if (!this.phone) {
           this.$message.error('检测到未填写联系电话，请填写')
-          return
         }
         if (this.type && this.contacts.filter(item => item.name || item.post || item.telephone).length === 0) {
           this.$message.error('检测到未填写联系人信息，请填写')
-          return
         }
         this.lock = false
         client.create({
@@ -231,7 +226,9 @@ export default {
               phone: item.telephone
             }
           }),
-          type: this.client_type
+          type: this.client_type.map((item) => {
+            return item.length > 1 ? item[1] : item[0]
+          })
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('保存成功，即将跳转至客户列表')
@@ -260,6 +257,19 @@ export default {
     }
   },
   mounted () {
+    this.$clone(companyType).forEach((item) => {
+      if (item.value >= 12 && item.value <= 25) {
+        this.companyType[0].children.push({
+          value: item.value,
+          label: item.name
+        })
+      } else {
+        this.companyType.push({
+          value: item.value,
+          label: item.name
+        })
+      }
+    })
     this.loading = false
   }
 }
