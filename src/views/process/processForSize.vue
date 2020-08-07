@@ -71,7 +71,7 @@
         <el-progress type="circle"
           :width="80"
           color="#01B48C"
-          :percentage="renderData.progress.commonAllocation===0?0:Number((100*renderData.progress.stockIn/renderData.progress.commonAllocation).toFixed(2))">
+          :percentage="renderData.progress.commonAllocation===0?0:Number(Number((100*renderData.progress.stockIn/renderData.progress.commonAllocation).toFixed(2)))">
         </el-progress>
         <div class="infoCtn">
           <span class="line1">{{otherData.processType}}入库</span>
@@ -82,7 +82,7 @@
       <div class="progressCtn">
         <el-progress type="circle"
           :width="80"
-          :percentage="Number(otherData.processType==='织片'?(renderData.progress.allocation>renderData.progress.orderNumber?100:100*renderData.progress.allocation/renderData.progress.orderNumber).toFixed(2):(100*renderData.progress.allocation/renderData.progress.commonAllocation).toFixed(2))">
+          :percentage="Number(otherData.processType==='织片'?Number((renderData.progress.allocation>renderData.progress.orderNumber?100:100*renderData.progress.allocation/renderData.progress.orderNumber).toFixed(2)):Number((100*renderData.progress.allocation/renderData.progress.commonAllocation).toFixed(2)))">
         </el-progress>
         <div class="infoCtn">
           <span class="line1">{{otherData.processType}}分配</span>
@@ -94,7 +94,7 @@
         <el-progress type="circle"
           color="#E6A23C"
           :width="80"
-          :percentage="renderData.progress.commonAllocation===0?0:Number(100*renderData.progress.inspection/renderData.progress.commonAllocation).toFixed(2)">
+          :percentage="renderData.progress.commonAllocation===0?0:Number(Number(100*renderData.progress.inspection/renderData.progress.commonAllocation).toFixed(2))">
         </el-progress>
         <div class="infoCtn">
           <span class="line1">{{otherData.processType}}检验</span>
@@ -1125,7 +1125,8 @@
                         <div class="tcolumn">尺码</div>
                         <div class="tcolumn">检验数</div>
                         <div class="tcolumn">次品数</div>
-                        <div class="tcolumn">次品原因</div>
+                        <div class="tcolumn"
+                          style="flex:1.2">次品原因</div>
                         <div class="tcolumn">操作</div>
                       </div>
                     </div>
@@ -1173,18 +1174,15 @@
                               placeholder="次品数"></el-input>
                           </div>
                         </div>
-                        <div class="tcolumn">
+                        <div class="tcolumn"
+                          style="flex:1.2">
                           <div style="height:32px">
-                            <el-select class="inputs"
-                              multiple
+                            <el-cascader :options="otherData.defectiveType"
+                              :props="{multiple: true}"
                               collapse-tags
                               v-model="itemChild.reason"
-                              placeholder="请选择次品原因">
-                              <el-option v-for="(item,index) in otherData.defectiveType"
-                                :label="item"
-                                :value="item"
-                                :key="index"></el-option>
-                            </el-select>
+                              placeholder="请选择次品原因"
+                              clearable></el-cascader>
                           </div>
                         </div>
                         <div class="tcolumn"
@@ -1204,6 +1202,8 @@
                               <div class="oprCtn">
                                 <div class="btnCancle"
                                   @click="itemChild.showCheck=false">取消</div>
+                                <div class="btnCancle"
+                                  @click="cancleInspectionColorSize">清空</div>
                                 <div class="btnConfirm"
                                   @click="selectInspectionColorSize(item)">确认</div>
                               </div>
@@ -1212,18 +1212,17 @@
                           <span class="btn noBorder"
                             style="padding:0;margin:0 5px"
                             @click="item.colorSize.push({
-                            showCheck:false,
-                            colorSize: '',
-                            number: '',
-                            price: '',
-                            substandard: '',
-                            reason: []
-                          })"
+                              showCheck:false,
+                              colorSize: '',
+                              number: '',
+                              price: '',
+                              substandard: '',
+                              reason: []
+                            })"
                             v-if="indexChild===0">新增</span>
                           <span class="btn noBorder"
                             style="padding:0;margin:0 5px;color:#F5222D"
-                            @click="item.colorSize.splice(index,1)"
-                            v-if="indexChild>0">删除</span>
+                            @click="spliceInspection(item,indexChild)">删除</span>
                         </div>
                       </div>
                     </div>
@@ -1722,7 +1721,68 @@ export default {
       },
       // 其他数据，一般是控制页面显隐的锁
       otherData: {
-        defectiveType: ['织片原因', '纱线原因', '套口原因', '其他原因'],
+        defectiveType: [{
+          label: '织片原因',
+          value: '织片原因',
+          children: [{
+            label: '单丝',
+            value: '单丝'
+          }, {
+            label: '漏针',
+            value: '漏针'
+          }, {
+            label: '粗毛',
+            value: '粗毛'
+          }, {
+            label: '细毛',
+            value: '细毛'
+          }, {
+            label: '色差',
+            value: '色差'
+          }]
+        }, {
+          label: '套口原因',
+          value: '套口原因',
+          children: [{
+            label: '漏针',
+            value: '漏针'
+          }, {
+            label: '扎针',
+            value: '扎针'
+          }, {
+            label: '罗纹',
+            value: '罗纹'
+          }, {
+            label: '抽条',
+            value: '抽条'
+          }, {
+            label: '合肩',
+            value: '合肩'
+          }]
+        }, {
+          label: '平车原因',
+          value: '平车原因',
+          children: [{
+            label: '跳针',
+            value: '跳针'
+          }, {
+            label: '线角',
+            value: '线角'
+          }, {
+            label: '浮线',
+            value: '浮线'
+          }]
+        }, {
+          label: '其它原因',
+          value: '其它原因',
+          children: [{
+            label: '污迹',
+            value: '污迹'
+          }, {
+            label: '破损',
+            value: '破损'
+          }]
+        }],
         props: { multiple: true },
         material: {
           step: '',
@@ -2461,6 +2521,29 @@ export default {
           label: item.size_name
         }
       })
+      if (this.nativeData.inspectionLog.filter((itemUser) => itemUser.inspection_user_id && itemUser.product_id === ev).length > 0) {
+        this.formData.inspectionForm.detail = Array.from(new Set(this.nativeData.inspectionLog.filter((item) => item.inspection_user_id && item.product_id === ev).map((item) => item.inspection_user_id))).map((item) => {
+          return {
+            client_auth: ['来源工序人员', Number(item)],
+            colorSize: []
+          }
+        })
+        this.formData.inspectionForm.detail.forEach((item) => {
+          this.nativeData.inspectionLog.forEach((itemUser) => {
+            if (Number(item.client_auth[1]) === Number(itemUser.inspection_user_id) && itemUser.product_id === ev) {
+              if (!item.colorSize.find((itemFind) => itemFind.colorSize === itemUser.size_id)) {
+                item.colorSize.push({
+                  showCheck: false,
+                  colorSize: itemUser.size_id,
+                  number: '',
+                  substandard: '',
+                  reason: []
+                })
+              }
+            }
+          })
+        })
+      }
     },
     // 获取检验单位人员，初始化检验表单
     getClientAuth (ev) {
@@ -2500,6 +2583,16 @@ export default {
           reason: []
         }
       })
+      this.formData.inspectionForm.detail = this.formData.inspectionForm.detail.filter((item) => item.colorSize.length > 0)
+    },
+    cancleInspectionColorSize () {
+      this.formData.inspectionForm.colorSizeArr.forEach((item) => {
+        item.checked = false
+      })
+    },
+    spliceInspection (item, index) {
+      item.colorSize.splice(index, 1)
+      this.formData.inspectionForm.detail = this.formData.inspectionForm.detail.filter((item) => item.colorSize.length > 0)
     },
     // 确认检验
     saveInspection () {
@@ -3025,7 +3118,7 @@ export default {
       })
       this.getProcessChoose(resArr[0].data.data.map((item) => item.product_flow))
       let inspectionList = []
-      this.nativeData.inspectionLog.forEach((item) => {
+      this.$clone(this.nativeData.inspectionLog).forEach((item) => {
         this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'size_id', 'from'], ['number', 'count'])
       })
       this.renderData.inspectionList = this.$mergeData(inspectionList, { mainRule: 'from', childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
@@ -3047,19 +3140,9 @@ export default {
         }, 0)
       }, 0)
       // 初始化已检验人员
-      if (this.nativeData.inspectionLog.length > 0) {
-        this.formData.inspectionForm.detail = Array.from(new Set(this.nativeData.inspectionLog.filter((item) => item.inspection_user_id).map((item) => item.inspection_user_id))).map((item) => {
-          return {
-            client_auth: ['来源工序人员', Number(item)],
-            colorSize: [{
-              showCheck: false,
-              colorSize: '',
-              number: '',
-              substandard: '',
-              reason: []
-            }]
-          }
-        })
+      if (this.nativeData.inspectionLog.filter((itemUser) => itemUser.inspection_user_id).length > 0) {
+        this.formData.inspectionForm.product_id = this.nativeData.inspectionLog[0].product_id
+        this.getInspectionPro(this.nativeData.inspectionLog[0].product_id)
       }
     },
     // 根据工序类型处理模块信息
