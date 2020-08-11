@@ -285,7 +285,7 @@
                             @input="changeBagsBoxNumber(itemPro,itemType)"
                             type='number'></zh-input>
                         </span>
-                        <span class="tcolumn flex08 right">
+                        <span class="tcolumn flex08 right notAllow">
                           <!-- <zh-input placeholder='数量'
                             v-model="itemPro.total_number"
                             class="inputs noborderType right"
@@ -322,7 +322,7 @@
                         @input="changeGrossWeight(itemType)"
                         type='number'></zh-input>
                     </span>
-                    <span class="tcolumn flex08 right">
+                    <span class="tcolumn flex08 right notAllow">
                       <!-- <zh-input placeholder='数量'
                         v-model="itemType.total_gross_weight"
                         class="inputs noborderType right"
@@ -336,7 +336,7 @@
                         @input="changeNetWeight(itemType)"
                         type='number'></zh-input>
                     </span>
-                    <span class="tcolumn flex08 right">
+                    <span class="tcolumn flex08 right notAllow">
                       <!-- <zh-input placeholder='数量'
                         v-model="itemType.total_net_weight"
                         class="inputs noborderType right"
@@ -369,7 +369,7 @@
                         type='number'
                         @input="compTotalVol(itemType)"></zh-input>
                     </span>
-                    <span class="tcolumn flex08 right">
+                    <span class="tcolumn flex08 right notAllow">
                       {{itemType.total_vol || 0}}
                     </span>
                     <span class="tcolumn flex18">

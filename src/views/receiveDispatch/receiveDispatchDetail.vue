@@ -1212,8 +1212,32 @@ export default {
       order_type: 1
     }), process.list()]).then((res) => {
       this.orderInfo = res[0].data.data
-      this.weave_detail = this.$mergeData(res[1].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
-      this.process_detail = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
+      this.weave_detail = this.$mergeData(res[1].data.data, {
+        mainRule: 'client_name',
+        otherRule: [
+          { name: 'client_id' }
+        ],
+        childrenRule: {
+          mainRule: ['product_id', 'size_id', 'color_id'],
+          otherRule: [
+            { name: 'number', type: 'add' },
+            { name: 'complete_time' }
+          ]
+        }
+      })
+      this.process_detail = this.$mergeData(res[2].data.data, {
+        mainRule: 'client_name',
+        otherRule: [
+          { name: 'client_id' }
+        ],
+        childrenRule: {
+          mainRule: ['product_id', 'size_id', 'color_id'],
+          otherRule: [
+            { name: 'number', type: 'add' },
+            { name: 'complete_time' }
+          ]
+        }
+      })
       this.weave_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.process_product = this.$mergeData(res[2].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
       this.weave_company = res[3].data.data.filter((item) => {
