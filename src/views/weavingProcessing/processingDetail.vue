@@ -1139,20 +1139,22 @@ export default {
             let materialInfo = []
             item.product_info.forEach((itemChild) => {
               item.partDataArr.forEach((itemPart) => {
-                itemPart.size_info.forEach((itemSize) => {
-                  let finded = filterPeijian.find((itemFind) => {
-                    return itemFind.value === itemPart.name
-                  })
-                  if (finded && itemSize.size_id === Number(itemChild.colorSize.split('/')[0])) {
-                    materialInfo.push({
-                      material_type: 2,
-                      material_name: itemPart.name,
-                      material_attribute: '无',
-                      unit: itemPart.unit,
-                      total_weight: itemChild.number * itemSize.number
+                if (itemPart.size_info) {
+                  itemPart.size_info.forEach((itemSize) => {
+                    let finded = filterPeijian.find((itemFind) => {
+                      return itemFind.value === itemPart.name
                     })
-                  }
-                })
+                    if (finded && itemSize.size_id === Number(itemChild.colorSize.split('/')[0])) {
+                      materialInfo.push({
+                        material_type: 2,
+                        material_name: itemPart.name,
+                        material_attribute: '无',
+                        unit: itemPart.unit,
+                        total_weight: itemChild.number * itemSize.number
+                      })
+                    }
+                  })
+                }
               })
             })
             this.materialTable[index].material_info = materialInfo
