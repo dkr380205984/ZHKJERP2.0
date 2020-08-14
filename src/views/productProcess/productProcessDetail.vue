@@ -643,7 +643,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, inspection, chargebacks, staff, process, station } from '@/assets/js/api.js'
+import { order, materialPlan, client, inspection, chargebacks, staff, course, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1164,13 +1164,15 @@ export default {
           order_type: 1
         }),
         staff.list(),
-        process.list(),
+        course.list({
+          type: 3
+        }),
         station.list({
           type: 2
         })
       ]).then((res) => {
         this.orderInfo = res[0].data.data
-        this.processArr = res[5].data.data.filter(item => item.type === 2).map((item) => {
+        this.processArr = res[5].data.data.filter(item => item.type === 3).map((item) => {
           return {
             value: item.name,
             label: item.name
