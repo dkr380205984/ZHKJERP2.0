@@ -1657,7 +1657,7 @@ export default {
         ]).then(res => {
           this.orderLog = res[4].data.data
           // 初始化原料出入库数据
-          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 1).concat(res[3].data.data.filter(item => +item.type === 1).map(item => {
+          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => (Number(item.material_type) === 1) && (+item.reality_weight > 0)).concat(res[3].data.data.filter(item => +item.type === 1).map(item => {
             return {
               material_name: item.material_name,
               material_attribute: item.material_color,
@@ -1773,7 +1773,7 @@ export default {
         ]).then(res => {
           console.log(res[2].data.data)
           // 初始化辅料出入库数据
-          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
+          let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => (Number(item.material_type) === 2) && (+item.reality_weight > 0))
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_process_client.concat(res[0].data.data.material_order_client), { mainRule: ['client_name', 'client_id'] })
@@ -1793,7 +1793,7 @@ export default {
             })
           })
           // 初始化统计数据
-          this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
+          this.totalInfo.plan = this.$mergeData(materialPlan.map(item => {
             return {
               type: item.material_type,
               material_name: item.material_name,
