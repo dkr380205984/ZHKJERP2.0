@@ -1,5 +1,5 @@
 <template>
-  <div class='fileModule'>
+  <div class='comModule'>
     <div class="titleCtn">
       <span class="title">
         <span class="title"

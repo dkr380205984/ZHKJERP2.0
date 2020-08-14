@@ -50,106 +50,10 @@
       <zh-file-module :orderId='$route.params.id'
         title_has_border />
     </template>
-    <template v-else-if="confirmInfo && $route.params.type === '2'">
-      <div class="module">
-        <div class="titleCtn rightBtn">
-          <div class="title">
-            <span class="title hasBorder">客户意见表</span>
-          </div>
-        </div>
-        <div class="detailCtn">
-          <div class="rowCtn">
-            <div class="tableCtnLv2">
-              <span class="tb_header">
-                <span class="tb_row">标题</span>
-                <span class="tb_row"
-                  style="flex:0.5">意见</span>
-                <span class="tb_row"
-                  style="flex:2">内容</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">尺码</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.size === 2,'green':confirmInfo.size === 1}"
-                  style="flex:0.5">{{confirmInfo.size ? (confirmInfo.size === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.size_info && (confirmInfo.size === 2)) ? confirmInfo.size_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">重量</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.weight === 2,'green':confirmInfo.weight === 1}"
-                  style="flex:0.5">{{confirmInfo.weight ? (confirmInfo.weight === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.weight_info && (confirmInfo.weight === 2)) ? confirmInfo.weight_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">颜色</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.color === 2,'green':confirmInfo.color === 1}"
-                  style="flex:0.5">{{confirmInfo.color ? (confirmInfo.color === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.color_info && (confirmInfo.color === 2)) ? confirmInfo.color_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">手感</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.feel === 2,'green':confirmInfo.feel === 1}"
-                  style="flex:0.5">{{confirmInfo.feel ? (confirmInfo.feel === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.feel_info && (confirmInfo.feel === 2)) ? confirmInfo.feel_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">品质</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.quality === 2,'green':confirmInfo.quality === 1}"
-                  style="flex:0.5">{{confirmInfo.quality ? (confirmInfo.quality === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.quality_info && (confirmInfo.quality === 2)) ? confirmInfo.quality_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">成分</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.component === 2,'green':confirmInfo.component === 1}"
-                  style="flex:0.5">{{confirmInfo.component ? (confirmInfo.component === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.component_info && (confirmInfo.component === 2)) ? confirmInfo.component_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">图案</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.pattern === 2,'green':confirmInfo.pattern === 1}"
-                  style="flex:0.5">{{confirmInfo.pattern ? (confirmInfo.pattern === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.pattern_info && (confirmInfo.pattern === 2)) ? confirmInfo.pattern_info : '/'}}</span>
-              </span>
-              <span class="tb_content">
-                <span class="tb_row">其他</span>
-                <span class="tb_row"
-                  :class="{'orange':confirmInfo.others === 2,'green':confirmInfo.others === 1}"
-                  style="flex:0.5">{{confirmInfo.others ? (confirmInfo.others === 1 ? '确认' : '不确认') : '/'}}</span>
-                <span class="tb_row"
-                  style="flex:2">{{(confirmInfo.others_info && (confirmInfo.others === 2)) ? confirmInfo.others_info : '/'}}</span>
-              </span>
-            </div>
-          </div>
-          <div class="rowCtn">
-            <div class="colCtn">
-              <span class="label">图片信息：</span>
-              <span class="text">
-                <el-image style="width: 300px; height: 150px"
-                  :src="confirmComImg[0]"
-                  :preview-src-list="confirmComImg">
-                  <div slot="error"
-                    class="image-slot">
-                    <i class="el-icon-picture-outline"></i>
-                  </div>
-                </el-image>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <template v-else-if="$route.params.type === '2'">
+      <zh-confirm-module title_has_border
+        :orderId="$route.params.id"
+        :orderInfo='confirmInfo' />
     </template>
     <div class="module">
       <div class="titleCtn rightCtn">
@@ -563,7 +467,7 @@ export default {
             id: this.$route.params.id
           })
         ]).then(res => {
-          this.confirmInfo = res[2].data.data.confirm_info
+          this.confirmInfo = res[2].data.data
           let data = res[1].data.data
           // 初始化订单信息
           this.orderInfo = data.order_info
@@ -681,11 +585,6 @@ export default {
   filters: {
     filterType (item) {
       return [item.category_info.category_name, item.category_info.style_name, item.category_info.type_name].join('/')
-    }
-  },
-  computed: {
-    confirmComImg () {
-      return (this.confirmInfo.file_url && this.confirmInfo.file_url.map(itemM => itemM.url)) || [require('@/assets/image/index/noPic.jpg')]
     }
   }
 }
