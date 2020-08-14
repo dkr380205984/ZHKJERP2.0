@@ -50,6 +50,8 @@
         </div>
       </div>
     </div>
+    <zh-file-module :orderId='$route.params.id'
+      title_has_border />
     <div class="module">
       <div class="titleCtn">
         <span class="title">织造入库</span>
@@ -1221,7 +1223,10 @@ export default {
           mainRule: ['product_id', 'size_id', 'color_id'],
           otherRule: [
             { name: 'number', type: 'add' },
-            { name: 'complete_time' }
+            { name: 'size_name' },
+            { name: 'color_name' },
+            { name: 'complete_time' },
+            { name: 'product_info' }
           ]
         }
       })
@@ -1231,10 +1236,13 @@ export default {
           { name: 'client_id' }
         ],
         childrenRule: {
-          mainRule: ['product_id', 'size_id', 'color_id'],
+          mainRule: ['product_id', 'size_id', 'color_id', 'type'],
           otherRule: [
             { name: 'number', type: 'add' },
-            { name: 'complete_time' }
+            { name: 'size_name' },
+            { name: 'color_name' },
+            { name: 'complete_time' },
+            { name: 'product_info' }
           ]
         }
       })

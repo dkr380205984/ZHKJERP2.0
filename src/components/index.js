@@ -9,6 +9,8 @@ import zhTransition from './zhTransition/zhTransition.vue'
 import zhMessage from './zhMessage/zhMessage.vue'
 import zhTimeProcess from './zhTimeProcess/zhTimeProcess.vue'
 import orderWarning from './orderWarning/orderWarning.vue'
+import zhDeduct from './zhDeduct/zhDeduct.vue'
+import zhFileModule from './zhFileModule/zhFileModule.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -22,5 +24,7 @@ export default {
     vue.component('zhMessage', zhMessage)
     vue.component('zhTimeProcess', zhTimeProcess)
     vue.component('orderWarning', orderWarning)
+    vue.component('zhDeduct', zhDeduct)
+    vue.component('zhFileModule', zhFileModule)
   }
 }

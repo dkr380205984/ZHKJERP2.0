@@ -45,6 +45,57 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">工种</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.type"
+                @change="changeType"
+                placeholder="请选择工种">
+                <el-option label="合同工"
+                  value="1"></el-option>
+                <el-option label="临时工"
+                  value="2"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">入职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.start_time"
+                value-format="yyyy-MM-dd"
+                placeholder="入职时间">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">离职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.end_time"
+                value-format="yyyy-MM-dd"
+                placeholder="离职时间">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">其他信息</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">民族</span>
@@ -177,49 +228,6 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">工种</span>
-              <span class="explanation">(必填)</span>
-            </div>
-            <div class="content">
-              <el-select v-model="staffInfo.type"
-                placeholder="请选择工种">
-                <el-option label="合同工"
-                  value="1"></el-option>
-                <el-option label="临时工"
-                  value="2"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">入职时间</span>
-            </div>
-            <div class="content"
-              style="height:32px">
-              <el-date-picker style="width:100%;height:100%;line-height:30px"
-                v-model="staffInfo.start_time"
-                value-format="yyyy-MM-dd"
-                placeholder="入职时间">
-              </el-date-picker>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">离职时间</span>
-            </div>
-            <div class="content"
-              style="height:32px">
-              <el-date-picker style="width:100%;height:100%;line-height:30px"
-                v-model="staffInfo.end_time"
-                value-format="yyyy-MM-dd"
-                placeholder="离职时间">
-              </el-date-picker>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">地址</span>
@@ -277,7 +285,7 @@ export default {
         emergentPhone: '',
         start_time: '',
         end_time: '',
-        type: '',
+        type: '2',
         desc: '',
         mingzu: '',
         dizhi: '',
@@ -291,20 +299,21 @@ export default {
   },
   methods: {
     submit () {
+      if (this.$submitLock()) return
       if (!this.staffInfo.name) {
-        this.$message.warning('请填写姓名')
+        this.$message.error('请填写姓名')
         return
       }
       if (!this.staffInfo.telephone) {
-        this.$message.warning('请填写手机号')
+        this.$message.error('请填写手机号')
         return
       }
       if (!this.staffInfo.department) {
-        this.$message.warning('请选择部门')
+        this.$message.error('请选择部门')
         return
       }
       if (!this.staffInfo.type) {
-        this.$message.warning('请选择工种')
+        this.$message.error('请选择工种')
         return
       }
       // 紧急联系人没有上传到接口
@@ -331,12 +340,52 @@ export default {
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('添加成功')
-          this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
+          this.$confirm('是否继续添加？', '提示', {
+            confirmButtonText: '是',
+            cancelButtonText: '否',
+            type: 'warning'
+          }).then(() => {
+            this.staffInfo = {
+              name: '',
+              department: '',
+              age: '',
+              sex: '',
+              telephone: '',
+              station: '',
+              IDcard: '',
+              bankName: '',
+              bankCard: '',
+              health: '',
+              emergentPerson: '',
+              emergentPhone: '',
+              start_time: '',
+              end_time: '',
+              type: '2',
+              desc: '',
+              mingzu: '',
+              dizhi: '',
+              xueli: '',
+              tag: ''
+            }
+            this.changeType('2')
+          }).catch(() => {
+            this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
+          })
         }
       })
+    },
+    changeType (e) {
+      if (e === '2') {
+        let nowDate = new Date().getTime()
+        this.staffInfo.start_time = this.$getTime(nowDate)
+        this.staffInfo.end_time = this.$getTime(nowDate + 30 * 24 * 60 * 60 * 1000)
+      } else {
+        this.staffInfo.end_time = this.$getTime(new Date(this.staffInfo.start_time).getTime() + 366 * 24 * 60 * 60 * 1000)
+      }
     }
   },
   created () {
+    this.changeType('2')
     Promise.all([
       station.list({
         type: 2

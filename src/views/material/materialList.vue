@@ -2,6 +2,26 @@
   <div id='materialList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':type===1}"
+        @click="type = 1">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaodinggou"></use>
+        </svg>
+        <span class="name">原料订购</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':type===2}"
+        @click="type = 2">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-wuliaodinggou"></use>
+        </svg>
+        <span class="name">辅料订购</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn2">
@@ -99,10 +119,12 @@
             <div class="col flex08">
               <span class="text">负责小组</span>
             </div>
-            <div class="col flex12">
+            <div class="col flex12"
+              v-if="type === 1">
               <span class="text">采购进度(原)</span>
             </div>
-            <div class="col flex12">
+            <div class="col flex12"
+              v-else>
               <span class="text">采购进度(辅)</span>
             </div>
             <div class="col">
@@ -131,14 +153,16 @@
             <div class="col flex08">
               {{itemOrder.group_name}}
             </div>
-            <div class="col flex12">
+            <div class="col flex12"
+              v-if="type === 1">
               <div class="stateCtn rowFlex"
                 :class="itemOrder.material_order_progress.y_percent<100?'orange':'green'">
                 <div class="state"></div>
                 <span class="name">{{itemOrder.material_order_progress.y_percent}}%</span>
               </div>
             </div>
-            <div class="col flex12">
+            <div class="col flex12"
+              v-else>
               <div class="stateCtn rowFlex"
                 :class="itemOrder.material_order_progress.f_percent<100?'orange':'green'">
                 <div class="state"></div>
@@ -151,24 +175,12 @@
             <div class="col middle flex08">
               <span class="opr"
                 v-if="itemOrder.has_plan!==0"
-                style="padding-right:0">
-                <el-dropdown>
-                  <span class="el-dropdown-link">
-                    {{itemOrder.material_order_progress.y_percent>=100&&itemOrder.material_order_progress.f_percent>=100?'查看详情':'订购物料'}}<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2') + '/normal')">
-                      <span class="detail">原料</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item @click.native="$router.push('/material/materialDetail/'+itemOrder.id+'/2' + '/' + (orderType ? '1' : '2') + '/normal')">
-                      <span class="detail">辅料</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                @click="$router.push(`/material/materialDetail/${itemOrder.id}/${type}/${orderType ? '1' : '2'}/normal`)">
+                {{type === 1 ? '原料订购':'辅料订购'}}
               </span>
               <span class="opr"
                 style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.has_plan===0">暂无物料计划</span>
+                v-else>暂无物料计划</span>
             </div>
           </div>
         </div>
@@ -200,9 +212,7 @@
           <div class="btn btnGray"
             @click="cancelChecked">取消</div>
           <div class="btn btnWhiteBlue"
-            @click="$router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/2')">批量订辅料</div>
-          <div class="btn btnWhiteBlue"
-            @click="$router.push('/material/materialBatchDetail/' + checkedList.map(item=>item.id).join('-') + '/' + (orderType ? '1' : '2') + '/1')">批量订原料</div>
+            @click="$router.push(`/material/materialBatchDetail/${checkedList.map(item=>item.id).join('-')}/${orderType ? '1' : '2'}/${type}`)">批量订{{type === 1 ? '原' : '辅'}}料</div>
         </div>
       </div>
     </div>
@@ -229,7 +239,8 @@ export default {
       company_id: '',
       companyArr: [],
       // 批量订购勾选数据
-      checkedList: []
+      checkedList: [],
+      type: 1
     }
   },
   watch: {

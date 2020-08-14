@@ -604,7 +604,8 @@
             </span>
           </div>
         </div>
-        <div class="rowCtn">
+        <!-- 订单详情2020-08-13添加上传文件模块 此处去掉 -->
+        <!-- <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">包装资料</span>
@@ -675,7 +676,7 @@
               </el-upload>
             </span>
           </div>
-        </div>
+        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">
@@ -771,9 +772,9 @@ export default {
       remark: '',
       isResouceShow: 0, // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
       order_file_arr: [],
-      packag_file_arr: [],
-      box_file_arr: [],
-      other_file_arr: [],
+      // packag_file_arr: [],
+      // box_file_arr: [],
+      // other_file_arr: [],
       // 预警数据
       isOpenWarn: false,
       warnType: '',
@@ -1185,9 +1186,9 @@ export default {
         return
       }
       const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      // const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      // const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      // const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
       let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
       let productPushFlag = this.timeData.find(item => item.name === '成品入库')
@@ -1242,9 +1243,12 @@ export default {
         remark: this.remark,
         total_price_RMB: this.total_price * this.exchange_rate / 100,
         order_contract: JSON.stringify(orderContract),
-        pack_means: JSON.stringify(packMeans),
-        store_means: JSON.stringify(storeMeans),
-        others_info: JSON.stringify(otherInfo),
+        // pack_means: JSON.stringify(packMeans),
+        // store_means: JSON.stringify(storeMeans),
+        // others_info: JSON.stringify(otherInfo),
+        pack_means: JSON.stringify([]),
+        store_means: JSON.stringify([]),
+        others_info: JSON.stringify([]),
         time_progress: warnData
       }
       this.lock = false
@@ -1410,24 +1414,24 @@ export default {
           url: items
         }
       }) : []
-      this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
-      this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
-        return {
-          name: items.replace('https://zhihui.tlkrzf.com/', ''),
-          url: items
-        }
-      }) : []
+      // this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
+      //   return {
+      //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+      //     url: items
+      //   }
+      // }) : []
+      // this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
+      //   return {
+      //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+      //     url: items
+      //   }
+      // }) : []
+      // this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
+      //   return {
+      //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+      //     url: items
+      //   }
+      // }) : []
       this.remark = orderInfo.remark
       this.computedTotalPrice()
       if (orderInfo.time_progress) {

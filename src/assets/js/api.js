@@ -250,7 +250,8 @@ const sampleOrder = {
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params),
   changeStatus: (params) => http.post(`${baseUrl}/sample/status/check`, params, 'application/json'),
-  clientPay: (params) => http.post(`${baseUrl}/order/client/pay`, params, 'application/json')
+  clientPay: (params) => http.post(`${baseUrl}/order/client/pay`, params, 'application/json'),
+  saveConfirmInfo: (params) => http.post(`${baseUrl}/sample/confirm/info/save`, params, 'application/json')
 }
 // 物料预定购
 const materialOrder = {
@@ -499,7 +500,15 @@ const transport = {
   list: (params) => http.get(`${baseUrl}/stock/out/list`, params),
   delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
 }
+// 订单文件更新
+const orderFile = {
+  create: (params) => http.post(`${baseUrl}/order/file/save`, params, 'application/json'),
+  // detail: (params) => http.get(`${baseUrl}/stock/out/detail`, params),
+  list: (params) => http.get(`${baseUrl}/order/file/list`, params),
+  delete: (params) => http.post(`${baseUrl}/order/file/delete`, params, 'application/json')
+}
 export {
+  orderFile,
   transport,
   warehouse,
   reimbursement,

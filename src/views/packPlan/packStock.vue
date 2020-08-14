@@ -70,6 +70,8 @@
         </div>
       </div>
     </div>
+    <zh-file-module :orderId='$route.params.id'
+      title_has_border />
     <div class="module">
       <div class="titleCtn rightBtn">
         <div class="title">销售出库</div>

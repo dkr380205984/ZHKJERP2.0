@@ -50,11 +50,116 @@
         </div>
       </div>
     </div>
+    <template v-if="$route.params.orderType === '1'">
+      <zh-file-module :orderId='$route.params.id'
+        title_has_border />
+    </template>
+    <template v-else-if="confirmInfo && $route.params.orderType === '2'">
+      <div class="module">
+        <div class="titleCtn rightBtn">
+          <div class="title">
+            <span class="title hasBorder">客户意见表</span>
+          </div>
+        </div>
+        <div class="detailCtn">
+          <div class="rowCtn">
+            <div class="tableCtnLv2">
+              <span class="tb_header">
+                <span class="tb_row">标题</span>
+                <span class="tb_row"
+                  style="flex:0.5">意见</span>
+                <span class="tb_row"
+                  style="flex:2">内容</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">尺码</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.size === 2,'green':confirmInfo.size === 1}"
+                  style="flex:0.5">{{confirmInfo.size ? (confirmInfo.size === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.size_info && (confirmInfo.size === 2)) ? confirmInfo.size_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">重量</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.weight === 2,'green':confirmInfo.weight === 1}"
+                  style="flex:0.5">{{confirmInfo.weight ? (confirmInfo.weight === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.weight_info && (confirmInfo.weight === 2)) ? confirmInfo.weight_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">颜色</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.color === 2,'green':confirmInfo.color === 1}"
+                  style="flex:0.5">{{confirmInfo.color ? (confirmInfo.color === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.color_info && (confirmInfo.color === 2)) ? confirmInfo.color_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">手感</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.feel === 2,'green':confirmInfo.feel === 1}"
+                  style="flex:0.5">{{confirmInfo.feel ? (confirmInfo.feel === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.feel_info && (confirmInfo.feel === 2)) ? confirmInfo.feel_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">品质</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.quality === 2,'green':confirmInfo.quality === 1}"
+                  style="flex:0.5">{{confirmInfo.quality ? (confirmInfo.quality === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.quality_info && (confirmInfo.quality === 2)) ? confirmInfo.quality_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">成分</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.component === 2,'green':confirmInfo.component === 1}"
+                  style="flex:0.5">{{confirmInfo.component ? (confirmInfo.component === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.component_info && (confirmInfo.component === 2)) ? confirmInfo.component_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">图案</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.pattern === 2,'green':confirmInfo.pattern === 1}"
+                  style="flex:0.5">{{confirmInfo.pattern ? (confirmInfo.pattern === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.pattern_info && (confirmInfo.pattern === 2)) ? confirmInfo.pattern_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">其他</span>
+                <span class="tb_row"
+                  :class="{'orange':confirmInfo.others === 2,'green':confirmInfo.others === 1}"
+                  style="flex:0.5">{{confirmInfo.others ? (confirmInfo.others === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(confirmInfo.others_info && (confirmInfo.others === 2)) ? confirmInfo.others_info : '/'}}</span>
+              </span>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">图片信息：</span>
+              <span class="text">
+                <el-image style="width: 300px; height: 150px"
+                  :src="confirmComImg[0]"
+                  :preview-src-list="confirmComImg">
+                  <div slot="error"
+                    class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <div class="module">
       <div class="titleCtn">
         <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料出入库</span>
       </div>
-      <template v-if="materialStockInfo.length > 0">
+      <template v-if="materialStockInfo.length > 0 || $route.params.type !== '1'">
         <div class="editCtn hasBorderTop">
           <div class="rowCtn">
             <div class="colCtn"
@@ -108,7 +213,6 @@
                         v-for="(itemColor,indexColor) in item.color_info"
                         :key="indexColor">
                         <div class="tcolumn">{{itemColor.attr}}</div>
-                        <!-- {{$toFixed(itemColor.order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}} -->
                         <span class="tcolumn">
                           <span class="order">{{$toFixed(itemColor.order_weight)}}{{itemColor.type === 1 ? 'kg' : itemColor.unit}}</span>
                           <span class="replenish"
@@ -121,14 +225,18 @@
                           style="flex:1.5">
                           <span class="trow"
                             style="align-items: center;">
-                            <div class="btn noBorder noMargin"
-                              @click="handleClick(item,itemColor,'out')">出库</div>
+                            <!-- <div class="btn noBorder noMargin"
+                              @click="handleClick(item,itemColor,'out')">出库</div> -->
                             <div class="btn noBorder"
                               @click="handleClick(item,itemColor,'end_go')">入库</div>
                           </span>
                         </span>
                       </div>
                     </div>
+                  </div>
+                  <div class="trow"
+                    v-if="materialStockInfo.length === 0">
+                    <span class="tcolumn center">暂无数据</span>
                   </div>
                 </div>
                 <div class="editCtn bgGary_page"
@@ -149,7 +257,8 @@
                           clearable
                           class="elInput"
                           placeholder="请选择出入库单位"
-                          :disabled="itemStock.editType === 5">
+                          :disabled="itemStock.editType === 5"
+                          @change="changeClient(itemStock,$event)">
                           <el-option v-for="item in materialClient"
                             :key="item.client_id"
                             :label="item.client_name"
@@ -166,6 +275,7 @@
                         <el-select v-model="itemStock.editType"
                           class="elInput"
                           placeholder="请选择操作类型"
+                          :disabled="itemStock.editTypeDisabled"
                           @change="getStockList">
                           <el-option v-for="item in editTypeArr"
                             :key="item.value"
@@ -179,21 +289,8 @@
                       v-if="itemStock.editType === 5">
                       <div class="label">
                         <span class="text">结余入库仓库</span>
-                        <!-- <span class="text">{{itemStock.editType === 5 ? '结余入库仓库' : '出入库仓库'}}</span> -->
                       </div>
                       <div class="content">
-                        <!-- <template v-if="itemStock.editType !== 5">
-                          <el-select v-model="itemStock.stockId"
-                            class="elInput"
-                            placeholder="请选择出入库仓库">
-                            <el-option v-for="item in [{id:null,name:'订单原料仓库'}]"
-                              :key="item.id"
-                              :label="item.name"
-                              :value="item.id">
-                            </el-option>
-                          </el-select>
-                        </template> -->
-                        <!-- <template v-else> -->
                         <el-select v-model="itemStock.stockId"
                           class="elInput"
                           placeholder="请选择结余入库仓库">
@@ -203,7 +300,6 @@
                             :value="item.id">
                           </el-option>
                         </el-select>
-                        <!-- </template> -->
                       </div>
                     </div>
                   </div>
@@ -217,19 +313,27 @@
                         <span class="explanation">（必填）</span>
                       </div>
                       <div class="content">
-                        <el-select v-model="itemMa.material_name"
-                          filterable
-                          default-first-option
-                          clearable
-                          class="elInput"
-                          :placeholder="'请选择需要操作的' + ($route.params.type === '1' ? '原' : '辅') +'料'"
-                          @change="changeColorInfo($event,itemMa)">
-                          <el-option v-for="item in materialStockInfo"
-                            :key="item.id"
-                            :label="item.material_name"
-                            :value="item.material_name">
-                          </el-option>
-                        </el-select>
+                        <template v-if="itemStock.isCustomerSupplied">
+                          <el-autocomplete class="elInput"
+                            v-model="itemMa.material_name"
+                            :fetch-suggestions="querySearchMaterial"
+                            :placeholder="`请选择需要操作的${$route.params.type === '1' ? '原' : '辅'}料`"></el-autocomplete>
+                        </template>
+                        <template v-else>
+                          <el-select v-model="itemMa.material_name"
+                            filterable
+                            default-first-option
+                            clearable
+                            class="elInput"
+                            :placeholder="'请选择需要操作的' + ($route.params.type === '1' ? '原' : '辅') +'料'"
+                            @change="changeColorInfo($event,itemMa)">
+                            <el-option v-for="item in materialStockInfo"
+                              :key="item.id"
+                              :label="item.material_name"
+                              :value="item.material_name">
+                            </el-option>
+                          </el-select>
+                        </template>
                       </div>
                     </div>
                     <div class="colCtn flex3">
@@ -239,18 +343,26 @@
                         <span class="explanation">（必填）</span>
                       </div>
                       <div class="content middle_page col">
-                        <el-select v-model="itemMa.material_attribute"
-                          filterable
-                          default-first-option
-                          clearable
-                          class="elInput"
-                          :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
-                          <el-option v-for="item in itemMa.color_info"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name">
-                          </el-option>
-                        </el-select>
+                        <template v-if="itemStock.isCustomerSupplied">
+                          <el-autocomplete class="elInput"
+                            v-model="itemMa.material_attribute"
+                            :fetch-suggestions="querySearchColor"
+                            :placeholder="`请选择需要操作的${$route.params.type === '1' ? '原' : '辅'}料颜色`"></el-autocomplete>
+                        </template>
+                        <template v-else>
+                          <el-select v-model="itemMa.material_attribute"
+                            filterable
+                            default-first-option
+                            clearable
+                            class="elInput"
+                            :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
+                            <el-option v-for="item in itemMa.color_info"
+                              :key="item.name"
+                              :label="item.name"
+                              :value="item.name">
+                            </el-option>
+                          </el-select>
+                        </template>
                       </div>
                     </div>
                     <div class="colCtn flex3">
@@ -302,7 +414,7 @@
                 <div class="addRows">
                   <span class="once"
                     v-if="stockEditInfo.length === 0"
-                    @click="addItem(stockEditInfo,'stock')">普通出入库</span>
+                    @click="addItem(stockEditInfo,'stock')">添加出入库</span>
                   <span class="once cancle"
                     v-if="stockEditInfo.length > 0"
                     @click="resetEditInfo('stock')">取消</span>
@@ -319,12 +431,12 @@
         </div>
       </template>
       <template v-else>
-        <div class="normalCtn hasBorderTop">暂无任何原料订购信息</div>
+        <div class="normalCtn hasBorderTop">暂无任何{{$route.params.type === '1' ? '原' : '辅'}}料订购信息</div>
       </template>
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}出库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}单位出库</span>
       </div>
       <template v-if="weaveInfo.length !== 0">
         <div class="editCtn hasBorderTop">
@@ -531,13 +643,13 @@
                 <div class="addRows">
                   <span class="once"
                     v-if="weaveStockEditInfo.length === 0"
-                    @click="addItem(weaveStockEditInfo,'process')">普通出库</span>
+                    @click="addItem(weaveStockEditInfo,'process')">添加单位出库</span>
                   <span class="once cancle"
                     v-if="weaveStockEditInfo.length > 0"
                     @click="resetEditInfo('weave')">取消</span>
                   <span class="once normal"
                     v-if="weaveStockEditInfo.length > 0"
-                    @click="addItem(weaveStockEditInfo,'process')">添加出入库</span>
+                    @click="addItem(weaveStockEditInfo,'process')">添加单位出库</span>
                   <span class="once ok"
                     v-if="weaveStockEditInfo.length > 0"
                     @click="saveAll('weave')">确认</span>
@@ -901,7 +1013,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock } from '@/assets/js/api.js'
+import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock, material, yarnColor, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -952,12 +1064,12 @@ export default {
       cloneStockLog: [],
       editTypeArr: [
         {
-          label: '出库',
-          value: 'out'
-        }, {
-          label: '入库',
-          value: 'go'
-        }, {
+          //   label: '出库',
+          //   value: 'out'
+          // }, {
+          //   label: '入库',
+          //   value: 'go'
+          // }, {
           label: '最终入库',
           value: 'end_go'
         }, {
@@ -966,7 +1078,11 @@ export default {
         }
       ],
       stockArr: [],
-      orderLog: []
+      orderLog: [],
+      // 添加辅料客供逻辑
+      materialList: [],
+      colorList: [],
+      confirmInfo: {}
     }
   },
   watch: {
@@ -1047,6 +1163,48 @@ export default {
     }
   },
   methods: {
+    // 添加辅料客供逻辑
+    querySearchMaterial (queryString, callback, flag) {
+      if (this.materialList.length === 0 || !flag) {
+        material.list().then(res => {
+          if (res.data.status !== false) {
+            this.materialList = res.data.data.map(item => ({ value: item.name }))
+            this.querySearchMaterial(queryString, callback, true)
+          }
+        })
+      } else {
+        callback(queryString ? this.materialList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.materialList)
+      }
+    },
+    querySearchColor (queryString, callback, flag) {
+      if (this.colorList.length === 0 || !flag) {
+        yarnColor.list().then(res => {
+          if (res.data.status !== false) {
+            this.colorList = res.data.data.map(item => ({ value: item.name }))
+            this.querySearchColor(queryString, callback, true)
+          }
+        })
+      } else {
+        callback(queryString ? this.colorList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.colorList)
+      }
+    },
+    changeClient (item, e) {
+      if (this.$route.params.orderType === '1') return
+      const isCustomerSupplied = this.materialClient.find(itemF => itemF.client_id === e)
+      if (isCustomerSupplied && isCustomerSupplied.isCustomerSupplied) {
+        item.isCustomerSupplied = true
+        item.editTypeDisabled = true
+        item.editType = 'end_go'
+      } else {
+        item.isCustomerSupplied = false
+        item.editTypeDisabled = false
+        item.material_info = [{
+          material_name: '',
+          material_attribute: '',
+          number: ''
+        }]
+      }
+    },
     getStockList (event) {
       if (event === 5) {
         if (this.stockArr.length === 0) {
@@ -1232,9 +1390,6 @@ export default {
       }
       if (type === 'material') {
         this.stockEditInfo.forEach(item => {
-          // if (+item.editType !== 5 && !item.client_name) {
-          //   flag.client = false
-          // }
           if (!item.editType) {
             flag.editType = false
           }
@@ -1420,7 +1575,7 @@ export default {
       if (type === 'stock') {
         let obj = {
           client_name: '',
-          editType: 'out',
+          editType: 'end_go',
           stockId: '',
           material_info: [
             {
@@ -1598,7 +1753,7 @@ export default {
           }))
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
-          this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] }).concat([{ client_id: this.orderInfo.client_id, client_name: this.orderInfo.client_name }])
+          this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化织造出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
             return {
@@ -1629,7 +1784,7 @@ export default {
             }
           })
           // 初始化统计数据
-          this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {
+          this.totalInfo.plan = this.$mergeData(materialPlan.map(item => {
             return {
               type: item.material_type,
               material_name: item.material_name,
@@ -1640,7 +1795,7 @@ export default {
           }), { mainRule: ['material_name', 'type'], otherRule: [{ name: 'unit' }], childrenName: 'color_info', childrenRule: { mainRule: 'color', otherRule: [{ name: 'number' }] } })
           // 初始化日志信息
           this.cloneStockLog = this.$clone(res[1].data.data.filter(item => Number(item.material_type) === 1))
-          this.handleClientArr = this.$mergeData(this.$clone(this.cloneStockLog), { mainRule: 'client_name' }).map(item => {
+          this.handleClientArr = this.$mergeData(this.cloneStockLog, { mainRule: 'client_name' }).map(item => {
             return {
               client_name: item.client_name
             }
@@ -1697,6 +1852,12 @@ export default {
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_process_client.concat(res[0].data.data.material_order_client), { mainRule: ['client_name', 'client_id'] })
+          // 添加客供逻辑
+          this.materialClient.unshift({
+            client_name: `${this.orderInfo.client_name}(客供)`,
+            client_id: this.orderInfo.client_id,
+            isCustomerSupplied: true
+          })
           // 初始化加工出入库数据
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
             return {
@@ -1745,6 +1906,20 @@ export default {
                   colorFlag.goStockNumEnd = Number(colorFlag.goStockNumEnd || 0) + Number(item.total_weight)
                 }
               }
+            } else {
+              this.materialStockInfo.push({
+                material_name: item.material_name,
+                checked: false,
+                unit: '个',
+                color_info: [
+                  {
+                    attr: item.material_color,
+                    order_weight: 0,
+                    goStockNumEnd: Number(item.total_weight),
+                    updated_at: null
+                  }
+                ]
+              })
             }
             let clientFlag = this.weaveInfo.find(value => value.client_name === item.client_name)
             if (clientFlag) {
@@ -1799,6 +1974,15 @@ export default {
   },
   created () {
     this.initData(this.$route.params.type)
+    if (this.$route.params.orderType === '2') {
+      sampleOrder.detail({
+        id: this.$route.params.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.confirmInfo = res.data.data.confirm_info
+        }
+      })
+    }
   },
   computed: {
     checkWhichYarn () {
@@ -1806,6 +1990,9 @@ export default {
     },
     checkWhichWeave () {
       return this.weaveInfo.filter(item => item.checked)
+    },
+    confirmComImg () {
+      return (this.confirmInfo.file_url && this.confirmInfo.file_url.map(itemM => itemM.url)) || [require('@/assets/image/index/noPic.jpg')]
     }
   }
 }
