@@ -443,6 +443,7 @@ export default {
     changeOtherMaterialUnit (e, item) {
       if (!e.target.value) {
         item.unit = '个'
+        this.computedTotal()
       }
     },
     querySearch (queryString, cb) {

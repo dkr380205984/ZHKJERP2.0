@@ -50,6 +50,8 @@
         </div>
       </div>
     </div>
+    <zh-file-module :orderId='$route.params.id'
+      title_has_border />
     <div class="module">
       <div class="titleCtn">
         <span class="title">成品检验</span>
@@ -374,114 +376,20 @@
         </div>
       </div>
     </div>
-    <!-- 扣款窗口 -->
-    <div class="popup"
-      v-if="deductPopupFlag">
-      <div class="main">
-        <div class="title">
-          单位扣款
-          <span class="el-icon-close"
-            @click="deductPopupFlag = false"></span>
-        </div>
-        <div class="content">
-          <div class="row">
-            <span class="label">扣款单位：</span>
-            <span class="info">
-              <el-select v-model="deductInfo.client_id"
-                filterable
-                placeholder="请选择需要扣款的单位">
-                <el-option v-for="item in clientArr"
-                  :key="item.client_id"
-                  :label="item.client_name"
-                  :value="item.client_id + '-' + item.type">
-                </el-option>
-              </el-select>
-            </span>
-          </div>
-          <div class="row">
-            <span class="label">扣款金额：</span>
-            <span class="info">
-              <zh-input type='number'
-                v-model=" deductInfo.price"
-                placeholder="请输入需要扣除款项的金额">
-                <template slot="append">元</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="row">
-            <span class="label">扣款备注：</span>
-            <span class="info">
-              <zh-input v-model=" deductInfo.remark"
-                placeholder="请输入扣款备注">
-              </zh-input>
-            </span>
-          </div>
-        </div>
-        <div class="opr">
-          <span class="btn btnGray"
-            @click="deductPopupFlag = false">取消</span>
-          <span class="btn btnBlue"
-            @click="clientDeduct">确定</span>
-        </div>
-      </div>
-    </div>
-    <!-- 操作记录 -->
-    <div class="popup"
-      v-show="deductLogPopupFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">扣款记录</div>
-          <i class="el-icon-close"
-            @click="deductLogPopupFlag=false"></i>
-        </div>
-        <div class="content">
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in deductLogList"
-              :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span style="margin-left:20px;color:#F5222D">扣款</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
-                    </span>
-                  </template>
-                  <div class="collapseBox">
-                    <span class="label">操作：</span>
-                    <span class="info">
-                      <span class="blue"
-                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
-                    </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款单位：</span>
-                    <span class="info">{{item.client_name}} </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款原因：</span>
-                    <span class="info">{{item.desc}}</span>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="deductLogPopupFlag=false">关闭</div>
-          <div class="btn btnBlue"
-            @click="deductLogPopupFlag=false">确定</div>
-        </div>
-      </div>
-    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnWhiteBlue"
-            @click="deductLogPopupFlag = true">扣款日志</div>
-          <div class="btn btnWhiteRed"
-            @click="deductPopupFlag = true">单位扣款</div>
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='1'
+            :showType='deductPopupType'
+            :logType='[4, 5]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>
@@ -492,7 +400,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, inspection, chargebacks, weave, processing } from '@/assets/js/api.js'
+import { order, materialPlan, client, inspection, weave, processing } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -552,13 +460,7 @@ export default {
       // 扣款窗口数据
       deductPopupFlag: false,
       clientArr: [],
-      deductInfo: {
-        client_id: '',
-        price: '',
-        remark: ''
-      },
-      deductLogPopupFlag: false,
-      deductLogList: []
+      deductPopupType: true
     }
   },
   watch: {
@@ -574,43 +476,6 @@ export default {
       let list = this.defectiveType
       let returnList = queryString ? list.filter(item => item.value.indexOf(queryString) !== -1) : list
       cb(returnList)
-    },
-    // 扣款提交
-    clientDeduct () {
-      if (!this.deductInfo.client_id) {
-        this.$message.error('请选择需要扣款的合作单位')
-        return
-      }
-      if (!this.deductInfo.price) {
-        this.$message.error('请填写需要扣除款项的金额')
-        return
-      }
-      chargebacks.create({
-        id: null,
-        client_id: this.deductInfo.client_id.split('-')[0],
-        order_id: JSON.stringify([this.$route.params.id]),
-        complete_time: this.$getTime(),
-        deduct_price: this.deductInfo.price,
-        desc: this.deductInfo.remark,
-        order_type: 1,
-        type: this.deductInfo.client_id.split('-')[1]
-      }).then((res) => {
-        if (res.data.status) {
-          this.$message.success('扣款成功')
-          this.deductPopupFlag = false
-          this.getDeductLog()
-        }
-      })
-    },
-    // 获取扣款日志
-    getDeductLog () {
-      chargebacks.log({
-        order_type: 1,
-        order_id: this.$route.params.id,
-        type: [4, 5]
-      }).then((res) => {
-        this.deductLogList = res.data.data
-      })
     },
     // 批量导出excel
     download () {
@@ -873,7 +738,6 @@ export default {
     }
   },
   mounted () {
-    this.getDeductLog()
     Promise.all([
       order.detail({
         id: this.$route.params.id

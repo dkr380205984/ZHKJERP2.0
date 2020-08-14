@@ -1,0 +1,121 @@
+@import '../common.less';
+.fileModule{
+  background-color: #FFF;
+  margin-bottom: 24px;
+  color: @font85;
+  .titleCtn{
+    height: 55px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    border-bottom: 1px solid @borderColor;
+    .title{
+      font-size: 16px;
+      font-weight: bold;
+      &.hasBorder{
+        position: relative;
+        &::after{
+          content: '';
+          position: absolute;
+          height: 4px;
+          background: rgba(80, 227, 194, 0.8);
+          bottom: -1px;
+          left: -2px;
+          right: -2px;
+          border-radius: 2px;
+        }
+      }
+    }
+    .rightBtn{
+      border: 1px solid @borderColor;
+      padding: 0 16px;
+      height: 32px;
+      line-height: 30px;
+      border-radius: 4px;
+      cursor: pointer;
+      &.blue{
+        color: #FFF;
+        border-color: @blue;
+        background-color: @blue;
+      }
+    }
+  }
+  .detailCtn{
+    padding: 24px 32px;
+    .infoCtn{
+      // min-height: 30px;
+      // padding-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      // border-bottom: 1px solid @borderColor;
+      .title{
+        // height: 30px;
+        cursor: pointer;
+        padding-bottom: 16px;
+        // line-height: 50px;
+      }
+      .content{
+        height: auto;
+        background-color: @borderColor;
+        display: flex;
+        flex-direction: column;
+        padding: 0 16px;
+        box-sizing: border-box;
+        .info{
+          margin-top: 24px;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          word-break: break-all;
+          &:last-child{
+            margin-bottom: 24px;
+          }
+          .item{
+            min-width: 100px;
+            margin-right: 24px;
+          }
+          &.fileModule{
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: @borderColor;
+          }
+          .fileItem{
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            &:last-child{
+              margin: 0;
+            }
+            .name{
+              &::before{
+                margin-right: 8px;
+              }
+            }
+            .see,
+            .down{
+              color: @blue;
+              cursor: pointer;
+              margin-left: 16px;
+              &>a{
+                text-decoration: none;
+                color: @blue;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .uploadBtn{    
+    font-size: 14px;
+    color: @font65;
+    border:1px solid @borderColor;
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+  .redBtn{
+    color: @red;
+    cursor: pointer;
+  }
+}

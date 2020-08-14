@@ -52,6 +52,111 @@
         </div>
       </div>
     </div>
+    <template v-if="$route.params.orderType === '1'">
+      <zh-file-module :orderId='$route.params.id'
+        title_has_border />
+    </template>
+    <template v-else-if="orderInfo.confirm_info && $route.params.orderType === '2'">
+      <div class="module">
+        <div class="titleCtn rightBtn">
+          <div class="title">
+            <span class="title hasBorder">客户意见表</span>
+          </div>
+        </div>
+        <div class="detailCtn">
+          <div class="rowCtn">
+            <div class="tableCtnLv2">
+              <span class="tb_header">
+                <span class="tb_row">标题</span>
+                <span class="tb_row"
+                  style="flex:0.5">意见</span>
+                <span class="tb_row"
+                  style="flex:2">内容</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">尺码</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.size === 2,'green':orderInfo.confirm_info.size === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.size ? (orderInfo.confirm_info.size === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.size_info && (orderInfo.confirm_info.size === 2)) ? orderInfo.confirm_info.size_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">重量</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.weight === 2,'green':orderInfo.confirm_info.weight === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.weight ? (orderInfo.confirm_info.weight === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.weight_info && (orderInfo.confirm_info.weight === 2)) ? orderInfo.confirm_info.weight_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">颜色</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.color === 2,'green':orderInfo.confirm_info.color === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.color ? (orderInfo.confirm_info.color === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.color_info && (orderInfo.confirm_info.color === 2)) ? orderInfo.confirm_info.color_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">手感</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.feel === 2,'green':orderInfo.confirm_info.feel === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.feel ? (orderInfo.confirm_info.feel === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.feel_info && (orderInfo.confirm_info.feel === 2)) ? orderInfo.confirm_info.feel_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">品质</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.quality === 2,'green':orderInfo.confirm_info.quality === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.quality ? (orderInfo.confirm_info.quality === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.quality_info && (orderInfo.confirm_info.quality === 2)) ? orderInfo.confirm_info.quality_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">成分</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.component === 2,'green':orderInfo.confirm_info.component === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.component ? (orderInfo.confirm_info.component === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.component_info && (orderInfo.confirm_info.component === 2)) ? orderInfo.confirm_info.component_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">图案</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.pattern === 2,'green':orderInfo.confirm_info.pattern === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.pattern ? (orderInfo.confirm_info.pattern === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.pattern_info && (orderInfo.confirm_info.pattern === 2)) ? orderInfo.confirm_info.pattern_info : '/'}}</span>
+              </span>
+              <span class="tb_content">
+                <span class="tb_row">其他</span>
+                <span class="tb_row"
+                  :class="{'orange':orderInfo.confirm_info.others === 2,'green':orderInfo.confirm_info.others === 1}"
+                  style="flex:0.5">{{orderInfo.confirm_info.others ? (orderInfo.confirm_info.others === 1 ? '确认' : '不确认') : '/'}}</span>
+                <span class="tb_row"
+                  style="flex:2">{{(orderInfo.confirm_info.others_info && (orderInfo.confirm_info.others === 2)) ? orderInfo.confirm_info.others_info : '/'}}</span>
+              </span>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">图片信息：</span>
+              <span class="text">
+                <el-image style="width: 300px; height: 150px"
+                  :src="confirmComImg[0]"
+                  :preview-src-list="confirmComImg">
+                  <div slot="error"
+                    class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <div class="module">
       <div class="titleCtn">
         <span class="title">订单{{type==='1'?'原':'辅'}}料统计</span>
@@ -688,8 +793,10 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
+        <div class="btn btnWhiteBlue"
+          @click="computedGoStockNum">自动计算实际入库值</div>
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
@@ -753,8 +860,9 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
+        <div class="btn btnWhiteBlue">自动计算实际入库值</div>
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
@@ -1381,114 +1489,124 @@
         </div>
       </div>
     </div>
-    <!-- 扣款窗口 -->
     <div class="popup"
-      v-if="deductPopupFlag">
-      <div class="main">
+      v-if='showComRealityGoStockPopup'>
+      <div class="main"
+        style="min-width:1000px">
         <div class="title">
-          单位扣款
+          <span class="text">填写实际入库值</span>
           <span class="el-icon-close"
-            @click="deductPopupFlag = false"></span>
+            @click="showComRealityGoStockPopup = false"></span>
         </div>
-        <div class="content">
-          <div class="row">
-            <span class="label">扣款单位：</span>
-            <span class="info">
-              <el-select v-model="deductInfo.client_id"
-                filterable
-                placeholder="请选择需要扣款的单位">
-                <el-option v-for="item in clientArr"
-                  :key="item.client_id"
-                  :label="item.client_name"
-                  :value="item.client_id + '-' + item.type">
-                </el-option>
-              </el-select>
-            </span>
+        <div class="content"
+          style="max-height:600px;">
+          <div class="row">入库日志</div>
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <span class="tb_row">入库时间</span>
+              <span class="tb_row">入库单位</span>
+              <span class="tb_row">入库物料名称</span>
+              <span class="tb_row">入库物料颜色</span>
+              <span class="tb_row">入库数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(itemStock,indexStock) in stockLog"
+              :key="indexStock">
+              <span class="tb_row">{{$getTime(itemStock.complete_time)}}</span>
+              <span class="tb_row">{{itemStock.client_name}}</span>
+              <span class="tb_row">{{itemStock.material_name}}</span>
+              <span class="tb_row">{{itemStock.material_color}}</span>
+              <span class="tb_row">{{itemStock.total_weight}}</span>
+            </div>
           </div>
-          <div class="row">
-            <span class="label">扣款金额：</span>
-            <span class="info">
-              <zh-input type='number'
-                v-model=" deductInfo.price"
-                placeholder="请输入需要扣除款项的金额">
-                <template slot="append">元</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="row">
-            <span class="label">扣款备注：</span>
-            <span class="info">
-              <zh-input v-model=" deductInfo.remark"
-                placeholder="请输入扣款备注">
-              </zh-input>
-            </span>
-          </div>
-        </div>
-        <div class="opr">
-          <span class="btn btnGray"
-            @click="deductPopupFlag = false">取消</span>
-          <span class="btn btnBlue"
-            @click="clientDeduct">确定</span>
-        </div>
-      </div>
-    </div>
-    <!-- 操作记录 -->
-    <div class="popup"
-      v-show="deductLogPopupFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">扣款记录</div>
-          <i class="el-icon-close"
-            @click="deductLogPopupFlag=false"></i>
-        </div>
-        <div class="content">
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in deductLogList"
+          <div class="row">采购日志</div>
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <span class="tb_row flex12">完成日期</span>
+              <span class="tb_row">来源</span>
+              <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
+              <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+              <span class="tb_row flex08">单价(元)</span>
+              <span class="tb_row flex08">采购数量</span>
+              <span class="tb_row flex08">采购总价(元)</span>
+              <span class="tb_row flex12 middle">实际入库数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in orderLog"
               :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span style="margin-left:20px;color:#F5222D">扣款</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
-                    </span>
-                  </template>
-                  <div class="collapseBox">
-                    <span class="label">操作：</span>
-                    <span class="info">
-                      <span class="blue"
-                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
-                    </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款单位：</span>
-                    <span class="info">{{item.client_name}} </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款原因：</span>
-                    <span class="info">{{item.desc}}</span>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
+              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+              <span class="tb_row">
+                <span>
+                  <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
+                  <br />
+                  {{item.client_name}}
+                </span>
+              </span>
+              <span class="tb_row flex12">{{item.material_name + '/' + item.before_color}}</span>
+              <span class="tb_row">{{item.color_code}}</span>
+              <span class="tb_row flex08">{{item.price}}</span>
+              <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+              <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+              <span class="tb_row flex12 middle">
+                <zh-input v-model="item.goStock_number">
+                  <template slot="append">{{type==='1'?'kg':item.unit}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </div>
+          <div class="row">加工日志</div>
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <span class="tb_row flex12">完成日期</span>
+              <span class="tb_row">加工单位</span>
+              <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
+              <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+              <span class="tb_row flex08">工序</span>
+              <span class="tb_row flex08">单价(元)</span>
+              <span class="tb_row flex08">数量</span>
+              <span class="tb_row flex08">总价(元)</span>
+              <span class="tb_row flex12 middle">实际入库数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in processLog"
+              :key="index">
+              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+              <span class="tb_row flex12">{{item.client_name}}</span>
+              <span class="tb_row flex12">{{item.material_name}}</span>
+              <span class="tb_row">{{item.material_color}}</span>
+              <span class="tb_row flex08">{{item.process_type}}</span>
+              <span class="tb_row flex08">{{item.price}}</span>
+              <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+              <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+              <span class="tb_row flex12 middle">
+                <zh-input v-model="item.goStock_number">
+                  <template slot="append">{{type==='1'?'kg':item.unit}}</template>
+                </zh-input>
+              </span>
+            </div>
+          </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="deductLogPopupFlag=false">关闭</div>
-          <div class="btn btnBlue"
-            @click="deductLogPopupFlag=false">确定</div>
+            @click="showComRealityGoStockPopup = false">取消</div>
+          <div class="btn btnBlue">提交</div>
         </div>
       </div>
     </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnWhiteBlue"
-            @click="deductLogPopupFlag = true">扣款日志</div>
-          <div class="btn btnWhiteRed"
-            @click="deductPopupFlag = true">单位扣款</div>
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='+$route.params.orderType'
+            :showType='deductPopupType'
+            :logType='[1,3]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>
@@ -1499,7 +1617,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock, chargebacks } from '@/assets/js/api.js'
+import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1589,53 +1707,15 @@ export default {
       // 扣款窗口数据
       deductPopupFlag: false,
       clientArr: [],
-      deductInfo: {
-        client_id: '',
-        price: '',
-        remark: ''
-      },
-      deductLogPopupFlag: false,
-      deductLogList: []
+      deductPopupType: true,
+      // 自动计算实际入库值
+      showComRealityGoStockPopup: false,
+      stockLog: [],
+      orderlog: [],
+      processLog: []
     }
   },
   methods: {
-    // 扣款提交
-    clientDeduct () {
-      if (!this.deductInfo.client_id) {
-        this.$message.error('请选择需要扣款的合作单位')
-        return
-      }
-      if (!this.deductInfo.price) {
-        this.$message.error('请填写需要扣除款项的金额')
-        return
-      }
-      chargebacks.create({
-        id: null,
-        client_id: this.deductInfo.client_id.split('-')[0],
-        order_id: JSON.stringify([this.$route.params.id]),
-        complete_time: this.$getTime(),
-        deduct_price: this.deductInfo.price,
-        desc: this.deductInfo.remark,
-        order_type: this.$route.params.orderType,
-        type: this.deductInfo.client_id.split('-')[1]
-      }).then((res) => {
-        if (res.data.status) {
-          this.$message.success('扣款成功')
-          this.deductPopupFlag = false
-          this.getDeductLog()
-        }
-      })
-    },
-    // 获取扣款日志
-    getDeductLog () {
-      chargebacks.log({
-        order_type: this.$route.params.orderType,
-        order_id: this.$route.params.id,
-        type: [1, 3]
-      }).then((res) => {
-        this.deductLogList = res.data.data
-      })
-    },
     // 加工日志勾选打印
     printProcessTable () {
       if (this.checkedProcessClientInfo.length === 0) {
@@ -2576,6 +2656,78 @@ export default {
         this.otherYarnStock = res.data.data
         this.total = res.data.meta.total
       })
+    },
+    computedGoStockNum () {
+      const { materialStock } = require('@/assets/js/api.js')
+      this.loading = true
+      materialStock.detail({
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType
+      }).then(res => {
+        if (res.data.status !== false) {
+          let stockLog = res.data.data.filter(itemF => +itemF.type === 3)// 过滤出最终入库
+          let orderLog = this.$clone(this.order_stock_log)
+          let processLog = this.$clone(this.process_log)
+          let notComMatArr = {
+            order: {
+              '0': [],
+              '1': []
+            },
+            process: {
+              '0': [],
+              '1': []
+            }
+          }
+          stockLog.forEach(itemS => {
+            let filterOrderArr = orderLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.before_color === itemS.material_color)
+            if (filterOrderArr.length === 1) {
+              filterOrderArr[0].goStock_number = itemS.total_weight
+            } else if (filterOrderArr.length === 0) {
+              notComMatArr.order['0'].push(`${itemS.material_name}/${itemS.material_color}`)
+            } else if (filterOrderArr.length > 1) {
+              notComMatArr.order['1'].push(`${itemS.material_name}/${itemS.material_color}`)
+            }
+            let filterProcessArr = processLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.material_color === itemS.material_color)
+            if (filterProcessArr.length === 1) {
+              filterProcessArr[0].goStock_number = itemS.total_weight
+            } else if (filterProcessArr.length === 0) {
+              notComMatArr.process['0'].push(`${itemS.material_name}/${itemS.material_color}`)
+            } else if (filterProcessArr.length > 1) {
+              notComMatArr.process['1'].push(`${itemS.material_name}/${itemS.material_color}`)
+            }
+          })
+          let msgStr = `${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '以下入库日志物料') || ''}
+                        ${(notComMatArr.order['0'].length > 0 && '未匹配上') || ''}
+                        ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['1'].length > 0 && '或') || ''}
+                        ${(notComMatArr.order['1'].length > 0 && '匹配多条') || ''}
+                        ${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '订购日志：<br />') || ''}
+                        ${(notComMatArr.order['0'].length > 0 && '未匹配上：<br />') || ''}
+                        ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['0'].join('<br />')) || ''}
+                        ${(notComMatArr.order['1'].length > 0 && '匹配上多条：<br />') || ''}
+                        ${(notComMatArr.order['1'].length > 0 && notComMatArr.order['1'].join('<br />')) || ''}
+                        <br />
+                        ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '以下入库日志物料') || ''}
+                        ${(notComMatArr.process['0'].length > 0 && '未匹配上') || ''}
+                        ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['1'].length > 0 && '或') || ''}
+                        ${(notComMatArr.process['1'].length > 0 && '匹配多条') || ''}
+                        ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '加工日志：<br />') || ''}
+                        ${(notComMatArr.process['0'].length > 0 && '未匹配上：<br />') || ''}
+                        ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['0'].join('<br />')) || ''}
+                        ${(notComMatArr.process['1'].length > 0 && '匹配上多条：<br />') || ''}
+                        ${(notComMatArr.process['1'].length > 0 && notComMatArr.process['1'].join('<br />')) || ''}`
+          if (msgStr) {
+            this.$alert(msgStr, '提示', {
+              confirmButtonText: '确定',
+              dangerouslyUseHTMLString: true
+            })
+          }
+          this.stockLog = stockLog
+          this.orderLog = orderLog
+          this.processLog = processLog
+          this.showComRealityGoStockPopup = true
+        }
+        this.loading = false
+      })
     }
   },
   computed: {
@@ -2603,6 +2755,9 @@ export default {
         }
       })
       return this.$mergeData(data, { mainRule: 'client_name' }).map(item => item.client_name)
+    },
+    confirmComImg () {
+      return (this.orderInfo.confirm_info && this.orderInfo.confirm_info.file_url && JSON.parse(this.orderInfo.confirm_info.file_url)) || [require('@/assets/image/index/noPic.jpg')]
     }
   },
   watch: {
@@ -2625,7 +2780,6 @@ export default {
   },
   created () {
     let api = this.$route.params.orderType === '1' ? order : sampleOrder
-    this.getDeductLog()
     Promise.all([api.detail({
       id: this.$route.params.id
     }), materialPlan.detail({
@@ -2762,28 +2916,11 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/material/materialDetail.less";
-</style>
-<style lang="less">
-#materialDetail {
-  .popup {
-    .el-timeline-item {
-      padding-bottom: 0px;
-      margin-bottom: -9px;
-    }
-    .el-collapse-item__header {
-      min-height: 46px;
-      height: 46px;
-    }
-    .el-timeline-item__tail {
-      margin-top: 14px;
-    }
-    .el-timeline-item__node--normal {
-      margin-top: 14px;
-    }
-    .collapseBox {
-      margin: 12px;
-    }
+.tableCtnLv2.height40 {
+  .tb_header,
+  .tb_content {
+    min-height: 40px !important;
   }
 }
+@import "~@/assets/less/material/materialDetail.less";
 </style>

@@ -130,7 +130,8 @@
                 </div>
                 <div class="tb_collapse tb_content bigPadding smallHeight"
                   v-for="(itemMa,indexMa) in itemPro.material_info"
-                  :key="indexMa">
+                  :key="indexMa"
+                  :title="itemMa.order_prog > 0 ? '该条数据已有订购信息，不允许修改' : ''">
                   <span class="tb_row">
                     <el-select placeholder="请选择部位"
                       v-model="itemMa.product_part"
@@ -444,6 +445,7 @@ export default {
     changeOtherMaterialUnit (e, item) {
       if (!e.target.value) {
         item.unit = '个'
+        this.computedTotal()
       }
     },
     querySearch (queryString, cb) {

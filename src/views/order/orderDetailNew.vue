@@ -121,6 +121,9 @@
         </div>
       </div>
     </div>
+    <zh-file-module :orderId='$route.params.id'
+      title_has_border
+      canChange />
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">发货信息</span>
@@ -1466,7 +1469,9 @@ export default {
       },
       // 确认完成修改数据
       showOkPopup: false,
-      actualProductInfo: []
+      actualProductInfo: [],
+      // 文件更新模块
+      showUpdateFilePopup: false
     }
   },
   methods: {
@@ -1738,7 +1743,7 @@ export default {
           order_type: 1
         })
       ]).then(res => {
-        let materialDetail = res[0].data.data.total_data
+        let materialDetail = res[0].data.data.total_data.filter(itemF => itemF.reality_weight > 0)
         let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
         this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
           return {
