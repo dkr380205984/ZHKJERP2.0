@@ -86,7 +86,7 @@
                       <div class="tcolumn noPad"
                         style="flex:4">
                         <div class="trow">
-                          <div class="tcolumn">产品部件</div>
+                          <!-- <div class="tcolumn">产品部件</div> -->
                           <div class="tcolumn">计划数量</div>
                           <div class="tcolumn">分配数量</div>
                           <div class="tcolumn">操作</div>
@@ -119,7 +119,7 @@
                         <div class="trow"
                           v-for="(itemChild,indexChild) in itemSize.part_data"
                           :key="indexChild">
-                          <div class="tcolumn">{{itemChild.name}}</div>
+                          <!-- <div class="tcolumn">{{itemChild.name}}</div> -->
                           <div class="tcolumn">{{itemChild.number}}</div>
                           <div class="tcolumn">{{itemChild.weavingNum}}</div>
                           <div class="tcolumn">
@@ -182,17 +182,17 @@
                   <div class="colCtn flex3">
                     <div class="label"
                       v-if="indexChild===0">
-                      <span class="text">配件/尺码/颜色</span>
+                      <span class="text">尺码/颜色</span>
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
                       <el-select v-model="itemChild.partColorSize"
                         no-data-text="请先选择产品"
-                        placeholder="请选择配件/尺码/颜色">
+                        placeholder="请选择尺码/颜色">
                         <el-option v-for="item in item.part_data"
                           :key="item.id + '/' +item.size_id + '/' + item.color_id"
                           :value="item.id + '/' +item.size_id + '/' + item.color_id"
-                          :label="item.name + '/' +item.size + '/' + item.color"></el-option>
+                          :label="item.size + '/' + item.color"></el-option>
                       </el-select>
                     </div>
                   </div>
@@ -280,7 +280,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="weaving_detail.length>0">
       <div class="titleCtn">
         <span class="title">织造分配详情</span>
       </div>
@@ -339,15 +340,18 @@
         </div>
       </div>
     </div>
-    <div class="module log">
+    <div class="module log"
+      v-if="weaving_log.length>0">
       <div class="titleCtn">
         <span class="title">织造分配日志</span>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="btnCtn_page"
-          style="margin-left:64px;display:inline-block">
-          <div class="btn noBorder noMargin"
-            @click="deleteLog('all')">批量删除</div>
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <div class="btn btnWhiteBlue"
+              @click="deleteLog('all')">批量删除</div>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn"
@@ -414,7 +418,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="weaving_detail.length>0">
       <div class="titleCtn">
         <span class="title">原料分配信息</span>
       </div>
@@ -577,7 +582,7 @@
                 <span class="text">{{item.product_code}}({{item.category_name}}/{{item.type_name}}/{{item.style_name}})</span>
               </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
               <div class="label">选择部件：</div>
               <div class="info">
                 <el-select placeholder="请选择产品部件"
@@ -588,7 +593,7 @@
                     :value="itemChild.id"></el-option>
                 </el-select>
               </div>
-            </div>
+            </div> -->
             <div class="row">
               <div class="label">织造单位：</div>
               <div class="info">
@@ -1199,9 +1204,11 @@ export default {
     },
     // 填写公共信息
     commonFn () {
+      console.log(this.checkWeaveList)
       this.checkWeaveList.forEach((item) => {
         if (!item.checkPart) {
-          item.checkPart = item.childrenMergeInfo.part_data[0].id
+          console.log(item)
+          item.checkPart = item.childrenMergeInfo[0].part_data[0].id
         }
       })
       this.checkWeaveList.forEach((item) => {
@@ -1461,13 +1468,14 @@ export default {
         }
       })
       productInfo.forEach((item) => {
-        item.part_data.forEach((itemChild) => {
-          itemChild.number = itemChild.size_info.find((itemFind) => itemFind.size_id === item.size_id).number * item.production_number
-          itemChild.color = item.color_name
-          itemChild.color_id = item.color_id
-          itemChild.size = item.size_name
-          itemChild.size_id = item.size_id
-        })
+        // item.part_data.forEach((itemChild) => {
+        //   itemChild.number = itemChild.size_info.find((itemFind) => itemFind.size_id === item.size_id).number * item.production_number
+        //   itemChild.color = item.color_name
+        //   itemChild.color_id = item.color_id
+        //   itemChild.size = item.size_name
+        //   itemChild.size_id = item.size_id
+        // })
+        item.part_data = []
         item.part_data.unshift({
           name: '大身',
           number: item.production_number,

@@ -69,9 +69,15 @@ export default {
             icon: 'icon-chanpinshoufa'
           },
           {
-            name: '产品检验',
+            name: '半成品检验',
             id: 10,
             path: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
+            icon: 'icon-chanpinjianyan'
+          },
+          {
+            name: '成品加工',
+            id: 10,
+            path: '/productProcess/productProcessList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
             icon: 'icon-chanpinjianyan'
           },
           {
@@ -82,7 +88,7 @@ export default {
           },
           {
             name: '进仓运输',
-            id: 19,
+            id: 20,
             path: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address=',
             icon: 'icon-zhuangxiangchuku'
           }

@@ -1,5 +1,5 @@
 <template>
-  <div id='inspectionList'
+  <div id='productProcessList'
     class='indexMain'
     v-loading='loading'>
     <div class="module">
@@ -80,13 +80,9 @@
               <span class="text">负责小组</span>
             </div>
             <div class="col">
-              <span class="text">检验进度</span>
-            </div>
-            <div class="col">
               <span class="text">下单时间</span>
             </div>
-            <div class="col"
-              style="flex:1.6">
+            <div class="col">
               <span class="text">操作</span>
             </div>
           </div>
@@ -106,19 +102,11 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.product_inspection_progress.r_semi_product>=100,'orange':itemOrder.product_inspection_progress.r_semi_product<100}">
-                <div class="state">
-                </div><span class="name">{{itemOrder.product_inspection_progress.r_semi_product}}%</span>
-              </div>
-            </div>
-            <div class="col">
               {{itemOrder.order_time}}
             </div>
-            <div class="col"
-              style="flex:1.6">
+            <div class="col">
               <span class="opr"
-                @click="$router.push('/inspection/semiFinishedDetail/' + itemOrder.id)">半成品检验</span>
+                @click="$router.push('/productProcess/productProcessDetail/' + itemOrder.id)">成品加工</span>
             </div>
           </div>
         </div>
@@ -180,10 +168,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/inspection/inspectionList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/productProcess/productProcessList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
-      this.$router.push('/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=')
+      this.$router.push('/productProcess/productProcessList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=')
     },
     getOrderList () {
       this.loading = true
@@ -267,5 +255,5 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/inspection/inspectionList.less";
+@import "~@/assets/less/productProcess/productProcessList.less";
 </style>

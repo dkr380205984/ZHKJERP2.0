@@ -57,6 +57,9 @@ const permissions = [{
 }, {
   module: '进仓运输管理',
   id: 19
+}, {
+  module: '成品加工',
+  id: 20
 }]
 const moneyArr = [{
   name: '元',
@@ -143,8 +146,11 @@ const companyType = [
     value: 25,
     name: '手工单位'
   }, {
-    value: 25,
+    value: 26,
     name: '其它单位'
+  }, {
+    value: 27,
+    name: '成品加工单位'
   }
 ]
 export {

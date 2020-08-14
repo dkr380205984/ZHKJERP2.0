@@ -319,10 +319,11 @@
         </div>
       </template>
       <template v-else>
-        <div class="normalCtn hasBorderTop">暂无任何原料订购信息</div>
+        <div class="normalCtn hasBorderTop">暂无任何{{$route.params.type === '1' ? '原' : '辅'}}料订购信息</div>
       </template>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="weaveInfo.length !== 0">
       <div class="titleCtn">
         <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}出库</span>
       </div>
@@ -344,7 +345,8 @@
           <div class="rowCtn">
             <div class="colCtn"
               style="margin-right:0">
-              <div class="flexTb">
+              <div class="flexTb"
+                style="border-bottom:0">
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn"
@@ -377,7 +379,9 @@
                       <el-checkbox v-model="item.checked"
                         @change="watchCheckedNum($event,item)"></el-checkbox>
                     </div>
-                    <div class="tcolumn">{{item.client_name}}</div>
+                    <div class="tcolumn">{{item.client_name}}
+                      <span style="color:#1a95ff">{{item.process?item.process:'织造'}}</span>
+                    </div>
                     <div class="tcolumn noPad"
                       style="flex:6">
                       <div class="trow"
@@ -551,19 +555,23 @@
         <div class="normalCtn hasBorderTop">暂无任何织造加工信息</div>
       </template>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="stockLog.length>0">
       <div class="titleCtn">
         <div class="title">出入库日志</div>
       </div>
       <div class="listCtn hasBorderTop">
-        <div class="btnCtn_page"
-          id='yarn'>
-          <div class="btn noBorder noMargin"
-            @click="deleteLog('all',stockLog)">批量删除</div>
-          <div class="btn noBorder noMargin"
-            @click="download">批量导出excel</div>
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
+            <div class="btn btnWhiteBlue"
+              @click="deleteLog('all')">批量删除</div>
+            <div class="btn btnWhiteBlue"
+              @click="download">批量导出excel</div>
+          </div>
         </div>
-        <div class="tableCtnLv2">
+        <div style="margin:18px 32px;width:auto"
+          class="tableCtnLv2">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
             <span class="tb_row">出入库时间</span>
@@ -1198,7 +1206,7 @@ export default {
       }).then(() => {
         let checkedArr = []
         if (type === 'all') {
-          checkedArr = item.filter(value => value.checked).map(value => value.id)
+          checkedArr = this.stockLog.filter(value => value.checked).map(value => value.id)
         } else {
           checkedArr.push(item)
         }
@@ -1687,30 +1695,25 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           }),
-          processing.detail({
+          processing.matDetail({
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType
           })
         ]).then(res => {
+          console.log(res[2].data.data)
           // 初始化辅料出入库数据
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => Number(item.material_type) === 2)
           this.orderInfo = res[0].data.data.order_info
           this.materialStockInfo = this.$mergeData(materialPlan.filter(itemMa => Number(itemMa.order_weight) && Number(itemMa.order_weight) !== 0), { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_process_client.concat(res[0].data.data.material_order_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化加工出入库数据
-          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'part_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
-            return {
-              checked: false,
-              client_name: items.client_name,
-              client_id: items.client_id,
-              material_info: this.$mergeData(items.material_info, { mainRule: ['name/material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'number/weight', type: 'add' }] } }).map(value => {
-                value.color_info.forEach(val => {
-                  val.type = 2
-                  val.unit = '个'
-                })
-                return value
+          this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: ['client_id', 'product_flow/process'], otherRule: [{ name: 'client_name' }], childrenName: 'material_info', childrenRule: { mainRule: 'material_name', childrenName: 'color_info', otherRule: [{ name: 'number/weight', type: 'add' }] } })
+          this.weaveInfo.forEach((item) => {
+            item.material_info.forEach((itemChild) => {
+              itemChild.color_info.forEach((itemSon) => {
+                itemSon.attr = itemSon.material_attribute
               })
-            }
+            })
           })
           // 初始化统计数据
           this.totalInfo.plan = this.$mergeData(this.$clone(materialPlan).map(item => {

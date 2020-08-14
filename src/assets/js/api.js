@@ -305,7 +305,10 @@ const weave = {
 const processing = {
   create: (params) => http.post(`${baseUrl}/production/semi_product/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/production/semi_product/list`, params),
-  delete: (params) => http.post(`${baseUrl}/production/semi_product/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/production/semi_product/delete`, params, 'application/json'),
+  saveMat: (params) => http.post(`${baseUrl}/material/distribute/save`, params, 'application/json'),
+  matDetail: (params) => http.get(`${baseUrl}/material/distribute/detail`, params),
+  matDelete: (params) => http.post(`${baseUrl}/material/distribute/delete`, params, 'application/json')
 }
 // 产品收发入库
 const receive = {
@@ -499,7 +502,14 @@ const transport = {
   list: (params) => http.get(`${baseUrl}/stock/out/list`, params),
   delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
 }
+// 成品加工
+const productProcess = {
+  create: (params) => http.post(`${baseUrl}/stock/out/save`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/stock/out/list`, params),
+  delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
+}
 export {
+  productProcess,
   transport,
   warehouse,
   reimbursement,
