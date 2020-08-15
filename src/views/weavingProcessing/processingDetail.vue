@@ -1123,6 +1123,21 @@ export default {
       }
       if (filterPeijian.length === 0 && filterWuliao.length === 0) {
         this.$message.error('你未选择任何物料，请自行填写分配物料')
+        this.materialTable = []
+        this.process_data.forEach((item, index) => {
+          this.materialTable.push({
+            client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
+            client_id: item.company_id,
+            process: item.process_type.join('/'),
+            material_info: [{
+              aterial_type: 2,
+              material_name: '',
+              material_attribute: '',
+              unit: 'kg',
+              total_weight: ''
+            }]
+          })
+        })
         this.step = 2
         return
       }
