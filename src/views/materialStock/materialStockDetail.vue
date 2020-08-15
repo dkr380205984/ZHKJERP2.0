@@ -341,7 +341,7 @@
     <div class="module"
       v-if="weaveInfo.length !== 0">
       <div class="titleCtn">
-        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料{{$route.params.type === '1' ? '织造' : '加工'}}单位出库</span>
+        <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料单位出库</span>
       </div>
       <template v-if="weaveInfo.length !== 0">
         <div class="editCtn hasBorderTop">
@@ -1671,8 +1671,9 @@ export default {
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化织造出入库数据
-          console.log(res[5].data.data)
+          console.log(res[5].data.data, res[2].data.data)
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
+            console.log(items.material_info)
             return {
               checked: false,
               client_name: items.client_name,
@@ -1683,10 +1684,11 @@ export default {
           this.weaveInfo.forEach((item) => {
             item.material_info.forEach((itemChild) => {
               itemChild.color_info.forEach((itemSon) => {
-                itemSon.attr = itemSon.material_attribute
+                itemSon.attr = itemSon.attr || itemSon.material_attribute
               })
             })
           })
+          console.log(this.weaveInfo)
           // 合并补纱信息入织造出入库
           res[3].data.data.filter(item => +item.type === 1).forEach(item => {
             let flag = this.weaveInfo.find(items => items.client_name === item.replenish_name)
