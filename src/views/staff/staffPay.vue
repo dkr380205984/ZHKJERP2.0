@@ -660,18 +660,20 @@ export default {
         return
       }
       staff.createPay({
-        id: item.id,
-        staff_id: item.staff_id,
-        complete_time: item.complete_time,
-        work_type: item.work_type,
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1]),
-        settle_type: item.settle_type,
-        price: item.price,
-        number: item.number,
-        unit: item.unit,
-        total_price: item.price * item.number,
-        desc: item.desc
+        data: [{
+          id: item.id,
+          staff_id: item.staff_id,
+          complete_time: item.complete_time,
+          work_type: item.work_type,
+          year: this.date.split('-')[0],
+          month: Number(this.date.split('-')[1]),
+          settle_type: item.settle_type,
+          price: item.price,
+          number: item.number,
+          unit: item.unit,
+          total_price: item.price * item.number,
+          desc: item.desc
+        }]
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('操作成功')

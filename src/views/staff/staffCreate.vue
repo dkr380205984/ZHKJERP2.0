@@ -88,6 +88,24 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">负责工序</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.station"
+                multiple
+                placeholder="请选择负责工序">
+                <el-option v-for="(item,index) in processList"
+                  :key="index"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="module">
@@ -125,7 +143,7 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">员工年龄</span>
             </div>
@@ -135,7 +153,7 @@
                 placeholder="请输入员工年龄"></zh-input>
             </div>
           </div>
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">员工性别</span>
             </div>
@@ -147,15 +165,6 @@
                 <el-option label="女"
                   value="2"></el-option>
               </el-select>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
-              <span class="text">岗位</span>
-            </div>
-            <div class="content">
-              <el-input v-model="staffInfo.station"
-                placeholder="请输入员工岗位"></el-input>
             </div>
           </div>
         </div>
@@ -266,7 +275,7 @@
   </div>
 </template>
 <script>
-import { staff, station, staffTag } from '@/assets/js/api.js'
+import { staff, station, staffTag, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -276,7 +285,7 @@ export default {
         age: '',
         sex: '',
         telephone: '',
-        station: '',
+        station: [],
         IDcard: '',
         bankName: '',
         bankCard: '',
@@ -294,7 +303,8 @@ export default {
       },
       departmentArr: [],
       stationArr: [],
-      staffTagList: []
+      staffTagList: [],
+      processList: [] // 工序数组，给员工绑定工序
     }
   },
   methods: {
@@ -390,10 +400,15 @@ export default {
       station.list({
         type: 2
       }),
-      staffTag.list()
+      staffTag.list(),
+      course.list({
+        type: 3
+      })
     ]).then((res) => {
       this.departmentArr = res[0].data.data
       this.staffTagList = res[1].data.data
+      this.processList = res[2].data.data
+      console.log(this.processList)
     })
   }
 }
