@@ -364,7 +364,7 @@ export default {
       this.staffInfo.IDcard = data.id_card
       this.staffInfo.bankName = data.bank_card_name
       this.staffInfo.bankCard = data.bank_card_code
-      this.staffInfo.station = data.station_id
+      this.staffInfo.station = data.station_id.map((item) => item.id)
       this.staffInfo.health = data.healthy_info
       this.staffInfo.emergentPhone = data.urgent_phone
       this.staffInfo.type = data.type
