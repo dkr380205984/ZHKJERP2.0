@@ -53,7 +53,7 @@
             </div>
             <div class="box">
               <div class="label">岗位：</div>
-              <div class="content">{{staffInfo.station_id}}</div>
+              <div class="content">{{staffInfo.station_id?staffInfo.station_id.map((item)=>item.name).join(','):''}}</div>
             </div>
           </div>
           <div class="tabelBody">

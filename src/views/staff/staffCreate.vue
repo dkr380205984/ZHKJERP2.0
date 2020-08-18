@@ -100,11 +100,18 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">岗位</span>
+              <span class="text">负责工序</span>
+              <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-input v-model="staffInfo.station"
-                placeholder="请输入员工岗位"></el-input>
+              <el-select v-model="staffInfo.station"
+                multiple
+                placeholder="请选择负责工序">
+                <el-option v-for="(item,index) in processList"
+                  :key="index"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -258,7 +265,7 @@
   </div>
 </template>
 <script>
-import { staff, station, staffTag } from '@/assets/js/api.js'
+import { staff, station, staffTag, course } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -268,7 +275,7 @@ export default {
         age: '',
         sex: '',
         telephone: '',
-        station: '',
+        station: [],
         IDcard: '',
         bankName: '',
         bankCard: '',
@@ -286,7 +293,8 @@ export default {
       },
       departmentArr: [],
       stationArr: [],
-      staffTagList: []
+      staffTagList: [],
+      processList: []
     }
   },
   methods: {
@@ -341,10 +349,14 @@ export default {
       station.list({
         type: 2
       }),
-      staffTag.list()
+      staffTag.list(),
+      course.list({
+        type: 2
+      })
     ]).then((res) => {
       this.departmentArr = res[0].data.data
       this.staffTagList = res[1].data.data
+      this.processList = res[2].data.data
     })
   }
 }

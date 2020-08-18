@@ -971,11 +971,12 @@
                   <div class="trow">
                     <div class="tcolumn">产品编号</div>
                     <div class="tcolumn noPad"
-                      style="flex:3">
+                      style="flex:4">
                       <div class="trow">
                         <div class="tcolumn">尺码</div>
                         <div class="tcolumn">分配+机动数</div>
                         <div class="tcolumn">已检验</div>
+                        <div class="tcolumn">操作</div>
                       </div>
                     </div>
                   </div>
@@ -990,7 +991,7 @@
                       </div>
                     </div>
                     <div class="tcolumn noPad"
-                      style="flex:3">
+                      style="flex:4">
                       <div class="trow"
                         v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                         :key="indexChild">
@@ -1001,6 +1002,10 @@
                           style="flex-direction:row;align-items: center;justify-content: flex-start;"><span style="color:#01B48C">{{itemChild.number}}</span><span style="color:#E6A23C">+{{parseInt(itemChild.motorise_number)}}</span></div>
                         <div class="tcolumn"
                           :style="{color:itemChild.inspection===0?'#ccc':'#E6A23C'}">{{itemChild.inspection}}</div>
+                        <div class="tcolumn">
+                          <span style="color:#1a95ff;cursor:pointer"
+                            @click="inspectionOnce(item,itemChild)">检验</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2524,7 +2529,7 @@ export default {
       if (this.nativeData.inspectionLog.filter((itemUser) => itemUser.inspection_user_id && itemUser.product_id === ev).length > 0) {
         this.formData.inspectionForm.detail = Array.from(new Set(this.nativeData.inspectionLog.filter((item) => item.inspection_user_id && item.product_id === ev).map((item) => item.inspection_user_id))).map((item) => {
           return {
-            client_auth: ['来源工序人员', Number(item)],
+            client_auth: ['所有人员', Number(item)],
             colorSize: []
           }
         })
@@ -2594,12 +2599,31 @@ export default {
       item.colorSize.splice(index, 1)
       this.formData.inspectionForm.detail = this.formData.inspectionForm.detail.filter((item) => item.colorSize.length > 0)
     },
+    // 单个检验
+    inspectionOnce (father, son) {
+      if (this.formData.inspectionForm.product_id && this.formData.inspectionForm.product_id !== father.product_id) {
+        this.$message.error('检测到有别的产品正在检验')
+        return
+      }
+      this.formData.inspectionForm.product_id = father.product_id
+      this.getInspectionPro(father.product_id)
+      this.formData.inspectionForm.detail.push({
+        client_auth: '',
+        colorSize: [{
+          showCheck: false,
+          colorSize: son.size_id,
+          number: '',
+          substandard: '',
+          reason: []
+        }]
+      })
+    },
     // 确认检验
     saveInspection () {
       let error = ''
       this.formData.inspectionForm.detail.forEach((item) => {
         if (item.client_auth.length === 0) {
-          error = '请选择来源工序人员/单位'
+          error = '请选择所有人员/单位'
         }
         item.colorSize.forEach((itemChild) => {
           if (!itemChild.colorSize) {
@@ -2626,7 +2650,7 @@ export default {
             size_id: itemChild.colorSize,
             color_id: null,
             client_id: item.client_auth[0] === '检验单位' ? item.client_auth[1] : '',
-            inspection_user: item.client_auth[0] === '来源工序人员' || item.client_auth[0] === '常用人员' ? item.client_auth[1] : '',
+            inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' || item.client_auth[0] === '工序负责人员' ? item.client_auth[1] : '',
             count: itemChild.substandard,
             number: itemChild.number,
             rejects_info: JSON.stringify(itemChild.reason),
@@ -2857,13 +2881,14 @@ export default {
           label: item.name
         }
       })
+      this.renderData.processChoose = this.selectData.processArr.slice(0, 3).map((item) => item.label)
+      this.selectData.processArr = this.selectData.processArr.slice(3, this.selectData.processArr.length)
       this.nativeData.yarnArr = resArr[3].data.data.map((item) => {
         return {
           value: item.name
         }
       })
       let stockInList = []
-      console.log(resArr[4].data.data)
       resArr[4].data.data.filter(item => item.type === 2).forEach((item) => {
         this.commonFind(stockInList, item, ['material_name', 'material_color', 'material_color'], ['total_weight'])
       })
@@ -2901,8 +2926,19 @@ export default {
           }
         }) : []
       }, {
-        value: '来源工序人员',
-        label: '来源工序人员',
+        value: '工序负责人员',
+        label: '工序负责人员',
+        children: resArr[5].data.data.filter((item) => {
+          return item.station_id && item.station_id.map((item) => item.name).indexOf(this.otherData.processType) !== -1
+        }).map((item) => {
+          return {
+            value: item.id,
+            label: item.name
+          }
+        })
+      }, {
+        value: '所有人员',
+        label: '所有人员',
         children: resArr[5].data.data.map((item) => {
           return {
             value: item.id,
