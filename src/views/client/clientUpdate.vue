@@ -56,17 +56,12 @@
               <span class="text">客户类型</span>
             </span>
             <span class="content content_middle">
-              <el-select v-model="client_type"
-                multiple
-                clearable
-                filterable
-                placeholder="请选择">
-                <el-option v-for="item in companyType"
-                  :key="item.value"
-                  :label="item.name"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+              <el-cascader v-model="client_type"
+                :options="companyType"
+                collapse-tags
+                :props="{ multiple: true }"
+                placeholder="请选择客户类型"
+                clearable></el-cascader>
             </span>
           </div>
         </div>
@@ -231,7 +226,9 @@ export default {
               phone: item.telephone
             }
           }) : [],
-          type: this.client_type
+          type: this.client_type.map((item) => {
+            return item.length > 1 ? item[1] : item[0]
+          })
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('保存成功，即将跳转至客户列表')
@@ -246,12 +243,22 @@ export default {
     }
   },
   mounted () {
+    this.companyType = this.$mergeData(companyType, { mainRule: 'type', childrenName: 'children' }).map(itemM => {
+      return {
+        value: itemM.type,
+        label: itemM.type,
+        children: itemM.children
+      }
+    })
     client.detail({
       id: this.$route.params.id
     }).then(res => {
       if (res.data.status !== false) {
         let data = res.data.data
-        this.client_type = data.type
+        this.client_type = data.type.map(itemType => {
+          let flag = companyType.find(itemF => +itemF.value === +itemType)
+          return [flag && flag.type, itemType]
+        })
         this.client_name = data.name
         this.client_abb = data.abbreviation
         this.cooperation = data.status === 1

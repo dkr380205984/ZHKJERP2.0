@@ -257,17 +257,11 @@ export default {
     }
   },
   mounted () {
-    this.$clone(companyType).forEach((item) => {
-      if (item.value >= 12 && item.value <= 25) {
-        this.companyType[0].children.push({
-          value: item.value,
-          label: item.name
-        })
-      } else {
-        this.companyType.push({
-          value: item.value,
-          label: item.name
-        })
+    this.companyType = this.$mergeData(companyType, { mainRule: 'type', childrenName: 'children' }).map(itemM => {
+      return {
+        value: itemM.type,
+        label: itemM.type,
+        children: itemM.children
       }
     })
     this.loading = false
