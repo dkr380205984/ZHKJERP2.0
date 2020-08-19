@@ -575,7 +575,8 @@
                             <span class="tcolumn">原料名称</span>
                             <span class="tcolumn">颜色</span>
                             <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">采购数量</span>
+                            <span class="tcolumn">入库数量</span>
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
@@ -592,10 +593,11 @@
                           <span class="trow"
                             v-for="(itemMa,indexMa) in item.childrenMergeInfo"
                             :key="indexMa">
-                            <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.material_color}}</span>
+                            <span class="tcolumn">{{itemMa.material_name || itemMa.stock_name}}</span>
+                            <span class="tcolumn">{{itemMa.color_code}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.total_weight ? itemMa.total_weight + 'kg' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.weight ? itemMa.weight + 'kg' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.reality_push_weight ? itemMa.reality_push_weight + 'kg' : '/'}}</span>
                             <span class="tcolumn">{{itemMa.complete_time}}</span>
                           </span>
                         </span>
@@ -614,7 +616,8 @@
                             <span class="tcolumn">颜色</span>
                             <span class="tcolumn">工序</span>
                             <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">加工数量</span>
+                            <span class="tcolumn">入库数量</span>
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
@@ -635,6 +638,7 @@
                             <span class="tcolumn">{{itemMa.process_type}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
                             <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.reality_push_weight ? itemMa.reality_push_weight + 'kg' : '/'}}</span>
                             <span class="tcolumn">{{itemMa.compiled_time}}</span>
                           </span>
                         </span>
@@ -653,7 +657,8 @@
                             <span class="tcolumn">原料名称</span>
                             <span class="tcolumn">颜色</span>
                             <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">采购数量</span>
+                            <span class="tcolumn">入库数量</span>
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
@@ -670,10 +675,11 @@
                           <span class="trow"
                             v-for="(itemMa,indexMa) in item.childrenMergeInfo"
                             :key="indexMa">
-                            <span class="tcolumn">{{itemMa.material_name}}</span>
-                            <span class="tcolumn">{{itemMa.material_color}}</span>
+                            <span class="tcolumn">{{itemMa.material_name || itemMa.stock_name}}</span>
+                            <span class="tcolumn">{{itemMa.color_code}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.total_weight ? itemMa.total_weight + 'kg' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.weight ? itemMa.weight + `${itemMa.unit || '个'}` : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.reality_push_weight ? itemMa.reality_push_weight + `${itemMa.unit || '个'}` : '/'}}</span>
                             <span class="tcolumn">{{itemMa.complete_time}}</span>
                           </span>
                         </span>
@@ -692,7 +698,8 @@
                             <span class="tcolumn">颜色</span>
                             <span class="tcolumn">工序</span>
                             <span class="tcolumn">单价</span>
-                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">加工数量</span>
+                            <span class="tcolumn">入库数量</span>
                             <span class="tcolumn">完成时间</span>
                           </span>
                         </span>
@@ -712,7 +719,8 @@
                             <span class="tcolumn">{{itemMa.color}}</span>
                             <span class="tcolumn">{{itemMa.process_type}}</span>
                             <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + (itemMa.unit || '个') : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.reality_push_weight ? itemMa.reality_push_weight + (itemMa.unit || '个') : '/'}}</span>
                             <span class="tcolumn">{{itemMa.compiled_time}}</span>
                           </span>
                         </span>
@@ -2117,13 +2125,12 @@ export default {
     // 财务概述-原料采购-辅料采购
     getMaterialOrderDetail () {
       this.loading = true
-      materialStock.detail({
+      materialManage.detail({
         order_id: this.$route.params.id,
         order_type: 1
       }).then((res) => {
-        console.log(res)
-        this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 1 && item.type === 3), { mainRule: 'client_name' })
-        this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.material_type) === 2 && item.type === 3), { mainRule: 'client_name' })
+        this.orderDetailInfo.finance.yarnOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: ['client_name', 'stock_name'] })
+        this.orderDetailInfo.finance.materialOrder = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: ['client_name', 'stock_name'] })
       })
       this.loading = false
     },
@@ -2135,15 +2142,15 @@ export default {
         order_type: 1
       }).then(res => {
         if (res.data.status !== false) {
-          this.orderDetailInfo.finance.yarnProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+          this.orderDetailInfo.finance.yarnProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 1), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }, { name: 'reality_push_weight', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.reality_push_weight) || Number(itemPrice.number) || 0))))
             return {
               total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
               ...item
             }
           })
-          this.orderDetailInfo.finance.materialProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }] } }).map(item => {
-            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.number) || 0))))
+          this.orderDetailInfo.finance.materialProcess = this.$mergeData(res.data.data.filter(item => Number(item.type) === 2), { mainRule: 'client_name', childrenName: 'material_info', childrenRule: { mainRule: ['process_type', 'material_name', 'price', 'material_color/color'], otherRule: [{ name: 'complete_time/compiled_time' }, { name: 'weight/number', type: 'add' }, { name: 'reality_push_weight', type: 'add' }] } }).map(item => {
+            let priceArr = item.material_info.map(itemPrice => Number(this.$toFixed((Number(itemPrice.price) || 0) * (Number(itemPrice.reality_push_weight) || Number(itemPrice.number) || 0))))
             return {
               total_price: priceArr.length > 0 ? priceArr.reduce((a, b) => a + b) : 0,
               ...item

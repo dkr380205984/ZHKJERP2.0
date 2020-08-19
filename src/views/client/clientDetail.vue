@@ -339,7 +339,10 @@
                   <span class="text">单价</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">采购数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -386,10 +389,13 @@
                   <span class="text">{{item.price}}元</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.weight}}kg</span>
+                  <span class="text">{{item.weight}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.price * item.weight)}}元</span>
+                  <span class="text">{{item.reality_push_weight || 0}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round(item.price * (Number(item.reality_push_weight) || item.weight))}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -633,7 +639,10 @@
                   <span class="text">单价</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">加工数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -678,10 +687,13 @@
                   <span class="text">{{item.price}}元</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.weight}}kg</span>
+                  <span class="text">{{item.weight}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.price*item.weight)}}元</span>
+                  <span class="text">{{item.reality_push_weight || 0}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round(item.price*(Number(item.reality_push_weight) || item.weight))}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>

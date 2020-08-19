@@ -167,7 +167,10 @@
                   <span class="text">单价</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">采购数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -213,10 +216,13 @@
                   <span class="text">{{item.price}}元</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.weight}}kg</span>
+                  <span class="text">{{item.weight}}{{item.unit || (item.type === 1 ? 'kg' : '个')}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.price * item.weight)}}元</span>
+                  <span class="text">{{item.reality_push_weight || 0}}{{item.unit || (item.type === 1 ? 'kg' : '个')}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round(item.price * (Number(item.reality_push_weight) || item.weight))}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -333,7 +339,10 @@
                   <span class="text">单价</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">加工数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -378,10 +387,13 @@
                   <span class="text">{{item.price}}元</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.weight}}kg</span>
+                  <span class="text">{{item.weight}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.price*item.weight)}}元</span>
+                  <span class="text">{{item.reality_push_weight || 0}}{{item.type === 1 ? 'kg' : (item.unit || '个')}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round(item.price*(Number(item.reality_push_weight) || item.weight))}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -2466,7 +2478,7 @@ export default {
       if (this.type === '物料订购调取') {
         let data = this.checkList.map(item => {
           item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
-          item.total_price = this.$toFixed(item.price * item.weight)
+          item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
           return item
         })
         downloadExcel(data, [
@@ -2477,7 +2489,8 @@ export default {
           { title: '来源类型', key: 'type_source_name' },
           { title: '公司名称', key: 'client_name' },
           { title: '单价(元)', key: 'price' },
-          { title: '数量', key: 'weight' },
+          { title: '采购数量', key: 'weight' },
+          { title: '入库数量', key: 'reality_push_weight' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -2485,7 +2498,7 @@ export default {
         ])
       } else if (this.type === '物料加工') {
         let data = this.checkList.map(item => {
-          item.total_price = this.$toFixed(item.price * item.weight)
+          item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
           return item
         })
         downloadExcel(data, [
@@ -2496,7 +2509,8 @@ export default {
           { title: '属性', key: 'material_color' },
           { title: '工序', key: 'process_type' },
           { title: '单价(元)', key: 'price' },
-          { title: '数量', key: 'weight' },
+          { title: '加工数量', key: 'weight' },
+          { title: '入库数量', key: 'reality_push_weight' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -3128,7 +3142,7 @@ export default {
         }).then((res) => {
           data.push(...res.data.data.map(item => {
             item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
-            item.total_price = this.$toFixed(item.price * item.weight)
+            item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
             return item
           }))
           total = res.data.meta.total
@@ -3141,7 +3155,8 @@ export default {
               { title: '来源类型', key: 'type_source_name' },
               { title: '公司名称', key: 'client_name' },
               { title: '单价(元)', key: 'price' },
-              { title: '数量', key: 'weight' },
+              { title: '采购数量', key: 'weight' },
+              { title: '入库数量', key: 'reality_push_weight' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
@@ -3168,7 +3183,7 @@ export default {
           operate_user: this.operate_user
         }).then((res) => {
           data.push(...res.data.data.map(item => {
-            item.total_price = this.$toFixed(item.price * item.weight)
+            item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
             return item
           }))
           total = res.data.meta.total
@@ -3181,7 +3196,8 @@ export default {
               { title: '属性', key: 'material_color' },
               { title: '工序', key: 'process_type' },
               { title: '单价(元)', key: 'price' },
-              { title: '数量', key: 'weight' },
+              { title: '加工数量', key: 'weight' },
+              { title: '入库数量', key: 'reality_push_weight' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
