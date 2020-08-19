@@ -1095,7 +1095,10 @@ export default {
       let finded = this.process_info.find((item) => item.product_id === id)
       this.process_data[index].partDataArr = finded.childrenMergeInfo[0].part_data
       this.process_data[index].colorSizeArr = finded.childrenMergeInfo.map((item) => {
-        return { name: item.size_name + '/' + item.color_name }
+        return {
+          name: item.size_name + '/' + item.color_name,
+          id: item.size_id + '/' + item.color_id
+        }
       })
     },
     addColorSize (index) {

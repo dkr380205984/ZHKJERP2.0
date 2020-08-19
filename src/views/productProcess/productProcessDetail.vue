@@ -54,10 +54,10 @@
       <div class="process hover"
         v-for="(item,index) in processChoose"
         :key="index"
-        :class="{'active':processType===item}"
-        @click="getModule(item)">
+        :class="{'active':processType===item.name}"
+        @click="getModule(item.name)">
         <span class="sort">{{index+1}}</span>
-        <span class="name">{{item}}</span>
+        <span class="name">{{item.name}}</span>
       </div>
       <div class="process">
         <el-dropdown trigger="click"
@@ -714,8 +714,8 @@ export default {
       },
       deductLogPopupFlag: false,
       deductLogList: [],
-      processChoose: ['开片', '车标', '检验', '包装'],
-      processType: '开片',
+      processChoose: [],
+      processType: '',
       processArr: [],
       inspectionForm: {
         process: '',
@@ -837,8 +837,8 @@ export default {
       this.inspectionForm.detail = detail
     },
     createProcess (ev) {
-      this.processChoose.push(ev)
-      this.processType = ev
+      this.processChoose.push(ev.name)
+      this.processType = ev.name
       // this.getModule(ev)
     },
     // 确认检验
@@ -1178,9 +1178,19 @@ export default {
             label: item.name
           }
         })
+        this.processArr = this.processArr.slice(3, this.processArr.length)
+        this.processChoose = res[5].data.data.slice(0, 3).map((item) => {
+          return {
+            name: item.name,
+            id: item.id
+          }
+        })
+        if (!this.processType) {
+          this.processType = this.processChoose[0].name
+        }
         this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
         this.companyArr = res[2].data.data.filter((item) => {
-          return item.type.indexOf(5) !== -1
+          return item.type.indexOf(27) !== -1
         })
         this.settingAuthArr = this.$clone(res[4].data.data)
         this.clientAuthArr = [{
@@ -1193,6 +1203,17 @@ export default {
             }
           }) : []
         }, {
+          value: '工序负责人员',
+          label: '工序负责人员',
+          children: res[4].data.data.filter((item) => {
+            return item.station_id && item.station_id.map((item) => item.name).indexOf(this.processType) !== -1
+          }).map((item) => {
+            return {
+              value: item.id,
+              label: item.name
+            }
+          })
+        }, {
           value: '所有人员',
           label: '所有人员',
           children: res[4].data.data.map((item) => {
@@ -1204,7 +1225,9 @@ export default {
         }, {
           value: '成品加工单位',
           label: '成品加工单位',
-          children: res[2].data.data.map(itemM => ({ value: itemM.id, label: itemM.name }))
+          children: res[2].data.data.filter((item) => {
+            return item.type.indexOf(27) !== -1
+          }).map(itemM => ({ value: itemM.id, label: itemM.name }))
         }]
         res[3].data.data.forEach((item) => {
           this.processChoose.push(item.product_flow)
