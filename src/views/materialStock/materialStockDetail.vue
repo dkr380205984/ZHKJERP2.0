@@ -705,6 +705,10 @@
               </span>
               <span class="tcolumn">{{$toFixed(item.color_info.map(items=>item.type === 1 ? items.number/1000 : items.number).reduce((a,b)=>{return Number(a)+Number(b)}))}}{{item.type === 1 ? 'kg' : item.unit}}</span>
             </span>
+            <span class="trow"
+              v-if="totalInfo.plan.length === 0">
+              <span class="tcolumn">暂无计划信息</span>
+            </span>
           </div>
         </div>
         <div class="flexTb"
@@ -764,6 +768,10 @@
                   </span>
                 </span>
               </span>
+            </span>
+            <span class="trow"
+              v-if="totalInfo.order.length === 0">
+              <span class="tcolumn">暂无计划信息</span>
             </span>
           </div>
         </div>
@@ -835,6 +843,10 @@
               </span>
             </span>
           </div>
+          <span class="trow"
+            v-if="totalInfo.process.length === 0">
+            <span class="tcolumn">暂无计划信息</span>
+          </span>
         </div>
       </div>
     </div>
@@ -1101,8 +1113,9 @@ export default {
       }
     },
     changeClient (item, e) {
-      if (this.$route.params.orderType === '1') return
+      if (this.$route.params.type === '1') return
       const isCustomerSupplied = this.materialClient.find(itemF => itemF.client_id === e)
+      console.log(isCustomerSupplied)
       if (isCustomerSupplied && isCustomerSupplied.isCustomerSupplied) {
         item.isCustomerSupplied = true
         item.editTypeDisabled = true
@@ -1773,7 +1786,6 @@ export default {
             order_type: this.$route.params.orderType
           })
         ]).then(res => {
-          console.log(res[2].data.data)
           // 初始化辅料出入库数据
           let materialPlan = res[0].data.data.order_material_plan.total_data.filter(item => (Number(item.material_type) === 2) && (+item.reality_weight > 0))
           this.orderInfo = res[0].data.data.order_info

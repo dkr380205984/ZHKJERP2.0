@@ -700,7 +700,7 @@
       <div class="titleCtn rightBtn">
         <span class="title">{{type==='1'?'原':'辅'}}料订购调取日志</span>
         <div class="btn btnWhiteBlue"
-          @click="computedGoStockNum">自动计算实际入库值</div>
+          @click="computedGoStockNum">修改实际入库值</div>
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
@@ -721,15 +721,16 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
-            <span class="tb_row flex12">完成日期</span>
+            <!-- <span class="tb_row flex12">完成日期</span> -->
             <span class="tb_row">来源</span>
             <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
             <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
             <span class="tb_row flex08">单价(元)</span>
-            <span class="tb_row flex08">数量</span>
+            <span class="tb_row flex08">采购数量</span>
+            <span class="tb_row flex08">入库数量</span>
+            <span class="tb_row flex08">差值</span>
             <span class="tb_row flex08">总价(元)</span>
-            <span class="tb_row">备注</span>
-            <span class="tb_row">操作人</span>
+            <span class="tb_row flex08">其他信息</span>
             <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
@@ -739,7 +740,7 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
-            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+            <!-- <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span> -->
             <span class="tb_row">
               <span>
                 <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
@@ -751,9 +752,20 @@
             <span class="tb_row">{{item.color_code}}</span>
             <span class="tb_row flex08">{{item.price}}</span>
             <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
-            <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
-            <span class="tb_row">{{item.desc}}</span>
-            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row flex08">{{item.reality_push_weight}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08"
+              :class="$toFixed((item.reality_push_weight || 0) - item.weight) >= 0 ? 'green' : 'orange'">{{$toFixed((item.reality_push_weight || 0) - item.weight)}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08">{{$toFixed(item.price*(Number(item.reality_push_weight) || item.weight))}}</span>
+            <span class="tb_row flex08">
+              <el-popover placement="right"
+                trigger="click">
+                备注：{{item.desc}}<br />
+                操作人：{{item.user_name}}<br />
+                完成日期：{{$getTime(item.complete_time)}}
+                <span class="tb_handle_btn blue"
+                  slot="reference">查看</span>
+              </el-popover>
+            </span>
             <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
@@ -766,7 +778,8 @@
     <div class="module">
       <div class="titleCtn rightBtn">
         <span class="title">{{type==='1'?'原':'辅'}}料加工日志</span>
-        <div class="btn btnWhiteBlue">自动计算实际入库值</div>
+        <div class="btn btnWhiteBlue"
+          @click="computedGoStockNum(false)">修改实际入库值</div>
       </div>
       <div class="listCtn hasBorderTop"
         style="padding-left:64px;padding-right:64px">
@@ -787,16 +800,17 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
-            <span class="tb_row flex12">完成日期</span>
-            <span class="tb_row flex2">加工单位</span>
+            <!-- <span class="tb_row flex12">完成日期</span> -->
+            <span class="tb_row flex12">加工单位</span>
             <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
             <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
             <span class="tb_row flex08">工序</span>
             <span class="tb_row flex08">单价(元)</span>
-            <span class="tb_row flex08">数量</span>
+            <span class="tb_row flex08">加工数量</span>
+            <span class="tb_row flex08">入库数量</span>
+            <span class="tb_row flex08">差值数量</span>
             <span class="tb_row flex08">总价(元)</span>
-            <span class="tb_row">备注</span>
-            <span class="tb_row">操作人</span>
+            <span class="tb_row flex08">其他信息</span>
             <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
@@ -806,16 +820,27 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
-            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
-            <span class="tb_row flex2">{{item.client_name}}</span>
+            <!-- <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span> -->
+            <span class="tb_row flex12">{{item.client_name}}</span>
             <span class="tb_row flex2">{{item.material_name}}</span>
             <span class="tb_row">{{item.material_color}}</span>
             <span class="tb_row flex08">{{item.process_type}}</span>
             <span class="tb_row flex08">{{item.price}}</span>
             <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
-            <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
-            <span class="tb_row">{{item.desc}}</span>
-            <span class="tb_row">{{item.user_name}}</span>
+            <span class="tb_row flex08">{{item.reality_push_weight}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08"
+              :class="$toFixed((item.reality_push_weight || 0) - item.weight) >= 0 ? 'green' : 'orange'">{{$toFixed((item.reality_push_weight || 0) - item.weight)}}{{type==='1'?'kg':item.unit}}</span>
+            <span class="tb_row flex08">{{$toFixed(item.price*(Number(item.reality_push_weight) || item.weight))}}</span>
+            <span class="tb_row flex08">
+              <el-popover placement="right"
+                trigger="click">
+                备注：{{item.desc}}<br />
+                操作人：{{item.user_name}}<br />
+                完成日期：{{$getTime(item.complete_time)}}
+                <span class="tb_handle_btn blue"
+                  slot="reference">查看</span>
+              </el-popover>
+            </span>
             <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
@@ -1372,15 +1397,6 @@
             @click="showRouterPopup = false"></span>
         </div>
         <div class="content">
-          <!-- <div class="row"
-            style="display:flex;justify-content:space-around;align-items:center">
-            <div class="btn btnWhiteBlue"
-              style="width:6em;text-align:center"
-              @click="$router.push('/material/materialDetail/' + $route.params.id + '/1/' + $route.params.type )">原料订购</div>
-            <div class="btn btnWhiteBlue"
-              style="width:6em;text-align:center"
-              @click="$router.push('/material/materialDetail/' + $route.params.id + '/2/' + $route.params.type )">辅料订购</div>
-          </div> -->
           <div class="row"
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
@@ -1423,77 +1439,84 @@
               <span class="tb_row">{{itemStock.total_weight}}</span>
             </div>
           </div>
-          <div class="row">采购日志</div>
-          <div class="tableCtnLv2 height40">
-            <div class="tb_header">
-              <span class="tb_row flex12">完成日期</span>
-              <span class="tb_row">来源</span>
-              <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
-              <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
-              <span class="tb_row flex08">单价(元)</span>
-              <span class="tb_row flex08">采购数量</span>
-              <span class="tb_row flex08">采购总价(元)</span>
-              <span class="tb_row flex12 middle">实际入库数量</span>
-            </div>
-            <div class="tb_content"
-              v-for="(item,index) in orderLog"
-              :key="index">
-              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
-              <span class="tb_row">
-                <span>
-                  <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
-                  <br />
-                  {{item.client_name}}
+          <template v-if="showPopupType">
+            <div class="row">采购日志</div>
+            <div class="tableCtnLv2 height40">
+              <div class="tb_header">
+                <span class="tb_row flex12">完成日期</span>
+                <span class="tb_row">来源</span>
+                <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
+                <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+                <span class="tb_row flex08">单价(元)</span>
+                <span class="tb_row flex08">采购数量</span>
+                <span class="tb_row flex08">采购总价(元)</span>
+                <span class="tb_row flex12 middle">实际入库数量</span>
+              </div>
+              <div class="tb_content"
+                v-for="(item,index) in orderLog"
+                :key="index">
+                <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+                <span class="tb_row">
+                  <span>
+                    <span :class="{'blue':item.type_source===1,'green':item.type_source===2}">{{item.type_source===2?'订购':'调取'}}{{item.replenish_id?'/补纱':''}}</span>
+                    <br />
+                    {{item.client_name}}
+                  </span>
                 </span>
-              </span>
-              <span class="tb_row flex12">{{item.material_name + '/' + item.before_color}}</span>
-              <span class="tb_row">{{item.color_code}}</span>
-              <span class="tb_row flex08">{{item.price}}</span>
-              <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
-              <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
-              <span class="tb_row flex12 middle">
-                <zh-input v-model="item.goStock_number">
-                  <template slot="append">{{type==='1'?'kg':item.unit}}</template>
-                </zh-input>
-              </span>
+                <span class="tb_row flex12">{{item.material_name + '/' + item.before_color}}</span>
+                <span class="tb_row">{{item.color_code}}</span>
+                <span class="tb_row flex08">{{item.price}}</span>
+                <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+                <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+                <span class="tb_row flex12 middle">
+                  <zh-input v-model="item.reality_push_weight"
+                    @input="item.isChange = true">
+                    <template slot="append">{{type==='1'?'kg':item.unit}}</template>
+                  </zh-input>
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="row">加工日志</div>
-          <div class="tableCtnLv2 height40">
-            <div class="tb_header">
-              <span class="tb_row flex12">完成日期</span>
-              <span class="tb_row">加工单位</span>
-              <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
-              <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
-              <span class="tb_row flex08">工序</span>
-              <span class="tb_row flex08">单价(元)</span>
-              <span class="tb_row flex08">数量</span>
-              <span class="tb_row flex08">总价(元)</span>
-              <span class="tb_row flex12 middle">实际入库数量</span>
+          </template>
+          <template v-else>
+            <div class="row">加工日志</div>
+            <div class="tableCtnLv2 height40">
+              <div class="tb_header">
+                <span class="tb_row flex12">完成日期</span>
+                <span class="tb_row">加工单位</span>
+                <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
+                <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
+                <span class="tb_row flex08">工序</span>
+                <span class="tb_row flex08">单价(元)</span>
+                <span class="tb_row flex08">数量</span>
+                <span class="tb_row flex08">总价(元)</span>
+                <span class="tb_row flex12 middle">实际入库数量</span>
+              </div>
+              <div class="tb_content"
+                v-for="(item,index) in processLog"
+                :key="index">
+                <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+                <span class="tb_row flex12">{{item.client_name}}</span>
+                <span class="tb_row flex12">{{item.material_name}}</span>
+                <span class="tb_row">{{item.material_color}}</span>
+                <span class="tb_row flex08">{{item.process_type}}</span>
+                <span class="tb_row flex08">{{item.price}}</span>
+                <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
+                <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+                <span class="tb_row flex12 middle">
+                  <zh-input v-model="item.reality_push_weight"
+                    @input="item.isChange = true">
+                    <template slot="append">{{type==='1'?'kg':item.unit}}</template>
+                  </zh-input>
+                </span>
+              </div>
             </div>
-            <div class="tb_content"
-              v-for="(item,index) in processLog"
-              :key="index">
-              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
-              <span class="tb_row flex12">{{item.client_name}}</span>
-              <span class="tb_row flex12">{{item.material_name}}</span>
-              <span class="tb_row">{{item.material_color}}</span>
-              <span class="tb_row flex08">{{item.process_type}}</span>
-              <span class="tb_row flex08">{{item.price}}</span>
-              <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
-              <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
-              <span class="tb_row flex12 middle">
-                <zh-input v-model="item.goStock_number">
-                  <template slot="append">{{type==='1'?'kg':item.unit}}</template>
-                </zh-input>
-              </span>
-            </div>
-          </div>
+          </template>
         </div>
         <div class="opr">
           <div class="btn btnGray"
             @click="showComRealityGoStockPopup = false">取消</div>
-          <div class="btn btnBlue">提交</div>
+          <div class="btn btnBlue"
+            @click="saveRealityWeight">提交</div>
         </div>
       </div>
     </div>
@@ -1614,12 +1637,46 @@ export default {
       deductPopupType: true,
       // 自动计算实际入库值
       showComRealityGoStockPopup: false,
+      showPopupType: true, // true订购false加工
       stockLog: [],
-      orderlog: [],
+      orderLog: [],
       processLog: []
     }
   },
   methods: {
+    // 修改实际入库数量
+    saveRealityWeight () {
+      let data = []
+      if (this.showPopupType) {
+        data = this.orderLog.filter(itemF => Number(itemF.reality_push_weight) && itemF.isChange).map(itemM => {
+          return {
+            id: itemM.id,
+            reality_push_weight: itemM.reality_push_weight
+          }
+        })
+      } else {
+        data = this.processLog.filter(itemF => Number(itemF.reality_push_weight) && itemF.isChange).map(itemM => {
+          return {
+            id: itemM.id,
+            reality_push_weight: itemM.reality_push_weight
+          }
+        })
+      }
+      if (data.length === 0) {
+        this.$message.warning('未改动实际入库数量，无需提交')
+        return
+      }
+      materialManage.changeReality({
+        data: data,
+        type: this.showPopupType ? 1 : 2
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('修改成功')
+          this.showComRealityGoStockPopup = false
+          this.$winReload()
+        }
+      })
+    },
     // 加工日志勾选打印
     printProcessTable () {
       if (this.checkedProcessClientInfo.length === 0) {
@@ -2561,77 +2618,92 @@ export default {
         this.total = res.data.meta.total
       })
     },
-    computedGoStockNum () {
-      const { materialStock } = require('@/assets/js/api.js')
-      this.loading = true
-      materialStock.detail({
-        order_id: this.$route.params.id,
-        order_type: this.$route.params.orderType
-      }).then(res => {
-        if (res.data.status !== false) {
-          let stockLog = res.data.data.filter(itemF => +itemF.type === 3)// 过滤出最终入库
-          let orderLog = this.$clone(this.order_stock_log)
-          let processLog = this.$clone(this.process_log)
-          let notComMatArr = {
-            order: {
-              '0': [],
-              '1': []
-            },
-            process: {
-              '0': [],
-              '1': []
-            }
-          }
-          stockLog.forEach(itemS => {
-            let filterOrderArr = orderLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.before_color === itemS.material_color)
-            if (filterOrderArr.length === 1) {
-              filterOrderArr[0].goStock_number = itemS.total_weight
-            } else if (filterOrderArr.length === 0) {
-              notComMatArr.order['0'].push(`${itemS.material_name}/${itemS.material_color}`)
-            } else if (filterOrderArr.length > 1) {
-              notComMatArr.order['1'].push(`${itemS.material_name}/${itemS.material_color}`)
-            }
-            let filterProcessArr = processLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.material_color === itemS.material_color)
-            if (filterProcessArr.length === 1) {
-              filterProcessArr[0].goStock_number = itemS.total_weight
-            } else if (filterProcessArr.length === 0) {
-              notComMatArr.process['0'].push(`${itemS.material_name}/${itemS.material_color}`)
-            } else if (filterProcessArr.length > 1) {
-              notComMatArr.process['1'].push(`${itemS.material_name}/${itemS.material_color}`)
-            }
-          })
-          let msgStr = `${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '以下入库日志物料') || ''}
-                        ${(notComMatArr.order['0'].length > 0 && '未匹配上') || ''}
-                        ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['1'].length > 0 && '或') || ''}
-                        ${(notComMatArr.order['1'].length > 0 && '匹配多条') || ''}
-                        ${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '订购日志：<br />') || ''}
-                        ${(notComMatArr.order['0'].length > 0 && '未匹配上：<br />') || ''}
-                        ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['0'].join('<br />')) || ''}
-                        ${(notComMatArr.order['1'].length > 0 && '匹配上多条：<br />') || ''}
-                        ${(notComMatArr.order['1'].length > 0 && notComMatArr.order['1'].join('<br />')) || ''}
-                        <br />
-                        ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '以下入库日志物料') || ''}
-                        ${(notComMatArr.process['0'].length > 0 && '未匹配上') || ''}
-                        ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['1'].length > 0 && '或') || ''}
-                        ${(notComMatArr.process['1'].length > 0 && '匹配多条') || ''}
-                        ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '加工日志：<br />') || ''}
-                        ${(notComMatArr.process['0'].length > 0 && '未匹配上：<br />') || ''}
-                        ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['0'].join('<br />')) || ''}
-                        ${(notComMatArr.process['1'].length > 0 && '匹配上多条：<br />') || ''}
-                        ${(notComMatArr.process['1'].length > 0 && notComMatArr.process['1'].join('<br />')) || ''}`
-          if (msgStr) {
-            this.$alert(msgStr, '提示', {
-              confirmButtonText: '确定',
-              dangerouslyUseHTMLString: true
-            })
-          }
-          this.stockLog = stockLog
-          this.orderLog = orderLog
-          this.processLog = processLog
-          this.showComRealityGoStockPopup = true
+    computedGoStockNum (type = true) {
+      this.showPopupType = type
+      if (this.stockLog.length > 0) {
+        if (type) {
+          this.orderLog = this.$clone(this.order_stock_log)
+        } else {
+          this.processLog = this.$clone(this.process_log)
         }
-        this.loading = false
-      })
+        this.showComRealityGoStockPopup = true
+      } else {
+        const { materialStock } = require('@/assets/js/api.js')
+        this.loading = true
+        materialStock.detail({
+          order_id: this.$route.params.id,
+          order_type: this.$route.params.orderType
+        }).then(res => {
+          if (res.data.status !== false) {
+            let stockLog = res.data.data.filter(itemF => +itemF.type === 3)// 过滤出最终入库
+            // let orderLog = this.$clone(this.order_stock_log)
+            // let processLog = this.$clone(this.process_log)
+            // let notComMatArr = {
+            //   order: {
+            //     '0': [],
+            //     '1': []
+            //   },
+            //   process: {
+            //     '0': [],
+            //     '1': []
+            //   }
+            // }
+            // stockLog.forEach(itemS => {
+            //   let filterOrderArr = orderLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.before_color === itemS.material_color)
+            //   if (filterOrderArr.length === 1) {
+            //     filterOrderArr[0].goStock_number = itemS.total_weight
+            //   } else if (filterOrderArr.length === 0) {
+            //     notComMatArr.order['0'].push(`${itemS.material_name}/${itemS.material_color}`)
+            //   } else if (filterOrderArr.length > 1) {
+            //     notComMatArr.order['1'].push(`${itemS.material_name}/${itemS.material_color}`)
+            //   }
+            //   let filterProcessArr = processLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.material_color === itemS.material_color)
+            //   if (filterProcessArr.length === 1) {
+            //     filterProcessArr[0].goStock_number = itemS.total_weight
+            //   } else if (filterProcessArr.length === 0) {
+            //     notComMatArr.process['0'].push(`${itemS.material_name}/${itemS.material_color}`)
+            //   } else if (filterProcessArr.length > 1) {
+            //     notComMatArr.process['1'].push(`${itemS.material_name}/${itemS.material_color}`)
+            //   }
+            // })
+            // let msgStr = `${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '以下入库日志物料') || ''}
+            //               ${(notComMatArr.order['0'].length > 0 && '未匹配上') || ''}
+            //               ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['1'].length > 0 && '或') || ''}
+            //               ${(notComMatArr.order['1'].length > 0 && '匹配多条') || ''}
+            //               ${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '订购日志：<br />') || ''}
+            //               ${(notComMatArr.order['0'].length > 0 && '未匹配上：<br />') || ''}
+            //               ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['0'].join('<br />')) || ''}
+            //               ${(notComMatArr.order['1'].length > 0 && '匹配上多条：<br />') || ''}
+            //               ${(notComMatArr.order['1'].length > 0 && notComMatArr.order['1'].join('<br />')) || ''}
+            //               <br />
+            //               ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '以下入库日志物料') || ''}
+            //               ${(notComMatArr.process['0'].length > 0 && '未匹配上') || ''}
+            //               ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['1'].length > 0 && '或') || ''}
+            //               ${(notComMatArr.process['1'].length > 0 && '匹配多条') || ''}
+            //               ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '加工日志：<br />') || ''}
+            //               ${(notComMatArr.process['0'].length > 0 && '未匹配上：<br />') || ''}
+            //               ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['0'].join('<br />')) || ''}
+            //               ${(notComMatArr.process['1'].length > 0 && '匹配上多条：<br />') || ''}
+            //               ${(notComMatArr.process['1'].length > 0 && notComMatArr.process['1'].join('<br />')) || ''}`
+            // if (msgStr) {
+            //   this.$alert(msgStr, '提示', {
+            //     confirmButtonText: '确定',
+            //     dangerouslyUseHTMLString: true
+            //   })
+            // }
+            this.stockLog = stockLog
+            if (type) {
+              this.orderLog = this.$clone(this.order_stock_log)
+            } else {
+              this.processLog = this.$clone(this.process_log)
+            }
+            // this.orderLog = orderLog
+            // this.processLog = processLog
+          }
+          this.loading = false
+          this.showComRealityGoStockPopup = true
+        })
+      }
     }
   },
   computed: {

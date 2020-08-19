@@ -30,12 +30,6 @@
         </div>
       </div>
       <div class="detailCtn">
-        <div class="floatRight">
-          <div class="btnCtn">
-            <div class="btn btnBlue"
-              @click="addNewPlan()">新增装箱单</div>
-          </div>
-        </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">订单号：</span>
@@ -44,12 +38,6 @@
           <div class="colCtn flex3">
             <span class="label">订单公司：</span>
             <span class="text">{{orderInfo.client_name}}</span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">下单日期：</span>
-            <span class="text">{{orderInfo.order_time}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">发货批次：</span>
@@ -60,6 +48,10 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
+            <span class="label">下单日期：</span>
+            <span class="text">{{orderInfo.order_time}}</span>
+          </div>
+          <div class="colCtn flex3">
             <span class="label">联系人：</span>
             <span class="text">{{orderInfo.contacts}}</span>
           </div>
@@ -68,29 +60,32 @@
             <span class="text">{{orderInfo.group_name}}</span>
           </div>
         </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">装箱资料：</span>
-            <span class="text"></span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <el-tabs v-model="activePlanId"
-            @tab-click='tabClick'
-            style="width:100%">
-            <el-tab-pane :label="'装箱计划单' + chinaNum[indexTb]"
-              v-for="(itemTb,indexTb) in planTb"
-              :key="indexTb"
-              :name="itemTb.id.toString()"></el-tab-pane>
-          </el-tabs>
-        </div>
       </div>
     </div>
     <zh-file-module :orderId='$route.params.id'
       title_has_border />
+    <div class="module cutCtn">
+      <div class="cut_item"
+        :class="{'active':activePlanId === itemPlan.id.toString()}"
+        v-for="(itemPlan,indexPlan) in planTb"
+        :key="indexPlan"
+        @click="cutTb(indexPlan)">
+        <div class="index">{{indexPlan+1}}</div>
+        <div class="title">{{itemPlan.title || `装箱计划单${chinaNum[indexPlan]}`}}</div>
+        <div :class="itemPlan.status === 2 ? 'green' : 'orange'">{{`(${itemPlan.status === 2 ? '已确认' : '未确认'})`}}</div>
+      </div>
+      <div class="cut_item hover"
+        @click="addNewPlan">
+        <div class="index el-icon-plus"></div>
+        <div class="title">新增计划单</div>
+      </div>
+    </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <div class="title">装箱信息</div>
+        <div class="btn btnBlue"
+          v-if="+activePlanId && status !== 2"
+          @click="showConFirmPackInfoPopup = true">确认实际装箱</div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -191,217 +186,254 @@
             </div>
           </div>
         </div>
-        <div class="rowCtn col"
-          v-for="(itemType,indexType) in planPackInfo"
-          :key="indexType">
-          <span class="label">装箱类型{{chinaNum[indexType]}}
-            <span class="tbBtn red"
-              style="font-size:16px"
-              @click="deleteItem(planPackInfo,indexType)">删除</span>
-          </span>
-          <div class="flexTb">
-            <span class="leftBtn el-icon-d-arrow-left"
-              v-if="canShow('scroll_row'+ indexType,'scroll_item'+ indexType,'left')"
-              @mousedown="scrollX('scroll_row' + indexType,'scroll_item' + indexType,false)"
-              @mouseup="timer = false"></span>
-            <span class="rightBtn el-icon-d-arrow-right"
-              v-if="canShow('scroll_row'+ indexType,'scroll_item'+ indexType,'right')"
-              @mousedown="scrollX('scroll_row' + indexType,'scroll_item' + indexType,true)"
-              @mouseup="timer = false"></span>
-            <div class="thead">
-              <span class="trow">
-                <span class="tcolumn w120 center">操作</span>
-                <span class="scroll_row flex14"
-                  :ref="'scroll_row' + indexType">
-                  <span class="scroll_item"
-                    :ref="'scroll_item' + indexType">
-                    <span class="tcolumn flex5 noPad">
-                      <span class="trow">
-                        <span class="tcolumn flex18">产品</span>
-                        <span class="tcolumn flex18">尺码/颜色</span>
-                        <span class="tcolumn flex08 right">袋装<br />(件/袋)</span>
-                        <span class="tcolumn flex08 right">袋箱数量<br />(袋/箱)</span>
-                        <span class="tcolumn flex08 right">总数量<br />(件)</span>
+        <template v-if="status !== 2">
+          <div class="rowCtn col"
+            v-for="(itemType,indexType) in planPackInfo"
+            :key="indexType">
+            <span class="label">装箱类型{{chinaNum[indexType]}}
+              <span class="tbBtn red"
+                style="font-size:16px"
+                @click="deleteItem(planPackInfo,indexType)">删除</span>
+            </span>
+            <div class="flexTb">
+              <span class="leftBtn el-icon-d-arrow-left"
+                v-if="canShow('scroll_row'+ indexType,'scroll_item'+ indexType,'left')"
+                @mousedown="scrollX('scroll_row' + indexType,'scroll_item' + indexType,false)"
+                @mouseup="timer = false"></span>
+              <span class="rightBtn el-icon-d-arrow-right"
+                v-if="canShow('scroll_row'+ indexType,'scroll_item'+ indexType,'right')"
+                @mousedown="scrollX('scroll_row' + indexType,'scroll_item' + indexType,true)"
+                @mouseup="timer = false"></span>
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn w120 center">操作</span>
+                  <span class="scroll_row flex14"
+                    :ref="'scroll_row' + indexType">
+                    <span class="scroll_item"
+                      :ref="'scroll_item' + indexType">
+                      <span class="tcolumn flex5 noPad">
+                        <span class="trow">
+                          <span class="tcolumn flex18">产品</span>
+                          <span class="tcolumn flex18">尺码/颜色</span>
+                          <span class="tcolumn flex08 right">袋装<br />(件/袋)</span>
+                          <span class="tcolumn flex08 right">袋箱数量<br />(袋/箱)</span>
+                          <span class="tcolumn flex08 right">总数量<br />(件)</span>
+                        </span>
                       </span>
+                      <span class="tcolumn center flex08">箱号</span>
+                      <span class="tcolumn flex08 right">箱数<br />(箱)</span>
+                      <span class="tcolumn flex08 right">每箱毛重<br />(kg)</span>
+                      <span class="tcolumn flex08 right">总毛重<br />(kg)</span>
+                      <span class="tcolumn flex08 right">每箱净数<br />(kg)</span>
+                      <span class="tcolumn flex08 right">总净重<br />(kg)</span>
+                      <span class="tcolumn flex18 center">长*宽*高<br />(cm)</span>
+                      <span class="tcolumn flex08 right">单箱体积<br />(m³)</span>
+                      <span class="tcolumn flex08 right">总体积<br />(m³)</span>
+                      <span class="tcolumn flex18">备注</span>
                     </span>
-                    <span class="tcolumn center flex08">箱号</span>
-                    <span class="tcolumn flex08 right">箱数<br />(箱)</span>
-                    <span class="tcolumn flex08 right">每箱毛重<br />(kg)</span>
-                    <span class="tcolumn flex08 right">总毛重<br />(kg)</span>
-                    <span class="tcolumn flex08 right">每箱净数<br />(kg)</span>
-                    <span class="tcolumn flex08 right">总净重<br />(kg)</span>
-                    <span class="tcolumn flex18 center">长*宽*高<br />(cm)</span>
-                    <span class="tcolumn flex08 right">单箱体积<br />(m³)</span>
-                    <span class="tcolumn flex08 right">总体积<br />(m³)</span>
-                    <span class="tcolumn flex18">备注</span>
                   </span>
                 </span>
-              </span>
-            </div>
-            <div class="tbody">
-              <span class="trow">
-                <span class="tcolumn w120 center">
-                  <span class="blue tbBtn"
-                    @click="addItem(itemType.product_info,'product')">新增行</span>
-                  <span class="red tbBtn"
-                    @click="deleteItem(itemType.product_info)">删除行</span>
-                </span>
-                <span class="scroll_row flex14"
-                  :ref="'scroll_row' + indexType">
-                  <span class="scroll_item"
-                    :ref="'scroll_item' + indexType">
-                    <span class="tcolumn flex5 noPad">
-                      <span class="trow"
-                        v-for="(itemPro,indexPro) in itemType.product_info"
-                        :key="indexPro">
-                        <span class="tcolumn flex18">
-                          <el-select v-model="itemPro.product_id"
-                            class="inputs"
-                            placeholder="请选择产品"
-                            @change="changeSizeColorArr(itemPro)">
-                            <el-option v-for="item in productList"
-                              :key="item.product_id"
-                              :label="item.product_code + '(' + [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/') + ')'"
-                              :value="item.product_id">
-                            </el-option>
-                          </el-select>
-                        </span>
-                        <span class="tcolumn flex18">
-                          <el-cascader v-model="itemPro.sizeColor"
-                            placeholder="尺码/颜色"
-                            class="inputs"
-                            :options="itemPro.sizeColorArr"
-                            :props="{ expandTrigger: 'hover' }"></el-cascader>
-                        </span>
-                        <span class="tcolumn flex08 right">
-                          <zh-input placeholder='数量'
-                            v-model="itemPro.bags_number"
-                            class="inputs noborderType right"
-                            @input="changeBagsBoxNumber(itemPro,itemType)"
-                            type='number'></zh-input>
-                        </span>
-                        <span class="tcolumn flex08 right">
-                          <zh-input placeholder='数量'
-                            v-model="itemPro.box_number"
-                            class="inputs noborderType right"
-                            @input="changeBagsBoxNumber(itemPro,itemType)"
-                            type='number'></zh-input>
-                        </span>
-                        <span class="tcolumn flex08 right notAllow">
-                          <!-- <zh-input placeholder='数量'
+              </div>
+              <div class="tbody">
+                <span class="trow">
+                  <span class="tcolumn w120 center">
+                    <span class="blue tbBtn"
+                      @click="addItem(itemType.product_info,'product')">新增行</span>
+                    <span class="red tbBtn"
+                      @click="deleteItem(itemType.product_info)">删除行</span>
+                  </span>
+                  <span class="scroll_row flex14"
+                    :ref="'scroll_row' + indexType">
+                    <span class="scroll_item"
+                      :ref="'scroll_item' + indexType">
+                      <span class="tcolumn flex5 noPad">
+                        <span class="trow"
+                          v-for="(itemPro,indexPro) in itemType.product_info"
+                          :key="indexPro">
+                          <span class="tcolumn flex18">
+                            <el-select v-model="itemPro.product_id"
+                              class="inputs"
+                              placeholder="请选择产品"
+                              @change="changeSizeColorArr(itemPro)">
+                              <el-option v-for="item in productList"
+                                :key="item.product_id"
+                                :label="item.product_code + '(' + [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/') + ')'"
+                                :value="item.product_id">
+                              </el-option>
+                            </el-select>
+                          </span>
+                          <span class="tcolumn flex18">
+                            <el-cascader v-model="itemPro.sizeColor"
+                              placeholder="尺码/颜色"
+                              class="inputs"
+                              :options="itemPro.sizeColorArr"
+                              :props="{ expandTrigger: 'hover' }"></el-cascader>
+                          </span>
+                          <span class="tcolumn flex08 right">
+                            <zh-input placeholder='数量'
+                              v-model="itemPro.bags_number"
+                              class="inputs noborderType right"
+                              @input="changeBagsBoxNumber(itemPro,itemType)"
+                              type='number'></zh-input>
+                          </span>
+                          <span class="tcolumn flex08 right">
+                            <zh-input placeholder='数量'
+                              v-model="itemPro.box_number"
+                              class="inputs noborderType right"
+                              @input="changeBagsBoxNumber(itemPro,itemType)"
+                              type='number'></zh-input>
+                          </span>
+                          <span class="tcolumn flex08 right notAllow">
+                            <!-- <zh-input placeholder='数量'
                             v-model="itemPro.total_number"
                             class="inputs noborderType right"
                             @input="changeBagsBoxNumber(itemPro)"
                             type='number'></zh-input> -->
-                          {{itemPro.total_number || 0}}
+                            {{itemPro.total_number || 0}}
+                          </span>
                         </span>
                       </span>
-                    </span>
-                    <span class="tcolumn center flex08 row">
-                      <zh-input placeholder='首箱号'
-                        v-model="itemType.first_box"
-                        class="inputs noborderType center"
-                        @input="changeBoxNumber(itemType)"
-                        type='number'></zh-input>
-                      <span style="margin:0 8px">~</span>
-                      <zh-input placeholder='末箱号'
-                        v-model="itemType.last_box"
-                        class="inputs noborderType center"
-                        @input="changeBoxNumber(itemType)"
-                        type='number'></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right">
-                      <zh-input placeholder='数量'
-                        v-model="itemType.total_box_number"
-                        @input="changeTotalBoxNumber(itemType)"
-                        class="inputs noborderType right"
-                        type='number'></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right">
-                      <zh-input placeholder='数量'
-                        v-model="itemType.gross_weight"
-                        class="inputs noborderType right"
-                        @input="changeGrossWeight(itemType)"
-                        type='number'></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right notAllow">
-                      <!-- <zh-input placeholder='数量'
+                      <span class="tcolumn center flex08 row">
+                        <zh-input placeholder='首箱号'
+                          v-model="itemType.first_box"
+                          class="inputs noborderType center"
+                          @input="changeBoxNumber(itemType)"
+                          type='number'></zh-input>
+                        <span style="margin:0 8px">~</span>
+                        <zh-input placeholder='末箱号'
+                          v-model="itemType.last_box"
+                          class="inputs noborderType center"
+                          @input="changeBoxNumber(itemType)"
+                          type='number'></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right">
+                        <zh-input placeholder='数量'
+                          v-model="itemType.total_box_number"
+                          @input="changeTotalBoxNumber(itemType)"
+                          class="inputs noborderType right"
+                          type='number'></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right">
+                        <zh-input placeholder='数量'
+                          v-model="itemType.gross_weight"
+                          class="inputs noborderType right"
+                          @input="changeGrossWeight(itemType)"
+                          type='number'></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right notAllow">
+                        <!-- <zh-input placeholder='数量'
                         v-model="itemType.total_gross_weight"
                         class="inputs noborderType right"
                         type='number'></zh-input> -->
-                      {{itemType.total_gross_weight || 0}}
-                    </span>
-                    <span class="tcolumn flex08 right">
-                      <zh-input placeholder='数量'
-                        v-model="itemType.net_weight"
-                        class="inputs noborderType right"
-                        @input="changeNetWeight(itemType)"
-                        type='number'></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right notAllow">
-                      <!-- <zh-input placeholder='数量'
+                        {{itemType.total_gross_weight || 0}}
+                      </span>
+                      <span class="tcolumn flex08 right">
+                        <zh-input placeholder='数量'
+                          v-model="itemType.net_weight"
+                          class="inputs noborderType right"
+                          @input="changeNetWeight(itemType)"
+                          type='number'></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right notAllow">
+                        <!-- <zh-input placeholder='数量'
                         v-model="itemType.total_net_weight"
                         class="inputs noborderType right"
                         type='number'></zh-input> -->
-                      {{itemType.total_net_weight || 0}}
-                    </span>
-                    <span class="tcolumn flex18 row">
-                      <zh-input placeholder='数量'
-                        v-model="itemType.long"
-                        class="inputs noborderType center"
-                        type='number'
-                        @input="compVol(itemType)"></zh-input>
-                      <span style="margin:0 8px">*</span>
-                      <zh-input placeholder='数量'
-                        v-model="itemType.width"
-                        class="inputs noborderType center"
-                        type='number'
-                        @input="compVol(itemType)"></zh-input>
-                      <span style="margin:0 8px">*</span>
-                      <zh-input placeholder='数量'
-                        v-model="itemType.height"
-                        class="inputs noborderType center"
-                        type='number'
-                        @input="compVol(itemType)"></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right">
-                      <zh-input placeholder='体积'
-                        v-model="itemType.vol_number"
-                        class="inputs noborderType center"
-                        type='number'
-                        @input="compTotalVol(itemType)"></zh-input>
-                    </span>
-                    <span class="tcolumn flex08 right notAllow">
-                      {{itemType.total_vol || 0}}
-                    </span>
-                    <span class="tcolumn flex18">
-                      <zh-input placeholder='备注'
-                        v-model="itemType.remark"
-                        class="inputs noborderType"></zh-input>
+                        {{itemType.total_net_weight || 0}}
+                      </span>
+                      <span class="tcolumn flex18 row">
+                        <zh-input placeholder='数量'
+                          v-model="itemType.long"
+                          class="inputs noborderType center"
+                          type='number'
+                          @input="compVol(itemType)"></zh-input>
+                        <span style="margin:0 8px">*</span>
+                        <zh-input placeholder='数量'
+                          v-model="itemType.width"
+                          class="inputs noborderType center"
+                          type='number'
+                          @input="compVol(itemType)"></zh-input>
+                        <span style="margin:0 8px">*</span>
+                        <zh-input placeholder='数量'
+                          v-model="itemType.height"
+                          class="inputs noborderType center"
+                          type='number'
+                          @input="compVol(itemType)"></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right">
+                        <zh-input placeholder='体积'
+                          v-model="itemType.vol_number"
+                          class="inputs noborderType center"
+                          type='number'
+                          @input="compTotalVol(itemType)"></zh-input>
+                      </span>
+                      <span class="tcolumn flex08 right notAllow">
+                        {{itemType.total_vol || 0}}
+                      </span>
+                      <span class="tcolumn flex18">
+                        <zh-input placeholder='备注'
+                          v-model="itemType.remark"
+                          class="inputs noborderType"></zh-input>
+                      </span>
                     </span>
                   </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="rowCtn col">
-          <div class="addRows">
-            <div class="once"
-              @click="addItem(planPackInfo,'type')">+添加装箱类型</div>
+          <div class="rowCtn col">
+            <div class="addRows">
+              <div class="once"
+                @click="addItem(planPackInfo,'type')">+添加装箱类型</div>
+            </div>
           </div>
-        </div>
+        </template>
+        <template v-else>
+          <div class="rowCtn col">
+            <span class="label">实际装箱信息</span>
+            <div class="tableCtnLv2">
+              <div class="tb_header">
+                <span class="tb_row">产品编号</span>
+                <span class="tb_row">产品类型</span>
+                <span class="tb_row tb_col"
+                  style="flex:2">
+                  <span class="tb_col_item">
+                    <span class="tb_row">尺码颜色</span>
+                    <span class="tb_row">实际装箱数量</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tb_content"
+                v-for="(itemPro,indexPro) in comProductList"
+                :key="indexPro">
+                <span class="tb_row">{{itemPro.product_code}}</span>
+                <span class="tb_row">{{itemPro.product_type}}</span>
+                <span class="tb_row tb_col"
+                  style="flex:2">
+                  <span class="tb_col_item"
+                    v-for="(itemSC,indexSC) in itemPro.size_color_info"
+                    :key="indexSC">
+                    <span class="tb_row">{{`${itemSC.size_name}/${itemSC.color_name}`}}</span>
+                    <span class="tb_row green">{{itemSC.total_number}}</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </template>
         <div class="rowCtn col">
           <span class="label">其他备注</span>
           <el-input type="textarea"
             :autosize="{ minRows: 5, maxRows: 8}"
             placeholder="请输入内容"
+            :disabled="status === 2"
             v-model="remark">
           </el-input>
         </div>
         <div class="rowCtn col">
           <span class="label">包装资料</span>
           <el-upload class="upload"
+            :disabled="status === 2"
             multiple
             action="https://upload.qiniup.com/"
             :before-upload="beforeAvatarUpload"
@@ -525,14 +557,68 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showConFirmPackInfoPopup && status !== 2">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <span class="text">确认实际装箱数量</span>
+          <span class="el-icon-close"
+            @click="showConFirmPackInfoPopup = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:600px">
+          <div class="row">
+            <div class="tableCtnLv2">
+              <div class="tb_header">
+                <span class="tb_row">产品编号</span>
+                <span class="tb_row">产品类型</span>
+                <span class="tb_row tb_col"
+                  style="flex:2">
+                  <span class="tb_col_item">
+                    <span class="tb_row">尺码颜色</span>
+                    <span class="tb_row">实际装箱数量</span>
+                  </span>
+                </span>
+              </div>
+              <div class="tb_content"
+                v-for="(itemPro,indexPro) in comProductList"
+                :key="indexPro">
+                <span class="tb_row">{{itemPro.product_code}}</span>
+                <span class="tb_row">{{itemPro.product_type}}</span>
+                <span class="tb_row tb_col"
+                  style="flex:2">
+                  <span class="tb_col_item"
+                    v-for="(itemSC,indexSC) in itemPro.size_color_info"
+                    :key="indexSC">
+                    <span class="tb_row">{{`${itemSC.size_name}/${itemSC.color_name}`}}</span>
+                    <span class="tb_row">{{itemSC.total_number}}</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showConFirmPackInfoPopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="isConfirmPackInfo">确认数量</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnRed"
+            v-if="status !== 2"
+            @click="deletePackPlan">删除</div>
           <div class="btn btnBlue"
             @click="$openUrl('/packPlanTable/' + $route.params.id + '/' + activePlanId)">打印</div>
           <div class="btn btnBlue"
+            v-if="status !== 2"
             @click="savePackPlan">提交</div>
         </div>
       </div>
@@ -555,6 +641,7 @@ export default {
       orderInfo: {},
       productList: [],
       planTb: [],
+      status: '',
       activePlanId: '',
       planPackInfo: [
         {
@@ -605,10 +692,58 @@ export default {
         { value: '杭州市' },
         { value: '宁波市' },
         { value: '义乌市' }
-      ]
+      ],
+      showConFirmPackInfoPopup: false
     }
   },
   methods: {
+    // 确认装箱数量
+    isConfirmPackInfo () {
+      this.$confirm('请确认实际装箱数量，一旦确认完成，将无法修改该装箱计划，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        packPlan.isConfirmPackPlan({
+          id: this.activePlanId
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('确认成功')
+            this.showConFirmPackInfoPopup = false
+            this.init()
+          }
+        })
+      }).catch(() => {
+
+      })
+    },
+    // 删除装箱计划
+    deletePackPlan () {
+      this.$confirm('该操作将永久删除该物料计划，无法回退，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.activePlanId === 'null') {
+          let index = this.planTb.find(itemF => itemF.id === 'null')
+          if (index !== -1) {
+            this.planTb.splice(index, 1)
+            this.cutTb(0)
+          }
+        } else {
+          packPlan.deletePackPlan({
+            id: this.activePlanId
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$message.success('删除成功')
+              this.init()
+            }
+          })
+        }
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
     // 计算单个体积
     compVol (item) {
       let long = item.long / 100
@@ -672,10 +807,8 @@ export default {
     },
     // 点击左右滑动按钮
     scrollX (per, son, bool) {
-      // let perItem = document.getElementsByClassName(per)
       let perItem = this.$refs[per]
       let perWidth = perItem[0].offsetWidth
-      // let sonDom = document.getElementsByClassName(son)
       let sonDom = this.$refs[son]
       let sonWidth = sonDom[0].offsetWidth
       let flag = true
@@ -700,8 +833,6 @@ export default {
     },
     // 判断是否显示左右滑动按钮
     canShow (per, son, dir) {
-      // let perDom = document.getElementsByClassName(per)[0]
-      // let sonDom = document.getElementsByClassName(son)[0]
       let perDom = this.$refs[per] ? this.$refs[per][0] : undefined
       let sonDom = this.$refs[son] ? this.$refs[son][0] : undefined
       if (!perDom || !sonDom) {
@@ -984,6 +1115,7 @@ export default {
       let fileArr = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       packPlan.create({
         id: this.activePlanId === 'null' ? null : this.activePlanId,
+        name: this.planTitle,
         order_id: this.$route.params.id,
         file_url: fileArr,
         desc: this.remark,
@@ -1076,44 +1208,87 @@ export default {
                 total_vol: itemType.total_bulk,
                 isCommit: true
               }
-            })
+            }),
+            status: itemM.status,
+            title: itemM.name
           }
         })
         if (this.planTb.length === 0) {
           this.addNewPlan()
         }
-        this.catTb(0)
+        this.activePlanId = null
+        this.cutTb(0)
         this.loading = false
         this.$forceUpdate()
       })
     },
-    catTb (index) {
-      let item = this.planTb[index]
-      this.remark = item.remark
-      this.activePlanId = item.id.toString()
-      this.file_arr = item.file_url.map(itemM => {
-        return {
-          name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
-          url: itemM
-        }
-      })
-      this.planPackInfo = item.packPlanInfo
+    cutTb (index) {
+      if (index === -1) return // 当切换index为-1时不做任何操作
+      if (this.activePlanId === this.planTb[index].id.toString()) return// 当切换的id和当前activePlanId一致时不做任何操作
+      this.loading = true
+      if (this.activePlanId === 'null') {
+        this.$confirm('检测到该新增计划单未提交，切换将清空新增计划单数据，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let indexNull = this.planTb.findIndex(itemF => itemF.id === 'null')
+          this.planTb.splice(indexNull, 1)
+          let item = this.planTb[index]
+          this.remark = item.remark
+          this.planTitle = item.title
+          this.activePlanId = item.id.toString()
+          this.file_arr = item.file_url.map(itemM => {
+            return {
+              name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+              url: itemM
+            }
+          })
+          this.planPackInfo = item.packPlanInfo
+          this.loading = false
+        }).catch(() => {
+          this.loading = false
+        })
+      } else {
+        let item = this.planTb[index]
+        this.remark = item.remark
+        this.activePlanId = item.id.toString()
+        this.file_arr = item.file_url.map(itemM => {
+          return {
+            name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+            url: itemM
+          }
+        })
+        this.planPackInfo = item.packPlanInfo
+        this.status = item.status
+        this.loading = false
+      }
     },
     addNewPlan () {
       if (this.planTb.find(itemF => itemF.id === 'null')) {
         this.$message.warning('检测到已有一张在添加的计划单，请先提交')
         return
       }
-      this.planTb.push({
+      let obj = {
         id: 'null',
         remark: '',
         file_url: [],
         packPlanInfo: []
+      }
+      this.$prompt('请输入该计划单名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        obj.title = value
+        this.planTitle = value
+        this.planTb.push(obj)
+        this.cutTb(this.planTb.length - 1)
+      }).catch(() => {
+        obj.title = ''
+        this.planTitle = ''
+        this.planTb.push(obj)
+        this.cutTb(this.planTb.length - 1)
       })
-      this.catTb(this.planTb.length - 1)
-    },
-    tabClick (tab, event) {
-      this.catTb(tab.index)
     },
     checkedAll (e) {
       this.totalPlanPackInfo.forEach(item => {
@@ -1225,6 +1400,39 @@ export default {
           })
         }
       })
+    },
+    comProductList () {
+      let productInfo = []
+      this.totalPlanPackInfo.forEach(item => {
+        item.product_info.forEach(itemPro => {
+          productInfo.push({
+            product_id: itemPro.product_id,
+            product_type: itemPro.type,
+            product_code: itemPro.product_code,
+            size_id: itemPro.sizeColor[0],
+            color_id: itemPro.sizeColor[1],
+            size_name: itemPro.sizeColorName[0],
+            color_name: itemPro.sizeColorName[1],
+            total_number: itemPro.total_number
+          })
+        })
+      })
+      return this.$mergeData(productInfo, {
+        mainRule: 'product_id',
+        otherRule: [
+          { name: 'product_type' },
+          { name: 'product_code' }
+        ],
+        childrenName: 'size_color_info',
+        childrenRule: {
+          mainRule: ['size_id', 'color_id'],
+          otherRule: [
+            { name: 'size_name' },
+            { name: 'color_name' },
+            { name: 'total_number', type: 'add' }
+          ]
+        }
+      })
     }
   }
 }
@@ -1237,21 +1445,6 @@ export default {
 #packPlanDetailNew {
   .el-input__inner {
     height: 32px !important;
-  }
-  .greenInput {
-    .el-tag {
-      display: inline !important;
-      padding: 0;
-      border: 0px;
-      background: transparent;
-      &:nth-last-child(n + 2)::after {
-        content: ",";
-        color: #01b48c;
-      }
-      .el-select__tags-text {
-        color: #01b48c;
-      }
-    }
   }
   .inputs {
     height: 32px !important;

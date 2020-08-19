@@ -1310,7 +1310,12 @@
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
           <!-- </div> -->
         </div>
-        <div class="opr">
+        <div class="opr"
+          style="justify-content:space-between">
+          <div style="display:flex">
+            <div class="btn btnWhiteBlue"
+              @click="$openUrl(`/packPlan/packPlanCreate/${$route.params.id}`)">查看装箱计划</div>
+          </div>
           <div style="display:flex">
             <div class="btn btnGray"
               v-if="showOkPopup === 1 && isCommit"

@@ -276,7 +276,8 @@ const materialManage = {
   create: (params) => http.post(`${baseUrl}/material/order/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/material/order/list`, params),
   delete: (params) => http.post(`${baseUrl}/material/order/delete`, params, 'application/json'), // 订购调取撤销
-  init: (params) => http.get(`${baseUrl}/material/order/init`, params) // 物料调取仓库初始化
+  init: (params) => http.get(`${baseUrl}/material/order/init`, params), // 物料调取仓库初始化
+  changeReality: (params) => http.post(`${baseUrl}/material/order/update/reality/weight`, params, 'application/json') // 改变订购日志实际入库值
 }
 // 加工工序
 const process = {
@@ -346,7 +347,9 @@ const packPlan = {
   deletePackActual: (params) => http.post(`${baseUrl}/pack/real/delete`, params, 'application/json'), // 实际装箱删除
   outMarket: (params) => http.post(`${baseUrl}/sell/out/save`, params, 'application/json'), // 销售出库
   outMarketLog: (params) => http.get(`${baseUrl}/sell/out/list`, params), // 销售出库日志
-  deleteOutMark: (params) => http.post(`${baseUrl}/sell/out/delete`, params, 'application/json') // 销售出库删除
+  deleteOutMark: (params) => http.post(`${baseUrl}/sell/out/delete`, params, 'application/json'), // 销售出库删除
+  isConfirmPackPlan: (params) => http.post(`${baseUrl}/pack/info/check`, params, 'application/json'), // 装箱计划单确认
+  deletePackPlan: (params) => http.post(`${baseUrl}/pack/info/delete`, params, 'application/json') // 装箱计划删除
 }
 // 产品检验
 const inspection = {
