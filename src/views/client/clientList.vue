@@ -206,11 +206,7 @@ export default {
       searchTypeFlag: false,
       pages: 1,
       total: 0,
-      companyType: [{
-        label: '加工单位',
-        value: '加工单位',
-        children: []
-      }],
+      companyType: [],
       clientStatus: 1,
       statusArr: [
         {
@@ -350,14 +346,12 @@ export default {
       this.YJSWKP = params.YJSWKP
       this.DJS = params.DJS
       this.YKK = params.YKK
-      console.log(this.client_type)
     },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type + '&&YJSYKP=' + this.YJSYKP + '&&YJSWKP=' + this.YJSWKP + '&&DJS=' + this.DJS + '&&YKK=' + this.YKK)
     },
     getClientList () {
-      console.log(this.client_type)
       this.loading = true
       client.list({
         limit: 10,
@@ -374,10 +368,10 @@ export default {
       })
     },
     computedType (type) {
-      return type.map(item => {
-        let flag = this.companyType.find(value => value.value === item)
-        return flag ? (flag.name || '') : ''
-      }).join(',')
+      return this.$unique(type.map(item => {
+        let flag = this.companyType.find(value => value.children.find(itemF => +itemF.value === +item))
+        return flag ? (flag.label || '') : ''
+      })).join(',')
     },
     reset () {
       this.$router.push('/client/clientList/page=1&&keyword=&&clientType=')
@@ -386,17 +380,11 @@ export default {
   created () {
     this.getFilters()
     this.getClientList()
-    this.$clone(companyType).forEach((item) => {
-      if (item.value >= 12 && item.value <= 25) {
-        this.companyType[0].children.push({
-          value: item.value,
-          label: item.name
-        })
-      } else {
-        this.companyType.push({
-          value: item.value,
-          label: item.name
-        })
+    this.companyType = this.$mergeData(companyType, { mainRule: 'type', childrenName: 'children' }).map(itemM => {
+      return {
+        value: itemM.type,
+        label: itemM.type,
+        children: itemM.children
       }
     })
   },

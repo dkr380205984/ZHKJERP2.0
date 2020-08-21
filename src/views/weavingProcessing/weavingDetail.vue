@@ -147,15 +147,14 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.company_id"
-                        filterable
-                        :filter-method="searchClient"
-                        placeholder="请选择织造单位">
-                        <el-option v-for="item in clientArrReal"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.name"></el-option>
-                      </el-select>
+                      <el-cascader v-model="item.company_id"
+                        :show-all-levels='false'
+                        placeholder="请选择织造单位"
+                        :options="clientArrReal"
+                        :filter-method='searchClient'
+                        clearable
+                        :props="{ expandTrigger: 'hover' }"
+                        filterable></el-cascader>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -595,15 +594,14 @@
             <div class="row">
               <div class="label">织造单位：</div>
               <div class="info">
-                <el-select v-model="commonCompany[index]"
-                  filterable
-                  :filter-method="searchClient"
-                  placeholder="请选择织造单位">
-                  <el-option v-for="item in clientArrReal"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.name"></el-option>
-                </el-select>
+                <el-cascader v-model="commonCompany[index]"
+                  :show-all-levels='false'
+                  placeholder="请选择织造单位"
+                  :options="clientArrReal"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
             <div class="row">
@@ -886,6 +884,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
@@ -906,7 +905,6 @@ export default {
       },
       weaving_info: [],
       productArr: [],
-      companyArr: [],
       clientArrReal: [],
       weaving_data: [],
       weaving_detail: [],
@@ -974,35 +972,22 @@ export default {
     querySearchReplenish (queryString, cb) {
       cb(queryString ? this.replenishRemarkList.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.replenishRemarkList)
     },
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.companyArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.companyArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.companyArr)
       }
+      return flag
     },
     // 补纱打印
     printReplenish (client) {
@@ -1120,7 +1105,7 @@ export default {
       let errorFlag = false
       let errMsg = ''
       this.weaving_data.forEach((item) => {
-        if (!item.company_id) {
+        if (!item.company_id || !item.company_id[1]) {
           errorFlag = true
           errMsg = '请选择织造单位'
         } else if (!item.product_name) {
@@ -1156,7 +1141,7 @@ export default {
             order_id: this.$route.params.id,
             order_type: this.$route.params.orderType,
             product_id: partColorSize[0], // 配件id
-            client_id: item.company_id,
+            client_id: item.company_id && item.company_id[1],
             complete_time: this.$getTime(item.complete_time),
             desc: item.desc,
             price: itemChild.price,
@@ -1495,13 +1480,7 @@ export default {
           part_data: mixedData
         })
       })
-      this.companyArr = res[2].data.data.filter((item) => {
-        return item.type.indexOf(4) !== -1
-      })
-      this.companyArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.companyArr)
+      this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14] })
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false
         return item

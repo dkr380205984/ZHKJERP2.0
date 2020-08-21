@@ -313,14 +313,14 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.company_id"
-                        filterable
-                        placeholder="请选择订购公司">
-                        <el-option v-for="item in orderCompany"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.name"></el-option>
-                      </el-select>
+                      <el-cascader v-model="item.company_id"
+                        :show-all-levels='false'
+                        placeholder="请选择订购公司"
+                        :options="orderCompany"
+                        :filter-method='searchClient'
+                        clearable
+                        :props="{ expandTrigger: 'hover' }"
+                        filterable></el-cascader>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -563,14 +563,14 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.company_id"
-                        filterable
-                        placeholder="请选择加工单位">
-                        <el-option v-for="item in processCompany"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.name"></el-option>
-                      </el-select>
+                      <el-cascader v-model="item.company_id"
+                        :show-all-levels='false'
+                        placeholder="请选择加工单位"
+                        :options="processCompany"
+                        :filter-method='searchClient'
+                        clearable
+                        :props="{ expandTrigger: 'hover' }"
+                        filterable></el-cascader>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -1006,14 +1006,14 @@
             <div class="row">
               <div class="label">订购公司：</div>
               <div class="info">
-                <el-select v-model="commonCompany[index]"
-                  filterable
-                  placeholder="请选择订购公司">
-                  <el-option v-for="item in orderCompany"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.name"></el-option>
-                </el-select>
+                <el-cascader v-model="commonCompany[index]"
+                  :show-all-levels='false'
+                  placeholder="请选择订购公司"
+                  :options="orderCompany"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
             <div class="row">
@@ -1062,14 +1062,14 @@
             <div class="row">
               <div class="label">加工单位：</div>
               <div class="info">
-                <el-select v-model="commonProcessCompany[index]"
-                  filterable
-                  placeholder="请选择加工单位">
-                  <el-option v-for="item in processCompany"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.name"></el-option>
-                </el-select>
+                <el-cascader v-model="commonProcessCompany[index]"
+                  :show-all-levels='false'
+                  placeholder="请选择加工单位"
+                  :options="processCompany"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
             <div class="row">
@@ -1543,6 +1543,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { order, materialPlan, client, materialManage, yarnColor, yarn, process, materialProcess, replenish, yarnStock, material, sampleOrder, stock } from '@/assets/js/api.js'
 export default {
@@ -1644,6 +1645,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     // 修改实际入库数量
     saveRealityWeight () {
       let data = []
@@ -2212,82 +2230,92 @@ export default {
       }
     },
     saveOrder () {
+      if (this.$submitLock()) return
       // 数据验证
-      let flattenData = this.$flatten(this.order_data)
-      let errorFlag = false
-      errorFlag = flattenData.some((item) => {
-        return !item.company_id
+      let flag = {
+        company: true,
+        price: true,
+        material: true,
+        id: true,
+        color: true,
+        number: true,
+        time: true
+      }
+      let data = this.order_data.map(itemF => {
+        if (!itemF.company_id || !itemF.company_id[1]) {
+          flag.company = false
+        }
+        if (!itemF.price) {
+          flag.price = false
+        }
+        if (!itemF.complete_time) {
+          flag.time = false
+        }
+        return itemF.material.map(itemM => {
+          if (!itemM.name) {
+            flag.material = false
+          }
+          if (!itemM.id) {
+            flag.id = false
+          }
+          if (!itemM.color) {
+            flag.color = false
+          }
+          if (!itemM.number) {
+            flag.number = false
+          }
+          return {
+            order_type: this.$route.params.orderType,
+            desc: itemF.desc,
+            complete_time: itemF.complete_time,
+            total_price: 0,
+            price: itemF.price,
+            total_weight: itemM.number,
+            color_code: itemM.color,
+            material_name: itemM.name,
+            plan_id: itemF.replenishFlag ? null : itemM.id,
+            type: this.type,
+            vat_code: null,
+            replenish_id: itemF.replenishFlag ? itemM.id : null,
+            type_source: 2, // 1调取，2订购
+            attribute: null,
+            stock_id: null,
+            client_id: itemF.company_id && itemF.company_id[1],
+            order_id: this.$route.params.id
+          }
+        })
       })
-      if (errorFlag) {
+      if (!flag.company) {
         this.$message.error('请选择订购公司')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return !item.id
-      })
-      if (errorFlag) {
+      if (!flag.id) {
         this.$message.error('请选择物料')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return item.price === ''
-      })
-      if (errorFlag) {
+      if (!flag.price) {
         this.$message.error('请输入单价信息')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return !item.name
-      })
-      if (errorFlag) {
+      if (!flag.material) {
         this.$message.error('请填写原料名称')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return !item.color
-      })
-      if (errorFlag) {
+      if (!flag.color) {
         this.$message.error('请填写原料颜色')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return !item.number
-      })
-      if (errorFlag) {
+      if (!flag.number) {
         this.$message.error('请填写原料数量')
         return
       }
-      errorFlag = flattenData.some((item) => {
-        return !item.complete_time
-      })
-      if (errorFlag) {
+      if (!flag.time) {
         this.$message.error('请选择截止日期')
         return
       }
-      let formData = this.$flatten(this.order_data).map((item) => {
-        return {
-          order_type: this.$route.params.orderType,
-          desc: item.desc,
-          complete_time: item.complete_time,
-          total_price: 0,
-          price: item.price,
-          total_weight: item.number,
-          color_code: item.color,
-          material_name: item.name,
-          plan_id: item.replenishFlag ? null : item.id,
-          type: this.type,
-          vat_code: null,
-          replenish_id: item.replenishFlag ? item.id : null,
-          type_source: 2, // 1调取，2订购
-          attribute: null,
-          stock_id: null,
-          client_id: item.company_id,
-          order_id: this.$route.params.id
-        }
-      })
       materialManage.create({
         data: {
-          order_data: formData,
+          order_data: this.$flatten(data),
           stock_data: []
         }
       }).then((res) => {
@@ -2448,10 +2476,11 @@ export default {
       this.$goElView('process')
     },
     saveProcess () {
+      if (this.$submitLock()) return
       let errorFlag = false
       let errorMsg = ''
       this.process_data.forEach((item) => {
-        if (!item.company_id) {
+        if (!item.company_id && item.company_id[1]) {
           errorFlag = true
           errorMsg = '请选择加工单位'
           return
@@ -2494,7 +2523,7 @@ export default {
             process_type: item.process.join('/'),
             type: this.type,
             order_id: this.$route.params.id,
-            client_id: item.company_id,
+            client_id: item.company_id && item.company_id[1],
             price: itemChild.price,
             weight: itemChild.number,
             desc: item.desc,
@@ -2636,69 +2665,12 @@ export default {
         }).then(res => {
           if (res.data.status !== false) {
             let stockLog = res.data.data.filter(itemF => +itemF.type === 3)// 过滤出最终入库
-            // let orderLog = this.$clone(this.order_stock_log)
-            // let processLog = this.$clone(this.process_log)
-            // let notComMatArr = {
-            //   order: {
-            //     '0': [],
-            //     '1': []
-            //   },
-            //   process: {
-            //     '0': [],
-            //     '1': []
-            //   }
-            // }
-            // stockLog.forEach(itemS => {
-            //   let filterOrderArr = orderLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.before_color === itemS.material_color)
-            //   if (filterOrderArr.length === 1) {
-            //     filterOrderArr[0].goStock_number = itemS.total_weight
-            //   } else if (filterOrderArr.length === 0) {
-            //     notComMatArr.order['0'].push(`${itemS.material_name}/${itemS.material_color}`)
-            //   } else if (filterOrderArr.length > 1) {
-            //     notComMatArr.order['1'].push(`${itemS.material_name}/${itemS.material_color}`)
-            //   }
-            //   let filterProcessArr = processLog.filter(itemF => itemF.material_name === itemS.material_name && itemF.material_color === itemS.material_color)
-            //   if (filterProcessArr.length === 1) {
-            //     filterProcessArr[0].goStock_number = itemS.total_weight
-            //   } else if (filterProcessArr.length === 0) {
-            //     notComMatArr.process['0'].push(`${itemS.material_name}/${itemS.material_color}`)
-            //   } else if (filterProcessArr.length > 1) {
-            //     notComMatArr.process['1'].push(`${itemS.material_name}/${itemS.material_color}`)
-            //   }
-            // })
-            // let msgStr = `${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '以下入库日志物料') || ''}
-            //               ${(notComMatArr.order['0'].length > 0 && '未匹配上') || ''}
-            //               ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['1'].length > 0 && '或') || ''}
-            //               ${(notComMatArr.order['1'].length > 0 && '匹配多条') || ''}
-            //               ${((notComMatArr.order['0'].length > 0 || notComMatArr.order['1'].length > 0) && '订购日志：<br />') || ''}
-            //               ${(notComMatArr.order['0'].length > 0 && '未匹配上：<br />') || ''}
-            //               ${(notComMatArr.order['0'].length > 0 && notComMatArr.order['0'].join('<br />')) || ''}
-            //               ${(notComMatArr.order['1'].length > 0 && '匹配上多条：<br />') || ''}
-            //               ${(notComMatArr.order['1'].length > 0 && notComMatArr.order['1'].join('<br />')) || ''}
-            //               <br />
-            //               ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '以下入库日志物料') || ''}
-            //               ${(notComMatArr.process['0'].length > 0 && '未匹配上') || ''}
-            //               ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['1'].length > 0 && '或') || ''}
-            //               ${(notComMatArr.process['1'].length > 0 && '匹配多条') || ''}
-            //               ${((notComMatArr.process['0'].length > 0 || notComMatArr.process['1'].length > 0) && '加工日志：<br />') || ''}
-            //               ${(notComMatArr.process['0'].length > 0 && '未匹配上：<br />') || ''}
-            //               ${(notComMatArr.process['0'].length > 0 && notComMatArr.process['0'].join('<br />')) || ''}
-            //               ${(notComMatArr.process['1'].length > 0 && '匹配上多条：<br />') || ''}
-            //               ${(notComMatArr.process['1'].length > 0 && notComMatArr.process['1'].join('<br />')) || ''}`
-            // if (msgStr) {
-            //   this.$alert(msgStr, '提示', {
-            //     confirmButtonText: '确定',
-            //     dangerouslyUseHTMLString: true
-            //   })
-            // }
             this.stockLog = stockLog
             if (type) {
               this.orderLog = this.$clone(this.order_stock_log)
             } else {
               this.processLog = this.$clone(this.process_log)
             }
-            // this.orderLog = orderLog
-            // this.processLog = processLog
           }
           this.loading = false
           this.showComRealityGoStockPopup = true
@@ -2789,16 +2761,12 @@ export default {
           })
         })
       }
-      this.orderCompany = res[2].data.data.filter((item) => {
-        if (this.type === '1') {
-          return item.type.indexOf(2) !== -1
-        } else {
-          return item.type.indexOf(10) !== -1
-        }
-      })
-      this.processCompany = res[2].data.data.filter((item) => {
-        return item.type.indexOf(3) !== -1
-      })
+      if (this.type === '1') {
+        this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [3, 4] })
+      } else if (this.type === '2') {
+        this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [5, 6] })
+      }
+      this.processCompany = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [9, 12] })
       this.colorList = res[3].data.data.map((item) => {
         return {
           value: item.name

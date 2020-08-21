@@ -120,9 +120,6 @@
             <div class="col middle flex12">
               <span class="opr blue"
                 @click="$router.push('/warehouse/warehouseDetail/' + itemOrder.id)">详情</span>
-              <!-- <span class="opr orange">修改</span>
-              <span class="opr red"
-                @click="deleteWarehouse(itemOrder.id)">删除</span> -->
             </div>
           </div>
         </div>
@@ -150,15 +147,14 @@
           <div class="row">
             <span class="label">运输单位：</span>
             <span class="info">
-              <el-select v-model="popupData.client_id"
-                filterable
-                placeholder="请选择运输单位">
-                <el-option v-for="item in clientList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-cascader v-model="popupData.client_id"
+                :show-all-levels='false'
+                placeholder="请选择运输单位"
+                :options="clientList"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                filterable></el-cascader>
             </span>
           </div>
           <div class="row">
@@ -279,32 +275,13 @@
         </div>
       </div>
     </div>
-    <!-- <div class="bottomFixBar"
-      v-if="checkedList.length > 0">
-      <div class="main">
-        <div class="checkedInfo"
-          style="float:left">
-          已选择
-          <span class="blue">{{checkedList.length}}</span>
-          个进仓单：
-          <template v-for="(item,index) in checkedList">
-            <span class="blue"
-              :key="index">{{item.code}}</span>;
-          </template>
-        </div>
-        <div class="btnCtn">
-          <div class="btn btnGray"
-            @click="cancelChecked">取消</div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script>
 import { warehouse, client, transport } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
-import { chinaNum } from '@/assets/js/dictionary.js'
+import { chinaNum, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -349,8 +326,25 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     saveTransport () {
-      if (!this.popupData.client_id) {
+      if (!this.popupData.client_id || !this.popupData.client_id[1]) {
         this.$message.error('请选择运输单位')
         return
       }
@@ -366,17 +360,13 @@ export default {
         this.$message.error('请输入总体积')
         return
       }
-      // if (!this.popupData.price) {
-      //   this.$message.error('请输入运输单价')
-      //   return
-      // }
       if (!this.popupData.total_price) {
         this.$message.error('请输入总价')
         return
       }
       let data = {
         id: null,
-        client_id: this.popupData.client_id,
+        client_id: this.popupData.client_id && this.popupData.client_id[1],
         total_number: this.popupData.total_number,
         total_gross_weight: this.popupData.total_gross_weight,
         price: this.popupData.price || null,
@@ -396,7 +386,7 @@ export default {
     addTransportTable () {
       if (this.clientList.length === 0) {
         client.list().then(res => {
-          this.clientList = res.data.data.filter(itemF => itemF.type.indexOf(8) !== -1)
+          this.clientList = this.$getClientOptions(res.data.data, companyType, { type: [35, 36] })
         })
       }
       if (this.checkedList.length > 0) {

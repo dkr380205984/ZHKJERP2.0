@@ -74,35 +74,57 @@
     </div>
     <div class="module">
       <div class="listCtn">
-        <div class="filterCtn">
+        <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
-            <el-input class="inputs"
-              v-model="keyword"
-              @change="changeRouter(1)"
-              placeholder="输入订单号按回车键查询">
-            </el-input>
-            <el-date-picker v-model="date"
-              style="width:290px"
-              class="inputs"
-              type="daterange"
-              align="left"
-              unlink-panels
-              value-format="yyyy-MM-dd"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :picker-options="pickerOptions"
-              @change="changeRouter(1)">
-            </el-date-picker>
-            <div class="btn btnGray"
-              @click="reset"
-              style="margin-left:0">重置</div>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入订单号按回车键查询">
+              </el-input>
+              <el-cascader v-model="company_id"
+                class="filter_item"
+                :show-all-levels='false'
+                placeholder="筛选公司"
+                :options="companyArr"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
+              <el-select v-model="group_id"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选小组">
+                <el-option v-for="(item,index) in groupArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="filter_item"
+                type="daterange"
+                align="left"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="pickerOptions"
+                @change="changeRouter(1)">
+              </el-date-picker>
+              <div class="resetBtn"
+                @click="reset">重置</div>
+            </div>
           </div>
-          <div class="rightCtn">
-            <div class="btn btnBlue"
-              @click="$router.push('/screenShipmentsList?keyword=' + keyword + '&start_time=' + (date[0] || '') + '&end_time=' + (date[1] || '') + '&group_id=' + group_id + '&company_id=' + company_id)">大屏模式</div>
-          </div>
+        </div>
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/screenShipmentsList?keyword=' + keyword + '&start_time=' + (date[0] || '') + '&end_time=' + (date[1] || '') + '&group_id=' + group_id + '&company_id=' + company_id)">大屏模式</div>
         </div>
         <div class="list">
           <div class="title">
@@ -113,29 +135,7 @@
               <span class="text">订单号</span>
             </div>
             <div class="col flex12">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchCompanyFlag">外贸公司
-                  <i class="el-icon-search iconBtn"
-                    @click="searchCompanyFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchCompanyFlag"
-                    class="filterBox">
-                    <el-select v-model="company_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      filterable
-                      placeholder="筛选公司">
-                      <el-option v-for="(item,index) in companyArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">外贸公司</span>
             </div>
             <div class="col middle flex12">
               <span class="text">产品图片</span>
@@ -145,28 +145,7 @@
                 style="line-height:1.2em">批次<br />订单数量</span>
             </div>
             <div class="col flex08">
-              <span class="text">
-                <span class="text"
-                  v-show="!searchGroupFlag">负责小组
-                  <i class="el-icon-search iconBtn"
-                    @click="searchGroupFlag=true"></i>
-                </span>
-                <transition name="el-zoom-in-top">
-                  <div v-show="searchGroupFlag"
-                    class="filterBox">
-                    <el-select v-model="group_id"
-                      @change="changeRouter(1)"
-                      clearable
-                      placeholder="小组">
-                      <el-option v-for="(item,index) in groupArr"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </transition>
-              </span>
+              <span class="text">负责小组</span>
             </div>
             <div class="col flex16">
               <span class="text">流程进度</span>
@@ -261,6 +240,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { getHash } from '@/assets/js/common.js'
 import { orderBatch, group, client, chartsAPI } from '@/assets/js/api.js'
 export default {
@@ -411,8 +391,6 @@ export default {
       groupArr: [],
       company_id: '',
       companyArr: [],
-      searchCompanyFlag: false,
-      searchGroupFlag: false,
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -453,6 +431,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
@@ -463,13 +458,7 @@ export default {
         this.date = ''
       }
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      if (this.group_id) {
-        this.searchGroupFlag = true
-      }
-      this.company_id = params.company_id
-      if (this.company_id) {
-        this.searchCompanyFlag = true
-      }
+      this.company_id = params.company_id.split(',')
     },
     changeRouter (page) {
       let pages = page || 1
@@ -486,51 +475,9 @@ export default {
         keyword: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        client_id: this.company_id,
+        client_id: this.company_id && this.company_id[1],
         group_id: this.group_id
       }).then(res => {
-        // let data = []
-        // let batchData = res.data.data.data
-        // for (let prop in batchData) {
-        //   let item = batchData[prop]
-        //   data.push(...item.map(itemBatch => {
-        //     let productInfo = itemBatch.batch_info.map(itemPro => {
-        //       return {
-        //         number: itemPro.product_info.map(itemSize => (+itemSize.numbers || 0)).reduce((a, b) => {
-        //           return a + b
-        //         }),
-        //         product_id: itemPro.category_info.product_id,
-        //         image: itemPro.category_info.image.length > 0 ? itemPro.category_info.image.map(itemImg => {
-        //           itemImg.product_id = itemPro.category_info.product_id
-        //           itemImg.product_type = itemPro.category_info.product_type
-        //           return itemImg
-        //         }) : [{
-        //           product_id: itemPro.category_info.product_id,
-        //           product_type: itemPro.category_info.product_type
-        //         }]
-        //       }
-        //     })
-        //     return {
-        //       delivery_time: prop,
-        //       order_code: itemBatch.order_code,
-        //       client_name: itemBatch.client_name,
-        //       image: productInfo.map(itemPro => itemPro.image).reduce((a, b) => {
-        //         return a.concat(b)
-        //       }),
-        //       status: itemBatch.status,
-        //       order_id: itemBatch.order_id,
-        //       batch_id: itemBatch.batch_id,
-        //       group_name: itemBatch.group_name,
-        //       total_number: productInfo.map(itemPro => (+itemPro.number || 0)).reduce((a, b) => {
-        //         return a + b
-        //       }),
-        //       order_time: itemBatch.order_time,
-        //       ...itemBatch.log
-
-        //     }
-        //   })
-        //   )
-        // }
         res.data.data.forEach(item => {
           item.image = []
           item.image = this.$flatten(this.$mergeData(item.product_info, { mainRule: 'product_id', otherRule: [{ name: 'image' }] }).map(item => {
@@ -636,9 +583,7 @@ export default {
       client.list()
     ]).then((res) => {
       this.groupArr = res[0].data.data
-      this.companyArr = res[1].data.data.filter((item) => {
-        return item.type.indexOf(1) !== -1
-      })
+      this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
     })
     let today = new Date()
     let todayMore14 = [this.$getTime(today)]

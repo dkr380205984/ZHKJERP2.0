@@ -88,7 +88,7 @@ export default {
           },
           {
             name: '进仓运输',
-            id: 20,
+            id: 19,
             path: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address=',
             icon: 'icon-zhuangxiangchuku'
           }

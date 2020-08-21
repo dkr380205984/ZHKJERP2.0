@@ -122,7 +122,7 @@
         <el-tabs style="width:100%;font-size:16px"
           v-model="type">
           <!-- 订单 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(1) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 1 && itemS <= 2))"
             label="所有订单"
             name="所有订单">
             <div class="filterCtn">
@@ -261,7 +261,7 @@
             </div>
           </el-tab-pane>
           <!-- 物料订购调取 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(2) !== -1 || clientInfo.type.indexOf(10) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 3 && itemS <= 6))"
             label="物料订购调取"
             name="物料订购调取">
             <div class="filterCtn">
@@ -425,7 +425,7 @@
             </div>
           </el-tab-pane>
           <!-- 物料预订购 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(2) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 3 && itemS <= 4))"
             label="物料预订购"
             name="物料预订购">
             <div class="filterCtn">
@@ -563,7 +563,7 @@
             </div>
           </el-tab-pane>
           <!-- 物料加工 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(3) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 9 && itemS <= 12))"
             label="物料加工"
             name="物料加工">
             <div class="filterCtn">
@@ -723,7 +723,7 @@
             </div>
           </el-tab-pane>
           <!-- 织造分配 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(4) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 13 && itemS <= 14))"
             label="织造分配"
             name="织造分配">
             <div class="filterCtn">
@@ -876,7 +876,7 @@
             </div>
           </el-tab-pane>
           <!-- 半成品加工 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(5) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 15 && itemS <= 28))"
             label="半成品加工"
             name="半成品加工">
             <div class="filterCtn">
@@ -1042,7 +1042,7 @@
             </div>
           </el-tab-pane>
           <!-- 包装订购 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(7) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))"
             label="包装订购"
             name="包装订购">
             <div class="filterCtn">
@@ -1176,7 +1176,7 @@
             </div>
           </el-tab-pane>
           <!-- 装箱出库 -->
-          <el-tab-pane v-if="clientInfo.type.indexOf(8) !== -1"
+          <el-tab-pane v-if="clientInfo.type.some(itemS => (itemS >= 35 && itemS <= 36))"
             label="装箱出库"
             name="装箱出库">
             <div class="filterCtn">
@@ -1926,24 +1926,22 @@ export default {
         this.clientInfo = this.$clone(res[0].data.data)
         this.clientInfo.typeStr = this.clientInfo.type.map(item => {
           let flag = this.companyType.find(value => value.value === item)
-          return flag ? flag.name : ''
+          return flag ? `${flag.type}/${flag.label}` : ''
         })
-        if (this.clientInfo.type.indexOf(1) !== -1) {
+        if (this.clientInfo.type.some(itemS => (itemS >= 1 && itemS <= 2))) {
           this.type = '所有订单'
-        } else if (this.clientInfo.type.indexOf(2) !== -1 || this.clientInfo.type.indexOf(10) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 3 && itemS <= 6))) {
           this.type = '物料订购调取'
-        } else if (this.clientInfo.type.indexOf(3) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 9 && itemS <= 12))) {
           this.type = '物料加工'
-        } else if (this.clientInfo.type.indexOf(4) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 13 && itemS <= 14))) {
           this.type = '织造分配'
-        } else if (this.clientInfo.type.indexOf(5) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 15 && itemS <= 28))) {
           this.type = '半成品加工'
-        } else if (this.clientInfo.type.indexOf(7) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))) {
           this.type = '包装订购'
-        } else if (this.clientInfo.type.indexOf(8) !== -1) {
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 35 && itemS <= 36))) {
           this.type = '装箱出库'
-          // } else if (this.clientInfo.type.indexOf(10) !== -1) {
-          //   this.type = '装饰辅料订购调取'
         } else if (this.clientInfo.type.indexOf(11) !== -1) {
           this.type = '销售出库'
         }

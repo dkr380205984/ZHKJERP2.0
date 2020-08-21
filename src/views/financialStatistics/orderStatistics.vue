@@ -173,17 +173,16 @@
                 v-model="keyword"
                 @change="changeRouter(1)"
                 placeholder="输入订单号按回车键查询"></el-input>
-              <el-select v-model="company_id"
+              <el-cascader v-model="company_id"
                 class="filter_item"
-                @change="changeRouter(1)"
+                :show-all-levels='false'
+                placeholder="筛选公司"
+                :options="companyArr"
+                :filter-method='searchClient'
                 clearable
-                filterable
-                placeholder="筛选公司">
-                <el-option v-for="(item,index) in companyArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"></el-option>
-              </el-select>
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
               <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -275,6 +274,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { getHash } from '@/assets/js/common.js'
 import { group, client, statistics } from '@/assets/js/api.js'
 export default {
@@ -331,6 +331,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
@@ -347,7 +364,7 @@ export default {
         order_code: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        client_id: this.company_id,
+        client_id: this.company_id && this.company_id[1],
         group_id: this.group_id
       }).then((res) => {
         this.loading = false
@@ -359,7 +376,7 @@ export default {
         order_code: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-        client_id: this.company_id,
+        client_id: this.company_id && this.company_id[1],
         group_id: this.group_id
       }).then((res) => {
         let orderStatistics = res.data.data
@@ -394,23 +411,18 @@ export default {
         this.date = ''
       }
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      if (this.group_id) {
-        this.searchGroupFlag = true
-      }
-      this.company_id = params.company_id
-      if (this.company_id) {
-        this.searchCompanyFlag = true
-      }
+      this.company_id = params.company_id.split(',')
     }
   },
   mounted () {
     this.getFilters()
     this.getList()
-    Promise.all([group.list(), client.list()]).then((res) => {
+    Promise.all([
+      group.list(),
+      client.list()
+    ]).then((res) => {
       this.groupArr = res[0].data.data
-      this.companyArr = res[1].data.data.filter((item) => {
-        return item.type.indexOf(1) !== -1
-      })
+      this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
     })
   }
 }

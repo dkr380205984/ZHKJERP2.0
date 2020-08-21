@@ -296,7 +296,7 @@ export default {
           'limit': 20,
           'page': pagesInner,
           'keyword': this.searchList.keyword,
-          'client_id': this.searchList.company,
+          'client_id': this.searchList.company && this.searchList.company[1],
           'group_id': this.searchList.group,
           'start_time': this.searchList.start_time || this.start_time,
           'end_time': this.searchList.end_time || this.end_time
@@ -337,7 +337,7 @@ export default {
           'limit': 20,
           'page': pagesInner,
           'keyword': this.searchList.keyword,
-          'client_id': this.searchList.company,
+          'client_id': this.searchList.company && this.searchList.company[1],
           'group_id': this.searchList.group,
           'start_time': this.searchList.start_time || this.start_time,
           'end_time': this.searchList.end_time || this.end_time,
@@ -398,6 +398,7 @@ export default {
     })
     if (this.$route.query) {
       this.searchList = this.$route.query
+      this.searchList.company = this.searchList.company_id.split(',')
     }
     // 按esc返回订单发货列表
     let html = document.getElementsByTagName('html')[0]

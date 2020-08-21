@@ -8,18 +8,16 @@
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <span class="filter_line">
-              <el-select v-model="company_id"
+              <el-cascader v-model="company_id"
                 class="filter_item"
-                @change="changeRouter(1)"
+                :show-all-levels='false'
+                placeholder="筛选公司"
+                :options="companyArr"
+                :filter-method='searchClient'
                 clearable
-                filterable
-                placeholder="筛选公司">
-                <el-option v-for="(item,index) in companyArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -54,9 +52,6 @@
             <div class="col">
               <span class="text">包含纱线</span>
             </div>
-            <!-- <div class="col">
-              <span class="text">预付款(元)</span>
-            </div> -->
             <div class="col">
               <span class="text">预定总量(kg)</span>
             </div>
@@ -90,9 +85,6 @@
                 </template>
               </span>
             </div>
-            <!-- <div class="col">
-              <span class="text">{{item.total_price}}</span>
-            </div> -->
             <div class="col">
               <span class="text">{{item.total_weight}}</span>
             </div>
@@ -147,16 +139,16 @@
             </div>
             <div class="col"
               style="margin-left:16px">
-              <el-select v-model="logClient"
-                @change="getLogList(1)"
+              <el-cascader v-model="logClient"
+                class="filter_item"
+                :show-all-levels='false'
                 placeholder="筛选纱线单位"
-                clearable>
-                <el-option v-for="(item,index) in companyArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :options="companyArr"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change="getLogList(1)"
+                filterable></el-cascader>
             </div>
             <div class="col"
               style="margin-left:16px">
@@ -256,6 +248,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { materialOrder, client, stock } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
@@ -297,12 +290,29 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     getList () {
       this.loading = true
       materialOrder.list({
         limit: 10,
         page: this.page,
-        client_id: this.company_id,
+        client_id: this.company_id && this.company_id[1],
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then((res) => {
@@ -320,7 +330,7 @@ export default {
       } else {
         this.date = ''
       }
-      this.company_id = params.client_id
+      this.company_id = params.client_id.split(',')
     },
     changeRouter (page) {
       let pages = page || 1
@@ -360,11 +370,9 @@ export default {
   },
   created () {
     this.getFilters()
-    this.getList()
     client.list().then((res) => {
-      this.companyArr = res.data.data.filter((item) => {
-        return item.type.indexOf(2) !== -1
-      })
+      this.companyArr = this.$getClientOptions(res.data.data, companyType, { type: [3, 4] })
+      this.getList()
     })
   }
 }

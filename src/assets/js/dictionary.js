@@ -223,6 +223,14 @@ const companyType = [
     value: 36,
     label: '其他单位',
     type: '运输单位'
+  }, {
+    value: 37,
+    label: '常用单位',
+    type: '销售出库单位'
+  }, {
+    value: 38,
+    label: '其他单位',
+    type: '销售出库单位'
   }
 ]
 /**

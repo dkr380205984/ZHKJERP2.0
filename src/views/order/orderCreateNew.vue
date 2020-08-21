@@ -51,17 +51,15 @@
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">
-              <el-select v-model="client_id"
-                filterable
+              <el-cascader v-model="client_id"
+                :show-all-levels='false'
                 placeholder="请选择订单公司"
-                :filter-method="searchClient"
-                @change="getContact($event)">
-                <el-option v-for="item in clientArrReal"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :options="clientArrReal"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change='getContact'
+                filterable></el-cascader>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -722,12 +720,11 @@
 </template>
 
 <script>
-import { chinaNum, moneyArr } from '@/assets/js/dictionary.js'
+import { companyType, chinaNum, moneyArr } from '@/assets/js/dictionary.js'
 import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      lock: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',
@@ -799,35 +796,22 @@ export default {
     }
   },
   methods: {
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.clientArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.clientArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.clientArr)
       }
+      return flag
     },
     // 批次类型输入建议函数
     querySearchType (queryString, cb) {
@@ -1117,10 +1101,7 @@ export default {
       })
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let flag = true
       this.order_code.forEach(item => {
         if (!item.code) {
@@ -1131,7 +1112,7 @@ export default {
         this.$message.error('请填写订单号')
         return
       }
-      if (!this.client_id) {
+      if (!this.client_id || this.client_id.length < 1) {
         this.$message.error('请选择外贸公司')
         return
       }
@@ -1215,7 +1196,7 @@ export default {
         order_code: this.order_code.map(item => {
           return item.code
         }).join(';'),
-        client_id: this.client_id,
+        client_id: this.client_id[1],
         contacts: this.contact_id,
         account_unit: this.unit,
         group_id: this.group_id,
@@ -1256,7 +1237,6 @@ export default {
         others_info: JSON.stringify([]),
         time_progress: warnData
       }
-      this.lock = false
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('添加成功')
@@ -1272,9 +1252,11 @@ export default {
     },
     getContact (eve) { // 外贸公司chang时更新联系人列表
       this.contact_id = ''
-      let flag = this.clientArr.find(item => item.id === eve)
+      let flag = this.clientArr.find(item => +item.id === +eve[1])
       if (flag) {
         this.contactArr = flag.contacts
+      } else {
+        this.contactArr = []
       }
     },
     importOrder (event) {
@@ -1292,8 +1274,9 @@ export default {
             code: item
           }
         })
-        this.client_id = orderInfo.client_id.toString()
-        this.getContact(this.client_id)
+        let findClient = this.clientArr.find(itemF => +itemF.id === +orderInfo.client_id)
+        this.client_id = findClient ? findClient.type.includes(1) ? ['1', orderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', orderInfo.client_id] : '' : ''
+        this.contactArr = findClient ? findClient.contacts : []
         this.contact_id = orderInfo.contacts_id
         this.group_id = orderInfo.group_id
         this.unit = orderInfo.account_unit
@@ -1473,9 +1456,6 @@ export default {
         }
       })
     }
-    if (this.$route.query.orderId) { // 复制订单直接导入某个订单
-      this.importOrder({ id: this.$route.query.orderId })
-    }
     this.getList()
     Promise.all([
       client.list(),
@@ -1487,11 +1467,11 @@ export default {
       })
     ]).then(res => {
       this.loading = true
-      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
-      this.clientArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.clientArr)
+      this.clientArr = res[0].data.data.filter(item => item.type.some(value => (value >= 1 && value <= 2)))
+      this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
+      if (this.$route.query.orderId) { // 复制订单直接导入某个订单
+        this.importOrder({ id: this.$route.query.orderId })
+      }
       this.groupArr = res[1].data.data
       this.postData.token = res[2].data.data
       this.warnList = res[3].data.data.filter(item => item.order_type === 1)

@@ -106,16 +106,14 @@
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <el-select v-model="company"
-                filterable
-                placeholder="请选择订单公司"
-                :filter-method="searchClient">
-                <el-option v-for="item in clientArrReal"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+              <el-cascader v-model="company"
+                :show-all-levels='false'
+                placeholder="请选择订购公司"
+                :options="clientArrReal"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                filterable></el-cascader>
             </div>
           </div>
           <div class="colCtn">
@@ -191,6 +189,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import XLSX from 'xlsx'
 import { client, yarn, yarnColor, materialOrder } from '@/assets/js/api.js'
 export default {
@@ -221,35 +220,22 @@ export default {
     }
   },
   methods: {
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.companyArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.companyArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.clientArr)
       }
+      return flag
     },
     searchMaterial (queryString, cb) {
       let result = queryString ? this.materialArr.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.materialArr
@@ -305,7 +291,7 @@ export default {
           errorMsg = '请输入原料数量'
         }
       })
-      if (!this.company) {
+      if (!this.company || !this.company[1]) {
         errorMsg = '请选择订购单位'
       }
       if (!this.total_price) {
@@ -321,7 +307,7 @@ export default {
       let formData = {
         id: null,
         type: this.state ? 2 : 1,
-        client_id: this.company,
+        client_id: this.company && this.company[1],
         total_weight: this.total_weight,
         order_time: this.order_time,
         desc: this.remark,
@@ -438,14 +424,12 @@ export default {
     }
   },
   mounted () {
-    Promise.all([client.list({
-      type: 2
-    }), yarn.list(), yarnColor.list()]).then((res) => {
-      this.companyArr = res[0].data.data.filter(itemClient => itemClient.type.indexOf(2) !== -1)
-      this.companyArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.companyArr)
+    Promise.all([
+      client.list(),
+      yarn.list(),
+      yarnColor.list()
+    ]).then((res) => {
+      this.clientArrReal = this.$getClientOptions(res[0].data.data, companyType, { type: [3, 4] })
       this.materialArr = res[1].data.data.map((item) => {
         return {
           value: item.name

@@ -12,20 +12,11 @@
             :content="msgContent"></zh-message>
         </span>
         <span style="height:32px">
-          <el-select v-model="priceCode"
-            filterable
-            remote
-            reserve-keyword
+          <el-autocomplete v-model="priceCode"
+            :fetch-suggestions="getPriceList"
             placeholder="请输入报价单编号"
-            :remote-method="getPriceList"
-            :loading="loading"
-            @change="getPriceInfo($event)">
-            <el-option v-for="item in priceList"
-              :key="item.id"
-              :label="item.quotation_code"
-              :value="item.id">
-            </el-option>
-          </el-select>
+            :trigger-on-focus="false"
+            @select="getPriceInfo($event.id)"></el-autocomplete>
         </span>
       </div>
       <div class="editCtn hasBorderTop">
@@ -47,17 +38,15 @@
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">
-              <el-select v-model="client_id"
-                filterable
-                default-first-option
+              <el-cascader v-model="client_id"
+                :show-all-levels='false'
                 placeholder="请选择外贸公司"
-                @change="getContact">
-                <el-option v-for="item in clientArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :options="clientArrReal"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change='getContact'
+                filterable></el-cascader>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -394,22 +383,6 @@
             </span>
           </div>
         </div>
-        <!-- <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">起订数量</span>
-            </span>
-            <span class="content">
-              <zh-input v-model="setNum"
-                type="number"
-                errorPosition="bottom"
-                errorMsg="请输入数字"
-                placeholder="请输入起订数量">
-                <template slot="append">件</template>
-              </zh-input>
-            </span>
-          </div>
-        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">
@@ -1044,7 +1017,7 @@
 
 <script>
 import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample } from '@/assets/js/api'
-import { moneyArr } from '@/assets/js/dictionary.js'
+import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -1056,6 +1029,7 @@ export default {
       price_name: '',
       client_id: '',
       clientArr: [],
+      clientArrReal: [],
       contact_id: '',
       contactsArr: [],
       unit: '',
@@ -1125,12 +1099,28 @@ export default {
       product_type: true,
       priceCode: '',
       priceList: [],
-      lock: true,
       fileArr: [],
       pid: ''
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     changeOtherMaterialUnit (e, item) {
       if (!e.target.value) {
         item.unit = '个'
@@ -1156,8 +1146,9 @@ export default {
         this.fileArr = data.file_url ? data.file_url.map(val => { return { url: val } }) : []
         this.price_name = data.name
         this.pid = data.pid || data.id
-        this.client_id = data.client_id.toString()
-        this.getContact()
+        let findClient = this.clientArr.find(itemF => itemF.id === data.client_id.toString())
+        this.client_id = findClient ? findClient.type.includes(1) ? ['1', data.client_id.toString()] : findClient.type.includes(2) ? ['2', data.client_id] : '' : ''
+        this.contactsArr = findClient ? findClient.contacts : []
         this.contact_id = data.client_contact
         this.unit = data.account_unit
         this.exchangeRate = data.exchange_rate
@@ -1266,9 +1257,14 @@ export default {
         }, 1000)
       })
     },
-    getContact () {
-      let contact = this.clientArr.find(item => item.id === this.client_id)
-      this.contactsArr = contact.contacts || []
+    getContact (eve) {
+      this.contact_id = ''
+      let flag = this.clientArr.find(item => +item.id === +eve[1])
+      if (flag) {
+        this.contactsArr = flag.contacts
+      } else {
+        this.contactsArr = []
+      }
     },
     addInfo (item, type) {
       if (type === 'material') {
@@ -1514,62 +1510,59 @@ export default {
       }
     },
     verifyData () {
-      if (this.lock) {
-        if (!this.client_id) {
-          this.$message({ type: 'error', message: '请选择外贸公司' })
-          return
-        }
-        if (!this.unit) {
-          this.$message({ type: 'error', message: '请选择结算单位' })
-          return
-        }
-        if (!this.exchangeRate) {
-          this.$message({ type: 'error', message: '请输入汇率' })
-          return
-        }
-        if (!this.priceInfo.product_cost) {
-          this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
-          return
-        }
-        if (!this.priceInfo.basic_fee.prop) {
-          this.$message({ type: 'error', message: '请输入基本佣金占比' })
-          return
-        }
-        if (!this.priceInfo.basic_tax.prop) {
-          this.$message({ type: 'error', message: '请输入基本税费占比' })
-          return
-        }
-        if (!this.priceInfo.basic_profits.prop) {
-          this.$message({ type: 'error', message: '请输入基本利润占比' })
-          return
-        }
-        if (this.checkedProList.length === 0) {
-          this.$confirm('检测到未选择产品, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.saveAll()
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消提交'
-            })
+      if (this.$submitLock()) return
+      if (!this.client_id) {
+        this.$message({ type: 'error', message: '请选择外贸公司' })
+        return
+      }
+      if (!this.unit) {
+        this.$message({ type: 'error', message: '请选择结算单位' })
+        return
+      }
+      if (!this.exchangeRate) {
+        this.$message({ type: 'error', message: '请输入汇率' })
+        return
+      }
+      if (!this.priceInfo.product_cost) {
+        this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
+        return
+      }
+      if (!this.priceInfo.basic_fee.prop) {
+        this.$message({ type: 'error', message: '请输入基本佣金占比' })
+        return
+      }
+      if (!this.priceInfo.basic_tax.prop) {
+        this.$message({ type: 'error', message: '请输入基本税费占比' })
+        return
+      }
+      if (!this.priceInfo.basic_profits.prop) {
+        this.$message({ type: 'error', message: '请输入基本利润占比' })
+        return
+      }
+      if (this.checkedProList.length === 0) {
+        this.$confirm('检测到未选择产品, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.saveAll()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消提交'
           })
-        } else {
-          let flag = true
-          this.checkedProList.forEach(items => {
-            if (!items.sizeColor) {
-              this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
-              flag = false
-            }
-          })
-          if (flag) {
-            this.saveAll()
-          }
-        }
+        })
       } else {
-        this.$message({ type: 'warning', message: '请勿频繁点击' })
+        let flag = true
+        this.checkedProList.forEach(items => {
+          if (!items.sizeColor) {
+            this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
+            flag = false
+          }
+        })
+        if (flag) {
+          this.saveAll()
+        }
       }
     },
     saveAll () {
@@ -1579,12 +1572,11 @@ export default {
         quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
-      this.lock = false
       price.create({
         id: null,
         pid: this.pid || this.$route.params.id,
         name: this.price_name,
-        client_id: this.client_id,
+        client_id: this.client_id[1],
         quotation_code: quotationCode,
         client_contact: this.contact_id,
         exchange_rate: this.exchangeRate,
@@ -1625,7 +1617,6 @@ export default {
             this.$router.push('/price/priceDetail/' + (res.data.data.pid || res.data.data.id) + '?priceId=' + res.data.data.id)
           }
         }
-        this.lock = true
       })
     },
     // 切换辅料单位
@@ -1667,7 +1658,8 @@ export default {
       }),
       getToken({})
     ]).then((res) => {
-      this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
+      this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
+      this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
       this.typeArr = res[1].data.data.map((item) => {
         return {
           value: item.id,
@@ -1695,7 +1687,6 @@ export default {
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
       this.postData.token = res[7].data.data
       this.getPriceInfo(this.$route.params.id)
-      this.loading = false
     })
   },
   watch: {

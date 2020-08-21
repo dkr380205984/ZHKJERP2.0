@@ -17,20 +17,6 @@
             placeholder="请输入报价单编号"
             :trigger-on-focus="false"
             @select="getPriceInfo($event.id)"></el-autocomplete>
-          <!-- <el-select v-model="priceCode"
-            filterable
-            remote
-            reserve-keyword
-            placeholder="请输入报价单编号"
-            :remote-method="getPriceList"
-            :loading="loading"
-            @change="getPriceInfo($event)">
-            <el-option v-for="item in priceList"
-              :key="item.id"
-              :label="item.quotation_code"
-              :value="item.id">
-            </el-option>
-          </el-select> -->
         </span>
       </div>
       <div class="editCtn hasBorderTop">
@@ -52,18 +38,15 @@
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">
-              <el-select v-model="client_id"
-                filterable
-                default-first-option
-                :filter-method="searchClient"
+              <el-cascader v-model="client_id"
+                :show-all-levels='false'
                 placeholder="请选择外贸公司"
-                @change="getContact">
-                <el-option v-for="item in clientArrReal"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :options="clientArrReal"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change='getContact'
+                filterable></el-cascader>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -365,8 +348,7 @@
             <span class="content">
               <el-select v-model="item.sizeColor"
                 multiple
-                placeholder="请选择尺码颜色"
-                @change="getProductPlan(item.id,product_type ? 1 : 2,$event)">
+                placeholder="请选择尺码颜色">
                 <el-option v-for="item in item.sizeColorList"
                   :key="item.sizeColor"
                   :label="item.sizeColor"
@@ -401,22 +383,6 @@
             </span>
           </div>
         </div>
-        <!-- <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">起订数量</span>
-            </span>
-            <span class="content">
-              <zh-input v-model="setNum"
-                type="number"
-                errorPosition="bottom"
-                errorMsg="请输入数字"
-                placeholder="请输入起订数量">
-                <template slot="append">件</template>
-              </zh-input>
-            </span>
-          </div>
-        </div> -->
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">
@@ -1056,8 +1022,8 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, productPlan, price, sample, priceLoading } from '@/assets/js/api'
-import { moneyArr } from '@/assets/js/dictionary.js'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
+import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -1138,59 +1104,32 @@ export default {
       product_type: true,
       priceCode: '',
       priceList: [],
-      lock: true,
       fileArr: [],
       priceLoadingList: []
     }
   },
   methods: {
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.clientArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.clientArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.clientArr)
       }
+      return flag
     },
     changeOtherMaterialUnit (e, item) {
       if (!e.target.value) {
         item.unit = '个'
       }
-    },
-    // 获取配料单信息
-    getProductPlan (id, type, sizeInfo) {
-      productPlan.getByProduct({
-        product_type: type,
-        product_id: id
-      }).then(res => {
-        if (res.data.status !== false) {
-          let flag = res.data.data.find(item => item.is_default)
-          let data = res.data.data.length === 1 ? res.data.data[0] : (flag || [])
-          console.log(data)
-        }
-      })
     },
     getPriceList (queryString, cb) {
       price.list({
@@ -1216,7 +1155,9 @@ export default {
       }).then(res => {
         let data = res.data.data
         this.price_name = data.name
-        this.client_id = data.client_id.toString()
+        let findClient = this.clientArr.find(itemF => itemF.id === data.client_id.toString())
+        this.client_id = findClient ? findClient.type.includes(1) ? ['1', data.client_id.toString()] : findClient.type.includes(2) ? ['2', data.client_id] : '' : ''
+        this.contactsArr = findClient ? findClient.contacts : []
         this.contact_id = data.client_contact
         this.unit = data.account_unit
         this.exchangeRate = data.exchange_rate
@@ -1280,7 +1221,6 @@ export default {
           basic_profits: JSON.parse(data.profit)
         }
         this.computedCost()
-        this.getContact()
         this.checkedProList = data.product_info.map(vals => {
           let sizeColorArr = []
           vals.product_info.size_measurement.forEach(valSize => {
@@ -1319,9 +1259,14 @@ export default {
         this.loading = false
       })
     },
-    getContact () {
-      let contact = this.clientArr.find(item => item.id === this.client_id)
-      this.contactsArr = contact.contacts || []
+    getContact (eve) {
+      this.contact_id = ''
+      let flag = this.clientArr.find(item => +item.id === +eve[1])
+      if (flag) {
+        this.contactsArr = flag.contacts
+      } else {
+        this.contactsArr = []
+      }
     },
     addInfo (item, type) {
       if (type === 'material') {
@@ -1461,63 +1406,6 @@ export default {
           })
         })
         this.checkedProList.push({ ...item, showFlag: false, sizeColorList: sizeColor, sizeColor: '' })
-        // planList.detail_code({
-        //   product_id: item.id
-        // }).then(res => {
-        //   // if (res.data.status) {
-        //   //   res.data.data.material_data.forEach(item => {
-        //   //     let findedYarn = this.priceInfo.raw_material.find(itemFind => itemFind.name === item.material)
-        //   //     let findedOther = this.priceInfo.other_material.find(itemFind => itemFind.name === item.material)
-        //   //     let number = item.colour.reduce((totalColour, currentColour) => {
-        //   //       return totalColour + currentColour.color.reduce((totalColor, currentColor) => {
-        //   //         return totalColor + currentColor.size.reduce((totalSize, currentSize) => {
-        //   //           return totalSize + Number(currentSize.number)
-        //   //         }, 0)
-        //   //       }, 0)
-        //   //     }, 0)
-        //   //     if (!findedYarn && item.type === 0) {
-        //   //       if (this.priceInfo.raw_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.checkedYarn(obj)
-        //   //         this.priceInfo.raw_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.raw_material[0].name = item.material
-        //   //         this.priceInfo.raw_material[0].weight = number
-        //   //         this.priceInfo.raw_material[0].disabled = true
-        //   //         this.checkedYarn(this.priceInfo.raw_material[0])
-        //   //       }
-        //   //     } else if (findedYarn && item.type === 0) {
-        //   //       findedYarn.weight = Number(findedYarn.weight ? findedYarn.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //     if (!findedOther && item.type === 1) {
-        //   //       if (this.priceInfo.other_material[0].name) {
-        //   //         let obj = {
-        //   //           name: item.material,
-        //   //           price: '',
-        //   //           weight: number,
-        //   //           prop: '',
-        //   //           total_price: '',
-        //   //           disabled: true
-        //   //         }
-        //   //         this.priceInfo.other_material.push(obj)
-        //   //       } else {
-        //   //         this.priceInfo.other_material[0].name = item.material
-        //   //         this.priceInfo.other_material[0].weight = number
-        //   //         this.priceInfo.other_material[0].disabled = true
-        //   //       }
-        //   //     } else if (findedOther && item.type === 1) {
-        //   //       findedOther.weight = Number(findedOther.weight ? findedOther.weight : 0) + Number(number || 0)
-        //   //     }
-        //   //   })
-        //   // }
-        // })
       } else {
         let canclePro = this.checkedProList.find(val => val.id === item.id)
         if (canclePro) {
@@ -1626,62 +1514,59 @@ export default {
       }
     },
     verifyData () {
-      if (this.lock) {
-        if (!this.client_id) {
-          this.$message({ type: 'error', message: '请选择外贸公司' })
-          return
-        }
-        if (!this.unit) {
-          this.$message({ type: 'error', message: '请选择结算单位' })
-          return
-        }
-        if (!this.exchangeRate) {
-          this.$message({ type: 'error', message: '请输入汇率' })
-          return
-        }
-        if (!this.priceInfo.product_cost) {
-          this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
-          return
-        }
-        if (!this.priceInfo.basic_fee.prop) {
-          this.$message({ type: 'error', message: '请输入基本佣金占比' })
-          return
-        }
-        if (!this.priceInfo.basic_tax.prop) {
-          this.$message({ type: 'error', message: '请输入基本税费占比' })
-          return
-        }
-        if (!this.priceInfo.basic_profits.prop) {
-          this.$message({ type: 'error', message: '请输入基本利润占比' })
-          return
-        }
-        if (this.checkedProList.length === 0) {
-          this.$confirm('检测到未选择产品, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.saveAll()
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消提交'
-            })
+      if (this.$submitLock()) return
+      if (!this.client_id || this.client_id.length < 1) {
+        this.$message({ type: 'error', message: '请选择外贸公司' })
+        return
+      }
+      if (!this.unit) {
+        this.$message({ type: 'error', message: '请选择结算单位' })
+        return
+      }
+      if (!this.exchangeRate) {
+        this.$message({ type: 'error', message: '请输入汇率' })
+        return
+      }
+      if (!this.priceInfo.product_cost) {
+        this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
+        return
+      }
+      if (!this.priceInfo.basic_fee.prop) {
+        this.$message({ type: 'error', message: '请输入基本佣金占比' })
+        return
+      }
+      if (!this.priceInfo.basic_tax.prop) {
+        this.$message({ type: 'error', message: '请输入基本税费占比' })
+        return
+      }
+      if (!this.priceInfo.basic_profits.prop) {
+        this.$message({ type: 'error', message: '请输入基本利润占比' })
+        return
+      }
+      if (this.checkedProList.length === 0) {
+        this.$confirm('检测到未选择产品, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.saveAll()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消提交'
           })
-        } else {
-          let flag = true
-          this.checkedProList.forEach(items => {
-            if (!items.sizeColor) {
-              this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
-              flag = false
-            }
-          })
-          if (flag) {
-            this.saveAll()
-          }
-        }
+        })
       } else {
-        this.$message({ type: 'warning', message: '请勿频繁点击' })
+        let flag = true
+        this.checkedProList.forEach(items => {
+          if (!items.sizeColor) {
+            this.$message({ type: 'error', message: '检测到选择产品“' + items.product_code + '”未选择尺码颜色' })
+            flag = false
+          }
+        })
+        if (flag) {
+          this.saveAll()
+        }
       }
     },
     saveAll () {
@@ -1691,11 +1576,10 @@ export default {
         quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
-      this.lock = false
       price.create({
         id: null,
         name: this.price_name,
-        client_id: this.client_id,
+        client_id: this.client_id[1],
         quotation_code: quotationCode,
         client_contact: this.contact_id,
         exchange_rate: this.exchangeRate,
@@ -1736,7 +1620,6 @@ export default {
             this.$router.push('/price/priceDetail/' + res.data.data.id)
           }
         }
-        this.lock = true
       })
     },
     // 切换辅料单位
@@ -1841,11 +1724,8 @@ export default {
         limit: 9999
       })
     ]).then((res) => {
-      this.clientArr = res[0].data.data.filter((item) => (item.type.indexOf(1) !== -1))
-      this.clientArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.clientArr)
+      this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
+      this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
       this.typeArr = res[1].data.data.map((item) => {
         return {
           value: item.id,

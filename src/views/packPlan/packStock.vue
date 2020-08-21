@@ -151,18 +151,15 @@
                 <span class="explanation">（必填）</span>
               </div>
               <div class="content">
-                <el-select v-model="itemOut.client_name"
-                  filterable
-                  default-first-option
-                  clearable
+                <el-cascader v-model="itemOut.client_name"
                   class="elInput"
-                  placeholder="请选择运输单位">
-                  <el-option v-for="item in marketClient"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+                  :show-all-levels='false'
+                  placeholder="请选择运输单位"
+                  :options="marketClient"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
             <div class="colCtn flex3">
@@ -302,73 +299,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module"
-      id="actualPacking"
-      v-if="actualPackingLog.length > 0">
-      <div class="titleCtn">
-        <div class="title">实际装箱日志</div>
-      </div>
-      <div class="listCtn hasBorderTop">
-        <div class="btnCtn_page"
-          id='yarn'>
-          <div class="btn noBorder noMargin"
-            @click="deleteLog('all',actualPackingLog,'actualPacking')">批量删除</div>
-          <div class="btn noBorder noMargin"
-            @click="download">批量导出excel</div>
-        </div>
-        <div class="tableCtnLv2 minHeight5">
-          <div class="tb_header">
-            <span class="tb_row flex04"></span>
-            <span class="tb_row">操作时间</span>
-            <span class="tb_row">产品信息</span>
-            <span class="tb_row flex08">尺码颜色</span>
-            <span class="tb_row flex08">实际装箱数</span>
-            <span class="tb_row flex08">箱数</span>
-            <span class="tb_row flex08">备注</span>
-            <span class="tb_row flex08">操作人</span>
-            <span class="tb_row middle flex08">操作</span>
-          </div>
-          <div class="tb_content"
-            v-for="(itemLog,indexLog) in actualPackingLog[actualPackingLogPages-1]"
-            :key="indexLog">
-            <span class="tb_row flex04">
-              <el-checkbox v-model="itemLog.checked"></el-checkbox>
-            </span>
-            <span class="tb_row">{{itemLog.create_time}}</span>
-            <span class="tb_row">{{itemLog.product_code}}<br />{{itemLog.type.join('/')}}</span>
-            <span class="tb_row flex08">{{itemLog.size_name + '/' + itemLog.color_name}}</span>
-            <span class="tb_row flex08">{{itemLog.pack_number+itemLog.unit}}</span>
-            <span class="tb_row flex08">{{itemLog.total_box || '/'}}</span>
-            <span class="tb_row flex08">
-              <template v-if="itemLog.desc">
-                <el-popover placement="top-start"
-                  title="备注信息"
-                  width="200"
-                  trigger="hover"
-                  :content="itemLog.desc">
-                  <div class="blue"
-                    slot="reference">查看</div>
-                </el-popover>
-              </template>
-              <template v-else>无</template>
-            </span>
-            <span class="tb_row flex08">{{itemLog.user_name}}</span>
-            <span class="tb_row middle flex08">
-              <span class="tb_handle_btn red"
-                @click="deleteLog('one',itemLog.id,'actualPacking')">删除</span>
-            </span>
-          </div>
-        </div>
-        <div class="pageCtn">
-          <el-pagination background
-            :page-size="1"
-            layout="prev, pager, next"
-            :total="actualPackingLogTotal"
-            :current-page.sync="actualPackingLogPages">
-          </el-pagination>
-        </div>
-      </div>
-    </div> -->
     <div class="module"
       id="market"
       v-if="outMarketLog.length > 0">
@@ -394,7 +324,6 @@
             <span class="tb_row flex06">销售单价</span>
             <span class="tb_row middle flex06">价格说明</span>
             <span class="tb_row middle flex08">总价</span>
-            <!-- <span class="tb_row middle flex06">操作人</span> -->
             <span class="tb_row middle flex06">备注</span>
             <span class="tb_row middle">操作</span>
           </div>
@@ -424,7 +353,6 @@
               <template v-else>无</template>
             </span>
             <span class="tb_row middle flex08">{{itemLog.total_price}}元</span>
-            <!-- <span class="tb_row middle flex06">{{itemLog.user_name}}</span> -->
             <span class="tb_row middle flex06">
               <template v-if="itemLog.desc">
                 <el-popover placement="top"
@@ -466,6 +394,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { order, client, packPlan } from '@/assets/js/api.js'
 export default {
@@ -476,7 +405,6 @@ export default {
       msgUrl: '',
       msgContent: '',
       orderInfo: {},
-      lock: true,
       // 销售出库
       outMarketEditInfo: [],
       productInfo_merge_list: [],
@@ -488,6 +416,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     saveOutMarket () {
       let flag = {
         client: true,
@@ -499,7 +444,7 @@ export default {
         price: true
       }
       let data = this.outMarketEditInfo.map(item => {
-        if (!item.client_name) {
+        if (!item.client_name || !item.client_name[1]) {
           flag.client = false
         }
         if (!item.out_time) {
@@ -523,7 +468,7 @@ export default {
         return {
           order_id: this.$route.params.id,
           product_id: item.product_id,
-          client_id: item.client_name,
+          client_id: item.client_name && item.client_name[1],
           complete_time: item.out_time,
           size_id: item.sizeColor[0],
           color_id: item.sizeColor[1],
@@ -763,7 +708,7 @@ export default {
           })
         }
       })
-      this.marketClient = res[1].data.data.filter(item => item.type.indexOf(11) !== -1)
+      this.marketClient = this.$getClientOptions(res[1].data.data, companyType, { type: [37, 38] })
       this.getOutMarketLog()
       this.loading = false
     })

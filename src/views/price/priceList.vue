@@ -13,18 +13,16 @@
                 @change="changeRouter(1)"
                 placeholder="输入编号按回车键查询">
               </el-input>
-              <el-select v-model="client_id"
+              <el-cascader v-model="client_id"
                 class="filter_item"
-                @change="changeRouter(1)"
-                filterable
+                :show-all-levels='false'
+                placeholder="筛选公司"
+                :options="clientArr"
+                :filter-method='searchClient'
                 clearable
-                placeholder="筛选公司">
-                <el-option v-for="(item,index) in clientArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
               <el-select v-model="user_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -157,6 +155,7 @@
   </div>
 </template>
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { price, client, auth } from '@/assets/js/api'
 import { getHash } from '@/assets/js/common.js'
 export default {
@@ -192,6 +191,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     getList () {
       this.loading = true
       price.list({
@@ -200,7 +216,7 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         status: this.status,
-        client_id: this.client_id,
+        client_id: this.client_id && this.client_id[1],
         code: this.keyword,
         product_code: '',
         user_name: this.user_id
@@ -309,17 +325,8 @@ export default {
         this.date = ''
       }
       this.status = params.status ? Number(params.status) : ''
-      if (this.status) {
-        this.searchStatusFlag = true
-      }
-      this.client_id = params.client_id ? params.client_id : ''
-      if (this.client_id) {
-        this.searchTypeFlag = true
-      }
+      this.client_id = params.client_id ? params.client_id.split(',') : ''
       this.user_id = params.user_id ? params.user_id : ''
-      if (this.user_id) {
-        this.searchUserName = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1
@@ -333,12 +340,7 @@ export default {
       client.list(),
       auth.list()
     ]).then(res => {
-      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1).map(item => {
-        return {
-          name: item.name,
-          id: item.id
-        }
-      })
+      this.clientArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
       this.userArr = res[1].data.data
     })
   },

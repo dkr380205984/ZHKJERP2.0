@@ -69,17 +69,16 @@
                 v-model="keyword"
                 @change="changeRouter(1)"
                 placeholder="输入订单编号按回车键查询"></el-input>
-              <el-select class="filter_item"
-                v-model="client_id"
-                @change="changeRouter(1)"
+              <el-cascader v-model="client_id"
+                class="filter_item"
+                :show-all-levels='false'
                 placeholder="搜索公司名称查询"
+                :options="clientList"
+                :filter-method='searchClient'
                 clearable
-                filterable>
-                <el-option v-for="item in clientList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"></el-option>
-              </el-select>
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
               <el-select class="filter_item"
                 v-model="status"
                 @change="changeRouter(1)"
@@ -168,6 +167,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { getHash } from '@/assets/js/common.js'
 import { settle, chargebacks, client } from '@/assets/js/api.js'
 export default {
@@ -207,6 +207,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     changeRouter (page) {
       let pages = page || 1
       this.$router.push('/financialStatistics/settleChargebacks/page=' + pages + '&&keyword=' + this.$strToAscII(this.keyword) + '&&clientId=' + this.client_id + '&&type=' + this.type + '&&status=' + this.status)
@@ -221,7 +238,7 @@ export default {
           limit: 10,
           page: this.pages,
           order_code: this.keyword,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[2],
           client_type: this.client_type,
           start_time: this.date ? this.date[0] : '',
           end_time: this.date ? this.date[1] : '',
@@ -244,7 +261,7 @@ export default {
           limit: 10,
           page: this.pages,
           order_code: this.keyword,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[2],
           client_type: this.client_type,
           start_time: this.date ? this.date[0] : '',
           end_time: this.date ? this.date[1] : '',
@@ -270,16 +287,16 @@ export default {
       this.keyword = this.$strToAscII(params.keyword, true)
       this.type = params.type
       this.status = params.status
-      this.client_id = params.clientId
+      this.client_id = params.clientId.split(',')
     }
   },
   created () {
     this.getFilters()
-    this.getList()
     Promise.all([
       client.list()
     ]).then(res => {
-      this.clientList = res[0].data.data
+      this.clientList = this.$getClientOptions(res[0].data.data, companyType, { hasFirstType: true })
+      this.getList()
     })
   }
 }

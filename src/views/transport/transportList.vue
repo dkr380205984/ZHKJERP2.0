@@ -30,16 +30,16 @@
                 @change="changeRouter(1)"
                 :placeholder="'输入订单号按回车键查询'">
               </el-input>
-              <el-select v-model="client_id"
+              <el-cascader v-model="client_id"
                 class="filter_item"
+                :show-all-levels='false'
                 placeholder="请选择运输单位"
-                @change="changeRouter(1)">
-                <el-option v-for="item in clientList"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
-                </el-option>
-              </el-select>
+                :options="clientList"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change="changeRouter(1)"
+                filterable></el-cascader>
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -119,7 +119,8 @@
 </template>
 
 <script>
-import { transport } from '@/assets/js/api.js'
+import { companyType } from '@/assets/js/dictionary.js'
+import { transport, client } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -145,6 +146,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     deleteWarehouse (id) {
       this.$confirm(`此操作将永久删除id为${id}运输货款单, 是否继续?`, '提示', {
         confirmButtonText: '确定',
@@ -171,7 +189,7 @@ export default {
       } else {
         this.date = ''
       }
-      this.client_id = params.clientId
+      this.client_id = params.clientId.split(',')
     },
     changeRouter (page) {
       let pages = page || 1
@@ -187,7 +205,7 @@ export default {
         page: pages,
         limit: 10,
         code: this.keyword,
-        client_id: this.client_id,
+        client_id: this.client_id && this.client_id[1],
         start_time: this.date ? this.date[0] : '',
         end_time: this.date ? this.date[1] : ''
       }).then(res => {
@@ -206,6 +224,11 @@ export default {
   },
   created () {
     this.getList()
+    client.list().then(res => {
+      if (res.data.status !== false) {
+        this.clientList = this.$getClientOptions(res.data.data, companyType, { type: [35, 36] })
+      }
+    })
   }
 }
 </script>

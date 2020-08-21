@@ -97,18 +97,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
+                <el-cascader v-model="client_id"
+                  class="inputs"
                   style="width:170px"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                  :show-all-levels='false'
                   placeholder="搜索公司名称查询"
+                  :options="clientFilter.matOrder"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matOrder"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-select class="inputs"
                   style="width:170px"
                   v-model="stock_id"
@@ -282,17 +281,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索加工单位名称查询"
+                  :options="clientFilter.matProcess"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matProcess"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -471,18 +470,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select style="width:170px"
+                <el-cascader v-model="client_id"
                   class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索出入库单位名称查询"
+                  :options="clientFilter.matStock"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matStock"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:250px"
                   class="inputs"
@@ -626,17 +624,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索织造单位名称查询"
+                  :options="clientFilter.proWeave"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proWeave"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -790,17 +788,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索补纱单位名称查询"
+                  :options="clientFilter.proWeave"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proWeave"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -936,17 +934,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
+                  placeholder="搜索公司名称查询"
+                  :options="clientFilter.proProcess"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.proProcess"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -1087,12 +1085,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  style="width:160px"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   style="width:160px"
                   v-model="order_code"
@@ -1111,18 +1103,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  style="width:160px"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索织造单位名称查询"
+                  :options="clientFilter.proWeave"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-select class="inputs"
                   style="width:160px"
                   v-model="production_type"
@@ -1249,12 +1240,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  style="width:160px"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   style="width:160px"
                   v-model="product_code"
@@ -1273,18 +1258,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  style="width:160px"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索半成品加工单位名称查询"
+                  :options="clientFilter.matProcess"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-select class="inputs"
                   style="width:160px"
                   v-model="production_type"
@@ -1411,11 +1395,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1432,17 +1411,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索织造单位名称查询"
+                  :options="clientFilter.proWeave"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -1560,11 +1539,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1694,11 +1668,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   v-model="material_name"
                   @change="changeRouter(1)"
@@ -1715,17 +1684,17 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
+                <el-cascader v-model="client_id"
+                  class="inputs"
+                  style="width:170px"
+                  :show-all-levels='false'
                   placeholder="搜索包装辅料单位名称查询"
+                  :options="clientFilter.matOther"
+                  :filter-method='searchClient'
                   clearable
-                  filterable>
-                  <el-option v-for="item in clientFilter.matOther"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select>
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -1842,11 +1811,6 @@
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
-                <!-- <el-input class="inputs"
-                  v-model="order_code"
-                  @change="changeRouter(1)"
-                  placeholder="输入关联单号查询">
-                </el-input> -->
                 <el-input class="inputs"
                   v-model="product_code"
                   @change="changeRouter(1)"
@@ -1863,17 +1827,6 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <!-- <el-select class="inputs"
-                  v-model="client_id"
-                  @change="changeRouter(1)"
-                  placeholder="搜索公司名称"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select> -->
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -2132,17 +2085,6 @@
                   @change="changeRouter(1)"
                   placeholder="输入产品编号查询">
                 </el-input>
-                <!-- <el-select class="inputs"
-                  v-model="operate_user"
-                  @change="changeRouter(1)"
-                  placeholder="搜索创建人查询"
-                  clearable
-                  filterable>
-                  <el-option v-for="item in authList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"></el-option>
-                </el-select> -->
                 <el-date-picker v-model="date"
                   style="width:290px"
                   class="inputs"
@@ -2329,6 +2271,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel, getHash } from '@/assets/js/common.js'
 import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, client, auth, process, stock } from '@/assets/js/api.js'
 export default {
@@ -2768,7 +2711,8 @@ export default {
       } else {
         this.date = ''
       }
-      this.client_id = params.client_id
+      this.client_id = params.client_id.split(',')
+      console.log(this.client_id)
       this.product_code = params.product_code
       this.order_type = Number(params.order_type)
       this.product_type = params.product_type
@@ -2802,7 +2746,7 @@ export default {
           stock_id: this.stock_id,
           order_type: this.order_type,
           material_name: this.material_name,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2824,7 +2768,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           material_name: this.material_name,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2846,7 +2790,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           material_name: this.material_name,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[2],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user,
@@ -2869,7 +2813,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           product_code: this.product_code,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2891,7 +2835,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           material_name: this.material_name,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2911,7 +2855,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           product_code: this.product_code,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2934,7 +2878,7 @@ export default {
           order_code: this.order_code,
           production_type: this.production_type,
           product_code: this.product_code,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[2],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2955,7 +2899,7 @@ export default {
           production_type: this.production_type,
           order_code: this.order_code,
           product_code: this.product_code,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[2],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -2975,7 +2919,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           product_code: this.product_code,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -3044,7 +2988,7 @@ export default {
           page: this.pages,
           order_code: this.order_code,
           material_name: this.material_name,
-          client_id: this.client_id,
+          client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user
@@ -3693,6 +3637,23 @@ export default {
           }
         })
       }
+    },
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
     }
   },
   created () {
@@ -3701,33 +3662,15 @@ export default {
     client.list().then((res) => {
       this.clientList = res.data.data
       this.clientFilter = {
-        matOrder: this.clientList.filter((item) => {
-          return item.type.indexOf(2) !== -1 || item.type.indexOf(3) !== -1 || item.type.indexOf(10) !== -1
-        }),
-        matProcess: this.clientList.filter((item) => {
-          return item.type.indexOf(3) !== -1
-        }),
-        matStock: this.clientList.filter((item) => {
-          return item.type.indexOf(3) !== -1 || item.type.indexOf(4) !== -1 || item.type.indexOf(5) !== -1
-        }),
-        proWeave: this.clientList.filter((item) => {
-          return item.type.indexOf(4) !== -1
-        }),
-        proProcess: this.clientList.filter((item) => {
-          return item.type.indexOf(5) !== -1
-        }),
-        matRep: this.clientList.filter((item) => {
-          return item.type.indexOf(4) !== -1
-        }),
-        proStock: this.clientList.filter((item) => {
-          return item.type.indexOf(5) !== -1
-        }),
-        proSemi: this.clientList.filter((item) => {
-          return item.type.indexOf(4) !== -1
-        }),
-        matOther: this.clientList.filter((item) => {
-          return item.type.indexOf(7) !== -1
-        })
+        matOrder: this.$getClientOptions(this.clientList, companyType, { typeScope: [3, 4] }),
+        matProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [9, 12] }),
+        matStock: this.$getClientOptions(this.clientList, companyType, { hasFirstType: true, typeScope: [9, 28] }),
+        proWeave: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14] }),
+        proProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [15, 28] }),
+        matRep: this.$getClientOptions(this.clientList, companyType, { typeScope: [3, 4] }),
+        proStock: this.$getClientOptions(this.clientList, companyType, { typeScope: [15, 28] }),
+        proSemi: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14] }),
+        matOther: this.$getClientOptions(this.clientList, companyType, { typeScope: [7, 8] })
       }
     })
     auth.list().then((res) => {

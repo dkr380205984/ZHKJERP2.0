@@ -134,14 +134,14 @@
                     </div>
                     <div class="content">
                       <div class="content">
-                        <el-select v-model="item.client_id"
+                        <el-cascader v-model="item.client_id"
+                          :show-all-levels='false'
                           placeholder="请选择织造单位"
-                          filterable>
-                          <el-option v-for="item in companyArr"
-                            :key="item.id"
-                            :value="item.id"
-                            :label="item.name"></el-option>
-                        </el-select>
+                          :options="companyArr"
+                          :filter-method='searchClient'
+                          clearable
+                          :props="{ expandTrigger: 'hover' }"
+                          filterable></el-cascader>
                       </div>
                     </div>
                   </div>
@@ -393,6 +393,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { order, weave, inspection, client } from '@/assets/js/api.js'
 export default {
@@ -432,6 +433,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     // 批量导出excel
     download () {
       let data = this.inspection_log.filter(item => item.checked)
@@ -476,6 +494,10 @@ export default {
         return
       }
       this.inspection_flag = true
+      let flag = this.companyArr.find(itemF => {
+        let flag = itemF.children.find(itemFI => +itemFI.value === +client)
+        return flag
+      })
       this.inspection_data.push({
         product_id: product || '',
         colorSizeArr: product ? this.inspection_product.find((item) => {
@@ -496,12 +518,16 @@ export default {
             reasonDesc: '' // 次品备注
           }]
         }],
-        client_id: client ? client.toString() : '',
+        client_id: flag ? [flag.value, client.toString()] : '',
         date: this.$getTime(new Date())
       })
     },
     easyInspection () {
       this.weave_detail.forEach((item) => {
+        let flag = this.companyArr.find(itemF => {
+          let flagI = itemF.children.find(itemFI => +itemFI.value === +item.client_id)
+          return flagI
+        })
         item.childrenMergeInfo.forEach((itemChild) => {
           if ((itemChild.number - itemChild.inspectionNum) > 0) {
             this.inspection_data.push({
@@ -523,7 +549,7 @@ export default {
                   reason: []
                 }]
               }],
-              client_id: item.client_id.toString(),
+              client_id: flag ? [flag.value, item.client_id.toString()] : '',
               date: this.$getTime(new Date())
             })
           }
@@ -594,7 +620,7 @@ export default {
             product_id: item.product_id,
             size_id: itemChild.colorSize.split('/')[0],
             color_id: itemChild.colorSize.split('/')[1],
-            client_id: item.client_id,
+            client_id: item.client_id && item.client_id[1],
             count: itemChild.count,
             number: itemChild.number,
             rejects_info: JSON.stringify(itemChild.substandard),
@@ -729,9 +755,7 @@ export default {
         }
       }), 'client_id')
       this.inspection_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
-      this.companyArr = res[2].data.data.filter((item) => {
-        return item.type.indexOf(4) !== -1
-      })
+      this.companyArr = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14] })
       this.inspection_log = res[3].data.data
       this.inspection_log.forEach((item) => {
         let flag = false

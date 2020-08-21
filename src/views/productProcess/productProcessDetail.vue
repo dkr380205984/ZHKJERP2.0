@@ -642,6 +642,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { order, materialPlan, client, inspection, chargebacks, staff, course, station } from '@/assets/js/api.js'
 export default {
@@ -749,6 +750,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     checkAllLog (ev) {
       this.inspection_log.forEach((item) => {
         item.checked = ev
@@ -873,7 +891,7 @@ export default {
             product_id: this.inspectionForm.product_id,
             size_id: itemChild.colorSize.split('/')[1],
             color_id: itemChild.colorSize.split('/')[0],
-            client_id: item.client_auth[0] === '检验单位' ? item.client_auth[1] : '',
+            client_id: (item.client_auth[0] !== '所有人员' && item.client_auth[0] !== '常用人员' && item.client_auth[0] !== '工序负责人员') ? item.client_auth[1] : '',
             inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' ? item.client_auth[1] : '',
             number: itemChild.number,
             rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
@@ -1222,13 +1240,7 @@ export default {
               label: item.name
             }
           })
-        }, {
-          value: '成品加工单位',
-          label: '成品加工单位',
-          children: res[2].data.data.filter((item) => {
-            return item.type.indexOf(27) !== -1
-          }).map(itemM => ({ value: itemM.id, label: itemM.name }))
-        }]
+        }].concat(this.$getClientOptions(res[2].data.data, companyType, { typeScope: [29, 34] }))
         res[3].data.data.forEach((item) => {
           this.processChoose.push(item.product_flow)
         })

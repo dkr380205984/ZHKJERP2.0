@@ -171,17 +171,15 @@
                 <span class="explanation">（必填）</span>
               </div>
               <div class="content">
-                <el-select v-model="itemOrder.order_client"
+                <el-cascader v-model="itemOrder.order_client"
                   class="elInput"
-                  filterable
-                  default-first-option
-                  placeholder="请选择订购单位">
-                  <el-option v-for="item in clientList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
+                  :show-all-levels='false'
+                  placeholder="请选择订购单位"
+                  :options="clientList"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
           </div>
@@ -414,14 +412,6 @@
             </span>
           </div>
         </div>
-        <!-- <div class="pageCtn">
-          <el-pagination background
-            :page-size="1"
-            layout="prev, pager, next"
-            :total="totalLog"
-            :current-page.sync="pageLog">
-          </el-pagination>
-        </div> -->
       </div>
     </div>
     <div class="module">
@@ -537,7 +527,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
+import { letterArr, chinaNum, companyType } from '@/assets/js/dictionary.js'
 import { packPlan, packag, order, client, packStock } from '@/assets/js/api.js'
 export default {
   data () {
@@ -557,9 +547,6 @@ export default {
       activePlanInfo: [],
       orderLog: [],
       packOrderInfo: [],
-      // pageLog: 1,
-      // totalLog: 1,
-      lock: true,
       // 库存调取数据
       stockLoading: true,
       stockTitleInfo: [
@@ -588,6 +575,23 @@ export default {
     }
   },
   methods: {
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
+    },
     init (activePlanId) {
       this.loading = true
       Promise.all([
@@ -606,7 +610,7 @@ export default {
         // 初始化订单信息
         this.orderInfo = res[2].data.data
         // 初始化订购单位
-        this.clientList = res[3].data.data.filter(item => item.type.indexOf(7) !== -1)
+        this.clientList = this.$getClientOptions(res[3].data.data, companyType, { type: [7, 8] })
         // 初始化计划单数据
         this.planTb = res[0].data.data.map(itemM => {
           let bagsNumber = itemM.pack_info.map(itemP => ((itemP.quantity_chest * itemP.chest_quantity) || 0)).reduce((a, b) => {
@@ -780,112 +784,107 @@ export default {
       elementGo.scrollIntoView()
     },
     saveAll () {
-      if (this.lock) {
-        let flag = {
-          client: true,
-          material: true,
-          type: true,
-          price: true,
-          number: true,
-          totalPrice: true,
-          time: true
+      if (this.$submitLock()) return
+      let flag = {
+        client: true,
+        material: true,
+        type: true,
+        price: true,
+        number: true,
+        totalPrice: true,
+        time: true
+      }
+      let data = []
+      this.packOrderEdit.forEach(item => {
+        if (!item.order_client || !item.order_client[1]) {
+          flag.client = false
         }
-        let data = []
-        this.packOrderEdit.forEach(item => {
-          if (!item.order_client) {
-            flag.client = false
+        if (!item.pack_name) {
+          flag.material = false
+        }
+        if (!item.computed_method) {
+          flag.type = false
+        }
+        if (!item.total_price) {
+          flag.totalPrice = false
+        }
+        if (!item.compile_time) {
+          flag.time = false
+        }
+        item.size_info.forEach(itemI => {
+          if (!itemI.one_price) {
+            flag.price = false
           }
-          if (!item.pack_name) {
-            flag.material = false
+          if (!itemI.number) {
+            flag.number = false
           }
-          if (!item.computed_method) {
-            flag.type = false
-          }
-          if (!item.total_price) {
-            flag.totalPrice = false
-          }
-          if (!item.compile_time) {
-            flag.time = false
-          }
-          item.size_info.forEach(itemI => {
-            if (!itemI.one_price) {
-              flag.price = false
-            }
-            if (!itemI.number) {
-              flag.number = false
-            }
-            data.push({
-              pack_plan_id: this.activePlanId,
-              price_square: itemI.price,
-              desc: item.remark,
-              order_time: item.compile_time,
-              total_price: itemI.one_price * itemI.number,
-              attribute: item.attr,
-              pack_size: itemI.size_info,
-              price_type: item.computed_method,
-              size: JSON.stringify([itemI.long_box, itemI.width_box, itemI.height_box]),
-              price: itemI.one_price,
-              number: itemI.number,
-              client_id: item.order_client,
-              material_name: item.pack_name,
-              // order_type: 1,
-              order_id: this.$route.params.id,
-              unit: item.unit || '个'
-            })
+          data.push({
+            pack_plan_id: this.activePlanId,
+            price_square: itemI.price,
+            desc: item.remark,
+            order_time: item.compile_time,
+            total_price: itemI.one_price * itemI.number,
+            attribute: item.attr,
+            pack_size: itemI.size_info,
+            price_type: item.computed_method,
+            size: JSON.stringify([itemI.long_box, itemI.width_box, itemI.height_box]),
+            price: itemI.one_price,
+            number: itemI.number,
+            client_id: item.order_client && item.order_client[1],
+            material_name: item.pack_name,
+            // order_type: 1,
+            order_id: this.$route.params.id,
+            unit: item.unit || '个'
           })
         })
-        if (!flag.client) {
-          this.$message.error('检测到未选择订购公司，请选择')
-          return
-        }
-        if (!flag.material) {
-          this.$message.error('检测到未选择包装辅料，请选择')
-          return
-        }
-        if (!flag.type) {
-          this.$message.error('检测到未选择计价方式，请选择')
-          return
-        }
-        if (!flag.price) {
-          this.$message.error('检测到未填写单价，请填写')
-          return
-        }
-        if (!flag.number) {
-          this.$message.error('检测到未填写订购价格，请填写')
-          return
-        }
-        if (!flag.totalPrice) {
-          this.$message.error('检测到未填写总价，请填写')
-          return
-        }
-        if (!flag.time) {
-          this.$message.error('检测到未选择完成时间，请选择')
-          return
-        }
-        this.lock = false
-        packPlan.packOrder({
-          data: {
-            order_data: data,
-            stock_data: null
-          }
-        }).then(res => {
-          if (res.data.status !== false) {
-            this.$message.success('保存成功')
-            this.packOrderEdit = []
-            this.getLog()
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装订购信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/packPlan/packOrderDetail/' + this.$route.params.id)
-            }
-          }
-          this.lock = true
-        })
-      } else {
-        this.$message.warning('请勿频繁点击')
+      })
+      if (!flag.client) {
+        this.$message.error('检测到未选择订购公司，请选择')
+        return
       }
+      if (!flag.material) {
+        this.$message.error('检测到未选择包装辅料，请选择')
+        return
+      }
+      if (!flag.type) {
+        this.$message.error('检测到未选择计价方式，请选择')
+        return
+      }
+      if (!flag.price) {
+        this.$message.error('检测到未填写单价，请填写')
+        return
+      }
+      if (!flag.number) {
+        this.$message.error('检测到未填写订购价格，请填写')
+        return
+      }
+      if (!flag.totalPrice) {
+        this.$message.error('检测到未填写总价，请填写')
+        return
+      }
+      if (!flag.time) {
+        this.$message.error('检测到未选择完成时间，请选择')
+        return
+      }
+      packPlan.packOrder({
+        data: {
+          order_data: data,
+          stock_data: null
+        }
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('保存成功')
+          this.packOrderEdit = []
+          this.getLog()
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装订购信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/packPlan/packOrderDetail/' + this.$route.params.id)
+          }
+        }
+      })
     },
     getLog () {
       this.loading = true
@@ -1004,47 +1003,42 @@ export default {
       }
     },
     saveStockPack () {
-      if (this.lock) {
-        if (!this.stockInfo.stock_number) {
-          this.$message.error('请输入调取数量')
-          return
-        }
-        let data = [{
-          pack_plan_id: this.activePlanId,
-          material_name: this.stockInfo.material_name,
-          size: this.stockInfo.size,
-          stock_id: this.stockInfo.stock_id,
-          attribute: this.stockInfo.attribute,
-          order_id: this.$route.params.id,
-          number: -this.stockInfo.stock_number,
-          action_type: 3,
-          desc: null
-        }]
-        this.lock = false
-        packPlan.packOrder({
-          data: {
-            stock_data: data,
-            order_data: null
-          }
-        }).then(res => {
-          if (res.data.status !== false) {
-            this.$message.success('调取成功')
-            this.packOrderEdit = []
-            this.init()
-            this.stockPopupFlag = false
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装调取信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/packPlan/packOrderDetail/' + this.$route.params.id)
-            }
-          }
-          this.lock = true
-        })
-      } else {
-        this.$message.warning('请勿频繁操作')
+      if (this.$submitLock()) return
+      if (!this.stockInfo.stock_number) {
+        this.$message.error('请输入调取数量')
+        return
       }
+      let data = [{
+        pack_plan_id: this.activePlanId,
+        material_name: this.stockInfo.material_name,
+        size: this.stockInfo.size,
+        stock_id: this.stockInfo.stock_id,
+        attribute: this.stockInfo.attribute,
+        order_id: this.$route.params.id,
+        number: -this.stockInfo.stock_number,
+        action_type: 3,
+        desc: null
+      }]
+      packPlan.packOrder({
+        data: {
+          stock_data: data,
+          order_data: null
+        }
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('调取成功')
+          this.packOrderEdit = []
+          this.init()
+          this.stockPopupFlag = false
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/packPlan/packOrderDetail/' + this.$route.params.id
+            this.msgContent = '<span style="color:#1A95FF">添加</span>了新的包装调取信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/packPlan/packOrderDetail/' + this.$route.params.id)
+          }
+        }
+      })
     },
     handleSelect ($event, item) {
       item.unit = $event.unit

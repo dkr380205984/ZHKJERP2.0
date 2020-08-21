@@ -366,6 +366,75 @@ const submitLock = () => {
     }, 1000)
   }
 }
+/**
+ *
+ * @param {Array} clientData      处理的client数据
+ * @param {Blob} hasFirstType     是否含有最外层type类型
+ * @param {Array,Number} type     过滤的type类型(优先级大于typeScope)
+ * @param {Array} typeScope       type取值范围(闭区间)(优先级大于returnAll)
+ * @param {Blob} returnAll        返回全部
+ */
+const getClientOptions = (clientData = [], companyType = [], { hasFirstType = false, type, typeScope, returnAll = true }) => {
+  if (plugin.getDataType(clientData) !== 'Array') {
+    throw new TypeError(`"clientData" is must be 'Array'`)
+  } else if (plugin.getDataType(companyType) !== 'Array') {
+    throw new TypeError(`"companyType" is must be 'Array'`)
+  }
+  // 过滤不符合条件的类型
+  let companyFilterType = companyType.filter(itemF => {
+    if (type) {
+      const typeStr = plugin.getDataType(type)
+      if (typeStr === 'Number') {
+        return +itemF.value === +type
+      } else if (typeStr === 'Array') {
+        return type.includes(+itemF.value)
+      } else {
+        throw new TypeError(`'type' is must be 'Number' or 'Array'`)
+      }
+    } else if (typeScope) {
+      const typeScopeStr = plugin.getDataType(typeScope)
+      if (typeScopeStr === 'Array') {
+        if (typeScope[0] && typeScope[1] && plugin.getDataType(typeScope[0]) === 'Number' && plugin.getDataType(typeScope[1]) === 'Number' && typeScope[1] > typeScope[0]) {
+          return +itemF.value >= typeScope[0] && +itemF.value <= typeScope[1]
+        } else if (typeScope[0] && plugin.getDataType(typeScope[0]) === 'Number') {
+          return +itemF.value >= typeScope[0]
+        } else {
+          throw new Error(`"typeScope" 参数错误`)
+        }
+      } else {
+        throw new TypeError(`'typeScope' is must be 'Array'`)
+      }
+    } else if (returnAll) {
+      return true
+    }
+  })
+  // 将单位塞入类型中
+  companyFilterType = companyFilterType.map(itemM => {
+    return {
+      value: itemM.value.toString(),
+      label: itemM.label,
+      type: itemM.type,
+      children: clientData.filter(itemF => itemF.type.includes(itemM.value)).map(itemM => {
+        return {
+          value: itemM.id.toString(),
+          label: itemM.name,
+          name_pinyin: itemM.name_pinyin.join(''),
+          contacts: itemM.contacts
+        }
+      })
+    }
+  })
+  if (hasFirstType) { // 是否需要最外层
+    companyFilterType = plugin.mergeData(companyFilterType, { mainRule: 'type/value', childrenName: 'children' }).map((itemM, indexM) => {
+      return {
+        value: indexM.toString(),
+        label: itemM.value,
+        children: itemM.children
+      }
+    })
+  }
+  return companyFilterType
+}
 export default {
   install (Vue) {
     Vue.prototype.$getDataType = plugin.getDataType
@@ -383,5 +452,6 @@ export default {
     Vue.prototype.$fuckSelect = plugin.fuckSelect
     Vue.prototype.$submitLock = submitLock()
     Vue.prototype.$unique = plugin.unique
+    Vue.prototype.$getClientOptions = getClientOptions
   }
 }

@@ -136,15 +136,14 @@
                       <span class="explanation">(必填)</span>
                     </div>
                     <div class="content">
-                      <el-select v-model="item.company_id"
-                        filterable
-                        :filter-method="searchClient"
-                        placeholder="请选择加工单位">
-                        <el-option v-for="item in clientArrReal"
-                          :key="item.id"
-                          :value="item.id"
-                          :label="item.name"></el-option>
-                      </el-select>
+                      <el-cascader v-model="item.company_id"
+                        :show-all-levels='false'
+                        placeholder="请选择加工单位"
+                        :options="clientArrReal"
+                        :filter-method='searchClient'
+                        clearable
+                        :props="{ expandTrigger: 'hover' }"
+                        filterable></el-cascader>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -528,15 +527,14 @@
             <div class="row">
               <div class="label">加工单位：</div>
               <div class="info">
-                <el-select v-model="commonCompany[index]"
-                  filterable
-                  :filter-method="searchClient"
-                  placeholder="请选择加工单位">
-                  <el-option v-for="item in clientArrReal"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.name"></el-option>
-                </el-select>
+                <el-cascader v-model="commonCompany[index]"
+                  :show-all-levels='false'
+                  placeholder="请选择加工单位"
+                  :options="clientArrReal"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
               </div>
             </div>
             <div class="row">
@@ -752,6 +750,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { order, materialPlan, client, process, processing, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
@@ -769,7 +768,6 @@ export default {
         order_batch: [],
         desc: ''
       },
-      companyArr: [],
       yarnArr: [],
       clientArrReal: [],
       processArr: [],
@@ -858,35 +856,22 @@ export default {
         item.material_info.splice(item, index)
       }
     },
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.companyArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.companyArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.companyArr)
       }
+      return flag
     },
     searchYarn (queryString, cb) {
       let result = queryString ? this.yarnArr.filter((item) => item.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.yarnArr
@@ -1001,7 +986,7 @@ export default {
         if (item.part_id) {
           this.material_flag = true
         }
-        if (!item.company_id) {
+        if (!item.company_id || !item.company_id[1]) {
           errorFlag = true
           errMsg = '请选择加工单位'
         } else if (!item.product_id) {
@@ -1041,7 +1026,7 @@ export default {
           this.process_data.forEach((item, index) => {
             this.materialTable.push({
               client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
-              client_id: item.company_id,
+              client_id: item.company_id && item.company_id[1],
               process: item.process_type.join('/'),
               material_info: [{
                 material_type: 2,
@@ -1066,7 +1051,7 @@ export default {
             product_id: item.product_id,
             size_id: itemChild.colorSize.split('/')[0],
             color_id: itemChild.colorSize.split('/')[1],
-            client_id: item.company_id,
+            client_id: item.company_id && item.company_id[1],
             price: itemChild.price,
             number: itemChild.number,
             complete_time: this.$getTime(item.complete_time),
@@ -1390,22 +1375,7 @@ export default {
         })
         this.orderInfo = res[0].data.data
         this.process_info = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_id' }] })
-        this.companyArr = res[2].data.data.filter((item) => {
-          let flag = false
-          item.type.forEach((itemChild) => {
-            if (itemChild === 5) {
-              flag = true
-            }
-            if (itemChild >= 12 && itemChild <= 25) {
-              flag = true
-            }
-          })
-          return flag
-        })
-        this.companyArr.forEach((item) => {
-          item.name_pinyin = item.name_pinyin.join('')
-        })
-        this.clientArrReal = this.$clone(this.companyArr)
+        this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [15, 28] })
         this.processArr = res[3].data.data.filter(item => item.type === 2)
         this.process_log = res[4].data.data.map((item) => {
           item.check = false

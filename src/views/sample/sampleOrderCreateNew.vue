@@ -84,17 +84,15 @@
               <span class="explanation">(必填)</span>
             </span>
             <span class="content">
-              <el-select v-model="client_id"
-                filterable
+              <el-cascader v-model="client_id"
+                :show-all-levels='false'
                 placeholder="请选择订单公司"
-                :filter-method="searchClient"
-                @change="getContact($event)">
-                <el-option v-for="item in clientArrReal"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
+                :options="clientArrReal"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change='getContact'
+                filterable></el-cascader>
             </span>
           </div>
           <div class="colCtn flex3">
@@ -458,6 +456,7 @@
 </template>
 
 <script>
+import { companyType } from '@/assets/js/dictionary.js'
 import { sample, client, group, sampleOrder, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
   data () {
@@ -496,7 +495,6 @@ export default {
       compiled_time: '',
       remark: '',
       isResouceShow: 0, // 处理cascader报错问题 绑定key值用来当option改变时重新渲染cascader
-      lock: true,
       importKeyword: '',
       // 预警数据
       isOpenWarn: false,
@@ -506,35 +504,22 @@ export default {
     }
   },
   methods: {
-    searchClient (query) {
-      this.clientArrReal = []
+    searchClient (node, query) {
+      let flag = true
       if (query) {
-        // 判断一个字符串是否包含某几个字符,所有的indexOf!==-1 且字符是从左往右的,也就是从小到大的
         if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
-          this.clientArrReal = this.clientArr.filter(item => {
-            return item.name.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
-          })
+          flag = node.data.label.includes(query)
         } else {
           const queryArr = query.split('')
-          this.clientArr.forEach((item) => {
-            let flag = true
-            let indexPinyin = 0
-            queryArr.forEach((itemQuery) => {
-              indexPinyin = item.name_pinyin.substr(indexPinyin, item.name_pinyin.length).indexOf(itemQuery)
-              if (indexPinyin === -1) {
-                flag = false
-                // 可以通过throw new Error('')终止循环,如果需要优化的话
-              }
-            })
-            if (flag) {
-              this.clientArrReal.push(item)
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
             }
-          })
+          }
         }
-      } else {
-        this.clientArrReal = this.$clone(this.clientArr)
       }
+      return flag
     },
     checkedWarn (item) {
       this.warnType = item.title
@@ -681,10 +666,7 @@ export default {
       this.isResouceShow++
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       if (!this.sample_order_title) {
         this.$message.error('请输入样单标题')
         return
@@ -701,7 +683,7 @@ export default {
         this.$message.error('请选择负责小组')
         return
       }
-      if (!this.client_id) {
+      if (!this.client_id || this.client_id.length < 1) {
         this.$message.error('请选择外贸公司')
         return
       }
@@ -751,7 +733,7 @@ export default {
         type: this.sample_type,
         order_time: this.order_time,
         group_id: this.group_id,
-        client_id: this.client_id,
+        client_id: this.client_id[1],
         contacts_id: this.contact_id,
         product_info: this.checkedProList.map(itemPro => {
           return {
@@ -769,7 +751,6 @@ export default {
         desc: this.remark,
         time_progress: warnData
       }
-      this.lock = false
       sampleOrder.create(data).then(res => {
         this.lock = true
         if (res.data.status) {
@@ -786,9 +767,11 @@ export default {
     },
     getContact (eve) { // 外贸公司chang时更新联系人列表
       this.contact_id = ''
-      let flag = this.clientArr.find(item => item.id === eve)
+      let flag = this.clientArr.find(item => +item.id === +eve[1])
       if (flag) {
         this.contactArr = flag.contacts
+      } else {
+        this.contactArr = []
       }
     },
     importOrder (event) {
@@ -803,8 +786,9 @@ export default {
           this.sample_type = sampleOrderInfo.type
           this.order_time = sampleOrderInfo.order_time
           this.group_id = sampleOrderInfo.group_id
-          this.client_id = sampleOrderInfo.client_id.toString()
-          this.getContact(this.client_id)
+          let findClient = this.clientArr.find(itemF => itemF.id === sampleOrderInfo.client_id.toString())
+          this.client_id = findClient ? findClient.type.includes(1) ? ['1', sampleOrderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', sampleOrderInfo.client_id] : '' : ''
+          this.contactArr = findClient ? findClient.contacts : []
           this.contact_id = sampleOrderInfo.contacts_id
           this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/size' }, { name: 'color_name/color' }] } })
           this.checkedProList = this.checkedProList.map(itemPro => {
@@ -874,9 +858,6 @@ export default {
         }
       })
     }
-    if (this.$route.query.orderId) { // 复制样单直接导入某个订单
-      this.importOrder({ id: this.$route.query.orderId })
-    }
     this.getList()
     Promise.all([
       client.list(),
@@ -886,11 +867,11 @@ export default {
         order_type: 2
       })
     ]).then(res => {
-      this.clientArr = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
-      this.clientArr.forEach((item) => {
-        item.name_pinyin = item.name_pinyin.join('')
-      })
-      this.clientArrReal = this.$clone(this.clientArr)
+      this.clientArr = res[0].data.data.filter(item => item.type.some(value => (value >= 1 && value <= 2)))
+      this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
+      if (this.$route.query.orderId) { // 复制样单直接导入某个订单
+        this.importOrder({ id: this.$route.query.orderId })
+      }
       this.groupArr = res[1].data.data
       this.warnList = res[2].data.data.filter(item => item.order_type === 2)
       this.sampleTypeArr = res[3].data.data
