@@ -1080,8 +1080,8 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="产品入库"
-            name="产品入库">
+          <el-tab-pane label="织造入库"
+            name="织造入库">
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
@@ -1114,7 +1114,7 @@
                   :props="{ expandTrigger: 'hover' }"
                   @change="changeRouter(1)"
                   filterable></el-cascader>
-                <el-select class="inputs"
+                <!-- <el-select class="inputs"
                   style="width:160px"
                   v-model="production_type"
                   @change="changeRouter(1)"
@@ -1125,7 +1125,7 @@
                     :key="index"
                     :label="item.name"
                     :value="item.name"></el-option>
-                </el-select>
+                </el-select> -->
                 <el-date-picker v-model="date"
                   style="width:240px"
                   class="inputs"
@@ -1144,7 +1144,7 @@
               </div>
             </div>
             <div class="list"
-              v-if="type==='产品入库'">
+              v-if="type==='织造入库'">
               <div class="title">
                 <div class="col"
                   style="flex:0.7">
@@ -1165,9 +1165,6 @@
                 </div>
                 <div class="col">
                   <span class="text">尺码颜色</span>
-                </div>
-                <div class="col">
-                  <span class="text">入库类型</span>
                 </div>
                 <div class="col">
                   <span class="text">数量(件)</span>
@@ -1211,9 +1208,6 @@
                   {{item.color_name}}
                 </div>
                 <div class="col">
-                  <span class="text">{{item.production_type}}</span>
-                </div>
-                <div class="col">
                   <span class="text">{{item.number}}</span>
                 </div>
                 <div class="col">
@@ -1228,15 +1222,15 @@
               </div>
             </div>
             <div class="statistics"
-              v-if="type==='产品入库'">
+              v-if="type==='织造入库'">
               <div class="oneBox">
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.product_push.total_number)}}</div>
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="产品出库"
-            name="产品出库">
+          <el-tab-pane label="半成品出入库"
+            name="半成品出入库">
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
@@ -1258,7 +1252,7 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
-                <el-cascader v-model="client_id"
+                <!-- <el-cascader v-model="client_id"
                   class="inputs"
                   style="width:170px"
                   :show-all-levels='false'
@@ -1268,8 +1262,8 @@
                   clearable
                   :props="{ expandTrigger: 'hover' }"
                   @change="changeRouter(1)"
-                  filterable></el-cascader>
-                <el-select class="inputs"
+                  filterable></el-cascader> -->
+                <!-- <el-select class="inputs"
                   style="width:160px"
                   v-model="production_type"
                   @change="changeRouter(1)"
@@ -1280,7 +1274,7 @@
                     :key="index"
                     :label="item.name"
                     :value="item.name"></el-option>
-                </el-select>
+                </el-select> -->
                 <el-date-picker v-model="date"
                   style="width:240px"
                   class="inputs"
@@ -1299,7 +1293,7 @@
               </div>
             </div>
             <div class="list"
-              v-if="type==='产品出库'">
+              v-if="type==='半成品出入库'">
               <div class="title">
                 <div class="col"
                   style="flex:0.7">
@@ -1311,9 +1305,6 @@
                 <div class="col">
                   <span class="text">关联单号</span>
                 </div>
-                <div class="col">
-                  <span class="text">单位名称</span>
-                </div>
                 <div class="col"
                   style="flex:1.5">
                   <span class="text">产品信息</span>
@@ -1322,10 +1313,13 @@
                   <span class="text">尺码颜色</span>
                 </div>
                 <div class="col">
-                  <span class="text">出库类型</span>
+                  <span class="text">绑定芯片</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">出库数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库数量</span>
                 </div>
                 <div class="col">
                   <span class="text">备注</span>
@@ -1351,9 +1345,6 @@
                 <div class="col">
                   <span class="text">{{item.order_code}}</span>
                 </div>
-                <div class="col">
-                  <span class="text">{{item.client_name}}</span>
-                </div>
                 <div class="col"
                   style="flex:1.5">
                   {{item.product_code.code}}
@@ -1366,10 +1357,13 @@
                   {{item.color_name}}
                 </div>
                 <div class="col">
-                  <span class="text">{{item.production_type}}</span>
+                  <span class="text">{{item.is_chip===1?item.number:0}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.number}}</span>
+                  <span class="text">{{item.is_pop===1?item.number:0}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.is_push===1?item.number:0}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -1383,7 +1377,7 @@
               </div>
             </div>
             <div class="statistics"
-              v-if="type==='产品出库'">
+              v-if="type==='半成品出入库'">
               <div class="oneBox">
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.product_pop.total_number)}}</div>
@@ -2273,7 +2267,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel, getHash } from '@/assets/js/common.js'
-import { materialManage, materialProcess, materialStock, weave, replenish, processing, receive, dispatch, inspection, packPlan, client, auth, process, stock } from '@/assets/js/api.js'
+import { materialManage, materialProcess, materialStock, weave, replenish, processing, inspection, packPlan, client, auth, process, stock, receiveDispatch } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2530,7 +2524,7 @@ export default {
           { title: '创建人', key: 'user_name' },
           { title: '完成日期', key: 'complete_time' }
         ])
-      } else if (this.type === '产品入库') {
+      } else if (this.type === '织造入库') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_code.code
           item.sizeColor = item.size_name + '/' + item.color_name
@@ -2547,7 +2541,7 @@ export default {
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' }
         ])
-      } else if (this.type === '产品出库') {
+      } else if (this.type === '半成品出入库') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_code.code
           item.sizeColor = item.size_name + '/' + item.color_name
@@ -2712,7 +2706,6 @@ export default {
         this.date = ''
       }
       this.client_id = params.client_id.split(',')
-      console.log(this.client_id)
       this.product_code = params.product_code
       this.order_type = Number(params.order_type)
       this.product_type = params.product_type
@@ -2869,8 +2862,8 @@ export default {
           }
           this.loading = false
         })
-      } else if (this.type === '产品入库') {
-        receive.detail({
+      } else if (this.type === '织造入库') {
+        receiveDispatch.weaveDetail({
           order_type: null,
           order_id: null,
           limit: 10,
@@ -2890,8 +2883,8 @@ export default {
           }
           this.loading = false
         })
-      } else if (this.type === '产品出库') {
-        dispatch.detail({
+      } else if (this.type === '半成品出入库') {
+        receiveDispatch.semiDetail({
           order_type: null,
           order_id: null,
           limit: 10,
@@ -3311,8 +3304,8 @@ export default {
             }, 1000)
           }
         })
-      } else if (this.type === '产品入库') {
-        receive.detail({
+      } else if (this.type === '织造入库') {
+        receiveDispatch.weaveDetail({
           order_type: null,
           order_id: null,
           limit: limit,
@@ -3350,8 +3343,8 @@ export default {
             }, 1000)
           }
         })
-      } else if (this.type === '产品出库') {
-        dispatch.detail({
+      } else if (this.type === '半成品出入库') {
+        receiveDispatch.semiDetail({
           order_type: null,
           order_id: null,
           limit: limit,
