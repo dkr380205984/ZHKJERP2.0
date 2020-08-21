@@ -20,7 +20,7 @@
       </div>
       <div class="tag_item">
         <!-- <span class="tag_label longWidht">类型</span>： -->
-        <span class="tag_info">{{item.handleType === 1 ? '入库' : '出库'}}</span>
+        <span class="tag_info">{{item.is_pop === 1 ? '入库' : '出库'}}</span>
       </div>
       <div class="tag_item">
         <!-- <span class="tag_label longWidht">件数</span>： -->
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { receive, dispatch, order } from '@/assets/js/api.js'
+import { receiveDispatch, order } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -52,12 +52,9 @@ export default {
   },
   methods: {
     init () {
+      const api = this.$route.query.type === 'true' ? receiveDispatch.weaveDetail : receiveDispatch.semiDetail
       Promise.all([
-        receive.detail({
-          order_id: this.$route.params.id,
-          order_type: 1
-        }),
-        dispatch.detail({
+        api({
           order_id: this.$route.params.id,
           order_type: 1
         }),
@@ -65,7 +62,7 @@ export default {
           id: this.$route.params.id
         })
       ]).then(res => {
-        let data = res[0].data.data.concat(res[1].data.data)
+        let data = res[0].data.data
         let logIdArr = this.$route.query.logId.split(',')
         logIdArr.forEach(item => {
           let findData = data.find(items => +items.id === +item)
@@ -82,19 +79,9 @@ export default {
               unit: findData.category_info.unit,
               handleType: +findData.type
             })
-            // this.printInfo.push({
-            //   client_name: dispatchData.client_name,
-            //   product_code: dispatchData.product_code.code,
-            //   type: [dispatchData.category_info.category_name, dispatchData.category_info.type_name, dispatchData.category_info.style_name],
-            //   size: dispatchData.size,
-            //   color: dispatchData.color,
-            //   count: dispatchData.count,
-            //   number: dispatchData.number,
-            //   unit: dispatchData.category_info.unit
-            // })
           }
         })
-        this.order_code = res[2].data.data.order_code
+        this.order_code = res[1].data.data.order_code
         setTimeout(() => {
           window.print()
         }, 1000)
@@ -105,7 +92,7 @@ export default {
         url: ''
       }
       const QRCode = require('qrcode')
-      QRCode.toDataURL(window.location.origin + '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id + '?logId=' + id + '&type=' + type, { errorCorrectionLevel: 'H' }, (err, url) => {
+      QRCode.toDataURL(window.location.origin + '/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id + '/' + (type === 'true' ? 1 : 2) + '?logId=' + id + '&type=' + (type === 'true' ? 1 : 2), { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
           qrCodeUrl.url = url
         }
