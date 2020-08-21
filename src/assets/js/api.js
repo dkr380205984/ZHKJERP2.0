@@ -311,17 +311,14 @@ const processing = {
   matDetail: (params) => http.get(`${baseUrl}/material/distribute/detail`, params),
   matDelete: (params) => http.post(`${baseUrl}/material/distribute/delete`, params, 'application/json')
 }
-// 产品收发入库
-const receive = {
-  create: (params) => http.post(`${baseUrl}/product/order/push`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/product/order/push/list`, params),
-  delete: (params) => http.post(`${baseUrl}/product/order/push/delete`, params, 'application/json')
-}
-// 产品收发出库
-const dispatch = {
-  create: (params) => http.post(`${baseUrl}/product/order/pop`, params, 'application/json'),
-  detail: (params) => http.get(`${baseUrl}/product/order/pop/list`, params),
-  delete: (params) => http.post(`${baseUrl}/product/order/pop/delete`, params, 'application/json')
+// 产品收发出入库
+const receiveDispatch = {
+  weaveCreate: (params) => http.post(`${baseUrl}/weave/product/push`, params, 'application/json'),
+  weaveDetail: (params) => http.get(`${baseUrl}/weave/product/push/list`, params),
+  weaveDelete: (params) => http.post(`${baseUrl}/weave/product/push/delete`, params, 'application/json'),
+  semiCreate: (params) => http.post(`${baseUrl}/semi/product/push`, params, 'application/json'),
+  semiDetail: (params) => http.get(`${baseUrl}/semi/product/push/list`, params),
+  semiDelete: (params) => http.post(`${baseUrl}/semi/product/pop/delete`, params, 'application/json')
 }
 // 物料出入库
 const materialStock = {
@@ -547,8 +544,7 @@ export {
   notify,
   packPlan,
   inspection,
-  receive,
-  dispatch,
+  receiveDispatch,
   processing,
   materialStock,
   weave,

@@ -56,4 +56,77 @@
   .flex18{
     flex: 1.8;
   }
+  .popup{
+    .content{
+      max-height: 500px;
+    }
+    .stockTable{
+      border:1px solid #E9E9E9;
+      display: inline-block;
+      .line{
+        line-height: 52px;
+        height: 52px;
+        font-size: @fontMiddle;
+        display: flex;
+        flex-direction: row;
+        .rowCtn{
+          display: flex;
+          height: 52px;
+          flex-direction: row;
+          .label{
+            width: 95px;
+            text-align: center;
+            border-right: 1px solid #E9E9E9;
+            border-bottom: 1px solid #E9E9E9;
+            &.noBorderRight{
+              border-right: 0;
+            }
+            &.noBorderBottom{
+              border-bottom: 0;
+            }
+          }
+          .info{
+            width: 140px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border-right: 1px solid #E9E9E9;
+            border-bottom: 1px solid #E9E9E9;
+            &.twice{
+              width: 382px;
+            }
+            &.noBorderRight{
+              border-right: 0;
+            }
+            &.noBorderBottom{
+              border-bottom: 0;
+            }
+          }
+        }
+        &.line1{
+          line-height: 32px;
+          height: 32px;
+          background: #E8E8E8;
+          text-align: center;
+          color: @font85;
+          font-weight: bold;
+          align-items: center;
+          justify-content: space-around;
+        }
+      }
+    }
+    .stockState{
+      background: #EDFAFF;
+      width: 350px;
+      height: 200px;
+      margin: 20px auto 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      .message{
+        font-size: @fontMiddle;
+        color: #0091FF;
+      }
+    }
+  }
 }
