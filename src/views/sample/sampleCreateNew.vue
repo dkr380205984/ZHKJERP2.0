@@ -397,7 +397,7 @@
           <div class="row">
             <span class="label">订单公司：</span>
             <span class="info">
-              <el-select v-model="orderInfo.client_id"
+              <!-- <el-select v-model="orderInfo.client_id"
                 filterable
                 placeholder="请选择订单公司"
                 @change="changeContacts">
@@ -406,7 +406,16 @@
                   :label="item.name"
                   :value="item.id">
                 </el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader v-model="orderInfo.client_id"
+                :show-all-levels='false'
+                placeholder="请选择订单公司"
+                :options="clientList"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                @change='changeContacts'
+                filterable></el-cascader>
             </span>
           </div>
           <div class="row">
@@ -510,7 +519,7 @@
 </template>
 
 <script>
-import { letterArr, chinaNum } from '@/assets/js/dictionary.js'
+import { letterArr, chinaNum, companyType } from '@/assets/js/dictionary.js'
 import { productType, flower, ingredient, colour, getToken, material, sample, client, auth, sampleOrder, orderType } from '@/assets/js/api.js'
 export default {
   data () {
@@ -928,7 +937,7 @@ export default {
         client.list(),
         auth.list()
       ]).then(res => {
-        this.clientList = res[0].data.data.filter(item => item.type.indexOf(1) !== -1)
+        this.clientList = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
         let flag = res[1].data.data.find(item => item.name === window.sessionStorage.getItem('user_name'))
         if (flag) {
           this.orderInfo.group_id = flag.group_id
@@ -938,7 +947,7 @@ export default {
     },
     createSampleOrder () {
       let orderInfo = this.$clone(this.orderInfo)
-      if (!orderInfo.client_id) {
+      if (!orderInfo.client_id || !orderInfo.client_id[1]) {
         this.$message.error('请选择订单公司')
         return
       }
@@ -967,17 +976,21 @@ export default {
           size_info: item.size_info.filter(itemSize => itemSize.numbers)
         }
       })
-      sampleOrder.create(orderInfo).then(res => {
+      sampleOrder.create({
+        ...orderInfo,
+        client_id: orderInfo.client_id && orderInfo.client_id[1]
+      }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('添加样单成功')
           this.$router.push('/sample/sampleDetail/' + this.activeId)
         }
       })
     },
-    changeContacts ($event) {
-      let flag = this.clientList.find(item => item.id === $event)
+    changeContacts (e) {
+      let flag = this.clientList.find(item => item.value === e[0])
       if (flag) {
-        this.contacts = flag.contacts
+        let flagI = flag.children.find(itemF => itemF.value === e[1])
+        this.contacts = flagI.contacts
       }
     },
     querySearchSample (queryString, cb) {
@@ -1055,6 +1068,23 @@ export default {
           this.needleType = productInfo.needle_type
         }
       })
+    },
+    searchClient (node, query) {
+      let flag = true
+      if (query) {
+        if (new RegExp('[\u4E00-\u9FA5]+').test(query.substr(0, 1))) {
+          flag = node.data.label.includes(query)
+        } else {
+          const queryArr = query.split('')
+          for (const item of queryArr) {
+            if (!node.data.name_pinyin.includes(item)) {
+              flag = false
+              break
+            }
+          }
+        }
+      }
+      return flag
     }
   },
   watch: {
@@ -1121,6 +1151,7 @@ export default {
     }
   },
   mounted () {
+    window.initCreateOrder = this.initCreateOrder
     this.sample_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),
