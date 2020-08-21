@@ -281,7 +281,7 @@ const routes = [
       name: '产品收发列表',
       component: () => import('../views/receiveDispatch/receiveDispatchList.vue')
     }, {
-      path: '/receiveDispatch/receiveDispatchDetail/:id',
+      path: '/receiveDispatch/receiveDispatchDetail/:id/:type',
       name: '产品收发详情',
       component: () => import('../views/receiveDispatch/receiveDispatchDetail.vue')
     }, {

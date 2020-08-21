@@ -2,6 +2,26 @@
   <div id='receiveDispatchList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':type===1}"
+        @click="type = 1">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinshoufa"></use>
+        </svg>
+        <span class="name">织造入库</span>
+      </div>
+      <div class="cut_item"
+        :class="{'active':type===2}"
+        @click="type = 2">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-chanpinshoufa"></use>
+        </svg>
+        <span class="name">半成品出入库</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn2">
@@ -78,7 +98,7 @@
               <span class="text">负责小组</span>
             </div>
             <div class="col flex16">
-              <span class="text">产品收发进度</span>
+              <span class="text">{{type===1?'织造分配状态':'半成品分配状态'}}</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
@@ -103,10 +123,17 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.product_push_progress>=100,'orange':itemOrder.product_push_progress<100}">
+              <div v-if="type===1"
+                class="stateCtn rowFlex"
+                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
                 <div class="state">
-                </div><span class="name">{{itemOrder.product_push_progress}}%</span>
+                </div><span class="name">{{itemOrder.product_weave_progress.product>0?'已分配':'未分配'}}</span>
+              </div>
+              <div v-if="type===2"
+                class="stateCtn rowFlex"
+                :class="{'orange':itemOrder.product_weave_progress.semi_product>0,'green':itemOrder.product_weave_progress.semi_product>=100}">
+                <div class="state">
+                </div><span class="name">{{itemOrder.product_weave_progress.semi_product>0?'已分配':'未分配'}}</span>
               </div>
             </div>
             <div class="col">
@@ -114,7 +141,7 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + itemOrder.id)">产品收发</span>
+                @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + itemOrder.id + '/' + type)">产品收发</span>
             </div>
           </div>
         </div>
@@ -139,6 +166,7 @@ import { order, group, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      type: '',
       searchOrderOrProduct: 'order',
       loading: true,
       list: [],
@@ -174,6 +202,9 @@ export default {
     pages (newVal) {
       this.changeRouter(newVal)
     },
+    type (newVal) {
+      this.changeRouter()
+    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -208,6 +239,7 @@ export default {
       } else {
         this.date = ''
       }
+      this.type = Number(params.type) || 1
       this.has_materialPlan = params.has_materialPlan
       this.has_materialOrder = params.has_materialOrder
       this.has_materialStock = params.has_materialStock
@@ -221,10 +253,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/receiveDispatch/receiveDispatchList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/receiveDispatch/receiveDispatchList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '&&type=' + this.type)
     },
     reset () {
-      this.$router.push('/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
+      this.$router.push('/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=&&type=')
     },
     getOrderList () {
       this.loading = true
