@@ -1291,7 +1291,7 @@ export default {
         }
       })
       let findClient = this.clientArr.find(itemF => itemF.id === orderInfo.client_id.toString())
-      this.client_id = findClient ? findClient.type.includes(1) ? ['1', orderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', orderInfo.client_id] : '' : ''
+      this.client_id = findClient ? findClient.type.includes(1) ? ['1', orderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', orderInfo.client_id.toString()] : '' : ''
       this.contactArr = findClient ? findClient.contacts : []
       this.contact_id = orderInfo.contacts_id
       this.group_id = orderInfo.group_id

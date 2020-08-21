@@ -771,7 +771,7 @@ export default {
       this.order_time = sampleOrderInfo.order_time
       this.group_id = sampleOrderInfo.group_id
       let findClient = this.clientArr.find(itemF => itemF.id === sampleOrderInfo.client_id.toString())
-      this.client_id = findClient ? findClient.type.includes(1) ? ['1', sampleOrderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', sampleOrderInfo.client_id] : '' : ''
+      this.client_id = findClient ? findClient.type.includes(1) ? ['1', sampleOrderInfo.client_id.toString()] : findClient.type.includes(2) ? ['2', sampleOrderInfo.client_id.toString()] : '' : ''
       this.contactArr = findClient ? findClient.contacts : []
       this.contact_id = sampleOrderInfo.contacts_id
       this.checkedProList = this.$mergeData(sampleOrderInfo.size_info, { mainRule: 'product_id/id', otherRule: [{ name: 'product_info' }], childrenName: 'sizeInfo', childrenRule: { mainRule: ['size_id', 'color_id'], otherRule: [{ name: 'size_name/size' }, { name: 'color_name/color' }, { name: 'numbers/number', type: 'add' }] } })
