@@ -266,7 +266,7 @@
             <div class="btn btnWhiteBlue"
               @click="deleteWeaveLog('all')">批量删除</div>
             <div class="btn btnWhiteBlue"
-              @click="printTag">批量打印标签</div>
+              @click="printTag(true)">批量打印标签</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -664,7 +664,7 @@
             <div class="btn btnWhiteBlue"
               @click="deleteProcessLog('all')">批量删除</div>
             <div class="btn btnWhiteBlue"
-              @click="printTag">批量打印标签</div>
+              @click="printTag(false)">批量打印标签</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -984,13 +984,13 @@ export default {
         { title: '操作人', key: 'user_name' }
       ], this.orderInfo)
     },
-    printTag () {
-      let flag = this.log.filter(items => items.checked)
-      if (flag.length === 0) {
+    printTag (flag = true) {
+      let filterArr = flag ? this.weaveLog.filter(items => items.checked) : this.processLog.filter(items => items.checked)
+      if (filterArr.length === 0) {
         this.$message.warning('请勾选您需要打印成标签的日志')
         return
       }
-      this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + flag.map(item => item.id).join(','))
+      this.$openUrl('/receiveDispatchTable/' + this.$route.params.id + '?logId=' + filterArr.map(item => item.id).join(',') + '&type=' + flag)
     },
     querySearchProcess (queryString, cb) {
       var restaurants = this.processTypeList
