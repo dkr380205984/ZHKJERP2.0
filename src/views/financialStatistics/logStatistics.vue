@@ -1528,7 +1528,8 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="成品检验"
+          <el-tab-pane v-if="false"
+            label="成品检验"
             name="成品检验">
             <div class="filterCtn">
               <div class="leftCtn">
