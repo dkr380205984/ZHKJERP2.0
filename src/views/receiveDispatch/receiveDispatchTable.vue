@@ -18,10 +18,10 @@
         <!-- <span class="tag_label longWidht">尺码颜色</span>： -->
         <span class="tag_info">{{item.size +  '/' + item.color}}</span>
       </div>
-      <div class="tag_item">
-        <!-- <span class="tag_label longWidht">类型</span>： -->
+      <!-- <div class="tag_item">
+        <span class="tag_label longWidht">类型</span>：
         <span class="tag_info">{{item.is_pop === 1 ? '入库' : '出库'}}</span>
-      </div>
+      </div> -->
       <div class="tag_item">
         <!-- <span class="tag_label longWidht">件数</span>： -->
         <span class="tag_info">{{item.count || 0}}件</span>
