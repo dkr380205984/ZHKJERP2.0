@@ -328,6 +328,9 @@
       v-if="$route.params.type==='2'">
       <div class="titleCtn">
         <span class="title">半成品加工分配信息</span>
+        <div class="btn btnWhiteBlue"
+          style="float:right;margin-top:12px;margin-right:32px"
+          @click="downloadXp">下载芯片控件</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -881,6 +884,9 @@ export default {
     }
   },
   methods: {
+    downloadXp () {
+      window.location = 'http://www.youwokeji.com.cn/CloudReader/YOWORFIDReaderCloudForWeb.exe'
+    },
     cancleBind () {
       this.$confirm('是否要停止绑定芯片,已经绑定的芯片数据会提交，如果数据无效请手动删除日志?', '提示', {
         confirmButtonText: '确定',
@@ -1114,7 +1120,6 @@ export default {
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一个织造入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
             this.msgSwitch = true
           } else {
-            this.$router.push('/receiveDispatch/receiveDispatchDetail/' + this.$route.params.id)
             this.init()
           }
         }

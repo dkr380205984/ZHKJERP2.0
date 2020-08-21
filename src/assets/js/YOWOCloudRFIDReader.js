@@ -139,8 +139,8 @@ let YOWORFIDReader = {
       SocketOpen = false
     }
     let WSonError = function () {
-      alert('第一次进入页面需要安装设备相关软件，请安装后刷新页面')
-      window.location = 'http://www.youwokeji.com.cn/CloudReader/YOWORFIDReaderCloudForWeb.exe'
+      // alert('第一次进入页面需要安装设备相关软件，请安装后刷新页面')
+      // window.location = 'http://www.youwokeji.com.cn/CloudReader/YOWORFIDReaderCloudForWeb.exe'
       SocketOpen = false
     }
     // let Wait = function (ms) {

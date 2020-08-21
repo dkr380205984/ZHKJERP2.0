@@ -317,7 +317,7 @@
                           <span class="tcolumn">尺码颜色</span>
                           <span class="tcolumn">生产工序</span>
                           <span class="tcolumn">分配数量</span>
-                          <span class="tcolumn">收发数量</span>
+                          <!-- <span class="tcolumn">收发数量</span> -->
                         </span>
                       </span>
                     </span>
@@ -335,10 +335,10 @@
                           <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
                           <span class="tcolumn">{{itemPro.process_type}}</span>
                           <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
-                          <span class="tcolumn">
+                          <!-- <span class="tcolumn">
                             <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
                             <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
-                          </span>
+                          </span> -->
                         </span>
                       </span>
                     </span>
@@ -358,7 +358,12 @@
                       <div class="link">
                         <i class="el-icon-tickets"
                           style="color:#1a95ff"></i>
-                        <span @click="$router.push('/receiveDispatch/receiveDispatchDetail/'+ $route.params.id)">产品收发</span>
+                        <span @click="$router.push('/receiveDispatch/receiveDispatchDetail/'+ $route.params.id + '/1')">织造入库</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/receiveDispatch/receiveDispatchDetail/'+ $route.params.id + '/2')">半成品出入库</span>
                       </div>
                     </span>
                   </div>
@@ -1364,7 +1369,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialPlan, materialStock, weave, processing, receive, dispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1823,11 +1828,11 @@ export default {
           order_id: this.$route.params.id,
           order_type: 1
         }),
-        receive.detail({
+        receiveDispatch.weaveDetail({
           order_id: this.$route.params.id,
           order_type: 1
         }),
-        dispatch.detail({
+        receiveDispatch.semiDetail({
           order_id: this.$route.params.id,
           order_type: 1
         })
