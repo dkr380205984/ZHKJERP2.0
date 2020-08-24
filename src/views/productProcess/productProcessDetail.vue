@@ -746,7 +746,7 @@ export default {
   },
   watch: {
     processType (newval) {
-      this.init()
+      this.init(true)
     }
   },
   methods: {
@@ -855,8 +855,12 @@ export default {
       this.inspectionForm.detail = detail
     },
     createProcess (ev) {
-      this.processChoose.push(ev.name)
-      this.processType = ev.name
+      console.log(ev)
+      this.processChoose.push({
+        name: ev,
+        id: ev
+      })
+      this.processType = ev
       // this.getModule(ev)
     },
     // 确认检验
@@ -1166,7 +1170,7 @@ export default {
         console.error('第三个参数必须为字符串或数组格式')
       }
     },
-    init () {
+    init (ifFirst) {
       this.loading = true
       Promise.all([
         order.detail({
@@ -1197,12 +1201,15 @@ export default {
           }
         })
         this.processArr = this.processArr.slice(3, this.processArr.length)
-        this.processChoose = res[5].data.data.slice(0, 3).map((item) => {
-          return {
-            name: item.name,
-            id: item.id
-          }
-        })
+        // 工序字段初始化一次就够了
+        if (!ifFirst) {
+          this.processChoose = res[5].data.data.slice(0, 3).map((item) => {
+            return {
+              name: item.name,
+              id: item.id
+            }
+          })
+        }
         if (!this.processType) {
           this.processType = this.processChoose[0].name
         }
