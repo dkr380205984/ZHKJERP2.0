@@ -308,6 +308,7 @@
                           style="padding:0;margin:0 5px 0 0">
                           <span @click="inspectionForm.colorSizeArr.length>0?itemChild.showCheck=true:$message.warning('请先选择产品')">批量选择</span>
                           <div class="selfSelect"
+                            style="transform: translate(8px, calc(-100% - 32px));"
                             v-if="itemChild.showCheck">
                             <div class="checkBoxCtn">
                               <el-checkbox v-for="(itemCheck,indexCheck) in inspectionForm.colorSizeArr"

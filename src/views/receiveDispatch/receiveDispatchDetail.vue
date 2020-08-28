@@ -52,8 +52,7 @@
     </div>
     <zh-file-module :orderId='$route.params.id'
       title_has_border />
-    <div class="module"
-      v-if="$route.params.type==='1'">
+    <div class="module">
       <div class="titleCtn">
         <span class="title">织造入库</span>
       </div>
@@ -255,7 +254,7 @@
       </div>
     </div>
     <div class="module"
-      v-if="weaveLog.length>0 && $route.params.type==='1'">
+      v-if="weaveLog.length>0">
       <div class="titleCtn">
         <span class="title">织造入库日志</span>
       </div>
@@ -324,8 +323,7 @@
         </div>
       </div>
     </div>
-    <div class="module"
-      v-if="$route.params.type==='2'">
+    <div class="module">
       <div class="titleCtn">
         <span class="title">半成品加工分配信息</span>
         <div class="btn btnWhiteBlue"
@@ -593,7 +591,7 @@
       </div>
     </div>
     <div class="module"
-      v-if="processLog.length>0&&$route.params.type==='2'">
+      v-if="processLog.length>0">
       <div class="titleCtn">
         <span class="title">半成品加工出入库统计</span>
       </div>
@@ -653,7 +651,7 @@
       </div>
     </div>
     <div class="module"
-      v-if="processLog.length>0 && $route.params.type==='2'">
+      v-if="processLog.length>0">
       <div class="titleCtn">
         <span class="title">半成品加工日志</span>
       </div>
