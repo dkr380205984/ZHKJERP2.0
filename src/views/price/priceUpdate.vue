@@ -1236,7 +1236,7 @@ export default {
             type_name: vals.product_info.type_name,
             style_name: vals.product_info.style_name,
             color: vals.product_info.color,
-            size: vals.size_measurement,
+            size: vals.product_info.size_measurement,
             product_type: vals.product_info.product_type,
             checked: true
           }
@@ -1491,8 +1491,11 @@ export default {
       }
     },
     setCardData (item) {
+      console.log(item)
       return {
         product_code: item.product_code,
+        product_id: item.id,
+        product_type: item.product_type,
         img: item.image.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
         category_name: item.category_info.product_category,
         type_name: item.type_name,

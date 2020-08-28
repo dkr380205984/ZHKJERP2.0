@@ -367,7 +367,6 @@ const submitLock = () => {
   }
 }
 /**
- *
  * @param {Array} clientData      处理的client数据
  * @param {Blob} hasFirstType     是否含有最外层type类型
  * @param {Array,Number} type     过滤的type类型(优先级大于typeScope)
@@ -435,6 +434,15 @@ const getClientOptions = (clientData = [], companyType = [], { hasFirstType = fa
   }
   return companyFilterType
 }
+const getZHTimeFormat = (time = false) => {
+  if (time === false) {
+    throw new TypeError(`The parameter 'time' is mandatory`)
+  } else if (!(new Date(time).getTime())) {
+    throw new TypeError(`the arguments for "time" is must be an 'Date'`)
+  }
+  const day = (new Date(plugin.getTime(time)).getTime() - new Date(plugin.getTime()).getTime()) / 1000 / 60 / 60 / 24
+  return `${plugin.getTime(time)}<br />剩余${day >= 0 ? day : 0}天`
+}
 export default {
   install (Vue) {
     Vue.prototype.$getDataType = plugin.getDataType
@@ -453,5 +461,6 @@ export default {
     Vue.prototype.$submitLock = submitLock()
     Vue.prototype.$unique = plugin.unique
     Vue.prototype.$getClientOptions = getClientOptions
+    Vue.prototype.$getZHTimeFormat = getZHTimeFormat
   }
 }

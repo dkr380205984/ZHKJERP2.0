@@ -232,17 +232,40 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3"
                     style="max-width:319.3px">
-                    <div class="label">
-                      <span class="text">截止日期</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <el-date-picker v-model="item.complete_time"
-                        value-format="yyyy-MM-dd"
-                        style="width:100%"
-                        type="date"
-                        placeholder="选择截止日期">
-                      </el-date-picker>
+                    <div class="content"
+                      style="display:flex">
+                      <div class="colCtn"
+                        style="margin-right:16px">
+                        <div class="label">
+                          <span class="text">分配日期</span>
+                          <span class="explanation">(必填)</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.order_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择分配日期">
+                          </el-date-picker>
+                        </div>
+                      </div>
+                      <div class="colCtn"
+                        style="margin:0">
+                        <div class="label">
+                          <span class="text">截止日期</span>
+                          <span class="explanation">(必填)</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.complete_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择截止日期">
+                          </el-date-picker>
+                          <div class="prompt orange"
+                            v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认！</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn">
@@ -300,7 +323,7 @@
                       <div class="tcolumn">单价(元)</div>
                       <div class="tcolumn">数量</div>
                       <div class="tcolumn">总价</div>
-                      <div class="tcolumn">完成时间</div>
+                      <div class="tcolumn">截止时间</div>
                     </div>
                   </div>
                   <div class="tcolumn">操作</div>
@@ -324,7 +347,8 @@
                       <div class="tcolumn">{{itemChild.price}}</div>
                       <div class="tcolumn">{{itemChild.number}}</div>
                       <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
-                      <div class="tcolumn">{{$getTime(itemChild.complete_time)}}</div>
+                      <div class="tcolumn"
+                        v-html="itemChild.deliver_time ? $getZHTimeFormat(itemChild.deliver_time) : '未获取到截止日期'"></div>
                     </div>
                   </div>
                   <div class="tcolumn">
@@ -341,8 +365,10 @@
     </div>
     <div class="module log"
       v-if="weaving_log.length>0">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">织造分配日志</span>
+        <div class="btn btnWhiteBlue"
+          @click="changeRealityWeaveNumber">修改实际分配值</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="btnCtn_page"
@@ -362,7 +388,7 @@
                       @change="getAll"></el-checkbox>
                   </div>
                   <div class="tcolumn"
-                    style="flex:1.2">完成日期</div>
+                    style="flex:1.2">创建日期</div>
                   <div class="tcolumn"
                     style="flex:1.5">织造单位</div>
                   <div class="tcolumn"
@@ -370,10 +396,10 @@
                   <div class="tcolumn"
                     style="flex:1.2">尺码颜色</div>
                   <div class="tcolumn">单价(元)</div>
-                  <div class="tcolumn">数量</div>
+                  <div class="tcolumn">计划数量</div>
+                  <div class="tcolumn">实际数量</div>
                   <div class="tcolumn">总价(元)</div>
-                  <div class="tcolumn">备注</div>
-                  <div class="tcolumn">操作人</div>
+                  <div class="tcolumn">其他信息</div>
                   <div class="tcolumn">操作</div>
                 </div>
               </div>
@@ -386,7 +412,7 @@
                     <el-checkbox v-model="item.checked"></el-checkbox>
                   </span>
                   <div class="tcolumn"
-                    style="flex:1.2">{{item.complete_time.slice(0,10)}}</div>
+                    style="flex:1.2">{{$getTime(item.created_at)}}</div>
                   <div class="tcolumn"
                     style="flex:1.5">{{item.client_name}}</div>
                   <div class="tcolumn"
@@ -401,9 +427,20 @@
                   </div>
                   <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn">{{item.number}}</div>
-                  <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
-                  <div class="tcolumn">{{item.desc}}</div>
-                  <div class="tcolumn">{{item.user_name}}</div>
+                  <div class="tcolumn">{{item.reality_number || '/'}}</div>
+                  <div class="tcolumn">{{$toFixed(item.price*(Number(item.reality_number) || item.number))}}</div>
+                  <div class="tcolumn">
+                    <el-popover placement="right"
+                      trigger="click">
+                      备注：{{item.desc}}<br />
+                      操作人：{{item.user_name}}<br />
+                      分配日期：{{$getTime(item.complete_time)}}<br />
+                      截止日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
+                      <div slot="reference"
+                        class="btn noBorder"
+                        style="margin:0;padding:0">查看</div>
+                    </el-popover>
+                  </div>
                   <div class="tcolumn">
                     <span style="color:#F5222D;cursor:pointer"
                       @click="deleteLog(item.id,index)">删除</span>
@@ -868,6 +905,62 @@
         </div>
       </div>
     </div>
+    <!-- 修改实际分配值 -->
+    <div class="popup"
+      v-if='showChangeRealityWeavePopup'>
+      <div class="main"
+        style="min-width:1000px">
+        <div class="title">
+          <span class="text">填写实际分配值</span>
+          <span class="el-icon-close"
+            @click="showChangeRealityWeavePopup = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:600px;">
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <span class="tb_row flex12">分配日期</span>
+              <span class="tb_row">织造单位</span>
+              <span class="tb_row flex12">产品名称</span>
+              <span class="tb_row">尺码颜色</span>
+              <span class="tb_row flex08">单价(元)</span>
+              <span class="tb_row flex08">分配数量</span>
+              <span class="tb_row flex08">总价(元)</span>
+              <span class="tb_row flex12 middle">实际分配数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in weaveLog"
+              :key="index">
+              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+              <span class="tb_row">{{item.client_name}}</span>
+              <span class="tb_row flex12">
+                {{item.product_info.product_code}}
+                <br />
+                {{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}
+              </span>
+              <span class="tb_row">
+                {{item.size_name}}
+                <br />
+                {{item.color_name}}
+              </span>
+              <span class="tb_row flex08">{{item.price}}</span>
+              <span class="tb_row flex08">{{item.number}}</span>
+              <span class="tb_row flex08">{{$toFixed(item.price*item.number)}}</span>
+              <span class="tb_row flex12 middle">
+                <zh-input v-model="item.reality_number"
+                  @input="item.isChange = true"></zh-input>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showChangeRealityWeavePopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveRealityNumber">提交</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -943,7 +1036,9 @@ export default {
       showReplenishPopup: false,
       replenishClientArr: [],
       deductLogPopupFlag: false,
-      deductLogList: []
+      deductLogList: [],
+      showChangeRealityWeavePopup: false,
+      weaveLog: []
     }
   },
   computed: {
@@ -959,6 +1054,32 @@ export default {
     }
   },
   methods: {
+    changeRealityWeaveNumber () {
+      this.weaveLog = this.$clone(this.weaving_log)
+      this.showChangeRealityWeavePopup = true
+    },
+    saveRealityNumber () {
+      let data = this.weaveLog.filter(itemF => Number(itemF.reality_number) && itemF.isChange).map(itemM => {
+        return {
+          id: itemM.id,
+          reality_number: itemM.reality_number
+        }
+      })
+      if (data.length === 0) {
+        this.$message.warning('未改动实际分配数量，无需提交')
+        return
+      }
+      weave.setRealityNumber({
+        data: data,
+        type: 1
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('修改成功')
+          this.showChangeRealityWeavePopup = false
+          this.$winReload()
+        }
+      })
+    },
     // 获取扣款日志
     getDeductLog () {
       chargebacks.log({
@@ -1029,6 +1150,7 @@ export default {
           price: '',
           number: ''
         }],
+        order_time: this.$getTime(),
         complete_time: '',
         part_data: [],
         desc: ''
@@ -1086,6 +1208,7 @@ export default {
           price: '',
           number: ''
         }],
+        order_time: this.$getTime(),
         complete_time: '',
         part_data: [],
         desc: ''
@@ -1142,10 +1265,12 @@ export default {
             order_type: this.$route.params.orderType,
             product_id: partColorSize[0], // 配件id
             client_id: item.company_id && item.company_id[1],
-            complete_time: this.$getTime(item.complete_time),
+            complete_time: item.order_time,
+            deliver_time: item.complete_time,
             desc: item.desc,
             price: itemChild.price,
             number: itemChild.number,
+            reality_number: itemChild.number, // 默认实际分配值默认等于计划值
             size_id: partColorSize[1],
             color_id: partColorSize[2],
             is_part: partFlag ? 1 : 2,

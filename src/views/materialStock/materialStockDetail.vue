@@ -763,7 +763,8 @@
                         </template>
                         <template v-else>无</template>
                       </span>
-                      <span class="tcolumn">{{$getTime(itemColor.complete_time)}}</span>
+                      <span class="tcolumn"
+                        v-html="$getZHTimeFormat(itemColor.complete_time)"></span>
                     </span>
                   </span>
                 </span>
@@ -834,7 +835,8 @@
                             </template>
                             <template v-else>无</template>
                           </span>
-                          <span class="tcolumn">{{$getTime(itemColor.complete_time)}}</span>
+                          <span class="tcolumn"
+                            v-html="$getZHTimeFormat(itemColor.complete_time)"></span>
                         </span>
                       </span>
                     </span>

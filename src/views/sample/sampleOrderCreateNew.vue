@@ -367,13 +367,16 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label"><span class="tex">交货时间</span></span>
+            <span class="label"><span class="text">交货时间</span></span>
             <span class="content">
               <el-date-picker v-model="compiled_time"
                 value-format="yyyy-MM-dd"
                 type="date"
-                placeholder="请选择交货日期">
+                placeholder="请选择交货日期"
+                :picker-options="{disabledDate:filterDate}">
               </el-date-picker>
+              <span class="prompt orange"
+                v-show="compiled_time === $getTime()">您的交货日期为今日，请再次确认！</span>
             </span>
           </div>
         </div>
@@ -504,6 +507,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -814,7 +820,7 @@ export default {
             itemPro.unit = itemPro.product_info.unit
             return itemPro
           })
-          this.compiled_time = sampleOrderInfo.deliver_time
+          this.compiled_time = ''
           this.remark = sampleOrderInfo.desc
           this.loading = false
         }

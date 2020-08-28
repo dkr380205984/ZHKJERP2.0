@@ -264,14 +264,14 @@
                     style="flex:5">
                     <div class="trow">
                       <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
-                      <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
-                      <div class="tcolumn">单价</div>
-                      <div class="tcolumn">数量</div>
-                      <div class="tcolumn">完成时间</div>
+                      <div class="tcolumn flex08">{{type==='1'?'颜色':'属性'}}</div>
+                      <div class="tcolumn flex08">单价</div>
+                      <div class="tcolumn flex08">数量</div>
+                      <div class="tcolumn flex12">完成时间</div>
                     </div>
                   </div>
-                  <div class="tcolumn">总价</div>
-                  <div class="tcolumn">操作</div>
+                  <div class="tcolumn flex08">总价</div>
+                  <div class="tcolumn flex08">操作</div>
                 </div>
               </div>
               <div class="tbody">
@@ -285,14 +285,15 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.material_name}}</div>
-                      <div class="tcolumn">{{itemChild.color_code}}</div>
-                      <div class="tcolumn">{{itemChild.price}}元</div>
-                      <div class="tcolumn"><span class="green">{{itemChild.weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
-                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
+                      <div class="tcolumn flex08">{{itemChild.color_code}}</div>
+                      <div class="tcolumn flex08">{{itemChild.price}}元</div>
+                      <div class="tcolumn flex08"><span class="green">{{itemChild.weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
+                      <div class="tcolumn flex12"
+                        v-html="itemChild.deliver_time ? $getZHTimeFormat(itemChild.deliver_time) : '未获取到交货日期'"></div>
                     </div>
                   </div>
-                  <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
-                  <div class="tcolumn"
+                  <div class="tcolumn flex08"><span class="green">{{item.total_price}}元</span></div>
+                  <div class="tcolumn flex08"
                     style="flex-direction: row; justify-content: start; align-items: center;">
                     <span class="blue"
                       @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name + '&&type=' + item.type_source)">打印</span>
@@ -401,16 +402,38 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3"
                     style="max-width:319.3px">
-                    <div class="label">
-                      <span class="text">截止日期</span>
-                    </div>
-                    <div class="content">
-                      <el-date-picker v-model="item.complete_time"
-                        value-format="yyyy-MM-dd"
-                        style="width:100%"
-                        type="date"
-                        placeholder="选择截止日期">
-                      </el-date-picker>
+                    <div class="content"
+                      style="display:flex">
+                      <div class="colCtn"
+                        style="margin-right:16px">
+                        <div class="label">
+                          <span class="text">下单日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.order_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择截止日期">
+                          </el-date-picker>
+                        </div>
+                      </div>
+                      <div class="colCtn"
+                        style="margin-right:0">
+                        <div class="label">
+                          <span class="text">交货日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.complete_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择截止日期">
+                          </el-date-picker>
+                          <div class="prompt orange"
+                            v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn">
@@ -517,9 +540,9 @@
                       <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
                       <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
                       <div class="tcolumn">工序</div>
-                      <div class="tcolumn">单价</div>
-                      <div class="tcolumn">数量</div>
-                      <div class="tcolumn">完成时间</div>
+                      <div class="tcolumn flex08">单价</div>
+                      <div class="tcolumn flex08">数量</div>
+                      <div class="tcolumn flex12">完成时间</div>
                     </div>
                   </div>
                   <div class="tcolumn">总价</div>
@@ -539,9 +562,10 @@
                       <div class="tcolumn">{{itemChild.material_name}}</div>
                       <div class="tcolumn">{{itemChild.material_color}}</div>
                       <div class="tcolumn"><span class="green">{{itemChild.process_type}}</span></div>
-                      <div class="tcolumn">{{itemChild.price}}元</div>
-                      <div class="tcolumn"><span class="green">{{itemChild.weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
-                      <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div>
+                      <div class="tcolumn flex08">{{itemChild.price}}元</div>
+                      <div class="tcolumn flex08"><span class="green">{{itemChild.weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
+                      <div class="tcolumn flex12"
+                        v-html="itemChild.deliver_time ? $getZHTimeFormat(itemChild.deliver_time) : '未获取到交货日期'"></div>
                     </div>
                   </div>
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
@@ -651,16 +675,38 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3"
                     style="max-width:319.3px">
-                    <div class="label">
-                      <span class="text">截止日期</span>
-                    </div>
-                    <div class="content">
-                      <el-date-picker v-model="item.complete_time"
-                        value-format="yyyy-MM-dd"
-                        style="width:100%"
-                        type="date"
-                        placeholder="选择截止日期">
-                      </el-date-picker>
+                    <div class="content"
+                      style="display:flex">
+                      <div class="colCtn"
+                        style="margin-right:16px">
+                        <div class="label">
+                          <span class="text">下单日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.order_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择下单日期">
+                          </el-date-picker>
+                        </div>
+                      </div>
+                      <div class="colCtn"
+                        style="margin-right:0">
+                        <div class="label">
+                          <span class="text">交货日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.complete_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择截止日期">
+                          </el-date-picker>
+                          <div class="prompt orange"
+                            v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn">
@@ -721,7 +767,7 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
-            <!-- <span class="tb_row flex12">完成日期</span> -->
+            <span class="tb_row">创建日期</span>
             <span class="tb_row">来源</span>
             <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
             <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
@@ -731,7 +777,6 @@
             <span class="tb_row flex08">差值</span>
             <span class="tb_row flex08">总价(元)</span>
             <span class="tb_row flex08">其他信息</span>
-            <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -740,6 +785,7 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
+            <span class="tb_row">{{$getTime(item.create_time)}}</span>
             <!-- <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span> -->
             <span class="tb_row">
               <span>
@@ -761,12 +807,12 @@
                 trigger="click">
                 备注：{{item.desc}}<br />
                 操作人：{{item.user_name}}<br />
-                完成日期：{{$getTime(item.complete_time)}}
+                下单日期：{{$getTime(item.complete_time)}}<br />
+                完成日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
                 <span class="tb_handle_btn blue"
                   slot="reference">查看</span>
               </el-popover>
             </span>
-            <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteOrderLog(item.id,index)">删除</span>
@@ -800,7 +846,7 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
-            <!-- <span class="tb_row flex12">完成日期</span> -->
+            <span class="tb_row">创建日期</span>
             <span class="tb_row flex12">加工单位</span>
             <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
             <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
@@ -811,7 +857,6 @@
             <span class="tb_row flex08">差值数量</span>
             <span class="tb_row flex08">总价(元)</span>
             <span class="tb_row flex08">其他信息</span>
-            <span class="tb_row">创建日期</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -820,7 +865,7 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
-            <!-- <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span> -->
+            <span class="tb_row">{{$getTime(item.create_time)}}</span>
             <span class="tb_row flex12">{{item.client_name}}</span>
             <span class="tb_row flex2">{{item.material_name}}</span>
             <span class="tb_row">{{item.material_color}}</span>
@@ -836,12 +881,12 @@
                 trigger="click">
                 备注：{{item.desc}}<br />
                 操作人：{{item.user_name}}<br />
-                完成日期：{{$getTime(item.complete_time)}}
+                下单日期：{{$getTime(item.complete_time)}}<br />
+                完成日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
                 <span class="tb_handle_btn blue"
                   slot="reference">查看</span>
               </el-popover>
             </span>
-            <span class="tb_row">{{item.create_time.slice(0,10)}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteProcessLog(item.id,index)">删除</span>
@@ -1826,7 +1871,8 @@ export default {
         return item
       })
       downloadExcel(data, [
-        { title: '完成日期', key: 'complete_time' },
+        { title: '采购日期', key: 'complete_time' },
+        { title: '交货日期', key: 'deliver_time' },
         { title: '来源类型', key: 'type_source_name' },
         { title: '来源', key: 'client_name' },
         { title: '物料名称', key: 'material_name' },
@@ -1850,7 +1896,8 @@ export default {
         return item
       })
       downloadExcel(data, [
-        { title: '完成日期', key: 'complete_time' },
+        { title: '下单日期', key: 'complete_time' },
+        { title: '交货日期', key: 'deliver_time' },
         { title: '加工单位', key: 'client_name' },
         { title: '物料名称', key: 'material_name' },
         { title: '属性', key: 'material_color' },
@@ -1888,7 +1935,8 @@ export default {
         replenishFlag: replenishFlag,
         price: '',
         company_id: '',
-        complete_time: this.$getTime(),
+        complete_time: '',
+        order_time: this.$getTime(),
         desc: ''
       })
     },
@@ -1919,7 +1967,8 @@ export default {
             material: material,
             price: '',
             company_id: '',
-            complete_time: this.$getTime(),
+            complete_time: '',
+            order_time: this.$getTime(),
             desc: ''
           })
         }
@@ -2267,10 +2316,12 @@ export default {
           return {
             order_type: this.$route.params.orderType,
             desc: itemF.desc,
-            complete_time: itemF.complete_time,
+            complete_time: itemF.order_time,
+            deliver_time: itemF.complete_time,
             total_price: 0,
             price: itemF.price,
             total_weight: itemM.number,
+            reality_push_weight: itemM.number, // 后加的 默认实际值等于计划订购值
             color_code: itemM.color,
             material_name: itemM.name,
             plan_id: itemF.replenishFlag ? null : itemM.id,
@@ -2424,6 +2475,7 @@ export default {
           price: ''
         }],
         process: [],
+        order_time: this.$getTime(),
         complete_time: '',
         desc: ''
       })
@@ -2452,6 +2504,7 @@ export default {
           company_id: '',
           processList: material,
           complete_time: '',
+          order_time: this.$getTime(),
           process: [],
           desc: ''
         })
@@ -2526,8 +2579,10 @@ export default {
             client_id: item.company_id && item.company_id[1],
             price: itemChild.price,
             weight: itemChild.number,
+            reality_push_weight: itemChild.number, // 后加的 默认实际值等于计划值
             desc: item.desc,
-            complete_time: this.$getTime(item.complete_time),
+            deliver_time: item.complete_time,
+            complete_time: item.order_time,
             plan_id: item.replenishFlag ? null : itemChild.material_id,
             replenish_id: item.replenishFlag ? itemChild.material_id : null
           })
@@ -2572,8 +2627,8 @@ export default {
           material_id: '',
           number: '',
           price: ''
-
         }],
+        order_time: this.$getTime(),
         complete_time: '',
         desc: ''
       })
