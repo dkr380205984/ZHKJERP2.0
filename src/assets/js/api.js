@@ -301,7 +301,8 @@ const replenish = {
 const weave = {
   create: (params) => http.post(`${baseUrl}/production/weave/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/production/weave/list`, params),
-  delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json')
+  delete: (params) => http.post(`${baseUrl}/production/weave/delete`, params, 'application/json'),
+  setRealityNumber: (params) => http.post(`${baseUrl}/production/update/reality/number`, params, 'application/json')
 }
 // 半成品加工分配
 const processing = {
@@ -310,7 +311,8 @@ const processing = {
   delete: (params) => http.post(`${baseUrl}/production/semi_product/delete`, params, 'application/json'),
   saveMat: (params) => http.post(`${baseUrl}/material/distribute/save`, params, 'application/json'),
   matDetail: (params) => http.get(`${baseUrl}/material/distribute/detail`, params),
-  matDelete: (params) => http.post(`${baseUrl}/material/distribute/delete`, params, 'application/json')
+  matDelete: (params) => http.post(`${baseUrl}/material/distribute/delete`, params, 'application/json'),
+  setRealityNumber: (params) => http.post(`${baseUrl}/production/update/reality/number`, params, 'application/json')
 }
 // 产品收发出入库
 const receiveDispatch = {
@@ -333,7 +335,8 @@ const materialStock = {
 const packPlan = {
   create: (params) => http.post(`${baseUrl}/pack/info/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/pack/info/list`, params),
-  packOrder: (params) => http.post(`${baseUrl}/pack/order/save`, params, 'application/json'), // 包装订购
+  packOrder: (params) => http.post(`${baseUrl}/pack/order/save`, params, 'application/json'), // 包装订购,
+  setRealityNumber: (params) => http.post(`${baseUrl}/production/update/reality/number`, params, 'application/json'), // 实际订购入库
   packOrderLog: (params) => http.get(`${baseUrl}/pack/order/list`, params), // 包装订购日志,
   deletePackOrder: (params) => http.post(`${baseUrl}/pack/order/delete`, params, 'application/json'), // 包装订购删除
   packOut: (params) => http.post(`${baseUrl}/stock/out/save`, params, 'application/json'), // 装箱出库

@@ -124,7 +124,7 @@
                       <span class="tcolumn">总价</span>
                     </span>
                   </span>
-                  <span class="tcolumn center">完成日期</span>
+                  <span class="tcolumn center">订购日期</span>
                   <span class="tcolumn center">操作</span>
                 </span>
               </span>
@@ -315,17 +315,39 @@
               </span>
             </div>
             <div class="colCtn flex3">
-              <span class="label">
-                <span class="text">完成日期</span>
-              </span>
-              <span class="content">
-                <el-date-picker v-model="itemOrder.compile_time"
-                  class="elInput"
-                  value-format="yyyy-MM-dd"
-                  type="date"
-                  placeholder="请选择完成日期">
-                </el-date-picker>
-              </span>
+              <div class="content"
+                style="display:flex;height:auto">
+                <div class="colCtn"
+                  style="margin-right:16px">
+                  <span class="label">
+                    <span class="text">订购日期</span>
+                  </span>
+                  <span class="content">
+                    <el-date-picker v-model="itemOrder.order_time"
+                      class="elInput"
+                      value-format="yyyy-MM-dd"
+                      type="date"
+                      placeholder="请选择订购日期">
+                    </el-date-picker>
+                  </span>
+                </div>
+                <div class="colCtn"
+                  style="margin-right:0">
+                  <span class="label">
+                    <span class="text">交货日期</span>
+                  </span>
+                  <span class="content">
+                    <el-date-picker v-model="itemOrder.compile_time"
+                      class="elInput"
+                      value-format="yyyy-MM-dd"
+                      type="date"
+                      placeholder="请选择交货日期">
+                    </el-date-picker>
+                    <div class="prompt orange"
+                      v-if="itemOrder.compile_time === $getTime()">您的交货日期为今日，请再次确认！</div>
+                  </span>
+                </div>
+              </div>
             </div>
             <div class="colCtn flex3">
               <span class="label">
@@ -359,8 +381,10 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <div class="title">包装辅料订购日志</div>
+        <div class="btn btnWhiteBlue"
+          @click="changeRealityGoStockNumber">修改实际入库值</div>
       </div>
       <div class="listCtn hasBorderTop">
         <div class="btnCtn_page">
@@ -373,14 +397,14 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
+            <!-- <span class="tb_row">创建日期</span> -->
             <span class="tb_row">订购单位</span>
             <span class="tb_row">包装辅料</span>
             <span class="tb_row">订购单价</span>
             <span class="tb_row">订购数量</span>
+            <span class="tb_row">实际数量</span>
             <span class="tb_row">总价</span>
-            <span class="tb_row middle">完成日期</span>
             <span class="tb_row middle">其他信息</span>
-            <span class="tb_row">操作人</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -389,19 +413,27 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
+            <!-- <span class="tb_row">{{item.created_at ? $getTime(item.created_at) : '/'}}</span> -->
             <span class="tb_row">{{item.client_name}}</span>
             <span class="tb_row">{{item.material_name}}</span>
             <span class="tb_row">{{$toFixed(item.price || 0)}}元/{{item.unit}}</span>
             <span class="tb_row">{{$toFixed(item.number)}}{{item.unit}}</span>
-            <span class="tb_row">{{$toFixed(item.total_price || 0)}}元</span>
-            <span class="tb_row middle">{{$getTime(item.order_time)}}</span>
+            <span class="tb_row">{{item.reality_number ? `${$toFixed(item.reality_number)}${item.unit}` : '/'}}</span>
+            <span class="tb_row">{{$toFixed((item.price * (Number(item.reality_number) || item.number)) || 0)}}元</span>
             <span class="tb_row middle">
-              <el-tooltip placement="top">
-                <div slot="content">规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />属性：{{item.attribute}}<br />备注：{{item.desc}}</div>
-                <span class="tb_handle_btn blue">查看</span>
-              </el-tooltip>
+              <el-popover placement="right"
+                trigger="click">
+                规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />
+                属性：{{item.attribute}}<br />
+                备注：{{item.desc}}<br />
+                操作人：{{item.user_name}}<br />
+                订购日期：{{$getTime(item.order_time)}}<br />
+                交货日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
+                <div slot="reference"
+                  class="btn noBorder"
+                  style="margin:0;padding:0">查看</div>
+              </el-popover>
             </span>
-            <span class="tb_row">{{item.user_name}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn"
                 v-if="item.action_type === 3"
@@ -503,6 +535,67 @@
         </div>
       </div>
     </div>
+    <!-- 修改实际入库值 -->
+    <div class="popup"
+      v-if='showChangeRealityGoStockPopup'>
+      <div class="main"
+        style="min-width:1000px">
+        <div class="title">
+          <span class="text">填写实际入库值</span>
+          <span class="el-icon-close"
+            @click="showChangeRealityGoStockPopup = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:600px;">
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <!-- <span class="tb_row">创建日期</span> -->
+              <span class="tb_row">订购单位</span>
+              <span class="tb_row">包装辅料</span>
+              <span class="tb_row">订购单价</span>
+              <span class="tb_row">订购数量</span>
+              <span class="tb_row">总价</span>
+              <span class="tb_row middle">其他信息</span>
+              <span class="tb_row flex12 middle">实际分配数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in packOrderLog"
+              :key="index">
+              <!-- <span class="tb_row">{{item.created_at ? $getTime(item.created_at) : '/'}}</span> -->
+              <span class="tb_row">{{item.client_name}}</span>
+              <span class="tb_row">{{item.material_name}}</span>
+              <span class="tb_row">{{$toFixed(item.price || 0)}}元/{{item.unit}}</span>
+              <span class="tb_row">{{$toFixed(item.number)}}{{item.unit}}</span>
+              <span class="tb_row">{{$toFixed(item.total_price || 0)}}元</span>
+              <span class="tb_row middle">
+                <el-popover placement="right"
+                  trigger="click">
+                  规格：{{item.price_square ? JSON.parse(item.size).join('*') : item.pack_size}}cm<br />
+                  属性：{{item.attribute}}<br />
+                  备注：{{item.desc}}<br />
+                  操作人：{{item.user_name}}<br />
+                  订购日期：{{$getTime(item.order_time)}}<br />
+                  交货日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
+                  <div slot="reference"
+                    class="btn noBorder"
+                    style="margin:0;padding:0">查看</div>
+                </el-popover>
+              </span>
+              <span class="tb_row flex12 middle">
+                <zh-input v-model="item.reality_number"
+                  @input="item.isChange = true"></zh-input>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showChangeRealityGoStockPopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveRealityNumber">提交</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -571,10 +664,39 @@ export default {
       // 扣款窗口数据
       deductPopupFlag: false,
       clientArr: [],
-      deductPopupType: false
+      deductPopupType: false,
+      showChangeRealityGoStockPopup: false,
+      packOrderLog: []
     }
   },
   methods: {
+    changeRealityGoStockNumber () {
+      this.packOrderLog = this.$clone(this.orderLog)
+      this.showChangeRealityGoStockPopup = true
+    },
+    saveRealityNumber () {
+      let data = this.packOrderLog.filter(itemF => Number(itemF.reality_number) && itemF.isChange).map(itemM => {
+        return {
+          id: itemM.id,
+          reality_number: itemM.reality_number
+        }
+      })
+      if (data.length === 0) {
+        this.$message.warning('未改动实际分配数量，无需提交')
+        return
+      }
+      packPlan.setRealityNumber({
+        data: data,
+        type: 3
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('修改成功')
+          this.showChangeRealityGoStockPopup = false
+          this.init()
+        }
+      })
+      console.log(data)
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -668,7 +790,8 @@ export default {
         { title: '单价', key: 'price' },
         { title: '数量', key: 'number' },
         { title: '总价', key: 'total_price' },
-        { title: '完成日期', key: 'order_time' },
+        { title: '订购日期', key: 'order_time' },
+        { title: '交货日期', key: 'deliver_time' },
         { title: '规格', key: 'pack_size' },
         { title: '属性', key: 'attribute' },
         { title: '备注', key: 'desc' },
@@ -745,7 +868,8 @@ export default {
             }
           ],
           total_price: '',
-          compile_time: this.$getTime(),
+          order_time: this.$getTime(),
+          compile_time: '',
           remark: ''
         })
       } else if (type === 'sizeInfo') {
@@ -777,7 +901,8 @@ export default {
           number: item.plan_number
         }],
         total_price: '',
-        compile_time: this.$getTime(),
+        order_time: this.$getTime(),
+        compile_time: '',
         remark: ''
       })
       let elementGo = this.$refs.orderModule
@@ -822,7 +947,8 @@ export default {
             pack_plan_id: this.activePlanId,
             price_square: itemI.price,
             desc: item.remark,
-            order_time: item.compile_time,
+            order_time: item.order_time,
+            deliver_time: item.compile_time,
             total_price: itemI.one_price * itemI.number,
             attribute: item.attr,
             pack_size: itemI.size_info,
@@ -830,6 +956,7 @@ export default {
             size: JSON.stringify([itemI.long_box, itemI.width_box, itemI.height_box]),
             price: itemI.one_price,
             number: itemI.number,
+            reality_number: itemI.number, // 默认实际入库值等于计划值
             client_id: item.order_client && item.order_client[1],
             material_name: item.pack_name,
             // order_type: 1,
@@ -910,7 +1037,8 @@ export default {
             price: 0,
             number: item.number,
             total_price: 0,
-            order_time: item.created_at,
+            order_time: item.order_time,
+            deliver_time: item.deliver_time,
             pack_size: item.size,
             attribute: item.attribute,
             desc: item.desc,

@@ -397,6 +397,20 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="content timeCtn">
+              <span class="label">交货日期</span>
+              <el-date-picker v-model="itemBatch.time"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择交货日期"
+                :picker-options="{disabledDate:filterDate}">
+              </el-date-picker>
+              <span class="prompt orange"
+                style="left:auto;right:0"
+                v-show="itemBatch.time === $getTime()">您的交货日期为今日，请再次确认！</span>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
               <span class="label">批次名称</span>
               <zh-input v-model="itemBatch.name"
                 placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
@@ -408,16 +422,6 @@
               <el-autocomplete v-model="itemBatch.type"
                 :fetch-suggestions="querySearchType"
                 placeholder="请输入批次类型"></el-autocomplete>
-            </span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="content timeCtn">
-              <span class="label">交货日期</span>
-              <el-date-picker v-model="itemBatch.time"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择交货日期">
-              </el-date-picker>
             </span>
           </div>
         </div>
@@ -796,6 +800,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -1306,7 +1313,7 @@ export default {
             return items
           }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name/color' }, { name: 'color_name/color' }] } })
           orderBatch.push({
-            time: itemBatch.delivery_time,
+            time: '',
             remark: itemBatch.desc,
             name: itemBatch.batch_title,
             type: itemBatch.order_type,
@@ -1345,7 +1352,7 @@ export default {
         this.checkedProList = arr
         this.batchDate = orderBatch.map(itemBatch => {
           return {
-            time: itemBatch.time,
+            time: '',
             batch_info: itemBatch.batch_info.map(itemPro => {
               return {
                 id: itemPro.id,

@@ -392,6 +392,18 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="content timeCtn">
+              <span class="label">交货日期</span>
+              <el-date-picker v-model="itemBatch.time"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择交货日期">
+              </el-date-picker>
+              <span class="prompt orange"
+                v-show="itemBatch.time === $getTime()">您的交货日期为今日，请再次确认！</span>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
               <span class="label">批次名称</span>
               <zh-input v-model="itemBatch.name"
                 placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
@@ -403,16 +415,6 @@
               <el-autocomplete v-model="itemBatch.type"
                 :fetch-suggestions="querySearchType"
                 placeholder="请输入批次类型"></el-autocomplete>
-            </span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="content timeCtn">
-              <span class="label">交货日期</span>
-              <el-date-picker v-model="itemBatch.time"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择交货日期">
-              </el-date-picker>
             </span>
           </div>
         </div>

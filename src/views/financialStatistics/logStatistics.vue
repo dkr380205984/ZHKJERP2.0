@@ -181,7 +181,7 @@
                   <span class="text">创建人</span>
                 </div>
                 <div class="col">
-                  <span class="text">截止日期</span>
+                  <span class="text">采购日期</span>
                 </div>
               </div>
               <div class="row"
@@ -353,7 +353,7 @@
                   <span class="text">创建人</span>
                 </div>
                 <div class="col">
-                  <span class="text">截止日期</span>
+                  <span class="text">下单日期</span>
                 </div>
               </div>
               <div class="row"
@@ -660,7 +660,7 @@
                   <el-checkbox v-model="checkAll">全选</el-checkbox>
                 </div>
                 <div class="col">
-                  <span class="text">分配日期</span>
+                  <span class="text">创建日期</span>
                 </div>
                 <div class="col">
                   <span class="text">关联单号</span>
@@ -691,7 +691,7 @@
                   <span class="text">创建人</span>
                 </div>
                 <div class="col">
-                  <span class="text">完成日期</span>
+                  <span class="text">分配日期</span>
                 </div>
               </div>
               <div class="row"
@@ -1007,7 +1007,7 @@
                   <span class="text">创建人</span>
                 </div>
                 <div class="col">
-                  <span class="text">完成时间</span>
+                  <span class="text">分配时间</span>
                 </div>
               </div>
               <div class="row"
@@ -1781,7 +1781,7 @@
                   <span class="text">{{item.user_name}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.order_time.slice(0,10)}}</span>
+                  <span class="text">{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}</span>
                 </div>
               </div>
             </div>
@@ -2432,7 +2432,7 @@ export default {
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
-          { title: '完成日期', key: 'complete_time' }
+          { title: '采购日期', key: 'complete_time' }
         ])
       } else if (this.type === '物料加工') {
         let data = this.checkList.map(item => {
@@ -2452,7 +2452,7 @@ export default {
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
-          { title: '完成日期', key: 'complete_time' }
+          { title: '下单日期', key: 'complete_time' }
         ])
       } else if (this.type === '物料出入库') {
         let data = this.checkList.map(item => {
@@ -2478,7 +2478,7 @@ export default {
           return item
         })
         downloadExcel(data, [
-          { title: '分配日期', key: 'created_at' },
+          { title: '创建日期', key: 'created_at' },
           { title: '关联单号', key: 'order_code' },
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
@@ -2488,7 +2488,7 @@ export default {
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
-          { title: '完成日期', key: 'complete_time' }
+          { title: '分配日期', key: 'complete_time' }
         ])
       } else if (this.type === '补纱日志') {
         let data = this.checkList
@@ -2512,7 +2512,7 @@ export default {
           return item
         })
         downloadExcel(data, [
-          { title: '分配日期', key: 'created_at' },
+          { title: '创建日期', key: 'created_at' },
           { title: '关联单号', key: 'order_code' },
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
@@ -2523,7 +2523,7 @@ export default {
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
-          { title: '完成日期', key: 'complete_time' }
+          { title: '分配日期', key: 'complete_time' }
         ])
       } else if (this.type === '织造入库') {
         let data = this.checkList.map((item) => {
@@ -2630,7 +2630,7 @@ export default {
           return item
         })
         downloadExcel(data, [
-          { title: '创建日期', key: 'order_time' },
+          { title: '采购日期', key: 'order_time' },
           { title: '关联单号', key: 'order_code' },
           { title: '订购单位', key: 'client_name' },
           { title: '包装辅料', key: 'material_name' },
@@ -3098,7 +3098,7 @@ export default {
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
-              { title: '完成日期', key: 'complete_time' }
+              { title: '采购日期', key: 'complete_time' }
             ])
             this.downloading = false
           } else {
@@ -3139,7 +3139,7 @@ export default {
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
-              { title: '完成日期', key: 'complete_time' }
+              { title: '下单日期', key: 'complete_time' }
             ])
             this.downloading = false
           } else {
@@ -3209,7 +3209,7 @@ export default {
           total = res.data.meta.total
           if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
             downloadExcel(data, [
-              { title: '分配日期', key: 'created_at' },
+              { title: '创建日期', key: 'created_at' },
               { title: '关联单号', key: 'order_code' },
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
@@ -3219,7 +3219,7 @@ export default {
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
-              { title: '完成日期', key: 'complete_time' }
+              { title: '分配日期', key: 'complete_time' }
             ])
             this.downloading = false
           } else {
@@ -3285,7 +3285,7 @@ export default {
           total = res.data.meta.total
           if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
             downloadExcel(data, [
-              { title: '分配日期', key: 'created_at' },
+              { title: '创建日期', key: 'created_at' },
               { title: '关联单号', key: 'order_code' },
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
@@ -3296,7 +3296,7 @@ export default {
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
-              { title: '完成日期', key: 'complete_time' }
+              { title: '分配日期', key: 'complete_time' }
             ])
             this.downloading = false
           } else {

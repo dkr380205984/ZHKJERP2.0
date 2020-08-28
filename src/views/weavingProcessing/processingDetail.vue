@@ -249,17 +249,40 @@
                     </div>
                   </div>
                   <div class="colCtn flex3">
-                    <div class="label">
-                      <span class="text">截止日期</span>
-                      <span class="explanation">(必填)</span>
-                    </div>
-                    <div class="content">
-                      <el-date-picker v-model="item.complete_time"
-                        value-format="yyyy-MM-dd"
-                        style="width:100%"
-                        type="date"
-                        placeholder="选择截止日期">
-                      </el-date-picker>
+                    <div class="content"
+                      style="display:flex">
+                      <div class="colCtn"
+                        style="margin-right:16px">
+                        <div class="label">
+                          <span class="text">分配日期</span>
+                          <span class="explanation">(必填)</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.order_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择分配日期">
+                          </el-date-picker>
+                        </div>
+                      </div>
+                      <div class="colCtn"
+                        style="margin-right:0">
+                        <div class="label">
+                          <span class="text">截止日期</span>
+                          <span class="explanation">(必填)</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.complete_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择截止日期">
+                          </el-date-picker>
+                          <div class="prompt orange"
+                            v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认！</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn flex3">
@@ -329,13 +352,18 @@
                       <div class="tcolumn">产品信息</div>
                       <div class="tcolumn">尺码颜色</div>
                       <div class="tcolumn">工序</div>
-                      <div class="tcolumn">单价(元)</div>
-                      <div class="tcolumn">数量</div>
-                      <div class="tcolumn">总价</div>
-                      <!-- <div class="tcolumn">完成时间</div> -->
+                      <div class="tcolumn"
+                        style="flex:0.8">单价(元)</div>
+                      <div class="tcolumn"
+                        style="flex:0.8">数量</div>
+                      <div class="tcolumn"
+                        style="flex:0.8">总价</div>
+                      <div class="tcolumn"
+                        style="flex:1.2">截止时间</div>
                     </div>
                   </div>
-                  <div class="tcolumn center">操作</div>
+                  <div class="tcolumn center"
+                    style="flex:0.8">操作</div>
                 </div>
               </div>
               <div class="tbody">
@@ -354,13 +382,19 @@
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.type}}</div>
-                      <div class="tcolumn">{{$toFixed(itemChild.price)}}</div>
-                      <div class="tcolumn">{{$toFixed(itemChild.number)}}</div>
-                      <div class="tcolumn">{{$toFixed(itemChild.price*itemChild.number)}}</div>
-                      <!-- <div class="tcolumn">{{itemChild.complete_time.slice(0,10)}}</div> -->
+                      <div class="tcolumn"
+                        style="flex:0.8">{{$toFixed(itemChild.price)}}</div>
+                      <div class="tcolumn"
+                        style="flex:0.8">{{$toFixed(itemChild.number)}}</div>
+                      <div class="tcolumn"
+                        style="flex:0.8">{{$toFixed(itemChild.price*itemChild.number)}}</div>
+                      <div class="tcolumn"
+                        style="flex:1.2"
+                        v-html="itemChild.deliver_time ? $getZHTimeFormat(itemChild.deliver_time) : '未获取到截止日期'"></div>
                     </div>
                   </div>
-                  <div class="tcolumn center">
+                  <div class="tcolumn center"
+                    style="flex:0.8">
                     <!-- v-if="havePartMaterial(item.childrenMergeInfo)" -->
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
@@ -378,8 +412,10 @@
     </div>
     <div class="module log"
       v-if="process_log.length>0">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">半成品加工分配日志</span>
+        <div class="btn btnWhiteBlue"
+          @click="changeRealityWeaveNumber">修改实际分配值</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -400,14 +436,17 @@
                     <el-checkbox v-model="checkAll"
                       @change="checkAllLog"></el-checkbox>
                   </div>
+                  <div class="tcolumn">创建日期</div>
                   <div class="tcolumn"
                     style="flex:1.6">加工单位</div>
                   <div class="tcolumn"
                     style="flex:1.5">产品名称</div>
                   <div class="tcolumn">尺码颜色</div>
                   <div class="tcolumn">单价(元)</div>
-                  <div class="tcolumn">数量</div>
+                  <div class="tcolumn">计划数量</div>
+                  <div class="tcolumn">实际数量</div>
                   <div class="tcolumn">总价(元)</div>
+                  <div class="tcolumn">其它信息</div>
                   <div class="tcolumn">操作</div>
                 </div>
               </div>
@@ -420,6 +459,7 @@
                     <el-checkbox v-model="item.checked"
                       @change="$forceUpdate()"></el-checkbox>
                   </div>
+                  <div class="tcolumn">{{$getTime(item.created_at)}}</div>
                   <div class="tcolumn"
                     style="flex:1.6">
                     <span style="color:#01B48C">
@@ -437,7 +477,20 @@
                   </div>
                   <div class="tcolumn">{{$toFixed(item.price)}}</div>
                   <div class="tcolumn">{{$toFixed(item.number)}}</div>
-                  <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
+                  <div class="tcolumn">{{item.reality_number ? $toFixed(item.reality_number) : '/'}}</div>
+                  <div class="tcolumn">{{$toFixed(item.price*(Number(item.reality_number) || item.number))}}</div>
+                  <div class="tcolumn">
+                    <el-popover placement="right"
+                      trigger="click">
+                      备注：{{item.desc}}<br />
+                      操作人：{{item.user_name}}<br />
+                      分配日期：{{$getTime(item.complete_time)}}
+                      截止日期：{{item.deliver_time ? $getTime(item.deliver_time) : '/'}}
+                      <div slot="reference"
+                        class="btn noBorder"
+                        style="margin:0;padding:0">查看</div>
+                    </el-popover>
+                  </div>
                   <div class="tcolumn">
                     <span style="color:#F5222D;cursor:pointer"
                       @click="deleteLog(item.id,index)">删除</span>
@@ -736,6 +789,62 @@
         </div>
       </div>
     </div>
+    <!-- 修改实际分配值 -->
+    <div class="popup"
+      v-if='showChangeRealityProcessPopup'>
+      <div class="main"
+        style="min-width:1000px">
+        <div class="title">
+          <span class="text">填写实际分配值</span>
+          <span class="el-icon-close"
+            @click="showChangeRealityProcessPopup = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:600px;">
+          <div class="tableCtnLv2 height40">
+            <div class="tb_header">
+              <span class="tb_row flex12">分配日期</span>
+              <span class="tb_row">织造单位</span>
+              <span class="tb_row flex12">产品名称</span>
+              <span class="tb_row">尺码颜色</span>
+              <span class="tb_row flex08">单价(元)</span>
+              <span class="tb_row flex08">分配数量</span>
+              <span class="tb_row flex08">总价(元)</span>
+              <span class="tb_row flex12 middle">实际分配数量</span>
+            </div>
+            <div class="tb_content"
+              v-for="(item,index) in processLog"
+              :key="index">
+              <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
+              <span class="tb_row">{{item.client_name}}</span>
+              <span class="tb_row flex12">
+                {{item.product_info.product_code}}
+                <br />
+                {{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}
+              </span>
+              <span class="tb_row">
+                {{item.size_name}}
+                <br />
+                {{item.color_name}}
+              </span>
+              <span class="tb_row flex08">{{item.price}}</span>
+              <span class="tb_row flex08">{{item.number}}</span>
+              <span class="tb_row flex08">{{$toFixed(item.price*item.number)}}</span>
+              <span class="tb_row flex12 middle">
+                <zh-input v-model="item.reality_number"
+                  @input="item.isChange = true"></zh-input>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showChangeRealityProcessPopup = false">取消</div>
+          <div class="btn btnBlue"
+            @click="saveRealityNumber">提交</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -802,7 +911,9 @@ export default {
       }],
       materialShow: [],
       checkAll: false,
-      flatMaterial: []// 物料展平的数据
+      flatMaterial: [], // 物料展平的数据
+      showChangeRealityProcessPopup: false,
+      processLog: []
     }
   },
   watch: {
@@ -818,6 +929,32 @@ export default {
     }
   },
   methods: {
+    changeRealityWeaveNumber () {
+      this.processLog = this.$clone(this.process_log)
+      this.showChangeRealityProcessPopup = true
+    },
+    saveRealityNumber () {
+      let data = this.processLog.filter(itemF => Number(itemF.reality_number) && itemF.isChange).map(itemM => {
+        return {
+          id: itemM.id,
+          reality_number: itemM.reality_number
+        }
+      })
+      if (data.length === 0) {
+        this.$message.warning('未改动实际分配数量，无需提交')
+        return
+      }
+      processing.setRealityNumber({
+        data: data,
+        type: 2
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('修改成功')
+          this.showChangeRealityProcessPopup = false
+          this.$winReload()
+        }
+      })
+    },
     checkAllLog (ev) {
       this.process_log.forEach((item) => {
         item.checked = ev
@@ -908,6 +1045,7 @@ export default {
           number: number || ''
         }],
         part_id: false,
+        order_time: this.$getTime(),
         complete_time: '',
         desc: ''
       })
@@ -941,6 +1079,7 @@ export default {
             }
           }),
           part_id: false,
+          order_time: this.$getTime(),
           complete_time: '',
           desc: ''
         })
@@ -964,6 +1103,7 @@ export default {
           number: ''
         }],
         part_id: false,
+        order_time: this.$getTime(),
         complete_time: '',
         desc: ''
       })
@@ -1054,7 +1194,9 @@ export default {
             client_id: item.company_id && item.company_id[1],
             price: itemChild.price,
             number: itemChild.number,
-            complete_time: this.$getTime(item.complete_time),
+            reality_number: itemChild.number,
+            complete_time: item.order_time,
+            deliver_time: item.complete_time,
             desc: item.desc,
             type: item.process_type.join('/')
           })
@@ -1114,8 +1256,8 @@ export default {
         this.materialTable = []
         this.process_data.forEach((item, index) => {
           this.materialTable.push({
-            client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
-            client_id: item.company_id,
+            client_name: this.clientArrReal.find((itemFind) => itemFind.value === item.company_id[0]).children.find(itemF => itemF.value === item.company_id[1]).label,
+            client_id: item.company_id[1],
             process: item.process_type.join('/'),
             material_info: [{
               aterial_type: 2,
@@ -1133,8 +1275,8 @@ export default {
       if (filterPeijian.length > 0) {
         this.process_data.forEach((item, index) => {
           this.materialTable.push({
-            client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
-            client_id: item.company_id,
+            client_name: this.clientArrReal.find((itemFind) => itemFind.value === item.company_id[0]).children.find(itemF => itemF.value === item.company_id[1]).label,
+            client_id: item.company_id[1],
             process: item.process_type.join('/'),
             material_info: []
           })
@@ -1176,8 +1318,8 @@ export default {
       if (filterWuliao.length > 0) {
         this.process_data.forEach((item, index) => {
           this.materialTable.push({
-            client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
-            client_id: item.company_id,
+            client_name: this.clientArrReal.find((itemFind) => itemFind.value === item.company_id[0]).children.find(itemF => itemF.value === item.company_id[1]).label,
+            client_id: item.company_id[1],
             process: item.process_type.join('/'),
             material_info: []
           })
