@@ -350,6 +350,40 @@ const plugin = {
     } else {
       return [...new Set(arr)]
     }
+  },
+  // 注意！这个方法会改变传进来的findArr数组
+  // findArr 需要查找的数组 比如 [{name:'爸爸',money:'1000'},{{name:'爸爸',money:'2000'},{name:'爷爷',money:'1000'}]
+  // compare 需要对比的对象 比如 {name:'爸爸',money:'2000'}
+  // findWhich 需要比对哪些数据相同 比如 ['name']
+  // addWhich 相同的数据需要相加的数据 比如 ['money']
+  // 上面的例子是指findArr数组里找是否有跟compare , name相同的数据，如果有，则finded的money相加，如果没有，findArr会push compare这个对象进去，这会改变findArr,很多情况下，findArr可以是一个空数组
+  commonFind (findArr, compare, findWhich, addWhich) {
+    if (typeof (findWhich) === 'string') {
+      return findArr.find((itemFind) => {
+        return itemFind[findWhich] === compare[itemFind]
+      })
+    } else if (findWhich.constructor === Array) {
+      let finded = findArr.find((itemFind) => {
+        let flag = true
+        findWhich.forEach((item) => {
+          if (compare[item] !== itemFind[item]) {
+            flag = false
+          }
+        })
+        return flag
+      })
+      if (!finded) {
+        findArr.push(compare)
+      } else {
+        if (addWhich.constructor === Array) {
+          addWhich.forEach((item) => {
+            finded[item] += Number(compare[item])
+          })
+        }
+      }
+    } else {
+      console.error('第三个参数必须为字符串或数组格式')
+    }
   }
 }
 const submitLock = () => {
@@ -462,5 +496,6 @@ export default {
     Vue.prototype.$unique = plugin.unique
     Vue.prototype.$getClientOptions = getClientOptions
     Vue.prototype.$getZHTimeFormat = getZHTimeFormat
+    Vue.prototype.$commonFind = plugin.commonFind
   }
 }

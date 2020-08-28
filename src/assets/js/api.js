@@ -318,10 +318,13 @@ const processing = {
 const receiveDispatch = {
   weaveCreate: (params) => http.post(`${baseUrl}/weave/product/push`, params, 'application/json'),
   weaveDetail: (params) => http.get(`${baseUrl}/weave/product/push/list`, params),
-  weaveDelete: (params) => http.post(`${baseUrl}/weave/product/push/delete`, params, 'application/json'),
+  // weaveDelete: (params) => http.post(`${baseUrl}/weave/product/push/delete`, params, 'application/json'),
   semiCreate: (params) => http.post(`${baseUrl}/semi/product/push`, params, 'application/json'),
   semiDetail: (params) => http.get(`${baseUrl}/semi/product/push/list`, params),
-  semiDelete: (params) => http.post(`${baseUrl}/semi/product/pop/delete`, params, 'application/json')
+  // semiDelete: (params) => http.post(`${baseUrl}/semi/product/pop/delete`, params, 'application/json'),
+  allCreate: (params) => http.post(`${baseUrl}/order/product/production/save`, params, 'application/json'),
+  allDetail: (params) => http.get(`${baseUrl}/order/product/production/list`, params),
+  allDelete: (params) => http.post(`${baseUrl}/order/product/production/delete`, params, 'application/json')
 }
 // 物料出入库
 const materialStock = {
