@@ -1132,9 +1132,12 @@ export default {
         } else if (!item.product_id) {
           errorFlag = true
           errMsg = '请选择产品'
+        } else if (!item.order_time) {
+          errorFlag = true
+          errMsg = '请选择分配日期'
         } else if (!item.complete_time) {
           errorFlag = true
-          errMsg = '请选择截至日期'
+          errMsg = '请选择截止日期'
         } else if (item.process_type.length === 0) {
           errorFlag = true
           errMsg = '请选择加工工序'

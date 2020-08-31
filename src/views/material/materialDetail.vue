@@ -2288,7 +2288,8 @@ export default {
         id: true,
         color: true,
         number: true,
-        time: true
+        time: true,
+        order_time: true
       }
       let data = this.order_data.map(itemF => {
         if (!itemF.company_id || !itemF.company_id[1]) {
@@ -2296,6 +2297,9 @@ export default {
         }
         if (!itemF.price) {
           flag.price = false
+        }
+        if (!itemF.order_time) {
+          flag.order_time = false
         }
         if (!itemF.complete_time) {
           flag.time = false
@@ -2360,8 +2364,12 @@ export default {
         this.$message.error('请填写原料数量')
         return
       }
+      if (!flag.order_time) {
+        this.$message.error('请选择下单日期')
+        return
+      }
       if (!flag.time) {
-        this.$message.error('请选择截止日期')
+        this.$message.error('请选择交货日期')
         return
       }
       materialManage.create({
@@ -2538,9 +2546,14 @@ export default {
           errorMsg = '请选择加工单位'
           return
         }
+        if (!item.order_time) {
+          errorFlag = true
+          errorMsg = '请选择下单日期'
+          return
+        }
         if (!item.complete_time) {
           errorFlag = true
-          errorMsg = '请选择截止日期'
+          errorMsg = '请选择交货日期'
           return
         }
         if (item.process.length === 0) {

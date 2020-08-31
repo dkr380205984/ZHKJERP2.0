@@ -1234,9 +1234,12 @@ export default {
         } else if (!item.product_name) {
           errorFlag = true
           errMsg = '请选择产品'
+        } else if (!item.order_time) {
+          errorFlag = true
+          errMsg = '请选择分配日期'
         } else if (!item.complete_time) {
           errorFlag = true
-          errMsg = '请选择截至日期'
+          errMsg = '请选择截止日期'
         }
         item.mixedData.forEach((itemChild) => {
           if (!itemChild.partColorSize) {

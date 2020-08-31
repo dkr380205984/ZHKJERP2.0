@@ -679,7 +679,10 @@
                   <span class="text">单价(元)</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">分配数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">实际数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -728,7 +731,10 @@
                   <span class="text">{{item.number}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.price*item.number)}}元</span>
+                  <span class="text">{{item.reality_number}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round(item.price*(Number(item.reality_number) || item.number))}}元</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -995,7 +1001,10 @@
                   <span class="text">单价(元)</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量(件)</span>
+                  <span class="text">分配数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">实际数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -1051,7 +1060,10 @@
                   <span class="text">{{item.number}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{Math.round(item.number*item.price)}}</span>
+                  <span class="text">{{item.reality_number}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{Math.round((Number(item.reality_number) || item.number)*item.price)}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -1730,7 +1742,10 @@
                   <span class="text">单价(元)</span>
                 </div>
                 <div class="col">
-                  <span class="text">数量</span>
+                  <span class="text">下单数量</span>
+                </div>
+                <div class="col">
+                  <span class="text">交货数量</span>
                 </div>
                 <div class="col">
                   <span class="text">总价</span>
@@ -1772,7 +1787,10 @@
                   <span class="text">{{$toFixed(item.number)}}</span>
                 </div>
                 <div class="col">
-                  <span class="text">{{$toFixed(item.total_price || 0)}}</span>
+                  <span class="text">{{item.reality_number ? $toFixed(item.reality_number) : ''}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{$toFixed((item.price * (Number(item.reality_number) || item.number)) || 0)}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -2427,8 +2445,8 @@ export default {
           { title: '来源类型', key: 'type_source_name' },
           { title: '公司名称', key: 'client_name' },
           { title: '单价(元)', key: 'price' },
-          { title: '采购数量', key: 'weight' },
-          { title: '入库数量', key: 'reality_push_weight' },
+          { title: '下单数量', key: 'weight' },
+          { title: '交货数量', key: 'reality_push_weight' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -2447,8 +2465,8 @@ export default {
           { title: '属性', key: 'material_color' },
           { title: '工序', key: 'process_type' },
           { title: '单价(元)', key: 'price' },
-          { title: '加工数量', key: 'weight' },
-          { title: '入库数量', key: 'reality_push_weight' },
+          { title: '下单数量', key: 'weight' },
+          { title: '交货数量', key: 'reality_push_weight' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -2474,7 +2492,7 @@ export default {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
           item.sizeColor = item.size_name + '/' + item.color_name
-          item.total_price = this.$toFixed(item.price * item.number)
+          item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
           return item
         })
         downloadExcel(data, [
@@ -2484,7 +2502,8 @@ export default {
           { title: '产品编号', key: 'product_code' },
           { title: '尺码颜色', key: 'sizeColor' },
           { title: '单价(元)', key: 'price' },
-          { title: '数量', key: 'number' },
+          { title: '分配数量', key: 'number' },
+          { title: '实际数量', key: 'reality_number' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -2507,7 +2526,7 @@ export default {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
           item.sizeColor = item.size_name + '/' + item.color_name
-          item.total_price = this.$toFixed(item.price * item.number)
+          item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
           item.part = item.part_assign.map((item) => item.name).join('/')
           return item
         })
@@ -2519,7 +2538,8 @@ export default {
           { title: '尺码颜色', key: 'sizeColor' },
           { title: '所需辅料', key: 'part' },
           { title: '单价(元)', key: 'price' },
-          { title: '数量', key: 'number' },
+          { title: '分配数量', key: 'number' },
+          { title: '实际数量', key: 'reality_number' },
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
@@ -2627,6 +2647,7 @@ export default {
       } else if (this.type === '包装订购') {
         let data = this.checkList.map(item => {
           item.pack_size = item.price_square ? JSON.parse(item.size).join('*') : item.pack_size
+          item.total_price = this.$toFixed((item.price * (Number(item.reality_number) || Number(item.number))))
           return item
         })
         downloadExcel(data, [
@@ -2635,7 +2656,8 @@ export default {
           { title: '订购单位', key: 'client_name' },
           { title: '包装辅料', key: 'material_name' },
           { title: '单价', key: 'price' },
-          { title: '数量', key: 'number' },
+          { title: '下单数量', key: 'number' },
+          { title: '交货数量', key: 'reality_number' },
           { title: '总价', key: 'total_price' },
           { title: '规格', key: 'pack_size' },
           { title: '属性', key: 'attribute' },
@@ -3093,8 +3115,8 @@ export default {
               { title: '来源类型', key: 'type_source_name' },
               { title: '公司名称', key: 'client_name' },
               { title: '单价(元)', key: 'price' },
-              { title: '采购数量', key: 'weight' },
-              { title: '入库数量', key: 'reality_push_weight' },
+              { title: '下单数量', key: 'weight' },
+              { title: '交货数量', key: 'reality_push_weight' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
@@ -3134,8 +3156,8 @@ export default {
               { title: '属性', key: 'material_color' },
               { title: '工序', key: 'process_type' },
               { title: '单价(元)', key: 'price' },
-              { title: '加工数量', key: 'weight' },
-              { title: '入库数量', key: 'reality_push_weight' },
+              { title: '下单数量', key: 'weight' },
+              { title: '交货数量', key: 'reality_push_weight' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
@@ -3203,7 +3225,7 @@ export default {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
             item.sizeColor = item.size_name + '/' + item.color_name
-            item.total_price = this.$toFixed(item.price * item.number)
+            item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
             return item
           }))
           total = res.data.meta.total
@@ -3215,7 +3237,8 @@ export default {
               { title: '产品编号', key: 'product_code' },
               { title: '尺码颜色', key: 'sizeColor' },
               { title: '单价(元)', key: 'price' },
-              { title: '数量', key: 'number' },
+              { title: '分配数量', key: 'number' },
+              { title: '实际数量', key: 'reality_number' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
@@ -3278,7 +3301,7 @@ export default {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
             item.sizeColor = item.size_name + '/' + item.color_name
-            item.total_price = this.$toFixed(item.price * item.number)
+            item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
             item.part = item.part_assign.map((item) => item.name).join('/')
             return item
           }))
@@ -3292,7 +3315,8 @@ export default {
               { title: '尺码颜色', key: 'sizeColor' },
               { title: '所需辅料', key: 'part' },
               { title: '单价(元)', key: 'price' },
-              { title: '数量', key: 'number' },
+              { title: '分配数量', key: 'number' },
+              { title: '实际数量', key: 'reality_number' },
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
@@ -3528,6 +3552,7 @@ export default {
         }).then((res) => {
           data.push(...res.data.data.map(item => {
             item.pack_size = item.price_square ? JSON.parse(item.size).join('*') : item.pack_size
+            item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
             return item
           }))
           total = res.data.meta.total
@@ -3538,7 +3563,8 @@ export default {
               { title: '订购单位', key: 'client_name' },
               { title: '包装辅料', key: 'material_name' },
               { title: '单价', key: 'price' },
-              { title: '数量', key: 'number' },
+              { title: '下单数量', key: 'number' },
+              { title: '交货数量', key: 'reality_number' },
               { title: '总价', key: 'total_price' },
               { title: '规格', key: 'pack_size' },
               { title: '属性', key: 'attribute' },

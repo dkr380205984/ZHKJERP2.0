@@ -441,10 +441,10 @@
                 <span class="text">单价</span>
               </div>
               <div class="col">
-                <span class="text">采购数量</span>
+                <span class="text">下单数量</span>
               </div>
               <div class="col">
-                <span class="text">入库数量</span>
+                <span class="text">交货数量</span>
               </div>
               <div class="col">
                 <span class="text">总价</span>
@@ -741,10 +741,10 @@
                 <span class="text">单价</span>
               </div>
               <div class="col">
-                <span class="text">加工数量</span>
+                <span class="text">下单数量</span>
               </div>
               <div class="col">
-                <span class="text">入库数量</span>
+                <span class="text">交货数量</span>
               </div>
               <div class="col">
                 <span class="text">总价</span>
@@ -899,7 +899,10 @@
                 <span class="text">单价(元)</span>
               </div>
               <div class="col">
-                <span class="text">数量</span>
+                <span class="text">分配数量</span>
+              </div>
+              <div class="col">
+                <span class="text">实际数量</span>
               </div>
               <div class="col">
                 <span class="text">总价</span>
@@ -948,7 +951,10 @@
                 <span class="text">{{item.number}}</span>
               </div>
               <div class="col">
-                <span class="text">{{Math.round(item.price*item.number)}}元</span>
+                <span class="text">{{item.reality_number}}</span>
+              </div>
+              <div class="col">
+                <span class="text">{{Math.round(item.price*(Number(item.reality_number) || item.number))}}元</span>
               </div>
               <div class="col">
                 <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -1058,7 +1064,10 @@
                 <span class="text">单价(元)</span>
               </div>
               <div class="col">
-                <span class="text">数量(件)</span>
+                <span class="text">分配数量</span>
+              </div>
+              <div class="col">
+                <span class="text">实际数量</span>
               </div>
               <div class="col">
                 <span class="text">总价</span>
@@ -1114,7 +1123,10 @@
                 <span class="text">{{item.number}}</span>
               </div>
               <div class="col">
-                <span class="text">{{Math.round(item.number*item.price)}}</span>
+                <span class="text">{{item.reality_number}}</span>
+              </div>
+              <div class="col">
+                <span class="text">{{Math.round((Number(item.reality_number) || item.number)*item.price)}}</span>
               </div>
               <div class="col">
                 <span class="text">{{item.desc?item.desc:'暂无'}}</span>
@@ -1206,7 +1218,10 @@
                 <span class="text">单价(元)</span>
               </div>
               <div class="col">
-                <span class="text">数量</span>
+                <span class="text">下单数量</span>
+              </div>
+              <div class="col">
+                <span class="text">交货数量</span>
               </div>
               <div class="col">
                 <span class="text">总价</span>
@@ -1248,7 +1263,10 @@
                 <span class="text">{{$toFixed(item.number)}}</span>
               </div>
               <div class="col">
-                <span class="text">{{$toFixed(item.total_price || 0)}}</span>
+                <span class="text">{{item.reality_number ? $toFixed(item.reality_number) : ''}}</span>
+              </div>
+              <div class="col">
+                <span class="text">{{$toFixed((item.price * (Number(item.reality_number) || item.number)) || 0)}}</span>
               </div>
               <div class="col">
                 <span class="text">{{item.desc?item.desc:'暂无'}}</span>

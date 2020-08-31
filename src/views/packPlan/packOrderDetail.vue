@@ -917,7 +917,8 @@ export default {
         price: true,
         number: true,
         totalPrice: true,
-        time: true
+        time: true,
+        order_time: true
       }
       let data = []
       this.packOrderEdit.forEach(item => {
@@ -932,6 +933,9 @@ export default {
         }
         if (!item.total_price) {
           flag.totalPrice = false
+        }
+        if (!item.order_time) {
+          flag.order_time = false
         }
         if (!item.compile_time) {
           flag.time = false
@@ -989,8 +993,12 @@ export default {
         this.$message.error('检测到未填写总价，请填写')
         return
       }
+      if (!flag.order_time) {
+        this.$message.error('检测到未选择采购日期，请选择')
+        return
+      }
       if (!flag.time) {
-        this.$message.error('检测到未选择完成时间，请选择')
+        this.$message.error('检测到未选择交货日期，请选择')
         return
       }
       packPlan.packOrder({
