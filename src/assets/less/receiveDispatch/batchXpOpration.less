@@ -1,0 +1,89 @@
+
+@import '../common.less';
+.listHead{
+  display: flex;
+  height: 106px;
+  .box{
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    &.small{
+      .boxBottom{
+        .num{
+          font-size: @fontMiddle;
+          font-weight: 400;
+        }
+      }
+      &::after{
+        content:'';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        width:1px;
+        height:42px;
+        background: #E8E8E8;
+      }
+    }
+    .boxTop{
+      line-height: 40px;
+      font-size: @fontMiddle;
+      color: @font45;
+      text-align: center;
+    }
+    .boxBottom{
+      line-height: 40px;
+      text-align: center;
+      color: @font85;
+      .num{
+        font-weight: bold;
+        font-size: 18px;
+        margin-right: 2px;
+      }
+      .em{
+        font-size: @fontMiddle;
+      }
+    }
+    &::after{
+      content:'';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      width:1px;
+      height:58px;
+      background: #E8E8E8;
+    }
+    &:nth-last-of-type(1){
+      &::after{
+        content:'';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        width:1px;
+        height:58px;
+        background: transparent;
+      }
+    }
+  }
+}
+.stockState{
+  background: #EDFAFF;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 4px;
+  .message{
+    font-size: @fontMiddle;
+    color: #0091FF;
+  }
+}

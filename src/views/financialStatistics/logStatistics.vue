@@ -1092,7 +1092,8 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="织造入库"
+          <el-tab-pane v-if="false"
+            label="织造入库"
             name="织造入库">
             <div class="filterCtn">
               <div class="leftCtn">
@@ -1396,7 +1397,8 @@
               </div>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="半成品检验"
+          <el-tab-pane v-if="false"
+            label="半成品检验"
             name="半成品检验">
             <div class="filterCtn">
               <div class="leftCtn">
