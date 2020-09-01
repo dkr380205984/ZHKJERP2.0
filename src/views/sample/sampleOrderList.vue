@@ -261,7 +261,7 @@
                 <div class="state"></div>
                 <span class="name">库</span>
               </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.product_weave_progress.product>0 ,'green':itemOrder.product_weave_progress.product>=100}">
+              <div :class="{'stateCtn':true,'orange':itemOrder.production_weave_progress.product>0 ,'green':itemOrder.production_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
@@ -617,7 +617,7 @@ export default {
             deliver_time: item.deliver_time,
             has_plan: item.has_plan,
             material_order_progress: item.material_order_progress,
-            product_weave_progress: item.product_weave_progress,
+            production_weave_progress: item.production_weave_progress,
             material_push_progress: item.material_push_progress
           }
         })
