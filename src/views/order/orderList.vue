@@ -283,34 +283,39 @@
             </div>
             <div class="col flex16">
               <div class="stateCtn"
-                :class="{'green':itemOrder.has_plan>0}">
+                :class="{'green':itemOrder.has_plan===1}">
                 <div class="state"></div>
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_order_progress.y_percent>0,'green':itemOrder.material_order_progress.y_percent>=100}">
-                <div class="state"></div>
-                <span class="name">订</span>
-              </div>
-              <div class="stateCtn"
                 :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
                 <div class="state"></div>
-                <span class="name">库</span>
+                <span class="name">入</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
+                :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
+                <div class="state"></div>
+                <span class="name">出</span>
+              </div>
+              <!-- <div class="stateCtn"
+                :class="{'orange':itemOrder.production_weave_progress.product>0,'green':itemOrder.production_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
+                :class="{'orange':itemOrder.production_weave_progress.semi_product>0,'green':itemOrder.production_weave_progress.semi_product>=100}">
+                <div class="state"></div>
+                <span class="name">半</span>
+              </div> -->
+              <div class="stateCtn"
                 :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
                 <div class="state"></div>
-                <span class="name">收</span>
+                <span class="name">检</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
+                :class="{'orange':itemOrder.semi_push_progress>0,'green':itemOrder.semi_push_progress>=100}">
                 <div class="state"></div>
-                <span class="name">检</span>
+                <span class="name">回</span>
               </div>
               <div class="stateCtn"
                 :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">

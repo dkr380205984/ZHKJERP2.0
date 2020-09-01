@@ -103,19 +103,16 @@
               {{itemOrder.group_name}}
             </div>
             <div class="col">
-              <!-- <div v-if="type===1"
-                class="stateCtn rowFlex"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
-                <div class="state">
-                </div><span class="name">{{itemOrder.product_weave_progress.product>0?'已分配':'未分配'}}</span>
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
+                <div class="state"></div>
+                <span class="name">检</span>
               </div>
-              <div v-if="type===2"
-                class="stateCtn rowFlex"
-                :class="{'orange':itemOrder.product_weave_progress.semi_product>0,'green':itemOrder.product_weave_progress.semi_product>=100}">
-                <div class="state">
-                </div><span class="name">{{itemOrder.product_weave_progress.semi_product>0?'已分配':'未分配'}}</span>
-              </div> -->
-              不确定
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.semi_push_progress>0,'green':itemOrder.semi_push_progress>=100}">
+                <div class="state"></div>
+                <span class="name">回</span>
+              </div>
             </div>
             <div class="col">
               {{itemOrder.order_time}}
