@@ -78,6 +78,17 @@
             </span>
           </div>
           <div class="row">
+            <div class="label isMust">扣款日期：</div>
+            <div class="info">
+              <el-date-picker style="width:100%"
+                v-model="deductEditInfo.time"
+                type="date"
+                value-format="yyyy-MM-dd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="row">
             <span class="label isMust">扣款金额：</span>
             <span class="info">
               <zh-input type='number'
@@ -88,10 +99,10 @@
             </span>
           </div>
           <div class="row">
-            <span class="label">扣款备注：</span>
+            <span class="label">扣款原因：</span>
             <span class="info">
-              <zh-input v-model=" deductEditInfo.remark"
-                placeholder="请输入扣款备注">
+              <zh-input v-model="deductEditInfo.remark"
+                placeholder="请输入扣款原因">
               </zh-input>
             </span>
           </div>
@@ -152,6 +163,7 @@ export default {
       deductEditInfo: {
         client_id: '',
         price: '',
+        time: this.$getTime(),
         remark: ''
       }
     }
@@ -188,7 +200,7 @@ export default {
         id: null,
         client_id: this.deductEditInfo.client_id.split('-')[0],
         order_id: JSON.stringify([this.orderId]),
-        complete_time: this.$getTime(),
+        complete_time: this.deductEditInfo.time,
         deduct_price: this.deductEditInfo.price,
         desc: this.deductEditInfo.remark,
         order_type: this.orderType,

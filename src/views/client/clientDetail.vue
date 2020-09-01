@@ -1184,7 +1184,7 @@
               <div class="col">
                 <span class="text blue"
                   style="cursor:pointer"
-                  @click="$router.push(`${item.order_type === 2 ? '/sample/sampleOrderDetail/' : '/order/orderDEtail'}${item.order_id}`)">{{item.order_code}}</span>
+                  @click="$router.push(`${item.order_type === 2 ? '/sample/sampleOrderDetail/' : '/order/orderDetail/'}${item.order_id}`)">{{item.order_code}}</span>
               </div>
               <div class="col flex07">
                 <span class="text">{{item.group_name}}</span>
