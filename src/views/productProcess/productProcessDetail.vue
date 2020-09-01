@@ -779,6 +779,9 @@ export default {
       }
       this.inspectionForm.product_id = obj.product_id
       this.getInspectionPro(obj.product_id)
+      if (this.inspectionForm.detail.length === 1 && !this.inspectionForm.detail[0].colorSize[0].colorSize && objChild) {
+        this.inspectionForm.detail.splice(0, 1)
+      }
       this.inspectionForm.detail.push({
         client_auth: '',
         colorSize: [{

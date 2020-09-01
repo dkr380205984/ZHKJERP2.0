@@ -2082,9 +2082,9 @@ export default {
               name: '成品加工',
               unit: '件',
               price_info: [{
-                number: '暂无',
-                total_price: 0,
-                pre_price: 0
+                number: data.production.number,
+                total_price: data.production.total_value,
+                pre_price: data.production.pre_value
               }]
             },
             {

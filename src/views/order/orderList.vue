@@ -144,7 +144,7 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <el-dropdown :hide-on-click="false"
+              <!-- <el-dropdown :hide-on-click="false"
                 class="filter_item"
                 trigger="click"
                 style="cursor:pointer">
@@ -222,7 +222,7 @@
                     </el-radio-group>
                   </el-dropdown-item>
                 </el-dropdown-menu>
-              </el-dropdown>
+              </el-dropdown> -->
             </div>
           </div>
           <div class="rightCtn"
