@@ -139,11 +139,11 @@ const routes = [
     }, {
       path: '/order/orderDetail/:id',
       name: '订单详情',
-      component: () => import('../views/order/orderDetailNew.vue')
+      component: () => import('../views/order/orderDetail.vue')
     }, {
       path: '/order/orderCreate',
       name: '订单添加',
-      component: () => import('../views/order/orderCreateNew.vue')
+      component: () => import('../views/order/orderCreate.vue')
     }, {
       path: '/order/orderUpdate/:id',
       name: '订单修改',
@@ -288,6 +288,14 @@ const routes = [
       path: '/receiveDispatch/jysf/:id',
       name: '检验收发详情',
       component: () => import('../views/receiveDispatch/jysf.vue')
+    }, {
+      path: '/receiveDispatch/batchXpList/:params',
+      name: '芯片读取出入库列表',
+      component: () => import('../views/receiveDispatch/batchXpList.vue')
+    }, {
+      path: '/receiveDispatch/batchXpOpration/:type',
+      name: '芯片读取',
+      component: () => import('../views/receiveDispatch/batchXpOpration.vue')
     }, {
       path: '/inspection/inspectionList/:params',
       name: '产品检验列表',
@@ -655,7 +663,10 @@ router.beforeEach((to, from, next) => {
     '运输货款列表': ['织为云', '运输货款列表'],
     '运输货款详情': ['织为云', '运输货款列表', '运输货款详情'],
     '成品加工列表': ['织为云', '成品加工列表'],
-    '成品加工详情': ['织为云', '成品加工列表', '成品加工详情']
+    '成品加工详情': ['织为云', '成品加工列表', '成品加工详情'],
+    '芯片读取出入库列表': ['织为云', '芯片读取出入库列表'],
+    '芯片读取': ['织为云', '芯片读取'],
+    '结算扣款统计': ['织为云', '结算扣款统计']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

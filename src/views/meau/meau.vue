@@ -68,12 +68,12 @@ export default {
             path: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
             icon: 'icon-chanpinshoufa'
           },
-          // {
-          //   name: '芯片读取出入库',
-          //   id: 10,
-          //   path: '/receiveDispatch/batchXpList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
-          //   icon: 'icon-chanpinjianyan'
-          // },
+          {
+            name: '芯片读取出入库',
+            id: 10,
+            path: '/receiveDispatch/batchXpList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
+            icon: 'icon-chanpinjianyan'
+          },
           {
             name: '成品加工',
             id: 10,

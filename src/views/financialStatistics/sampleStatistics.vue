@@ -370,7 +370,11 @@ export default {
         this.date = ''
       }
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      this.company_id = params.company_id.split(',')
+      if (params.company_id !== 'null' && params.company_id !== '') {
+        this.company_id = params.company_id.split(',')
+      } else {
+        this.company_id = ''
+      }
     }
   },
   mounted () {
