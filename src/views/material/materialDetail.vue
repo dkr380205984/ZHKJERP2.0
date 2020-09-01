@@ -414,7 +414,7 @@
                             value-format="yyyy-MM-dd"
                             style="width:100%"
                             type="date"
-                            placeholder="选择截止日期">
+                            placeholder="选择下单日期">
                           </el-date-picker>
                         </div>
                       </div>
@@ -428,7 +428,8 @@
                             value-format="yyyy-MM-dd"
                             style="width:100%"
                             type="date"
-                            placeholder="选择截止日期">
+                            placeholder="选择交货日期"
+                            :picker-options="{disabledDate:filterDate}">
                           </el-date-picker>
                           <div class="prompt orange"
                             v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
@@ -701,7 +702,8 @@
                             value-format="yyyy-MM-dd"
                             style="width:100%"
                             type="date"
-                            placeholder="选择截止日期">
+                            placeholder="选择交货日期"
+                            :picker-options="{disabledDate:filterDate}">
                           </el-date-picker>
                           <div class="prompt orange"
                             v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
@@ -1093,7 +1095,7 @@
         </div>
         <div class="content">
           <div class="tips">
-            提示信息：一键加工操作可以统一选择加工单位,加工单价,加工工序和截止日期，如不需要可以选择直接跳过该步骤。
+            提示信息：一键加工操作可以统一选择加工单位,加工单价,加工工序和交货日期，如不需要可以选择直接跳过该步骤。
           </div>
           <div v-for="(item,index) in checkWhichYarn"
             :key="index"
@@ -1141,13 +1143,14 @@
               </div>
             </div>
             <div class="row">
-              <div class="label">截止日期：</div>
+              <div class="label">交货日期：</div>
               <div class="info">
                 <el-date-picker v-model="commonDate[index]"
                   value-format="yyyy-MM-dd"
                   style="width:100%"
                   type="date"
-                  placeholder="选择截止日期">
+                  placeholder="选择交货日期"
+                  :picker-options="{disabledDate:filterDate}">
                 </el-date-picker>
               </div>
             </div>
@@ -1690,6 +1693,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {

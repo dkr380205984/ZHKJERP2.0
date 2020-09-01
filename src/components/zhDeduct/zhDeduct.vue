@@ -23,7 +23,7 @@
                       <div>
                         <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?$getTime(item.complete_time):'有问题'}}</span>
                         <span style="margin-left:20px">金额：
-                          <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price)}}元</span>
+                          <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price || 0)}}元</span>
                         </span>
                       </div>
                       <div class="blue"

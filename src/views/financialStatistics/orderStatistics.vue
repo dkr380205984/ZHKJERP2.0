@@ -25,14 +25,6 @@
         </svg>
         <span class="name">产品产量统计</span>
       </div>
-      <!-- <div class="cut_item"
-        @click="$router.push('/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY=')">
-        <svg class="iconFont"
-          aria-hidden="true">
-          <use xlink:href="#icon-wuliaoshiyongtongji"></use>
-        </svg>
-        <span class="name">物料使用统计</span>
-      </div> -->
       <div class="cut_item"
         @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
         <svg class="iconFont"
