@@ -2,8 +2,8 @@
   <div id='clientList'
     class='indexMain'
     v-loading='loading'>
-    <!-- <div class="chartsCtn">
-      <div class="charts">
+    <!-- <div class="chartsCtn"> -->
+    <!-- <div class="charts">
         <div class="title">
           <span>订单产值</span>
           <el-tooltip class="item"
@@ -32,10 +32,26 @@
         <div class="number">{{costTotal}}</div>
         <v-chart style="width:320px;height:120px"
           :options="processData" />
-      </div>
-      <div class="charts listHard">
+      </div> -->
+    <!-- <div class="charts listHard">
         <div class="box">
-          <span class="title">已结算</span>
+          <span class="title">合计</span>
+          <span class="number">{{1000.79}}万元</span>
+          <span class="info">
+            <span class="info_item">订单：{{2000}}万元 </span>
+            <span class="info_item">成本：{{1000.90}}万元</span>
+          </span>
+        </div>
+        <div class="box">
+          <span class="title">已结算(已开票)</span>
+          <span class="number">{{1000.79}}万元</span>
+          <span class="info">
+            <span class="info_item">订单：{{2000}}万元 </span>
+            <span class="info_item">成本：{{1000.90}}万元</span>
+          </span>
+        </div>
+        <div class="box">
+          <span class="title">已结算(未开票)</span>
           <span class="number">{{1000.79}}万元</span>
           <span class="info">
             <span class="info_item">订单：{{2000}}万元 </span>

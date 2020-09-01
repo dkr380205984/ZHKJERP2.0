@@ -124,7 +124,7 @@
                       <span class="tcolumn">总价</span>
                     </span>
                   </span>
-                  <span class="tcolumn center">订购日期</span>
+                  <span class="tcolumn">交货日期</span>
                   <span class="tcolumn center">操作</span>
                 </span>
               </span>
@@ -149,7 +149,8 @@
                       <span class="tcolumn">{{itemMa.total_price ? $toFixed(itemMa.total_price) + '元' : '/'}}</span>
                     </span>
                   </span>
-                  <span class="tcolumn center">{{$getTime(itemTime.compiled_time)}}</span>
+                  <span class="tcolumn"
+                    v-html="$getZHTimeFormat(itemTime.compiled_time)"></span>
                   <span class="tcolumn center">
                     <div class="btn noBorder noMargin"
                       @click="$openUrl('/packOrderTable/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">打印</div>
@@ -341,7 +342,8 @@
                       class="elInput"
                       value-format="yyyy-MM-dd"
                       type="date"
-                      placeholder="请选择交货日期">
+                      placeholder="请选择交货日期"
+                      :picker-options="{disabledDate:filterDate}">
                     </el-date-picker>
                     <div class="prompt orange"
                       v-if="itemOrder.compile_time === $getTime()">您的交货日期为今日，请再次确认！</div>
@@ -402,7 +404,7 @@
             <span class="tb_row">包装辅料</span>
             <span class="tb_row">订购单价</span>
             <span class="tb_row">订购数量</span>
-            <span class="tb_row">实际数量</span>
+            <span class="tb_row">实际入库数量</span>
             <span class="tb_row">总价</span>
             <span class="tb_row middle">其他信息</span>
             <span class="tb_row middle">操作</span>
@@ -556,7 +558,7 @@
               <span class="tb_row">订购数量</span>
               <span class="tb_row">总价</span>
               <span class="tb_row middle">其他信息</span>
-              <span class="tb_row flex12 middle">实际分配数量</span>
+              <span class="tb_row flex12 middle">实际入库数量</span>
             </div>
             <div class="tb_content"
               v-for="(item,index) in packOrderLog"
@@ -670,6 +672,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     changeRealityGoStockNumber () {
       this.packOrderLog = this.$clone(this.orderLog)
       this.showChangeRealityGoStockPopup = true
@@ -682,7 +687,7 @@ export default {
         }
       })
       if (data.length === 0) {
-        this.$message.warning('未改动实际分配数量，无需提交')
+        this.$message.warning('未改动实际入库数量，无需提交')
         return
       }
       packPlan.setRealityNumber({
@@ -1079,7 +1084,7 @@ export default {
           }
         })
         // this.totalLog = this.orderLog.length
-        this.packOrderInfo = this.$mergeData(res[1].data.data, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'order_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
+        this.packOrderInfo = this.$mergeData(res[1].data.data, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenName: 'time_info', childrenRule: { mainRule: 'deliver_time/compiled_time', childrenName: 'material_info', childrenRule: { mainRule: ['material_name', 'price'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'total_price', type: 'add' }, { name: 'desc' }] } } })
         this.loading = false
       })
     },

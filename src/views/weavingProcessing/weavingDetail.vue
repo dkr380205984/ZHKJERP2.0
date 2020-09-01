@@ -260,7 +260,8 @@
                             value-format="yyyy-MM-dd"
                             style="width:100%"
                             type="date"
-                            placeholder="选择截止日期">
+                            placeholder="选择截止日期"
+                            :picker-options="{disabledDate:filterDate}">
                           </el-date-picker>
                           <div class="prompt orange"
                             v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认！</div>
@@ -368,7 +369,7 @@
       <div class="titleCtn rightBtn">
         <span class="title">织造分配日志</span>
         <div class="btn btnWhiteBlue"
-          @click="changeRealityWeaveNumber">修改实际分配值</div>
+          @click="changeRealityWeaveNumber">修改实际生产值</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="btnCtn_page"
@@ -397,7 +398,7 @@
                     style="flex:1.2">尺码颜色</div>
                   <div class="tcolumn">单价(元)</div>
                   <div class="tcolumn">计划数量</div>
-                  <div class="tcolumn">实际数量</div>
+                  <div class="tcolumn">实际生产数量</div>
                   <div class="tcolumn">总价(元)</div>
                   <div class="tcolumn">其他信息</div>
                   <div class="tcolumn">操作</div>
@@ -657,7 +658,8 @@
                   value-format="yyyy-MM-dd"
                   style="width:100%"
                   type="date"
-                  placeholder="选择截止日期">
+                  placeholder="选择截止日期"
+                  :picker-options="{disabledDate:filterDate}">
                 </el-date-picker>
               </div>
             </div>
@@ -856,7 +858,7 @@
       </div>
     </div>
     <!-- 操作记录 -->
-    <div class="popup"
+    <!-- <div class="popup"
       v-show="deductLogPopupFlag">
       <div class="main">
         <div class="title">
@@ -904,14 +906,14 @@
             @click="deductLogPopupFlag=false">确定</div>
         </div>
       </div>
-    </div>
-    <!-- 修改实际分配值 -->
+    </div> -->
+    <!-- 修改实际生产值 -->
     <div class="popup"
       v-if='showChangeRealityWeavePopup'>
       <div class="main"
         style="min-width:1000px">
         <div class="title">
-          <span class="text">填写实际分配值</span>
+          <span class="text">填写实际生产值</span>
           <span class="el-icon-close"
             @click="showChangeRealityWeavePopup = false"></span>
         </div>
@@ -926,7 +928,7 @@
               <span class="tb_row flex08">单价(元)</span>
               <span class="tb_row flex08">分配数量</span>
               <span class="tb_row flex08">总价(元)</span>
-              <span class="tb_row flex12 middle">实际分配数量</span>
+              <span class="tb_row flex12 middle">实际生产数量</span>
             </div>
             <div class="tb_content"
               v-for="(item,index) in weaveLog"
@@ -964,8 +966,19 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnWhiteBlue"
-            @click="deductLogPopupFlag = true">扣款日志</div>
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='+$route.params.orderType'
+            :showType='deductPopupType'
+            :logType='[4]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
+          <!-- <div class="btn btnWhiteBlue"
+            @click="deductLogPopupFlag = true">扣款日志</div> -->
           <div class="btn btnBlue"
             @click="$router.push('/weavingProcessing/processingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到半成品分配</div>
           <div class="btn btnGray"
@@ -978,7 +991,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock, chargebacks } from '@/assets/js/api.js'
+import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1035,10 +1048,12 @@ export default {
       showRouterPopup: false,
       showReplenishPopup: false,
       replenishClientArr: [],
-      deductLogPopupFlag: false,
-      deductLogList: [],
       showChangeRealityWeavePopup: false,
-      weaveLog: []
+      weaveLog: [],
+      // 扣款数据
+      deductPopupFlag: false,
+      deductPopupType: true,
+      clientArr: []
     }
   },
   computed: {
@@ -1054,6 +1069,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     changeRealityWeaveNumber () {
       this.weaveLog = this.$clone(this.weaving_log)
       this.showChangeRealityWeavePopup = true
@@ -1066,7 +1084,7 @@ export default {
         }
       })
       if (data.length === 0) {
-        this.$message.warning('未改动实际分配数量，无需提交')
+        this.$message.warning('未改动实际生产数量，无需提交')
         return
       }
       weave.setRealityNumber({
@@ -1078,16 +1096,6 @@ export default {
           this.showChangeRealityWeavePopup = false
           this.$winReload()
         }
-      })
-    },
-    // 获取扣款日志
-    getDeductLog () {
-      chargebacks.log({
-        order_type: 1,
-        order_id: this.$route.params.id,
-        type: [99]
-      }).then((res) => {
-        this.deductLogList = res.data.data
       })
     },
     querySearchReplenish (queryString, cb) {
@@ -1169,7 +1177,6 @@ export default {
         return
       }
       this.easyWeaving_flag = true
-      console.log(this.checkWeaveList)
       // this.checkWeaveList.forEach((item) => {
       //   let mixedData = []
       //   item.childrenMergeInfo.forEach((itemChild) => {
@@ -1273,7 +1280,7 @@ export default {
             desc: item.desc,
             price: itemChild.price,
             number: itemChild.number,
-            reality_number: itemChild.number, // 默认实际分配值默认等于计划值
+            reality_number: itemChild.number, // 默认实际生产值默认等于计划值
             size_id: partColorSize[1],
             color_id: partColorSize[2],
             is_part: partFlag ? 1 : 2,
@@ -1338,6 +1345,7 @@ export default {
             company_id: '',
             product_name: item.product_code,
             mixedData: mixedData,
+            order_time: this.$getTime(),
             complete_time: '',
             part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
             desc: ''
@@ -1541,7 +1549,6 @@ export default {
     if (this.$route.query.showReplenishPopup === 'true') {
       this.showReplenishPopup = true
     }
-    this.getDeductLog()
     Promise.all([
       api.detail({
         id: this.$route.params.id
@@ -1612,6 +1619,13 @@ export default {
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false
         return item
+      })
+      this.clientArr = this.$unique(res[3].data.data, 'client_id').map(item => {
+        return {
+          client_id: item.client_id,
+          client_name: item.client_name,
+          type: 4
+        }
       })
       this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
       // 根据织造日志统计一下分配数量

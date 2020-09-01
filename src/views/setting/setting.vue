@@ -1492,7 +1492,7 @@
               </div>
             </div>
             <div class="row"
-              v-for="(item,index) in changePackMaterialInfo.packMaterialPriceArr"
+              v-for="(item,index) in changePackMaterialInfo.packPriceArr"
               :key="index">
               <div class="label">报价信息：</div>
               <div class="info flex">
@@ -1774,11 +1774,6 @@
               <div class="label">备注内容：</div>
               <div class="info">
                 <div ref="editorPrint"></div>
-                <!-- <el-input type="textarea"
-                  :autosize="{ minRows: 8, maxRows: 16}"
-                  placeholder="请编辑备注内容"
-                  v-model="printEditInfo.remark">
-                </el-input> -->
               </div>
             </div>
           </div>
@@ -2111,91 +2106,6 @@
         </div>
       </div>
     </div>
-    <!-- 删除规格 -->
-    <!-- <div class="popup"
-      v-show="measurementFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">删除规格</div>
-          <i class="el-icon-close"
-            @click="measurementFlag=false"></i>
-        </div>
-        <div class="content">
-          <div class="row">
-            <div class="label">选择尺码：</div>
-            <div class="info">
-              <el-select v-model="deleteMeasurementId"
-                placeholder="请选择删除尺码">
-                <el-option v-for="item in measurementIdArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"></el-option>
-              </el-select>
-            </div>
-          </div>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="measurementFlag=false">取消</div>
-          <div class="btn btnBlue"
-            @click="deleteMeasurement">确定</div>
-        </div>
-      </div>
-    </div> -->
-    <!-- 纱线/辅料/包装详情 -->
-    <!-- <div class="popup"
-      v-show="showDetailPopup">
-      <div class="main">
-        <div class="title">
-          <div class="text">{{detailType === 'yarn' ? '纱线原料' : detailType === 'material' ? '装饰辅料' : '包装辅料'}}详情</div>
-          <i class="el-icon-close"
-            @click="showDetailPopup=false"></i>
-        </div>
-        <div class="content">
-          <div class="row">
-            <div class="label">{{detailType === 'yarn' ? '纱线' : detailType === 'material' ? '辅料' : '包装'}}名称：</div>
-            <div class="info">{{detailInfo.name}}</div>
-          </div>
-          <div class="row"
-            v-if="detailType === 'material' || detailType === 'pack'">
-            <div class="label">计量单位：</div>
-            <div class="info">{{detailInfo.unit}}</div>
-          </div>
-          <div class="row">
-            <div class="label">{{detailType === 'yarn' ? '纱线' : detailType === 'material' ? '辅料' : '包装'}}报价：</div>
-            <div class="info popup_inner_box">
-              <span class="popup_inner_line"
-                v-for="(itemPrice,indexPrice) in detailInfo.price"
-                :key="indexPrice">
-                <span class="popup_inner_item flex12">{{itemPrice.client_name}}</span>
-                <span class="popup_inner_item flex06"><em class="blue">{{itemPrice.price}}</em>{{itemPrice.unit ? itemPrice.unit : (detailInfo.unit ? '元/' + detailInfo.unit : '元/kg')}}</span>
-                <span class="popup_inner_item flex08">{{itemPrice.time}}</span>
-              </span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="label">更新日志：</div>
-            <div class="info popup_inner_box">
-              <div class="info popup_inner_box">
-                <span class="popup_inner_line"
-                  v-for="(itemLog,indexLog) in detailInfo.log"
-                  :key="indexLog">
-                  <span class="popup_inner_item flex12">{{itemLog.client_name}}</span>
-                  <span class="popup_inner_item flex06"><em class="blue">{{itemLog.price}}</em>{{itemLog.unit ? itemLog.unit : (detailInfo.unit ? '元/' + detailInfo.unit : 'kg')}}</span>
-                  <span class="popup_inner_item flex08">{{itemLog.time}}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="measurementFlag=false">取消</div>
-          <div class="btn btnBlue"
-            @click="deleteMeasurement">确定</div>
-        </div>
-      </div>
-    </div> -->
     <!-- 批量添加纱线 -->
     <div class="popup"
       v-if="updataYarnsFlag">
@@ -3806,21 +3716,15 @@ export default {
       })
     },
     getYarnName () {
-      // if (this.clientList.length === 0) {
       client.list().then((res) => {
-        this.clientList = res.data.data.filter(item => item.type.indexOf(2) !== -1)
+        this.clientList = res.data.data.filter(item => (item.type.includes(3) || item.type.includes(4)))
       })
-      // }
       yarn.list().then((res) => {
         this.yarnNameList = res.data.data
         this.yarnNameTotal = this.yarnNameList.length
       })
     },
     saveYarnName () {
-      // if (this.changeYarnInfo.yarnName.indexOf('/') !== -1 || this.changeYarnInfo.yarnName.indexOf('%') !== -1) {
-      //   this.$message.error('纱线名称不能包含特殊字符斜杠，请重新添加')
-      //   return
-      // }
       if (this.changeYarnInfo.yarnName) {
         yarn.create({
           data: [
@@ -3971,15 +3875,11 @@ export default {
       })
     },
     getMaterialName () {
-      // if (this.clientList.length === 0) {
       client.list().then((res) => {
-        this.clientList = res.data.data.filter(item => item.type.indexOf(10) !== -1)
+        this.clientList = res.data.data.filter(item => (item.type.includes(5) || item.type.includes(6)))
       })
-      // }
       material.list().then(res => {
-        if (res.data.status === false) {
-          this.$message.error('获取装饰辅料列表失败，' + res.data.message)
-        } else {
+        if (res.data.status !== false) {
           this.materialNameList = res.data.data
           this.materialNameTotal = this.materialNameList.length
         }
@@ -4019,9 +3919,7 @@ export default {
             }
           })
         }).then(res => {
-          if (res.data.status === false) {
-            this.$message.error('添加失败，' + res.data.message)
-          } else {
+          if (res.data.status !== false) {
             this.$message.success('添加成功')
             this.closeAndResetInfo('material')
             this.getMaterialName()
@@ -4055,15 +3953,11 @@ export default {
       })
     },
     getPackName () {
-      // if (this.clientList.length === 0) {
       client.list().then((res) => {
-        this.clientList = res.data.data.filter(item => item.type.indexOf(7) !== -1)
+        this.clientList = res.data.data.filter(item => (item.type.includes(7) || item.type.includes(8)))
       })
-      // }
       packag.list().then(res => {
-        if (res.data.status === false) {
-          this.$message.error('获取包装辅料列表失败，' + res.data.message)
-        } else {
+        if (res.data.status !== false) {
           this.packMaterialNameList = res.data.data
           this.packMaterialNameTotal = this.packMaterialNameList.length
         }

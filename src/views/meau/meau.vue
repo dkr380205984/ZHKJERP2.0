@@ -63,7 +63,7 @@ export default {
             icon: 'icon-zhizaojiagong'
           },
           {
-            name: '检验收发管理',
+            name: '半成品检验收发',
             id: 9,
             path: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
             icon: 'icon-chanpinshoufa'
@@ -75,7 +75,7 @@ export default {
           //   icon: 'icon-chanpinjianyan'
           // },
           {
-            name: '成品加工',
+            name: '成品检验加工',
             id: 10,
             path: '/productProcess/productProcessList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
             icon: 'icon-chanpinjianyan'
@@ -113,7 +113,7 @@ export default {
             icon: 'icon-yuangongguanli'
           },
           {
-            name: '客户管理',
+            name: '客户添加结算',
             id: 13,
             path: '/client/clientList/page=1&&keyword=&&clientType=',
             icon: 'icon-kehuguanli'

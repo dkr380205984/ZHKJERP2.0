@@ -277,7 +277,8 @@
                             value-format="yyyy-MM-dd"
                             style="width:100%"
                             type="date"
-                            placeholder="选择截止日期">
+                            placeholder="选择截止日期"
+                            :picker-options="{disabledDate:filterDate}">
                           </el-date-picker>
                           <div class="prompt orange"
                             v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认！</div>
@@ -415,7 +416,7 @@
       <div class="titleCtn rightBtn">
         <span class="title">半成品加工分配日志</span>
         <div class="btn btnWhiteBlue"
-          @click="changeRealityWeaveNumber">修改实际分配值</div>
+          @click="changeRealityWeaveNumber">修改实际值</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -620,7 +621,8 @@
                   value-format="yyyy-MM-dd"
                   style="width:100%"
                   type="date"
-                  placeholder="选择截止日期">
+                  placeholder="选择截止日期"
+                  :picker-options="{disabledDate:filterDate}">
                 </el-date-picker>
               </div>
             </div>
@@ -789,13 +791,13 @@
         </div>
       </div>
     </div>
-    <!-- 修改实际分配值 -->
+    <!-- 修改实际值 -->
     <div class="popup"
       v-if='showChangeRealityProcessPopup'>
       <div class="main"
         style="min-width:1000px">
         <div class="title">
-          <span class="text">填写实际分配值</span>
+          <span class="text">填写实际值</span>
           <span class="el-icon-close"
             @click="showChangeRealityProcessPopup = false"></span>
         </div>
@@ -810,7 +812,7 @@
               <span class="tb_row flex08">单价(元)</span>
               <span class="tb_row flex08">分配数量</span>
               <span class="tb_row flex08">总价(元)</span>
-              <span class="tb_row flex12 middle">实际分配数量</span>
+              <span class="tb_row flex12 middle">实际数量</span>
             </div>
             <div class="tb_content"
               v-for="(item,index) in processLog"
@@ -848,6 +850,17 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='+$route.params.orderType'
+            :showType='deductPopupType'
+            :logType='[5]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
           <div class="btn btnBlue"
             @click="$router.push('/weavingProcessing/weavingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到织造分配</div>
           <div class="btn btnGray"
@@ -913,7 +926,11 @@ export default {
       checkAll: false,
       flatMaterial: [], // 物料展平的数据
       showChangeRealityProcessPopup: false,
-      processLog: []
+      processLog: [],
+      // 扣款数据
+      deductPopupType: true,
+      deductPopupFlag: false,
+      clientArr: []
     }
   },
   watch: {
@@ -929,6 +946,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     changeRealityWeaveNumber () {
       this.processLog = this.$clone(this.process_log)
       this.showChangeRealityProcessPopup = true
@@ -941,7 +961,7 @@ export default {
         }
       })
       if (data.length === 0) {
-        this.$message.warning('未改动实际分配数量，无需提交')
+        this.$message.warning('未改动实际数量，无需提交')
         return
       }
       processing.setRealityNumber({
@@ -1525,6 +1545,13 @@ export default {
         this.process_log = res[4].data.data.map((item) => {
           item.check = false
           return item
+        })
+        this.clientArr = this.$unique(res[4].data.data, 'client_id').map(item => {
+          return {
+            client_id: item.client_id,
+            client_name: item.client_name,
+            type: 5
+          }
         })
         this.process_detail = this.$mergeData(this.process_log, { mainRule: ['client_name', 'client_id'] })
         // 根据分配日志统计一下分配数量
