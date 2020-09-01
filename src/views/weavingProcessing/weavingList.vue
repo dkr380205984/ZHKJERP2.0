@@ -123,12 +123,12 @@
             </div>
             <div class="col flex12">
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.product>0,'green':itemOrder.product_weave_progress.product>=100}">
+                :class="{'orange':itemOrder.production_weave_progress.product>0,'green':itemOrder.production_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.product_weave_progress.semi_product>0,'green':itemOrder.product_weave_progress.semi_product>=100}">
+                :class="{'orange':itemOrder.production_weave_progress.semi_product>0,'green':itemOrder.production_weave_progress.semi_product>=100}">
                 <div class="state"></div>
                 <span class="name">加</span>
               </div>

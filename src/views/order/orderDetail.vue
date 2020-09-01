@@ -1680,27 +1680,32 @@ export default {
         this.productProgInfo.push(
           {
             name: '物料进度',
-            isCompiled: orderData.material_push_progress.r_push > 100 && orderData.material_order_progress.y_percent > 100,
+            isCompiled: orderData.material_push_progress.r_push >= 100 && orderData.material_push_progress.r_pop >= 100,
             info: [
               {
                 name: '入库',
                 prog: orderData.material_push_progress.r_push > 100 ? 100 : orderData.material_push_progress.r_push,
                 class: 'greenProg'
+              },
+              {
+                name: '出库',
+                prog: orderData.material_push_progress.r_pop > 100 ? 100 : orderData.material_push_progress.r_pop,
+                class: 'blueProg'
               }
-              // , {
-              //   name: '订购',
-              //   prog: orderData.material_order_progress.y_percent > 100 ? 100 : orderData.material_order_progress.y_percent,
-              //   class: 'blueProg'
-              // }
             ]
           },
           {
             name: '生产进度',
-            isCompiled: orderData.product_weave_progress.product > 100,
+            isCompiled: orderData.product_push_progress >= 100 && orderData.product_push_progress >= 100,
             info: [
               {
-                name: '分配',
-                prog: orderData.product_weave_progress.product > 100 ? 100 : orderData.product_weave_progress.product,
+                name: '入库',
+                prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
+                class: 'blueProg'
+              },
+              {
+                name: '回库',
+                prog: orderData.semi_push_progress > 100 ? 100 : orderData.semi_push_progress,
                 class: 'blueProg'
               }
             ]
@@ -1733,11 +1738,11 @@ export default {
           // },
           {
             name: '出库进度',
-            isCompiled: orderData.order_pack_progress > 100,
+            isCompiled: orderData.pack_real_progress >= 100,
             info: [
               {
                 name: '装箱',
-                prog: orderData.order_pack_progress > 100 ? 100 : orderData.order_pack_progress || 0,
+                prog: orderData.pack_real_progress > 100 ? 100 : orderData.pack_real_progress || 0,
                 class: 'blueProg'
               }
             ]
