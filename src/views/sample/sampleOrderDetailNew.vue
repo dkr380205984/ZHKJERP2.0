@@ -1487,22 +1487,22 @@ export default {
             name: '入库',
             prog: sampleOrderData.material_push_progress.r_push > 100 ? 100 : sampleOrderData.material_push_progress.r_push,
             class: 'greenProg'
-          }, {
-            name: '订购',
-            prog: sampleOrderData.material_order_progress.y_percent > 100 ? 100 : sampleOrderData.material_order_progress.y_percent,
-            class: 'blueProg'
+            // }, {
+            //   name: '订购',
+            //   prog: sampleOrderData.material_order_progress.y_percent > 100 ? 100 : sampleOrderData.material_order_progress.y_percent,
+            //   class: 'blueProg'
           }
         ]
-      }, {
-        name: '织造进度',
-        isCompiled: sampleOrderData.product_weave_progress.product > 100,
-        info: [
-          {
-            name: '分配',
-            prog: sampleOrderData.product_weave_progress.product > 100 ? 100 : sampleOrderData.product_weave_progress.product,
-            class: 'blueProg'
-          }
-        ]
+        // }, {
+        //   name: '织造进度',
+        //   isCompiled: sampleOrderData.product_weave_progress.product > 100,
+        //   info: [
+        //     {
+        //       name: '分配',
+        //       prog: sampleOrderData.product_weave_progress.product > 100 ? 100 : sampleOrderData.product_weave_progress.product,
+        //       class: 'blueProg'
+        //     }
+        //   ]
       })
       this.getFinanceDetail()
     },
