@@ -59,7 +59,10 @@
       </div>
     </div>
     <div class="module"
-      v-loading="loadingTop">
+      v-loading="loadingTop"
+      element-loading-text="正在加载数据，请耐心等待。等待期间，请不要刷新页面或者关闭页面。"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)">
       <div class="listHead">
         <div class="box">
           <div class="boxTop">打样数量</div>

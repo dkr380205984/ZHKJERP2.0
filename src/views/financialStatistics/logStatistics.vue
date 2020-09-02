@@ -91,6 +91,7 @@
                     v-model="group_id"
                     @change="changeRouter(1)"
                     placeholder="搜索小组名称查询"
+                    :disabled="order_type === 0"
                     clearable
                     filterable>
                     <el-option v-for="item in groupList"
@@ -300,6 +301,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -512,6 +514,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -687,6 +690,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -884,6 +888,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -1057,6 +1062,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -1633,10 +1639,9 @@
                 <div class="content">{{$formatNum(statistics.semi_product_inspection.rejects_number)}}</div>
               </div>
             </div>
-          </el-tab-pane>
-          <el-tab-pane v-if="false"
-            label="成品检验"
-            name="成品检验">
+          </el-tab-pane> -->
+          <!-- <el-tab-pane label="成品加工"
+            name="成品加工">
             <div class="filterCtn">
               <div class="leftCtn">
                 <span class="label">筛选条件：</span>
@@ -1673,8 +1678,7 @@
                   @click="reset">重置</div>
               </div>
             </div>
-            <div class="list"
-              v-if="type==='成品检验'">
+            <div class="list">
               <div class="title">
                 <div class="col flex07">
                   <el-checkbox v-model="checkAll">全选</el-checkbox>
@@ -1713,7 +1717,7 @@
                     @change="$forceUpdate()"></el-checkbox>
                 </div>
                 <div class="col">
-                  <span class="text">{{item.created_at.slice(0,10)}}</span>
+                  <span class="text">{{item.created_at}}</span>
                 </div>
                 <div class="col">
                   <span class="text">{{item.order_code}}</span>
@@ -1750,8 +1754,7 @@
                 </div>
               </div>
             </div>
-            <div class="statistics"
-              v-if="type==='成品检验'">
+            <div class="statistics">
               <div class="oneBox">
                 <div class="label">数量:</div>
                 <div class="content">{{$formatNum(statistics.product_inspection.total_number)}}</div>
@@ -3081,18 +3084,18 @@ export default {
           }
           this.loading = false
         })
-      } else if (this.type === '成品检验') {
+      } else if (this.type === '成品加工') {
         inspection.finishedDetail({
           order_type: null,
           order_id: null,
           limit: 10,
-          page: this.pages,
-          order_code: this.order_code,
-          product_code: this.product_code,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user,
-          group_id: this.group_id
+          page: this.pages
+          // order_code: this.order_code,
+          // product_code: this.product_code,
+          // start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          // end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          // operate_user: this.operate_user,
+          // group_id: this.group_id
         }).then((res) => {
           this.list = res.data.data
           this.list.forEach((item) => {
