@@ -399,6 +399,7 @@
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
+                  :disabled="order_type === 0"
                   placeholder="搜索小组名称查询"
                   clearable
                   filterable>
@@ -717,6 +718,7 @@
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
+                  :disabled="order_type === 0"
                   placeholder="搜索小组名称查询"
                   clearable
                   filterable>
@@ -902,6 +904,7 @@
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
+                  :disabled="order_type === 0"
                   placeholder="搜索小组名称查询"
                   clearable
                   filterable>
@@ -1086,6 +1089,7 @@
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
+                  :disabled="order_type === 0"
                   placeholder="搜索小组名称查询"
                   clearable
                   filterable>
@@ -2014,6 +2018,58 @@
             @click="$router.go(-1)">返回</div>
           <div class="btn btnOrange"
             @click="$router.push('/client/clientUpdate/' + $route.params.id)">修改</div>
+          <div class="btn btnBlue"
+            @click="openDownLoadAllProp">导出所有相关日志</div>
+        </div>
+      </div>
+    </div>
+    <!-- 导出所有日志窗口-->
+    <div class="popup"
+      v-if="isDownLoading">
+      <div class="centerMain">
+        <div class="item">
+          <el-date-picker v-model="year"
+            style="width:100%"
+            value-format="yyyy"
+            type="year"
+            placeholder="选择导出年份"
+            :disabled="isDownLoading > 1">
+          </el-date-picker>
+        </div>
+        <div class="item"
+          v-for="(item,index) in downLoadInfoArr"
+          :key="index"
+          :class="{
+            'blue':item.isGetting === 2 && isDownLoading === 2,
+            'red':item.isGetting === 3,
+            'green':item.isGetting === 4
+          }">
+          <div>
+            <el-checkbox v-model="item.checked"
+              :disabled="isDownLoading > 1"></el-checkbox>
+            {{item.name}}
+          </div>
+          <div>
+            {{(item.isGetting === 1 || item.isGetting === 2) ? `${item.propgress || 0}%` : ''}}
+            <div :class="{
+              'el-icon-loading':item.isGetting === 2 && isDownLoading === 2,
+              'blue':item.isGetting === 2 && isDownLoading === 2,
+              'el-icon-error':item.isGetting === 3,
+              'red':item.isGetting === 3,
+              'el-icon-success':item.isGetting === 4,
+              'green':item.isGetting === 4,
+              'orange':item.isGetting === 5
+            }">{{item.isGetting === 5 ? '无相关日志' : ''}}</div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="isDownLoading = 0">关闭</div>
+          <div class="btn btnBlue"
+            v-if="isDownLoading === 1"
+            @click="downloadAllInfo">开始</div>
+          <div class="btn btnBlue"
+            v-if="isDownLoading === 2">进行中<span class="el-icon-loading"></span></div>
         </div>
       </div>
     </div>
@@ -2021,6 +2077,7 @@
 </template>
 
 <script>
+import { downloadExcel } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
 import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, statistics } from '@/assets/js/api.js'
 export default {
@@ -2120,10 +2177,602 @@ export default {
       orderOprList: [],
       // 2020-09-01新增修改数据
       group_id: '',
-      groupList: []
+      groupList: [],
+      // 导出所有数据
+      year: '',
+      isDownLoading: 0, // 导出状态 0窗口关闭1窗口打开2正在导出3导出完毕
+      downLoadInfoArr: []
     }
   },
   methods: {
+    downloadAllInfo () {
+      if (!this.year) {
+        this.$message.warning('请选择导出数据年份')
+        return
+      }
+      this.isDownLoading = 2
+      this.downLoadInfoArr.forEach(item => {
+        if (item.checked) {
+          this.getAllLog(item)
+        }
+      })
+    },
+    openDownLoadAllProp () {
+      this.year = new Date().getFullYear().toString()
+      this.downLoadInfoArr = []
+      if (this.clientInfo.type.some(itemS => (itemS >= 1 && itemS <= 2))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '订单',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        }, {
+          checked: true,
+          name: '样单',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 3 && itemS <= 6))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '物料订购调取',
+          isGetting: 2, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 3 && itemS <= 4))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '物料预订购',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 9 && itemS <= 12))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '物料加工',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 13 && itemS <= 14))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '织造分配',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 15 && itemS <= 28))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '半成品加工',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '包装订购',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 37 && itemS <= 38))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '销售出库',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      this.downLoadInfoArr.push({
+        checked: true,
+        name: '扣款',
+        isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+        propgress: 0 // 进度
+      }, {
+        checked: true,
+        name: '结算',
+        isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+        propgress: 0 // 进度
+      })
+      this.isDownLoading = 1
+    },
+    getAllLog (item = {}, data = [], page = 1, total, limit = 50) {
+      item.isGetting = 1
+      item.propgress = this.$toFixed(page / Math.ceil(total / limit) * 100)
+      if (item.name === '订单') {
+        statistics.orderList({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data)
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '订单编号', key: 'order_code' },
+                { title: '下单日期', key: 'order_time' },
+                { title: '订单公司', key: 'client_name' },
+                { title: '负责小组', key: 'group_name' },
+                { title: '下单数量', key: 'order_number' },
+                { title: '下单总额', key: 'total_price' },
+                { title: '出库数量', key: 'pack_number' },
+                { title: '实际总值', key: 'reality_number' },
+                { title: '工厂成本', key: 'company_cost' },
+                { title: '结算记录', key: 'settle_number' },
+                { title: '扣款记录', key: 'deduct_number' },
+                { title: '创建人', key: 'user_name' }
+              ], false, `订单-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '样单') {
+        statistics.sampleList({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data)
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '样单编号', key: 'order_code' },
+                { title: '下单日期', key: 'order_time' },
+                { title: '订单公司', key: 'client_name' },
+                { title: '负责小组', key: 'group_name' },
+                { title: '打样数量', key: 'numbers' },
+                { title: '客户付费', key: 'client_pay' },
+                { title: '工厂成本', key: 'company_cost' }
+              ], false, `样单-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '物料订购调取') {
+        materialManage.detail({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.type_source_name = (item.type_source === 2 ? '订购' : '调取') + (item.replenish_id ? '/补纱' : '')
+              item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'create_time' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '物料名称', key: 'material_name' },
+                { title: '属性', key: 'color_code' },
+                { title: '来源类型', key: 'type_source_name' },
+                { title: '公司名称', key: 'client_name' },
+                { title: '单价(元)', key: 'price' },
+                { title: '下单数量', key: 'weight' },
+                { title: '交货数量', key: 'reality_push_weight' },
+                { title: '总价(元)', key: 'total_price' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' },
+                { title: '采购日期', key: 'complete_time' }
+              ], false, `物料订购调取-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '物料预定购') {
+        materialOrder.allLog({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data)
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '订购日期', key: 'order_time' },
+                { title: '纱线单位', key: 'client_name' },
+                { title: '物料名称', key: 'material_name' },
+                { title: '物料颜色', key: 'color_code' },
+                { title: '物料价格', key: 'price' },
+                { title: '入库数量', key: 'weight' },
+                { title: '入库仓库', key: 'stock_name' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' },
+                { title: '操作时间', key: 'create_time' }
+              ], false, `物料预订购入库-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '物料加工') {
+        materialProcess.detail({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.total_price = this.$toFixed(item.price * (Number(item.reality_push_weight) || item.weight))
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'create_time' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '加工单位', key: 'client_name' },
+                { title: '物料名称', key: 'material_name' },
+                { title: '属性', key: 'material_color' },
+                { title: '工序', key: 'process_type' },
+                { title: '单价(元)', key: 'price' },
+                { title: '下单数量', key: 'weight' },
+                { title: '交货数量', key: 'reality_push_weight' },
+                { title: '总价(元)', key: 'total_price' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' },
+                { title: '下单日期', key: 'complete_time' }
+              ], false, `物料加工-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '织造分配') {
+        weave.detail({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map((item) => {
+              item.product_code = item.product_info.code
+              item.sizeColor = item.size_name + '/' + item.color_name
+              item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'created_at' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '出入库单位', key: 'client_name' },
+                { title: '产品编号', key: 'product_code' },
+                { title: '尺码颜色', key: 'sizeColor' },
+                { title: '单价(元)', key: 'price' },
+                { title: '分配数量', key: 'number' },
+                { title: '实际数量', key: 'reality_number' },
+                { title: '总价(元)', key: 'total_price' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' },
+                { title: '分配日期', key: 'complete_time' }
+              ], false, `织造分配-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '半成品加工') {
+        processing.detail({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map((item) => {
+              item.product_code = item.product_info.product_code
+              item.sizeColor = item.size + '/' + item.color
+              item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'created_at' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '出入库单位', key: 'client_name' },
+                { title: '加工类型', key: 'type' },
+                { title: '产品编号', key: 'product_code' },
+                { title: '尺码颜色', key: 'sizeColor' },
+                { title: '单价(元)', key: 'price' },
+                { title: '分配数量', key: 'number' },
+                { title: '实际数量', key: 'reality_number' },
+                { title: '总价(元)', key: 'total_price' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' },
+                { title: '分配日期', key: 'complete_time' }
+              ], false, `半成品加工-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '包装订购') {
+        packPlan.packOrderLog({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.pack_size = item.price_square ? JSON.parse(item.size).join('*') : item.pack_size
+              item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'order_time' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '订购单位', key: 'client_name' },
+                { title: '包装辅料', key: 'material_name' },
+                { title: '单价', key: 'price' },
+                { title: '下单数量', key: 'number' },
+                { title: '交货数量', key: 'reality_number' },
+                { title: '总价', key: 'total_price' },
+                { title: '规格', key: 'pack_size' },
+                { title: '属性', key: 'attribute' },
+                { title: '备注', key: 'desc' },
+                { title: '创建人', key: 'user_name' }
+              ], false, `包装订购-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '销售出库') {
+        packPlan.outMarketLog({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.category_type = [item.category_info.category_name, item.category_info.type_name, item.category_info.style_name].join('/')
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '出库日期', key: 'complete_time' },
+                { title: '销售单位', key: 'client_name' },
+                { title: '销售产品', key: 'product_code' },
+                { title: '产品类型', key: 'category_type' },
+                { title: '尺码', key: 'size_name' },
+                { title: '颜色', key: 'color_name' },
+                { title: '销售数量', key: 'number' },
+                { title: '销售单价', key: 'price' },
+                { title: '价格说明', key: 'price_remark' },
+                { title: '总价', key: 'total_price' },
+                { title: '备注', key: 'desc' }
+              ], false, `销售出库-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '扣款') {
+        chargebacks.log({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.order_code_str = item.order_code.map(itemM => itemM.order_code).join(';')
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '扣款日期', key: 'complete_time' },
+                { title: '扣款编号', key: 'deduct_code' },
+                { title: '扣款单位', key: 'client_name' },
+                { title: '包含订单', key: 'category_type' },
+                { title: '扣款金额', key: 'deduct_price' },
+                { title: '操作人', key: 'user_name' }
+              ], false, `扣款-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      } else if (item.name === '结算') {
+        settle.log({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.order_code_str = item.order_code.map(itemM => itemM.order_code).join(';')
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '结算日期', key: 'complete_time' },
+                { title: '结算编号', key: 'settle_code' },
+                { title: '结算单位', key: 'client_name' },
+                { title: '包含订单', key: 'category_type' },
+                { title: '结算金额', key: 'settle_price' },
+                { title: '操作人', key: 'user_name' }
+              ], false, `结算-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
+      }
+    },
     goSettleDeductDetail (item) {
       this.$router.push('/financialStatistics/oprDetail/' + this.$route.params.id + '/' + this.typeNum + '/' + item.id + '/' + item.methods + '?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)
     },
@@ -2605,7 +3254,7 @@ export default {
   watch: {
     type (newVal) {
       this.group_id = ''
-      if (newVal === '所有订单') {
+      if (newVal === '所有订单' || newVal === '包装订购' || newVal === '物料预定购' || newVal === '销售出库' || newVal === '装箱出库') {
         this.order_type = 1
       } else {
         this.order_type = 0
@@ -2616,6 +3265,27 @@ export default {
       this.list.forEach(item => {
         item.checked = newVal
       })
+      // },
+      // downLoadInfoArr: {
+      //   deep: true,
+      //   handler (newVal) {
+      //     if (this.isDownLoading === 2) {
+      //       if (!newVal.filter(itemF => itemF.checked).map(item => item.isGetting).includes(1)) {
+      //         this.isDownLoading = 3
+      //       }
+      //     }
+      //   }
+    },
+    downLoadInfoArr: {
+      deep: true,
+      handler (newVal) {
+        if (this.isDownLoading === 2) {
+          const arr = this.downLoadInfoArr.filter(itemF => itemF.checked).map(itemM => itemM.isGetting)
+          if (!arr.includes(1) && !arr.includes(2)) {
+            this.isDownLoading = 3
+          }
+        }
+      }
     }
   },
   computed: {

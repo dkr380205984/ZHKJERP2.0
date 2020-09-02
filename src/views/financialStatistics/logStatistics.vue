@@ -91,6 +91,7 @@
                     v-model="group_id"
                     @change="changeRouter(1)"
                     placeholder="搜索小组名称查询"
+                    :disabled="order_type === 0"
                     clearable
                     filterable>
                     <el-option v-for="item in groupList"
@@ -300,6 +301,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -512,6 +514,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -687,6 +690,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -884,6 +888,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
@@ -1057,6 +1062,7 @@
                   <el-select class="filter_item"
                     v-model="group_id"
                     @change="changeRouter(1)"
+                    :disabled="order_type === 0"
                     placeholder="搜索小组名称查询"
                     clearable
                     filterable>
