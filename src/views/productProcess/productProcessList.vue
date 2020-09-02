@@ -104,7 +104,7 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/productProcess/productProcessDetail/' + itemOrder.id)">成品加工</span>
+                @click="$saveHistoryOrder(itemOrder);$router.push('/productProcess/productProcessDetail/' + itemOrder.id)">成品加工</span>
             </div>
           </div>
         </div>
@@ -119,6 +119,7 @@
         </div>
       </div>
     </div>
+    <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
   </div>
 </template>
 

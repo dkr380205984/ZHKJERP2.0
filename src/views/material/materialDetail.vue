@@ -476,52 +476,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module"
-      v-if="replenishList.length>0">
-      <div class="titleCtn">
-        <span class="title">{{type==='1'?'原':'辅'}}料补充</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="flexTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
-                  <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
-                  <div class="tcolumn">补充数量</div>
-                  <div class="tcolumn">已补数量</div>
-                  <div class="tcolumn">操作</div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="item in replenishList"
-                  :key="item.id">
-                  <div class="tcolumn">{{item.material_name}}</div>
-                  <div class="tcolumn">{{item.material_color}}</div>
-                  <div class="tcolumn">{{item.need_weight}}</div>
-                  <div class="tcolumn">{{item.order_weight}}</div>
-                  <div class="tcolumn"
-                    style="flex-direction:row;line-height:54px;justify-content:start">
-                    <a href="#order"
-                      class="blue"
-                      @click="normalOrder(item.material_name,item.material_color,item.id,item.need_weight-item.order_weight,true)">订购</a>
-                    <span class="border"
-                      style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
-                      v-if="type==='1'"></span>
-                    <span class="blue"
-                      @click="supplyStock(item.material_name,item.material_color,item.need_weight-item.order_weight, item.id)"
-                      v-if="type==='1'">调取</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="module"
       id="process">
       <div class="titleCtn">
@@ -993,42 +947,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module">
-      <div class="titleCtn">
-        <span class="title">结余入库日志</span>
-      </div>
-      <div class="detailCtn">
-        <div class="rowCtn">
-          <div class="normalTb"
-            style="width:100%">
-            <div class="thead">
-              <div class="trow">
-                <div class="tcolumn">入库时间</div>
-                <div class="tcolumn">原料名称</div>
-                <div class="tcolumn">原料颜色</div>
-                <div class="tcolumn">入库数量</div>
-                <div class="tcolumn">入库仓库</div>
-                <div class="tcolumn">操作人</div>
-              </div>
-            </div>
-            <div class="tbody"
-              v-if="stock_list.length>0">
-              <div class="trow"
-                v-for="(item,index) in stock_list[stockDefault].childrenMergeInfo"
-                :key="index">
-                <div class="tcolumn">{{item.stock_name}}</div>
-                <div class="tcolumn">{{item.material_color}}</div>
-                <div class="tcolumn">{{item.total_weight}}</div>
-                <div class="tcolumn">
-                  <span class="blue"
-                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id)">调取</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="popup"
       v-show="easyOrderFlag">
       <div class="main">

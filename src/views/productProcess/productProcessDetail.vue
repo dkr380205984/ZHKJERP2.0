@@ -639,6 +639,7 @@
         </div>
       </div>
     </div>
+    <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
   </div>
 </template>
 

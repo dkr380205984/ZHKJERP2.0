@@ -772,6 +772,7 @@
         </div>
       </div>
     </div>
+    <history-pendant prefix="/receiveDispatch/jysf"></history-pendant>
   </div>
 </template>
 

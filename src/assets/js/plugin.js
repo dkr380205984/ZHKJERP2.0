@@ -480,8 +480,21 @@ const getZHTimeFormat = (time = false) => {
   const day = (new Date(plugin.getTime(time)).getTime() - new Date(plugin.getTime()).getTime()) / 1000 / 60 / 60 / 24
   return `${plugin.getTime(time)}<br />剩余${day >= 0 ? day : 0}天`
 }
+const saveHistoryOrder = (orderInfo) => {
+  let curTime = new Date()
+  orderInfo.outOfDate = new Date(curTime.setHours(curTime.getHours() + 12))
+  let local = JSON.parse(window.localStorage.getItem('orderHistory')) || []
+  local = local.filter((item) => {
+    return (new Date(item.outOfDate)) > (new Date())
+  })
+  if (!local.find((itemFind) => itemFind.id === orderInfo.id)) {
+    local.push(orderInfo)
+    window.localStorage.setItem('orderHistory', JSON.stringify(local))
+  }
+}
 export default {
   install (Vue) {
+    Vue.prototype.$saveHistoryOrder = saveHistoryOrder
     Vue.prototype.$getDataType = plugin.getDataType
     Vue.prototype.$winReload = plugin.winReload
     Vue.prototype.$openUrl = plugin.openUrl
