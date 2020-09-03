@@ -107,7 +107,7 @@ export default {
       })
     ]).then(res => {
       this.orderInfo = res[0].data.data
-      this.packOrderInfo = res[1].data.data.filter(item => item.client_id.toString() === this.printInfo.clientId && this.$getTime(item.order_time) === this.$getTime(this.printInfo.time))
+      this.packOrderInfo = res[1].data.data.filter(item => ((item.client_id.toString() === this.printInfo.clientId) && (this.$getTime(item.deliver_time) === this.$getTime(this.printInfo.time))))
       this.printInfo.clientName = this.packOrderInfo[0].client_name
       this.total_price = (this.packOrderInfo.map(item => Number(item.total_price)).length > 0) ? (this.packOrderInfo.map(item => Number(item.total_price)).reduce((a, b) => a + b)) : 0
       this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + '包装辅料订购单')

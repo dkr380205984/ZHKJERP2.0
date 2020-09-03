@@ -81,7 +81,7 @@ export default {
             icon: 'icon-chanpinjianyan'
           },
           {
-            name: '装箱计划',
+            name: '装箱计划订购',
             id: 11,
             path: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
             icon: 'icon-jincangdan'

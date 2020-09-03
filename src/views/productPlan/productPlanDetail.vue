@@ -162,7 +162,7 @@
                 v-for="(item,index) in orderList"
                 :key="index"
                 style="margin:4px 0">
-                <el-radio :label="item.id">{{item.order_code}}</el-radio>
+                <el-radio :label="item.id">{{`${item.order_code}--${item.client_name}--${item.order_time}`}}</el-radio>
               </el-radio-group>
             </template>
             <template v-else>
@@ -171,7 +171,7 @@
           </div>
         </div>
         <div class="opr">
-          <div class="btn btnGary"
+          <div class="btn btnGray"
             @click="showOrderListFlag = false">取消</div>
           <div class="btn btnBlue"
             @click="goMaterialPlan(checkedOrderId)">确定</div>

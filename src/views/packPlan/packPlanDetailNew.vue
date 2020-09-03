@@ -84,7 +84,7 @@
       <div class="titleCtn rightBtn">
         <div class="title">装箱信息</div>
         <div class="btn btnBlue"
-          v-if="+activePlanId && status !== 2"
+          v-if="+activePlanId && activePlanInfo.status !== 2"
           @click="showConFirmPackInfoPopup = true">确认实际装箱</div>
       </div>
       <div class="detailCtn">
@@ -186,14 +186,14 @@
             </div>
           </div>
         </div>
-        <template v-if="status !== 2">
+        <template v-if="activePlanInfo.status !== 2">
           <div class="rowCtn col"
-            v-for="(itemType,indexType) in planPackInfo"
+            v-for="(itemType,indexType) in activePlanInfo.packPlanInfo"
             :key="indexType">
             <span class="label">装箱类型{{chinaNum[indexType]}}
               <span class="tbBtn red"
                 style="font-size:16px"
-                @click="deleteItem(planPackInfo,indexType)">删除</span>
+                @click="deleteItem(activePlanInfo.packPlanInfo,indexType)">删除</span>
             </span>
             <div class="flexTb">
               <span class="leftBtn el-icon-d-arrow-left"
@@ -384,7 +384,7 @@
           <div class="rowCtn col">
             <div class="addRows">
               <div class="once"
-                @click="addItem(planPackInfo,'type')">+添加装箱类型</div>
+                @click="addItem(activePlanInfo.packPlanInfo,'type')">+添加装箱类型</div>
             </div>
           </div>
         </template>
@@ -421,25 +421,33 @@
             </div>
           </div>
         </template>
+        <div class="rowCtn col"
+          style="width:200px">
+          <span class="label">计划单名称</span>
+          <el-input placeholder="请输入计划单名称"
+            :disabled="activePlanInfo.status === 2"
+            v-model="activePlanInfo.title">
+          </el-input>
+        </div>
         <div class="rowCtn col">
           <span class="label">其他备注</span>
           <el-input type="textarea"
             :autosize="{ minRows: 5, maxRows: 8}"
             placeholder="请输入内容"
-            :disabled="status === 2"
-            v-model="remark">
+            :disabled="activePlanInfo.status === 2"
+            v-model="activePlanInfo.remark">
           </el-input>
         </div>
         <div class="rowCtn col">
           <span class="label">包装资料</span>
           <el-upload class="upload"
-            :disabled="status === 2"
+            :disabled="activePlanInfo.status === 2"
             multiple
             action="https://upload.qiniup.com/"
             :before-upload="beforeAvatarUpload"
             :data="postData"
             ref="packagUpload"
-            :file-list="file_arr"
+            :file-list="activePlanInfo.file_arr"
             list-type="picture">
             <div class="uploadBtn">
               <i class="el-icon-upload"></i>
@@ -558,7 +566,7 @@
       </div>
     </div>
     <div class="popup"
-      v-if="showConFirmPackInfoPopup && status !== 2">
+      v-if="showConFirmPackInfoPopup && activePlanInfo.status !== 2">
       <div class="main"
         style="width:800px">
         <div class="title">
@@ -613,12 +621,12 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnRed"
-            v-if="status !== 2"
+            v-if="activePlanInfo.status !== 2"
             @click="deletePackPlan">删除</div>
           <div class="btn btnBlue"
             @click="$openUrl('/packPlanTable/' + $route.params.id + '/' + activePlanId)">打印</div>
           <div class="btn btnBlue"
-            v-if="status !== 2"
+            v-if="activePlanInfo.status !== 2"
             @click="savePackPlan">提交</div>
         </div>
       </div>
@@ -641,8 +649,11 @@ export default {
       orderInfo: {},
       productList: [],
       planTb: [],
-      status: '',
       activePlanId: '',
+      activePlanInfo: {
+        file_arr: [],
+        packPlanInfo: []
+      },
       planPackInfo: [
         {
           product_info: [
@@ -670,9 +681,7 @@ export default {
           remark: ''
         }
       ],
-      remark: '',
       postData: { token: '' },
-      file_arr: [],
       // 进仓单弹窗数据
       showPopup: false,
       popupData: {
@@ -930,7 +939,7 @@ export default {
         vol: true
       }
       let packInfo = []
-      this.planPackInfo.forEach((itemPlan, indexPlan) => {
+      this.activePlanInfo.packPlanInfo.forEach((itemPlan, indexPlan) => {
         itemPlan.product_info.forEach(itemPro => {
           if (!itemPro.product_id) {
             flag.product_id = false
@@ -1115,10 +1124,10 @@ export default {
       let fileArr = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       packPlan.create({
         id: this.activePlanId === 'null' ? null : this.activePlanId,
-        name: this.planTitle,
+        name: this.activePlanInfo.title,
         order_id: this.$route.params.id,
         file_url: fileArr,
-        desc: this.remark,
+        desc: this.activePlanInfo.remark,
         pack_info: packInfo
       }).then(res => {
         if (res.data.status !== false) {
@@ -1180,6 +1189,12 @@ export default {
             remark: itemM.desc,
             create_at: itemM.created_at,
             file_url: itemM.file_url,
+            file_arr: itemM.file_url.map(itemM => {
+              return {
+                name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+                url: itemM
+              }
+            }),
             packPlanInfo: this.$mergeData(itemM.pack_info, { mainRule: 'pack_type', otherRule: [{ name: 'chest_number' }, { name: 'chest_quantity' }, { name: 'gross_weight_chest' }, { name: 'gross_weight_total' }, { name: 'net_weight_chest' }, { name: 'net_weight_total' }, { name: 'extent_width_height' }, { name: 'bulk' }, { name: 'total_bulk' }, { name: 'desc' }], childrenName: 'product_info' }).map(itemType => {
               return {
                 product_info: itemType.product_info.map(itemPro => {
@@ -1234,33 +1249,15 @@ export default {
         }).then(() => {
           let indexNull = this.planTb.findIndex(itemF => itemF.id === 'null')
           this.planTb.splice(indexNull, 1)
-          let item = this.planTb[index]
-          this.remark = item.remark
-          this.planTitle = item.title
-          this.activePlanId = item.id.toString()
-          this.file_arr = item.file_url.map(itemM => {
-            return {
-              name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
-              url: itemM
-            }
-          })
-          this.planPackInfo = item.packPlanInfo
+          this.activePlanInfo = this.planTb[index]
+          this.activePlanId = this.activePlanInfo.id.toString()
           this.loading = false
         }).catch(() => {
           this.loading = false
         })
       } else {
-        let item = this.planTb[index]
-        this.remark = item.remark
-        this.activePlanId = item.id.toString()
-        this.file_arr = item.file_url.map(itemM => {
-          return {
-            name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
-            url: itemM
-          }
-        })
-        this.planPackInfo = item.packPlanInfo
-        this.status = item.status
+        this.activePlanInfo = this.planTb[index]
+        this.activePlanId = this.activePlanInfo.id.toString()
         this.loading = false
       }
     },
@@ -1273,22 +1270,12 @@ export default {
         id: 'null',
         remark: '',
         file_url: [],
-        packPlanInfo: []
+        file_arr: [],
+        packPlanInfo: [],
+        title: ''
       }
-      this.$prompt('请输入该计划单名称', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(({ value }) => {
-        obj.title = value
-        this.planTitle = value
-        this.planTb.push(obj)
-        this.cutTb(this.planTb.length - 1)
-      }).catch(() => {
-        obj.title = ''
-        this.planTitle = ''
-        this.planTb.push(obj)
-        this.cutTb(this.planTb.length - 1)
-      })
+      this.planTb.push(obj)
+      this.cutTb(this.planTb.length - 1)
     },
     checkedAll (e) {
       this.totalPlanPackInfo.forEach(item => {
@@ -1384,7 +1371,7 @@ export default {
   },
   computed: {
     totalPlanPackInfo () {
-      return this.planPackInfo.map(itemType => {
+      return this.activePlanInfo.packPlanInfo.map(itemType => {
         return {
           ...itemType,
           product_info: itemType.product_info.map(itemPro => {

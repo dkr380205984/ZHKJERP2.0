@@ -56,7 +56,7 @@
                   <span>{{item.numbers ? item.numbers : 0}}件</span>
                   <span style="color:#1A94FF">{{item.order_time}}</span>
                 </span>
-                <span class="tb_row flex3">
+                <span class="tb_row flex3 middle">
                   <div class="progress_item">
                     <el-progress type="circle"
                       color="#1A94FF"
@@ -81,7 +81,8 @@
                       :show-text='false'></el-progress>
                     <span class="inner_icon stock"></span>
                   </div>
-                  <div class="progress_item">
+                  <div class="progress_item"
+                    v-if="item.order_type !== 2">
                     <el-progress type="circle"
                       color="#1A94FF"
                       :percentage="item.product_weave_progress.product ? (item.product_weave_progress.product > 100 ? 100 : item.product_weave_progress.product) : 0"
@@ -89,7 +90,8 @@
                       :show-text='false'></el-progress>
                     <span class="inner_icon weave"></span>
                   </div>
-                  <div class="progress_item">
+                  <div class="progress_item"
+                    v-if="item.order_type !== 2">
                     <el-progress type="circle"
                       color="#1A94FF"
                       :percentage="item.product_push_progress ? (item.product_push_progress > 100 ? 100 : item.product_push_progress) : 0"
@@ -97,7 +99,7 @@
                       :show-text='false'></el-progress>
                     <span class="inner_icon receive_dispatch"></span>
                   </div>
-                  <div class="progress_item"
+                  <!-- <div class="progress_item"
                     v-if="item.order_type !== 2">
                     <el-progress type="circle"
                       color="#1A94FF"
@@ -105,7 +107,7 @@
                       :stroke-width='10'
                       :show-text='false'></el-progress>
                     <span class="inner_icon inspection"></span>
-                  </div>
+                  </div> -->
                   <div class="progress_item"
                     v-if="item.order_type !== 2">
                     <el-progress type="circle"

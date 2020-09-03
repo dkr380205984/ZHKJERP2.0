@@ -266,7 +266,8 @@ export default {
       },
       zhujia_info: [],
       letterArr: letterArr,
-      bottomArr: [[]]
+      bottomArr: [[]],
+      weftCmp: ''
     }
   },
   methods: {
@@ -442,6 +443,7 @@ export default {
       return array
     },
     init (data) {
+      console.log(data)
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.weftCmp = this.warpInfo.weight_calculate_formula
@@ -974,7 +976,7 @@ export default {
             warpOrWeft: ''
           })
         }
-        this.init(this.$clone(res.data.data))
+        this.init(this.$clone(data))
         this.getColour(this.$route.params.colorIndex)
         // setTimeout(() => {
         //   window.print()

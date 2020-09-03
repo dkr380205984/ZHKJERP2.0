@@ -199,11 +199,11 @@
                 <div class="state"></div>
                 <span class="name">收</span>
               </div>
-              <div class="stateCtn"
+              <!-- <div class="stateCtn"
                 :class="{'orange':itemOrder.product_inspection_progress.r_product>0,'green':itemOrder.product_inspection_progress.r_product>=100}">
                 <div class="state"></div>
                 <span class="name">检</span>
-              </div>
+              </div> -->
               <div class="stateCtn"
                 :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>

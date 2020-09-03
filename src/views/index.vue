@@ -60,6 +60,9 @@
           <i class="el-icon-setting elIcon"
             v-show="haveSet"
             @click="$router.push('/setting/setting')"></i>
+          <i class="el-icon-s-data elIcon"
+            v-show="haveSet"
+            @click="$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')"></i>
           <div class="headImg">{{userName.charAt(userName.length-1)}}</div>
           <div class="selectCtn">
             <el-dropdown @command="commondHandler"

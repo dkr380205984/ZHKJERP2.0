@@ -174,6 +174,13 @@
                       @click="handleGoStock">结余入库</span>
                   </div> -->
                 </div>
+                <div class="trow"
+                  v-if="statistic_data.length === 0">
+                  <span class="tcolumn"
+                    style="flex-direction:row;justify-content:center;align-items: center;">该订单没有计划{{type==='1'?'原':'辅'}}料，请先计划{{type==='1'?'原':'辅'}}料<span class='blue'
+                      style="margin-left:16px"
+                      @click="$router.push(`/materialPlan/materialPlanUpdate/${$route.params.id}/${$route.params.orderType}`)">去计划</span></span>
+                </div>
               </div>
             </div>
           </div>

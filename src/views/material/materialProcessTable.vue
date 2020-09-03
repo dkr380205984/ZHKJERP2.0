@@ -56,7 +56,7 @@
               <span class="row_item noBorder left">{{itemColor.process_type}}</span>
               <span class="row_item noBorder left">{{$toFixed(itemColor.price) || 0}}元/{{$route.params.type === '1' ? 'kg' : (itemColor.unit || '个')}}</span>
               <span class="row_item noBorder left">{{$toFixed(itemColor.number) || 0}}{{$route.params.type === '1' ? 'kg' : (itemColor.unit || '个')}}</span>
-              <span class="row_item noBorder left">{{$getTime(itemColor.complete_time)}}</span>
+              <span class="row_item noBorder left">{{itemColor.deliver_time ? $getTime(itemColor.deliver_time) : '/'}}</span>
             </div>
           </template>
         </template>
@@ -105,12 +105,12 @@ export default {
           })
         ]).then(res => {
           this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
-          let processInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
+          let processInfo = res[1].data.data.filter(item => (item.client_name === this.$route.query.clientName) && (+item.type === +this.$route.params.type))
           if (this.$route.query.logId) {
             let logId = this.$route.query.logId.split('-')
             processInfo = processInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
           }
-          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'process_type' }] } }).map(item => {
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item
           })
@@ -135,12 +135,12 @@ export default {
           })
         ]).then(res => {
           this.orderInfo = this.$getDataType(res[0].data.data) === 'Object' ? [res[0].data.data] : res[0].data.data
-          let processInfo = res[1].data.data.filter(item => item.client_name === this.$route.query.clientName)
+          let processInfo = res[1].data.data.filter(item => (item.client_name === this.$route.query.clientName) && (+item.type === +this.$route.params.type))
           if (this.$route.query.logId) {
             let logId = this.$route.query.logId.split('-')
             processInfo = processInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
           }
-          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'complete_time' }, { name: 'process_type' }] } }).map(item => {
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item
           })

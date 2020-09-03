@@ -2282,7 +2282,7 @@ export default {
       })
       this.isDownLoading = 1
     },
-    getAllLog (item = {}, data = [], page = 1, total, limit = 50) {
+    getAllLog (item = {}, data = [], total, page = 1, limit = 50) {
       item.isGetting = 1
       item.propgress = this.$toFixed(page / Math.ceil(total / limit) * 100)
       if (item.name === '订单') {
@@ -2516,7 +2516,7 @@ export default {
           }
           if (res.data.status !== false) {
             data.push(...res.data.data.map((item) => {
-              item.product_code = item.product_info.code
+              item.product_code = item.product_info.product_code
               item.sizeColor = item.size_name + '/' + item.color_name
               item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
               return item
@@ -2584,7 +2584,7 @@ export default {
                 { title: '总价(元)', key: 'total_price' },
                 { title: '备注', key: 'desc' },
                 { title: '创建人', key: 'user_name' },
-                { title: '分配日期', key: 'complete_time' }
+                { title: '分配日期', key: 'complete' }
               ], false, `半成品加工-${this.year}年度-${new Date().getTime()}`)
               item.isGetting = 4
             } else {
@@ -2714,8 +2714,9 @@ export default {
                 { title: '扣款日期', key: 'complete_time' },
                 { title: '扣款编号', key: 'deduct_code' },
                 { title: '扣款单位', key: 'client_name' },
-                { title: '包含订单', key: 'category_type' },
+                { title: '包含订单', key: 'order_code_str' },
                 { title: '扣款金额', key: 'deduct_price' },
+                { title: '扣款原因', key: 'desc' },
                 { title: '操作人', key: 'user_name' }
               ], false, `扣款-${this.year}年度-${new Date().getTime()}`)
               item.isGetting = 4
@@ -2754,8 +2755,9 @@ export default {
                 { title: '结算日期', key: 'complete_time' },
                 { title: '结算编号', key: 'settle_code' },
                 { title: '结算单位', key: 'client_name' },
-                { title: '包含订单', key: 'category_type' },
+                { title: '包含订单', key: 'order_code_str' },
                 { title: '结算金额', key: 'settle_price' },
+                { title: '备注信息', key: 'desc' },
                 { title: '操作人', key: 'user_name' }
               ], false, `结算-${this.year}年度-${new Date().getTime()}`)
               item.isGetting = 4

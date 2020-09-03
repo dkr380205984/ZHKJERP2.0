@@ -2656,7 +2656,7 @@ export default {
           { title: '总价(元)', key: 'total_price' },
           { title: '备注', key: 'desc' },
           { title: '创建人', key: 'user_name' },
-          { title: '分配日期', key: 'complete_time' }
+          { title: '分配日期', key: 'complete' }
         ])
       } else if (this.type === '织造入库') {
         let data = this.checkList.map((item) => {
@@ -3452,7 +3452,7 @@ export default {
               { title: '总价(元)', key: 'total_price' },
               { title: '备注', key: 'desc' },
               { title: '创建人', key: 'user_name' },
-              { title: '分配日期', key: 'complete_time' }
+              { title: '分配日期', key: 'complete' }
             ])
             this.downloading = false
           } else {

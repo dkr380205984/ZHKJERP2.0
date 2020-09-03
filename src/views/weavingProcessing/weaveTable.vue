@@ -239,7 +239,7 @@ export default {
                 color_id: item.color_id,
                 price: item.price,
                 number: item.number,
-                compiled_time: this.$getTime(item.complete_time),
+                compiled_time: item.deliver_time ? this.$getTime(item.deliver_time) : '',
                 process_type: '织造',
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
@@ -292,7 +292,7 @@ export default {
                 color_id: item.color_id,
                 price: item.price,
                 number: item.number,
-                compiled_time: this.$getTime(item.complete_time),
+                compiled_time: item.deliver_time ? this.$getTime(item.deliver_time) : '',
                 process_type: item.type,
                 sizeInfo: sizeInfo
               }
@@ -375,7 +375,7 @@ export default {
                 color_id: item.color_id,
                 price: item.price,
                 number: item.number,
-                compiled_time: this.$getTime(item.complete_time),
+                compiled_time: item.deliver_time ? this.$getTime(item.deliver_time) : '',
                 process_type: '织造',
                 sizeInfo: sizeInfo,
                 material_info: item.material_assign
@@ -428,7 +428,7 @@ export default {
                 color_id: item.color_id,
                 price: item.price,
                 number: item.number,
-                compiled_time: this.$getTime(item.complete_time),
+                compiled_time: item.deliver_time ? this.$getTime(item.deliver_time) : '',
                 process_type: item.type,
                 sizeInfo: sizeInfo
               }

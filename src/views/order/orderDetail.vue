@@ -235,9 +235,6 @@
                 @click="orderDetailInfo.production.length>0?(showFlag2.showWeave=!showFlag2.showWeave):getProductionDetail()">{{showFlag2.showWeave?'收起列表':'展开详情'}}</div>
               <div class="opr"
                 v-if="index===2"
-                @click="orderDetailInfo.inspection.length>0?(showFlag2.showIns=!showFlag2.showIns):getInspectionDetail()">{{showFlag2.showIns?'收起列表':'展开详情'}}</div>
-              <div class="opr"
-                v-if="index===3"
                 @click="orderDetailInfo.outStock.length>0?(showFlag2.showOut=!showFlag2.showOut):getOutStockDetail()">{{showFlag2.showOut?'收起列表':'展开详情'}}</div>
             </div>
             <div class="hideCtn">
@@ -375,57 +372,7 @@
                   </div>
                 </div>
               </template>
-              <template v-if="index===2&&showFlag2.showIns">
-                <div class="flexTb">
-                  <div class="thead">
-                    <span class="trow">
-                      <span class="tcolumn">产品信息</span>
-                      <span class="tcolumn flex5 noPad">
-                        <span class="trow">
-                          <span class="tcolumn">尺码颜色</span>
-                          <span class="tcolumn">半成品检验</span>
-                          <span class="tcolumn">次品数量</span>
-                          <span class="tcolumn">成品检验</span>
-                          <span class="tcolumn">次品数量</span>
-                        </span>
-                      </span>
-                    </span>
-                  </div>
-                  <div class="tbody">
-                    <span class="trow"
-                      v-for="(item,index) in orderDetailInfo.inspection"
-                      :key="index">
-                      <span class="tcolumn">{{item.product_code}}<br />{{item.type.join('/')}}</span>
-                      <span class="tcolumn noPad flex5">
-                        <span class="trow"
-                          v-for="(itemSize,indexSize) in item.color_info"
-                          :key="indexSize">
-                          <span class="tcolumn">{{itemSize.size + '/' + itemSize.color}}</span>
-                          <span class="tcolumn green">{{itemSize.semi_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn">{{itemSize.semi_rejects_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn green">{{itemSize.finished_number || 0}}{{item.unit || '件'}}</span>
-                          <span class="tcolumn">{{itemSize.finished_rejects_number || 0}}{{item.unit || '件'}}</span>
-                        </span>
-                      </span>
-                    </span>
-                    <span class="extra">
-                      <div class="label">相关页面：</div>
-                      <div class="link"
-                        style="margin-left:4px">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/inspection/semiFinishedDetail/'+ $route.params.id )">半成品检验</span>
-                      </div>
-                      <div class="link">
-                        <i class="el-icon-tickets"
-                          style="color:#1a95ff"></i>
-                        <span @click="$router.push('/inspection/finishedDetail/'+ $route.params.id )">成品检验</span>
-                      </div>
-                    </span>
-                  </div>
-                </div>
-              </template>
-              <template v-if="index===3&&showFlag2.showOut">
+              <template v-if="index===2&&showFlag2.showOut">
                 <div class="flexTb">
                   <div class="thead">
                     <span class="trow">
@@ -1710,32 +1657,6 @@ export default {
               }
             ]
           },
-          // {
-          //   name: '收发进度',
-          //   isCompiled: orderData.product_push_progress > 100,
-          //   info: [
-          //     {
-          //       name: '收发',
-          //       prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // },
-          // {
-          //   name: '检验进度',
-          //   isCompiled: orderData.product_inspection_progress.r_product > 100 && orderData.product_inspection_progress.r_semi_product > 100,
-          //   info: [
-          //     {
-          //       name: '成品',
-          //       prog: orderData.product_inspection_progress.r_product > 100 ? 100 : orderData.product_inspection_progress.r_product,
-          //       class: 'greenProg'
-          //     }, {
-          //       name: '半成品',
-          //       prog: orderData.product_inspection_progress.r_semi_product > 100 ? 100 : orderData.product_inspection_progress.r_semi_product,
-          //       class: 'blueProg'
-          //     }
-          //   ]
-          // },
           {
             name: '出库进度',
             isCompiled: orderData.pack_real_progress >= 100,
