@@ -1620,7 +1620,7 @@ export default {
         item.check = false
         return item
       })
-      this.clientArr = this.$unique(res[3].data.data, 'client_id').map(item => {
+      this.clientArr = this.$unique([].concat(res[3].data.data, res[5].data.data.material_process_client, res[5].data.data.material_order_client), 'client_id').map(item => {
         return {
           client_id: item.client_id,
           client_name: item.client_name,

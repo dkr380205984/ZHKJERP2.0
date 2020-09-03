@@ -396,6 +396,12 @@
                   @change="getList(1)"
                   placeholder="输入物料名称查询">
                 </el-input>
+                <el-input class="filter_item"
+                  :disabled="order_type === 0"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
@@ -715,6 +721,12 @@
                   @change="getList(1)"
                   placeholder="输入物料名称查询">
                 </el-input>
+                <el-input class="filter_item"
+                  :disabled="order_type === 0"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
@@ -901,6 +913,12 @@
                   @change="getList(1)"
                   placeholder="输入产品编号查询">
                 </el-input>
+                <el-input class="filter_item"
+                  :disabled="order_type === 0"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
@@ -1086,6 +1104,12 @@
                   @change="getList(1)"
                   placeholder="输入产品编号查询">
                 </el-input>
+                <el-input class="filter_item"
+                  :disabled="order_type === 0"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
                 <el-select class="filter_item"
                   v-model="group_id"
                   @change="getList(1)"
@@ -1257,6 +1281,12 @@
                   v-model="material_name"
                   @change="getList(1)"
                   placeholder="输入物料名称查询">
+                </el-input>
+                <el-input class="filter_item"
+                  :disabled="order_type === 0"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
                 </el-input>
                 <el-select class="filter_item"
                   v-model="group_id"
@@ -1947,9 +1977,9 @@
           </el-timeline>
           <div class="row">
             <span class="label">合计结算：</span>
-            <span class="info green">{{oprListCom.settle}}元</span>
+            <span class="info green">{{$toFixed(oprListCom.settle)}}元</span>
             <span class="label">合计扣款：</span>
-            <span class="info red">{{oprListCom.chargebacks}}元</span>
+            <span class="info red">{{$toFixed(oprListCom.chargebacks)}}元</span>
           </div>
         </div>
         <div class="opr">
@@ -2776,7 +2806,7 @@ export default {
       }
     },
     goSettleDeductDetail (item) {
-      this.$router.push('/financialStatistics/oprDetail/' + this.$route.params.id + '/' + this.typeNum + '/' + item.id + '/' + item.methods + '?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)
+      this.$router.push('/financialStatistics/oprDetail/' + this.$route.params.id + '/' + item.type + '/' + item.id + '/' + item.methods + '?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)
     },
     init () {
       Promise.all([
@@ -2881,6 +2911,7 @@ export default {
           page: this.pages,
           stock_id: this.stock_id,
           order_type: this.order_type,
+          order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.$route.params.id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
@@ -3182,12 +3213,12 @@ export default {
     getSettleChargbacksLog () {
       Promise.all([
         chargebacks.log({
-          client_id: this.$route.params.id,
-          order_type: this.order_type
+          client_id: this.$route.params.id
+          // order_type: this.order_type
         }),
         settle.log({
-          client_id: this.$route.params.id,
-          order_type: this.order_type
+          client_id: this.$route.params.id
+          // order_type: this.order_type
         })
       ]).then(res => {
         this.oprList = res[0].data.data.map((item) => {

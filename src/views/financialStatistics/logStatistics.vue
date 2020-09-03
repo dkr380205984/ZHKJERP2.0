@@ -77,6 +77,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入物料名称查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -99,18 +105,6 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
                   <div class="resetBtn"
                     @click="reset">重置</div>
                 </div>
@@ -138,6 +132,18 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
                 </div>
               </div>
               <div class="rightCtn"
@@ -288,6 +294,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入物料名称查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -310,18 +322,6 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
                   <div class="resetBtn"
                     @click="reset">重置</div>
                 </div>
@@ -338,6 +338,18 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
                 </div>
               </div>
               <div class="rightCtn"
@@ -487,20 +499,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入物料名称查询">
                   </el-input>
-                  <el-select class="filter_item"
-                    v-model="operate_type"
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
                     @change="changeRouter(1)"
-                    placeholder="操作类型查询"
-                    clearable>
-                    <el-option label="出库"
-                      value="1"></el-option>
-                    <el-option label="入库"
-                      value="2"></el-option>
-                    <el-option label="最终入库"
-                      value="3"></el-option>
-                    <el-option label="织造出库"
-                      value="4"></el-option>
-                  </el-select>
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -529,6 +533,20 @@
                 <div class="filter_line"
                   :class="openHiddleFilter ? false : 'hiddle'">
                   <el-select class="filter_item"
+                    v-model="operate_type"
+                    @change="changeRouter(1)"
+                    placeholder="操作类型查询"
+                    clearable>
+                    <el-option label="出库"
+                      value="1"></el-option>
+                    <el-option label="入库"
+                      value="2"></el-option>
+                    <el-option label="最终入库"
+                      value="3"></el-option>
+                    <el-option label="织造出库"
+                      value="4"></el-option>
+                  </el-select>
+                  <el-select class="filter_item"
                     v-model="operate_user"
                     @change="changeRouter(1)"
                     placeholder="搜索创建人查询"
@@ -552,6 +570,12 @@
                     @change="changeRouter(1)">
                   </el-date-picker>
                 </div>
+              </div>
+              <div class="rightCtn"
+                @click="openHiddleFilter = !openHiddleFilter">
+                {{openHiddleFilter ? '收起' : '展开'}}
+                <span class="el-icon-arrow-down openIcon"
+                  :class="openHiddleFilter ? 'active' : false"></span>
               </div>
             </div>
             <div class="list"
@@ -677,6 +701,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入产品编号查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -699,18 +729,6 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
                   <div class="resetBtn"
                     @click="reset">重置</div>
                 </div>
@@ -727,6 +745,18 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
                 </div>
               </div>
               <div class="rightCtn"
@@ -875,6 +905,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入物料名称查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -897,18 +933,6 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
                   <div class="resetBtn"
                     @click="reset">重置</div>
                 </div>
@@ -925,6 +949,18 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
                 </div>
               </div>
               <div class="rightCtn"
@@ -1049,6 +1085,12 @@
                     @change="changeRouter(1)"
                     placeholder="输入产品编号查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    :disabled="order_type === 0"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -1071,18 +1113,6 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
                   <div class="resetBtn"
                     @click="reset">重置</div>
                 </div>
@@ -1099,6 +1129,18 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
                 </div>
               </div>
               <div class="rightCtn"
@@ -1776,6 +1818,11 @@
                     @change="changeRouter(1)"
                     placeholder="输入物料名称查询">
                   </el-input>
+                  <el-input class="filter_item"
+                    v-model="order_code"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
+                  </el-input>
                   <el-cascader v-model="client_id"
                     class="filter_item"
                     :show-all-levels='false'
@@ -1797,6 +1844,11 @@
                       :label="item.name"
                       :value="item.id"></el-option>
                   </el-select>
+                  <div class="resetBtn"
+                    @click="reset">重置</div>
+                </div>
+                <div class="filter_line"
+                  :class="openHiddleFilter ? false : 'hiddle'">
                   <el-select class="filter_item"
                     v-model="operate_user"
                     @change="changeRouter(1)"
@@ -1820,9 +1872,13 @@
                     end-placeholder="结束日期"
                     @change="changeRouter(1)">
                   </el-date-picker>
-                  <div class="resetBtn"
-                    @click="reset">重置</div>
                 </div>
+              </div>
+              <div class="rightCtn"
+                @click="openHiddleFilter = !openHiddleFilter">
+                {{openHiddleFilter ? '收起' : '展开'}}
+                <span class="el-icon-arrow-down openIcon"
+                  :class="openHiddleFilter ? 'active' : false"></span>
               </div>
             </div>
             <div class="list"
@@ -1938,9 +1994,16 @@
                 <span class="label">筛选条件：</span>
                 <div class="filter_line">
                   <el-input class="filter_item"
+                    style="width:180px"
                     v-model="product_code"
                     @change="changeRouter(1)"
                     placeholder="输入产品编号查询">
+                  </el-input>
+                  <el-input class="filter_item"
+                    style="width:180px"
+                    v-model="order_code"
+                    @change="changeRouter(1)"
+                    placeholder="输入关联编号查询">
                   </el-input>
                   <el-select class="filter_item"
                     v-model="group_id"
@@ -2523,6 +2586,7 @@ export default {
       this.product_code = ''
       this.product_type = ''
       this.order_type = 0
+      this.order_code = ''
       this.operate_user = ''
       this.material_name = ''
       this.group_id = ''
@@ -2844,6 +2908,7 @@ export default {
       this.client_id = params.client_id.split(',')
       this.product_code = params.product_code
       this.order_type = Number(params.order_type)
+      this.order_code = params.order_code
       this.product_type = params.product_type
       this.operate_user = params.operate_user
       this.material_name = this.$strToAscII(params.material_name, true)
@@ -2853,7 +2918,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id + '&&operate_type=' + this.operate_type + '&&group_id=' + this.group_id)
+      this.$router.push('/financialStatistics/logStatistics/page=' + pages + '&&type=' + this.type + '&&date=' + this.date + '&&client_id=' + this.client_id + '&&product_code=' + this.product_code + '&&order_type=' + this.order_type + '&&order_code=' + this.order_code + '&&production_type=' + this.production_type + '&&operate_user=' + this.operate_user + '&&material_name=' + this.$strToAscII(this.material_name) + '&&stock_id=' + this.stock_id + '&&operate_type=' + this.operate_type + '&&group_id=' + this.group_id)
     },
     rejectsDetail (detail) {
       this.rejects_info = detail
@@ -2874,6 +2939,7 @@ export default {
           page: this.pages,
           stock_id: this.stock_id,
           order_type: this.order_type,
+          order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
@@ -3220,6 +3286,7 @@ export default {
           page: page,
           stock_id: this.stock_id,
           order_type: this.order_type,
+          order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
