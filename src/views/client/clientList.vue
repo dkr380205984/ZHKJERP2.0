@@ -194,7 +194,7 @@
             <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price_invoice)}}元</div>
             <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price)}}元</div>
             <div class="col flex08">{{$formatNum(itemClient.financial_data.wait_settle_price)}}元</div>
-            <div class="col flex08">{{$formatNum(itemClient.financial_data.deduct_price)}}元</div>
+            <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.deduct_price))}}元</div>
             <div class="col middle flex12">
               <span class="opr"
                 @click="$router.push('/client/clientDetail/' + itemClient.id)">详情</span>

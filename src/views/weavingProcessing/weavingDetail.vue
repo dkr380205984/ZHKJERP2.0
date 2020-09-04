@@ -701,7 +701,7 @@
                   :value="item.name"
                   :label="item.name"></el-option>
               </el-select>
-              <el-input style="margin-left:5px"
+              <el-input style="margin-left:5px;max-width:50%"
                 v-model="item.weight"
                 placeholder="请输入重量">
                 <template slot="append">kg</template>
@@ -969,7 +969,7 @@
           <zh-deduct :orderId='+$route.params.id'
             :orderType='+$route.params.orderType'
             :showType='deductPopupType'
-            :logType='[4]'
+            :logType='[4,99]'
             :clientList="clientArr"
             v-model="deductPopupFlag">
             <div class="btn btnWhiteBlue"
@@ -1425,10 +1425,6 @@ export default {
         client_name: data.client_name,
         id: data.client_id,
         percent: ''
-      }, {
-        client_name: '本厂',
-        id: null,
-        percent: ''
       }]
       this.replenish_data.replenishClientId = data.client_id
       this.replenish_flag = true
@@ -1487,7 +1483,7 @@ export default {
       })
     },
     deleteReplenishLog (id, index) {
-      this.$confirm('请确认是否删除该日志', '提示', {
+      this.$confirm('请确认是否删除该日志,删除后,请删除相应的扣款记录', '提示', {
         confirmButtonText: '确定删除',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1508,7 +1504,7 @@ export default {
           replenish.delete({
             id: [id]
           }).then((res) => {
-            if (res.data.status) {
+            if (res.data.status !== false) {
               this.$message({
                 type: 'success',
                 message: '删除成功!请刷新页面后查看补纱信息变化'

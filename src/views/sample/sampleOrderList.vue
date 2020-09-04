@@ -249,7 +249,22 @@
             <div class="col">{{itemOrder.number}}</div>
             <div class="col">{{itemOrder.group_name}}</div>
             <div class="col">
-              <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
+              <div class="stateCtn"
+                :class="{'green':itemOrder.has_plan===1}">
+                <div class="state"></div>
+                <span class="name">计</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
+                <div class="state"></div>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
+                <div class="state"></div>
+                <span class="name">出</span>
+              </div>
+              <!-- <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
                 <div class="state"></div>
                 <span class="name">计</span>
               </div>
@@ -264,7 +279,7 @@
               <div :class="{'stateCtn':true,'orange':itemOrder.production_weave_progress.product>0 ,'green':itemOrder.production_weave_progress.product>=100}">
                 <div class="state"></div>
                 <span class="name">织</span>
-              </div>
+              </div> -->
             </div>
             <div class="col">
               <div :class="{'stateCtn':true, 'rowFlex':true, 'red':itemOrder.status === 3003,'green':itemOrder.status === 3004,'blue':itemOrder.status === 3002,'orange':itemOrder.status === 3001}">
@@ -616,8 +631,6 @@ export default {
             group_name: item.group_name,
             deliver_time: item.deliver_time,
             has_plan: item.has_plan,
-            material_order_progress: item.material_order_progress,
-            production_weave_progress: item.production_weave_progress,
             material_push_progress: item.material_push_progress
           }
         })

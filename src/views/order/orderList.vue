@@ -640,10 +640,10 @@ export default {
             }]
           }).reduce((total, item) => {
             return total.concat(item)
-          })
+          }, [])
           item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
             return Number(total) + Number(itemNum)
-          })
+          }, 0)
           return item
         })
         this.total = res.data.meta.total

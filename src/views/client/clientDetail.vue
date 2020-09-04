@@ -103,7 +103,7 @@
         <div class="box">
           <div class="boxTop red">已扣款</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.deduct_price}}</span>
+            <span class="num">{{$toFixed(clientInfo.financial_data.deduct_price)}}</span>
             <span class="em">元</span>
           </div>
         </div>

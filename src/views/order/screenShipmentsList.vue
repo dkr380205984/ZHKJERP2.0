@@ -63,15 +63,17 @@
                       :percentage="item.has_plan > 0 ? 100 : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
-                    <span class="inner_icon order"></span>
+                    <!-- <span class="inner_icon order"></span> -->
+                    <span class="inner_icon">计</span>
                   </div>
                   <div class="progress_item">
                     <el-progress type="circle"
                       color="#1A94FF"
-                      :percentage="item.material_order_progress.y_percent ? (item.material_order_progress.y_percent > 100 ? 100 : item.material_order_progress.y_percent) : 0"
+                      :percentage="item.material_push_progress.r_push ? (item.material_push_progress.r_push > 100 ? 100 : item.material_push_progress.r_push) : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
-                    <span class="inner_icon orderMaterial"></span>
+                    <!-- <span class="inner_icon orderMaterial"></span> -->
+                    <span class="inner_icon">入</span>
                   </div>
                   <div class="progress_item">
                     <el-progress type="circle"
@@ -79,16 +81,8 @@
                       :percentage="item.material_push_progress.r_pop ? (item.material_push_progress.r_pop > 100 ? 100 : item.material_push_progress.r_pop) : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
-                    <span class="inner_icon stock"></span>
-                  </div>
-                  <div class="progress_item"
-                    v-if="item.order_type !== 2">
-                    <el-progress type="circle"
-                      color="#1A94FF"
-                      :percentage="item.product_weave_progress.product ? (item.product_weave_progress.product > 100 ? 100 : item.product_weave_progress.product) : 0"
-                      :stroke-width='10'
-                      :show-text='false'></el-progress>
-                    <span class="inner_icon weave"></span>
+                    <!-- <span class="inner_icon stock"></span> -->
+                    <span class="inner_icon">出</span>
                   </div>
                   <div class="progress_item"
                     v-if="item.order_type !== 2">
@@ -97,7 +91,18 @@
                       :percentage="item.product_push_progress ? (item.product_push_progress > 100 ? 100 : item.product_push_progress) : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
-                    <span class="inner_icon receive_dispatch"></span>
+                    <!-- <span class="inner_icon weave"></span> -->
+                    <span class="inner_icon">检</span>
+                  </div>
+                  <div class="progress_item"
+                    v-if="item.order_type !== 2">
+                    <el-progress type="circle"
+                      color="#1A94FF"
+                      :percentage="item.semi_push_progress ? (item.semi_push_progress > 100 ? 100 : item.semi_push_progress) : 0"
+                      :stroke-width='10'
+                      :show-text='false'></el-progress>
+                    <!-- <span class="inner_icon receive_dispatch"></span> -->
+                    <span class="inner_icon">回</span>
                   </div>
                   <!-- <div class="progress_item"
                     v-if="item.order_type !== 2">
@@ -115,7 +120,8 @@
                       :percentage="item.pack_real_progress ? (item.pack_real_progress > 100 ? 100 : item.pack_real_progress) : 0"
                       :stroke-width='10'
                       :show-text='false'></el-progress>
-                    <span class="inner_icon outBound"></span>
+                    <!-- <span class="inner_icon outBound"></span> -->
+                    <span class="inner_icon">箱</span>
                   </div>
                 </span>
                 <span class="tb_row">{{item.group_name}}</span>
@@ -221,7 +227,6 @@ export default {
         // if (this.pages > Math.ceil(this.filterList[this.orderType ? 'orderCount' : 'sampleCount'] / 10)) {
         //   this.pages = 1
         // }
-        // console.log(this.pages)
       }, time)
     },
     // 判断是否为今日
@@ -241,7 +246,6 @@ export default {
       let useDay = Math.ceil((new Date().getTime() - new Date(orderTime).getTime()) / 1000 / 60 / 60 / 24)
       let dayNumber = Math.floor((new Date().getTime() - new Date(time).getTime()) / 1000 / 60 / 60 / 24)
       let str = dayNumber > 0 ? '逾期' + dayNumber + '天' : dayNumber === 0 ? `今日发货` : `${-dayNumber}天后发货`
-      console.log(str)
       return [useDay, str]
     },
     // 判断是否逾期
@@ -362,10 +366,7 @@ export default {
               delivery_time: item.deliver_time,
               status: item.status,
               has_plan: item.has_plan,
-              material_order_progress: item.material_order_progress,
-              material_push_progress: item.material_push_progress,
-              product_weave_progress: item.product_weave_progress,
-              product_push_progress: item.product_push_progress
+              material_push_progress: item.material_push_progress
             }
           }))
           this.filterList.sample.push(data.splice(0, 10))
