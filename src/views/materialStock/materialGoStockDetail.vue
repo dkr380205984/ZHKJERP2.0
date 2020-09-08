@@ -342,6 +342,7 @@
                   <span class="tb_row flex06">色号</span>
                   <span class="tb_row flex06">批/缸号</span>
                   <span class="tb_row flex06">入库数量</span>
+                  <span class="tb_row middle">操作</span>
                 </span>
               </span>
             </span>
@@ -357,6 +358,10 @@
                   <span class="tb_row flex06">{{itemA.color_code || '/'}}</span>
                   <span class="tb_row flex06">{{itemA.vat_code || '/'}}</span>
                   <span class="tb_row green flex06">{{$toFixed(itemA.total_weight || 0)}}{{itemA.unit || ($route.params.type === '1' ? 'kg' : '个')}}</span>
+                  <span class="tb_row middle">
+                    <span class="tb_handle_btn blue"
+                      @click="goStockAgain(itemM,itemA)">继续入库</span>
+                  </span>
                 </span>
               </span>
             </span>
@@ -757,6 +762,25 @@ export default {
         this.editInfo.push(obj)
       })
       this.$goElView('goStock')
+    },
+    // 入库模块点击继续入库
+    goStockAgain (itemM, itemA) {
+      this.editInfo.push({
+        client_id: '',
+        materialArr: [],
+        isCustomerSupplied: true,
+        material_info: [{
+          material_name: itemM.material_name,
+          attrArr: [],
+          attr_name: itemA.material_color,
+          vat_code: itemA.vat_code,
+          color_code: itemA.color_code,
+          weight: '',
+          unit: itemA.unit || (this.$route.params.type === '1' ? 'kg' : '个')
+        }],
+        time: this.$getTime(),
+        remark: ''
+      })
     },
     querySearchMaterial (queryString, callback, flag = true) { // flag用来规避接口返回空数组时一直回调
       if (this.materialList.length === 0 && flag) {
