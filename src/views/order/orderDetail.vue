@@ -249,7 +249,7 @@
                           <span class="tcolumn">计划数量</span>
                           <span class="tcolumn">采购数量</span>
                           <span class="tcolumn">最终入库</span>
-                          <span class="tcolumn">最终出库</span>
+                          <span class="tcolumn">织造出库</span>
                         </span>
                       </span>
                     </span>
@@ -1714,7 +1714,7 @@ export default {
         })
       ]).then(res => {
         let materialDetail = res[0].data.data.total_data.filter(itemF => itemF.reality_weight > 0)
-        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
+        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 4)
         this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
           return {
             material_name: item.material_name,
@@ -1735,7 +1735,7 @@ export default {
           if (flag) {
             let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
             if (attrFlag) {
-              if (Number(itemMa.type) === 1) {
+              if (Number(itemMa.type) === 4) {
                 attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
               } else if (Number(itemMa.type) === 3) {
                 attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
@@ -1753,7 +1753,7 @@ export default {
                   order_number: 0,
                   process_number: 0,
                   go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
-                  out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
+                  out_stock_number: Number(itemMa.type) === 4 ? this.$toFixed(itemMa.total_weight || 0) : 0
                 }
               ]
             })

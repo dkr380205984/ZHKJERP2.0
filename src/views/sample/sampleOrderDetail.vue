@@ -9,21 +9,6 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
-            <!-- <el-dropdown trigger="click"
-              @command="changeOrderStatus">
-              <div class="btn btnBlue">操作<i class="el-icon-arrow-down el-icon--right"></i></div>
-              <el-dropdown-menu>
-                <el-dropdown-item command='ok'>
-                  <span class="create">确认完成</span>
-                </el-dropdown-item>
-                <el-dropdown-item command='change'>
-                  <span class="updated">修改</span>
-                </el-dropdown-item>
-                <el-dropdown-item command='showCanclePopup'>
-                  <span class="delete">取消订单</span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown> -->
             <div class="btn btnGray"
               style="line-height:36px;"
               @click="changeOrderStatus('showCanclePopup')"
@@ -32,8 +17,6 @@
               style="height:38px;line-height:38px;margin-right:16px"
               @click="changeOrderStatus('waitConfirm')"
               v-if="sampleOrderInfo.status === 3002">待客户确定</div>
-            <!-- <div class="btn btnGray"
-              style="line-height:36px"></div> -->
             <el-menu mode="horizontal">
               <el-menu class="editMenu"
                 mode="horizontal"
@@ -50,22 +33,6 @@
                   <el-menu-item index="ok"
                     class="elMenuItem"
                     v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
-                  <!-- <el-menu-item index="waitConfirm"
-                    class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3002">待客户确认</el-menu-item> -->
-                  <!-- <el-submenu index="1-2"
-                    class="elMenuItem">
-                    <template slot="title">已确认</template>
-                  </el-submenu> -->
-                  <!-- <el-menu-item index="change"
-                    class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">修改样单</el-menu-item> -->
-                  <!-- <el-menu-item index="showCanclePopup"
-                    class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3001 || sampleOrderInfo.status === 3002">取消样单</el-menu-item> -->
-                  <!-- <el-menu-item index="isNoHandle"
-                    class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3003 || sampleOrderInfo.status === 3004">无法操作</el-menu-item> -->
                 </el-submenu>
               </el-menu>
             </el-menu>
@@ -99,16 +66,17 @@
             <span class="label">负责小组：</span>
             <span class="text">{{sampleOrderInfo.group_name}}</span>
           </div>
-          <!-- <div class="colCtn flex3">
-            <span class="label">下单日期：</span>
-            <span class="text">{{sampleOrderInfo.order_time}}</span>
-          </div> -->
         </div>
         <zh-transition :list='sampleOrderArr'
           showKey='showComponentsName'
           @changed='cutSampleOrderInfo'></zh-transition>
       </div>
     </div>
+    <zh-confirm-module title_has_border
+      :orderId="activeSampleOrderId"
+      canChange
+      :orderInfo='sampleOrderInfo'
+      @change="init" />
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">打样信息</span>
@@ -208,454 +176,491 @@
         </div>
       </div>
     </div>
-    <div class="module"
-      v-if="warnData.isOpenWarn">
+    <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">预警详情</span>
+        <span class="title hasBorder">流程进度</span>
       </div>
       <div class="detailCtn">
-        <div class="rowCtn">
+        <div class="rowCtn"
+          style="padding:0 60px"
+          v-if="warnData.isOpenWarn">
           <zh-time-process :processData="warnData.warnArr"
             :handleFlag="false"
             :startTime="warnData.startTime"
             :endTime='warnData.endTime'
             style="width:100%"></zh-time-process>
         </div>
+        <div class="rowCtn"
+          v-if="warnData.isOpenWarn">
+          <div style="height:1px;background:#E9E9E9;width:100%;margin:25px 0"></div>
+        </div>
+        <div class="processCtn">
+          <div class="processOnce showAll"
+            v-for="(item,index) in productProgInfo"
+            :key='index'>
+            <div class="showCtn">
+              <div class="label active">{{item.name}}</div>
+              <div class="lineOut">
+                <div class="lineIn"
+                  v-for="(itemChild,indexChild) in item.info"
+                  :key="indexChild"
+                  :class="{'blue':indexChild===0,'green':indexChild===1}"
+                  :style="{'width':itemChild.prog + '%','z-index':parseInt(100-itemChild.prog)}"></div>
+              </div>
+              <div class="boxCtn"
+                v-for="(itemChild,indexChild) in item.info"
+                :key="indexChild">
+                <div class="box"
+                  :class="{'blue':indexChild===0,'green':indexChild===1}"></div>
+                <div class="text">{{itemChild.name}}</div>
+                <div class="rate">({{itemChild.prog}}%)</div>
+              </div>
+              <div class="opr"
+                v-if="index===0"
+                @click="orderDetailInfo.material.length>0?(showFlag2.showMaterial=!showFlag2.showMaterial):getMaterialDetail()">{{showFlag2.showMaterial?'收起列表':'展开详情'}}</div>
+              <div class="opr"
+                v-if="index===1"
+                @click="orderDetailInfo.production.length>0?(showFlag2.showWeave=!showFlag2.showWeave):getProductionDetail()">{{showFlag2.showWeave?'收起列表':'展开详情'}}</div>
+            </div>
+            <div class="hideCtn">
+              <template v-if="index===0&&showFlag2.showMaterial">
+                <div class="flexTb">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn">物料名称</span>
+                      <span class="tcolumn flex5 noPad">
+                        <span class="trow">
+                          <span class="tcolumn">颜色属性</span>
+                          <span class="tcolumn">计划数量</span>
+                          <span class="tcolumn">采购数量</span>
+                          <span class="tcolumn">最终入库</span>
+                          <span class="tcolumn">织造出库</span>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="tbody">
+                    <span class="trow"
+                      v-for="(item,index) in orderDetailInfo.material"
+                      :key="index">
+                      <span class="tcolumn">{{item.material_name}}</span>
+                      <span class="tcolumn noPad flex5">
+                        <span class="trow"
+                          v-for="(itemAttr,indexAttr) in item.attr_info"
+                          :key="indexAttr">
+                          <span class="tcolumn">{{itemAttr.attr}}</span>
+                          <span class="tcolumn green">{{itemAttr.plan_number}}{{item.unit}}</span>
+                          <span class="tcolumn green">{{itemAttr.order_number}}{{item.unit}}</span>
+                          <span class="tcolumn green">{{itemAttr.go_stock_number || 0}}{{item.unit}}</span>
+                          <span class="tcolumn green">{{itemAttr.out_stock_number || 0}}{{item.unit}}</span>
+                        </span>
+                      </span>
+                    </span>
+                    <span class="extra">
+                      <div class="label">相关页面：</div>
+                      <div class="link"
+                        style="margin-left:4px">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/materialPlan/materialPlanDetail/'+ activeSampleOrderId +'/2')">物料计划</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/1/2/normal')">原料订购加工</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/materialStock/materialStockDetail/'+activeSampleOrderId +'/1/2')">原料出入库</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/material/materialDetail/'+activeSampleOrderId +'/2/2/normal')">辅料订购加工</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/2/2')">辅料出入库</span>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </template>
+              <template v-if="index===1&&showFlag2.showWeave">
+                <div class="flexTb">
+                  <div class="thead">
+                    <span class="trow">
+                      <span class="tcolumn">生产单位</span>
+                      <span class="tcolumn flex5 noPad">
+                        <span class="trow">
+                          <span class="tcolumn">产品信息</span>
+                          <span class="tcolumn">尺码颜色</span>
+                          <span class="tcolumn">生产工序</span>
+                          <span class="tcolumn">分配数量</span>
+                          <span class="tcolumn">收发数量</span>
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                  <div class="tbody">
+                    <span class="trow"
+                      v-for="(item,index) in orderDetailInfo.production"
+                      :key="index">
+                      <span class="tcolumn">{{item.client_name}}</span>
+                      <span class="tcolumn noPad flex5">
+                        <span class="trow"
+                          v-for="(itemPro,indexPro) in item.product_info"
+                          :key="indexPro">
+                          <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                          <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                          <span class="tcolumn">{{itemPro.process_type}}</span>
+                          <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
+                          <span class="tcolumn">
+                            <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
+                            <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                    <span class="extra">
+                      <div class="label">相关页面：</div>
+                      <div class="link"
+                        style="margin-left:4px">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/weavingProcessing/weavingDetail/'+ activeSampleOrderId +'/2')">生产织造</span>
+                      </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push('/weavingProcessing/processingDetail/'+ activeSampleOrderId +'/2')">半成品加工</span>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title hasBorder">流程进度</span>
+        <span class="title hasBorder">财务概览</span>
       </div>
       <div class="detailCtn">
-        <div class="rowCtn">
-          <div class="progress_box">
-            <div class="progress_contact"
-              :style="{width:timeProgressInfo.find(itemTime=>itemTime.name === '今天') ? timeProgressInfo.find(itemTime=>itemTime.name === '今天').prog + '%' : 0}"></div>
-            <div class="timeCtn"
-              v-for="(itemTime,indexTime) in timeProgressInfo"
-              :key="indexTime"
-              :style="{left:itemTime.prog + '%'}">
-              <div class="time">{{itemTime.time}}</div>
-              <div class="line"></div>
-              <div class="time_name">{{itemTime.name}}</div>
-            </div>
+        <div class="flexTb">
+          <div class="thead">
+            <span class="trow">
+              <span class="tcolumn">工序项目</span>
+              <span class="tcolumn flex30 noPad">
+                <span class="trow">
+                  <span class="tcolumn">数量</span>
+                  <span class="tcolumn">总价</span>
+                  <span class="tcolumn">平均价格</span>
+                </span>
+              </span>
+              <span class="tcolumn">操作</span>
+            </span>
+          </div>
+          <div class="tbody">
+            <span class="trow"
+              style="flex-wrap: wrap;"
+              v-for="(item,index) in orderDetailInfo.finance.finance"
+              :key="index">
+              <span class="tcolumn">{{item.name}}</span>
+              <span class="tcolumn noPad flex30">
+                <span class="trow"
+                  v-for="(itemPrice,indexPrice) in item.price_info"
+                  :key="indexPrice">
+                  <span class="tcolumn"
+                    :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.name}}{{itemPrice.number ? itemPrice.number + item.unit : ''}}</span>
+                  <span class="tcolumn green"
+                    :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? itemPrice.total_price + (item.priceUnit ? item.priceUnit : '元') : ''}}</span>
+                  <span class="tcolumn"
+                    :class="{'noData':!itemPrice.pre_price}">{{itemPrice.pre_price ? itemPrice.pre_price + (item.priceUnit ? item.priceUnit : '元') + '' + item.unit: ''}}</span>
+                </span>
+              </span>
+              <span class="tcolumn"
+                style="border-right:0">
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.yarnOrder.length>0?showFlag.showYarnOrder = !showFlag.showYarnOrder : activeFinanceTitle = 'yarnOrder'"
+                  v-if="item.price_info[0].number && index===0">{{showFlag.showYarnOrder?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===0">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.yarnProcess.length>0?showFlag.showYarnProcess = !showFlag.showYarnProcess : activeFinanceTitle = 'yarnProcess'"
+                  v-if="item.price_info[0].number  && index===1">{{showFlag.showYarnProcess?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===1">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.materialOrder.length>0?showFlag.showMaterialOrder = !showFlag.showMaterialOrder : activeFinanceTitle = 'materialOrder'"
+                  v-if="item.price_info[0].number && index===2">{{showFlag.showMaterialOrder?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===2">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.materialProcess.length>0?showFlag.showMaterialProcess = !showFlag.showMaterialProcess : activeFinanceTitle = 'materialProcess'"
+                  v-if="item.price_info[0].number && index===3">{{showFlag.showMaterialProcess?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===3">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.weave.length>0?showFlag.showWeave = !showFlag.showWeave : activeFinanceTitle = 'weave'"
+                  v-if="item.price_info[0].number && index===4">{{showFlag.showWeave?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===4">暂无数据</div>
+                <div style="color:#1a95ff;cursor:pointer"
+                  @click="orderDetailInfo.finance.process.length>0?showFlag.showProcess = !showFlag.showProcess : activeFinanceTitle = 'process'"
+                  v-if="item.price_info[0].number && index===5">{{showFlag.showProcess?'收起列表':'展开详情'}}</div>
+                <div style="color:#ccc;cursor:not-allowed"
+                  v-if="!item.price_info[0].number && index===5">暂无数据</div>
+              </span>
+              <div class="hideTbCtn">
+                <template v-if="index===0 && showFlag.showYarnOrder">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">订购公司</span>
+                        <span class="tcolumn flex5 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">原料名称</span>
+                            <span class="tcolumn">颜色</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn">总价</span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
+                        :key="index">
+                        <span class="tcolumn">
+                          <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
+                          {{item.client_name || item.stock_name}}
+                        </span>
+                        <span class="tcolumn noPad flex5">
+                          <span class="trow"
+                            v-for="(itemMa,indexMa) in item.material_info"
+                            :key="indexMa">
+                            <span class="tcolumn">{{itemMa.material_name}}</span>
+                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===1 && showFlag.showYarnProcess">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">加工单位</span>
+                        <span class="tcolumn flex6 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">原料名称</span>
+                            <span class="tcolumn">颜色</span>
+                            <span class="tcolumn">工序</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn">总价</span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.yarnProcess"
+                        :key="index">
+                        <span class="tcolumn">{{item.client_name}}</span>
+                        <span class="tcolumn noPad flex6">
+                          <span class="trow"
+                            v-for="(itemMa,indexMa) in item.material_info"
+                            :key="indexMa">
+                            <span class="tcolumn">{{itemMa.material_name}}</span>
+                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn">{{itemMa.process_type}}</span>
+                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===2 && showFlag.showMaterialOrder">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">订购公司</span>
+                        <span class="tcolumn flex5 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">原料名称</span>
+                            <span class="tcolumn">颜色</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn">总价</span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.materialOrder"
+                        :key="index">
+                        <span class="tcolumn">
+                          <span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>
+                          {{item.client_name|| item.stock_name}}
+                        </span>
+                        <span class="tcolumn noPad flex5">
+                          <span class="trow"
+                            v-for="(itemMa,indexMa) in item.material_info"
+                            :key="indexMa">
+                            <span class="tcolumn">{{itemMa.material_name}}</span>
+                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===3 && showFlag.showMaterialProcess">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">加工单位</span>
+                        <span class="tcolumn flex6 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">原料名称</span>
+                            <span class="tcolumn">颜色</span>
+                            <span class="tcolumn">工序</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn">总价</span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.materialProcess"
+                        :key="index">
+                        <span class="tcolumn">{{item.client_name}}</span>
+                        <span class="tcolumn noPad flex6">
+                          <span class="trow"
+                            v-for="(itemMa,indexMa) in item.material_info"
+                            :key="indexMa">
+                            <span class="tcolumn">{{itemMa.material_name}}</span>
+                            <span class="tcolumn">{{itemMa.color}}</span>
+                            <span class="tcolumn">{{itemMa.process_type}}</span>
+                            <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
+                            <span class="tcolumn">{{itemMa.compiled_time}}</span>
+                          </span>
+                        </span>
+                        <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===4 && showFlag.showWeave">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">织造单位</span>
+                        <span class="tcolumn flex6 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">产品信息</span>
+                            <span class="tcolumn">尺码颜色</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">总价</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.weave"
+                        :key="index">
+                        <span class="tcolumn">{{item.client_name}}</span>
+                        <span class="tcolumn noPad flex6">
+                          <span class="trow"
+                            v-for="(itemPro,indexPro) in item.product_info"
+                            :key="indexPro">
+                            <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                            <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                            <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                            <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
+                            <span class="tcolumn">{{itemPro.compiled_time}}</span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+                <template v-if="index===5 && showFlag.showProcess">
+                  <div class="flexTb">
+                    <div class="thead">
+                      <span class="trow">
+                        <span class="tcolumn">加工单位</span>
+                        <span class="tcolumn flex7 noPad">
+                          <span class="trow">
+                            <span class="tcolumn">产品信息</span>
+                            <span class="tcolumn">尺码颜色</span>
+                            <span class="tcolumn">工序</span>
+                            <span class="tcolumn">单价</span>
+                            <span class="tcolumn">数量</span>
+                            <span class="tcolumn">总价</span>
+                            <span class="tcolumn">完成时间</span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="tbody">
+                      <span class="trow"
+                        v-for="(item,index) in orderDetailInfo.finance.process"
+                        :key="index">
+                        <span class="tcolumn">{{item.client_name}}</span>
+                        <span class="tcolumn noPad flex7">
+                          <span class="trow"
+                            v-for="(itemPro,indexPro) in item.product_info"
+                            :key="indexPro">
+                            <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
+                            <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
+                            <span class="tcolumn">{{itemPro.process_type}}</span>
+                            <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
+                            <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
+                            <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
+                            <span class="tcolumn">{{itemPro.compiled_time}}</span>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </span>
           </div>
         </div>
-        <div class="rowCtn">
-          <div class="product_prog_box">
-            <div class="prog_title">
-              <span class="title_item_box">
-                下单数：
-                <span class="blue">{{product_order_total_number}}</span>
-                条
-              </span>
-            </div>
-            <div class="prog_item"
-              v-for="(item,index) in productProgInfo"
-              :key='index'>
-              <span class="prog_label">{{item.name}}：</span>
-              <span class="prog_context">
-                <span v-for="(itemInner,indexInner) in item.info"
-                  :key="indexInner"
-                  :class="['prog_context_item',itemInner.class ]"
-                  :style="{'width':itemInner.prog + '%'}">
-                  <span class="endLine">
-                    <span class="endInfo">{{itemInner.name}}({{(Number(itemInner.prog) || 0) + '%'}})</span>
-                  </span>
-                </span>
-              </span>
-              <span class="prog_status"
-                v-if="item.isCompiled">完成</span>
-            </div>
-          </div>
-        </div>
-        <div class="swichCtn">
-          <div :class="['swich',activeDetailTitle === 'material' ? 'active' : '']"
-            @click="catDetail('material')">物料概述</div>
-          <div :class="['swich',activeDetailTitle === 'production' ? 'active' : '']"
-            @click="catDetail('production')">生产概述</div>
-          <div :class="['swich',activeDetailTitle === 'finance' ? 'active' : '']"
-            @click="catDetail('finance')">财务概述</div>
-        </div>
-      </div>
-      <div class="detailCtn">
-        <!-- 物料概述 -->
-        <template v-if="activeDetailTitle === 'material'">
-          <div class="btn_box">
-            <div class="left">
-              <div class="routerBtn"
-                @click="$router.push('/materialPlan/materialPlanDetail/'+ activeSampleOrderId +'/2')">物料计划</div>
-              <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/1/2/noraml')">原料订购加工</div>
-              <div class="routerBtn"
-                @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/1/2')">原料出入库</div>
-              <div class="routerBtn"
-                @click="$router.push('/material/materialDetail/'+ activeSampleOrderId +'/2/2/normal')">辅料订购加工</div>
-              <div class="routerBtn"
-                @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/2/2')">辅料出入库</div>
-            </div>
-            <!-- <div class="right btn btnBlue">确认完成</div> -->
-          </div>
-          <div class="flexTb">
-            <div class="thead">
-              <span class="trow">
-                <span class="tcolumn">物料名称</span>
-                <span class="tcolumn flex5 noPad">
-                  <span class="trow">
-                    <span class="tcolumn">颜色属性</span>
-                    <span class="tcolumn">计划数量</span>
-                    <span class="tcolumn">采购数量</span>
-                    <span class="tcolumn">最终入库</span>
-                    <span class="tcolumn">最终出库</span>
-                  </span>
-                </span>
-              </span>
-            </div>
-            <div class="tbody">
-              <span class="trow"
-                v-for="(item,index) in orderDetailInfo.material"
-                :key="index">
-                <span class="tcolumn">{{item.material_name}}</span>
-                <span class="tcolumn noPad flex5">
-                  <span class="trow"
-                    v-for="(itemAttr,indexAttr) in item.attr_info"
-                    :key="indexAttr">
-                    <span class="tcolumn">{{itemAttr.attr}}</span>
-                    <span class="tcolumn green">{{itemAttr.plan_number}}{{item.unit}}</span>
-                    <span class="tcolumn green">{{itemAttr.order_number}}{{item.unit}}</span>
-                    <span class="tcolumn green">{{itemAttr.go_stock_number || 0}}{{item.unit}}</span>
-                    <span class="tcolumn green">{{itemAttr.out_stock_number || 0}}{{item.unit}}</span>
-                  </span>
-                </span>
-              </span>
-            </div>
-          </div>
-        </template>
-        <!-- 生产概述 -->
-        <template v-else-if="activeDetailTitle === 'production'">
-          <div class="btn_box">
-            <div class="left">
-              <div class="routerBtn"
-                @click="$router.push('/weavingProcessing/weavingDetail/'+ activeSampleOrderId +'/2')">生产织造</div>
-              <div class="routerBtn"
-                @click="$router.push('/weavingProcessing/processingDetail/'+ activeSampleOrderId +'/2')">半成品加工</div>
-            </div>
-            <!-- <div class="right btn btnBlue">确认完成</div> -->
-          </div>
-          <div class="flexTb">
-            <div class="thead">
-              <span class="trow">
-                <span class="tcolumn">生产单位</span>
-                <span class="tcolumn flex5 noPad">
-                  <span class="trow">
-                    <span class="tcolumn">产品信息</span>
-                    <span class="tcolumn">尺码颜色</span>
-                    <span class="tcolumn">生产工序</span>
-                    <span class="tcolumn">分配数量</span>
-                    <span class="tcolumn">收发数量</span>
-                  </span>
-                </span>
-              </span>
-            </div>
-            <div class="tbody">
-              <span class="trow"
-                v-for="(item,index) in orderDetailInfo.production"
-                :key="index">
-                <span class="tcolumn">{{item.client_name}}</span>
-                <span class="tcolumn noPad flex5">
-                  <span class="trow"
-                    v-for="(itemPro,indexPro) in item.product_info"
-                    :key="indexPro">
-                    <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                    <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                    <span class="tcolumn">{{itemPro.process_type}}</span>
-                    <span class="tcolumn green">{{itemPro.number || 0}}{{itemPro.unit || '件'}}</span>
-                    <span class="tcolumn">
-                      <span>入库：<span class="green">{{itemPro.go_number || 0}}{{itemPro.unit || '件'}}</span></span>
-                      <span>出库：<span class="green">{{itemPro.out_number || 0}}{{itemPro.unit || '件'}}</span></span>
-                    </span>
-                  </span>
-                </span>
-              </span>
-            </div>
-          </div>
-        </template>
-        <!-- 财务概述 -->
-        <template v-else-if="activeDetailTitle === 'finance'">
-          <zh-transition :list='orderDetailInfo.finance.title'
-            markId='1'
-            showKey='name'
-            @changed='changeFinance'></zh-transition>
-          <template v-if="activeFinanceTitle === 'finance'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">工序项目</span>
-                  <span class="tcolumn flex30 noPad">
-                    <span class="trow">
-                      <span class="tcolumn right noBorder flex03"></span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">总价</span>
-                      <span class="tcolumn">平均价格</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.finance"
-                  :key="index">
-                  <span class="tcolumn">{{item.name}}</span>
-                  <span class="tcolumn noPad flex30">
-                    <span class="trow"
-                      v-for="(itemPrice,indexPrice) in item.price_info"
-                      :key="indexPrice">
-                      <span class="tcolumn right noBorder flex03">{{itemPrice.name}}</span>
-                      <span class="tcolumn">{{itemPrice.number ? itemPrice.number + item.unit : '/'}}</span>
-                      <span class="tcolumn green">{{itemPrice.total_price ? itemPrice.total_price + '元' : '/'}}</span>
-                      <span class="tcolumn">{{itemPrice.pre_price ? itemPrice.pre_price + '元/' + item.unit: '/'}}</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'yarnOrder'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">订购公司</span>
-                  <span class="tcolumn flex5 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">原料名称</span>
-                      <span class="tcolumn">颜色</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn">总价</span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.yarnOrder"
-                  :key="index">
-                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name || item.stock_name}}</span>
-                  <span class="tcolumn noPad flex5">
-                    <span class="trow"
-                      v-for="(itemMa,indexMa) in item.material_info"
-                      :key="indexMa">
-                      <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.color}}</span>
-                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'yarnProcess'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">加工单位</span>
-                  <span class="tcolumn flex6 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">原料名称</span>
-                      <span class="tcolumn">颜色</span>
-                      <span class="tcolumn">工序</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn">总价</span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.yarnProcess"
-                  :key="index">
-                  <span class="tcolumn">{{item.client_name}}</span>
-                  <span class="tcolumn noPad flex6">
-                    <span class="trow"
-                      v-for="(itemMa,indexMa) in item.material_info"
-                      :key="indexMa">
-                      <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.color}}</span>
-                      <span class="tcolumn">{{itemMa.process_type}}</span>
-                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + 'kg' : '/'}}</span>
-                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'materialOrder'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">订购公司</span>
-                  <span class="tcolumn flex5 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">原料名称</span>
-                      <span class="tcolumn">颜色</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn">总价</span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.materialOrder"
-                  :key="index">
-                  <span class="tcolumn"><span class="green">{{Number(item.type) === 1 ? '调取' : '订购'}}</span>{{item.client_name|| item.stock_name}}</span>
-                  <span class="tcolumn noPad flex5">
-                    <span class="trow"
-                      v-for="(itemMa,indexMa) in item.material_info"
-                      :key="indexMa">
-                      <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.color}}</span>
-                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
-                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'materialProcess'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">加工单位</span>
-                  <span class="tcolumn flex6 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">原料名称</span>
-                      <span class="tcolumn">颜色</span>
-                      <span class="tcolumn">工序</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn">总价</span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.materialProcess"
-                  :key="index">
-                  <span class="tcolumn">{{item.client_name}}</span>
-                  <span class="tcolumn noPad flex6">
-                    <span class="trow"
-                      v-for="(itemMa,indexMa) in item.material_info"
-                      :key="indexMa">
-                      <span class="tcolumn">{{itemMa.material_name}}</span>
-                      <span class="tcolumn">{{itemMa.color}}</span>
-                      <span class="tcolumn">{{itemMa.process_type}}</span>
-                      <span class="tcolumn green">{{itemMa.price ? itemMa.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemMa.number ? itemMa.number + '个' : '/'}}</span>
-                      <span class="tcolumn">{{itemMa.compiled_time}}</span>
-                    </span>
-                  </span>
-                  <span class="tcolumn green">{{item.total_price ? item.total_price + '元' : '/'}}</span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'weave'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">织造单位</span>
-                  <span class="tcolumn flex6 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">产品信息</span>
-                      <span class="tcolumn">尺码颜色</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">总价</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.weave"
-                  :key="index">
-                  <span class="tcolumn">{{item.client_name}}</span>
-                  <span class="tcolumn noPad flex6">
-                    <span class="trow"
-                      v-for="(itemPro,indexPro) in item.product_info"
-                      :key="indexPro">
-                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                      <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
-                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
-                      <span class="tcolumn">{{itemPro.compiled_time}}</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </template>
-          <template v-else-if="activeFinanceTitle === 'process'">
-            <div class="flexTb">
-              <div class="thead">
-                <span class="trow">
-                  <span class="tcolumn">加工单位</span>
-                  <span class="tcolumn flex7 noPad">
-                    <span class="trow">
-                      <span class="tcolumn">产品信息</span>
-                      <span class="tcolumn">尺码颜色</span>
-                      <span class="tcolumn">工序</span>
-                      <span class="tcolumn">单价</span>
-                      <span class="tcolumn">数量</span>
-                      <span class="tcolumn">总价</span>
-                      <span class="tcolumn">完成时间</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div class="tbody">
-                <span class="trow"
-                  v-for="(item,index) in orderDetailInfo.finance.process"
-                  :key="index">
-                  <span class="tcolumn">{{item.client_name}}</span>
-                  <span class="tcolumn noPad flex7">
-                    <span class="trow"
-                      v-for="(itemPro,indexPro) in item.product_info"
-                      :key="indexPro">
-                      <span class="tcolumn">{{itemPro.product_code}}<br />{{itemPro|filterType}}</span>
-                      <span class="tcolumn">{{itemPro.size + '/' + itemPro.color}}</span>
-                      <span class="tcolumn">{{itemPro.process_type}}</span>
-                      <span class="tcolumn green">{{itemPro.price ? itemPro.price + '元' : '/'}}</span>
-                      <span class="tcolumn green">{{itemPro.number ? itemPro.number + (itemPro.unit || '条') : '/'}}</span>
-                      <span class="tcolumn green">{{itemPro.total_price ? $toFixed(itemPro.total_price) + '元' : '/'}}</span>
-                      <span class="tcolumn">{{itemPro.compiled_time}}</span>
-                    </span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </template>
-        </template>
       </div>
     </div>
     <!-- 转产品窗口 -->
@@ -664,7 +669,7 @@
       <div class="main">
         <div class="title">
           <span class="text">样品转产品</span>
-          <span class="el-icon-close"
+          <span class="el-icon-close  "
             @click="closePopup"></span>
         </div>
         <div class="content steps">
@@ -1292,6 +1297,22 @@ export default {
         startTime: this.$getTime(),
         endTime: this.$getTime(),
         warnArr: []
+      },
+      showFlag: {
+        showYarnOrder: false,
+        showYarnProcess: false,
+        showMaterialOrder: false,
+        showMaterialProcess: false,
+        showWeave: false,
+        showProcess: false,
+        showPackOrder: false,
+        showOutStock: false
+      },
+      showFlag2: {
+        showMaterial: false,
+        showWeave: false,
+        showIns: false,
+        showOut: false
       }
     }
   },
@@ -1460,34 +1481,34 @@ export default {
       let sampleOrderData = item
       this.productProgInfo.push({
         name: '物料进度',
-        isCompiled: sampleOrderData.material_push_progress.r_push > 100 && sampleOrderData.material_order_progress.y_percent > 100,
+        isCompiled: sampleOrderData.material_push_progress.r_push > 100 && sampleOrderData.material_push_progress.r_pop > 100,
         info: [
           {
             name: '入库',
             prog: sampleOrderData.material_push_progress.r_push > 100 ? 100 : sampleOrderData.material_push_progress.r_push,
             class: 'greenProg'
           }, {
-            name: '订购',
-            prog: sampleOrderData.material_order_progress.y_percent > 100 ? 100 : sampleOrderData.material_order_progress.y_percent,
+            name: '出库',
+            prog: sampleOrderData.material_push_progress.r_pop > 100 ? 100 : sampleOrderData.material_push_progress.r_pop,
             class: 'blueProg'
+            // }, {
+            //   name: '订购',
+            //   prog: sampleOrderData.material_order_progress.y_percent > 100 ? 100 : sampleOrderData.material_order_progress.y_percent,
+            //   class: 'blueProg'
           }
         ]
-      }, {
-        name: '织造进度',
-        isCompiled: sampleOrderData.product_weave_progress.product > 100,
-        info: [
-          {
-            name: '分配',
-            prog: sampleOrderData.product_weave_progress.product > 100 ? 100 : sampleOrderData.product_weave_progress.product,
-            class: 'blueProg'
-          }
-        ]
+        // }, {
+        //   name: '织造进度',
+        //   isCompiled: sampleOrderData.product_weave_progress.product > 100,
+        //   info: [
+        //     {
+        //       name: '分配',
+        //       prog: sampleOrderData.product_weave_progress.product > 100 ? 100 : sampleOrderData.product_weave_progress.product,
+        //       class: 'blueProg'
+        //     }
+        //   ]
       })
-      if (this.activeDetailTitle === 'material') {
-        this.getMaterialDetail()
-      } else {
-        this.catDetail('material')
-      }
+      this.getFinanceDetail()
     },
     // 物料概述
     getMaterialDetail () {
@@ -1503,7 +1524,7 @@ export default {
         })
       ]).then(res => {
         let materialDetail = res[0].data.data.total_data
-        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 1)
+        let materialStock = res[1].data.data.filter(item => Number(item.type) === 3 || Number(item.type) === 4)
         this.orderDetailInfo.material = this.$mergeData(materialDetail, { mainRule: ['material_name', 'material_type'], otherRule: [{ name: 'unit' }], childrenName: 'attr_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'reality_weight/plan_number', type: 'add' }, { name: 'order_weight/order_number', type: 'add' }, { name: 'process_weight/process_number', type: 'add' }] } }).map(item => {
           return {
             material_name: item.material_name,
@@ -1524,7 +1545,7 @@ export default {
           if (flag) {
             let attrFlag = flag.attr_info.find(item => item.attr === itemMa.material_color)
             if (attrFlag) {
-              if (Number(itemMa.type) === 1) {
+              if (Number(itemMa.type) === 4) {
                 attrFlag.out_stock_number = this.$toFixed((Number(attrFlag.out_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
               } else if (Number(itemMa.type) === 3) {
                 attrFlag.go_stock_number = this.$toFixed((Number(attrFlag.go_stock_number) || 0) + (Number(itemMa.total_weight) || 0))
@@ -1542,12 +1563,18 @@ export default {
                   order_number: 0,
                   process_number: 0,
                   go_stock_number: Number(itemMa.type) === 3 ? this.$toFixed(itemMa.total_weight || 0) : 0,
-                  out_stock_number: Number(itemMa.type) === 1 ? this.$toFixed(itemMa.total_weight || 0) : 0
+                  out_stock_number: Number(itemMa.type) === 4 ? this.$toFixed(itemMa.total_weight || 0) : 0
                 }
               ]
             })
           }
         })
+        this.showFlag2.showMaterial = true
+        if (this.orderDetailInfo.material.length > 0) {
+
+        } else {
+          this.$message.error('暂无物料信息')
+        }
         this.loading = false
       })
     },
@@ -1588,6 +1615,12 @@ export default {
           }
         }))
         this.orderDetailInfo.production = this.$mergeData(productionDetail, { mainRule: ['client_name'], childrenName: 'product_info', childrenRule: { mainRule: ['code/product_code', 'size', 'color', 'process_type'], otherRule: [{ name: 'unit' }, { name: 'name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'number', type: 'add' }, { name: 'go_number', type: 'add' }, { name: 'out_number', type: 'add' }, { name: 'is_part' }] } })
+        this.showFlag2.showWeave = true
+        if (this.orderDetailInfo.production.length > 0) {
+
+        } else {
+          this.$message.error('暂无生产信息')
+        }
         this.loading = false
       })
     },
@@ -1598,26 +1631,19 @@ export default {
         order_id: this.activeSampleOrderId,
         order_type: 2
       }).then(res => {
+        console.log(res)
         if (res.data.status !== false) {
           let data = res.data.data
           this.orderDetailInfo.finance.finance = [
             {
               name: '原料采购',
               unit: 'kg',
-              price_info: [
-                {
-                  name: '调取',
-                  number: data.material_order.stock_number,
-                  total_price: 0,
-                  pre_price: 0
-                },
-                {
-                  name: '订购',
-                  number: data.material_order.order_number.number,
-                  total_price: data.material_order.order_number.total_value,
-                  pre_price: data.material_order.order_number.pre_value
-                }
-              ]
+              price_info: [{
+                name: '实际入库',
+                number: data.material_order.order_number.number || 0,
+                total_price: data.material_order.order_number.total_value,
+                pre_price: data.material_order.order_number.pre_value
+              }]
             },
             {
               name: '原料加工',
@@ -2337,39 +2363,45 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.init()
   },
   watch: {
-    activeDetailTitle (newVal) {
-      if (this.orderDetailInfo[newVal].length === 0) {
-        if (newVal === 'material') {
-          this.getMaterialDetail()
-        } else if (newVal === 'production') {
-          this.getProductionDetail()
-        } else {
-          this.$message.error('未知操作')
-        }
-      } else if (newVal === 'finance') {
-        this.changeFinance({ key: 'finance' })
-      }
-    },
+    // activeDetailTitle (newVal) {
+    //   if (this.orderDetailInfo[newVal].length === 0) {
+    //     if (newVal === 'material') {
+    //       this.getMaterialDetail()
+    //     } else if (newVal === 'production') {
+    //       this.getProductionDetail()
+    //     } else {
+    //       this.$message.error('未知操作')
+    //     }
+    //   } else if (newVal === 'finance') {
+    //     this.changeFinance({ key: 'finance' })
+    //   }
+    // },
     activeFinanceTitle (newVal) {
       if (this.orderDetailInfo.finance[newVal].length === 0) {
         if (newVal === 'finance') {
           this.getFinanceDetail()
         } else if (newVal === 'yarnOrder') {
           this.getMaterialOrderDetail()
+          this.showFlag.showYarnOrder = true
         } else if (newVal === 'yarnProcess') {
           this.getMaterialProcessDetail()
+          this.showFlag.showYarnProcess = true
         } else if (newVal === 'materialOrder') {
           this.getMaterialOrderDetail()
+          this.showFlag.showMaterialOrder = true
         } else if (newVal === 'materialProcess') {
           this.getMaterialProcessDetail()
+          this.showFlag.showMaterialProcess = true
         } else if (newVal === 'weave') {
           this.getWeaveDetail()
+          this.showFlag.showWeave = true
         } else if (newVal === 'process') {
           this.getProcessDetail()
+          this.showFlag.showProcess = true
         } else {
           this.$message.error('未知操作')
         }
