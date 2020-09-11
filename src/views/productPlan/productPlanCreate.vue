@@ -501,7 +501,7 @@ export default {
                 arr.push({
                   name: keyColor,
                   attr: keyMat,
-                  number: craftMat[item.colour_name][keyMat][keyColor],
+                  number: this.$toFixed(Number(craftMat[item.colour_name][keyMat][keyColor]) || 0) || '',
                   unit: 'g'
                 })
               })

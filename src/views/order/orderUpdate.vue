@@ -1066,7 +1066,7 @@ export default {
         selectFlag.size.forEach(itemSize => {
           selectFlag.color.forEach(itemColor => {
             itemPro.product_info.push({
-              size_color: [itemSize.size_name, itemColor.color_name],
+              size_color: [itemSize.size_id, itemColor.color_id],
               price: '',
               number: ''
             })
@@ -1120,10 +1120,10 @@ export default {
         this.$message.error('请输入汇率')
         return
       }
-      if (!this.tax_prop) {
-        this.$message.error('请输入税率')
-        return
-      }
+      // if (!this.tax_prop) {
+      //   this.$message.error('请输入税率')
+      //   return
+      // }
       if (!this.order_time) {
         this.$message.error('请选择下单日期')
         return

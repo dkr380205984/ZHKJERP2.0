@@ -9,12 +9,20 @@
             <span class="label">筛选条件：</span>
             <div class="filter_line">
               <el-input class="filter_item"
+                style="width:160px"
                 v-model="keyword"
                 @change="changeRouter(1)"
                 placeholder="输入编号按回车键查询">
               </el-input>
+              <el-input class="filter_item"
+                style="width:160px"
+                v-model="keyword_name"
+                @change="changeRouter(1)"
+                placeholder="输入报价单名称按回车键查询">
+              </el-input>
               <el-cascader v-model="client_id"
                 class="filter_item"
+                style="width:160px"
                 :show-all-levels='false'
                 placeholder="筛选公司"
                 :options="clientArr"
@@ -25,6 +33,7 @@
                 filterable></el-cascader>
               <el-select v-model="user_id"
                 class="filter_item"
+                style="width:160px"
                 @change="changeRouter(1)"
                 filterable
                 clearable
@@ -49,7 +58,7 @@
                 </el-option>
               </el-select>
               <el-date-picker v-model="date"
-                style="width:290px"
+                style="width:250px"
                 class="filter_item"
                 type="daterange"
                 align="right"
@@ -166,6 +175,7 @@ export default {
       searchTypeFlag: false,
       searchUserName: false,
       keyword: '',
+      keyword_name: '',
       date: '',
       client_id: '',
       clientArr: [],
@@ -219,14 +229,10 @@ export default {
         client_id: this.client_id && this.client_id[1],
         code: this.keyword,
         product_code: '',
-        user_name: this.user_id
+        user_name: this.user_id,
+        name: this.keyword_name
       }).then(res => {
-        if (res.data.status === false) {
-          this.$message({
-            type: 'error',
-            message: res.data.message
-          })
-        } else {
+        if (res.data.status !== false) {
           this.list = res.data.data.map(item => {
             let img = item.file_url ? item.file_url.map(vals => {
               return {
@@ -319,6 +325,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.keyword_name = params.keyword_name
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
@@ -330,7 +337,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
     }
   },
   created () {

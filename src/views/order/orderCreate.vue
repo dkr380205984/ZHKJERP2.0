@@ -1426,7 +1426,8 @@ export default {
                   }
                 })
               }
-            })
+            }),
+            category_info: data.category_info
           })
           this.batchDate.forEach(itemBatch => {
             itemBatch.time = this.$getTime()

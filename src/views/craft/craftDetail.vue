@@ -728,7 +728,7 @@
           <div class="btn btnBlue"
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
           <div class="btn btnBlue"
-            @click="goPDF">转为PDF</div>
+            @click="goPDF">转为设计稿</div>
           <div class="btn btnRed"
             @click="deleteCraft">删除</div>
         </div>

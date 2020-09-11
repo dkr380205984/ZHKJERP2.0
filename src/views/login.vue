@@ -87,7 +87,7 @@ export default {
             })
             window.sessionStorage.setItem('user_name', res.data.data.user_name)
             window.sessionStorage.setItem('company_name', res.data.data.company_name)
-            window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id))
+            window.sessionStorage.setItem('module_id', JSON.stringify(res.data.data.module_id || []))
             window.sessionStorage.setItem('logo', res.data.data.company_logo)
             window.sessionStorage.setItem('has_check', res.data.data.has_check)
             window.sessionStorage.setItem('user_id', res.data.data.user_id)

@@ -86,7 +86,7 @@
                 v-model="searchOrderOrProduct"
                 @change="changeRouter(1)">
                 <el-option value="order"
-                  label="订单搜索"></el-option>
+                  label="订单号搜索"></el-option>
                 <el-option value="product"
                   label="产品编号搜索"></el-option>
               </el-select>
@@ -254,7 +254,26 @@
               <span class="text">负责小组</span>
             </div>
             <div class="col flex16">
-              <span class="text">流程进度</span>
+              <span class="text">
+                流程进度
+                <el-popover placement="right"
+                  width="150"
+                  trigger="click">
+                  计：物料计划状态
+                  <br />
+                  入：原料入库状态
+                  <br />
+                  出：原料出库状态
+                  <br />
+                  检：半成品检验状态
+                  <br />
+                  回：半成品回库状态
+                  <br />
+                  箱：成品装箱状态
+                  <span class="el-icon-question"
+                    slot="reference"></span>
+                </el-popover>
+              </span>
             </div>
             <div class="col">
               <span class="text">订单状态</span>
@@ -283,41 +302,37 @@
             </div>
             <div class="col flex16">
               <div class="stateCtn"
+                title="物料计划状态"
                 :class="{'green':itemOrder.has_plan===1}">
                 <div class="state"></div>
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
+                title="原料入库状态"
                 :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
                 <div class="state"></div>
                 <span class="name">入</span>
               </div>
               <div class="stateCtn"
+                title="原料出库状态"
                 :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
                 <div class="state"></div>
                 <span class="name">出</span>
               </div>
-              <!-- <div class="stateCtn"
-                :class="{'orange':itemOrder.production_weave_progress.product>0,'green':itemOrder.production_weave_progress.product>=100}">
-                <div class="state"></div>
-                <span class="name">织</span>
-              </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.production_weave_progress.semi_product>0,'green':itemOrder.production_weave_progress.semi_product>=100}">
-                <div class="state"></div>
-                <span class="name">半</span>
-              </div> -->
-              <div class="stateCtn"
+                title="半成品检验状态"
                 :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
                 <div class="state"></div>
                 <span class="name">检</span>
               </div>
               <div class="stateCtn"
+                title="半成品回库状态"
                 :class="{'orange':itemOrder.semi_push_progress>0,'green':itemOrder.semi_push_progress>=100}">
                 <div class="state"></div>
                 <span class="name">回</span>
               </div>
               <div class="stateCtn"
+                title="成品装箱状态"
                 :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>
                 <span class="name">箱</span>

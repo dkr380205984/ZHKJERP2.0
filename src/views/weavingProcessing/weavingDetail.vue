@@ -1156,7 +1156,7 @@ export default {
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           price: '',
-          number: ''
+          number: number
         }],
         order_time: this.$getTime(),
         complete_time: '',
