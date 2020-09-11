@@ -106,12 +106,33 @@
           </div>
         </div>
         <div class="box small">
-          <div class="boxTop">生产织造</div>
+          <div class="boxTop">织片加工</div>
           <div class="boxBottom">
             <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
             <span class="em">万元</span>
           </div>
         </div>
+        <div class="box small">
+          <div class="boxTop">套口加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <div class="box small">
+          <div class="boxTop">其他加工</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div>
+        <!-- <div class="box small">
+          <div class="boxTop">生产织造</div>
+          <div class="boxBottom">
+            <span class="num">{{$toFixed(orderStatistics.company_cost_detail.product_weave)}}</span>
+            <span class="em">万元</span>
+          </div>
+        </div> -->
       </div>
     </div>
     <div class="module"

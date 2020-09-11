@@ -130,11 +130,13 @@
       }
     }
   }
-  .leftCtn{
-    float: left;
-    display: flex;
-    align-items: center;
-    height: 100%;
+  .bottomFixBar{
+    .leftCtn{
+      float: left;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
   }
   .popup{
     .collapseBox{
@@ -151,5 +153,61 @@
         cursor: pointer;
       }
     }
+    .centerMain{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: #FFF;
+      width: 300px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border-radius: 4px;
+      padding-bottom: 40px;
+      .item{
+        min-height: 32px;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        .btn{
+          white-space: nowrap;
+        }
+      }
+      .opr{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        border-top: 1px solid #E8E8E8;
+        height: 40px;
+        width: 300px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 20px;
+      }
+    }
+  }
+  .colCtn{
+    .showMore{
+      color: @blue;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+  }
+  .flex07{
+    flex: 0.7;
+  }
+  .flex12{
+    flex: 1.2;
+  }
+  .btnWhiteGray{
+    cursor: not-allowed;
+    border-color: @font25;
+    color: @font25;
   }
 }

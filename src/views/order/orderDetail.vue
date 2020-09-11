@@ -38,10 +38,6 @@
             <span class="label">订单号：</span>
             <span class="text">{{orderInfo.order_code}}</span>
           </div>
-          <!-- <div class="colCtn flex3">
-            <span class="label">是否客供：</span>
-            <span class="text">{{orderInfo.material_status===2?'非客供纱':'客供纱'}}</span>
-          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -702,63 +698,6 @@
                     </div>
                   </div>
                 </template>
-                <!-- <template v-if="item.hasDetail === 'replenish'">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">补纱单位</span>
-                        <span class="tcolumn noPad flex5">
-                          <span class="trow">
-                            <span class="tcolumn">纱线名称</span>
-                            <span class="tcolumn">纱线颜色</span>
-                            <span class="tcolumn">补纱数量</span>
-                            <span class="tcolumn">承担单位</span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.replenish"
-                        :key="index">
-                        <span class="tcolumn">{{item.replenish_name}}</span>
-                        <span class="tcolumn noPad flex5">
-                          <span class="trow"
-                            v-for="(itemOut,indexOut) in item.childrenMergeInfo"
-                            :key='indexOut'>
-                            <span class="tcolumn">{{itemOut.material_name}}</span>
-                            <span class="tcolumn green">{{itemOut.material_color}}</span>
-                            <span class="tcolumn green">{{itemOut.need_weight}}</span>
-                            <span class="tcolumn green">
-                              <span v-for="(itemChild,indexChild) in itemOut.client_info"
-                                :key="indexChild">{{itemChild.client_name}}({{itemChild.percent}}元)</span>
-                            </span>
-                          </span>
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </template> -->
-                <!-- <template v-if="item.hasDetail === 'deduct'">
-                  <div class="flexTb">
-                    <div class="thead">
-                      <span class="trow">
-                        <span class="tcolumn">扣款单位</span>
-                        <span class="tcolumn">扣款金额</span>
-                        <span class="tcolumn">扣款原因</span>
-                      </span>
-                    </div>
-                    <div class="tbody">
-                      <span class="trow"
-                        v-for="(item,index) in orderDetailInfo.finance.deductPrice"
-                        :key="index">
-                        <span class="tcolumn">{{item.client_name}}</span>
-                        <span class="tcolumn">{{item.deduct_price}}元</span>
-                        <span class="tcolumn">{{item.reason_text}}</span>
-                      </span>
-                    </div>
-                  </div>
-                </template> -->
               </div>
             </span>
           </div>
@@ -805,9 +744,6 @@
               :key="indexMa + 'info'">
               <span class="label">原料信息{{indexMa + 1}}：</span>
               <span class="info popup_info_page">
-                <!-- <zh-input v-model="itemMa.material_name"
-                  placeholder="请填写原料"
-                  class="elInput" /> -->
                 <el-autocomplete v-model="itemMa.material_name"
                   :fetch-suggestions="querySearchYarn"
                   placeholder="请填写原料"></el-autocomplete>
@@ -956,10 +892,6 @@
               :key="indexMa + 'info'">
               <span class="label">产品信息{{indexMa + 1}}：</span>
               <span class="info popup_info_page">
-                <!-- <el-autocomplete v-model="itemMa.material_name"
-                  :fetch-suggestions="querySearchPack"
-                  class="elInput"
-                  placeholder="请填写包装"></el-autocomplete> -->
                 <zh-input v-model="itemMa.product_code"
                   placeholder="产品"
                   class="elInput"
@@ -990,7 +922,6 @@
         </div>
         <div class="content center"
           v-if="showCanclePopup === 5 || showCanclePopup === 6">
-          <!-- <div class="row"> -->
           <span class="el-icon-warning-outline orange"
             v-if="isCommit === 'before'">确认提交后将修改该订单状态为取消，是否继续?</span>
           <span class="blue"
@@ -999,7 +930,6 @@
             v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
           <span class="red"
             v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
-          <!-- </div> -->
         </div>
         <div class="opr"
           :style="{'justify-content': showCanclePopup > 4 ? 'flex-end' : 'space-between'}">
@@ -1049,7 +979,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, weave, packPlan, finance, materialManage, yarn, material, packag, stock, replenish, chargebacks } from '@/assets/js/api.js'
+import { order, weave, packPlan, finance, materialManage, yarn, material, packag, stock, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1086,17 +1016,7 @@ export default {
     }
   },
   methods: {
-    //
     useCallback (item) {
-      console.log(item)
-      // if ((this.orderDetailInfo[item.key] && this.orderDetailInfo[item.key].length > 0) || item.show) {
-      //   item.show = !item.show
-      // } else {
-      //   this[item.callback](item, (e = [], key = item.key, showFlag = true) => {
-      //     this.orderDetailInfo[key] = e
-      //     showFlag && (item.show = !item.show)
-      //   })
-      // }
       if ((item.detailInfo && item.detailInfo.length > 0) || item.showDetail) {
         item.showDetail = !item.showDetail
       } else {
@@ -1197,9 +1117,6 @@ export default {
                   number: itemOther.numbers
                 })
               }
-              // if (sizeArr.indexOf(itemOther.size_name) === -1) {
-              //   sizeArr.push(itemOther.size_name)
-              // }
               let colorFlag = colorArr.find(itemColor => itemColor.color_name === itemOther.color_name)
               if (!colorFlag) {
                 colorArr.push({
@@ -1327,7 +1244,7 @@ export default {
               detailInfo: []
             },
             {
-              name: '原料入库信息',
+              name: '原料采购信息',
               unit: 'kg',
               price_info: [
                 {
@@ -1344,7 +1261,7 @@ export default {
               detailInfo: []
             },
             {
-              name: '辅料入库信息',
+              name: '辅料采购信息',
               unit: '件',
               price_info: [{
                 number: data.assist_material_order.number,
@@ -1357,15 +1274,6 @@ export default {
               type: 2,
               detailInfo: []
             },
-            // {
-            //   name: '工序管理',
-            //   unit: '件',
-            //   price_info: [{
-            //     number: data.product_weave.number,
-            //     total_price: data.product_weave.total_value,
-            //     pre_price: data.product_weave.pre_value
-            //   }]
-            // },
             ...Object.entries(data.product_weave.detail_data).map(itemM => {
               return {
                 name: `${itemM[0]}信息`,
@@ -1398,15 +1306,6 @@ export default {
               type: null,
               detailInfo: []
             },
-            // {
-            //   name: '补纱信息',
-            //   unit: 'kg',
-            //   price_info: [{
-            //     number: data.yarn_replenish_weight,
-            //     total_price: 0,
-            //     pre_price: 0
-            //   }]
-            // },
             {
               name: '扣款金额',
               unit: '元',
@@ -1593,19 +1492,6 @@ export default {
             this.$message.error('暂无扣款信息')
           }
           cb(returnData)
-        }
-        this.loading = false
-      })
-    },
-    // 财务概述-补纱日志
-    getReplenish () {
-      this.loading = true
-      replenish.list({
-        order_id: this.$route.params.id,
-        order_type: 1
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.orderDetailInfo.finance.replenish = this.$mergeData(res.data.data, { mainRule: 'replenish_name' })
         }
         this.loading = false
       })

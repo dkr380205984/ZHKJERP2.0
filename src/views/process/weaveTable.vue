@@ -42,14 +42,10 @@
           <div class="row_item left">{{orderInfo.client_name}}</div>
           <div class="row_item center w180">下单日期</div>
           <div class="row_item left">{{orderInfo.order_time}}</div>
-          <div class="row_item center w180">负责小组</div>
-          <div class="row_item left">{{orderInfo.group_name}}</div>
         </div>
         <div class="print_row">
           <div class="row_item center w180">生产单位</div>
           <div class="row_item left">{{itemWeave.client_name || ''}}</div>
-          <div class="row_item center w180">工序</div>
-          <div class="row_item left">{{itemWeave.process_type || ''}}</div>
           <div class="row_item center w180">均价</div>
           <div class="row_item left">{{showFlag ? ($toFixed(itemWeave.totalPrice/itemWeave.orderInfo.total_number) + '元') : ''}}</div>
           <div class="row_item center w180">总价</div>
@@ -64,8 +60,6 @@
           <div class="row_item left">{{itemWeave.product_code}}<br />{{itemWeave|filterType}}</div>
           <div class="row_item center w180">产品名称</div>
           <div class="row_item left">{{itemWeave.name || ''}}</div>
-          <div class="row_item center w180">均重</div>
-          <div class="row_item left">{{itemWeave.weight || ''}}</div>
           <div class="row_item center w180">下机时间</div>
           <div class="row_item left">{{itemWeave.complete_time || ''}}</div>
         </div>

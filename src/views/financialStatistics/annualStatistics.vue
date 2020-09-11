@@ -214,6 +214,24 @@ export default {
             expend: 0
           }
         ]
+        const productionWeave = {
+          order: [],
+          sample_order: []
+        }
+        for (const key in data.production_weave.order) {
+          const item = data.production_weave.order[key]
+          productionWeave.order.push({
+            type: key,
+            price: item
+          })
+        }
+        for (const key in data.production_weave.sample_order) {
+          const item = data.production_weave.sample_order[key]
+          productionWeave.sample_order.push({
+            type: key,
+            price: item
+          })
+        }
         this.detail = [
           {
             name: '订单',
@@ -278,19 +296,69 @@ export default {
             ]
           },
           {
-            name: '生产织造',
+            name: '织片加工',
             info: [
               {
-                name: '订单织造',
+                name: '订单织片',
                 income: 0,
-                expend: data.production_weave.order,
+                expend: productionWeave.order.filter(itemF => itemF.type === '织片').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
                 show: true,
                 url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
               },
               {
-                name: '样单织造',
+                name: '样单织片',
                 income: 0,
-                expend: data.production_weave.sample_order,
+                expend: productionWeave.sample_order.filter(itemF => itemF.type === '织片').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '套口加工',
+            info: [
+              {
+                name: '订单套口',
+                income: 0,
+                expend: productionWeave.order.filter(itemF => itemF.type === '套口').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单套口',
+                income: 0,
+                expend: productionWeave.sample_order.filter(itemF => itemF.type === '套口').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
+              }
+            ]
+          },
+          {
+            name: '其他加工',
+            info: [
+              {
+                name: '订单其他加工',
+                income: 0,
+                expend: productionWeave.order.filter(itemF => itemF.type !== '织片' && itemF.type !== '套口').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
+                show: true,
+                url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=&&stock_id='
+              },
+              {
+                name: '样单其他加工',
+                income: 0,
+                expend: productionWeave.sample_order.filter(itemF => itemF.type !== '织片' && itemF.type !== '套口').map(itemM => itemM.price).reduce((a, b) => {
+                  return a + b
+                }, 0),
                 show: true,
                 url: '/financialStatistics/logStatistics/page=1&&type=织造分配&&date=' + this.start_time + ',' + this.end_time + '&&client_id=&&product_code=&&order_type=2&&production_type=&&operate_user=&&material_name=&&stock_id='
               }
@@ -393,6 +461,7 @@ export default {
     this.start_time = this.year + '-01-01'
     this.end_time = this.year + '-12-31'
     this.yearArr = Math.floor(this.year / 10) - 1
+    window.$Vue = this
     this.getData()
   }
 }

@@ -394,17 +394,40 @@
                   <div class="rowCtn">
                     <div class="colCtn flex3"
                       style="max-width:319.3px">
-                      <div class="label">
-                        <span class="text">截止日期</span>
-                        <span class="explanation">(必填)</span>
-                      </div>
-                      <div class="content">
-                        <el-date-picker v-model="item.complete_time"
-                          value-format="yyyy-MM-dd"
-                          style="width:100%"
-                          type="date"
-                          placeholder="选择截止日期">
-                        </el-date-picker>
+                      <div class="content"
+                        style="display:flex">
+                        <div class="colCtn"
+                          style="margin-right:16px">
+                          <div class="label">
+                            <span class="text">下单日期</span>
+                          </div>
+                          <div class="content">
+                            <el-date-picker v-model="item.order_time"
+                              disabled
+                              value-format="yyyy-MM-dd"
+                              style="width:100%"
+                              type="date"
+                              placeholder="选择下单日期">
+                            </el-date-picker>
+                          </div>
+                        </div>
+                        <div class="colCtn"
+                          style="margin-right:0">
+                          <div class="label">
+                            <span class="text">交货日期</span>
+                          </div>
+                          <div class="content">
+                            <el-date-picker v-model="item.complete_time"
+                              value-format="yyyy-MM-dd"
+                              style="width:100%"
+                              type="date"
+                              placeholder="选择交货日期"
+                              :picker-options="{disabledDate:filterDate}">
+                            </el-date-picker>
+                            <div class="prompt orange"
+                              v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="colCtn">
@@ -1201,7 +1224,8 @@
                               <div class="checkBoxCtn">
                                 <el-checkbox v-for="(itemCheck,indexCheck) in formData.inspectionForm.colorSizeArr"
                                   :key="indexCheck"
-                                  v-model="itemCheck.checked">
+                                  v-model="itemCheck.checked"
+                                  @change="$forceUpdate">
                                   <span>{{itemCheck.color_name}}</span>
                                 </el-checkbox>
                               </div>
@@ -1518,17 +1542,40 @@
                   <div class="rowCtn">
                     <div class="colCtn flex3"
                       style="max-width:319.3px">
-                      <div class="label">
-                        <span class="text">截止日期</span>
-                        <span class="explanation">(必填)</span>
-                      </div>
-                      <div class="content">
-                        <el-date-picker v-model="item.complete_time"
-                          value-format="yyyy-MM-dd"
-                          style="width:100%"
-                          type="date"
-                          placeholder="选择截止日期">
-                        </el-date-picker>
+                      <div class="content"
+                        style="display:flex">
+                        <div class="colCtn"
+                          style="margin-right:16px">
+                          <div class="label">
+                            <span class="text">下单日期</span>
+                          </div>
+                          <div class="content">
+                            <el-date-picker v-model="item.order_time"
+                              disabled
+                              value-format="yyyy-MM-dd"
+                              style="width:100%"
+                              type="date"
+                              placeholder="选择下单日期">
+                            </el-date-picker>
+                          </div>
+                        </div>
+                        <div class="colCtn"
+                          style="margin-right:0">
+                          <div class="label">
+                            <span class="text">交货日期</span>
+                          </div>
+                          <div class="content">
+                            <el-date-picker v-model="item.complete_time"
+                              value-format="yyyy-MM-dd"
+                              style="width:100%"
+                              type="date"
+                              placeholder="选择交货日期"
+                              :picker-options="{disabledDate:filterDate}">
+                            </el-date-picker>
+                            <div class="prompt orange"
+                              v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="colCtn">
@@ -1630,6 +1677,25 @@
       </div>
       <!-- |||||||||入库大模块结束||||||||| -->
     </template>
+    <div class="bottomFixBar">
+      <div class="main">
+        <div class="btnCtn">
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='+$route.params.orderType'
+            :showType='deductPopupType'
+            :logType='[deductType]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
+          <div class="btn btnGray"
+            @click="$router.go(-1)">返回</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1867,7 +1933,11 @@ export default {
           },
           type: 'stockIn'
         }]
-      }
+      },
+      // 扣款窗口数据
+      deductPopupFlag: false,
+      clientArr: [],
+      deductPopupType: true
     }
   },
   watch: {
@@ -1907,6 +1977,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     // 拼音搜索单位名称
     searchClient (query) {
       this.selectData.clientArr = []
@@ -1993,6 +2066,7 @@ export default {
             }],
             product_id: item.product_id,
             mixedData: mixedData,
+            order_time: this.$getTime(),
             complete_time: '',
             colorSizeArr: this.renderData.allocationList.find((itemFind) => item.product_id === itemFind.product_id).childrenMergeInfo,
             desc: ''
@@ -2027,6 +2101,7 @@ export default {
           loss: this.otherData.processType === '织片' ? 3 : 0,
           lossNum: this.otherData.processType === '织片' ? parseInt(number * 0.03) : 0
         }],
+        order_time: this.$getTime(),
         complete_time: '',
         colorSizeArr: [],
         desc: ''
@@ -2054,7 +2129,7 @@ export default {
     },
     // 机动数计算
     changeLoss (obj) {
-      obj.lossNum = parseInt(obj.number * obj.loss / 100)
+      obj.lossNum = Math.ceil(obj.number * obj.loss / 100)
     },
     // 确认分配产品，弹框物料分配
     confirmAllocation () {
@@ -2608,16 +2683,20 @@ export default {
       }
       this.formData.inspectionForm.product_id = father.product_id
       this.getInspectionPro(father.product_id)
-      this.formData.inspectionForm.detail.push({
-        client_auth: '',
-        colorSize: [{
-          showCheck: false,
-          colorSize: son.color_id,
-          number: '',
-          substandard: '',
-          reason: []
-        }]
-      })
+      if (!this.formData.inspectionForm.detail[0].client_auth && !this.formData.inspectionForm.detail[0].colorSize[0].colorSize && !this.formData.inspectionForm.detail[0].colorSize[0].number && !this.formData.inspectionForm.detail[0].colorSize[0].substandard && (!this.formData.inspectionForm.detail[0].colorSize[0].reason || this.formData.inspectionForm.detail[0].colorSize[0].reason.length === 0)) {
+        this.formData.inspectionForm.detail[0].colorSize[0].colorSize = son.color_id
+      } else {
+        this.formData.inspectionForm.detail.push({
+          client_auth: '',
+          colorSize: [{
+            showCheck: false,
+            colorSize: son.color_id,
+            number: '',
+            substandard: '',
+            reason: []
+          }]
+        })
+      }
     },
     // 确认检验
     saveInspection () {
@@ -2720,7 +2799,8 @@ export default {
     singleStockIn (id, size, color, number) {
       this.formData.stockInForm.push({
         product_id: id,
-        complete_time: this.$getTime(new Date()),
+        order_time: this.$getTime(),
+        complete_time: '',
         desc: '',
         colorSizeArr: [],
         detail: [{
@@ -2753,7 +2833,8 @@ export default {
       this.formData.stockInForm = checkStockInList.map((item) => {
         return {
           product_id: item.product_id,
-          complete_time: this.$getTime(new Date()),
+          order_time: this.$getTime(),
+          complete_time: '',
           desc: '',
           colorSizeArr: this.renderData.allocationDetailCommon.find((itemFind) => itemFind.product_id === item.product_id).childrenMergeInfo,
           detail: item.checkList.map((itemChild) => {
@@ -2876,7 +2957,7 @@ export default {
           return item.type.indexOf(13) !== -1
         }
       }))
-      this.selectData.processArr = resArr[2].data.data.filter(item => item.type === 2).map((item) => {
+      this.selectData.processArr = resArr[2].data.data.filter(item => item.type === 3).map((item) => {
         return {
           value: item.name,
           label: item.name
@@ -3000,6 +3081,7 @@ export default {
           return totalChild + currentChild.stockIn
         }, 0)
       }, 0)
+      this.getDeductClientArr(this.nativeData.stockInLog)
     },
     // 处理分配信息
     getAllocation (resArr) {
@@ -3146,6 +3228,7 @@ export default {
           return totalChild + (this.otherData.processType === '织片' ? currentChild.allocation : currentChild.number) + currentChild.motorise_number
         }, 0)
       }, 0)
+      this.getDeductClientArr(this.nativeData.allocationLog)
     },
     // 处理检验信息
     getInspection (resArr) {
@@ -3181,6 +3264,7 @@ export default {
         this.formData.inspectionForm.product_id = this.nativeData.inspectionLog[0].product_id
         this.getInspectionPro(this.nativeData.inspectionLog[0].product_id)
       }
+      this.getDeductClientArr(this.nativeData.inspectionLog)
     },
     // 根据工序类型处理模块信息
     getModule (type) {
@@ -3323,6 +3407,10 @@ export default {
         this.$message.warning('检测到页面已存在其他数据类型，正在为你自动切换')
       }
       this.$router.push(whichRoot)
+    },
+    getDeductClientArr (data) {
+      let clientArr = this.$unique(data.filter(itemF => itemF.client_id).map(itemM => ({ client_id: itemM.client_id, client_name: itemM.client_name, type: this.deductType })).concat(this.clientArr), 'client_id')
+      this.clientArr = clientArr
     }
   },
   mounted () {
@@ -3336,6 +3424,16 @@ export default {
     }
     if (this.$route.query.whichModule) {
       this.otherData.whichModule = this.$route.query.whichModule
+    }
+  },
+  computed: {
+    deductType () {
+      if (this.$route.query.processType === '织片') {
+        return 4
+      } else if (this.$route.query.processType === '套口') {
+        return 5
+      }
+      return 11
     }
   }
 }
@@ -3380,6 +3478,7 @@ export default {
     }
     .inputs {
       height: 32px;
+      width: auto;
     }
   }
   .el-icon-setting {

@@ -137,6 +137,7 @@
           .content{
             display: block;
             height:32px;
+            position: relative;
             .uploadBtn{
               font-size: 14px;
               color: @font65;
@@ -146,6 +147,16 @@
             }
             &.autoHeight{
               height: auto;
+            }
+            .prompt{
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              font-size:@fontSmall;
+              transform: translateY(100%);
+              &.orange{
+                color: @orange;
+              }
             }
           }
           .editBtn{

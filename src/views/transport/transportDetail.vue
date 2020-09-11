@@ -48,7 +48,7 @@
           </div>
         </div>
       </div>
-      <div class="detailCtn">
+      <!-- <div class="detailCtn">
         <div class="rowCtn">
           <div class="tableCtn">
             <div class="head">包含进仓单</div>
@@ -87,7 +87,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="bottomFixBar">
       <div class="main">
@@ -179,7 +179,7 @@
             </span>
           </div>
         </div>
-        <div class="content"
+        <!-- <div class="content"
           style="max-height:200px">
           <template v-for="(item,index) in popupData.stock_card_info">
             <div class="row"
@@ -235,7 +235,7 @@
             </div>
 
           </template>
-        </div>
+        </div> -->
         <div class="opr">
           <div class="btn btnGray"
             @click="closePopup">取消</div>
@@ -369,7 +369,7 @@ export default {
         total_price: this.popupData.total_price,
         cubic_number: this.popupData.cubic_number,
         desc: this.popupData.desc,
-        stock_card_id: this.popupData.stock_card_info.map(itemM => itemM.id)
+        stock_card_id: []
       }
       transport.create(data).then(res => {
         if (res.data.status !== false) {

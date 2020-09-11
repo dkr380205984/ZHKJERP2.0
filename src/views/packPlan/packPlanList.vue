@@ -76,11 +76,8 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <!-- <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div> -->
             <div class="col flex16 middle">
-              <span class="text">装箱计划状态</span>
+              <span class="text">采购状态</span>
             </div>
             <div class="col">
               <span class="text">下单时间</span>
@@ -101,11 +98,13 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <!-- <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div> -->
             <div class="col middle">
-              <div class="stateCtn"
+              <div class="stateCtn rowFlex"
+                :class="itemOrder.pack_order_progress>0?'green':'orange'">
+                <div class="state"></div>
+                <span class="name">{{itemOrder.pack_order_progress>0?'已采购':'未采购'}}</span>
+              </div>
+              <!-- <div class="stateCtn"
                 :class="{'green':itemOrder.has_pack_plan>0}">
                 <div class="state"></div>
                 <span class="name">计</span>
@@ -115,7 +114,7 @@
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
-              <!-- <div class="stateCtn"
+              <div class="stateCtn"
                 :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
                 <div class="state"></div>
                 <span class="name">库</span>
@@ -126,7 +125,7 @@
             </div>
             <div class="col">
               <span class="opr"
-                @click="$router.push('/packPlan/packPlanCreate/' + itemOrder.id)">详情</span>
+                @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">详情</span>
             </div>
           </div>
         </div>

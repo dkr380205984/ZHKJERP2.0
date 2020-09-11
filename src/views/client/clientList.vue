@@ -115,6 +115,9 @@
               <span class="text">联系电话</span>
             </div>
             <div class="col flex08">
+              <span class="text">合计</span>
+            </div>
+            <div class="col flex08">
               <span class="text">已结算(已开票)</span>
             </div>
             <div class="col flex08">
@@ -135,12 +138,20 @@
             :key="indexClient">
             <div class="col flex12">{{itemClient.name}}</div>
             <div class="col">{{itemClient.abbreviation}}</div>
-            <div class="col flex12">{{computedType(itemClient.type)}}</div>
+            <div class="col flex12"
+              style="overflow: hidden;
+              text-overflow: ellipsis;
+              word-break: break-word;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;">{{computedType(itemClient.type)}}</div>
             <div class="col flex08">{{itemClient.phone}}</div>
-            <div class="col flex08">{{itemClient.financial_data.settle_price_invoice}}元</div>
-            <div class="col flex08">{{itemClient.financial_data.settle_price}}元</div>
-            <div class="col flex08">{{itemClient.financial_data.wait_settle_price}}元</div>
-            <div class="col flex08">{{itemClient.financial_data.deduct_price}}元</div>
+            <div class="col flex08"
+              style="font-weight:bold">{{$formatNum(itemClient.financial_data.total_price)}}元</div>
+            <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price_invoice)}}元</div>
+            <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price)}}元</div>
+            <div class="col flex08">{{$formatNum(itemClient.financial_data.wait_settle_price)}}元</div>
+            <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.deduct_price))}}元</div>
             <div class="col middle flex12">
               <span class="opr"
                 @click="$router.push('/client/clientDetail/' + itemClient.id)">详情</span>

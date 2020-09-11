@@ -44,6 +44,75 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">工种</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.type"
+                @change="changeType"
+                placeholder="请选择工种">
+                <el-option label="合同工"
+                  value="1"></el-option>
+                <el-option label="临时工"
+                  value="2"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">入职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.start_time"
+                value-format="yyyy-MM-dd"
+                placeholder="入职时间">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">离职时间</span>
+            </div>
+            <div class="content"
+              style="height:32px">
+              <el-date-picker style="width:100%;height:100%;line-height:30px"
+                v-model="staffInfo.end_time"
+                value-format="yyyy-MM-dd"
+                placeholder="离职时间">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">负责工序</span>
+              <span class="explanation">(必填)</span>
+            </div>
+            <div class="content">
+              <el-select v-model="staffInfo.station"
+                multiple
+                placeholder="请选择负责工序">
+                <el-option v-for="(item,index) in processList"
+                  :key="index"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title">其他信息</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">民族</span>
@@ -73,7 +142,7 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">员工年龄</span>
             </div>
@@ -83,7 +152,7 @@
                 placeholder="请输入员工年龄"></zh-input>
             </div>
           </div>
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">员工性别</span>
             </div>
@@ -91,25 +160,9 @@
               <el-select v-model="staffInfo.sex"
                 placeholder="请选择性别">
                 <el-option label="男"
-                  :value="1"></el-option>
+                  value="1"></el-option>
                 <el-option label="女"
-                  :value="2"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="colCtn">
-            <div class="label">
-              <span class="text">负责工序</span>
-              <span class="explanation">(必填)</span>
-            </div>
-            <div class="content">
-              <el-select v-model="staffInfo.station"
-                multiple
-                placeholder="请选择负责工序">
-                <el-option v-for="(item,index) in processList"
-                  :key="index"
-                  :value="item.id"
-                  :label="item.name"></el-option>
+                  value="2"></el-option>
               </el-select>
             </div>
           </div>
@@ -183,49 +236,6 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">工种</span>
-              <span class="explanation">(必填)</span>
-            </div>
-            <div class="content">
-              <el-select v-model="staffInfo.type"
-                placeholder="请选择工种">
-                <el-option label="合同工"
-                  :value="1"></el-option>
-                <el-option label="临时工"
-                  :value="2"></el-option>
-              </el-select>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">入职时间</span>
-            </div>
-            <div class="content"
-              style="height:32px">
-              <el-date-picker style="width:100%;height:100%;line-height:30px"
-                v-model="staffInfo.start_time"
-                value-format="yyyy-MM-dd"
-                placeholder="入职时间">
-              </el-date-picker>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <div class="label">
-              <span class="text">离职时间</span>
-            </div>
-            <div class="content"
-              style="height:32px">
-              <el-date-picker style="width:100%;height:100%;line-height:30px"
-                v-model="staffInfo.end_time"
-                value-format="yyyy-MM-dd"
-                placeholder="离职时间">
-              </el-date-picker>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">地址</span>
@@ -274,7 +284,7 @@ export default {
         age: '',
         sex: '',
         telephone: '',
-        station: [],
+        station: '',
         IDcard: '',
         bankName: '',
         bankCard: '',
@@ -340,6 +350,15 @@ export default {
           this.$router.push('/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=')
         }
       })
+    },
+    changeType (e) {
+      if (e === '2') {
+        let nowDate = new Date().getTime()
+        this.staffInfo.start_time = this.$getTime(nowDate)
+        this.staffInfo.end_time = this.$getTime(nowDate + 30 * 24 * 60 * 60 * 1000)
+      } else {
+        this.staffInfo.end_time = this.$getTime(new Date(this.staffInfo.start_time).getTime() + 366 * 24 * 60 * 60 * 1000)
+      }
     }
   },
   mounted () {
@@ -352,22 +371,22 @@ export default {
       }),
       staffTag.list(),
       course.list({
-        type: 2
+        type: 3
       })
     ]).then((res) => {
       let data = res[0].data.data
       this.staffInfo.name = data.name
       this.staffInfo.telephone = data.phone
-      this.staffInfo.sex = data.sex
+      this.staffInfo.sex = (data.sex || '').toString()
       this.staffInfo.department = data.department_id
       this.staffInfo.age = data.age
       this.staffInfo.IDcard = data.id_card
       this.staffInfo.bankName = data.bank_card_name
       this.staffInfo.bankCard = data.bank_card_code
-      this.staffInfo.station = data.station_id ? data.station_id.map((item) => item.id) : []
+      this.staffInfo.station = data.station_id.map((item) => item.id)
       this.staffInfo.health = data.healthy_info
       this.staffInfo.emergentPhone = data.urgent_phone
-      this.staffInfo.type = data.type
+      this.staffInfo.type = (data.type || '').toString()
       this.staffInfo.start_time = data.work_time
       this.staffInfo.desc = data.desc
       this.staffInfo.dizhi = data.address

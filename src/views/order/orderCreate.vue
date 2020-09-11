@@ -79,22 +79,6 @@
               </el-select>
             </span>
           </div>
-          <!-- <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">负责小组</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <el-select v-model="group_id"
-                placeholder="请选择负责小组">
-                <el-option v-for="item in groupArr"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </span>
-          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
@@ -149,53 +133,7 @@
               </el-date-picker>
             </span>
           </div>
-          <!-- <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">税率</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <zh-input placeholder="请输入税率"
-                v-model="tax_prop"
-                type="number"
-                errorPosition='bottom'
-                errorMsg="请输入数字">
-                <template slot="append">%</template>
-              </zh-input>
-            </span>
-          </div> -->
         </div>
-        <!-- <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">下单日期</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content">
-              <el-date-picker v-model="order_time"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择下单日期">
-              </el-date-picker>
-            </span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">
-              <span class="text">是否客供纱</span>
-              <span class="explanation">(必填)</span>
-            </span>
-            <span class="content"
-              style="display: flex;
-                align-items: center;">
-              <el-radio styel="line-height:32px"
-                v-model="ifKegong"
-                label="是">是</el-radio>
-              <el-radio styel="line-height:32px"
-                v-model="ifKegong"
-                label="否">否</el-radio>
-            </span>
-          </div>
-        </div> -->
       </div>
     </div>
     <div class="module">
@@ -438,6 +376,20 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="content timeCtn">
+              <span class="label">交货日期</span>
+              <el-date-picker v-model="itemBatch.time"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择交货日期"
+                :picker-options="{disabledDate:filterDate}">
+              </el-date-picker>
+              <span class="prompt orange"
+                style="left:auto;right:0"
+                v-show="itemBatch.time === $getTime()">您的交货日期为今日，请再次确认！</span>
+            </span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="content timeCtn">
               <span class="label">批次名称</span>
               <zh-input v-model="itemBatch.name"
                 placeholder="可输入批次名称、PO号或者其它订单号"></zh-input>
@@ -449,16 +401,6 @@
               <el-autocomplete v-model="itemBatch.type"
                 :fetch-suggestions="querySearchType"
                 placeholder="请输入批次类型"></el-autocomplete>
-            </span>
-          </div>
-          <div class="colCtn flex3">
-            <span class="content timeCtn">
-              <span class="label">交货日期</span>
-              <el-date-picker v-model="itemBatch.time"
-                value-format="yyyy-MM-dd"
-                type="date"
-                placeholder="请选择交货日期">
-              </el-date-picker>
             </span>
             <span style="position: absolute;right: -5em;font-size: 14px;color: #1a95ff;top: 0;line-height: 32px;cursor: pointer;"
               v-if="tableType==='table'"
@@ -961,6 +903,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     searchClient (query) {
       this.clientArrReal = []
       if (query) {

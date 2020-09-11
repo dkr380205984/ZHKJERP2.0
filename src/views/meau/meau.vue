@@ -87,15 +87,15 @@ export default {
             icon: 'icon-chanpinjianyan'
           },
           {
-            name: '装箱管理',
+            name: '包装订购',
             id: 11,
             path: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
-            icon: 'icon-zhuangxiangchuku'
+            icon: 'icon-baozhuangdinggou'
           },
           {
-            name: '进仓运输',
+            name: '运输管理',
             id: 19,
-            path: '/warehouse/warehouseList/page=1&&keyword=&&date=&&address=',
+            path: '/transport/transportList/page=1&&keyword=&&date=&&clientId=',
             icon: 'icon-zhuangxiangchuku'
           }
         ],

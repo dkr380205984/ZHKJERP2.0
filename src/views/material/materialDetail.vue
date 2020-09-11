@@ -48,82 +48,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="module"
-      v-show="replenishList.length>0">
-      <div class="titleCtn">
-        <span class="title">补纱信息</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div v-if="false"
-          class="rowCtn">
-          <div class="colCtn"
-            style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
-            <el-tooltip class="item"
-              effect="dark"
-              :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购白胚'"
-              placement="top"
-              v-if="type==='1'">
-              <div class="btn"
-                :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
-                @click="easyOrder(1)">订购白胚</div>
-            </el-tooltip>
-            <el-tooltip class="item"
-              effect="dark"
-              :content="checkWhichYarn.length===0?'请选取纱线进行订购操作':'订购色纱'"
-              placement="top">
-              <div class="btn"
-                :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
-                @click="easyOrder(2)">{{type==='1'?'订购色纱':'批量订购'}}</div>
-            </el-tooltip>
-          </div>
-        </div>
-        <div class="rowCtn"
-          style="margin-top:40px">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="flexTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn">{{type==='1'?'原':'辅'}}料名称</div>
-                  <div class="tcolumn noPad"
-                    style="flex:4">
-                    <div class="trow">
-                      <div class="tcolumn">{{type==='1'?'颜色':'属性'}}名称</div>
-                      <div class="tcolumn">计划补纱数量</div>
-                      <div class="tcolumn">实际补纱数量</div>
-                      <div class="tcolumn">操作</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="(item,index) in replenishList"
-                  :key="index">
-                  <div class="tcolumn">{{item.material_name}}</div>
-                  <div class="tcolumn noPad"
-                    style="flex:4">
-                    <div class="trow"
-                      v-for="(itemChild,indexChild) in item.childrenMergeInfo"
-                      :key="indexChild">
-                      <div class="tcolumn">{{itemChild.material_color}}</div>
-                      <div class="tcolumn">{{itemChild.need_weight}}{{type==='1'?'kg':itemChild.unit}}</div>
-                      <div class="tcolumn"><span class="green">{{itemChild.order_weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
-                      <div class="tcolumn"
-                        style="flex-direction:row;line-height:54px;justify-content:start">
-                        <a href="#order"
-                          class="blue"
-                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight,true)">订购</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <div class="module"
       id="order">
       <div class="titleCtn rightBtn">
@@ -150,6 +74,7 @@
                       <div class="tcolumn">{{type==='1'?'颜色':'属性'}}</div>
                       <div class="tcolumn">单价</div>
                       <div class="tcolumn">数量</div>
+                      <div class="tcolumn">交货日期</div>
                     </div>
                   </div>
                   <div class="tcolumn">总价</div>
@@ -172,13 +97,16 @@
                       <div class="tcolumn">{{itemChild.color_code}}</div>
                       <div class="tcolumn">{{itemChild.price}}元</div>
                       <div class="tcolumn"><span class="green">{{itemChild.weight}}{{type==='1'?'kg':itemChild.unit}}</span></div>
+                      <div class="tcolumn">
+                        <span v-html="$getZHTimeFormat(itemChild.complete_time)"></span>
+                      </div>
                     </div>
                   </div>
                   <div class="tcolumn"><span class="green">{{item.total_price}}元</span></div>
                   <div class="tcolumn"
                     style="flex-direction: row; justify-content: start; align-items: center;">
                     <span class="blue"
-                      @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name + '&&type=' + item.type_source)">打印</span>
+                      @click="$openUrl('/materialTable/' + $route.params.id + '/' + $route.params.orderType + '/' + $route.params.type + '?clientName=' + item.client_name )">打印</span>
                   </div>
                 </div>
               </div>
@@ -291,16 +219,40 @@
                 <div class="rowCtn">
                   <div class="colCtn flex3"
                     style="max-width:319.3px">
-                    <div class="label">
-                      <span class="text">截止日期</span>
-                    </div>
-                    <div class="content">
-                      <el-date-picker v-model="item.complete_time"
-                        value-format="yyyy-MM-dd"
-                        style="width:100%"
-                        type="date"
-                        placeholder="选择截止日期">
-                      </el-date-picker>
+                    <div class="content"
+                      style="display:flex">
+                      <div class="colCtn"
+                        style="margin-right:16px">
+                        <div class="label">
+                          <span class="text">下单日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.order_time"
+                            disabled
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择下单日期">
+                          </el-date-picker>
+                        </div>
+                      </div>
+                      <div class="colCtn"
+                        style="margin-right:0">
+                        <div class="label">
+                          <span class="text">交货日期</span>
+                        </div>
+                        <div class="content">
+                          <el-date-picker v-model="item.complete_time"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            type="date"
+                            placeholder="选择交货日期"
+                            :picker-options="{disabledDate:filterDate}">
+                          </el-date-picker>
+                          <div class="prompt orange"
+                            v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="colCtn">
@@ -356,13 +308,16 @@
         <div class="tableCtnLv2 minHeight5">
           <div class="tb_header">
             <span class="tb_row flex04"></span>
-            <span class="tb_row flex12">完成日期</span>
-            <span class="tb_row flex2">订购单位</span>
-            <span class="tb_row flex2">{{type==='1'?'原':'辅'}}料名称</span>
+            <span class="tb_row middle">创建日期</span>
+            <span class="tb_row flex12">订购单位</span>
+            <span class="tb_row flex12">{{type==='1'?'原':'辅'}}料名称</span>
             <span class="tb_row">{{type==='1'?'颜色':'属性'}}</span>
             <span class="tb_row flex08">单价(元)</span>
             <span class="tb_row flex08">数量</span>
             <span class="tb_row flex08">总价(元)</span>
+            <span class="tb_row middle">备注</span>
+            <span class="tb_row middle">完成日期</span>
+            <span class="tb_row">操作人</span>
             <span class="tb_row middle">操作</span>
           </div>
           <div class="tb_content"
@@ -371,17 +326,26 @@
             <span class="tb_row flex04">
               <el-checkbox v-model="item.checked"></el-checkbox>
             </span>
-            <span class="tb_row flex12">{{$getTime(item.complete_time)}}</span>
-            <span class="tb_row flex2">
-              <span>
-                {{item.client_name}}
-              </span>
-            </span>
-            <span class="tb_row flex2">{{item.material_name}}</span>
+            <span class="tb_row middle">{{$getTime(item.create_time)}}</span>
+            <span class="tb_row flex12"> {{item.client_name}} </span>
+            <span class="tb_row flex12">{{item.material_name}}</span>
             <span class="tb_row">{{item.color_code}}</span>
             <span class="tb_row flex08">{{item.price}}</span>
             <span class="tb_row flex08">{{item.weight}}{{type==='1'?'kg':item.unit}}</span>
             <span class="tb_row flex08">{{$toFixed(item.price*item.weight)}}</span>
+            <span class="tb_row middle">
+              <template v-if="!item.desc">/</template>
+              <el-popover placement="bottom"
+                v-else
+                width="200"
+                trigger="click"
+                :content="item.desc">
+                <span class="tb_row_handle_btn blue"
+                  slot="reference">查看</span>
+              </el-popover>
+            </span>
+            <span class="tb_row middle">{{$getTime(item.complete_time)}}</span>
+            <span class="tb_row">{{item.user_name}}</span>
             <span class="tb_row middle">
               <span class="tb_handle_btn red"
                 @click="deleteOrderLog(item.id,index)">删除</span>
@@ -390,192 +354,20 @@
         </div>
       </div>
     </div>
-    <!-- <div class="popup"
-      v-show="easyOrderFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">快捷填写</div>
-          <i class="el-icon-close"
-            @click="easyOrderFlag=false"></i>
-        </div>
-        <div class="content">
-          <div class="tips">
-            提示信息：一键添加操作可以统一选择订购公司和物料单价，如不需要可以选择直接跳过该步骤。
-          </div>
-          <div v-for="(item,index) in checkWhichYarn"
-            :key="index"
-            style="padding:8px;background:#f4f4f4;margin:8px 0">
-            <div class="row">
-              <div class="label">物料名称：</div>
-              <div class="info">
-                <span class="text">{{item.material_name}}{{item.replenishFlag?'(补)':''}}</span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="label">订购公司：</div>
-              <div class="info">
-                <el-select v-model="commonCompany[index]"
-                  filterable
-                  placeholder="请选择订购公司">
-                  <el-option v-for="item in orderCompany"
-                    :key="item.id"
-                    :value="item.id"
-                    :label="item.name"></el-option>
-                </el-select>
-              </div>
-            </div>
-            <div class="row">
-              <div class="label">物料单价：</div>
-              <div class="info">
-                <el-input placeholder="单价"
-                  class="hasMargin"
-                  v-model="commonPrice[index]"
-                  :key="index">
-                  <template slot="append">元</template>
-                </el-input>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="easyOrderFlag = false">直接跳过</div>
-          <a href="#order"
-            class="btn btnBlue"
-            @click="commonFn">确定</a>
-        </div>
-      </div>
-    </div> -->
-    <!-- 打印单扫码进入页面后 -->
-    <!-- <div class="popup"
-      v-if="showRouterPopup">
-      <div class="main">
-        <div class="title">
-          <span style="display:flex;justify-content:center;flex:auto">请选择需要您要跳转的页面</span>
-          <span class="el-icon-close"
-            @click="showRouterPopup = false"></span>
-        </div>
-        <div class="content">
-          <div class="row"
-            style="display:flex;justify-content:space-around;align-items:center">
-            <div class="btn btnWhiteBlue"
-              style="width:6em;text-align:center"
-              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/1/' + $route.params.orderType)">原料出入库</div>
-            <div class="btn btnWhiteBlue"
-              style="width:6em;text-align:center"
-              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id + '/2/' + $route.params.orderType)">辅料出入库</div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-    <!-- 扣款窗口 -->
-    <div class="popup"
-      v-if="deductPopupFlag">
-      <div class="main">
-        <div class="title">
-          单位扣款
-          <span class="el-icon-close"
-            @click="deductPopupFlag = false"></span>
-        </div>
-        <div class="content">
-          <div class="row">
-            <span class="label">扣款单位：</span>
-            <span class="info">
-              <el-select v-model="deductInfo.client_id"
-                filterable
-                placeholder="请选择需要扣款的单位">
-                <el-option v-for="item in clientArr"
-                  :key="item.client_id"
-                  :label="item.client_name"
-                  :value="item.client_id + '-' + item.type">
-                </el-option>
-              </el-select>
-            </span>
-          </div>
-          <div class="row">
-            <span class="label">扣款金额：</span>
-            <span class="info">
-              <zh-input type='number'
-                v-model=" deductInfo.price"
-                placeholder="请输入需要扣除款项的金额">
-                <template slot="append">元</template>
-              </zh-input>
-            </span>
-          </div>
-          <div class="row">
-            <span class="label">扣款备注：</span>
-            <span class="info">
-              <zh-input v-model=" deductInfo.remark"
-                placeholder="请输入扣款备注">
-              </zh-input>
-            </span>
-          </div>
-        </div>
-        <div class="opr">
-          <span class="btn btnGray"
-            @click="deductPopupFlag = false">取消</span>
-          <span class="btn btnBlue"
-            @click="clientDeduct">确定</span>
-        </div>
-      </div>
-    </div>
-    <!-- 操作记录 -->
-    <div class="popup"
-      v-show="deductLogPopupFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">扣款记录</div>
-          <i class="el-icon-close"
-            @click="deductLogPopupFlag=false"></i>
-        </div>
-        <div class="content">
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in deductLogList"
-              :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span style="margin-left:20px;color:#F5222D">扣款</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
-                    </span>
-                  </template>
-                  <div class="collapseBox">
-                    <span class="label">操作：</span>
-                    <span class="info">
-                      <span class="blue"
-                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
-                    </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款单位：</span>
-                    <span class="info">{{item.client_name}} </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款原因：</span>
-                    <span class="info">{{item.desc}}</span>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="deductLogPopupFlag=false">关闭</div>
-          <div class="btn btnBlue"
-            @click="deductLogPopupFlag=false">确定</div>
-        </div>
-      </div>
-    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
-          <div class="btn btnWhiteBlue"
-            @click="deductLogPopupFlag = true">扣款日志</div>
-          <div class="btn btnWhiteRed"
-            @click="deductPopupFlag = true">单位扣款</div>
+          <zh-deduct :orderId='+$route.params.id'
+            :orderType='+$route.params.orderType'
+            :showType='deductPopupType'
+            :logType='[1]'
+            :clientList="clientArr"
+            v-model="deductPopupFlag">
+            <div class="btn btnWhiteBlue"
+              @click="deductPopupFlag = true;deductPopupType = false">扣款日志</div>
+            <div class="btn btnWhiteRed"
+              @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
+          </zh-deduct>
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
         </div>
@@ -588,10 +380,6 @@
       :destroy-on-close='true'
       :with-header="false">
       <div class="drawerCtn">
-        <!-- <div class="header">
-          <span class="title">库存调取</span>
-          <span class="el-icon-close close_icon"></span>
-        </div> -->
         <div class="content">
           <div class="modules">
             <div class="title">
@@ -660,7 +448,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, sampleOrder, client, yarn, material, yarnColor, chargebacks, materialManage, yarnStock } from '@/assets/js/api.js'
+import { order, sampleOrder, client, yarn, material, yarnColor, materialManage, yarnStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -674,7 +462,23 @@ export default {
       replenishFlag: false,
       replenishList: [],
       order_stock_info: [],
-      order_data: [],
+      order_data: [
+        {
+          material: [{
+            name: '',
+            color: '',
+            number: '',
+            unit: '',
+            price: '',
+            id: ''
+          }],
+          replenishFlag: '',
+          company_id: '',
+          order_time: this.$getTime(),
+          complete_time: '',
+          desc: ''
+        }
+      ],
       order_stock_log: [],
       orderCompany: [],
       // 订购modules初始化数据
@@ -683,13 +487,7 @@ export default {
       // 扣款窗口数据
       deductPopupFlag: false,
       clientArr: [],
-      deductInfo: {
-        client_id: '',
-        price: '',
-        remark: ''
-      },
-      deductLogPopupFlag: false,
-      deductLogList: [],
+      deductPopupType: true,
       // 抽屉数据
       showStockInfoFlag: false,
       stockLoading: false,
@@ -700,6 +498,9 @@ export default {
     }
   },
   methods: {
+    filterDate (date) {
+      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+    },
     getStockList (page) {
       this.stockPage = page || this.stockPage
       this.stockLoading = true
@@ -720,43 +521,6 @@ export default {
     getStockInfo () {
       this.showStockInfoFlag = true
       this.getStockList(1)
-    },
-    // 扣款提交
-    clientDeduct () {
-      if (!this.deductInfo.client_id) {
-        this.$message.error('请选择需要扣款的合作单位')
-        return
-      }
-      if (!this.deductInfo.price) {
-        this.$message.error('请填写需要扣除款项的金额')
-        return
-      }
-      chargebacks.create({
-        id: null,
-        client_id: this.deductInfo.client_id.split('-')[0],
-        order_id: JSON.stringify([this.$route.params.id]),
-        complete_time: this.$getTime(),
-        deduct_price: this.deductInfo.price,
-        desc: this.deductInfo.remark,
-        order_type: this.$route.params.orderType,
-        type: this.deductInfo.client_id.split('-')[1]
-      }).then((res) => {
-        if (res.data.status) {
-          this.$message.success('扣款成功')
-          this.deductPopupFlag = false
-          this.getDeductLog()
-        }
-      })
-    },
-    // 获取扣款日志
-    getDeductLog () {
-      chargebacks.log({
-        order_type: this.$route.params.orderType,
-        order_id: this.$route.params.id,
-        type: [1, 3]
-      }).then((res) => {
-        this.deductLogList = res.data.data
-      })
     },
     saveOrder () {
       // 数据验证
@@ -889,7 +653,8 @@ export default {
           }],
           replenishFlag: '',
           company_id: '',
-          complete_time: this.$getTime(),
+          order_time: this.$getTime(),
+          complete_time: '',
           desc: ''
         })
       } else if (type === 'material') {
@@ -910,29 +675,13 @@ export default {
       data.push(this.$clone(item))
     },
     reset (type) {
-      // this.$confirm('此操作将清空数据, 是否继续?', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(() => {
       if (type === 'order') {
         this.order_data = []
       }
-      //   this.$message({
-      //     type: 'success',
-      //     message: '取消成功!'
-      //   })
-      // }).catch(() => {
-      //   this.$message({
-      //     type: 'info',
-      //     message: '已取消'
-      //   })
-      // })
     },
     init () {
       this.loading = true
       let api = this.$route.params.orderType === '1' ? order : sampleOrder
-      this.getDeductLog()
       Promise.all([
         api.detail({
           id: this.$route.params.id
@@ -976,7 +725,7 @@ export default {
           }
           return item
         }).filter(item => (item.material_type === Number(this.type)))
-        this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
+        this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name' })
         this.order_stock_info.forEach((item) => {
           item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
             return total + current.price * current.weight
@@ -1035,7 +784,7 @@ export default {
         return
       }
       let data = this.order_stock_log.filter(item => item.checked).map(item => item.id).join('-')
-      this.$openUrl('/materialTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '/' + this.$route.params.type + '?clientName=' + this.checkedOrderClientInfo[0].client_name + '&type=' + this.checkedOrderClientInfo[0].type_source + '&logId=' + data)
+      this.$openUrl('/materialTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '/' + this.$route.params.type + '?clientName=' + this.checkedOrderClientInfo[0].client_name + '&logId=' + data)
     },
     // 删除订购日志
     deleteOrderLog (id, index) {
@@ -1082,11 +831,10 @@ export default {
     checkedOrderClientInfo () {
       let data = this.order_stock_log.filter(item => item.checked).map(item => {
         return {
-          client_name: item.client_name,
-          type_source: item.type_source
+          client_name: item.client_name
         }
       })
-      return this.$mergeData(data, { mainRule: ['client_name', 'type_source'] })
+      return this.$mergeData(data, { mainRule: ['client_name'] })
     }
   },
   created () {
