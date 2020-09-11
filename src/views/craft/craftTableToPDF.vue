@@ -69,7 +69,7 @@
         <div class="print_row"
           style="display:flex;justify-content: center;padding:20px 0">
           <div class="canvasCtn"
-            style="margin:20px;position:relative">
+            style="position:relative">
             <div class="mark"
               style="width: 0px;
                     height: 0px;
@@ -95,7 +95,8 @@
               src="" />
           </div>
           <div class="canvasCtn"
-            v-show="(warpInfo.back_status===1||weftInfo.back_status===1)">
+            v-show="(warpInfo.back_status===1||weftInfo.back_status===1)"
+            style="margin-left:20px;position: relative;">
             <div class="mark"
               style="width: 0px;
                     height: 0px;

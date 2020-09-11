@@ -86,7 +86,7 @@
                 v-model="searchOrderOrProduct"
                 @change="changeRouter(1)">
                 <el-option value="order"
-                  label="订单搜索"></el-option>
+                  label="样单号搜索"></el-option>
                 <el-option value="product"
                   label="产品编号搜索"></el-option>
               </el-select>
@@ -224,7 +224,20 @@
               <span class="text">负责小组</span>
             </div>
             <div class="col">
-              <span class="text">流程进度</span>
+              <span class="text">
+                流程进度
+                <el-popover placement="right"
+                  width="150"
+                  trigger="click">
+                  计：物料计划状态
+                  <br />
+                  入：原料入库状态
+                  <br />
+                  出：原料出库状态
+                  <span class="el-icon-question"
+                    slot="reference"></span>
+                </el-popover>
+              </span>
             </div>
             <div class="col">
               <span class="text">样单状态</span>
@@ -250,36 +263,23 @@
             <div class="col">{{itemOrder.group_name}}</div>
             <div class="col">
               <div class="stateCtn"
+                title="物料计划状态"
                 :class="{'green':itemOrder.has_plan===1}">
                 <div class="state"></div>
                 <span class="name">计</span>
               </div>
               <div class="stateCtn"
+                title="原料入库状态"
                 :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
                 <div class="state"></div>
                 <span class="name">入</span>
               </div>
               <div class="stateCtn"
+                title="原料出库状态"
                 :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
                 <div class="state"></div>
                 <span class="name">出</span>
               </div>
-              <!-- <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
-                <div class="state"></div>
-                <span class="name">计</span>
-              </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.material_order_progress.y_percent>0 ,'green':itemOrder.material_order_progress.y_percent>=100}">
-                <div class="state"></div>
-                <span class="name">订</span>
-              </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.material_push_progress.r_push>0 ,'green':itemOrder.material_push_progress.r_push>=100}">
-                <div class="state"></div>
-                <span class="name">库</span>
-              </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.production_weave_progress.product>0 ,'green':itemOrder.production_weave_progress.product>=100}">
-                <div class="state"></div>
-                <span class="name">织</span>
-              </div> -->
             </div>
             <div class="col">
               <div :class="{'stateCtn':true, 'rowFlex':true, 'red':itemOrder.status === 3003,'green':itemOrder.status === 3004,'blue':itemOrder.status === 3002,'orange':itemOrder.status === 3001}">
@@ -293,21 +293,6 @@
             <div class="col middle">
               <span class="opr"
                 @click="$router.push('/sample/sampleOrderDetail/' + (itemOrder.pid || itemOrder.id))">详情</span>
-              <!-- <span class="opr">
-                <el-dropdown @command="handleCommand($event,itemOrder.id)">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'>
-                      <span class="updated">修改</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='delete'>
-                      <span class="delete">删除</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span> -->
             </div>
           </div>
         </div>

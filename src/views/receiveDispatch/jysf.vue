@@ -126,14 +126,14 @@
         <div class="rowCtn">
           <div class="colCtn"
             style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
-            <div class="btn btnWhiteBlue"
-              @click="addLog()">新增记录</div>
+            <!-- <div class="btn btnWhiteBlue"
+              @click="addLog()">新增记录</div> -->
             <div class="btn btnWhiteBlue"
               @click="batchAddLog">批量新增</div>
             <div class="btn btnWhiteBlue"
               @click="otherData.batchFlag = true">批量绑定芯片</div>
-            <div class="btn btnWhiteBlue"
-              @click="saveAll">确认添加</div>
+            <!-- <div class="btn btnWhiteBlue"
+              @click="saveAll">确认添加</div> -->
           </div>
         </div>
         <div class="rowCtn">
@@ -200,132 +200,149 @@
             </div>
           </div>
         </div>
-        <div class="rowCtn"
-          v-if="formData.tableData.length>0">
+        <div class="rowCtn">
           <div class="colCtn"
-            style="padding:32px;width:1272px;background:#FAFAFA">
-            <el-table :data="formData.tableData"
-              style="width:100%">
-              <el-table-column fixed
-                label="产品名称"
-                width="200">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.product_id"
-                    @change="selectProduct($event,scope.$index)"
-                    placeholder="选择产品">
-                    <el-option v-for="item in selectData.productArr"
-                      :key="item.product_id"
-                      :value="item.product_id"
-                      :label="item.product_code + '('+item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name+')'"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column fixed
-                label="尺码颜色"
-                width="200">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.colorSize"
-                    no-data-text="请先选择产品"
-                    placeholder="选择尺码颜色">
-                    <el-option v-for="item in scope.row.colorSizeArr"
-                      :key="item.id"
-                      :value="item.id"
-                      :label="item.name"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column label="织造分配单位"
-                width="200">
-                <template slot-scope="scope">
-                  <el-cascader v-model="scope.row.weave_client_id"
-                    placeholder="选择织造单位"
-                    :options="selectData.weaveClient">
-                  </el-cascader>
-                </template>
-              </el-table-column>
-              <el-table-column label="数量"
-                width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.number"
-                    placeholder="数量"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="捆数"
-                width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.count"
-                    placeholder="捆数"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="次品数量"
-                width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.cpNum"
-                    placeholder="次品数量"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="次品原因"
-                width="200">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.reason"
-                    placeholder="选择次品原因"
-                    collapse-tags
-                    multiple>
-                    <el-option v-for="(item,index) in selectData.defectiveType"
-                      :key="index"
-                      :label="item"
-                      :value="item"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column label="出库单位"
-                width="200">
-                <template slot-scope="scope">
-                  <el-cascader v-model="scope.row.semi_client_id"
-                    placeholder="选择出库单位"
-                    collapse-tags
-                    :disabled="scope.row.back_client_id.length>0"
-                    :props="{multiple:true}"
-                    :options="selectData.semiClient">
-                  </el-cascader>
-                </template>
-              </el-table-column>
-              <el-table-column label="回库单位"
-                width="200">
-                <template slot-scope="scope">
-                  <el-cascader v-model="scope.row.back_client_id"
-                    placeholder="选择回库单位"
-                    collapse-tags
-                    :disabled="scope.row.semi_client_id.length>0"
-                    :props="{multiple:true}"
-                    :options="selectData.semiClient">
-                  </el-cascader>
-                </template>
-              </el-table-column>
-              <el-table-column label="备注信息"
-                width="200">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.desc"
-                    placeholder="输入备注"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="绑定芯片"
-                width="200">
-                <template slot-scope="scope">
-                  <el-switch v-model="scope.row.is_xp"
-                    active-text="绑定"
-                    inactive-text="不绑定">
-                  </el-switch>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作"
-                width="100">
-                <template slot-scope="scope">
-                  <div style="cursor:pointer;color:#F5222D"
-                    @click="formData.tableData.splice(scope.$index,1)">删除</div>
-                </template>
-              </el-table-column>
-            </el-table>
+            style="margin-right:0">
+            <div style="padding:16px 32px;width:1272px;background:#FAFAFA;box-sizing:border-box"
+              v-if="formData.tableData.length > 0">
+              <el-table :data="formData.tableData"
+                style="width:100%">
+                <el-table-column fixed
+                  label="产品名称"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.product_id"
+                      @change="selectProduct($event,scope.$index)"
+                      placeholder="选择产品">
+                      <el-option v-for="item in selectData.productArr"
+                        :key="item.product_id"
+                        :value="item.product_id"
+                        :label="item.product_code + '('+item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name+')'"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed
+                  label="尺码颜色"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.colorSize"
+                      no-data-text="请先选择产品"
+                      placeholder="选择尺码颜色">
+                      <el-option v-for="item in scope.row.colorSizeArr"
+                        :key="item.id"
+                        :value="item.id"
+                        :label="item.name"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="织造分配单位"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-cascader v-model="scope.row.weave_client_id"
+                      placeholder="选择织造单位"
+                      :options="selectData.weaveClient">
+                    </el-cascader>
+                  </template>
+                </el-table-column>
+                <el-table-column label="数量"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.number"
+                      placeholder="数量"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column label="捆数"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.count"
+                      placeholder="捆数"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column label="次品数量"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.cpNum"
+                      placeholder="次品数量"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column label="次品原因"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.reason"
+                      placeholder="选择次品原因"
+                      collapse-tags
+                      multiple>
+                      <el-option v-for="(item,index) in selectData.defectiveType"
+                        :key="index"
+                        :label="item"
+                        :value="item"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="出库单位"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-cascader v-model="scope.row.semi_client_id"
+                      placeholder="选择出库单位"
+                      collapse-tags
+                      :disabled="scope.row.back_client_id.length>0"
+                      :props="{multiple:true}"
+                      :options="selectData.semiClient">
+                    </el-cascader>
+                  </template>
+                </el-table-column>
+                <el-table-column label="回库单位"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-cascader v-model="scope.row.back_client_id"
+                      placeholder="选择回库单位"
+                      collapse-tags
+                      :disabled="scope.row.semi_client_id.length>0"
+                      :props="{multiple:true}"
+                      :options="selectData.semiClient">
+                    </el-cascader>
+                  </template>
+                </el-table-column>
+                <el-table-column label="备注信息"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.desc"
+                      placeholder="输入备注"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column label="绑定芯片"
+                  width="200">
+                  <template slot-scope="scope">
+                    <el-switch v-model="scope.row.is_xp"
+                      active-text="绑定"
+                      inactive-text="不绑定">
+                    </el-switch>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作"
+                  width="100">
+                  <template slot-scope="scope">
+                    <div style="cursor:pointer;color:#F5222D"
+                      @click="formData.tableData.splice(scope.$index,1)">删除</div>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div class="addRows"
+              style="margin:0 32px">
+              <span class="once"
+                v-if="formData.tableData.length === 0"
+                @click="addLog()">新增记录</span>
+              <span class="once cancle"
+                v-if="formData.tableData.length > 0"
+                @click="formData.tableData = []">取消</span>
+              <span class="once normal"
+                v-if="formData.tableData.length > 0"
+                @click="addLog()">新增记录</span>
+              <span class="once ok"
+                v-if="formData.tableData.length > 0"
+                @click="saveAll">确认添加</span>
+            </div>
           </div>
         </div>
       </div>

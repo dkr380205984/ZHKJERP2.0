@@ -54,10 +54,10 @@
       <div class="process hover"
         v-for="(item,index) in processChoose"
         :key="index"
-        :class="{'active':processType===item.name}"
-        @click="getModule(item.name)">
+        :class="{'active':processType===item}"
+        @click="getModule(item)">
         <span class="sort">{{index+1}}</span>
-        <span class="name">{{item.name}}</span>
+        <span class="name">{{item}}</span>
       </div>
       <div class="process">
         <el-dropdown trigger="click"
@@ -79,7 +79,8 @@
     <div class="module progress">
       <div class="line1"
         style="color:#E6A23C">{{rate.insNum}}/{{rate.allNum}}</div>
-      <div class="line2">
+      <div class="line2"
+        style="overflow:hidden">
         <div class="rate"
           :style="{'width':(rate.insNum/rate.allNum*100).toFixed(2)+'%'}"></div>
       </div>
@@ -104,7 +105,7 @@
                     <div class="trow">
                       <div class="tcolumn">尺码颜色</div>
                       <div class="tcolumn">下单数量</div>
-                      <div class="tcolumn">加工数量</div>
+                      <div class="tcolumn">加工检验数量</div>
                       <div class="tcolumn">次品数量</div>
                       <div class="tcolumn">操作</div>
                     </div>
@@ -220,10 +221,6 @@
                 <template slot="append">元</template>
               </el-input>
             </div>
-            <div style="float:right">
-              <div class="btn btnWhiteBlue"
-                @click="saveInspection">确认加工</div>
-            </div>
           </div>
         </div>
         <div class="rowCtn">
@@ -311,6 +308,8 @@
                             style="transform: translate(8px, calc(-100% - 32px));"
                             v-if="itemChild.showCheck">
                             <div class="checkBoxCtn">
+                              <el-checkbox v-model="inspectionForm.checkedAllOption"
+                                @change="checkedAllOption($event,inspectionForm.colorSizeArr)">全选 </el-checkbox>
                               <el-checkbox v-for="(itemCheck,indexCheck) in inspectionForm.colorSizeArr"
                                 :key="indexCheck"
                                 v-model="itemCheck.checked">
@@ -346,6 +345,20 @@
                   </div>
                 </div>
               </div>
+              <div class="addRows">
+                <span class="once"
+                  v-if="inspectionForm.detail.length === 0"
+                  @click="addProcess">新增记录</span>
+                <span class="once cancle"
+                  v-if="inspectionForm.detail.length > 0"
+                  @click="inspectionForm.detail = []">取消</span>
+                <span class="once normal"
+                  v-if="inspectionForm.detail.length > 0"
+                  @click="addProcess">新增记录</span>
+                <span class="once ok"
+                  v-if="inspectionForm.detail.length > 0"
+                  @click="saveInspection">确认加工</span>
+              </div>
             </div>
           </div>
         </div>
@@ -354,7 +367,7 @@
     <div class="module"
       v-if="inspectionList.length>0">
       <div class="titleCtn">
-        <span class="title">检验信息</span>
+        <span class="title">加工检验信息</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -372,7 +385,7 @@
                         style="flex:3">
                         <div class="trow">
                           <div class="tcolumn">配色尺码</div>
-                          <div class="tcolumn">检验数量</div>
+                          <div class="tcolumn">加工检验数量</div>
                           <div class="tcolumn">次品数量</div>
                         </div>
                       </div>
@@ -441,14 +454,16 @@
                     <el-checkbox v-model="checkAll"
                       @change="checkAllLog"></el-checkbox>
                   </div>
+                  <div class="tcolumn">添加日期</div>
                   <div class="tcolumn"
-                    style="flex:1.8">产品名称</div>
+                    style="flex:1.5">产品名称</div>
+                  <div class="tcolumn">颜色尺码</div>
+                  <div class="tcolumn">结算单价</div>
                   <div class="tcolumn"
-                    style="flex:1.8">颜色尺码</div>
-                  <div class="tcolumn"
-                    style="flex:1.8">来源单位/人员</div>
-                  <div class="tcolumn">检验数量</div>
+                    style="flex:1.2">来源单位/人员</div>
+                  <div class="tcolumn"> 加工检验数量 </div>
                   <div class="tcolumn">次品数量</div>
+                  <div class="tcolumn">操作人</div>
                   <div class="tcolumn">操作</div>
                 </div>
               </div>
@@ -461,28 +476,34 @@
                     <el-checkbox v-model="item.checked"
                       @change="$forceUpdate()"></el-checkbox>
                   </span>
+                  <div class="tcolumn">{{item.complete_time}}</div>
                   <div class="tcolumn"
-                    style="flex:1.8">
+                    style="flex:1.5">
                     <span>{{item.product_info.product_code}}</span>
                     <span>{{item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name }}</span>
                   </div>
+                  <div class="tcolumn">{{item.color_name + '/' + item.size_name}}</div>
+                  <div class="tcolumn">{{item.price || '/'}}</div>
                   <div class="tcolumn"
-                    style="flex:1.8">{{item.color_name + '/' + item.size_name}}</div>
-                  <div class="tcolumn"
-                    style="flex:1.8">{{item.inspection_user || item.client_name}}</div>
+                    style="flex:1.2">{{item.inspection_user || item.client_name}}</div>
                   <div class="tcolumn">{{item.number}}</div>
                   <div class="tcolumn"
                     style="color:#F5222D;font-weight:bold;flex-direction:row;align-items:center;justify-content: flex-start;line-height:32px">{{JSON.parse(item.rejects_info).number}}
-                    <span style="color:#1a95ff;cursor:pointer;font-weight:400"
-                      v-if="JSON.parse(item.rejects_info).number"
-                      @click="lookDetail(JSON.parse(item.rejects_info))">(查看原因)</span>
+                    <template v-if="JSON.parse(item.rejects_info).number">
+                      <el-popover placement="right"
+                        width="60"
+                        trigger="click">
+                        {{JSON.parse(item.rejects_info).reason.join(',')}}
+                        <span style="color:#1a95ff;cursor:pointer;font-weight:400"
+                          slot="reference">(查看原因)</span>
+                      </el-popover>
+                    </template>
                   </div>
+                  <div class="tcolumn">{{item.user_name}}</div>
                   <div class="tcolumn"
                     style="flex-direction:row;align-items: center;justify-content: flex-start;">
                     <span style="color:#F5222D;cursor:pointer"
                       @click="deleteLog(item.id,index)">删除</span>
-                    <span style="color:#1a95ff;cursor:pointer;margin-left:10px"
-                      @click="lookDetail(item)">详情</span>
                   </div>
                 </div>
               </div>
@@ -752,6 +773,24 @@ export default {
     }
   },
   methods: {
+    checkedAllOption (e, colroSizeArr) {
+      colroSizeArr.forEach(item => {
+        item.checked = e
+      })
+      this.$forceUpdate()
+    },
+    addProcess () {
+      this.inspectionForm.detail.push({
+        client_auth: '',
+        colorSize: [{
+          showCheck: false,
+          colorSize: '',
+          number: '',
+          substandard: '',
+          reason: []
+        }]
+      })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -860,13 +899,8 @@ export default {
       this.inspectionForm.detail = detail
     },
     createProcess (ev) {
-      console.log(ev)
-      this.processChoose.push({
-        name: ev,
-        id: ev
-      })
+      this.processChoose.push(ev)
       this.processType = ev
-      // this.getModule(ev)
     },
     // 确认检验
     saveInspection () {
@@ -901,7 +935,7 @@ export default {
             size_id: itemChild.colorSize.split('/')[1],
             color_id: itemChild.colorSize.split('/')[0],
             client_id: (item.client_auth[0] !== '所有人员' && item.client_auth[0] !== '常用人员' && item.client_auth[0] !== '工序负责人员') ? item.client_auth[1] : '',
-            inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' ? item.client_auth[1] : '',
+            inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' || item.client_auth[0] === '工序负责人员' ? item.client_auth[1] : '',
             number: itemChild.number,
             rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
             complete_time: this.$getTime(new Date()),
@@ -1205,18 +1239,22 @@ export default {
             label: item.name
           }
         })
+        if (this.processArr.length === 0) {
+          this.$alert('未在设置页面添加任何结算工序，请先添加结算工序！', '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$router.go(-1)
+            }
+          })
+          return
+        }
         this.processArr = this.processArr.slice(3, this.processArr.length)
         // 工序字段初始化一次就够了
         if (!ifFirst) {
-          this.processChoose = res[5].data.data.slice(0, 3).map((item) => {
-            return {
-              name: item.name,
-              id: item.id
-            }
-          })
+          this.processChoose = res[5].data.data.slice(0, 3).map((item) => item.name)
         }
         if (!this.processType) {
-          this.processType = this.processChoose[0].name
+          this.processType = this.processChoose[0]
         }
         this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
         this.companyArr = res[2].data.data.filter((item) => {
@@ -1292,18 +1330,6 @@ export default {
         }, 0)
         this.departmentArr = res[6].data.data
         this.loading = false
-      })
-    },
-    lookDetail (detail) {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '日志详情',
-        message: h('div', null, [
-          h('div', null, [
-            h('span', { style: 'color:#333333' }, '次品原因：'),
-            h('span', { style: 'color:#01B48C' }, detail.reason.join(','))
-          ])
-        ])
       })
     }
   },

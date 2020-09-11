@@ -70,11 +70,11 @@
               style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
               <el-tooltip class="item"
                 effect="dark"
-                :content="checkWhichYarn.length===0?'请选取物料进行批量操作':'批量操作'"
+                :content="checkWhichYarn.length===0?'请选取物料进行批量操作':'批量入库'"
                 placement="top">
                 <div class="btn"
                   :class="{'btnGray':checkWhichYarn.length===0,'btnWhiteBlue':checkWhichYarn.length>0}"
-                  @click="batchBtnClick">批量操作</div>
+                  @click="batchBtnClick">批量入库</div>
               </el-tooltip>
             </div>
           </div>
@@ -350,11 +350,11 @@
               style="display:flex;flex-direction:row;justify-content: flex-end;margin-right:36px">
               <el-tooltip class="item"
                 effect="dark"
-                :content="checkWhichWeave.length===0?'请选取单位进行批量操作':'批量操作'"
+                :content="checkWhichWeave.length===0?'请选取单位进行批量操作':'批量出库'"
                 placement="top">
                 <span class="btn"
                   :class="{'btnGray':checkWhichWeave.length===0,'btnWhiteBlue':checkWhichWeave.length>0}"
-                  @click="batchBtnClickWeave">批量操作</span>
+                  @click="batchBtnClickWeave">批量出库</span>
               </el-tooltip>
             </div>
           </div>
@@ -647,7 +647,7 @@
             <span class="tb_row flex08">{{itemLog.material_color}}</span>
             <span class="tb_row flex08">{{itemLog.total_weight}}</span>
             <span class="tb_row flex08"
-              :class="itemLog.type === 1 ? 'blue' : itemLog.type === 2 ? 'green' : itemLog.type === 3 ? 'green' : 'orange'">{{itemLog.type === 1 ? '出库' : itemLog.type === 2 ? '入库' : itemLog.type === 3 ? '最终入库' : '织造出库'}}</span>
+              :class="itemLog.type === 1 ? 'blue' : itemLog.type === 2 ? 'green' : itemLog.type === 3 ? 'green' : 'orange'">{{itemLog.type === 1 ? '出库' : itemLog.type === 2 ? '入库' : itemLog.type === 3 ? '最终入库' : ($route.params.type === '2' ? '加工出库' : '织造出库')}}</span>
             <span class="tb_row flex08">{{itemLog.user_name}}</span>
             <span class="tb_row middle flex08">
               <span class="tb_handle_btn red"
@@ -764,7 +764,7 @@
                         <template v-else>无</template>
                       </span>
                       <span class="tcolumn"
-                        v-html="$getZHTimeFormat(itemColor.complete_time)"></span>
+                        v-html="$getZHTimeFormat(itemColor.deliver_time)"></span>
                     </span>
                   </span>
                 </span>
@@ -836,7 +836,7 @@
                             <template v-else>无</template>
                           </span>
                           <span class="tcolumn"
-                            v-html="$getZHTimeFormat(itemColor.complete_time)"></span>
+                            v-html="$getZHTimeFormat(itemColor.deliver_time)"></span>
                         </span>
                       </span>
                     </span>
@@ -981,7 +981,7 @@ export default {
           label: '最终入库'
         }, {
           value: 4,
-          label: '织造出库'
+          label: this.$route.params.type === '2' ? '加工出库' : '织造出库'
         }
       ],
       showFilterClientBox: false,
@@ -1434,7 +1434,7 @@ export default {
       if (exceedMaterialInfo.length > 0) {
         this.$message.error({
           dangerouslyUseHTMLString: true,
-          message: '检测到您所织造出库的原料大于已入库数<br />请做出调整；具体超出信息：<br />' + exceedMaterialInfo.join('<br />')
+          message: `检测到您所${this.$route.params.type === '2' ? '加工出库' : '织造出库'}的原料大于已入库数<br />请做出调整；具体超出信息：<br />` + exceedMaterialInfo.join('<br />')
         })
         return
       }
@@ -1888,7 +1888,7 @@ export default {
         order_id: this.$route.params.id
       }).then(res => {
         if (res.data.status !== false) {
-          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['material_name'], childrenName: 'source_info', childrenRule: { mainRule: ['client_name', 'type_source', 'stock_name'], childrenName: 'color_info', childrenRule: { mainRule: 'before_color/color_code', otherRule: [{ name: 'weight', type: 'add' }, { name: 'type' }, { name: 'unit' }, { name: 'desc' }, { name: 'complete_time' }] } } })
+          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['material_name'], childrenName: 'source_info', childrenRule: { mainRule: ['client_name', 'type_source', 'stock_name'], childrenName: 'color_info', childrenRule: { mainRule: 'before_color/color_code', otherRule: [{ name: 'weight', type: 'add' }, { name: 'type' }, { name: 'unit' }, { name: 'desc' }, { name: 'complete_time' }, { name: 'deliver_time' }] } } })
           this.totalInfo.order = data
         }
       })
@@ -1901,7 +1901,7 @@ export default {
         order_id: this.$route.params.id
       }).then(res => {
         if (res.data.status !== false) {
-          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['client_name'], childrenName: 'process_info', childrenRule: { mainRule: 'process_type', childrenName: 'material_info', childrenRule: { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: 'material_color', otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'complete_time' }, { name: 'type' }] } } } })
+          let data = this.$mergeData(res.data.data.filter(item => +item.type === +this.$route.params.type), { mainRule: ['client_name'], childrenName: 'process_info', childrenRule: { mainRule: 'process_type', childrenName: 'material_info', childrenRule: { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: 'material_color', otherRule: [{ name: 'weight', type: 'add' }, { name: 'unit' }, { name: 'complete_time' }, { name: 'deliver_time' }, { name: 'type' }] } } } })
           this.totalInfo.process = data
         }
       })

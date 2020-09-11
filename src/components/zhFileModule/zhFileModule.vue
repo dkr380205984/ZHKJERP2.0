@@ -182,7 +182,8 @@ export default {
                   name: itemF.replace('https://zhihui.tlkrzf.com/', ''),
                   url: itemF
                 }
-              })
+              }),
+              remark: itemM.desc
             }
           })
         }

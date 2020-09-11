@@ -673,7 +673,7 @@ export default {
     changeLossInner (item, type, productionNum) {
       let totalNum = item.number * item.need_number * productionNum
       if (type === 'loss') {
-        if (totalNum && item.material_loss) {
+        if (totalNum && (item.material_loss || item.material_loss === 0)) {
           item.end_num = this.numberAutoMethod(item.type === 1 ? (totalNum / 1000 * (1 + item.material_loss / 100)) : (totalNum * (1 + item.material_loss / 100)))
         }
       } else if (type === 'end_num') {

@@ -178,6 +178,16 @@
         <span class="name">半成品加工</span>
       </div>
       <div class="cut_item"
+        :class="{'active':type === '成品加工'}"
+        @click="type = '成品加工'"
+        v-if="clientInfo.type.some(itemS => (itemS >= 29&& itemS <= 34))">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-zhizaojiagong"></use>
+        </svg>
+        <span class="name">成品加工</span>
+      </div>
+      <div class="cut_item"
         :class="{'active':type === '包装订购'}"
         @click="type = '包装订购'"
         v-if="clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))">
@@ -1271,6 +1281,177 @@
             </div>
           </div>
         </template>
+        <!-- 成品加工 -->
+        <template v-if="clientInfo.type.some(itemS => (itemS >= 29 && itemS <= 34)) && type === '成品加工'">
+          <div class="filterCtn2">
+            <div class="leftCtn">
+              <span class="label">筛选条件：</span>
+              <div class="filter_line">
+                <el-input class="filter_item"
+                  v-model="product_code"
+                  @change="getList(1)"
+                  placeholder="输入产品编号查询">
+                </el-input>
+                <el-input class="filter_item"
+                  v-model="order_code"
+                  @change="getList(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
+                <el-select class="filter_item"
+                  v-model="group_id"
+                  @change="getList(1)"
+                  placeholder="搜索小组名称查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in groupList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-select class="filter_item"
+                  v-model="operate_user"
+                  @change="getList(1)"
+                  placeholder="搜索创建人查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in authList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-date-picker v-model="date"
+                  style="width:250px"
+                  class="filter_item"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="getList(1)">
+                </el-date-picker>
+                <div class="resetBtn"
+                  @click="reset">重置</div>
+              </div>
+            </div>
+          </div>
+          <div class="list">
+            <div class="title">
+              <div class="col flex07">
+                <el-checkbox v-model="checkAll">全选</el-checkbox>
+              </div>
+              <div class="col">
+                <span class="text">创建日期</span>
+              </div>
+              <div class="col">
+                <span class="text">加工单位/人员</span>
+              </div>
+              <div class="col">
+                <span class="text">关联单号</span>
+              </div>
+              <div class="col"
+                style="flex:1.5">
+                <span class="text">产品信息</span>
+              </div>
+              <div class="col">
+                <span class="text">尺码颜色</span>
+              </div>
+              <div class="col flex07">
+                <span class="text">数量</span>
+              </div>
+              <div class="col flex07">
+                <span class="text">单价</span>
+              </div>
+              <div class="col">
+                <span class="text">次品信息</span>
+              </div>
+              <div class="col">
+                <span class="text">备注</span>
+              </div>
+              <div class="col">
+                <span class="text">创建人</span>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in list"
+              :key="index">
+              <div class="col flex07">
+                <el-checkbox v-model="item.checked"
+                  @change="$forceUpdate()"></el-checkbox>
+              </div>
+              <div class="col">
+                <span class="text">{{item.complete_time}}</span>
+              </div>
+              <div class="col">
+                <span class="text">
+                  <span class="green">{{item.product_flow}}</span>
+                  <br />
+                  <span>{{item.client_name || item.inspection_user}}</span>
+                </span>
+              </div>
+              <div class="col">
+                <span class="text blue"
+                  style="cursor:pointer"
+                  @click="$router.push(`/order/orderDetail/${item.order_id}`)">{{item.order_code}}</span>
+              </div>
+              <div class="col"
+                style="flex:1.5">
+                {{item.product_info.product_code}}
+                <br />
+                {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+              </div>
+              <div class="col">
+                <div class="text">
+                  {{item.size_name}}
+                  <br />
+                  {{item.color_name}}
+                </div>
+              </div>
+              <div class="col flex07">
+                <span class="text">{{item.number}}</span>
+              </div>
+              <div class="col flex07">
+                <span class="text">{{item.price || '/'}}</span>
+              </div>
+              <div class="col">
+                <span class="green"
+                  v-if="item.rejects_info===0">无次品</span>
+                <el-popover placement="right"
+                  v-else
+                  width="100"
+                  trigger="click">
+                  次品数量：{{item.rejects_info.number}}
+                  <br />
+                  次品原因:{{item.rejects_info.reason ? item.rejects_info.reason.join(',') : ''}}
+                  <span class="blue"
+                    slot="reference"
+                    style="cursor:pointer">有次品(查看)</span>
+                </el-popover>
+              </div>
+              <div class="col">
+                <span class="text">{{item.desc?item.desc:'暂无'}}</span>
+              </div>
+              <div class="col">
+                <span class="text">{{item.user_name}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="statistics">
+            <div class="oneBox">
+              <div class="label">平均价格:</div>
+              <div class="content">{{statistics.finished_product.avg_price}}元</div>
+            </div>
+            <div class="oneBox">
+              <div class="label">数量:</div>
+              <div class="content">{{$formatNum(statistics.finished_product.total_number)}}</div>
+            </div>
+            <div class="oneBox">
+              <div class="label">总价:</div>
+              <div class="content">{{$formatNum(statistics.finished_product.total_price)}}元</div>
+            </div>
+          </div>
+        </template>
         <!-- 包装订购 -->
         <template v-if="clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8)) && type === '包装订购'">
           <div class="filterCtn2">
@@ -2109,7 +2290,7 @@
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
-import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, statistics } from '@/assets/js/api.js'
+import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, statistics, inspection } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2160,6 +2341,11 @@ export default {
           total_number: 0
         },
         semi_product: {
+          avg_price: 0,
+          total_price: 0,
+          total_number: 0
+        },
+        finished_product: {
           avg_price: 0,
           total_price: 0,
           total_number: 0
@@ -2247,7 +2433,7 @@ export default {
         this.downLoadInfoArr.push({
           checked: true,
           name: '物料订购调取',
-          isGetting: 2, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
           propgress: 0 // 进度
         })
       }
@@ -2279,6 +2465,14 @@ export default {
         this.downLoadInfoArr.push({
           checked: true,
           name: '半成品加工',
+          isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+          propgress: 0 // 进度
+        })
+      }
+      if (this.clientInfo.type.some(itemS => (itemS >= 29 && itemS <= 34))) {
+        this.downLoadInfoArr.push({
+          checked: true,
+          name: '成品加工',
           isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
           propgress: 0 // 进度
         })
@@ -2629,6 +2823,68 @@ export default {
           console.log(error)
           item.isGetting = 3
         })
+      } else if (item.name === '成品加工') {
+        inspection.finishedDetail({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map((item) => {
+              if (item.rejects_info) {
+                item.rejects_info = JSON.parse(item.rejects_info)
+                if (!item.rejects_info.number) {
+                  item.rejects_info = 0
+                }
+              }
+              item.client_or_user_name = item.client_name || item.inspection_user
+              item.product_code = item.product_info.product_code
+              item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+              if (item.rejects_info !== 0) {
+                item.rejects_number = item.rejects_info.number
+                item.rejects_infos = item.rejects_info.reason ? item.rejects_info.reason.join(',') : ''
+              } else {
+                item.rejects_number = 0
+                item.rejects_infos = ''
+              }
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '创建日期', key: 'complete_time' },
+                { title: '加工类型', key: 'product_flow' },
+                { titla: '加工单位', key: 'client_or_user_name' },
+                { title: '关联单号', key: 'order_code' },
+                { title: '产品编号', key: 'product_code' },
+                { title: '产品品类', key: 'product_types' },
+                { title: '尺码', key: 'size_name' },
+                { title: '颜色', key: 'color_name' },
+                { title: '数量', key: 'number' },
+                { title: '次品数量', key: 'rejects_number' },
+                { title: '次品原因', key: 'rejects_infos' },
+                { title: '备注', key: 'desc' },
+                { title: '操作人', key: 'user_name' }
+              ], false, `成品加工-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
       } else if (item.name === '包装订购') {
         packPlan.packOrderLog({
           limit: limit,
@@ -2834,6 +3090,8 @@ export default {
           this.type = '织造分配'
         } else if (this.clientInfo.type.some(itemS => (itemS >= 15 && itemS <= 28))) {
           this.type = '半成品加工'
+        } else if (this.clientInfo.type.some(itemS => (itemS >= 29 && itemS <= 34))) {
+          this.type = '成品加工'
         } else if (this.clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))) {
           this.type = '包装订购'
         } else if (this.clientInfo.type.some(itemS => (itemS >= 35 && itemS <= 36))) {
@@ -3040,6 +3298,41 @@ export default {
           })
           this.total = res.data.meta.total
           this.statistics.semi_product = {
+            avg_price: res.data.avg_price,
+            total_price: res.data.total_price,
+            total_number: res.data.total_number
+          }
+          this.loading = false
+          this.loadingStatistics = false
+        })
+      } else if (this.type === '成品加工') {
+        inspection.finishedDetail({
+          order_type: null,
+          order_id: null,
+          limit: 10,
+          page: this.pages,
+          order_code: this.order_code,
+          product_code: this.product_code,
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          operate_user: this.operate_user,
+          group_id: this.group_id,
+          client_id: this.$route.params.id
+        }).then(res => {
+          this.list = res.data.data.map(itemM => {
+            if (itemM.rejects_info) {
+              itemM.rejects_info = JSON.parse(itemM.rejects_info)
+              if (!itemM.rejects_info.number) {
+                itemM.rejects_info = 0
+              }
+            }
+            return {
+              ...itemM,
+              checked: false
+            }
+          })
+          this.total = res.data.meta.total
+          this.statistics.finished_product = {
             avg_price: res.data.avg_price,
             total_price: res.data.total_price,
             total_number: res.data.total_number
@@ -3287,7 +3580,7 @@ export default {
   watch: {
     type (newVal) {
       this.group_id = ''
-      if (newVal === '所有订单' || newVal === '包装订购' || newVal === '物料预定购' || newVal === '销售出库' || newVal === '装箱出库') {
+      if (newVal === '所有订单' || newVal === '成品加工' || newVal === '包装订购' || newVal === '物料预定购' || newVal === '销售出库' || newVal === '装箱出库') {
         this.order_type = 1
       } else {
         this.order_type = 0
@@ -3298,16 +3591,6 @@ export default {
       this.list.forEach(item => {
         item.checked = newVal
       })
-      // },
-      // downLoadInfoArr: {
-      //   deep: true,
-      //   handler (newVal) {
-      //     if (this.isDownLoading === 2) {
-      //       if (!newVal.filter(itemF => itemF.checked).map(item => item.isGetting).includes(1)) {
-      //         this.isDownLoading = 3
-      //       }
-      //     }
-      //   }
     },
     downLoadInfoArr: {
       deep: true,
@@ -3344,6 +3627,8 @@ export default {
         return 4
       } else if (this.type === '半成品加工') {
         return 5
+      } else if (this.type === '成品加工') {
+        return 10
       } else if (this.type === '包装订购') {
         return 6
       } else if (this.type === '装箱出库') {
