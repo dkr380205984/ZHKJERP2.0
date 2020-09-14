@@ -449,6 +449,7 @@
                     style="flex:1.8">来源单位/人员</div>
                   <div class="tcolumn">检验数量</div>
                   <div class="tcolumn">次品数量</div>
+                  <div class="tcolumn">单价</div>
                   <div class="tcolumn">操作</div>
                 </div>
               </div>
@@ -477,6 +478,7 @@
                       v-if="JSON.parse(item.rejects_info).number"
                       @click="lookDetail(JSON.parse(item.rejects_info))">(查看原因)</span>
                   </div>
+                  <div class="tcolumn">{{item.price}}</div>
                   <div class="tcolumn"
                     style="flex-direction:row;align-items: center;justify-content: flex-start;">
                     <span style="color:#F5222D;cursor:pointer"
@@ -905,6 +907,7 @@ export default {
             number: itemChild.number,
             rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
             complete_time: this.$getTime(new Date()),
+            price: this.inspectionForm.price,
             desc: ''
           })
         })
