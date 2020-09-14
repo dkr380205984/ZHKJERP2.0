@@ -764,7 +764,7 @@
                         <template v-else>无</template>
                       </span>
                       <span class="tcolumn"
-                        v-html="$getZHTimeFormat(itemColor.deliver_time)"></span>
+                        v-html="itemColor.deliver_time ? $getZHTimeFormat(itemColor.deliver_time) : '未获取到交货日期'"></span>
                     </span>
                   </span>
                 </span>
@@ -836,7 +836,7 @@
                             <template v-else>无</template>
                           </span>
                           <span class="tcolumn"
-                            v-html="$getZHTimeFormat(itemColor.deliver_time)"></span>
+                            v-html="itemColor.deliver_time ? $getZHTimeFormat(itemColor.deliver_time) : '未获取到交货日期'"></span>
                         </span>
                       </span>
                     </span>

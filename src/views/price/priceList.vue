@@ -4,25 +4,26 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/price/priceCreate')">添加报价</div>
+        </div>
         <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <div class="filter_line">
               <el-input class="filter_item"
-                style="width:160px"
                 v-model="keyword"
                 @change="changeRouter(1)"
                 placeholder="输入编号按回车键查询">
               </el-input>
               <el-input class="filter_item"
-                style="width:160px"
                 v-model="keyword_name"
                 @change="changeRouter(1)"
                 placeholder="输入报价单名称按回车键查询">
               </el-input>
               <el-cascader v-model="client_id"
                 class="filter_item"
-                style="width:160px"
                 :show-all-levels='false'
                 placeholder="筛选公司"
                 :options="clientArr"
@@ -33,7 +34,6 @@
                 filterable></el-cascader>
               <el-select v-model="user_id"
                 class="filter_item"
-                style="width:160px"
                 @change="changeRouter(1)"
                 filterable
                 clearable
@@ -44,9 +44,13 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <div class="resetBtn"
+                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="openHiddleFilter ? false : 'hiddle'">
               <el-select v-model="status"
                 class="filter_item"
-                style="width:160px"
                 @change="changeRouter(1)"
                 filterable
                 clearable
@@ -69,14 +73,14 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
-              <div class="resetBtn"
-                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
             </div>
           </div>
-        </div>
-        <div class="addCtn">
-          <div class="btn btnBlue"
-            @click="$router.push('/price/priceCreate')">添加报价</div>
+          <div class="rightCtn"
+            @click="openHiddleFilter = !openHiddleFilter">
+            {{openHiddleFilter ? '收起' : '展开'}}
+            <span class="el-icon-arrow-down openIcon"
+              :class="openHiddleFilter ? 'active' : false"></span>
+          </div>
         </div>
         <div class="list">
           <div class="title">
@@ -171,6 +175,7 @@ export default {
   data () {
     return {
       has_check: window.sessionStorage.getItem('has_check'),
+      openHiddleFilter: false,
       loading: true,
       searchTypeFlag: false,
       searchUserName: false,
@@ -325,7 +330,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
-      this.keyword_name = params.keyword_name
+      this.keyword_name = params.keyword_name || ''
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {

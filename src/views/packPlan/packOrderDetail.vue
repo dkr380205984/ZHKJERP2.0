@@ -150,7 +150,7 @@
                     </span>
                   </span>
                   <span class="tcolumn"
-                    v-html="$getZHTimeFormat(itemTime.compiled_time)"></span>
+                    v-html="itemTime.compiled_time ? $getZHTimeFormat(itemTime.compiled_time) : '未获取到交货日期'"></span>
                   <span class="tcolumn center">
                     <div class="btn noBorder noMargin"
                       @click="$openUrl('/packOrderTable/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">打印</div>
