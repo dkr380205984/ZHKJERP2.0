@@ -461,7 +461,7 @@
                   <div class="tcolumn">结算单价</div>
                   <div class="tcolumn"
                     style="flex:1.2">来源单位/人员</div>
-                  <div class="tcolumn"> 加工检验数量 </div>
+                  <div class="tcolumn"> 检验数量 </div>
                   <div class="tcolumn">次品数量</div>
                   <div class="tcolumn">操作人</div>
                   <div class="tcolumn">操作</div>
@@ -483,7 +483,7 @@
                     <span>{{item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name }}</span>
                   </div>
                   <div class="tcolumn">{{item.color_name + '/' + item.size_name}}</div>
-                  <div class="tcolumn">{{item.price || '/'}}</div>
+                  <div class="tcolumn">{{item.price || '0'}}</div>
                   <div class="tcolumn"
                     style="flex:1.2">{{item.inspection_user || item.client_name}}</div>
                   <div class="tcolumn">{{item.number}}</div>
@@ -939,6 +939,7 @@ export default {
             number: itemChild.number,
             rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
             complete_time: this.$getTime(new Date()),
+            price: this.inspectionForm.price,
             desc: ''
           })
         })

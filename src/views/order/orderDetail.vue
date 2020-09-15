@@ -438,6 +438,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
+        <span class="btn btnBlue"
+          style="float:right;margin-top:12px"
+          @click="showPricePopup = true">导入报价单</span>
       </div>
       <div class="detailCtn">
         <div class="flexTb">
@@ -466,10 +469,16 @@
                   :key="indexPrice">
                   <span class="tcolumn"
                     :class="{'noData':!itemPrice.number && !itemPrice.name}">{{itemPrice.number ? $toFixed(itemPrice.number) + item.unit : ''}}</span>
-                  <span class="tcolumn green"
-                    :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? $toFixed(itemPrice.total_price) + (item.priceUnit ? item.priceUnit : '元') : ''}}</span>
                   <span class="tcolumn"
-                    :class="{'noData':!itemPrice.pre_price}">{{itemPrice.pre_price ? $toFixed(itemPrice.pre_price) + (item.priceUnit ? item.priceUnit : '元') + '/' + item.unit: ''}}</span>
+                    :class="{'noData':!itemPrice.total_price}">{{itemPrice.total_price ? $toFixed(itemPrice.total_price) + (item.priceUnit ? item.priceUnit : '元') : ''}}
+                    <span v-if="itemPrice.total_price && nativeOrder.quotation_id && index!==2 && index!==4  && index!==9 && index!==10"
+                      :class="{'green':itemPrice.total_price<=itemPrice.plan_total_price,'red':itemPrice.total_price>itemPrice.plan_total_price}">报价{{itemPrice.plan_total_price}}元,同比{{itemPrice.total_price>itemPrice.plan_total_price?'增长':'下降'}} {{Math.abs($toFixed((itemPrice.total_price-itemPrice.plan_total_price)/itemPrice.plan_total_price*100))}}%</span>
+                  </span>
+                  <span class="tcolumn"
+                    :class="{'noData':!itemPrice.pre_price}">{{itemPrice.pre_price ? $toFixed(itemPrice.pre_price) + (item.priceUnit ? item.priceUnit : '元') + '/' + item.unit: ''}}
+                    <span v-if="itemPrice.pre_price && nativeOrder.quotation_id &&  index!==1 && index!==0 && index!==3  && index!==2 && index!==4 && index!==9 && index!==10"
+                      :class="{'green':itemPrice.pre_price<=itemPrice.plan_pre_price,'red':itemPrice.pre_price>itemPrice.plan_pre_price}">报价{{itemPrice.plan_pre_price}}元,同比{{itemPrice.pre_price>itemPrice.plan_pre_price?'增长':'下降'}} {{Math.abs($toFixed((itemPrice.pre_price-itemPrice.plan_pre_price)/itemPrice.plan_pre_price*100))}}%</span>
+                  </span>
                 </span>
               </span>
               <span class="tcolumn"
@@ -1329,6 +1338,69 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showPricePopup">
+      <div class="main"
+        style="width:600px">
+        <div class="title">
+          <span class="text">绑定报价单</span>
+          <span class="el-icon-close"
+            @click="showPricePopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div style="font-size:14px;background:#eee;padding:8px;broder-radius:4px;width:100%">不知道报价单编号?前往<span style="color:#1a95ff;cursor:pointer"
+                @click="openPrice()">报价单列表</span>筛选
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">搜索报价单：</div>
+            <div class="info">
+              <el-autocomplete v-model="priceCode"
+                :fetch-suggestions="getPriceList"
+                placeholder="请输入报价单编号搜索"
+                :trigger-on-focus="false"
+                @select="getPriceInfo($event.id)">
+              </el-autocomplete>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">报价编号：</div>
+            <div class="info text">{{priceInfo.price_code}}</div>
+          </div>
+          <div class="row">
+            <div class="label">报价名称：</div>
+            <div class="info text">{{priceInfo.price_name||'无'}}</div>
+          </div>
+          <div class="row">
+            <div class="label">外贸公司：</div>
+            <div class="info text">{{priceInfo.client_name}}</div>
+          </div>
+          <div class="row">
+            <div class="label">图片信息：</div>
+            <span class="info imgCtn"
+              v-if="priceInfo.imgArr.length>0">
+              <el-image style="width: 80px; height: 80px"
+                :src="priceInfo.imgArr[0]"
+                :preview-src-list="priceInfo.imgArr">
+              </el-image>
+            </span>
+            <span class="info text"
+              v-else>待选择</span>
+          </div>
+        </div>
+        <div class="opr">
+          <div style="display:flex">
+            <div class="btn btnGray"
+              @click="showPricePopup = false">取消</div>
+          </div>
+          <div style="display:flex">
+            <div class="btn btnBlue"
+              @click="bindPrice">确认绑定</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -1344,7 +1416,7 @@
 
 <script>
 import { moneyArr } from '@/assets/js/dictionary.js'
-import { order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1466,10 +1538,136 @@ export default {
       showOkPopup: false,
       actualProductInfo: [],
       // 文件更新模块
-      showUpdateFilePopup: false
+      showUpdateFilePopup: false,
+      showPricePopup: false,
+      priceInfo: {
+        price_code: '待选择',
+        price_name: '待选择',
+        client_name: '待选择',
+        imgArr: []
+      },
+      price_sts: {
+        materialOrderPricePlan: 0,
+        materialOrderTotalPlan: 0,
+        materialProcessPricePlan: 0,
+        materialProcessTotalPlan: 0,
+        weavePricePlan: 0,
+        weaveTotalPlan: 0,
+        semiProcessPricePlan: 0,
+        semiProcessTotalPlan: 0,
+        finishedProcessPricePlan: 0,
+        finishedProcessTotalPlan: 0,
+        packPricePlan: 0,
+        packTotalPlan: 0
+      },
+      priceCode: '',
+      productAllNumber: 0,
+      nativeOrder: {
+        quotation_id: null
+      }
     }
   },
   methods: {
+    // 绑定报价单
+    bindPrice () {
+      if (!this.priceInfo.id) {
+        this.$message.error('请先选择报价单')
+        return
+      }
+      this.loading = true
+      this.nativeOrder.quotation_id = this.priceInfo.id
+      order.create(this.nativeOrder).then(res => {
+        if (res.data.status) {
+          this.$message.success('绑定成功')
+          this.showPricePopup = false
+          this.init()
+        }
+      })
+    },
+    // 搜索报价单
+    getPriceList (queryString, cb) {
+      price.list({
+        code: queryString,
+        limit: 9999
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.priceList = res.data.data.map(item => {
+            return {
+              value: item.quotation_code,
+              id: item.id
+            }
+          })
+          cb(this.priceList)
+        }
+      })
+    },
+    // 导入报价单
+    getPriceInfo (id) {
+      this.loading = true
+      price.detail({
+        id: id
+      }).then(res => {
+        let data = res.data.data
+        this.priceInfo = {
+          id: data.id,
+          price_name: data.name,
+          price_code: data.quotation_code,
+          client_name: data.client_name,
+          imgArr: data.file_url || [require('@/assets/image/index/noPic.jpg')]
+        }
+        this.loading = false
+      })
+    },
+    openPrice () {
+      window.open('/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id=')
+    },
+    getPrice (id) {
+      this.loading = true
+      price.detail({
+        id: id
+      }).then((res) => {
+        let data = res.data.data
+        this.price_sts.materialOrderPricePlan = JSON.parse(data.material_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0)
+        this.price_sts.materialOrderTotalPlan = this.price_sts.materialOrderPricePlan * this.productAllNumber
+        this.price_sts.materialProcessPricePlan = data.assist_info ? JSON.parse(data.assist_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0) : 0
+        this.price_sts.materialProcessTotalPlan = this.price_sts.materialProcessPricePlan * this.productAllNumber
+        this.price_sts.weavePricePlan = JSON.parse(data.weave_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0)
+        this.price_sts.weaveTotalPlan = this.price_sts.weavePricePlan * this.productAllNumber
+        this.price_sts.semiProcessPricePlan = JSON.parse(data.semi_product_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0)
+        this.price_sts.semiProcessTotalPlan = this.price_sts.semiProcessPricePlan * this.productAllNumber
+        this.price_sts.finishedProcessPricePlan = JSON.parse(data.production_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0)
+        this.price_sts.finishedProcessTotalPlan = this.price_sts.finishedProcessPricePlan * this.productAllNumber
+        this.price_sts.packPricePlan = JSON.parse(data.pack_material_info).reduce((total, current) => {
+          return total + Number(current.total_price)
+        }, 0)
+        this.price_sts.packTotalPlan = this.price_sts.packPricePlan * this.productAllNumber
+        this.orderDetailInfo.finance.finance[0].price_info[0].plan_pre_price = this.$toFixed(data.total_price / data.exchange_rate * 100)
+        this.orderDetailInfo.finance.finance[0].price_info[0].plan_total_price = this.$toFixed(this.orderDetailInfo.finance.finance[0].price_info[0].plan_pre_price * this.productAllNumber)
+        this.orderDetailInfo.finance.finance[1].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.materialOrderPricePlan)
+        this.orderDetailInfo.finance.finance[1].price_info[0].plan_total_price = this.$toFixed(this.price_sts.materialOrderTotalPlan)
+        this.orderDetailInfo.finance.finance[3].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.materialProcessPricePlan)
+        this.orderDetailInfo.finance.finance[3].price_info[0].plan_total_price = this.$toFixed(this.price_sts.materialProcessTotalPlan)
+        this.orderDetailInfo.finance.finance[5].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.weavePricePlan)
+        this.orderDetailInfo.finance.finance[5].price_info[0].plan_total_price = this.$toFixed(this.price_sts.weaveTotalPlan)
+        this.orderDetailInfo.finance.finance[6].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.semiProcessPricePlan)
+        this.orderDetailInfo.finance.finance[6].price_info[0].plan_total_price = this.$toFixed(this.price_sts.semiProcessTotalPlan)
+        this.orderDetailInfo.finance.finance[7].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.finishedProcessPricePlan)
+        this.orderDetailInfo.finance.finance[7].price_info[0].plan_total_price = this.$toFixed(this.price_sts.finishedProcessTotalPlan)
+        this.orderDetailInfo.finance.finance[8].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.packPricePlan)
+        this.orderDetailInfo.finance.finance[8].price_info[0].plan_total_price = this.$toFixed(this.price_sts.packTotalPlan)
+        this.loading = false
+      })
+    },
     // 获取预警列表
     getWarnList () {
       warnSetting.list().then(res => {
@@ -1540,7 +1738,10 @@ export default {
           id: this.$route.params.id
         })
       ]).then(res => {
+        this.nativeOrder = this.$clone(res[0].data.data) // 克隆一份原生的订单数据
         this.orderInfo = res[0].data.data
+        console.log(this.orderInfo)
+        console.log(this.orderInfo.contact_name)
         this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
           return {
@@ -1576,19 +1777,26 @@ export default {
         this.product_order_total_number = numArr.length > 0 ? numArr.reduce((a, b) => a + b) : 0
         res[0].data.data.batch_info.forEach(itemBatch => {
           itemBatch.product_info.forEach(itemPro => {
-            if (!productList.find(item => item.product_id === itemPro.product_id)) {
+            let finded = productList.find(item => item.product_id === itemPro.product_id)
+            if (!finded) {
               productList.push({
                 product_id: itemPro.product_id,
                 size: itemPro.all_size,
                 color: itemPro.all_color,
                 image: itemPro.image,
                 product_code: itemPro.product_code,
-                category_info: itemPro.category_info
+                category_info: itemPro.category_info,
+                numbers: itemPro.numbers
               })
+            } else {
+              finded.numbers += itemPro.numbers
             }
           })
         })
         this.productList = productList
+        this.productAllNumber = productList.reduce((total, current) => {
+          return total + Number(current.numbers)
+        }, 0)
         // 处理流程时间线
         let nowDate = this.$getTime()
         let timeArr = this.orderInfo.batch_info.map(item => {
@@ -1703,6 +1911,10 @@ export default {
           this.canSeePriceFlag = true
         }
         this.loading = false
+        // 如果有报价单需要单独处理报价单
+        if (this.nativeOrder.quotation_id) {
+          this.getPrice(this.nativeOrder.quotation_id)
+        }
       })
     },
     // 物料概述
@@ -2206,7 +2418,6 @@ export default {
         order_type: 1
       }).then(res => {
         if (res.data.status !== false) {
-          console.log(res)
           this.orderDetailInfo.finance.deductPrice = res.data.data
         }
         this.loading = false

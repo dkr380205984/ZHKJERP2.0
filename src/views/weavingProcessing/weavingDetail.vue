@@ -1706,6 +1706,7 @@ export default {
         }
       })
       productInfo.forEach((item) => {
+        item.part_data = item.part_data.filter((item) => Number(item.need_weave) === 1)
         item.part_data.forEach((itemChild) => {
           itemChild.number = itemChild.size_info.find((itemFind) => itemFind.size_id === item.size_id).number * item.production_number
           itemChild.color = item.color_name

@@ -299,7 +299,7 @@
                       collapse-tags
                       :disabled="scope.row.semi_client_id.length>0"
                       :props="{multiple:true}"
-                      :options="selectData.semiClient">
+                      :options="selectData.backClient">
                     </el-cascader>
                   </template>
                 </el-table-column>
@@ -1070,6 +1070,50 @@ export default {
             return itemSome <= 28 || itemSome >= 15
           })
         }).map((item) => {
+          return {
+            label: item.name,
+            value: item.id
+          }
+        })
+      }]
+      this.selectData.backClient = [{
+        value: '已分配单位',
+        label: '已分配单位',
+        children: this.$mergeData(allocation.filter((item) => item.process !== '织造'), {
+          mainRule: ['client_id', 'process'],
+          otherRule: [{ name: 'client_name' }]
+        }).map((item) => {
+          return {
+            value: item.client_id + '/' + item.process,
+            label: item.client_name + '/' + item.process
+          }
+        })
+      }, {
+        value: '半成品加工单位',
+        label: '半成品加工单位',
+        children: resArr[1].data.data.filter((item) => {
+          return item.type.some((itemSome) => {
+            return itemSome <= 28 || itemSome >= 15
+          })
+        }).map((item) => {
+          return {
+            label: item.name,
+            value: item.id
+          }
+        })
+      }, {
+        value: '针织织造单位',
+        label: '针织织造单位',
+        children: resArr[1].data.data.filter((item) => item.type.indexOf(14) !== -1).map((item) => {
+          return {
+            label: item.name,
+            value: item.id
+          }
+        })
+      }, {
+        label: '梭织织造单位',
+        value: '梭织织造单位',
+        children: resArr[1].data.data.filter((item) => item.type.indexOf(13) !== -1).map((item) => {
           return {
             label: item.name,
             value: item.id
