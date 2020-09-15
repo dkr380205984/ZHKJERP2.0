@@ -356,6 +356,9 @@
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span>
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0"
+                      @click="openPrintQrCode(item)">打印二维码</span>
                   </div>
                 </div>
               </div>
@@ -515,7 +518,8 @@
                           <div class="tcolumn"
                             style="text-align: center;flex-direction: row;align-items: center;">
                             无法统计原料分配信息，这可能是因为物料计划单未
-                            <span class="blue">填写</span></div>
+                            <span class="blue">填写</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -857,56 +861,6 @@
         </div>
       </div>
     </div>
-    <!-- 操作记录 -->
-    <!-- <div class="popup"
-      v-show="deductLogPopupFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">扣款记录</div>
-          <i class="el-icon-close"
-            @click="deductLogPopupFlag=false"></i>
-        </div>
-        <div class="content">
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in deductLogList"
-              :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?item.complete_time:'有问题'}}</span>
-                    <span style="margin-left:20px;color:#F5222D">扣款</span>
-                    <span style="margin-left:20px">金额：
-                      <span style="font-size:14px">{{$formatNum(item.deduct_price)}}</span>
-                    </span>
-                  </template>
-                  <div class="collapseBox">
-                    <span class="label">操作：</span>
-                    <span class="info">
-                      <span class="blue"
-                        @click="$router.push('/financialStatistics/oprDetail/' + item.client_id + '/' +item.type + '/' + item.id + '/扣款?orderId=' + item.order_code.map(itemM => itemM.order_id).join(',') + '&orderType=' + item.order_type)">查看详情</span>
-                    </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款单位：</span>
-                    <span class="info">{{item.client_name}} </span>
-                  </div>
-                  <div class="collapseBox">
-                    <span class="label">扣款原因：</span>
-                    <span class="info">{{item.desc}}</span>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="deductLogPopupFlag=false">关闭</div>
-          <div class="btn btnBlue"
-            @click="deductLogPopupFlag=false">确定</div>
-        </div>
-      </div>
-    </div> -->
     <!-- 修改实际生产值 -->
     <div class="popup"
       v-if='showChangeRealityWeavePopup'>
@@ -963,6 +917,101 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="qrCodePrintInfo.showPopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">打印二维码-{{qrCodePrintInfo.client_name}}</span>
+          <span class="el-icon-close"
+            @click="qrCodePrintInfo.showPopup = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">选择产品：</span>
+            <div class="info">
+              <el-select v-model="qrCodePrintInfo.product_id"
+                clearable
+                placeholder="请选择打印的产品"
+                @change="changeQRCodePro">
+                <el-option v-for="item in qrCodePrintInfo.productList"
+                  :key="item.product_id"
+                  :label="`${item.product_info.product_code}(${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name})`"
+                  :value="item.product_id">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">分配数量：</span>
+            <div class="info">
+              <zh-input v-model="qrCodePrintInfo.number"
+                @input="computedPrintNum(qrCodePrintInfo)"
+                type='number'
+                placeholder="请输入分配数量">
+                <template slot="append">{{qrCodePrintInfo.unit || '条'}}</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">每捆数量：</span>
+            <div class="info">
+              <zh-input v-model="qrCodePrintInfo.count"
+                @input="computedPrintNum(qrCodePrintInfo)"
+                type='number'
+                placeholder="请输入每捆数量">
+                <template slot="append">{{qrCodePrintInfo.unit || '条'}}</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">打印损耗：</span>
+            <div class="info">
+              <zh-input v-model="qrCodePrintInfo.loss"
+                @input="computedPrintNum(qrCodePrintInfo)"
+                type='number'
+                placeholder="请输入打印损耗">
+                <template slot="append">%</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">打印数量：</span>
+            <div class="info">
+              <zh-input v-model="qrCodePrintInfo.print_number"
+                type='number'
+                disabled
+                placeholder="自动计算">
+                <template slot="append">张</template>
+              </zh-input>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="qrCodePrintInfo.showPopup">取消</div>
+          <div class="btn btnBlue"
+            @click="printQrCode">打印</div>
+        </div>
+      </div>
+    </div>
+    <div class="popup printQrcodePopup"
+      v-show="showPrintPopup">
+      <div class="main">
+        <div class="content">
+          <iframe id="printCtn_iframe"
+            frameborder='0'
+            scrolling='no'
+            width="166px"
+            height="176px"></iframe>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showPrintPopup = false">关闭</div>
+          <div class="btn btnBlue"
+            @click="printIFRameCon">打印</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -977,8 +1026,6 @@
             <div class="btn btnWhiteRed"
               @click="deductPopupFlag = true;deductPopupType = true">单位扣款</div>
           </zh-deduct>
-          <!-- <div class="btn btnWhiteBlue"
-            @click="deductLogPopupFlag = true">扣款日志</div> -->
           <div class="btn btnBlue"
             @click="$router.push('/weavingProcessing/processingDetail/' + $route.params.id + '/' + $route.params.orderType)">转到半成品分配</div>
           <div class="btn btnGray"
@@ -1053,7 +1100,20 @@ export default {
       // 扣款数据
       deductPopupFlag: false,
       deductPopupType: true,
-      clientArr: []
+      clientArr: [],
+      // 打印二维码
+      qrCodePrintInfo: {
+        showPopup: false,
+        client_id: '',
+        client_name: '',
+        productList: [],
+        product_id: '',
+        number: '',
+        count: '',
+        loss: 5,
+        print_number: ''
+      },
+      showPrintPopup: false
     }
   },
   computed: {
@@ -1069,6 +1129,72 @@ export default {
     }
   },
   methods: {
+    printQrCode () {
+      const QRCode = require('qrcode')
+      QRCode.toDataURL(`${window.location.origin}/receiveDispatch/jysf/${this.$route.params.id}?client_id=${this.qrCodePrintInfo.client_id}&product_id=${this.qrCodePrintInfo.product_id}`, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          console.log(url)
+          let iframe = document.getElementById('printCtn_iframe')
+          let doc = iframe.contentWindow.document
+          const innerHtml = `
+          <div style='width:150px;height:160px;display:flex;flex-direction:column;align-items:center'>
+            <div style="width:120px;height:30px;font-size:10px;display:flex;flex-direction:column;">
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.client_name}</span>
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.product_code}</span>
+            </div>
+            <div style="border:1px solid #CCC;width:120px;height:120px;">
+              <img src='${url}' style="width:120px;height:120px"/>
+            </div>
+          </div>
+          `
+          doc.write(innerHtml)
+          doc.close()
+          iframe.contentWindow.focus()
+          this.showPrintPopup = true
+        }
+      })
+    },
+    printIFRameCon () {
+      let iframe = document.getElementById('printCtn_iframe')
+      iframe.contentWindow.focus()
+      iframe.contentWindow.print()
+    },
+    openPrintQrCode (item) {
+      let qrCodeProductList = this.$mergeData(item.childrenMergeInfo, {
+        mainRule: 'product_id',
+        otherRule: [
+          { name: 'product_info' },
+          { name: 'number', type: 'add' }
+        ]
+      })
+      this.qrCodePrintInfo = {
+        showPopup: true,
+        client_id: item.client_id,
+        client_name: item.client_name,
+        productList: qrCodeProductList,
+        product_id: qrCodeProductList[0] && qrCodeProductList[0].product_id,
+        product_code: qrCodeProductList[0] && qrCodeProductList[0].product_info.product_code,
+        number: qrCodeProductList[0] && qrCodeProductList[0].number,
+        count: '',
+        loss: 5,
+        print_number: ''
+      }
+    },
+    changeQRCodePro (e) {
+      let flag = this.qrCodePrintInfo.productList.find(itemF => itemF.product_id === e)
+      if (flag) {
+        this.qrCodePrintInfo.number = flag.number
+        this.qrCodePrintInfo.product_code = flag.product_info.product_code
+        this.computedPrintNum(this.qrCodePrintInfo)
+      }
+    },
+    computedPrintNum (data) {
+      if (data.number && data.count && data.loss) {
+        data.print_number = Math.ceil(Math.ceil(data.number / data.count) * (1 + (data.loss / 100)))
+      } else {
+        data.print_number = ''
+      }
+    },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
     },

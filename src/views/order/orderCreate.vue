@@ -795,7 +795,7 @@ export default {
       isOpenWarn: true,
       warnType: '',
       warnList: [],
-      timeData: [{ percent: 0.10, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.35, name: '半成品入库' }, { percent: 0.15, name: '成品入库' }, { percent: 0.15, name: '成品装箱' }],
+      timeData: [{ percent: 0.10, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.35, name: '织造入库' }, { percent: 0.15, name: '半成品回库' }, { percent: 0.15, name: '成品装箱' }],
       orderTypeArr: []
     }
   },
@@ -849,10 +849,10 @@ export default {
           name: '物料入库'
         }, {
           percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
+          name: '织造入库'
         }, {
           percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
+          name: '半成品回库'
         }, {
           percent: this.$toFixed(item.product_pack / 100),
           name: '成品装箱'
@@ -1185,8 +1185,8 @@ export default {
       // const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
       let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
       let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
-      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      let productPushFlag = this.timeData.find(item => item.name === '半成品回库')
+      let semiProductPushFlag = this.timeData.find(item => item.name === '织造入库')
       let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
       let warnData = this.isOpenWarn ? {
         order_time: this.order_time,

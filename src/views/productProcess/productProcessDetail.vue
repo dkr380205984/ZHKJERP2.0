@@ -234,7 +234,7 @@
                     style="flex:5">
                     <div class="trow">
                       <div class="tcolumn">配色/尺码</div>
-                      <div class="tcolumn">加工数</div>
+                      <div class="tcolumn">加工检验数</div>
                       <div class="tcolumn">次品数</div>
                       <div class="tcolumn"
                         style="flex:1.2">次品原因</div>

@@ -368,6 +368,11 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/receiveDispatch/jysf/'+ $route.params.id)">检验收发</span>
                       </div>
+                      <div class="link">
+                        <i class="el-icon-tickets"
+                          style="color:#1a95ff"></i>
+                        <span @click="$router.push(`/productProcess/productProcessDetail/${$route.params.id}`)">成品加工</span>
+                      </div>
                     </span>
                   </div>
                 </div>

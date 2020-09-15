@@ -28,242 +28,188 @@
             @click="showPopup=true">添加结算人员</div>
         </div>
       </div>
-      <div class="detailCtn">
-        <div class="excelTable">
-          <div class="title">
-            <div class="block">
-              <div class="selectCtn">
-                <el-select @change="getList"
-                  v-model="department"
-                  clearable
-                  placeholder="请选择部门">
-                  <el-option v-for="(item,index) in departmentArr"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
-                </el-select>
-              </div>
-              <div class="selectCtn"
-                style="width:auto">
-                <span class="label"
-                  style="margin-left:15px">请选择结算月份：</span>
-                <el-date-picker v-model="date"
-                  @change="init"
-                  :clearable="false"
-                  type="month"
-                  value-format="yyyy-MM"
-                  placeholder="选择结算月份">
-                </el-date-picker>
-              </div>
-            </div>
-            <!-- <div class="block">合计</div> -->
-          </div>
-          <div class="tabelBodyCtn">
-            <div class="tabelBodyMain hasBorder">
-              <div class="box"
-                style="flex:1.5">
-                <div class="label">员工编号</div>
-              </div>
-              <div class="box">
-                <div class="label">员工姓名</div>
-              </div>
-              <div class="box">
-                <div class="label">员工部门</div>
-              </div>
-              <div class="box">
-                <div class="label">结算工资(元)</div>
-              </div>
-              <div class="box">
-                <div class="label">额外部分(元)</div>
-              </div>
-              <div class="box">
-                <div class="label">扣除部分(元)</div>
-              </div>
-              <div class="box">
-                <div class="label">实发工资(元)</div>
-              </div>
-              <div class="box">
-                <div class="label">更新日期</div>
-              </div>
+      <div class="listCtn hasBorder_top">
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-select @change="getList"
+                class='filter_item'
+                v-model="department"
+                clearable
+                placeholder="请选择部门">
+                <el-option v-for="(item,index) in departmentArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+              <el-date-picker v-model="date"
+                class='filter_item'
+                @change="init"
+                :clearable="false"
+                type="month"
+                value-format="yyyy-MM"
+                placeholder="选择结算月份">
+              </el-date-picker>
+
             </div>
           </div>
-          <div class="tabelBodyCtn"
-            v-for="(item,index) in list"
-            :key="index">
-            <div class="tabelBodyMain"
-              :class="{'hasBorder':index<list.length-1}">
-              <div class="box"
-                style="flex:1.5">
-                <div class="label noWarp">
-                  <i class="el-icon-caret-right"
-                    v-if="!item.checked"
-                    @click="item.checked=true"></i>
-                  <i class="el-icon-caret-bottom"
-                    v-if="item.checked"
-                    @click="item.checked=false"></i>
-                  {{item.staff_code}}
-                </div>
+        </div>
+        <div class="list">
+          <el-table :data="list"
+            border
+            style="width: 100%">
+            <el-table-column fixed
+              prop="name"
+              label="姓名"
+              width="150">
+            </el-table-column>
+            <el-table-column label="基本工资"
+              align='center'
+              width="950">
+              <el-table-column prop="wage_hourly"
+                label="计时总计"
+                width="150">
+              </el-table-column>
+              <el-table-column prop="wage_order_other"
+                label="订单/其它方式结算"
+                width="150">
+              </el-table-column>
+              <el-table-column prop="wage_basic"
+                label="基本工资"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.wage_basic"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.wage_basic}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="wage_extra_work"
+                label="加班工资"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.wage_extra_work"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.wage_extra_work}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="wage_labor"
+                label="劳务工资"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.wage_labor"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.wage_labor}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="wage_live_allow"
+                label="生活补贴"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.wage_live_allow"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.wage_live_allow}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="wage_other"
+                label="其它"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.wage_other"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.wage_other}}
+                  </template>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="扣除部分"
+              align='center'
+              width="450">
+              <el-table-column prop="deduct_annuity"
+                label="养老金"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.deduct_annuity"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.deduct_annuity}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="deduct_income_tax"
+                label="个税"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.deduct_income_tax"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.deduct_income_tax}}
+                  </template>
+                </template>
+              </el-table-column>
+              <el-table-column prop="deduct_other"
+                label="其它"
+                width="150">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.isEdit">
+                    <zh-input v-model="scope.row.deduct_other"
+                      placeholder='金额'></zh-input>
+                  </template>
+                  <template v-else>
+                    {{scope.row.deduct_other}}
+                  </template>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column prop="reality_wage"
+              label="实发工资"
+              width="150">
+            </el-table-column>
+            <el-table-column fixed="right"
+              align="center"
+              label="操作"
+              width="150">
+              <div slot-scope="scope"
+                class="display:flex">
+                <span class="btn noBorder orange"
+                  v-if="!scope.row.isEdit"
+                  @click="scope.row.isEdit = true">修改</span>
+                <span class="btn noBorder"
+                  v-else
+                  @click="scope.row.isEdit = false">完成</span>
+                <span class="btn noBorder red"
+                  v-if="!scope.row.isEdit">删除</span>
+                <span class="btn noBorder"
+                  v-else
+                  @click="scope.row.isEdit = false">取消</span>
               </div>
-              <div class="box">
-                <div class="label">{{item.name}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{item.department_name}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{$toFixed(item.price || 0)}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{item.extra_price}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{item.deduct_price}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{$toFixed(item.realityTotal || 0)}}</div>
-              </div>
-              <div class="box">
-                <div class="label">{{item.child_data.length>0?item.child_data[0].complete_time:"-"}}</div>
-              </div>
-            </div>
-            <div class="tableBodyList"
-              v-show="item.checked">
-              <div class="titleLine">
-                <div class="leftCtn">
-                  <span class="text">结算工资</span>
-                </div>
-                <div class="rightCtn">
-                  <span class="text">金额(元)</span>
-                  <span class="text oprCtn">操作</span>
-                </div>
-              </div>
-              <div class="normalLine"
-                v-for="(itemChild,indexChild) in item.total"
-                :key="indexChild + '结算工资'">
-                <div class="leftCtn">
-                  <span class="text">{{itemChild.reason}}</span>
-                </div>
-                <div class="middleCtn">
-                  ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
-                </div>
-                <div class="rightCtn">
-                  <span class="text">{{itemChild.price}}</span>
-                  <span class="text oprCtn">
-                    <span class="opr blue"
-                      @click="$router.push('/staff/staffDetail/'+ item.id)">详情</span>
-                  </span>
-                </div>
-              </div>
-              <div class="titleLine">
-                <div class="leftCtn">
-                  <span class="text">额外部分
-                    <!-- <span class="addIcon"
-                      @click="addExtra(item)">
-                      <i class="el-icon-circle-plus"></i>
-                    </span> -->
-                  </span>
-                </div>
-              </div>
-              <div class="normalLine"
-                v-for="(itemExtra,indexExtra) in item.extra"
-                :key="indexExtra+'额外部分'">
-                <div class="leftCtn">
-                  <!-- <el-input class="inputs"
-                    placeholder="费用名称"
-                    v-if="itemExtra.edit"
-                    v-model="itemExtra.reason"></el-input>
-                     v-if="!itemExtra.edit" -->
-                  <span class="text">{{itemExtra.reason}}</span>
-                </div>
-                <div class="middleCtn">
-                  ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
-                </div>
-                <div class="rightCtn">
-                  <zh-input class="inputs"
-                    @change="cmpTotal(item)"
-                    placeholder="费用金额"
-                    type="number"
-                    v-if="itemExtra.edit"
-                    v-model="itemExtra.price"></zh-input>
-                  <span v-if="!itemExtra.edit"
-                    class="text">{{itemExtra.price}}</span>
-                  <span class="text oprCtn">
-                    <span class="opr orange"
-                      v-if="!itemExtra.edit"
-                      @click="updateExtra(itemExtra)">修改</span>
-                    <span class="opr blue"
-                      v-if="itemExtra.edit"
-                      @click="saveExtra(itemExtra,item)">完成</span>
-                    <!-- <span class="opr red"
-                      @click="deleteExtra(item,indexExtra)">删除</span> -->
-                  </span>
-                </div>
-              </div>
-              <div class="titleLine">
-                <div class="leftCtn">
-                  <span class="text">扣除部分
-                    <!-- <span class="addIcon"
-                      @click="addDeduct(item)">
-                      <i class="el-icon-circle-plus"></i>
-                    </span> -->
-                  </span>
-                </div>
-              </div>
-              <div class="normalLine"
-                v-for="(itemDeduct,indexDeduct) in item.deduct"
-                :key="indexDeduct+'扣除部分'">
-                <div class="leftCtn">
-                  <!-- <el-input class="inputs"
-                    placeholder="费用名称"
-                    v-if="itemDeduct.edit"
-                    v-model="itemDeduct.reason"></el-input>
-                     v-if="!itemDeduct.edit" -->
-                  <span class="text">{{itemDeduct.reason}}</span>
-                </div>
-                <div class="middleCtn">
-                  ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
-                </div>
-                <div class="rightCtn">
-                  <zh-input class="inputs"
-                    @change="cmpTotal(item)"
-                    placeholder="费用金额"
-                    type="number"
-                    v-if="itemDeduct.edit"
-                    v-model="itemDeduct.price"></zh-input>
-                  <span v-if="!itemDeduct.edit"
-                    class="text">{{itemDeduct.price}}</span>
-                  <span class="text oprCtn">
-                    <span class="opr orange"
-                      v-if="!itemDeduct.edit"
-                      @click="updateDeduct(itemDeduct)">修改</span>
-                    <span class="opr blue"
-                      @click="saveDeduct(itemDeduct,item)"
-                      v-if="itemDeduct.edit">完成</span>
-                    <!-- <span class="opr red"
-                      @click="deleteDeduct(item,indexDeduct)">删除</span> -->
-                  </span>
-                </div>
-              </div>
-              <div class="titleLine">
-                <div class="leftCtn">
-                  <span class="text">实发工资</span>
-                </div>
-                <div class="rightCtn">
-                  <span class="text oprCtn">金额</span>
-                </div>
-              </div>
-              <div class="normalLine">
-                <div class="leftCtn">
-                  <span class="text">实发工资</span></div>
-                <div class="middleCtn">
-                  ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
-                </div>
-                <div class="rightCtn">
-                  <span class="text oprCtn">{{item.realityTotal}}</span></div>
-              </div>
-            </div>
-          </div>
+            </el-table-column>
+          </el-table>
+
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -411,6 +357,9 @@ export default {
     }
   },
   methods: {
+    updateRow (item) {
+      console.log(item)
+    },
     init () {
       this.loading = true
       staff.getMonthStaffUser({
@@ -585,103 +534,64 @@ export default {
         year: this.date.split('-')[0],
         month: Math.round(this.date.split('-')[1])
       }).then((res) => {
-        if (res.data.data) {
+        if (res.data.status !== false) {
           this.list = res.data.data.map((item) => {
-            item.checked = false
-            item.total = [{
-              reason: '按时结算总计',
-              price: item.child_data.reduce((total, current) => {
-                if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
-                  return Number(current.total_price) + total
-                } else {
-                  return total
-                }
-              }, 0)
-            }, {
-              reason: '订单/其他方式结算',
-              price: item.child_data.reduce((total, current) => {
-                if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
-                  return Number(current.total_price) + total
-                } else {
-                  return total
-                }
-              }, 0)
-            }]
-            item.price = item.total.reduce((total, current) => {
-              return total + current.price
-            }, 0)
-            item.extra = [
-              {
-                edit: true,
-                reason: '基本工资',
-                price: 0
-              }, {
-                edit: true,
-                reason: '加班工资',
-                price: 0
-              }, {
-                edit: true,
-                reason: '劳务工资',
-                price: 0
-              }, {
-                edit: true,
-                reason: '生活补贴',
-                price: 0
-              }, {
-                edit: true,
-                reason: '其他',
-                price: 0
-              }
-            ]
-            item.deduct = [
-              {
-                edit: true,
-                reason: '养老金',
-                price: 0
-              },
-              {
-                edit: true,
-                reason: '个税',
-                price: 0
-              },
-              {
-                edit: true,
-                reason: '其他',
-                price: 0
-              }
-            ]
-            item.deduct_data.forEach(itemInner => {
-              if (itemInner.type === 1) {
-                let flag1 = item.extra.find(val => val.reason === itemInner.reason)
-                if (flag1) {
-                  flag1.price = itemInner.price
-                  flag1.edit = false
-                }
+            const hourluWage = item.child_data.reduce((total, current) => {
+              if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
+                return Number(current.total_price) + total
               } else {
-                let flag2 = item.deduct.find(val => val.reason === itemInner.reason)
-                if (flag2) {
-                  flag2.price = itemInner.price
-                  flag2.edit = false
-                }
+                return total
               }
-            })
-            // item.extra = item.deduct_data.filter((item) => item.type === 1)
-            // if (item.deduct_data.length === 0) {
-            // }
-            item.extra_price = item.extra.reduce((total, current) => {
-              return total + current.price
             }, 0)
-            item.deduct_price = item.deduct.reduce((total, current) => {
-              return total + current.price
+            const orderOtherWage = item.child_data.reduce((total, current) => {
+              if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
+                return Number(current.total_price) + total
+              } else {
+                return total
+              }
             }, 0)
-            item.realityTotal = item.total.reduce((total, current) => {
-              return current.price + total
-            }, 0) + item.extra.reduce((total, current) => {
-              return current.price + total
-            }, 0) - item.deduct.reduce((total, current) => {
-              return current.price + total
-            }, 0)
-            return item
+            const wageList = item.deduct_data.filter(itemF => itemF.type === 1)
+            const deductList = wageList.filter(itemF => itemF.type === 2)
+            const basicWage = wageList.find(itemF => itemF.reason === '基本工资')
+            const extraWorkWage = wageList.find(itemF => itemF.reason === '加班工资')
+            const laborWage = wageList.find(itemF => itemF.reason === '劳务工资')
+            const liveAllowWage = wageList.find(itemF => itemF.reason === '生活补贴')
+            const otherWage = wageList.find(itemF => itemF.reason === '其他')
+            const annuityDeduct = deductList.find(itemF => itemF.reason === '养老金')
+            const incomeTaxDeduct = deductList.find(itemF => itemF.reason === '个税')
+            const otherDeduct = deductList.find(itemF => itemF.reason === '其它')
+            return {
+              isEdit: false,
+              name: item.name,
+              id: item.id,
+              wage_hourly: hourluWage || 0,
+              wage_order_other: orderOtherWage || 0,
+              wage_basic: basicWage ? basicWage.price : '',
+              wage_extra_work: extraWorkWage ? extraWorkWage.price : '',
+              wage_labor: laborWage ? laborWage.price : '',
+              wage_live_allow: liveAllowWage ? liveAllowWage.price : '',
+              wage_other: otherWage ? otherWage.price : '',
+              deduct_annuity: annuityDeduct ? annuityDeduct.price : '',
+              deduct_income_tax: incomeTaxDeduct ? incomeTaxDeduct.price : '',
+              deduct_other: otherDeduct ? otherDeduct.price : '',
+              reality_wage: this.$toFixed(([
+                hourluWage || 0,
+                orderOtherWage || 0,
+                basicWage ? basicWage.price : 0,
+                extraWorkWage ? extraWorkWage.price : 0,
+                laborWage ? laborWage.price : 0,
+                liveAllowWage ? liveAllowWage.price : 0,
+                otherWage ? otherWage.price : 0
+              ].reduce((a, b) => {
+                return Number(a) + Number(b)
+              }, 0)) - ([
+                annuityDeduct ? annuityDeduct.price : 0,
+                incomeTaxDeduct ? incomeTaxDeduct.price : 0,
+                otherDeduct ? otherDeduct.price : 0
+              ].reduce((a, b) => {
+                return Number(a) + Number(b)
+              }, 0)))
+            }
           })
           this.total = res.data.meta.total
         }
@@ -703,66 +613,6 @@ export default {
           this.loading = false
         }
       })
-      // staff.payList({
-      //   staff_id: this.staffAllList.filter((item) => item.checked).map((item) => item.id)
-      // }).then((res) => {
-      //   this.list = res.data.data.map((item) => {
-      //     item.checked = false
-      //     item.total = [{
-      //       reason: '按时结算总计',
-      //       price: item.child_data.reduce((total, current) => {
-      //         if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
-      //           return Number(current.total_price) + total
-      //         } else {
-      //           return total
-      //         }
-      //       }, 0)
-      //     }, {
-      //       reason: '订单/其他方式结算',
-      //       price: item.child_data.reduce((total, current) => {
-      //         if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
-      //           return Number(current.total_price) + total
-      //         } else {
-      //           return total
-      //         }
-      //       }, 0)
-      //     }]
-      //     item.price = item.total.reduce((total, current) => {
-      //       return total + current.price
-      //     }, 0)
-      //     item.extra = item.deduct_data.filter((item) => item.type === 1)
-      //     if (item.deduct_data.length === 0) {
-      //       item.extra = [{
-      //         edit: true,
-      //         reason: '加班工资',
-      //         price: 0
-      //       }]
-      //     }
-      //     item.extra_price = item.extra.reduce((total, current) => {
-      //       return total + current.price
-      //     }, 0)
-      //     item.deduct = item.deduct_data.filter((item) => item.type === 2)
-      //     if (item.deduct_data.length === 0) {
-      //       item.deduct = [{
-      //         edit: true,
-      //         reason: '五险一金',
-      //         price: 0
-      //       }]
-      //     }
-      //     item.deduct_price = item.deduct.reduce((total, current) => {
-      //       return total + current.price
-      //     }, 0)
-      //     item.realityTotal = item.total.reduce((total, current) => {
-      //       return current.price + total
-      //     }, 0) + item.extra.reduce((total, current) => {
-      //       return current.price + total
-      //     }, 0) - item.deduct.reduce((total, current) => {
-      //       return current.price + total
-      //     }, 0)
-      //     return item
-      //   })
-      //   this.loading = false
-      // })
     }
   },
   computed: {
