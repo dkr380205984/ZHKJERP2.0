@@ -142,6 +142,7 @@
         </div>
       </div>
     </div>
+    <scanner-watcher :scannerEvent="goRouter"></scanner-watcher>
   </div>
 </template>
 
@@ -426,6 +427,9 @@ export default {
     }
   },
   methods: {
+    goRouter (router) {
+      window.location.href = router
+    },
     commondHandler (cmd) {
       if (cmd === 'sendMsg') {
         this.$router.push('/other/sendMsg')

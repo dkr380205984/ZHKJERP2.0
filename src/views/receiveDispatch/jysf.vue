@@ -781,6 +781,99 @@
         </div>
       </div>
     </div>
+    <!-- 扫码枪扫进来的 -->
+    <div class="popup"
+      v-show="otherData.codeFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">扫码详情</div>
+          <i class="el-icon-close"
+            @click="otherData.codeFlag=false"></i>
+        </div>
+        <div class="content">
+          <div style="background:#ccc;color:rgba(0,0,0,0.85);font-size:14px;padding:8px;border-radius:4px">请仔细核对订单信息，产品信息是否匹配！！！</div>
+          <div class="row">
+            <span class="label">选择产品：</span>
+            <span class="info">
+              <el-select v-model="formData.codeData.product_id"
+                @change="getColorSize($event)"
+                placeholder="选择产品">
+                <el-option v-for="item in selectData.productArr"
+                  :key="item.product_id"
+                  :value="Number(item.product_id)"
+                  :label="item.product_code + '('+item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name+')'"></el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">尺码颜色：</span>
+            <span class="info">
+              <el-select v-model="formData.codeData.colorSize"
+                no-data-text="请先选择产品"
+                placeholder="选择尺码颜色">
+                <el-option v-for="item in formData.codeData.colorSizeArr"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"></el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">织造单位：</span>
+            <span class="info">
+              <el-cascader v-model="formData.codeData.weave_client_id"
+                placeholder="选择织造单位"
+                :options="selectData.weaveClient">
+              </el-cascader>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">入库数量：</span>
+            <span class="info">
+              <el-input v-model="formData.codeData.number"
+                placeholder="入库数量"></el-input>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">次品数量：</span>
+            <span class="info">
+              <el-input v-model="formData.codeData.cpNum"
+                placeholder="次品数量"></el-input>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">次品原因：</span>
+            <span class="info">
+              <el-select v-model="formData.codeData.reason"
+                placeholder="选择次品原因"
+                collapse-tags
+                multiple>
+                <el-option v-for="(item,index) in selectData.defectiveType"
+                  :key="index"
+                  :label="item"
+                  :value="item"></el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">绑定芯片：</span>
+            <span class="info"
+              style="display:flex;align-items:center">
+              <el-switch v-model="formData.codeData.is_xp"
+                active-text="绑定"
+                inactive-text="不绑定">
+              </el-switch>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="otherData.codeFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="codeSubmit">提交</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -816,6 +909,23 @@ export default {
       },
       // 表单数据，用于提交的数据
       formData: {
+        // 二维码扫进来提交的表单
+        codeData: {
+          product_id: '',
+          product_code: '',
+          colorSize: '',
+          colorSizeArr: [],
+          weave_client_id: [],
+          semi_client_id: [],
+          back_client_id: [],
+          number: '',
+          cpNum: '',
+          count: '',
+          is_xp: true,
+          cpNumber: '',
+          reason: '',
+          desc: ''
+        },
         tableData: [],
         batchData: {
           product_id: '',
@@ -880,6 +990,7 @@ export default {
         loading: true,
         batchFlag: false,
         xpFlag: false,
+        codeFlag: false,
         xpLoop: 0,
         xpState: 1,
         readTimer: null,
@@ -945,6 +1056,27 @@ export default {
         })
         if (api) {
           this.getCommon(this.nativeData.resSort.common)
+          // 处理扫码枪逻辑
+          if (this.$route.query && this.$route.query.client_id) {
+            this.formData.codeData = {
+              product_id: Number(this.$route.query.product_id),
+              product_code: '',
+              colorSize: '',
+              colorSizeArr: [],
+              weave_client_id: ['已分配单位', this.$route.query.client_id + '/织造'],
+              semi_client_id: [],
+              back_client_id: [],
+              number: '',
+              cpNum: '',
+              count: '1',
+              is_xp: true,
+              cpNumber: '',
+              reason: '',
+              desc: ''
+            }
+            this.getColorSize(Number(this.$route.query.product_id))
+            this.otherData.codeFlag = true
+          }
         }
         this.getReceiveDispatch(this.nativeData.resSort.receiveDispatch)
         this.otherData.loading = false
@@ -1483,6 +1615,16 @@ export default {
         }
       })
     },
+    getColorSize (id) {
+      this.formData.codeData.colorSizeArr = this.selectData.productArr.find((item) => {
+        return item.product_id === id
+      }).childrenMergeInfo.map((item) => {
+        return {
+          name: item.size_name + '/' + item.color_name,
+          id: item.size_id + '/' + item.color_id
+        }
+      })
+    },
     // 选择弹窗产品
     selectPopupProduct (id) {
       this.formData.batchData.colorSizeArr = this.selectData.productArr.find((item) => {
@@ -1497,6 +1639,10 @@ export default {
     selectLog (val) {
       this.nativeData.selectedLog = val
     },
+    codeSubmit () {
+      this.formData.tableData = [this.formData.codeData]
+      this.saveAll()
+    },
     saveAll () {
       if (this.formData.tableData.length === 0) {
         this.$message.error('请至少提交一条记录')
@@ -1507,6 +1653,7 @@ export default {
       let xpData = this.formData.tableData.filter((item) => item.is_xp)
       if (normalData.length === 0 && xpData.length > 0) {
         this.otherData.xpFlag = true
+        this.otherData.codeFlag = false
         this.otherData.xpState = 1
         this.otherData.xpLoop = 0
         this.formData.xpformArr = xpData
@@ -1519,6 +1666,7 @@ export default {
           if (res.data.status) {
             this.formData.tableData = []
             this.$message.success('提交成功')
+            this.otherData.codeFlag = false
             this.init()
           }
         })
@@ -1527,6 +1675,7 @@ export default {
         receiveDispatch.allCreate({ data: this.changeDataToSubmit(normalData) }).then((res) => {
           if (res.data.status) {
             this.otherData.xpFlag = true
+            this.otherData.codeFlag = false
             this.otherData.xpState = 1
             this.otherData.xpLoop = 0
             this.formData.xpformArr = xpData
