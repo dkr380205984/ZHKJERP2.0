@@ -225,6 +225,22 @@
                 placeholder="请输入单位"></el-input>
             </span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">需要织造</span>
+              <span class="explanation">(该配件是否需要织造)</span>
+            </span>
+            <span class="content"
+              style="display:flex;align-items:center">
+              <el-switch v-model="item.need_weave"
+                @change="$forceUpdate()"
+                :active-value="1"
+                :inactive-value="0"
+                active-text="需要"
+                inactive-text="不需要">
+              </el-switch>
+            </span>
+          </div>
         </div>
         <div class="rowCtn"
           v-for="(itemIngredient,indexIngredient) in item.ingredient"
@@ -427,7 +443,8 @@ export default {
           ingredient_value: ''
         }],
         size: [{ size: '', weight: '', desc: '', number: '1' }],
-        unit: '个'
+        unit: '个',
+        need_weave: 0
       }],
       // 配件类型从辅料里面选
       materialArr: [],
@@ -466,11 +483,14 @@ export default {
             number: '1'
           }
         }),
-        unit: '个'
+        unit: '个',
+        need_weave: 0
       })
     },
     getUnit (ev, item) {
+      console.log(ev)
       item.unit = ev.unit
+      item.need_weave = ev.need_weave
     },
     deleteFitting (index, id) {
       this.$confirm('此操作将删除该配件, 是否继续?', '提示', {
@@ -714,6 +734,7 @@ export default {
               number: item.ingredient_value
             }
           }),
+          need_weave: item.need_weave,
           unit: item.unit
         }
       })
@@ -836,7 +857,8 @@ export default {
                   number: itemSize.number
                 }
               }),
-              unit: item.unit
+              unit: item.unit,
+              need_weave: item.need_weave
             }
           })
           this.needleType = productInfo.needle_type

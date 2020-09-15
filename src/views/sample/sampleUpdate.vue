@@ -216,6 +216,22 @@
                 placeholder="请输入单位"></el-input>
             </span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">
+              <span class="text">需要织造</span>
+              <span class="explanation">(该配件是否需要织造)</span>
+            </span>
+            <span class="content"
+              style="display:flex;align-items:center">
+              <el-switch v-model="item.need_weave"
+                @change="$forceUpdate()"
+                :active-value="1"
+                :inactive-value="0"
+                active-text="需要"
+                inactive-text="不需要">
+              </el-switch>
+            </span>
+          </div>
         </div>
         <div class="rowCtn"
           v-for="(itemIngredient,indexIngredient) in item.ingredient"
@@ -457,6 +473,7 @@ export default {
             number: '1'
           }
         }),
+        need_weave: 0,
         unit: '个'
       })
     },
@@ -611,6 +628,7 @@ export default {
     },
     getUnit (ev, item) {
       item.unit = ev.unit
+      item.need_weave = ev.need_weave
     },
     submit () {
       if (!this.lock) {
@@ -689,6 +707,7 @@ export default {
           name: item.fitting_name,
           part_category: '',
           unit: item.unit,
+          need_weave: item.need_weave,
           // part_color: this.colour.map((item) => {
           //   return { color_name: item.colour }
           // }),
@@ -884,7 +903,8 @@ export default {
               number: itemSize.number
             }
           }),
-          unit: item.unit
+          unit: item.unit,
+          need_weave: item.need_weave
         }
       })
       this.needleType = productInfo.needle_type

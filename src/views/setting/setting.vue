@@ -484,6 +484,7 @@
                   <div class="trow">
                     <div class="tcolumn padding40">辅料名称</div>
                     <div class="tcolumn padding40">计量单位</div>
+                    <div class="tcolumn padding40">是否需要织造</div>
                     <div class="tcolumn padding40">最新报价</div>
                     <div class="tcolumn middle padding40">操作</div>
                   </div>
@@ -494,6 +495,8 @@
                     :key="index">
                     <div class="tcolumn padding40">{{item.name}}</div>
                     <div class="tcolumn padding40">{{item.unit}}</div>
+                    <div class="tcolumn padding40"
+                      :style="{'color':item.need_weave?'#1a95ff':'#ccc'}">{{item.need_weave?'需要':'不需要'}}</div>
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0 && item.unit) ? '元/' + item.unit : ''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
@@ -1414,6 +1417,18 @@
               <div class="info">
                 <zh-input placeholder="请输入装饰辅料名称"
                   v-model="changeMaterialInfo.materialName"></zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">需要织造：</div>
+              <div class="info">
+                <el-switch v-model="changeMaterialInfo.need_weave"
+                  @change="$forceUpdate()"
+                  :active-value="1"
+                  :inactive-value="0"
+                  active-text="需要"
+                  inactive-text="不需要">
+                </el-switch>
               </div>
             </div>
             <div class="row">
@@ -2345,6 +2360,7 @@ export default {
         id: '',
         materialName: '',
         materialUnit: '',
+        need_weave: false,
         materialPriceArr: [{
           company: '',
           price: ''
@@ -3889,6 +3905,7 @@ export default {
       this.yarn_handle_type = type
       this.showPopup = true
       if (item) {
+        this.changeMaterialInfo.need_weave = item.need_weave
         this.changeMaterialInfo.materialName = item.name
         this.changeMaterialInfo.id = item.id
         this.changeMaterialInfo.unit = item.unit
@@ -3912,6 +3929,7 @@ export default {
           id: this.changeMaterialInfo.id,
           unit: this.changeMaterialInfo.unit,
           name: this.changeMaterialInfo.materialName,
+          need_weave: this.changeMaterialInfo.need_weave,
           price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
             return {
               client_id: itemPrice.company,
@@ -3920,7 +3938,7 @@ export default {
           })
         }).then(res => {
           if (res.data.status !== false) {
-            this.$message.success('添加成功')
+            this.$message.success(this.changeMaterialInfo.id ? '修改成功' : '添加成功')
             this.closeAndResetInfo('material')
             this.getMaterialName()
           }
