@@ -123,10 +123,21 @@
               {{itemOrder.group_name}}
             </div> -->
             <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.product_weave_progress===1?'green':'orange'">
+              <div class="stateCtn"
+                v-if="processType!=='织片'"
+                :class="{'orange':fuckState(itemOrder,'入库')>0,'green':fuckState(itemOrder,'入库')>=1}">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.product_weave_progress===1?'已分配':'未分配'}}</span>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':fuckState(itemOrder,'分配')>0,'green':fuckState(itemOrder,'分配')>=1}">
+                <div class="state"></div>
+                <span class="name">分</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':fuckState(itemOrder,'检验')>0,'green':fuckState(itemOrder,'检验')>=1}">
+                <div class="state"></div>
+                <span class="name">检</span>
               </div>
             </div>
             <div class="col">
@@ -202,6 +213,58 @@ export default {
     }
   },
   methods: {
+    fuckState (itemOrder, type) {
+      let flag = false
+      if (type === '入库') {
+        if (this.processType === '织片' || this.processType === '套口') {
+          flag = itemOrder.product_push_progress && itemOrder.product_push_progress[this.processType]
+          if (flag) {
+            flag = itemOrder.product_push_progress[this.processType] / itemOrder.number
+          } else {
+            flag = 0
+          }
+        } else {
+          for (let attr in itemOrder.product_push_progress) {
+            if (attr !== '织片' || attr !== '套口') {
+              flag = 1
+            }
+          }
+        }
+      }
+      if (type === '分配') {
+        if (this.processType === '织片' || this.processType === '套口') {
+          flag = itemOrder.product_weave_progress && itemOrder.product_weave_progress[this.processType]
+          if (flag) {
+            flag = itemOrder.product_weave_progress[this.processType] / itemOrder.number
+          } else {
+            flag = 0
+          }
+        } else {
+          for (let attr in itemOrder.product_weave_progress) {
+            if (attr !== '织片' || attr !== '套口') {
+              flag = 1
+            }
+          }
+        }
+      }
+      if (type === '检验') {
+        if (this.processType === '织片' || this.processType === '套口') {
+          flag = itemOrder.product_semi_inspection_progress && itemOrder.product_semi_inspection_progress[this.processType]
+          if (flag) {
+            flag = itemOrder.product_semi_inspection_progress[this.processType] / itemOrder.number
+          } else {
+            flag = 0
+          }
+        } else {
+          for (let attr in itemOrder.product_semi_inspection_progress) {
+            if (attr !== '织片' || attr !== '套口') {
+              flag = 1
+            }
+          }
+        }
+      }
+      return flag
+    },
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)

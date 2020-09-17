@@ -100,9 +100,9 @@
             </div>
             <div class="col">
               <div class="stateCtn rowFlex"
-                :class="{'green':itemOrder.product_inspection_progress.r_product===1,'orange':itemOrder.product_inspection_progress.r_product!==1}">
+                :class="{'green':itemOrder.product_inspection_progress>0,'orange':itemOrder.product_inspection_progress===0}">
                 <div class="state">
-                </div><span class="name">{{itemOrder.product_inspection_progress.r_product===1?'已检验':'未检验'}}</span>
+                </div><span class="name">{{itemOrder.product_inspection_progress>0?'已检验':'未检验'}}</span>
               </div>
             </div>
             <div class="col">

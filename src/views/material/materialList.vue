@@ -155,9 +155,16 @@
             </div> -->
             <div class="col flex12">
               <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.y_percent>0?'green':'orange'">
+                v-if="material_type==='1'"
+                :class="itemOrder.material_order_progress.yl>0?'green':'orange'">
                 <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.y_percent>0?'已采购':'未采购'}}</span>
+                <span class="name">{{itemOrder.material_order_progress.yl>0?'已采购':'未采购'}}</span>
+              </div>
+              <div class="stateCtn rowFlex"
+                v-if="material_type==='2'"
+                :class="itemOrder.material_order_progress.fl>0?'green':'orange'">
+                <div class="state"></div>
+                <span class="name">{{itemOrder.material_order_progress.fl>0?'已采购':'未采购'}}</span>
               </div>
             </div>
             <div class="col">
