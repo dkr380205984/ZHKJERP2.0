@@ -2688,15 +2688,15 @@ export default {
         this.date = ''
       }
       this.client_id = params.client_id.split(',')
-      this.product_code = params.product_code
+      this.product_code = params.product_code || ''
       this.order_type = Number(params.order_type)
-      this.order_code = params.order_code
-      this.product_type = params.product_type
-      this.operate_user = params.operate_user
+      this.order_code = params.order_code || ''
+      this.product_type = params.product_type || ''
+      this.operate_user = params.operate_user || ''
       this.material_name = this.$strToAscII(params.material_name, true)
       this.stock_id = Number(params.stock_id) || ''
       this.operate_type = params.operate_type || ''
-      this.type = params.type
+      this.type = params.type || ''
     },
     changeRouter (page) {
       let pages = page || 1

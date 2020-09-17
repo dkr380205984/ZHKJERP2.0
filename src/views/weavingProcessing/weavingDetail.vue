@@ -355,7 +355,7 @@
                   <div class="tcolumn">
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
-                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印</span>
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印分配单</span>
                     <span class="btn noBorder"
                       style="padding:0;margin:0"
                       @click="openPrintQrCode(item)">打印二维码</span>
@@ -935,7 +935,7 @@
                 @change="changeQRCodePro">
                 <el-option v-for="item in qrCodePrintInfo.productList"
                   :key="item.product_id"
-                  :label="`${item.product_info.product_code}(${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name})`"
+                  :label="`${item.product_info.product_code}(${item.product_info.category_name ? [item.product_info.category_name,item.product_info.type_name,item.product_info.style_name].join('/') : item.product_info.product_title})`"
                   :value="item.product_id">
                 </el-option>
               </el-select>

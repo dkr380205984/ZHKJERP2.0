@@ -423,4 +423,30 @@
       align-items: center;      
     }
   }
+  .warnCtn{
+    position: relative;
+    .warningCtn{
+      width: auto;
+      height: auto;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translate(-32px ,-50%);
+      font-size: 22px;
+      font-weight: bold;
+      color: rgba(0,0,0,1);
+      display: flex;
+      align-items: flex-end;
+      cursor: pointer;
+      .item{
+        &.red{
+          align-self: flex-start;
+          color: @red;
+          margin: 0 4px;
+          font-size: 28px;
+          transform: translateY(-4px);
+        }
+      }
+    }
+  }
 }

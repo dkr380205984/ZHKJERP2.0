@@ -15,40 +15,40 @@ export default {
   data () {
     return {
       code: '',
-      lastTime: 0
+      lastTime: new Date().getTime()
     }
   },
   methods: {
     watchFun (e) {
-      let curryCode = e.which
-      if (curryCode === 13) { // 当按键为enter时调用callback
+      let curryCode = e.which || e.keyCode
+      const curryTime = new Date().getTime()
+      if (curryCode === 13 && curryTime - this.lastTime <= 300) { // 当按键为enter时调用callback
+        if (!this.code) return
         if (this.scannerEvent) {
           this.scannerEvent(this.code)
         } else { // 默认开新窗口跳转页面
           this.$openUrl(this.code)
         }
         this.code = ''
-        this.lastTime = 0
+      } else if (curryCode === 16) {
+        this.lastTime = curryTime
+      } else if (curryCode === 13) {
+        this.lastTime = curryTime
       } else {
-        const curryTime = new Date().getTime()
-        if (this.lastTime > 0) {
-          if (curryTime - this.lastTime <= 300) {
-            this.code += String.fromCharCode(curryCode)
-          } else if (curryTime - this.lastTime > 1000) {
-            this.code = ''
-            this.lastTime = 0
-          }
-        } else {
-          this.code += String.fromCharCode(curryCode)
+        if (curryTime - this.lastTime <= 300) {
+          this.code += e.key
+        } else if (curryTime - this.lastTime > 1000) {
+          this.code = e.key
         }
+        this.lastTime = curryTime
       }
     }
   },
   created () {
-    window.addEventListener('keypress', this.watchFun)
+    window.addEventListener('keydown', this.watchFun, false)
   },
   beforeDestroy () {
-    window.removeEventListener('keypress', this.watchFun)
+    window.removeEventListener('keydown', this.watchFun, false)
   }
 }
 </script>
