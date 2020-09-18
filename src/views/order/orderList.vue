@@ -293,27 +293,27 @@
             </div> -->
             <div class="col flex16">
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.yl.push===0,'green':itemOrder.material_push_progress.yl.push>0}">
+                :class="{'green':itemOrder.material_push_progress.yl.push>0}">
                 <div class="state"></div>
                 <span class="name">入</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.yl.pop===0,'green':itemOrder.material_push_progress.yl.pop>0}">
+                :class="{'green':itemOrder.material_push_progress.yl.pop>0}">
                 <div class="state"></div>
                 <span class="name">出</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':!fuckState(itemOrder,'织片'),'green':fuckState(itemOrder,'织片')}">
+                :class="{'green':fuckState(itemOrder,'织片')}">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':!fuckState(itemOrder,'套口'),'green':fuckState(itemOrder,'套口')}">
+                :class="{'green':fuckState(itemOrder,'套口')}">
                 <div class="state"></div>
                 <span class="name">套</span>
               </div>
               <div class="stateCtn"
-                :class="{'orange':!fuckState(itemOrder,'其他'),'green':fuckState(itemOrder,'其他')}">
+                :class="{'green':fuckState(itemOrder,'其他')}">
                 <div class="state"></div>
                 <span class="name">其</span>
               </div>

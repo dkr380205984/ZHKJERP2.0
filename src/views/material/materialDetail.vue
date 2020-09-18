@@ -605,8 +605,8 @@ export default {
         }
       })
     },
-    searchYarn (queryString, cb) {
-      if (this.yarnList.length === 0) {
+    searchYarn (queryString, cb, flag = true) {
+      if (this.yarnList.length === 0 && flag) {
         let yarnApi = this.type === '1' ? yarn : material
         yarnApi.list().then(res => {
           if (res.data.status !== false) {
@@ -615,7 +615,7 @@ export default {
                 value: item.name
               }
             })
-            this.searchYarn(queryString, cb)
+            this.searchYarn(queryString, cb, false)
           }
         })
       } else {
@@ -623,8 +623,8 @@ export default {
         cb(result)
       }
     },
-    searchColor (queryString, cb) {
-      if (this.colorList.length === 0) {
+    searchColor (queryString, cb, flag = true) {
+      if (this.colorList.length === 0 && flag) {
         yarnColor.list().then(res => {
           if (res.data.status !== false) {
             this.colorList = res.data.data.map((item) => {
@@ -632,7 +632,7 @@ export default {
                 value: item.name
               }
             })
-            this.searchColor(queryString, cb)
+            this.searchColor(queryString, cb, false)
           }
         })
       } else {
