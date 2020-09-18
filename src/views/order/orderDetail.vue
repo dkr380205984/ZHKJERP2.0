@@ -191,11 +191,11 @@
     <div class="module">
       <div class="titleCtn warnCtn">
         <span class="title hasBorder">流程进度</span>
-        <span class="warningCtn">
+        <!-- <span class="warningCtn">
           <span class="item">已触发</span>
           <span class="item red">3</span>
           <span class="item">次预警提醒</span>
-        </span>
+        </span> -->
       </div>
       <div class="detailCtn">
         <div class="rowCtn"
