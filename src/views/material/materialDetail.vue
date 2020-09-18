@@ -9,6 +9,10 @@
           :url="msgUrl"
           :content="msgContent"
           :afterSend="afterSend"></zh-message>
+        <div style="float:right">
+          <look-price :price_id="orderInfo.quotation_id"
+            :whichPrice="type==='1'?'material_info':'assist_info'"></look-price>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -1541,6 +1545,7 @@ export default {
       type: this.$route.params.type,
       loading: true,
       orderInfo: {
+        quotation_id: null,
         order_code: '',
         client_name: '',
         user_name: '',
