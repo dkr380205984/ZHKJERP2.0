@@ -118,7 +118,8 @@ export default {
   watch: {
     // props value 突变触发更新
     value (val) {
-      this.getInputDom().value = val === null || val === undefined ? '' : String(val)
+      // this.getInputDom().value = (val === null || val === undefined ? '' : String(val))
+      this.selfValue = (val === null || val === undefined ? '' : String(val))
     }
   },
   computed: {
@@ -276,7 +277,8 @@ export default {
   },
   mounted () {
     // 初始化输入框
-    this.getInputDom().value = this.nativeInputValue
+    // this.getInputDom().value = this.nativeInputValue
+    this.selfValue = this.nativeInputValue
     // 初始化errorMessage
     this.errorMessageInit()
     this.errorRegExp(this.nativeInputValue)
