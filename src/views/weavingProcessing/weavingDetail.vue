@@ -992,7 +992,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="qrCodePrintInfo.showPopup">取消</div>
+            @click="qrCodePrintInfo.showPopup = false">取消</div>
           <div class="btn btnBlue"
             @click="printQrCode">打印</div>
         </div>
@@ -1001,12 +1001,14 @@
     <div class="popup printQrcodePopup"
       v-show="showPrintPopup">
       <div class="main">
-        <div class="content">
+        <div class="content"
+          style="height: 176px;display: flex;align-items: center;overflow: hidden;">
           <iframe id="printCtn_iframe"
+            style="position: relative;top: -50px;"
             frameborder='0'
             scrolling='no'
             width="166px"
-            height="176px"></iframe>
+            height="276px"></iframe>
         </div>
         <div class="opr">
           <div class="btn btnGray"
@@ -1141,9 +1143,9 @@ export default {
           let iframe = document.getElementById('printCtn_iframe')
           let doc = iframe.contentWindow.document
           const innerHtml = `
-          <div style='width:150px;height:160px;display:flex;flex-direction:column;align-items:center'>
+          <div style='width:150px;height:160px;display:flex;flex-direction:column;align-items:center;padding-top:100px'>
             <div style="width:120px;height:30px;font-size:10px;display:flex;flex-direction:column;">
-              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.client_name}</span>
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${window.sessionStorage.getItem('company_name') || ''}</span>
               <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.product_code}</span>
             </div>
             <div style="border:1px solid #CCC;width:120px;height:120px;">
