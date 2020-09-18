@@ -13,6 +13,11 @@
                 @change="changeRouter(1)"
                 placeholder="输入编号按回车键查询">
               </el-input>
+              <el-input class="filter_item"
+                v-model="keyword_name"
+                @change="changeRouter(1)"
+                placeholder="输入报价单名称按回车键查询">
+              </el-input>
               <el-select v-model="client_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -50,6 +55,12 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <div class="resetBtn"
+                style="margin-left:0"
+                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="openHiddleFilter ? false : 'hiddle'">
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -62,10 +73,13 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
-              <div class="resetBtn"
-                style="margin-left:0"
-                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
             </div>
+          </div>
+          <div class="rightCtn"
+            @click="openHiddleFilter = !openHiddleFilter">
+            {{openHiddleFilter ? '收起' : '展开'}}
+            <span class="el-icon-arrow-down openIcon"
+              :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
         <div class="addCtn">
@@ -165,15 +179,14 @@ export default {
     return {
       has_check: window.sessionStorage.getItem('has_check'),
       loading: true,
-      searchTypeFlag: false,
-      searchUserName: false,
+      openHiddleFilter: false,
       keyword: '',
+      keyword_name: '',
       date: '',
       client_id: '',
       clientArr: [],
       user_id: '',
       userArr: [],
-      searchStatusFlag: false,
       status: '',
       statusArr: [
         {
@@ -204,7 +217,8 @@ export default {
         client_id: this.client_id,
         code: this.keyword,
         product_code: '',
-        user_name: this.user_id
+        user_name: this.user_id,
+        name: this.keyword_name
       }).then(res => {
         if (res.data.status === false) {
           this.$message({
@@ -303,28 +317,20 @@ export default {
     getFilters () {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
-      this.keyword = params.keyword
+      this.keyword = params.keyword || ''
+      this.keyword_name = params.keyword_name || ''
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
         this.date = ''
       }
       this.status = params.status ? Number(params.status) : ''
-      if (this.status) {
-        this.searchStatusFlag = true
-      }
       this.client_id = params.client_id ? params.client_id : ''
-      if (this.client_id) {
-        this.searchTypeFlag = true
-      }
       this.user_id = params.user_id ? params.user_id : ''
-      if (this.user_id) {
-        this.searchUserName = true
-      }
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
     }
   },
   created () {

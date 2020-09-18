@@ -7,6 +7,11 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function (location) {
   return originalPush.call(this, location).catch(err => err)
 }
+// 解决replace替换路由时出错
+const originalReplace = VueRouter.prototype.replace
+VueRouter.prototype.replace = function (location) {
+  return originalReplace.call(this, location).catch(err => err)
+}
 const routes = [
   {
     path: '/',

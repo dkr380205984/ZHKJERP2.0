@@ -8,17 +8,17 @@
         <div class="oprCtn">
           <span class="opr"
             :class="{'active':$route.fullPath.indexOf('processCommon')!==-1}"
-            @click="$router.push('/process/processCommon/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
+            @click="$router.replace('/process/processCommon/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
             全部
           </span>
           <span class="opr"
             :class="{'active':$route.fullPath.indexOf('processForSize')!==-1}"
-            @click="$router.push('/process/processForSize/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
+            @click="$router.replace('/process/processForSize/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
             尺码
           </span>
           <span class="opr"
             :class="{'active':$route.fullPath.indexOf('processForColor')!==-1}"
-            @click="$router.push('/process/processForColor/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
+            @click="$router.replace('/process/processForColor/' +  $route.params.id + '/' + ( $route.params.orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=' +$route.query.whichModule + '&processType=' + otherData.processType)">
             配色
           </span>
         </div>
@@ -186,7 +186,8 @@
                       <el-checkbox v-model="item.checked"
                         @change="checkAllColorSize($event,item)">
                         <div style="display:flex;flex-direction:column;position: relative;bottom: 7px;"><span>{{item.product_code}}</span>
-                          <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span></div>
+                          <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
+                        </div>
                       </el-checkbox>
                     </div>
                     <div class="tcolumn noPad"
@@ -955,8 +956,7 @@
                             number: '',
                             unit: 'kg'
                           })">增加</div>
-                          <div style="color:#F5222D;cursor:pointer"
-                            v-if="indexChild>0"
+                          <div style="color:#F5222D;cursor:pointer;margin-left:12px"
                             @click="deleteMaterial(item.material_merge,indexChild)">删除</div>
                         </div>
                       </div>
@@ -1134,10 +1134,10 @@
                   <template slot="append">元</template>
                 </el-input>
               </div>
-              <div style="float:right">
+              <!-- <div style="float:right">
                 <div class="btn btnWhiteBlue"
                   @click="saveInspection">确认检验</div>
-              </div>
+              </div> -->
             </div>
           </div>
           <div class="rowCtn">
@@ -1257,6 +1257,20 @@
                       </div>
                     </div>
                   </div>
+                </div>
+                <div class="addRows">
+                  <span class="once"
+                    v-if="formData.inspectionForm.detail.length === 0"
+                    @click="addInspection">新增记录</span>
+                  <span class="once cancle"
+                    v-if="formData.inspectionForm.detail.length > 0"
+                    @click="formData.inspectionForm.detail = []">取消</span>
+                  <span class="once normal"
+                    v-if="formData.inspectionForm.detail.length > 0"
+                    @click="addInspection">新增记录</span>
+                  <span class="once ok"
+                    v-if="formData.inspectionForm.detail.length > 0"
+                    @click="saveInspection">确认检验</span>
                 </div>
               </div>
             </div>
@@ -2698,6 +2712,18 @@ export default {
         })
       }
     },
+    addInspection () {
+      this.formData.inspectionForm.detail.push({
+        client_auth: '',
+        colorSize: [{
+          showCheck: false,
+          colorSize: '',
+          number: '',
+          substandard: '',
+          reason: []
+        }]
+      })
+    },
     // 确认检验
     saveInspection () {
       let error = ''
@@ -3355,7 +3381,6 @@ export default {
     },
     // 根据日志检测用户是否进对了页面，如果进错了，给他赶出去
     checkUrl () {
-      console.log(this.nativeData.inspectionLog)
       let whichRoot = this.$route.fullPath
       let newVal = this.otherData.whichModule
       if (newVal === 'inspection') {
@@ -3406,7 +3431,7 @@ export default {
       if (this.$route.fullPath.split('/')[2] !== whichRoot.split('/')[2]) {
         this.$message.warning('检测到页面已存在其他数据类型，正在为你自动切换')
       }
-      this.$router.push(whichRoot)
+      this.$router.replace(whichRoot)
     },
     getDeductClientArr (data) {
       let clientArr = this.$unique(data.filter(itemF => itemF.client_id).map(itemM => ({ client_id: itemM.client_id, client_name: itemM.client_name, type: this.deductType })).concat(this.clientArr), 'client_id')

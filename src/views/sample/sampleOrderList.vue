@@ -86,7 +86,7 @@
                 v-model="searchOrderOrProduct"
                 @change="changeRouter(1)">
                 <el-option value="order"
-                  label="订单搜索"></el-option>
+                  label="样单号搜索"></el-option>
                 <el-option value="product"
                   label="产品编号搜索"></el-option>
               </el-select>
