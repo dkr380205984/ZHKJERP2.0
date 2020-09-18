@@ -45,7 +45,7 @@
                 </el-option>
               </el-select>
               <div class="resetBtn"
-                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=')">重置</div>
+                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=&&min=&&max=')">重置</div>
             </div>
             <div class="filter_line"
               :class="openHiddleFilter ? false : 'hiddle'">
@@ -62,7 +62,7 @@
                 </el-option>
               </el-select>
               <el-date-picker v-model="date"
-                style="width:250px"
+                style="width:200px"
                 class="filter_item"
                 type="daterange"
                 align="right"
@@ -73,6 +73,18 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
+              <el-input class="filter_item"
+                v-model="min"
+                @change="changeRouter(1)"
+                placeholder="输入最低报价">
+                <template slot="append">元</template>
+              </el-input>
+              <el-input class="filter_item"
+                v-model="max"
+                @change="changeRouter(1)"
+                placeholder="输入最高报价">
+                <template slot="append">元</template>
+              </el-input>
             </div>
           </div>
           <div class="rightCtn"
@@ -202,7 +214,9 @@ export default {
       ],
       total: 0,
       pages: 1,
-      list: []
+      list: [],
+      min: '',
+      max: ''
     }
   },
   methods: {
@@ -227,6 +241,8 @@ export default {
       this.loading = true
       price.list({
         limit: 10,
+        min_price: this.min,
+        max_price: this.max,
         page: this.pages,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
@@ -339,10 +355,12 @@ export default {
       this.status = params.status ? Number(params.status) : ''
       this.client_id = params.client_id ? params.client_id.split(',') : ''
       this.user_id = params.user_id ? params.user_id : ''
+      this.min = params.min || ''
+      this.max = params.max || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id)
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id + '&&min=' + this.min + '&&max=' + this.max)
     }
   },
   created () {
