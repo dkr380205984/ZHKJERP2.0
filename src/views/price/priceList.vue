@@ -77,13 +77,11 @@
                 v-model="min"
                 @change="changeRouter(1)"
                 placeholder="输入最低报价">
-                <template slot="append">元</template>
               </el-input>
               <el-input class="filter_item"
                 v-model="max"
                 @change="changeRouter(1)"
                 placeholder="输入最高报价">
-                <template slot="append">元</template>
               </el-input>
             </div>
           </div>
