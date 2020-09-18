@@ -150,10 +150,31 @@
               </div>
             </div> -->
             <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_push_progress > 0?'green':'orange'">
-                <div class="state"></div>
-                <span class="name">{{itemOrder.material_push_progress>0?'已添加':'未添加'}}</span>
+              <div class="col flex12"
+                v-if="material_type==='1'">
+                <div class="stateCtn"
+                  :class="{'orange':itemOrder.material_push_progress.yl.push===0,'green':itemOrder.material_push_progress.yl.push>0}">
+                  <div class="state"></div>
+                  <span class="name">入</span>
+                </div>
+                <div class="stateCtn"
+                  :class="{'orange':itemOrder.material_push_progress.yl.pop===0,'green':itemOrder.material_push_progress.yl.pop>0}">
+                  <div class="state"></div>
+                  <span class="name">出</span>
+                </div>
+              </div>
+              <div class="col flex12"
+                v-if="material_type==='2'">
+                <div class="stateCtn"
+                  :class="{'orange':itemOrder.material_push_progress.fl.push===0,'green':itemOrder.material_push_progress.fl.push>0}">
+                  <div class="state"></div>
+                  <span class="name">入</span>
+                </div>
+                <div class="stateCtn"
+                  :class="{'orange':itemOrder.material_push_progress.fl.pop===0,'green':itemOrder.material_push_progress.fl.pop>0}">
+                  <div class="state"></div>
+                  <span class="name">出</span>
+                </div>
               </div>
             </div>
             <div class="col">

@@ -251,21 +251,35 @@
             <div class="col">{{itemOrder.number}}</div>
             <!-- <div class="col">{{itemOrder.group_name}}</div> -->
             <div class="col">
-              <div :class="{'stateCtn':true, 'green':itemOrder.has_plan > 0}">
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.material_push_progress.yl.push===0,'green':itemOrder.material_push_progress.yl.push>0}">
                 <div class="state"></div>
-                <span class="name">计</span>
+                <span class="name">入</span>
               </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.material_order_progress.y_percent>0 ,'green':itemOrder.material_order_progress.y_percent>=100}">
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.material_push_progress.yl.pop===0,'green':itemOrder.material_push_progress.yl.pop>0}">
                 <div class="state"></div>
-                <span class="name">订</span>
+                <span class="name">出</span>
               </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.material_push_progress.r_push>0 ,'green':itemOrder.material_push_progress.r_push>=100}">
-                <div class="state"></div>
-                <span class="name">库</span>
-              </div>
-              <div :class="{'stateCtn':true,'orange':itemOrder.product_weave_progress.product>0 ,'green':itemOrder.product_weave_progress.product>=100}">
+              <div class="stateCtn"
+                :class="{'orange':!fuckState(itemOrder,'织片'),'green':fuckState(itemOrder,'织片')}">
                 <div class="state"></div>
                 <span class="name">织</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':!fuckState(itemOrder,'套口'),'green':fuckState(itemOrder,'套口')}">
+                <div class="state"></div>
+                <span class="name">套</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':!fuckState(itemOrder,'其他'),'green':fuckState(itemOrder,'其他')}">
+                <div class="state"></div>
+                <span class="name">其</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':itemOrder.product_inspection_progress>0,'green':itemOrder.product_inspection_progress>=100}">
+                <div class="state"></div>
+                <span class="name">检</span>
               </div>
             </div>
             <div class="col">
@@ -525,6 +539,29 @@ export default {
     }
   },
   methods: {
+    fuckState (itemOrder, type) {
+      if (type === '织片' || type === '套口') {
+        return (itemOrder.product_weave_progress && itemOrder.product_weave_progress[type]) || (itemOrder.product_semi_inspection_progress && itemOrder.product_semi_inspection_progress[type]) || (itemOrder.product_push_progress && itemOrder.product_push_progress[type])
+      } else {
+        let flag = false
+        for (let attr in itemOrder.product_weave_progress) {
+          if (attr !== '织片' || attr !== '套口') {
+            flag = true
+          }
+        }
+        for (let attr in itemOrder.product_semi_inspection_progress) {
+          if (attr !== '织片' || attr !== '套口') {
+            flag = true
+          }
+        }
+        for (let attr in itemOrder.product_push_progress) {
+          if (attr !== '织片' || attr !== '套口') {
+            flag = true
+          }
+        }
+        return flag
+      }
+    },
     // 更新筛选条件
     getFilters () {
       let params = getHash(this.$route.params.params)
