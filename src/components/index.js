@@ -14,6 +14,7 @@ import zhFileModule from './zhFileModule/zhFileModule.vue'
 import zhConfirmModule from './zhConfirmModule/zhConfirmModule.vue'
 import historyPendant from './historyPendant/historyPendant.vue'
 import scannerWatcher from './scannerWatcher/scannerWatcher.vue'
+import lookPrice from './lookPrice/lookPrice.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -32,5 +33,6 @@ export default {
     vue.component('zhConfirmModule', zhConfirmModule)
     vue.component('historyPendant', historyPendant)
     vue.component('scannerWatcher', scannerWatcher)
+    vue.component('lookPrice', lookPrice)
   }
 }

@@ -9,6 +9,10 @@
           :url="msgUrl"
           :content="msgContent"
           :afterSend="$winReload"></zh-message>
+        <div style="float:right">
+          <look-price :price_id="orderInfo.quotation_id"
+            whichPrice='production_info'></look-price>
+        </div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">

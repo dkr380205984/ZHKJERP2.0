@@ -121,6 +121,11 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">收发检验统计</span>
+        <el-switch style="float:right;margin-top:20px;margin-right:32px"
+          v-model="keyBoard"
+          active-text="打开键盘"
+          inactive-text="关闭键盘">
+        </el-switch>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -247,22 +252,25 @@
                 <el-table-column label="数量"
                   width="200">
                   <template slot-scope="scope">
-                    <el-input v-model="scope.row.number"
-                      placeholder="数量"></el-input>
+                    <zh-input :keyBoard="keyBoard"
+                      v-model="scope.row.number"
+                      placeholder="数量"></zh-input>
                   </template>
                 </el-table-column>
                 <el-table-column label="捆数"
                   width="200">
                   <template slot-scope="scope">
-                    <el-input v-model="scope.row.count"
-                      placeholder="捆数"></el-input>
+                    <zh-input :keyBoard="keyBoard"
+                      v-model="scope.row.count"
+                      placeholder="捆数"></zh-input>
                   </template>
                 </el-table-column>
                 <el-table-column label="次品数量"
                   width="200">
                   <template slot-scope="scope">
-                    <el-input v-model="scope.row.cpNum"
-                      placeholder="次品数量"></el-input>
+                    <zh-input :keyBoard="keyBoard"
+                      v-model="scope.row.cpNum"
+                      placeholder="次品数量"></zh-input>
                   </template>
                 </el-table-column>
                 <el-table-column label="次品原因"
@@ -790,7 +798,8 @@
           <i class="el-icon-close"
             @click="otherData.codeFlag=false"></i>
         </div>
-        <div class="content">
+        <div class="content"
+          style="position:relative">
           <div style="background:#ccc;color:rgba(0,0,0,0.85);font-size:14px;padding:8px;border-radius:4px">请仔细核对订单信息，产品信息是否匹配！！！</div>
           <div class="row">
             <span class="label">选择产品：</span>
@@ -827,18 +836,22 @@
               </el-cascader>
             </span>
           </div>
-          <div class="row">
+          <div class="row"
+            style="position:relative">
             <span class="label">入库数量：</span>
-            <span class="info">
-              <el-input v-model="formData.codeData.number"
-                placeholder="入库数量"></el-input>
+            <span class="info"
+              style="position:relative">
+              <zh-input :keyBoard="keyBoard"
+                v-model="formData.codeData.number"
+                placeholder="入库数量"></zh-input>
             </span>
           </div>
           <div class="row">
             <span class="label">次品数量：</span>
             <span class="info">
-              <el-input v-model="formData.codeData.cpNum"
-                placeholder="次品数量"></el-input>
+              <zh-input :keyBoard="keyBoard"
+                v-model="formData.codeData.cpNum"
+                placeholder="次品数量"></zh-input>
             </span>
           </div>
           <div class="row">
@@ -893,6 +906,7 @@ export default {
   data () {
     return {
       rfidreader: null,
+      keyBoard: true,
       // 渲染层，用于渲染页面的数据
       renderData: {
         orderInfo: {

@@ -1,0 +1,44 @@
+.lookPrice{
+  position: relative;
+  .lookPriceText{
+    font-size: 16px;
+    &.noPrice{
+      cursor: not-allowed;
+      color: #ccc;
+    }
+    &.hasPrice{
+      color: #1a95ff;
+      cursor: pointer;
+    }
+   
+  }
+  .price_popup{
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    margin: auto;
+    transform: translate(-50%, 100%);
+    width: 300px;
+    background: #fff;
+    border: 1px solid #E9E9E9;
+    z-index: 99;
+    border-radius: 4px;
+    box-shadow: 0 0 3px rgba(0,0,0,.15);
+    .main{
+      padding: 12px;
+      .once{
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        height: 32px;
+        line-height: 32px;
+        .name{
+           color: rgba(0,0,0,0.65);
+        }
+        .price{
+          color:#1a95ff;
+        }
+      }
+    }
+  }
+}

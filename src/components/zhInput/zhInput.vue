@@ -1,5 +1,6 @@
 <template>
-  <div class="zhInputCtn">
+  <div class="zhInputCtn"
+    @click.stop>
     <!-- 前置元素 -->
     <div class="zhInputPrepend"
       v-if="$slots.prepend">
@@ -17,11 +18,17 @@
         @change="handleChange"
         @mousewheel="handleMouseWheel"
         v-bind="$attrs"
+        v-model="selfValue"
         ref="input" />
       <div class="zhInputClose"
         v-show="!($attrs.disabled===''|| $attrs.disabled) && clearable && (focused || hovering)"
         @mousedown="clear">×</div>
     </div>
+    <zh-boarderkey v-if="keyBoard"
+      v-show="showKeyBorder"
+      :left="left"
+      :top="top"
+      @getNum="getValue"></zh-boarderkey>
     <!-- 后置元素 -->
     <div class="zhInputAppend"
       v-if="$slots.append">
@@ -35,15 +42,23 @@
 </template>
 
 <script>
+import zhBoarderkey from './zhBoarderkey.vue'
 import './zhInput.less'
 import { evil } from '../common.js'
 export default {
+  components: {
+    zhBoarderkey
+  },
   props: {
     value: [String, Number],
     // 数据类型
     type: {
       type: String,
       default: 'text'
+    },
+    keyBoard: {
+      type: Boolean,
+      default: false
     },
     // 数据类型为custom时生效，传入一个正则表达式
     customReg: {
@@ -90,10 +105,14 @@ export default {
   },
   data () {
     return {
+      selfValue: '',
       focused: false,
       unShowError: true,
       errorMessage: '',
-      hovering: false
+      hovering: false,
+      showKeyBorder: false,
+      left: 0,
+      top: 0
     }
   },
   watch: {
@@ -185,12 +204,56 @@ export default {
         this.unShowError = false
       }
     },
+    getValue (num) {
+      this.$nextTick(() => {
+        this.showKeyBorder = true
+      })
+      if (num === '删除') {
+        this.selfValue = this.selfValue.substring(0, this.selfValue.length - 1)
+      } else {
+        this.selfValue += num.toString()
+      }
+      this.$emit('input', this.selfValue)
+    },
     handleChange (ev) {
       this.$emit('change', ev.target.value)
     },
+    // getAbsoluteLocation (element) {
+    //   if (arguments.length !== 1 || element == null) {
+    //     return null
+    //   }
+    //   var scrollTop = element.scrollTop
+    //   var offsetTop = element.offsetTop
+    //   var offsetLeft = element.offsetLeft
+    //   var offsetWidth = element.offsetWidth
+    //   var offsetHeight = element.offsetHeight
+    //   while (element.offsetParent) {
+    //     element = element.offsetParent
+    //     offsetTop += element.offsetTop
+    //     offsetLeft += element.offsetLeft
+    //     scrollTop += element.scrollTop
+    //   }
+    //   return {
+    //     scrollTop: scrollTop,
+    //     absoluteTop: offsetTop,
+    //     absoluteLeft: offsetLeft,
+    //     offsetWidth: offsetWidth,
+    //     offsetHeight: offsetHeight
+    //   }
+    // },
     handleFocus (ev) {
       this.focused = true
       this.$emit('focus', ev.target.value)
+      document.body.click()
+      this.$nextTick(() => {
+        this.getPosition(ev)
+      })
+    },
+    getPosition (ev) {
+      let position = ev.target.getBoundingClientRect()
+      this.left = position.left
+      this.top = position.top
+      this.showKeyBorder = true
     },
     handleBlur (ev) {
       this.focused = false
@@ -206,6 +269,9 @@ export default {
       this.$emit('change', '')
       this.$emit('clear')
       this.errorRegExp()
+    },
+    closeNum () {
+      this.showKeyBorder = false
     }
   },
   mounted () {
@@ -214,6 +280,8 @@ export default {
     // 初始化errorMessage
     this.errorMessageInit()
     this.errorRegExp(this.nativeInputValue)
+    document.body.removeEventListener('click', this.closeNum)
+    document.body.addEventListener('click', this.closeNum)
   }
 }
 </script>
