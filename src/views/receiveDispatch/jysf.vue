@@ -775,7 +775,7 @@
                 placeholder="选择单位"
                 collapse-tags
                 :disabled="otherData.commonInfo.semi_client_id.length>0"
-                :options="selectData.semiClient"
+                :options="selectData.backClient"
                 :props="{multiple:true}">
               </el-cascader>
             </span>
