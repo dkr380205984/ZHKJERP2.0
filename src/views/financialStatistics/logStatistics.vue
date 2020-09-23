@@ -2925,7 +2925,8 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user,
           group_id: this.group_id,
-          client_id: this.client_id && this.client_id[1]
+          client_id: (this.client_id && this.client_id[0] !== '所有人员' && this.client_id[1]) || '',
+          inspection_user: (this.client_id && this.client_id[0] === '所有人员' && this.client_id[1]) || ''
         }).then((res) => {
           this.list = res.data.data.map(item => {
             if (item.rejects_info) {

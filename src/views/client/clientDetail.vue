@@ -3109,7 +3109,6 @@ export default {
         // 初始化仓库筛选数据
         this.stockList = res[3].data.data
         this.groupList = res[4].data.data
-        this.getList()
         this.getSettleChargbacksLog()
         this.loading = false
       })

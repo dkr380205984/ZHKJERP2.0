@@ -106,7 +106,7 @@ export default {
         month: Number(this.$route.query.month)
       }).then(res => {
         res.data.data.forEach(item => {
-          let thisMonthData = item.child_data.filter(itemF => new Date(itemF.complete_time).getMonth() === +this.$route.query.month - 1)
+          let thisMonthData = item.child_data
           let totalPrice = thisMonthData.map(value => Number(value.total_price) || 0)
           let data = thisMonthData.map(value => {
             return {

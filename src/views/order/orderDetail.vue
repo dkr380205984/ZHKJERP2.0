@@ -21,6 +21,10 @@
               style="padding:0 8px;font-size:14px"
               v-if="orderInfo.status === 2002 || orderInfo.status === 2005"
               @click="changeOrderStatus('ok')">确认完成</div>
+            <div class="btn btnBlue"
+              style="padding:0 8px;font-size:14px"
+              v-if="orderInfo.status === 2004"
+              @click="changeOrderStatus('ok',true)">修改实际装箱值</div>
           </div>
           <div class="otherInfo"
             style="justify-content: space-between;">
@@ -191,11 +195,12 @@
     <div class="module">
       <div class="titleCtn warnCtn">
         <span class="title hasBorder">流程进度</span>
-        <!-- <span class="warningCtn">
+        <span class="warningCtn"
+          v-if="warnData.warnArr.filter(itemF=>itemF.isWarnStatus > 0).length > 0">
           <span class="item">已触发</span>
-          <span class="item red">3</span>
+          <span class="item red">{{warnData.warnArr.filter(itemF=>itemF.isWarnStatus > 0).length}}</span>
           <span class="item">次预警提醒</span>
-        </span> -->
+        </span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn"
@@ -1842,50 +1847,49 @@ export default {
         })
         // 处理流程进度
         let orderData = res[0].data.data
-        this.productProgInfo.push(
-          {
-            name: '物料进度',
-            isCompiled: orderData.material_push_progress.r_push >= 100 && orderData.material_push_progress.r_pop >= 100,
-            info: [
-              {
-                name: '入库',
-                prog: orderData.material_push_progress.r_push > 100 ? 100 : orderData.material_push_progress.r_push,
-                class: 'greenProg'
-              },
-              {
-                name: '出库',
-                prog: orderData.material_push_progress.r_pop > 100 ? 100 : orderData.material_push_progress.r_pop,
-                class: 'blueProg'
-              }
-            ]
-          },
-          {
-            name: '生产进度',
-            isCompiled: orderData.product_push_progress >= 100 && orderData.product_push_progress >= 100,
-            info: [
-              {
-                name: '入库',
-                prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
-                class: 'blueProg'
-              },
-              {
-                name: '回库',
-                prog: orderData.semi_push_progress > 100 ? 100 : orderData.semi_push_progress,
-                class: 'blueProg'
-              }
-            ]
-          },
-          {
-            name: '出库进度',
-            isCompiled: orderData.pack_real_progress >= 100,
-            info: [
-              {
-                name: '装箱',
-                prog: orderData.pack_real_progress > 100 ? 100 : orderData.pack_real_progress || 0,
-                class: 'blueProg'
-              }
-            ]
-          })
+        this.productProgInfo = [{
+          name: '物料进度',
+          isCompiled: orderData.material_push_progress.r_push >= 100 && orderData.material_push_progress.r_pop >= 100,
+          info: [
+            {
+              name: '入库',
+              prog: orderData.material_push_progress.r_push > 100 ? 100 : orderData.material_push_progress.r_push,
+              class: 'greenProg'
+            },
+            {
+              name: '出库',
+              prog: orderData.material_push_progress.r_pop > 100 ? 100 : orderData.material_push_progress.r_pop,
+              class: 'blueProg'
+            }
+          ]
+        },
+        {
+          name: '生产进度',
+          isCompiled: orderData.product_push_progress >= 100 && orderData.product_push_progress >= 100,
+          info: [
+            {
+              name: '入库',
+              prog: orderData.product_push_progress > 100 ? 100 : orderData.product_push_progress,
+              class: 'blueProg'
+            },
+            {
+              name: '回库',
+              prog: orderData.semi_push_progress > 100 ? 100 : orderData.semi_push_progress,
+              class: 'blueProg'
+            }
+          ]
+        },
+        {
+          name: '出库进度',
+          isCompiled: orderData.pack_real_progress >= 100,
+          info: [
+            {
+              name: '装箱',
+              prog: orderData.pack_real_progress > 100 ? 100 : orderData.pack_real_progress || 0,
+              class: 'blueProg'
+            }
+          ]
+        }]
         this.catDetail('material')
         if (this.orderInfo.time_progress) {
           this.warnData = {
@@ -1895,19 +1899,24 @@ export default {
             warnArr: [
               {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_plan / 100),
-                name: '物料计划'
+                name: '物料计划',
+                isWarnStatus: this.orderInfo.material_plan_progress_status
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_push / 100),
-                name: '物料入库'
+                name: '物料入库',
+                isWarnStatus: this.orderInfo.material_push_progress_status
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.semi_product_push / 100),
-                name: '半成品入库'
+                name: '半成品入库',
+                isWarnStatus: this.orderInfo.semi_product_push_progress_status
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_push / 100),
-                name: '成品入库'
+                name: '成品入库',
+                isWarnStatus: this.orderInfo.product_push_progress_status
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_pack / 100),
-                name: '成品包装'
+                name: '成品包装',
+                isWarnStatus: this.orderInfo.pack_push_progress_status
               }
             ]
           }
@@ -2435,7 +2444,7 @@ export default {
       this.activeFinanceTitle = item.key
     },
     // 修改订单状态
-    changeOrderStatus (type) {
+    changeOrderStatus (type, flag) {
       if (type === 'okSubmit') {
         let flag = {
           product: true,
@@ -2512,6 +2521,18 @@ export default {
           })
         })
         this.showOkPopup = 1
+        if (flag) {
+          this.loading = true
+          packPlan.packActualLog({
+            order_id: this.$route.params.id
+          }).then(res => {
+            res.data.data && res.data.data.forEach(itemF => {
+              let findFlag = this.actualProductInfo.find(itemFI => itemFI.product_id === itemF.product_id && itemFI.sizeColor[0] === itemF.size_id && itemFI.sizeColor[1] === itemF.color_id)
+              findFlag && (findFlag.actual_number = itemF.number)
+            })
+            this.loading = false
+          })
+        }
       } else if (type === 'change') {
         this.$router.push('/order/orderUpdate/' + this.$route.params.id)
       } else if (type === 'showCanclePopup') {

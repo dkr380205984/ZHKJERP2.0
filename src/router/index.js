@@ -431,7 +431,7 @@ const routes = [
     }, {
       path: '/staff/staffSettle',
       name: '合计工资结算单',
-      component: () => import('../views/staff/staffSettleOld.vue')
+      component: () => import('../views/staff/staffSettle.vue')
     }, {
       path: '/reimbursement/reimbursementCreate',
       name: '添加报销单',

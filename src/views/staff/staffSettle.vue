@@ -23,7 +23,7 @@
         <span class="title">合计工资结算单</span>
         <div class="titleBtnCtn">
           <div class="btn btnWhiteBlue"
-            @click="$openUrl('/staffAnnualTable?year=' + date.split('-')[0] + '&month=' + date.split('-')[1] + '&departmentId=' + department)">打印</div>
+            @click="$openUrl('/staffAnnualTable?year=' + year + '&month=' + month + '&departmentId=' + department)">打印</div>
           <div class="btn btnWhiteBlue"
             @click="showPopup=true">添加结算人员</div>
         </div>
@@ -44,15 +44,23 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <el-date-picker v-model="date"
+              <el-date-picker v-model="year"
                 class='filter_item'
                 @change="init"
                 :clearable="false"
-                type="month"
-                value-format="yyyy-MM"
-                placeholder="选择结算月份">
+                type="year"
+                value-format="yyyy"
+                placeholder="选择年份">
               </el-date-picker>
-
+            </div>
+            <div class="filter_line">
+              <div class="monthSelect">
+                <div class="item"
+                  :class="{ 'isActive' : month === item}"
+                  v-for="item in 12"
+                  :key="item"
+                  @click="changeMonth(item)">{{item}}月</div>
+              </div>
             </div>
           </div>
         </div>
@@ -200,7 +208,7 @@
                   @click="scope.row.isEdit = true">修改</span>
                 <span class="btn noBorder"
                   v-else
-                  @click="scope.row.isEdit = false">完成</span>
+                  @click="saveDeduct(scope.row)">完成</span>
                 <span class="btn noBorder red"
                   v-if="!scope.row.isEdit">删除</span>
                 <span class="btn noBorder"
@@ -346,7 +354,8 @@ export default {
       department: '',
       departmentPopup: '',
       departmentArr: [],
-      date: '',
+      year: '',
+      month: '',
       list: [],
       page: 1,
       total: 1,
@@ -357,14 +366,15 @@ export default {
     }
   },
   methods: {
-    updateRow (item) {
-      console.log(item)
+    changeMonth (e) {
+      this.month = e
+      this.getList()
     },
     init () {
       this.loading = true
       staff.getMonthStaffUser({
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1])
+        year: this.year,
+        month: Number(this.month)
       }).then(res => {
         if (res.data.status !== false && res.data.data) {
           let filterUser = res.data.data.staff_data ? JSON.parse(res.data.data.staff_data) : []
@@ -458,8 +468,8 @@ export default {
         type: 1,
         reason: item.reason,
         price: item.price,
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1])
+        year: this.year,
+        month: Number(this.month)
       }).then((res) => {
         if (res.data.status) {
           if (!item.id) {
@@ -474,33 +484,74 @@ export default {
         }
       })
     },
-    saveDeduct (item, itemFather) {
-      if (!item.reason) {
-        this.$message.error('请输入扣款名称')
-        return
-      }
-      if (!item.price) {
-        this.$messsage.error('请输入扣款金额')
-        return
-      }
+    saveDeduct (item) {
+      const data = [
+        {
+          type: 1,
+          year: this.year,
+          month: Number(this.month),
+          price: item.wage_basic,
+          staff_id: item.id,
+          reason: '基本工资'
+        }, {
+          type: 1,
+          year: this.year,
+          month: Number(this.month),
+          price: item.wage_extra_work,
+          staff_id: item.id,
+          reason: '加班工资'
+        }, {
+          type: 1,
+          year: this.year,
+          month: Number(this.month),
+          price: item.wage_labor,
+          staff_id: item.id,
+          reason: '劳务工资'
+        }, {
+          type: 1,
+          year: this.year,
+          month: Number(this.month),
+          price: item.wage_live_allow,
+          staff_id: item.id,
+          reason: '生活补贴'
+        }, {
+          type: 1,
+          year: this.year,
+          month: Number(this.month),
+          price: item.wage_other,
+          staff_id: item.id,
+          reason: '其它'
+        }, {
+          type: 2,
+          year: this.year,
+          month: Number(this.month),
+          price: item.deduct_annuity,
+          staff_id: item.id,
+          reason: '养老金'
+        }, {
+          type: 2,
+          year: this.year,
+          month: Number(this.month),
+          price: item.deduct_income_tax,
+          staff_id: item.id,
+          reason: '个税'
+        }, {
+          type: 2,
+          year: this.year,
+          month: Number(this.month),
+          price: item.deduct_other,
+          staff_id: item.id,
+          reason: '其它'
+        }
+      ]
       this.loading = true
       staff.createOtherPay({
-        id: item.id, // 修改的时候id不为空
-        staff_id: itemFather.id,
-        type: 2,
-        reason: item.reason,
-        price: item.price,
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1])
+        data: data
       }).then((res) => {
-        if (res.data.status) {
-          this.$message.success('扣除成功')
-          itemFather.deduct_price = itemFather.deduct_price + Number(item.price)
-          itemFather.price = itemFather.price - item.price
-        } else {
+        if (res.data.status !== false) {
           this.$message.success('修改成功')
+          item.isEdit = false
         }
-        item.edit = false
         this.loading = false
       })
     },
@@ -531,69 +582,74 @@ export default {
         page: this.page,
         limit: 10,
         department_id: this.department,
-        year: this.date.split('-')[0],
-        month: Math.round(this.date.split('-')[1])
+        year: this.year,
+        month: Math.round(this.month)
       }).then((res) => {
         if (res.data.status !== false) {
-          this.list = res.data.data.map((item) => {
-            const hourluWage = item.child_data.reduce((total, current) => {
-              if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
-                return Number(current.total_price) + total
-              } else {
-                return total
+          if (!res.data.data) {
+            this.list = []
+            this.total = 1
+          } else {
+            this.list = res.data.data.map((item) => {
+              const hourluWage = item.child_data.reduce((total, current) => {
+                if (current.settle_type === '按时结算' || current.settle_type === '按日结算' || current.settle_type === '按月结算') {
+                  return Number(current.total_price) + total
+                } else {
+                  return total
+                }
+              }, 0)
+              const orderOtherWage = item.child_data.reduce((total, current) => {
+                if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
+                  return Number(current.total_price) + total
+                } else {
+                  return total
+                }
+              }, 0)
+              const wageList = item.deduct_data.filter(itemF => itemF.type === 1)
+              const deductList = item.deduct_data.filter(itemF => itemF.type === 2)
+              const basicWage = wageList.find(itemF => itemF.reason === '基本工资')
+              const extraWorkWage = wageList.find(itemF => itemF.reason === '加班工资')
+              const laborWage = wageList.find(itemF => itemF.reason === '劳务工资')
+              const liveAllowWage = wageList.find(itemF => itemF.reason === '生活补贴')
+              const otherWage = wageList.find(itemF => itemF.reason === '其他')
+              const annuityDeduct = deductList.find(itemF => itemF.reason === '养老金')
+              const incomeTaxDeduct = deductList.find(itemF => itemF.reason === '个税')
+              const otherDeduct = deductList.find(itemF => itemF.reason === '其它')
+              return {
+                isEdit: false,
+                name: item.name,
+                id: item.id,
+                wage_hourly: hourluWage || 0,
+                wage_order_other: orderOtherWage || 0,
+                wage_basic: basicWage ? basicWage.price : '',
+                wage_extra_work: extraWorkWage ? extraWorkWage.price : '',
+                wage_labor: laborWage ? laborWage.price : '',
+                wage_live_allow: liveAllowWage ? liveAllowWage.price : '',
+                wage_other: otherWage ? otherWage.price : '',
+                deduct_annuity: annuityDeduct ? annuityDeduct.price : '',
+                deduct_income_tax: incomeTaxDeduct ? incomeTaxDeduct.price : '',
+                deduct_other: otherDeduct ? otherDeduct.price : '',
+                reality_wage: this.$toFixed(([
+                  hourluWage || 0,
+                  orderOtherWage || 0,
+                  basicWage ? basicWage.price : 0,
+                  extraWorkWage ? extraWorkWage.price : 0,
+                  laborWage ? laborWage.price : 0,
+                  liveAllowWage ? liveAllowWage.price : 0,
+                  otherWage ? otherWage.price : 0
+                ].reduce((a, b) => {
+                  return Number(a) + Number(b)
+                }, 0)) - ([
+                  annuityDeduct ? annuityDeduct.price : 0,
+                  incomeTaxDeduct ? incomeTaxDeduct.price : 0,
+                  otherDeduct ? otherDeduct.price : 0
+                ].reduce((a, b) => {
+                  return Number(a) + Number(b)
+                }, 0)))
               }
-            }, 0)
-            const orderOtherWage = item.child_data.reduce((total, current) => {
-              if (current.settle_type !== '按时结算' && current.settle_type !== '按日结算' && current.settle_type !== '按月结算') {
-                return Number(current.total_price) + total
-              } else {
-                return total
-              }
-            }, 0)
-            const wageList = item.deduct_data.filter(itemF => itemF.type === 1)
-            const deductList = wageList.filter(itemF => itemF.type === 2)
-            const basicWage = wageList.find(itemF => itemF.reason === '基本工资')
-            const extraWorkWage = wageList.find(itemF => itemF.reason === '加班工资')
-            const laborWage = wageList.find(itemF => itemF.reason === '劳务工资')
-            const liveAllowWage = wageList.find(itemF => itemF.reason === '生活补贴')
-            const otherWage = wageList.find(itemF => itemF.reason === '其他')
-            const annuityDeduct = deductList.find(itemF => itemF.reason === '养老金')
-            const incomeTaxDeduct = deductList.find(itemF => itemF.reason === '个税')
-            const otherDeduct = deductList.find(itemF => itemF.reason === '其它')
-            return {
-              isEdit: false,
-              name: item.name,
-              id: item.id,
-              wage_hourly: hourluWage || 0,
-              wage_order_other: orderOtherWage || 0,
-              wage_basic: basicWage ? basicWage.price : '',
-              wage_extra_work: extraWorkWage ? extraWorkWage.price : '',
-              wage_labor: laborWage ? laborWage.price : '',
-              wage_live_allow: liveAllowWage ? liveAllowWage.price : '',
-              wage_other: otherWage ? otherWage.price : '',
-              deduct_annuity: annuityDeduct ? annuityDeduct.price : '',
-              deduct_income_tax: incomeTaxDeduct ? incomeTaxDeduct.price : '',
-              deduct_other: otherDeduct ? otherDeduct.price : '',
-              reality_wage: this.$toFixed(([
-                hourluWage || 0,
-                orderOtherWage || 0,
-                basicWage ? basicWage.price : 0,
-                extraWorkWage ? extraWorkWage.price : 0,
-                laborWage ? laborWage.price : 0,
-                liveAllowWage ? liveAllowWage.price : 0,
-                otherWage ? otherWage.price : 0
-              ].reduce((a, b) => {
-                return Number(a) + Number(b)
-              }, 0)) - ([
-                annuityDeduct ? annuityDeduct.price : 0,
-                incomeTaxDeduct ? incomeTaxDeduct.price : 0,
-                otherDeduct ? otherDeduct.price : 0
-              ].reduce((a, b) => {
-                return Number(a) + Number(b)
-              }, 0)))
-            }
-          })
-          this.total = res.data.meta.total
+            })
+            this.total = res.data.meta.total
+          }
         }
         this.loading = false
       })
@@ -603,8 +659,8 @@ export default {
       this.showPopup = false
       staff.settingMonthStaffUser({
         staff_data: this.staffAllList.filter((item) => item.checked).map((item) => item.id),
-        year: this.date.split('-')[0],
-        month: Number(this.date.split('-')[1])
+        year: this.year,
+        month: Number(this.month)
       }).then((res) => {
         if (res.data.stauts !== false) {
           this.$message.success('已成功为您更新' + this.date + '的人员结算信息')
@@ -634,7 +690,8 @@ export default {
   mounted () {
     // 设置默认日期
     let now = new Date()
-    this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth())) : (now.getMonth()))
+    this.year = now.getFullYear().toString()
+    this.month = now.getMonth()
     this.init()
     Promise.all([
       station.list({
