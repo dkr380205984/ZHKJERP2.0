@@ -934,6 +934,73 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showCompare">
+      <div class="main"
+        style="width:720px">
+        <div class="title">
+          <div class="text">{{$route.params.type === '1' ? '原' : '辅'}}料确认</div>
+          <i class="el-icon-close"
+            @click="showCompare=false"></i>
+        </div>
+        <div class="content"
+          style="align-items:baseline">
+          <div class="tips">
+            提示信息：首次{{$route.params.type === '1' ? '原' : '辅'}}料出入库需要确认物料信息是否和样品相同，请按照实际情况填写下列信息。
+          </div>
+          <div class="popupTable">
+            <div class="row">
+              <div class="col hasBack">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.color"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.color"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.colorDesc"
+                  :disabled="compareInfo.color==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">{{$route.params.type === '1'?'纱线支数':'辅料质量'}}</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.number"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.number"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.numberDesc"
+                  :disabled="compareInfo.number==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">{{$route.params.type === '1' ? '原' : '辅'}}料克重</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.weight"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.weight"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.weightDesc"
+                  :disabled="compareInfo.weight==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showCompare=false">取消</div>
+          <span class="btn btnBlue"
+            @click="compare">确定</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1008,7 +1075,16 @@ export default {
       // 添加辅料客供逻辑
       materialList: [],
       colorList: [],
-      confirmInfo: {}
+      confirmInfo: {},
+      showCompare: false,
+      compareInfo: {
+        color: '无差异',
+        number: '无差异',
+        weight: '无差异',
+        colorDesc: '',
+        numberDesc: '',
+        weightDesc: ''
+      }
     }
   },
   watch: {
@@ -1089,6 +1165,10 @@ export default {
     }
   },
   methods: {
+    // 比较下物料
+    compare () {
+
+    },
     // 添加辅料客供逻辑
     querySearchMaterial (queryString, callback, flag) {
       if (this.materialList.length === 0 || !flag) {
@@ -1470,17 +1550,18 @@ export default {
       if (data.length > 0) {
         materialStock.create({ data: data }).then(res => {
           if (res.data.status !== false) {
-            this.initData(this.$route.params.type)
-            this.stockEditInfo = []
-            this.weaveStockEditInfo = []
+            if (this.stockLog.length === 0) {
+              this.showCompare = true
+            }
             this.$message.success('保存成功')
             if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
               this.msgUrl = '/materialStock/materialStockDetail/' + this.$route.params.id + '/' + this.$route.params.type + '/' + this.$route.params.orderType
               this.msgContent = '<span style="color:#1A95FF">添加</span>了一个物料出入库信息,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
               this.msgSwitch = true
-            } else {
-              this.initData(this.$route.params.type)
             }
+            this.initData(this.$route.params.type)
+            this.stockEditInfo = []
+            this.weaveStockEditInfo = []
           }
         })
       }

@@ -2088,6 +2088,9 @@ export default {
       if (res.data.status) {
         if (this.$route.params.type === '1') {
           this.data = res.data.data
+          if (this.data.is_draft === 2) {
+            this.$router.push('/craft/craftUpdate/' + this.$route.params.id + '/' + this.$route.params.type)
+          }
           this.init(res.data.data, 0)
         } else {
           this.data = res.data.data
@@ -2098,7 +2101,6 @@ export default {
           })
           this.init(this.data[this.craftIndex], this.craftIndex)
         }
-        console.log(this.warpInfo)
         this.loading = false
       }
     })

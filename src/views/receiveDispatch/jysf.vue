@@ -4,12 +4,14 @@
     class="indexMain"
     v-loading="otherData.loading">
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn"
+        style="display:flex;justify-content:space-between;align-items: center;">
         <span class="title">订单信息</span>
         <!-- <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"
           :afterSend="$winReload"></zh-message> -->
+        <div class="btn btnWhiteBlue">确认成品信息</div>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -802,6 +804,15 @@
           style="position:relative">
           <div style="background:#ccc;color:rgba(0,0,0,0.85);font-size:14px;padding:8px;border-radius:4px">请仔细核对订单信息，产品信息是否匹配！！！</div>
           <div class="row">
+            <span class="label">产品图片：</span>
+            <span class="info">
+              <img v-for="(itemImg,indexImg) in formData.codeData.image"
+                :key="indexImg"
+                :src="itemImg.thumb" />
+              <span v-if="formData.codeData.image.length===0">暂无图片</span>
+            </span>
+          </div>
+          <div class="row">
             <span class="label">选择产品：</span>
             <span class="info">
               <el-select v-model="formData.codeData.product_id"
@@ -887,6 +898,73 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="otherData.showCompare">
+      <div class="main"
+        style="width:720px">
+        <div class="title">
+          <div class="text">半成品信息确认</div>
+          <i class="el-icon-close"
+            @click="otherData.showCompare=false"></i>
+        </div>
+        <div class="content"
+          style="align-items:baseline">
+          <div class="tips">
+            提示信息：首次半成品检验需要确认半成品信息是否和样品相同，请按照实际情况填写下列信息。
+          </div>
+          <div class="popupTable">
+            <div class="row">
+              <div class="col hasBack">半成品尺寸</div>
+              <div class="col">
+                <el-radio v-model="otherData.compareInfo.size"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="otherData.compareInfo.size"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="otherData.compareInfo.sizeDesc"
+                  :disabled="otherData.compareInfo.size==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">半成品花型</div>
+              <div class="col">
+                <el-radio v-model="otherData.compareInfo.flower"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="otherData.compareInfo.flower"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="otherData.compareInfo.flowerDesc"
+                  :disabled="otherData.compareInfo.flower==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">半成品配色</div>
+              <div class="col">
+                <el-radio v-model="otherData.compareInfo.color"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="otherData.compareInfo.color"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="otherData.compareInfo.colorDesc"
+                  :disabled="otherData.compareInfo.color==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="otherData.showCompare=false">取消</div>
+          <span class="btn btnBlue"
+            @click="compare">确定</span>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -925,6 +1003,7 @@ export default {
       formData: {
         // 二维码扫进来提交的表单
         codeData: {
+          image: [],
           product_id: '',
           product_code: '',
           colorSize: '',
@@ -1015,6 +1094,15 @@ export default {
           semi_client_id: [],
           back_client_id: []
         },
+        showCompare: false,
+        compareInfo: {
+          size: '无差异',
+          flower: '无差异',
+          color: '无差异',
+          colorDesc: '',
+          sizeDesc: '',
+          flowerDesc: ''
+        },
         dataBuffer: [], // xp缓存日志id
         commonApi: [{
           api: order.detail,
@@ -1055,6 +1143,9 @@ export default {
     }
   },
   methods: {
+    compare () {
+
+    },
     downloadXp () {
       window.location = 'http://www.youwokeji.com.cn/CloudReader/YOWORFIDReaderCloudForWeb.exe'
     },
@@ -1152,7 +1243,7 @@ export default {
       })
       this.selectData.productArr = this.$mergeData(productFlat, {
         mainRule: 'product_id',
-        otherRule: [{ name: 'category_info' }, { name: 'product_code' }],
+        otherRule: [{ name: 'category_info' }, { name: 'product_code' }, { name: 'image' }],
         childrenRule: {
           mainRule: ['color_id', 'size_id'],
           otherRule: [
@@ -1303,7 +1394,9 @@ export default {
         }
       })
       // 根据日志统计数据
-      console.log(this.renderData.statistics, this.nativeData.log)
+      // if (this.nativeData.log.length === 0) {
+      //   this.otherData.showCompare = true
+      // }
       this.renderData.statistics.forEach((itemPro) => {
         itemPro.childrenMergeInfo.forEach((itemChild) => {
           itemChild.inNum = this.nativeData.log.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_weave_push === 1).reduce((total, current) => {
@@ -1630,14 +1723,17 @@ export default {
       })
     },
     getColorSize (id) {
-      this.formData.codeData.colorSizeArr = this.selectData.productArr.find((item) => {
+      let finded = this.selectData.productArr.find((item) => {
         return item.product_id === id
-      }).childrenMergeInfo.map((item) => {
+      })
+      this.formData.codeData.colorSizeArr = finded.childrenMergeInfo.map((item) => {
         return {
           name: item.size_name + '/' + item.color_name,
           id: item.size_id + '/' + item.color_id
         }
       })
+      this.formData.codeData.image = finded.image || []
+      console.log(this.selectData.productArr)
     },
     // 选择弹窗产品
     selectPopupProduct (id) {

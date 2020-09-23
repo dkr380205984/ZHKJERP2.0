@@ -121,6 +121,10 @@ const routes = [
       name: '工艺单添加',
       component: () => import('../views/craft/craftCreate.vue')
     }, {
+      path: '/craft/craftList/:params',
+      name: '工艺单列表',
+      component: () => import('../views/craft/craftList.vue')
+    }, {
       path: '/craft/craftUpdate/:id/:type',
       name: '工艺单修改',
       component: () => import('../views/craft/craftUpdate.vue')

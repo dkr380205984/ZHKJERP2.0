@@ -55,7 +55,7 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
-              <div class="reserBtn"
+              <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
             <div class="filter_line"

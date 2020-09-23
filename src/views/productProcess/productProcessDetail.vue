@@ -307,10 +307,11 @@
                         style="flex-direction:row;align-items:center;justify-content:flex-start">
                         <span class="btn noBorder"
                           style="padding:0;margin:0 5px 0 0">
-                          <span @click="inspectionForm.colorSizeArr.length>0?itemChild.showCheck=true:$message.warning('请先选择产品')">批量选择</span>
+                          <span @click.stop="inspectionForm.colorSizeArr.length>0?itemChild.showCheck=true:$message.warning('请先选择产品')">批量选择</span>
                           <div class="selfSelect"
                             style="transform: translate(8px, calc(-100% - 32px));"
-                            v-if="itemChild.showCheck">
+                            v-if="itemChild.showCheck"
+                            @click.stop>
                             <div class="checkBoxCtn">
                               <el-checkbox v-model="inspectionForm.checkedAllOption"
                                 @change="checkedAllOption($event,inspectionForm.colorSizeArr)">全选 </el-checkbox>
@@ -664,6 +665,101 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showCompare">
+      <div class="main"
+        style="width:720px">
+        <div class="title">
+          <div class="text">成品信息确认</div>
+          <i class="el-icon-close"
+            @click="showCompare=false"></i>
+        </div>
+        <div class="content"
+          style="align-items:baseline">
+          <div class="tips">
+            提示信息：首次成品信息检验需要确认成品信息是否和样品相同，请按照实际情况填写下列信息。
+          </div>
+          <div class="popupTable">
+            <div class="row">
+              <div class="col hasBack">成品尺寸</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.size"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.size"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.sizeDesc"
+                  :disabled="compareInfo.size==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">成品克重</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.weight"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.weight"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.weightDesc"
+                  :disabled="compareInfo.weight==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">成品颜色</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.color"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.color"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.colorDesc"
+                  :disabled="compareInfo.color==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">成品手感</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.touch"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.touch"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.touchDesc"
+                  :disabled="compareInfo.touch==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col hasBack">成品工序</div>
+              <div class="col">
+                <el-radio v-model="compareInfo.process"
+                  label="无差异">无差异</el-radio>
+                <el-radio v-model="compareInfo.process"
+                  label="差异较大">差异较大</el-radio>
+              </div>
+              <div class="col">
+                <el-input v-model="compareInfo.processDesc"
+                  :disabled="compareInfo.process==='无差异'"
+                  placeholder="请输入备注信息"></el-input>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showCompare=false">取消</div>
+          <span class="btn btnBlue"
+            @click="compare">确定</span>
+        </div>
+      </div>
+    </div>
     <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
   </div>
 </template>
@@ -683,6 +779,19 @@ export default {
       rate: {
         allNum: 1,
         insNum: 1
+      },
+      showCompare: false,
+      compareInfo: {
+        size: '无差异',
+        weight: '无差异',
+        color: '无差异',
+        touch: '无差异',
+        process: '无差异',
+        sizeDesc: '',
+        weightDesc: '',
+        colorDesc: '',
+        touchDesc: '',
+        processDesc: ''
       },
       defectiveType: [
         {
@@ -777,6 +886,9 @@ export default {
     }
   },
   methods: {
+    compare () {
+
+    },
     checkedAllOption (e, colroSizeArr) {
       colroSizeArr.forEach(item => {
         item.checked = e
@@ -967,23 +1079,37 @@ export default {
             }
           })
           if (payArr.length > 0) {
-            staff.createPay({ data: payArr }).then((res) => {
-              if (res.data.status) {
-                this.$message.success('检验成功')
-                this.inspectionForm.detail = [{
-                  client_auth: '',
-                  colorSize: [{
-                    showCheck: false,
-                    colorSize: '',
-                    number: '',
-                    price: '',
-                    substandard: '',
-                    reason: []
-                  }]
-                }]
-                this.loading = false
-              }
-            })
+            // 直接添加结算的逻辑去掉
+            // staff.createPay({ data: payArr }).then((res) => {
+            //   if (res.data.status) {
+            //     this.$message.success('检验成功')
+            //     this.inspectionForm.detail = [{
+            //       client_auth: '',
+            //       colorSize: [{
+            //         showCheck: false,
+            //         colorSize: '',
+            //         number: '',
+            //         price: '',
+            //         substandard: '',
+            //         reason: []
+            //       }]
+            //     }]
+            //     this.loading = false
+            //   }
+            // })
+            this.$message.success('检验成功')
+            this.inspectionForm.detail = [{
+              client_auth: '',
+              colorSize: [{
+                showCheck: false,
+                colorSize: '',
+                number: '',
+                price: '',
+                substandard: '',
+                reason: []
+              }]
+            }]
+            this.loading = false
           } else {
             this.$message.success('检验成功')
             this.inspectionForm.detail = [{
@@ -1181,6 +1307,14 @@ export default {
       })
       this.inspectionForm.detail = this.inspectionForm.detail.filter((item) => item.colorSize.length > 0)
     },
+    // 全局添加监听，去掉批量选择弹窗
+    cancleSelect () {
+      this.inspectionForm.detail.forEach((item) => {
+        item.colorSize.forEach((itemChild) => {
+          itemChild.showCheck = false
+        })
+      })
+    },
     // 注意！这个方法会改变传进来的findArr数组
     // findArr 需要查找的数组
     // compare 需要对比的数据
@@ -1266,7 +1400,28 @@ export default {
           return item.type.indexOf(27) !== -1
         })
         this.settingAuthArr = this.$clone(res[4].data.data)
+        res[3].data.data.forEach((item) => {
+          this.processChoose.push(item.product_flow)
+        })
+        if (res[3].data.data.length === 0) {
+          this.showCompare = true
+        }
+        this.processChoose = Array.from(new Set(this.processChoose))
+        this.inspection_log = res[3].data.data.filter((item) => item.product_flow === this.processType)
+        this.inspection_log.forEach((item) => {
+          item.from = item.inspection_user || item.client_name
+          item.count = Number(JSON.parse(item.rejects_info).number) || 0
+        })
         this.clientAuthArr = [{
+          value: '已检验人员',
+          label: '已检验人员',
+          children: this.inspection_log.filter((item) => item.inspection_user_id).map((item) => {
+            return {
+              value: item.inspection_user_id,
+              label: item.inspection_user
+            }
+          })
+        }, {
           value: '常用人员',
           label: '常用人员',
           children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
@@ -1296,15 +1451,6 @@ export default {
             }
           })
         }].concat(this.$getClientOptions(res[2].data.data, companyType, { typeScope: [29, 34] }))
-        res[3].data.data.forEach((item) => {
-          this.processChoose.push(item.product_flow)
-        })
-        this.processChoose = Array.from(new Set(this.processChoose))
-        this.inspection_log = res[3].data.data.filter((item) => item.product_flow === this.processType)
-        this.inspection_log.forEach((item) => {
-          item.from = item.inspection_user || item.client_name
-          item.count = Number(JSON.parse(item.rejects_info).number) || 0
-        })
         this.inspection_detail.forEach((item) => {
           item.childrenMergeInfo.forEach((itemChild) => {
             let findArr = this.inspection_log.filter((itemFilter) => {
@@ -1341,6 +1487,10 @@ export default {
   mounted () {
     this.getDeductLog()
     this.init()
+    window.addEventListener('click', this.cancleSelect)
+  },
+  destroyed () {
+    window.removeEventListener('click', this.cancleSelect)
   }
 }
 </script>

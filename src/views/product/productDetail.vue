@@ -225,7 +225,8 @@
                     @click="noOpr">...</span>
                 </div>
               </div>
-              <div class="rect">
+              <div class="rect"
+                v-if="canSeePrice!==-1">
                 <div class="tab"
                   v-if="detail.quotation_info.length>1">
                   <div class="circle"
@@ -268,7 +269,8 @@
                     @click="noOpr">...</span>
                 </div>
               </div>
-              <div class="rect">
+              <div class="rect"
+                v-if="canSeeOrder!==-1">
                 <div class="tab"
                   v-if="detail.order_info.length>1">
                   <div class="circle"
@@ -421,6 +423,8 @@ import { product } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      canSeePrice: false,
+      canSeeOrder: false,
       loading: true,
       detail: {
         category_info: {
@@ -556,6 +560,9 @@ export default {
     }
   },
   mounted () {
+    let modules = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : []
+    this.canSeePrice = modules.indexOf(2)
+    this.canSeeOrder = modules.indexOf(5)
     const QRCode = require('qrcode')
     QRCode.toDataURL(window.location.href, { errorCorrectionLevel: 'H' }, (err, url) => {
       if (!err) {
