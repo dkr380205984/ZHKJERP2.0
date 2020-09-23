@@ -2,10 +2,27 @@
   <div class="zhTimeProcess">
     <div class="processCtn"
       :ref="'zhTimeProcess'+ id">
-      <div class="processLine"
-        v-for="(item,index) in renderData"
-        :key="'processLine' + index"
-        :style="{'width':item.width + 'px'}">{{Math.round(item.percent*needTime) + '天'}}({{$toFixed(item.percent * 100) + '%'}})</div>
+      <template v-for="(item,index) in renderData">
+        <template v-if="item.isWarnStatus>0">
+          <el-popover placement="top-start"
+            :key="'processLine' + index"
+            width="200"
+            trigger="hover"
+            :content="`该工序时间进度已过${item.isWarnStatus > 1 ? 100 : 75}%，但是相关的生产进度未达预期要求的${item.isWarnStatus > 1 ? 100 : 75}%，请及时跟进确认。`">
+            <div class="processLine"
+              slot="reference"
+              :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1,'isWarnStatus75':item.isWarnStatus > 0,'isWarnStatus100':item.isWarnStatus > 1}"
+              :style="{'width':item.width + 'px'}">{{Math.round(item.percent*needTime) + '天'}}({{$toFixed(item.percent * 100) + '%'}})</div>
+            <!-- <el-button >hover 激活</el-button> -->
+          </el-popover>
+        </template>
+        <div class="processLine"
+          v-else
+          :key="'processLine' + index"
+          slot="reference"
+          :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1}"
+          :style="{'width':item.width + 'px'}">{{Math.round(item.percent*needTime) + '天'}}({{$toFixed(item.percent * 100) + '%'}})</div>
+      </template>
       <div class="timeNode unEdit">
         <span class="time">{{startTime}}</span>
         <!-- <span class="name">下单日期</span> -->

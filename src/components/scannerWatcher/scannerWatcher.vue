@@ -22,7 +22,7 @@ export default {
     watchFun (e) {
       let curryCode = e.which || e.keyCode
       const curryTime = new Date().getTime()
-      if (curryCode === 13 && curryTime - this.lastTime <= 300) { // 当按键为enter时调用callback
+      if (curryCode === 13 && curryTime - this.lastTime <= 30) { // 当按键为enter时调用callback
         if (!this.code) return
         if (this.scannerEvent) {
           this.scannerEvent(this.code)
@@ -35,9 +35,9 @@ export default {
       } else if (curryCode === 13) {
         this.lastTime = curryTime
       } else {
-        if (curryTime - this.lastTime <= 300) {
+        if (curryTime - this.lastTime <= 30) {
           this.code += e.key
-        } else if (curryTime - this.lastTime > 1000) {
+        } else if (curryTime - this.lastTime > 100) {
           this.code = e.key
         }
         this.lastTime = curryTime

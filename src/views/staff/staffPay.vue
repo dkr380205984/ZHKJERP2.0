@@ -118,6 +118,9 @@
                 <div class="label">
                   <span class="opr"
                     @click="addPay(item)">新增</span>
+                  <span class="opr"
+                    style="margin-left:16px"
+                    @click="openImportPopup(item.id)">导入结算日志</span>
                 </div>
               </div>
             </div>
@@ -432,7 +435,7 @@
                 <span class="tb_row">{{itemLog.total_price}}</span>
                 <span class="tb_row">{{itemLog.desc}}</span>
                 <span class="tb_row">{{itemLog.user_name}}</span>
-                <span class="tb_row">{{$getTime(itemLog.created_at.date)}}</span>
+                <span class="tb_row">{{(itemLog.created_at && itemLog.created_at.data && $getTime(itemLog.created_at.date)) || '/'}}</span>
               </div>
               <div class="tb_content">
                 <span class="tb_row"></span>
@@ -520,6 +523,77 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showImportPopup">
+      <div class="main"
+        style="width:1024px;">
+        <div class="title">
+          <div class="text">导入结算日志</div>
+          <i class="el-icon-close"
+            @click="showImportPopup=false"></i>
+        </div>
+        <div class="content"
+          style="max-height:580px">
+          <div class="row">
+            <div class="col">
+              <el-date-picker v-model="importData"
+                @change="openImportPopup()"
+                type="month"
+                :clearable="false"
+                value-format="yyyy-MM"
+                placeholder="筛选月份">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="row">
+            <div class="tableCtnLv2 minHeight5">
+              <div class="tb_header">
+                <span class="tb_row"
+                  style="flex:0.4">
+                  <el-checkbox v-model="checkedAllImportLog"
+                    @change="checkedAllImport">全选</el-checkbox>
+                </span>
+                <span class="tb_row middle">结算日期</span>
+                <span class="tb_row middle">工序</span>
+                <span class="tb_row middle">来源订单</span>
+                <span class="tb_row middle">单价</span>
+                <span class="tb_row middle">数量</span>
+                <span class="tb_row middle">合计金额</span>
+              </div>
+              <div style="height:275px;overflow-y:auto;border-top:1px solid #DDD"
+                v-loading='importLoading'>
+                <div class="tb_content"
+                  v-for="(itemLog,indexLog) in importLogList"
+                  :key="indexLog"
+                  :style="{'border-top':indexLog === 0 ? 'none' : false}">
+                  <span class="tb_row"
+                    style="flex:0.4">
+                    <el-checkbox v-model="itemLog.checked"
+                      @change="$forceUpdate()" />
+                  </span>
+                  <span class="tb_row middle">{{itemLog.complete_time}}</span>
+                  <span class="tb_row middle">{{itemLog.product_flow}}</span>
+                  <span class="tb_row middle">
+                    {{itemLog.order_code}}
+                    <br />
+                    {{itemLog.product_info.product_code}}
+                  </span>
+                  <span class="tb_row middle">{{itemLog.price || 0}}</span>
+                  <span class="tb_row middle">{{itemLog.number}}</span>
+                  <span class="tb_row middle">{{(itemLog.price * itemLog.number) || 0}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showImportPopup=false">取消</div>
+          <div class="btn btnBlue"
+            @click="importSubmit">导入勾选</div>
+        </div>
+      </div>
+    </div>
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -573,7 +647,14 @@ export default {
         work_type: '',
         settle_type: '',
         price: ''
-      }
+      },
+      // 导入结算日志
+      showImportPopup: false,
+      importLoading: false,
+      importData: '',
+      importLogList: [],
+      importUserId: '',
+      checkedAllImportLog: false
     }
   },
   watch: {
@@ -675,7 +756,7 @@ export default {
           desc: item.desc
         }]
       }).then((res) => {
-        if (res.data.status) {
+        if (res.data.status !== false) {
           this.$message.success('操作成功')
           // item.addFlag = false
           // itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
@@ -839,6 +920,67 @@ export default {
     closePreFilledPopup () {
       window.sessionStorage.setItem('staffPayPreFilledInfo', JSON.stringify(this.preFilledInfo))
       this.showPreFilledPopup = false
+    },
+    openImportPopup (id) {
+      this.importUserId = id || this.importUserId
+      if (!this.showImportPopup) {
+        this.showImportPopup = true
+      }
+      const { inspection } = require('@/assets/js/api.js')
+      this.importLoading = true
+      const startTime = `${this.importData}-01`
+      const nowYear = new Date(startTime).getFullYear()
+      const nowMonth = new Date(startTime).getMonth() + 1
+      const nextMonth = nowMonth + 1 >= 13 ? '01' : (nowMonth + 1 > 9 ? nowMonth + 1 : `0${nowMonth + 1}`)
+      const nextYear = nowMonth + 1 >= 13 ? nowYear + 1 : nowYear
+      const endTime = this.$getTime(new Date(`${nextYear}-${nextMonth}-01`).getTime() - (1000 * 60 * 60 * 24))
+      console.log(startTime, endTime, event)
+      inspection.finishedDetail({
+        start_time: startTime,
+        end_time: endTime,
+        inspection_user: this.importUserId
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.importLogList = res.data.data
+        }
+        this.importLoading = false
+      })
+    },
+    checkedAllImport (e) {
+      this.importLogList.forEach(itemF => {
+        itemF.checked = e
+      })
+      this.$forceUpdate()
+    },
+    importSubmit () {
+      const data = this.importLogList.filter(item => item.checked).map(item => {
+        return {
+          id: null,
+          staff_id: this.importUserId,
+          complete_time: item.complete_time,
+          work_type: item.product_flow,
+          year: this.date.split('-')[0],
+          month: Number(this.date.split('-')[1]),
+          settle_type: `${item.order_code}/${item.product_info.product_code}`,
+          price: item.price || 0,
+          number: item.number || 0,
+          unit: '件',
+          total_price: (item.price * item.number) || 0,
+          desc: '结算日志导入'
+        }
+      })
+      staff.createPay({
+        data: data
+      }).then((res) => {
+        if (res.data.status !== false) {
+          this.$message.success('操作成功')
+          // item.addFlag = false
+          // itemFather.total_price = itemFather.total_price + Math.round(item.price * item.number)
+          this.init()
+          // this.loading = false
+          // this.$forceUpdate()
+        }
+      })
     }
   },
   computed: {
@@ -868,6 +1010,7 @@ export default {
     let now = new Date()
     this.date = now.getFullYear() + '-' + (now.getMonth() < 9 ? ('0' + (now.getMonth())) : (now.getMonth()))
     this.date_log = this.date
+    this.importData = this.date
     Promise.all([
       station.list({
         type: 2

@@ -90,8 +90,7 @@
             <div class="col flex12">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
             <div class="col middle">
-              <zh-img-list :list="itemOrder.image"
-                type='open'></zh-img-list>
+              <zh-img-list :list="itemOrder.image"></zh-img-list>
             </div>
             <div class="col flex08">
               {{itemOrder.number}}

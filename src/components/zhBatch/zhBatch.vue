@@ -54,7 +54,8 @@
                   <div class="trow"
                     v-for="(itemPro,indexPro) in item.product_info"
                     :key="indexPro">
-                    <div class="tcolumn">{{itemPro.product_code}}</div>
+                    <div class="tcolumn blue"
+                      @click="$openUrl(`/product/productDetail/${itemPro.product_id}`)">{{itemPro.product_code}}</div>
                     <div class="tcolumn">
                       <div class="col middle">
                         <zh-img-list :list="itemPro.image"></zh-img-list>

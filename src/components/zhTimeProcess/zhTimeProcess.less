@@ -1,3 +1,6 @@
+
+@red:#F5222D;
+@orange:#E6A23C;
 .zhTimeProcess{
   display: block;
   height: 20px;
@@ -18,6 +21,21 @@
       color: #fff;
       overflow: hidden;
       text-overflow: ellipsis;
+      overflow: hidden;
+      &.firstLine{
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+      &.lastLine{
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      &.isWarnStatus75{
+        background-color: @orange;
+      }
+      &.isWarnStatus100{
+        background-color: @red;
+      }
     }
     .timeNode{
       position: absolute;

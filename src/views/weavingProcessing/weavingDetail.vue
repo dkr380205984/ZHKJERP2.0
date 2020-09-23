@@ -1004,7 +1004,7 @@
         <div class="content"
           style="height: 176px;display: flex;align-items: center;overflow: hidden;">
           <iframe id="printCtn_iframe"
-            style="position: relative;top: -50px;"
+            style="position: relative;top: -35px;"
             frameborder='0'
             scrolling='no'
             width="166px"
@@ -1139,13 +1139,14 @@ export default {
       const QRCode = require('qrcode')
       QRCode.toDataURL(`${window.location.origin}/receiveDispatch/jysf/${this.$route.params.id}?client_id=${this.qrCodePrintInfo.client_id}&product_id=${this.qrCodePrintInfo.product_id}`, { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
-          console.log(url)
           let iframe = document.getElementById('printCtn_iframe')
           let doc = iframe.contentWindow.document
           const innerHtml = `
-          <div style='width:150px;height:160px;display:flex;flex-direction:column;align-items:center;padding-top:100px'>
-            <div style="width:120px;height:30px;font-size:10px;display:flex;flex-direction:column;">
+          <div style='width:150px;height:160px;display:flex;flex-direction:column;align-items:center;padding-top:70px'>
+            <div style="width:120px;height:60px;font-size:10px;display:flex;flex-direction:column;">
               <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${window.sessionStorage.getItem('company_name') || ''}</span>
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.client_name || ''}</span>
+              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.orderInfo.order_code}</span>
               <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${this.qrCodePrintInfo.product_code}</span>
             </div>
             <div style="border:1px solid #CCC;width:120px;height:120px;">
