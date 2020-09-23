@@ -1142,6 +1142,8 @@
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
+          <div class="btn btnOrange"
+            @click="submit('草稿')">保存为草稿</div>
           <div class="btn btnBlue"
             @click="submit">修改</div>
         </div>
@@ -1873,6 +1875,8 @@ export default {
     filterMethods (index) {
       if (index === 0) {
         return '主'
+      } else if (index === null) {
+        return ''
       } else {
         return '夹' + index
       }
@@ -2197,101 +2201,86 @@ export default {
         })
       })
     },
-    submit () {
+    submit (ifCaogao) {
       // 获取合并单元格信息
       let errorInput = false
-      errorInput = this.colour.some((itemColour) => {
-        if (!itemColour.value) {
-          return true
-        }
-        return itemColour.colorWarp.some((itemColor) => {
-          if (!itemColor.name) {
+      if (ifCaogao !== '草稿') {
+        errorInput = this.colour.some((itemColour) => {
+          if (!itemColour.value) {
             return true
           }
-        }) || itemColour.colorWeft.some((itemColor) => {
-          if (!itemColor.name) {
-            return true
-          }
-        })
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到配色方案信息不完整'
-        })
-        return
-      }
-      errorInput = !this.yarn.yarnWarp || !this.yarn.yarnWeft
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到主要原料信息不完整'
-        })
-        return
-      }
-      errorInput = this.yarn.yarnOtherWarp.some((item) => {
-        return item.value && item.array.some((apply) => {
-          return apply === ''
-        })
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到经向次要原料信息不完整'
-        })
-        return
-      }
-      errorInput = this.yarn.yarnOtherWeft.some((item) => {
-        return item.value && item.array.some((apply) => {
-          return apply === ''
-        })
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到纬向次要原料信息不完整'
-        })
-        return
-      }
-      errorInput = this.material.materialWarp.some((item) => {
-        return item.value ? !item.number || item.array.some((apply) => {
-          return apply === ''
-        }) : item.number ? !item.value || item.array.some((apply) => {
-          return apply === ''
-        }) : false
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到经向辅助原料信息不完整'
-        })
-        return
-      }
-      errorInput = this.material.materialWeft.some((item) => {
-        return item.value ? !item.number || item.array.some((apply) => {
-          return apply === ''
-        }) : item.number ? !item.value || item.array.some((apply) => {
-          return apply === ''
-        }) : false
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到纬向辅助原料信息不完整'
-        })
-        return
-      }
-      errorInput = this.tableData.warp.data.some((item, index) => {
-        if (index === 2 || index === 1) {
-          return item.some((value) => {
-            return !value
+          return itemColour.colorWarp.some((itemColor) => {
+            if (!itemColor.name) {
+              return true
+            }
+          }) || itemColour.colorWeft.some((itemColor) => {
+            if (!itemColor.name) {
+              return true
+            }
           })
-        } else {
-          return false
-        }
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到经向排列信息不完整'
         })
-        return
-      }
-      if (this.ifDouble.warp) {
-        errorInput = this.tableData.warpBack.data.some((item, index) => {
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到配色方案信息不完整'
+          })
+          return
+        }
+        errorInput = !this.yarn.yarnWarp || !this.yarn.yarnWeft
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到主要原料信息不完整'
+          })
+          return
+        }
+        errorInput = this.yarn.yarnOtherWarp.some((item) => {
+          return item.value && item.array.some((apply) => {
+            return apply === ''
+          })
+        })
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到经向次要原料信息不完整'
+          })
+          return
+        }
+        errorInput = this.yarn.yarnOtherWeft.some((item) => {
+          return item.value && item.array.some((apply) => {
+            return apply === ''
+          })
+        })
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到纬向次要原料信息不完整'
+          })
+          return
+        }
+        errorInput = this.material.materialWarp.some((item) => {
+          return item.value ? !item.number || item.array.some((apply) => {
+            return apply === ''
+          }) : item.number ? !item.value || item.array.some((apply) => {
+            return apply === ''
+          }) : false
+        })
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到经向辅助原料信息不完整'
+          })
+          return
+        }
+        errorInput = this.material.materialWeft.some((item) => {
+          return item.value ? !item.number || item.array.some((apply) => {
+            return apply === ''
+          }) : item.number ? !item.value || item.array.some((apply) => {
+            return apply === ''
+          }) : false
+        })
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到纬向辅助原料信息不完整'
+          })
+          return
+        }
+        errorInput = this.tableData.warp.data.some((item, index) => {
           if (index === 2 || index === 1) {
             return item.some((value) => {
               return !value
@@ -2300,30 +2289,30 @@ export default {
             return false
           }
         })
-      }
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到经向反面排列信息不完整'
-        })
-        return
-      }
-      errorInput = this.tableData.weft.data.some((item, index) => {
-        if (index === 2 || index === 1) {
-          return item.some((value) => {
-            return !value
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到经向排列信息不完整'
           })
-        } else {
-          return false
+          return
         }
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到纬向排列信息不完整'
-        })
-        return
-      }
-      if (this.ifDouble.weft) {
-        errorInput = this.tableData.weftBack.data.some((item, index) => {
+        if (this.ifDouble.warp) {
+          errorInput = this.tableData.warpBack.data.some((item, index) => {
+            if (index === 2 || index === 1) {
+              return item.some((value) => {
+                return !value
+              })
+            } else {
+              return false
+            }
+          })
+        }
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到经向反面排列信息不完整'
+          })
+          return
+        }
+        errorInput = this.tableData.weft.data.some((item, index) => {
           if (index === 2 || index === 1) {
             return item.some((value) => {
               return !value
@@ -2332,79 +2321,92 @@ export default {
             return false
           }
         })
-      }
-      if (errorInput) {
-        this.$message.error({
-          message: '检测到纬向反面排列信息不完整'
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到纬向排列信息不完整'
+          })
+          return
+        }
+        if (this.ifDouble.weft) {
+          errorInput = this.tableData.weftBack.data.some((item, index) => {
+            if (index === 2 || index === 1) {
+              return item.some((value) => {
+                return !value
+              })
+            } else {
+              return false
+            }
+          })
+        }
+        if (errorInput) {
+          this.$message.error({
+            message: '检测到纬向反面排列信息不完整'
+          })
+          return
+        }
+        if (!this.warpInfo.reed_width) {
+          this.$message.error({
+            message: '请输入筘幅'
+          })
+          return
+        }
+        if (!this.weftInfo.neichang) {
+          this.$message.error({
+            message: '请输入内长'
+          })
+          return
+        }
+        if (!this.weftInfo.rangwei) {
+          this.$message.error({
+            message: '请输入让位'
+          })
+          return
+        }
+        errorInput = this.coefficient.some((item) => {
+          return item === ''
         })
-        return
-      }
-      if (!this.warpInfo.reed_width) {
-        this.$message.error({
-          message: '请输入筘幅'
-        })
-        return
-      }
-      if (!this.weftInfo.neichang) {
-        this.$message.error({
-          message: '请输入内长'
-        })
-        return
-      }
-      if (!this.weftInfo.rangwei) {
-        this.$message.error({
-          message: '请输入让位'
-        })
-        return
-      }
-      // if (!this.weight) {
-      //   this.$message.error({
-      //     message: '请输入产品克重'
-      //   })
-      //   return
-      // }
-      errorInput = this.coefficient.some((item) => {
-        return item === ''
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '请输入物料系数'
-        })
-        return
-      }
-      console.log(this.repeatPM)
-      if (this.PMFlag === 'normal') {
-        errorInput = this.repeatPM.some((item) => {
-          return item.number === '' || Number(item.number) === 0 || !item.value
-        })
-      } else {
-        this.repeatPM.forEach((item) => {
-          item.children.forEach((itemChild) => {
-            itemChild.children.forEach((itemSon) => {
-              if (!itemChild.number || !itemSon.value || !itemSon.repeat) {
-                errorInput = true
-              }
+        if (errorInput) {
+          this.$message.error({
+            message: '请输入物料系数'
+          })
+          return
+        }
+        if (this.PMFlag === 'normal') {
+          errorInput = this.repeatPM.some((item) => {
+            return item.number === '' || Number(item.number) === 0 || !item.value
+          })
+        } else {
+          this.repeatPM.forEach((item) => {
+            item.children.forEach((itemChild) => {
+              itemChild.children.forEach((itemSon) => {
+                if (!itemChild.number || !itemSon.value || !itemSon.repeat) {
+                  errorInput = true
+                }
+              })
             })
           })
+        }
+        if (errorInput) {
+          this.$message.error({
+            message: '请检查穿综循环是否漏填'
+          })
+          return
+        }
+        this.GL.forEach((item1) => {
+          item1.forEach((item2) => {
+            if (!item2[0] || !item2[1]) {
+              errorInput = true
+            }
+          })
         })
+        if (errorInput) {
+          this.$message.error({
+            message: '请填写纹版图'
+          })
+          return
+        }
       }
       if (errorInput) {
-        this.$message.error({
-          message: '请检查穿综循环是否漏填'
-        })
-        return
-      }
-      this.GL.forEach((item1) => {
-        item1.forEach((item2) => {
-          if (!item2[0] || !item2[1]) {
-            errorInput = true
-          }
-        })
-      })
-      if (errorInput) {
-        this.$message.error({
-          message: '请填写纹版图'
-        })
         return
       }
       let formData = {
@@ -2413,7 +2415,7 @@ export default {
         title: this.ZDYMC,
         product_type: this.$route.params.type,
         company_id: window.sessionStorage.getItem('company_id'),
-        product_id: this.$route.params.id,
+        product_id: null,
         size: this.DSGG,
         weight: this.DSKZ,
         desc: this.desc,
@@ -2474,7 +2476,7 @@ export default {
           warp_rank: this.tableData.warp.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.warpJia.find((itemFind) => itemFind.label === itemJia).value
+                return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
               if (item.length === this.tableData.warp.number) {
@@ -2568,7 +2570,7 @@ export default {
           weft_rank: this.tableData.weft.data.map((item, index) => {
             if (index === 1) {
               return item.map((itemJia) => {
-                return this.weftJia.find((itemFind) => itemFind.label === itemJia).value
+                return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
               })
             } else {
               if (item.length === this.tableData.weft.number) {
@@ -2614,7 +2616,7 @@ export default {
         draft_method: {
           PM: this.repeatPM.map((item, index) => {
             if (this.PMFlag === 'normal') {
-              item.value = item.value.replace(/，/g, ',')
+              item.value = item.value ? item.value.replace(/，/g, ',') : ''
               item.repeat = Number(item.repeat) > 0 ? Number(item.repeat) : 1
             } else {
               item.children = item.children.map((item2) => {

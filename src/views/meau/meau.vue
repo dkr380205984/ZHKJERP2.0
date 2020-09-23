@@ -39,6 +39,12 @@ export default {
       meauList: {
         production: [
           {
+            name: '工艺单列表',
+            id: 3,
+            path: '/craft/craftList/page=1&&keyword=&&date=',
+            icon: 'icon-wuliaojihua'
+          },
+          {
             name: '物料计划生产',
             id: 6,
             path: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1',
