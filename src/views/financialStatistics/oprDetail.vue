@@ -29,17 +29,17 @@
             <span class="text">{{info.settle_code || info.deduct_code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">创建人：</span>
-            <span class="text">{{info.user_name}}</span>
+            <span class="label">{{$route.params.oprType}}单位：</span>
+            <span class="text">{{info.client_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">是否开票：</span>
-            <span class="text">{{info.is_invoice===1?'已开票':'未开票'}}</span>
+            <span class="label">创建人：</span>
+            <span class="text">{{info.user_name}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">结算时间：</span>
+            <span class="label">{{$route.params.oprType}}时间：</span>
             <span class="text">{{info.complete_time}}</span>
           </div>
         </div>
@@ -60,6 +60,10 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">是否开票：</span>
+            <span class="text">{{info.is_invoice===1?'已开票':'未开票'}}</span>
+          </div>
           <div class="colCtn">
             <span class="label">包含订单：</span>
             <span class="text">

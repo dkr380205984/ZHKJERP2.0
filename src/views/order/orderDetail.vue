@@ -206,7 +206,7 @@
       </div>
       <div class="detailCtn">
         <el-tabs type="border-card"
-          style="margin:0 32px">
+          style="margin:0 32px;box-shadow:none">
           <el-tab-pane v-for="(item,index) in compareInfo"
             :key="index">
             <span slot="label"
