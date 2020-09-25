@@ -1690,41 +1690,47 @@ export default {
           afterChange: (changes, opt) => {
             // 计算整经头文
             if (opt === 'edit') {
-              let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
-              let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
-              let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // 旧代码保留一份
-              // let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              merge.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWarp[item.row - 2][i] = arrWarp[item.row - 2][item.col]
+              let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.warp.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.warp.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
-              mergeBack.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWarpBack[item.row - 2][i] = arrWarpBack[item.row - 2][item.col]
+              }), 'warp')
+              let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.warpBack.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
+              }), 'warpBack')
               let sum = 0
-              arrWarp[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWarp[1][index] ? Number(arrWarp[1][index]) : 1
-                let item3 = arrWarp[2][index] ? Number(arrWarp[2][index]) : 1
-                sum += item1 * item2 * item3
+              warpTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
-              arrWarpBack[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWarpBack[1][index] ? Number(arrWarpBack[1][index]) : 1
-                let item3 = arrWarpBack[2][index] ? Number(arrWarpBack[2][index]) : 1
-                sum += item1 * item2 * item3
+              warpTableBack.forEach((item, index) => {
+                sum += Number(item.number)
               })
               this.warpInfo.weft = sum
+              console.log(warpTable)
             }
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
@@ -1808,41 +1814,48 @@ export default {
           afterChange: (changes, opt) => {
             // 计算整经头文
             if (opt === 'edit') {
-              let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
-              let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
-              let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let merge = this.$refs.warp.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let mergeBack = this.$refs.warpBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              merge.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWarp[item.row - 2][i] = arrWarp[item.row - 2][item.col]
+              let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.warp.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.warp.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
-              mergeBack.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWarpBack[item.row - 2][i] = arrWarpBack[item.row - 2][item.col]
+              }), 'warp')
+              let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.warpBack.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
+              }), 'warpBack')
               let sum = 0
-              arrWarp[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWarp[1][index] ? Number(arrWarp[1][index]) : 1
-                let item3 = arrWarp[2][index] ? Number(arrWarp[2][index]) : 1
-                sum += item1 * item2 * item3
+              warpTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
-              arrWarpBack[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWarpBack[1][index] ? Number(arrWarpBack[1][index]) : 1
-                let item3 = arrWarpBack[2][index] ? Number(arrWarpBack[2][index]) : 1
-                sum += item1 * item2 * item3
+              warpTableBack.forEach((item, index) => {
+                sum += Number(item.number)
               })
               this.warpInfo.weft = sum
             }
+
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -1925,38 +1938,44 @@ export default {
           afterChange: (changes, opt) => {
             // 计算纬向总计
             if (opt === 'edit') {
-              let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
-              let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
-              // let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              merge.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWeft[item.row - 2][i] = arrWeft[item.row - 2][item.col]
+              let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.weft.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.weft.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
-              mergeBack.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWeftBack[item.row - 2][i] = arrWeftBack[item.row - 2][item.col]
+              }), 'weft')
+              let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.weftBack.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
+              }), 'weftBack')
               let sum = 0
-              arrWeft[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWeft[1][index] ? Number(arrWeft[1][index]) : 1
-                let item3 = arrWeft[2][index] ? Number(arrWeft[2][index]) : 1
-                sum += item1 * item2 * item3
+              weftTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
-              arrWeftBack[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWeftBack[1][index] ? Number(arrWeftBack[1][index]) : 1
-                let item3 = arrWeftBack[2][index] ? Number(arrWeftBack[2][index]) : 1
-                sum += item1 * item2 * item3
+              weftBackTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
               this.weftInfo.total = sum
             }
@@ -2042,38 +2061,44 @@ export default {
           afterChange: (changes, opt) => {
             // 计算纬向总计
             if (opt === 'edit') {
-              let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
-              let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
-              let merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              let mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let merge = this.$refs.weft.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              // let mergeBack = this.$refs.weftBack.hotInstance.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-              merge.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWeft[item.row - 2][i] = arrWeft[item.row - 2][item.col]
+              let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.weft.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.weft.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
-              mergeBack.forEach((item) => {
-                if (item.row === 3 || item.row === 4) {
-                  for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-                    arrWeftBack[item.row - 2][i] = arrWeftBack[item.row - 2][item.col]
+              }), 'weft')
+              let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
+                if (index === 1) {
+                  return item.map((itemJia) => {
+                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                  })
+                } else {
+                  if (item.length === this.tableData.weftBack.number) {
+                    return item
+                  } else {
+                    for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                      item[i] = item[i] || null
+                    }
+                    return item
                   }
                 }
-              })
+              }), 'weftBack')
               let sum = 0
-              arrWeft[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWeft[1][index] ? Number(arrWeft[1][index]) : 1
-                let item3 = arrWeft[2][index] ? Number(arrWeft[2][index]) : 1
-                sum += item1 * item2 * item3
+              weftTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
-              arrWeftBack[0].forEach((item, index) => {
-                let item1 = item ? Number(item) : 0
-                let item2 = arrWeftBack[1][index] ? Number(arrWeftBack[1][index]) : 1
-                let item3 = arrWeftBack[2][index] ? Number(arrWeftBack[2][index]) : 1
-                sum += item1 * item2 * item3
+              weftBackTable.forEach((item, index) => {
+                sum += Number(item.number)
               })
               this.weftInfo.total = sum
             }
@@ -3370,6 +3395,291 @@ export default {
         this.loading = false
       })
     },
+    // 从详情页把计算克重的代码抄过来,算出后端计算配料单所需要的数据
+    computeYarn () {
+      let yarn_color_weight = {}
+      let peise_yarn_weight = {}
+      let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
+        if (index === 1) {
+          return item.map((itemJia) => {
+            return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+          })
+        } else {
+          if (item.length === this.tableData.warp.number) {
+            return item
+          } else {
+            for (let i = 0; i < this.tableData.warp.number; i++) {
+              item[i] = item[i] || null
+            }
+            return item
+          }
+        }
+      }), 'warp')
+      let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
+        if (index === 1) {
+          return item.map((itemJia) => {
+            return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+          })
+        } else {
+          if (item.length === this.tableData.weft.number) {
+            return item
+          } else {
+            for (let i = 0; i < this.tableData.weft.number; i++) {
+              item[i] = item[i] || null
+            }
+            return item
+          }
+        }
+      }), 'weft')
+      let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
+        if (index === 1) {
+          return item.map((itemJia) => {
+            return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+          })
+        } else {
+          if (item.length === this.tableData.warpBack.number) {
+            return item
+          } else {
+            for (let i = 0; i < this.tableData.warpBack.number; i++) {
+              item[i] = item[i] || null
+            }
+            return item
+          }
+        }
+      }), 'warpBack')
+      let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
+        if (index === 1) {
+          return item.map((itemJia) => {
+            return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+          })
+        } else {
+          if (item.length === this.tableData.weftBack.number) {
+            return item
+          } else {
+            for (let i = 0; i < this.tableData.weftBack.number; i++) {
+              item[i] = item[i] || null
+            }
+            return item
+          }
+        }
+      }), 'weftBack')
+      warpTable.forEach((item) => {
+        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+        this.colorNumber.warp[item.color] += Number(item.number)
+      })
+      warpTableBack.forEach((item) => {
+        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+        this.colorNumber.warp[item.color] += Number(item.number)
+      })
+      weftTable.forEach((item) => {
+        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+        this.colorNumber.weft[item.color] += Number(item.number)
+      })
+      weftBackTable.forEach((item) => {
+        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+        this.colorNumber.weft[item.color] += Number(item.number)
+      })
+      this.warpInfo.material_data = [{
+        material_name: this.yarn.yarnWarp,
+        type_material: 1,
+        apply: this.warpJia.filter((item) => {
+          return !(this.yarn.yarnOtherWarp.find((itemFind) => {
+            return itemFind.array.find((itemArr) => {
+              return itemArr === item.value
+            })
+          }))
+        }).map(item => item.value)
+      }].concat(this.yarn.yarnOtherWarp.filter((item) => {
+        return item.value !== ''
+      }).map((item) => {
+        return {
+          material_name: item.value,
+          apply: item.array,
+          type_material: 2
+        }
+      }))
+      this.weftInfo.material_data = [{
+        material_name: this.yarn.yarnWeft,
+        type_material: 1,
+        apply: this.weftJia.filter((item) => {
+          return !(this.yarn.yarnOtherWeft.find((itemFind) => {
+            return itemFind.array.find((itemArr) => {
+              return itemArr === item.value
+            })
+          }))
+        }).map(item => item.value)
+      }].concat(this.yarn.yarnOtherWeft.filter((item) => {
+        return item.value !== ''
+      }).map((item) => {
+        return {
+          material_name: item.value,
+          apply: item.array,
+          type_material: 2
+        }
+      }))
+      this.warpInfo.material_data.forEach((item) => {
+        item.apply.forEach((itemChild) => {
+          this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+            return {
+              name: item,
+              value: this.coefficient[index]
+            }
+          }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+        })
+      })
+      this.weftInfo.material_data.forEach((item) => {
+        item.apply.forEach((itemChild) => {
+          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
+            return {
+              name: item,
+              value: this.coefficient[index]
+            }
+          }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+        })
+      })
+      this.colour.forEach((itemColour) => {
+        let colour_name = this.colourArr.find((itemFind) => itemFind.color_id === itemColour.value).color_name
+        peise_yarn_weight[colour_name] = {}
+        itemColour.colorWarp.forEach((itemColor, indexColor) => {
+          peise_yarn_weight[colour_name][itemColor.name] = {}
+          peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.warp[indexColor])
+        })
+        itemColour.colorWeft.forEach((itemColor, indexColor) => {
+          peise_yarn_weight[colour_name][itemColor.name] = peise_yarn_weight[colour_name][itemColor.name] || {}
+          peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] ?
+            peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] += Number(this.colorWeight.weft[indexColor]) :
+            peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.weft[indexColor])
+          peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name].toFixed(2)
+        })
+      })
+      return {
+        yarn_color_weight: yarn_color_weight,
+        peise_yarn_weight: peise_yarn_weight,
+      }
+    },
+    // 获取特殊数据,用于处理 乘以[n]遍，最后一遍去掉[x]列到[y]列
+    getSpecial (info) {
+      if (Number(info)) {
+        return {
+          number: Number(info)
+        }
+      }
+      // 只解析上列字符串，别的不管
+      let arr = info.split(']')
+      return {
+        number: arr[0].split('[')[1],
+        start: arr[1].split('[')[1],
+        end: arr[2].split('[')[1]
+      }
+    },
+    // 展平合并信息
+    getFlatTable (table, type) {
+      let tableArr = table
+      let mergeTable = this.tableHot[type].getPlugin('MergeCells').mergedCellsCollection.mergedCells
+      // 获取完整的合并项信息
+      let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
+      let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
+      // 处理合并项的合并信息
+      let firstArr = []
+      firstMerge.forEach((item) => {
+        let temporaryStorage = [] // 临时存储合并项
+        for (let i = item.col; i < (item.col + item.colspan); i++) {
+          temporaryStorage.push({
+            order: tableArr[0][i],
+            color: tableArr[1][i],
+            number: tableArr[2][i],
+            // GLorPM: tableArr[5][i]
+          })
+        }
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              return item.order < forNum.start || item.order > forNum.end
+            })
+          }
+          firstArr.push(realStorage)
+        }
+      })
+      let secondArr = []
+      secondMerge.forEach((item) => {
+        let temporaryStorage = firstArr.filter((itemFilter) => {
+          return itemFilter[0].order > item.col && itemFilter[0].order <= (item.col + item.colspan)
+        })
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          console.log(temporaryStorage)
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              let flag = true
+              item.forEach((itemChild) => {
+                if (itemChild.order >= forNum.start && itemChild.order <= forNum.end) {
+                  flag = false
+                }
+              })
+              return flag
+            })
+          }
+          secondArr.push(realStorage)
+        }
+      })
+      // 多维数组展平
+      let flattenArr = this.mergeArray(secondArr)
+      return flattenArr
+    },
+    // 合并项信息处理
+    getMergeInfo (mergeTable, row, length) {
+      let mergeArr = mergeTable.filter(item => item.row === row).sort((a, b) => { return a.col - b.col })
+      let saveMerge = []
+      let col = 0
+      let mergeIndex = 0
+      while (col < length) {
+        if (mergeArr[mergeIndex]) {
+          if (col < mergeArr[mergeIndex].col) {
+            for (let i = 0; i < mergeArr[mergeIndex].col - col; i++) {
+              saveMerge.push({
+                col: i + col,
+                colspan: 1,
+                row: row
+              })
+            }
+            col = mergeArr[mergeIndex].col
+          } else {
+            saveMerge.push({
+              col: mergeArr[mergeIndex].col,
+              colspan: mergeArr[mergeIndex].colspan,
+              row: row
+            })
+            col = mergeArr[mergeIndex].col + mergeArr[mergeIndex].colspan
+            mergeIndex++
+          }
+        } else {
+          for (let i = col; i < length; i++) {
+            saveMerge.push({
+              col: i,
+              colspan: 1,
+              row: row
+            })
+          }
+          col = length
+        }
+      }
+      return saveMerge
+    },
+    // 合并数组
+    mergeArray (arr, saveArr) {
+      let array = saveArr || []
+      arr.forEach((item) => {
+        if (Array.isArray(item)) {
+          this.mergeArray(item, array)
+        } else {
+          array.push(item)
+        }
+      })
+      return array
+    },
     submit (ifCaogao) {
       // 获取合并单元格信息
       let errorInput = false
@@ -3648,6 +3958,13 @@ export default {
       }
       this.weftInfo.total = sum
       // 重算经纬代码到此截至
+      let cmpYarn = {
+        yarn_color_weight: {},
+        peise_yarn_weight: {}
+      }
+      if (ifCaogao !== '草稿') {
+        cmpYarn = this.computeYarn()
+      }
       let formData = {
         id: null,
         is_draft: ifCaogao === '草稿' ? 2 : 1, //设计单字段，现改为是否为草稿
@@ -3658,6 +3975,8 @@ export default {
         size: this.DSGG,
         weight: this.DSKZ,
         desc: this.desc,
+        yarn_color_weight: cmpYarn.yarn_color_weight,
+        peise_yarn_weight: cmpYarn.peise_yarn_weight,
         yarn_coefficient: this.allMaterial.map((item, index) => {
           return {
             name: item,

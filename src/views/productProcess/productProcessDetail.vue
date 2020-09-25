@@ -151,6 +151,11 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">{{processType}}加工</span>
+        <el-switch style="float:right;margin-top:20px;margin-right:32px"
+          v-model="keyBoard"
+          active-text="打开键盘"
+          inactive-text="关闭键盘">
+        </el-switch>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -279,8 +284,9 @@
                       </div>
                       <div class="tcolumn">
                         <div style="height:32px">
-                          <el-input v-model="itemChild.number"
-                            placeholder="加工数"></el-input>
+                          <zh-input :keyBoard="keyBoard"
+                            v-model="itemChild.number"
+                            placeholder="加工检验数"></zh-input>
                         </div>
                       </div>
                       <div class="tcolumn">
@@ -771,6 +777,7 @@ import { order, materialPlan, client, inspection, chargebacks, staff, course, st
 export default {
   data () {
     return {
+      keyBoard: true,
       loading: true,
       msgSwitch: false,
       msgUrl: '',

@@ -1364,21 +1364,28 @@ export default {
         }
       })
     },
+    // 获取特殊数据,用于处理 乘以[n]遍，最后一遍去掉[x]列到[y]列
+    getSpecial (info) {
+      if (Number(info)) {
+        return {
+          number: Number(info)
+        }
+      }
+      // 只解析上列字符串，别的不管
+      let arr = info.split(']')
+      return {
+        number: arr[0].split('[')[1],
+        start: arr[1].split('[')[1],
+        end: arr[2].split('[')[1]
+      }
+    },
     // 展平合并信息
     getFlatTable (table, type, merge) {
       let tableArr = JSON.parse(table)
       let mergeTable = JSON.parse(this[type][merge])
-      // 获取完整的合并项信息
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
-      // 第一步，处理纹版图的合并信息
-      let GLMerge = mergeTable.filter(item => item.row === 5)
-      GLMerge.forEach((item) => {
-        for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-          tableArr[item.row][i] = tableArr[item.row][item.col]
-        }
-      })
-      // 第二步，处理合并项的合并信息
+      // 处理合并项的合并信息
       let firstArr = []
       firstMerge.forEach((item) => {
         let temporaryStorage = [] // 临时存储合并项
@@ -1386,12 +1393,19 @@ export default {
           temporaryStorage.push({
             order: tableArr[0][i],
             color: tableArr[1][i],
-            number: tableArr[2][i],
-            GLorPM: tableArr[5][i]
+            number: tableArr[2][i]
+            // GLorPM: tableArr[5][i]
           })
         }
-        for (let i = 0; i < (tableArr[item.row][item.col] || 1); i++) {
-          firstArr.push(temporaryStorage)
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              return item.order < forNum.start || item.order > forNum.end
+            })
+          }
+          firstArr.push(realStorage)
         }
       })
       let secondArr = []
@@ -1399,8 +1413,21 @@ export default {
         let temporaryStorage = firstArr.filter((itemFilter) => {
           return itemFilter[0].order > item.col && itemFilter[0].order <= (item.col + item.colspan)
         })
-        for (let i = 0; i < (tableArr[item.row][item.col] || 1); i++) {
-          secondArr.push(temporaryStorage)
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              let flag = true
+              item.forEach((itemChild) => {
+                if (itemChild.order >= forNum.start && itemChild.order <= forNum.end) {
+                  flag = false
+                }
+              })
+              return flag
+            })
+          }
+          secondArr.push(realStorage)
         }
       })
       // 多维数组展平
@@ -1676,71 +1703,110 @@ export default {
           }
         })
       })
-      console.log(this.GLXuhao)
-      console.log(this.GL)
-      console.log(this.GLRepeat)
-      console.log(GLRepeatComplete)
       // 计算克重信息
-      let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
-      this.tableData.warp.mergeCells.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
-          }
+      // let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
+      // this.tableData.warp.mergeCells.forEach((item) => {
+      //   if (item.row === 3 || item.row === 4) {
+      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+      //       arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
+      //     }
+      //   }
+      // })
+      // let arrWeft = JSON.parse(this.weftInfo.weft_rank).slice(1, 5)
+      // this.tableData.weft.mergeCells.forEach((item) => {
+      //   if (item.row === 3 || item.row === 4) {
+      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+      //       arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
+      //     }
+      //   }
+      // })
+      // let arrWarpBack = JSON.parse(this.warpInfo.warp_rank_back).slice(1, 5)
+      // this.tableData.warpBack.mergeCells.forEach((item) => {
+      //   if (item.row === 3 || item.row === 4) {
+      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+      //       arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
+      //     }
+      //   }
+      // })
+      // let arrWeftBack = JSON.parse(this.weftInfo.weft_rank_back).slice(1, 5)
+      // this.tableData.weftBack.mergeCells.forEach((item) => {
+      //   if (item.row === 3 || item.row === 4) {
+      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
+      //       arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
+      //     }
+      //   }
+      // })
+      // for (let i = 0; i < arrWarp[0].length; i++) {
+      //   const x = arrWarp[1][i] ? arrWarp[1][i] : 1
+      //   const y = arrWarp[2][i] ? arrWarp[2][i] : 1
+      //   const z = arrWarp[3][i] ? arrWarp[3][i] : 1
+      //   this.colorNumber.warp[arrWarp[0][i]] = this.colorNumber.warp[arrWarp[0][i]] ? this.colorNumber.warp[arrWarp[0][i]] : 0
+      //   this.colorNumber.warp[arrWarp[0][i]] += x * y * z
+      // }
+      // for (let i = 0; i < arrWeft[0].length; i++) {
+      //   const x = arrWeft[1][i] ? arrWeft[1][i] : 1
+      //   const y = arrWeft[2][i] ? arrWeft[2][i] : 1
+      //   const z = arrWeft[3][i] ? arrWeft[3][i] : 1
+      //   this.colorNumber.weft[arrWeft[0][i]] = this.colorNumber.weft[arrWeft[0][i]] ? this.colorNumber.weft[arrWeft[0][i]] : 0
+      //   this.colorNumber.weft[arrWeft[0][i]] += x * y * z
+      // }
+      // for (let i = 0; i < arrWarpBack[0].length; i++) {
+      //   const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
+      //   const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
+      //   const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
+      //   this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
+      //   this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
+      // }
+      // for (let i = 0; i < arrWeftBack[0].length; i++) {
+      //   const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
+      //   const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
+      //   const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
+      //   this.colorNumber.weft[arrWeftBack[0][i]] = this.colorNumber.weft[arrWeftBack[0][i]] ? this.colorNumber.weft[arrWeftBack[0][i]] : 0
+      //   this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
+      // }
+      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
+      // 展平合并信息
+      let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'Ⅰ'
         }
+        return item
       })
-      let arrWeft = JSON.parse(this.weftInfo.weft_rank).slice(1, 5)
-      this.tableData.weft.mergeCells.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
-          }
+      let weftTable = this.getFlatTable(this.weftInfo.weft_rank, 'weftInfo', 'merge_data').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'A'
         }
+        return item
       })
-      let arrWarpBack = JSON.parse(this.warpInfo.warp_rank_back).slice(1, 5)
-      this.tableData.warpBack.mergeCells.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
-          }
+      let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'Ⅰ'
         }
+        return item
       })
-      let arrWeftBack = JSON.parse(this.weftInfo.weft_rank_back).slice(1, 5)
-      this.tableData.weftBack.mergeCells.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
-          }
+      let weftTableBack = this.getFlatTable(this.weftInfo.weft_rank_back, 'weftInfo', 'merge_data_back').map((item) => {
+        if (!item.GLorPM) {
+          item.GLorPM = 'A'
         }
+        return item
       })
-      for (let i = 0; i < arrWarp[0].length; i++) {
-        const x = arrWarp[1][i] ? arrWarp[1][i] : 1
-        const y = arrWarp[2][i] ? arrWarp[2][i] : 1
-        const z = arrWarp[3][i] ? arrWarp[3][i] : 1
-        this.colorNumber.warp[arrWarp[0][i]] = this.colorNumber.warp[arrWarp[0][i]] ? this.colorNumber.warp[arrWarp[0][i]] : 0
-        this.colorNumber.warp[arrWarp[0][i]] += x * y * z
-      }
-      for (let i = 0; i < arrWeft[0].length; i++) {
-        const x = arrWeft[1][i] ? arrWeft[1][i] : 1
-        const y = arrWeft[2][i] ? arrWeft[2][i] : 1
-        const z = arrWeft[3][i] ? arrWeft[3][i] : 1
-        this.colorNumber.weft[arrWeft[0][i]] = this.colorNumber.weft[arrWeft[0][i]] ? this.colorNumber.weft[arrWeft[0][i]] : 0
-        this.colorNumber.weft[arrWeft[0][i]] += x * y * z
-      }
-      for (let i = 0; i < arrWarpBack[0].length; i++) {
-        const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
-        const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
-        const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
-        this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
-        this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
-      }
-      for (let i = 0; i < arrWeftBack[0].length; i++) {
-        const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
-        const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
-        const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-        this.colorNumber.weft[arrWeftBack[0][i]] = this.colorNumber.weft[arrWeftBack[0][i]] ? this.colorNumber.weft[arrWeftBack[0][i]] : 0
-        this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
-      }
+      // 将展平的数据用于克重计算
+      warpTable.forEach((item) => {
+        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+        this.colorNumber.warp[item.color] += Number(item.number)
+      })
+      weftTable.forEach((item) => {
+        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+        this.colorNumber.weft[item.color] += Number(item.number)
+      })
+      warpTableBack.forEach((item) => {
+        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+        this.colorNumber.warp[item.color] += Number(item.number)
+      })
+      weftTableBack.forEach((item) => {
+        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+        this.colorNumber.weft[item.color] += Number(item.number)
+      })
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -1784,33 +1850,6 @@ export default {
         })
       })
       this.weight = this.weight.toFixed(1)
-
-      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
-      // 展平合并信息
-      let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
-        if (!item.GLorPM) {
-          item.GLorPM = 'Ⅰ'
-        }
-        return item
-      })
-      let weftTable = this.getFlatTable(this.weftInfo.weft_rank, 'weftInfo', 'merge_data').map((item) => {
-        if (!item.GLorPM) {
-          item.GLorPM = 'A'
-        }
-        return item
-      })
-      let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
-        if (!item.GLorPM) {
-          item.GLorPM = 'Ⅰ'
-        }
-        return item
-      })
-      let weftTableBack = this.getFlatTable(this.weftInfo.weft_rank_back, 'weftInfo', 'merge_data_back').map((item) => {
-        if (!item.GLorPM) {
-          item.GLorPM = 'A'
-        }
-        return item
-      })
       // 将展开的合并信息结合穿综和纹版信息
       let warpGetPMNum = []
       let weftGetGLNum = []
