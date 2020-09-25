@@ -524,7 +524,13 @@ const orderFile = {
   list: (params) => http.get(`${baseUrl}/order/file/list`, params),
   delete: (params) => http.post(`${baseUrl}/order/file/delete`, params, 'application/json')
 }
+// 产前信息确认
+const compare = {
+  create: (params) => http.post(`${baseUrl}/order/module/confirm`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/order/detail`, params)
+}
 export {
+  compare,
   productProcess,
   orderFile,
   transport,

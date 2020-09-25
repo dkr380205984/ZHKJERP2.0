@@ -39,7 +39,7 @@ export default {
       meauList: {
         production: [
           {
-            name: '工艺单列表',
+            name: '工艺单管理',
             id: 3,
             path: '/craft/craftList/page=1&&keyword=&&date=',
             icon: 'icon-wuliaojihua'

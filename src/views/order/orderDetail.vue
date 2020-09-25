@@ -191,13 +191,51 @@
               <span class="tb_row middle">
                 <span class="tb_handle_btn blue"
                   v-if="itemBatch.status !== 1"
-                  @click="changeBatchStatus(itemBatch)">确认完成</span>
+                  @click="changeBatchStatus(itemBatch)">确认发货</span>
                 <span class="tb_handle_btn green"
-                  v-else>已确认</span>
+                  v-else>已确认发货</span>
               </span>
             </span>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
+        <span class="title hasBorder">订单产前确认信息</span>
+      </div>
+      <div class="detailCtn">
+        <el-tabs type="border-card"
+          style="margin:0 32px">
+          <el-tab-pane v-for="(item,index) in compareInfo"
+            :key="index">
+            <span slot="label"
+              :class="item.status">{{item.label}}</span>
+            <div class="confirmTable">
+              <div class="otherCtn"
+                v-if="item.compareInfo">
+                <span class="item">操作人：{{item.user_name}}</span>
+                <span class="item">操作时间：{{item.update_time}}</span>
+              </div>
+              <div class="tb_content center"
+                v-if="!item.compareInfo">暂未确认</div>
+              <div class="tb_content"
+                v-for="(itemI,indexI) in item.compareInfo"
+                :key="indexI">
+                <span class="tb_row hasBack">{{item.nameIndex === undefined ? itemI.name : itemI.name[item.nameIndex]}}</span>
+                <span class="tb_row flex04"
+                  v-if="!itemI.isRemarkItem"
+                  :class="{green:itemI.status,orange:!itemI.status}">{{itemI.status ? '无差异' : '差异较大'}}</span>
+                <span class="tb_row">
+                  <template v-if="Array.isArray(itemI.info)">
+                    {{itemI.info.join(',') || '无'}}
+                  </template>
+                  <template v-else>{{itemI.info || '无'}}</template>
+                </span>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
     <div class="module">
@@ -452,36 +490,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title hasBorder">订单确认信息</span>
-      </div>
-      <div class="detailCtn">
-        <el-tabs type="border-card"
-          style="margin:0 32px">
-          <el-tab-pane>
-            <span slot="label"
-              style="color:#F5222D">原料出入库</span>
-            <span>红色代表有问题</span>
-          </el-tab-pane>
-          <el-tab-pane>
-            <span slot="label"
-              style="color:#01B48C">辅料出入库</span>
-            <span>绿色代表通过</span>
-          </el-tab-pane>
-          <el-tab-pane>
-            <span slot="label"
-              style="color:#F5222D">半成品加工</span>
-            <span>红色代表有问题</span>
-          </el-tab-pane>
-          <el-tab-pane>
-            <span slot="label"
-              style="color:#01B48C">成平加工</span>
-            <span>绿色代表通过</span>
-          </el-tab-pane>
-        </el-tabs>
       </div>
     </div>
     <div class="module">
@@ -1613,10 +1621,55 @@ export default {
       productAllNumber: 0,
       nativeOrder: {
         quotation_id: null
-      }
+      },
+      // 产前确认信息
+      compareInfo: [
+        {
+          label: '原料确认',
+          status: false
+        }, {
+          label: '辅料确认',
+          status: false
+        }, {
+          label: '半成品确认',
+          status: false
+        }, {
+          label: '成品确认',
+          status: false
+        }
+      ]
     }
   },
   methods: {
+    // 处理产前确认信息
+    getConfirmBeforeProductionInfo (orderInfo) {
+      let materialPush = orderInfo.material_push_confirm && JSON.parse(orderInfo.material_push_confirm)
+      let assignMaterialPush = orderInfo.assist_material_push_confirm && JSON.parse(orderInfo.assist_material_push_confirm)
+      let productInspection = orderInfo.product_inspection_confirm && JSON.parse(orderInfo.product_inspection_confirm)
+      let productProduction = orderInfo.product_production_confirm && JSON.parse(orderInfo.product_production_confirm)
+      this.compareInfo = [
+        {
+          label: '原料确认',
+          status: materialPush && (materialPush.compareInfo.some(item => !item.status) ? 'orange' : 'green'),
+          nameIndex: 0,
+          ...(materialPush || {})
+        }, {
+          label: '辅料确认',
+          status: assignMaterialPush && (assignMaterialPush.compareInfo.some(item => !item.status) ? 'orange' : 'green'),
+          nameIndex: 1,
+          ...(assignMaterialPush || {})
+        }, {
+          label: '半成品确认',
+          status: productInspection && (productInspection.compareInfo.some(item => !item.status) ? 'orange' : 'green'),
+          ...(productInspection || {})
+        }, {
+          label: '成品确认',
+          status: productProduction && (productProduction.compareInfo.some(item => !item.status) ? 'orange' : 'green'),
+          ...(productProduction || {})
+        }
+      ]
+      console.log(this.compareInfo)
+    },
     // 绑定报价单
     bindPrice () {
       if (!this.priceInfo.id) {
@@ -1788,9 +1841,10 @@ export default {
         })
       ]).then(res => {
         this.nativeOrder = this.$clone(res[0].data.data) // 克隆一份原生的订单数据
+        // 处理产前确认
+        this.getConfirmBeforeProductionInfo(res[0].data.data)
+        // 初始化
         this.orderInfo = res[0].data.data
-        console.log(this.orderInfo)
-        console.log(this.orderInfo.contact_name)
         this.orderInfo.order_contract = !this.orderInfo.order_contract ? [] : JSON.parse(this.orderInfo.order_contract).map(item => {
           let splitArr = item.split('/')
           return {
@@ -2387,7 +2441,7 @@ export default {
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
-        if (res.data.stauts !== false) {
+        if (res.data.status !== false) {
           let processInfo = res.data.data.map(item => {
             return {
               ...item.product_info,
@@ -2415,7 +2469,7 @@ export default {
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
-        if (res.data.stauts !== false) {
+        if (res.data.status !== false) {
           let inspectionList = []
           res.data.data.forEach((item) => {
             item.from = item.inspection_user || item.client_name
@@ -2449,7 +2503,7 @@ export default {
         order_id: this.$route.params.id,
         order_type: 1
       }).then(res => {
-        if (res.data.stauts !== false) {
+        if (res.data.status !== false) {
           this.orderDetailInfo.finance.outStock = this.$mergeData(res.data.data, { mainRule: 'client_name', childrenName: 'out_info', childrenRule: { mainRule: ['price', 'complete_time/compiled_time'], otherRule: [{ name: 'number', type: 'add' }, { name: 'cubic_number/cube_number', type: 'add' }, { name: 'total_price', type: 'add' }] } })
         }
         this.loading = false

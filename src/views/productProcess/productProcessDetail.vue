@@ -93,8 +93,10 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">下单信息</span>
+        <div class="btn btnBlue"
+          @click="getConfirmDetail">产前信息确认</div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
@@ -681,7 +683,7 @@
     <div class="popup"
       v-show="showCompare">
       <div class="main"
-        style="width:720px">
+        style="width:800px">
         <div class="title">
           <div class="text">成品信息确认</div>
           <i class="el-icon-close"
@@ -689,87 +691,75 @@
         </div>
         <div class="content"
           style="align-items:baseline">
-          <div class="tips">
+          <div class="tips"
+            v-if="showCompare === 2">
             提示信息：首次成品信息检验需要确认成品信息是否和样品相同，请按照实际情况填写下列信息。
           </div>
           <div class="popupTable">
-            <div class="row">
-              <div class="col hasBack">成品尺寸</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.size"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.size"
-                  label="差异较大">差异较大</el-radio>
+            <div class="row"
+              v-for="(item,index) in compareInfo"
+              :key="index">
+              <div class="col hasBack"
+                style="width:6em;flex:none">{{item.name}}</div>
+              <div class="col"
+                v-if="!item.isRemarkItem">
+                <template v-if="showCompare === 1">
+                  <span :class="{'green':item.status,'orange': !item.status }">{{`${item.status ? '无差异' :'差异较大'}`}}</span>
+                </template>
+                <template v-else>
+                  <el-radio v-model="item.status"
+                    :label="true"
+                    @change="item.info = ''">无差异</el-radio>
+                  <el-radio v-model="item.status"
+                    :label="false">差异较大</el-radio>
+                </template>
               </div>
-              <div class="col">
-                <el-input v-model="compareInfo.sizeDesc"
-                  :disabled="compareInfo.size==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
+              <div class="col"
+                :style="{'flex':item.isRemarkItem ? 2.8 : 1.8}"
+                v-if="showCompare === 1">
+                <template v-if="Array.isArray(item.info)">
+                  {{item.info.join(';') || '无'}}
+                </template>
+                <template v-else>
+                  {{item.info || '无'}}
+                </template>
               </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">成品克重</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.weight"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.weight"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.weightDesc"
-                  :disabled="compareInfo.weight==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">成品颜色</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.color"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.color"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.colorDesc"
-                  :disabled="compareInfo.color==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">成品手感</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.touch"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.touch"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.touchDesc"
-                  :disabled="compareInfo.touch==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">成品工序</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.process"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.process"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.processDesc"
-                  :disabled="compareInfo.process==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
+              <div class="col"
+                :style="{'flex':item.isRemarkItem ? 2.8 : 1.8}"
+                v-if="showCompare === 2">
+                <template v-if="item.isSelect">
+                  <el-select v-model="item.info"
+                    :disabled='item.status'
+                    filterable
+                    clearable
+                    multiple
+                    collapse-tags
+                    :placeholder="item.selectPlaceholder || '请选择不符合的产品'">
+                    <el-option v-for="item in compareOptions[item.optionsName]"
+                      :key="item"
+                      :label="item"
+                      :value="item">
+                    </el-option>
+                  </el-select>
+                </template>
+                <template v-else>
+                  <el-input v-model="item.info"
+                    :disabled="item.status && !item.isRemarkItem"
+                    placeholder="请输入备注信息"></el-input>
+                </template>
               </div>
             </div>
           </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showCompare=false">取消</div>
-          <span class="btn btnBlue"
-            @click="compare">确定</span>
+            @click="showCompare=false">{{showCompare === 2 ? '取消' : '关闭'}}</div>
+          <div class="btn btnBlue"
+            v-if="showCompare === 2"
+            @click="compareSubmit">确定</div>
+          <div class="btn btnOrange"
+            v-else
+            @click="confirmBeforeProductionInfo">修改</div>
         </div>
       </div>
     </div>
@@ -780,7 +770,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, inspection, chargebacks, staff, course, station } from '@/assets/js/api.js'
+import { order, materialPlan, client, inspection, chargebacks, staff, course, station, compare } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -793,19 +783,6 @@ export default {
       rate: {
         allNum: 1,
         insNum: 1
-      },
-      showCompare: false,
-      compareInfo: {
-        size: '无差异',
-        weight: '无差异',
-        color: '无差异',
-        touch: '无差异',
-        process: '无差异',
-        sizeDesc: '',
-        weightDesc: '',
-        colorDesc: '',
-        touchDesc: '',
-        processDesc: ''
       },
       defectiveType: [
         {
@@ -891,7 +868,49 @@ export default {
       clientAuthArr: [],
       departmentArr: [],
       settingAuthArr: [],
-      inspectionList: []
+      inspectionList: [],
+      // 产前信息确认
+      showCompare: false, // false不展示弹窗 1为详情 2为修改
+      compareInfo: [
+        {
+          name: '成品尺寸', // 第一项为原料title 第二项辅料title
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'productList'
+        }, {
+          name: '成品克重',
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'productList'
+        }, {
+          name: '成品颜色',
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'productList'
+        }, {
+          name: '成品手感',
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'productList'
+        }, {
+          name: '成品工序',
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'productList'
+        }, {
+          isRemarkItem: true,
+          name: '其它备注',
+          info: ''
+        }
+      ],
+      compareOptions: {
+        productList: []
+      }
     }
   },
   watch: {
@@ -900,8 +919,46 @@ export default {
     }
   },
   methods: {
-    compare () {
-
+    getConfirmDetail () {
+      this.loading = true
+      compare.detail({
+        id: this.$route.params.id
+      }).then(res => {
+        this.loading = false
+        if (res.data.status !== false) {
+          if (res.data.data.product_production_confirm) {
+            this.compareInfo = JSON.parse(res.data.data.product_production_confirm).compareInfo
+            this.showCompare = 1
+          } else {
+            this.confirmBeforeProductionInfo()
+          }
+        }
+      })
+    },
+    // 产前信息确认
+    confirmBeforeProductionInfo () {
+      this.compareOptions.productList = this.$unique(this.inspection_detail.map(itemP => {
+        return itemP.childrenMergeInfo.map(itemSC => {
+          return `${itemP.product_code}/${itemSC.size_name}/${itemSC.color_name}`
+        })
+      }).flat(Infinity))
+      this.showCompare = 2
+    },
+    // 提交确认信息
+    compareSubmit () {
+      compare.create({
+        order_id: this.$route.params.id,
+        product_production_confirm: JSON.stringify({
+          compareInfo: this.compareInfo,
+          user_name: window.sessionStorage.getItem('user_name'),
+          update_time: this.$getTime()
+        })
+      }).then(res => {
+        if (res.data.stauts !== false) {
+          this.$message.success('确认成功')
+          this.showCompare = false
+        }
+      })
     },
     checkedAllOption (e, colroSizeArr) {
       colroSizeArr.forEach(item => {
@@ -1440,9 +1497,6 @@ export default {
         res[3].data.data.forEach((item) => {
           this.processChoose.push(item.product_flow)
         })
-        if (res[3].data.data.length === 0) {
-          this.showCompare = true
-        }
         this.processChoose = Array.from(new Set(this.processChoose))
         this.inspection_log = res[3].data.data.filter((item) => item.product_flow === this.processType)
         this.inspection_log.forEach((item) => {

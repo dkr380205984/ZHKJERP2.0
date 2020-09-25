@@ -60,8 +60,10 @@
         :orderInfo='confirmInfo' />
     </template>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">{{$route.params.type === '1' ? '原' : '辅'}}料出入库</span>
+        <div class="btn btnBlue"
+          @click="getConfirmDetail">产前信息确认</div>
       </div>
       <template v-if="materialStockInfo.length > 0 || $route.params.type !== '1'">
         <div class="editCtn hasBorderTop">
@@ -937,7 +939,7 @@
     <div class="popup"
       v-show="showCompare">
       <div class="main"
-        style="width:720px">
+        style="width:800px">
         <div class="title">
           <div class="text">{{$route.params.type === '1' ? '原' : '辅'}}料确认</div>
           <i class="el-icon-close"
@@ -945,59 +947,75 @@
         </div>
         <div class="content"
           style="align-items:baseline">
-          <div class="tips">
+          <div class="tips"
+            v-if="showCompare === 2">
             提示信息：首次{{$route.params.type === '1' ? '原' : '辅'}}料出入库需要确认物料信息是否和样品相同，请按照实际情况填写下列信息。
           </div>
           <div class="popupTable">
-            <div class="row">
-              <div class="col hasBack">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.color"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.color"
-                  label="差异较大">差异较大</el-radio>
+            <div class="row"
+              v-for="(item,index) in compareInfo"
+              :key="index">
+              <div class="col hasBack"
+                style="width:6em;flex:none">{{$route.params.type === '1' ? item.name[0] : item.name[1]}}</div>
+              <div class="col"
+                v-if="!item.isRemarkItem">
+                <template v-if="showCompare === 1">
+                  <span :class="{'green':item.status,'orange': !item.status }">{{`${item.status ? '无差异' :'差异较大'}`}}</span>
+                </template>
+                <template v-else>
+                  <el-radio v-model="item.status"
+                    :label="true"
+                    @change="item.info = ''">无差异</el-radio>
+                  <el-radio v-model="item.status"
+                    :label="false">差异较大</el-radio>
+                </template>
               </div>
-              <div class="col">
-                <el-input v-model="compareInfo.colorDesc"
-                  :disabled="compareInfo.color==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
+              <div class="col"
+                :style="{'flex':item.isRemarkItem ? 2.8 : 1.8}"
+                v-if="showCompare === 1">
+                <template v-if="Array.isArray(item.info)">
+                  {{item.info.join(';') || '无'}}
+                </template>
+                <template v-else>
+                  {{item.info || '无'}}
+                </template>
               </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">{{$route.params.type === '1'?'纱线支数':'辅料质量'}}</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.number"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.number"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.numberDesc"
-                  :disabled="compareInfo.number==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col hasBack">{{$route.params.type === '1' ? '原' : '辅'}}料克重</div>
-              <div class="col">
-                <el-radio v-model="compareInfo.weight"
-                  label="无差异">无差异</el-radio>
-                <el-radio v-model="compareInfo.weight"
-                  label="差异较大">差异较大</el-radio>
-              </div>
-              <div class="col">
-                <el-input v-model="compareInfo.weightDesc"
-                  :disabled="compareInfo.weight==='无差异'"
-                  placeholder="请输入备注信息"></el-input>
+              <div class="col"
+                :style="{'flex':item.isRemarkItem ? 2.8 : 1.8}"
+                v-if="showCompare === 2">
+                <template v-if="item.isSelect">
+                  <el-select v-model="item.info"
+                    :disabled='item.status'
+                    filterable
+                    clearable
+                    multiple
+                    collapse-tags
+                    placeholder="请选择不符合的纱线">
+                    <el-option v-for="item in compareOptions[item.optionsName]"
+                      :key="item"
+                      :label="item"
+                      :value="item">
+                    </el-option>
+                  </el-select>
+                </template>
+                <template v-else>
+                  <el-input v-model="item.info"
+                    :disabled="item.status && !item.isRemarkItem"
+                    placeholder="请输入备注信息"></el-input>
+                </template>
               </div>
             </div>
           </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="showCompare=false">取消</div>
-          <span class="btn btnBlue"
-            @click="compare">确定</span>
+            @click="showCompare=false">{{showCompare === 2 ? '取消' : '关闭'}}</div>
+          <div class="btn btnBlue"
+            v-if="showCompare === 2"
+            @click="compareSubmit">确定</div>
+          <div class="btn btnOrange"
+            v-else
+            @click="confirmBeforeProductionInfo">修改</div>
         </div>
       </div>
     </div>
@@ -1006,7 +1024,7 @@
 
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
-import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock, material, yarnColor, sampleOrder } from '@/assets/js/api.js'
+import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock, material, yarnColor, sampleOrder, compare } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1076,14 +1094,36 @@ export default {
       materialList: [],
       colorList: [],
       confirmInfo: {},
-      showCompare: false,
-      compareInfo: {
-        color: '无差异',
-        number: '无差异',
-        weight: '无差异',
-        colorDesc: '',
-        numberDesc: '',
-        weightDesc: ''
+      // 产前信息确认
+      showCompare: false, // false不展示弹窗 1为详情 2为修改
+      compareInfo: [
+        {
+          name: ['原料支数', '辅料质量'], // 第一项为原料title 第二项辅料title
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'materialNameList'
+        }, {
+          name: ['原料颜色', '辅料颜色'],
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'materialColorList'
+        }, {
+          name: ['原料克重', '辅料克重'],
+          status: true,
+          info: '',
+          isSelect: true,
+          optionsName: 'materialNameList'
+        }, {
+          isRemarkItem: true,
+          name: ['其它备注', '其它备注'],
+          info: ''
+        }
+      ],
+      compareOptions: {
+        materialNameList: [],
+        materialColorList: []
       }
     }
   },
@@ -1165,9 +1205,57 @@ export default {
     }
   },
   methods: {
-    // 比较下物料
-    compare () {
-
+    getConfirmDetail () {
+      this.loading = true
+      compare.detail({
+        id: this.$route.params.id
+      }).then(res => {
+        this.loading = false
+        if (res.data.status !== false) {
+          if (res.data.data.material_push_confirm && this.$route.params.type === '1') { // 原料
+            this.compareInfo = JSON.parse(res.data.data.material_push_confirm).compareInfo
+            this.showCompare = 1
+          } else if (res.data.data.assist_material_push_confirm && this.$route.params.type === '2') { // 辅料
+            this.compareInfo = JSON.parse(res.data.data.assist_material_push_confirm).compareInfo
+            this.showCompare = 1
+          } else {
+            this.confirmBeforeProductionInfo()
+          }
+        }
+      })
+    },
+    // 产前信息确认
+    confirmBeforeProductionInfo () {
+      this.compareOptions.materialNameList = this.$unique(this.materialStockInfo.map(itemM => itemM.material_name))
+      this.compareOptions.materialColorList = this.$unique(this.materialStockInfo.map(itemM => {
+        return itemM.color_info.map(itemC => `${itemM.material_name}/${itemC.attr}`)
+      }).flat(Infinity))
+      this.showCompare = 2
+    },
+    // 提交确认信息
+    compareSubmit () {
+      let obj = {
+        order_id: this.$route.params.id
+      }
+      if (this.$route.params.type === '1') { // 区分原辅料
+        obj.material_push_confirm = JSON.stringify({
+          compareInfo: this.compareInfo,
+          user_name: window.sessionStorage.getItem('user_name'),
+          update_time: this.$getTime()
+        })
+      } else {
+        obj.assist_material_push_confirm = JSON.stringify({
+          compareInfo: this.compareInfo,
+          user_name: window.sessionStorage.getItem('user_name'),
+          update_time: this.$getTime()
+        })
+      }
+      compare.create(obj).then(res => {
+        if (res.data.stauts !== false) {
+          this.$message.success('确认成功')
+          this.showCompare = false
+        }
+      })
     },
     // 添加辅料客供逻辑
     querySearchMaterial (queryString, callback, flag) {

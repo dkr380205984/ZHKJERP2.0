@@ -14,6 +14,11 @@
                 placeholder="输入工艺单编号按回车键查询">
               </el-input> -->
               <el-input class="filter_item"
+                v-model="keyword"
+                @change="changeRouter(1)"
+                placeholder="输入工艺单名称按回车键查询">
+              </el-input>
+              <el-input class="filter_item"
                 v-model="product_code"
                 @change="changeRouter(1)"
                 placeholder="输入产品编号按回车键查询">
@@ -117,7 +122,7 @@
               <span class="text">({{item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name}})</span>
             </div>
             <div class="col middle">
-              <zh-img-list :list="item.product_info.img"></zh-img-list>
+              <zh-img-list :list="item.product_info.image"></zh-img-list>
             </div>
             <div class="col">
               <span class="text one_line">
@@ -231,7 +236,8 @@ export default {
         user_id: this.user_id || '',
         product_code: this.product_code || '',
         material_name: this.material_name,
-        craft_code: this.keyword,
+        // craft_code: this.keyword,
+        title: this.keyword,
         limit: 10,
         page: this.page
       }).then((res) => {
