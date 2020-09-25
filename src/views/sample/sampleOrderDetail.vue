@@ -188,6 +188,7 @@
             :handleFlag="false"
             :startTime="warnData.startTime"
             :endTime='warnData.endTime'
+            nowDay
             style="width:100%"></zh-time-process>
         </div>
         <div class="rowCtn"
@@ -1462,16 +1463,24 @@ export default {
           warnArr: [
             {
               percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.material_plan / 100),
-              name: '物料计划'
+              name: '物料计划',
+              isWarnStatus: this.sampleOrderInfo.material_plan_progress_status,
+              porgress: 1
             }, {
               percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.material_push / 100),
-              name: '物料入库'
+              name: '物料入库',
+              isWarnStatus: this.sampleOrderInfo.material_push_progress_status,
+              porgress: this.sampleOrderInfo.material_push_progress.r_push
             }, {
               percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.semi_product_push / 100),
-              name: '半成品入库'
+              name: '织造入库',
+              isWarnStatus: this.sampleOrderInfo.semi_product_push_progress_status,
+              porgress: this.sampleOrderInfo.product_push_progress
             }, {
               percent: this.$toFixed(this.sampleOrderInfo.time_progress.progress_data.product_push / 100),
-              name: '成品入库'
+              name: '成品回库',
+              isWarnStatus: this.sampleOrderInfo.product_push_progress_status,
+              porgress: this.sampleOrderInfo.semi_push_progress
             }
           ]
         }

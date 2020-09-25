@@ -2501,6 +2501,154 @@
               </div>
             </div>
           </el-tab-pane>
+          <el-tab-pane label="预订购入库"
+            name="预订购入库">
+            <div class="filterCtn2">
+              <div class="leftCtn">
+                <span class="label">筛选条件：</span>
+                <div class="filter_line">
+                  <el-input class="filter_item"
+                    v-model="material_name"
+                    @change="changeRouter(1)"
+                    placeholder="输入物料名称查询">
+                  </el-input>
+                  <el-cascader v-model="client_id"
+                    class="filter_item"
+                    :show-all-levels='false'
+                    placeholder="搜索物料预定购单位名称查询"
+                    :options="clientFilter.matOrder"
+                    :filter-method='searchClient'
+                    clearable
+                    :props="{ expandTrigger: 'hover' }"
+                    @change="changeRouter(1)"
+                    filterable></el-cascader>
+                  <el-select v-model="stock_id"
+                    class="filter_item"
+                    @change="changeRouter(1)"
+                    placeholder="筛选入库仓库"
+                    clearable>
+                    <el-option v-for="(item,index) in stockList"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </el-select>
+                  <el-date-picker v-model="date"
+                    style="width:250px"
+                    class="filter_item"
+                    type="daterange"
+                    align="right"
+                    unlink-panels
+                    value-format="yyyy-MM-dd"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="changeRouter(1)">
+                  </el-date-picker>
+                  <div class="resetBtn"
+                    @click="reset">重置</div>
+                </div>
+              </div>
+            </div>
+            <div class="list"
+              v-if="type==='预订购入库'">
+              <div class="title">
+                <div class="col flex07">
+                  <el-checkbox v-model="checkAll">全选</el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">订购日期</span>
+                </div>
+                <div class="col">
+                  <span class="text">纱线单位</span>
+                </div>
+                <div class="col">
+                  <span class="text">物料名称</span>
+                </div>
+                <div class="col">
+                  <span class="text">物料颜色</span>
+                </div>
+                <div class="col right">
+                  <span class="text">物料价格(元/kg)</span>
+                </div>
+                <div class="col right">
+                  <span class="text">入库数量(kg)</span>
+                </div>
+                <div class="col">
+                  <span class="text">入库仓库</span>
+                </div>
+                <div class="col center">
+                  <span class="text">备注</span>
+                </div>
+                <div class="col">
+                  <span class="text">操作人</span>
+                </div>
+                <div class="col">
+                  <span class="text">操作时间</span>
+                </div>
+              </div>
+              <div class="row"
+                v-for="(item,index) in list"
+                :key="index">
+                <div class="col flex07">
+                  <el-checkbox v-model="item.checked"
+                    @change="$forceUpdate()"></el-checkbox>
+                </div>
+                <div class="col">
+                  <span class="text">{{$getTime(item.order_time)}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.client_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.material_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.color_code}}</span>
+                </div>
+                <div class="col right">
+                  <span class="text">{{item.price}}</span>
+                </div>
+                <div class="col right">
+                  <span class="text">{{item.weight}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.stock_name}}</span>
+                </div>
+                <div class="col center">
+                  <span class="text">
+                    <el-popover placement="top-start"
+                      v-if="item.desc"
+                      title="备注"
+                      width="200"
+                      trigger="hover"
+                      :content="item.desc">
+                      <div class="btn noBorder"
+                        style="padding:0;margin:0"
+                        slot="reference">查看</div>
+                    </el-popover>
+                  </span>
+                </div>
+                <div class="col">
+                  <span class="text">{{item.user_name}}</span>
+                </div>
+                <div class="col">
+                  <span class="text">{{$getTime(item.create_time)}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="statistics"
+              v-if="type==='预订购入库'">
+              <div class="oneBox">
+                <div class="label">总数量:</div>
+                <div class="content">{{$formatNum(statistics.material_order.total_number)}}件</div>
+              </div>
+              <div class="oneBox">
+                <div class="label">总价:</div>
+                <div class="content">{{$formatNum(statistics.material_order.total_price)}}元</div>
+              </div>
+            </div>
+          </el-tab-pane>
         </el-tabs>
         <div class="pageCtn">
           <el-pagination background
@@ -2537,7 +2685,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel, getHash } from '@/assets/js/common.js'
-import { group, materialManage, materialProcess, materialStock, weave, replenish, processing, inspection, packPlan, client, auth, process, stock, receiveDispatch, staff } from '@/assets/js/api.js'
+import { materialOrder, group, materialManage, materialProcess, materialStock, weave, replenish, processing, inspection, packPlan, client, auth, process, stock, receiveDispatch, staff } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2970,13 +3118,13 @@ export default {
         })
       } else if (this.type === '实际装箱') {
         packPlan.packActualLog({
-          order_type: null,
-          order_id: null,
+          // order_type: null,
+          // order_id: null,
           limit: 10,
           page: this.pages,
           order_code: this.order_code,
           product_code: this.product_code,
-          client_id: this.client_id,
+          // client_id: this.client_id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           operate_user: this.operate_user,
@@ -3015,21 +3163,39 @@ export default {
         })
       } else if (this.type === '销售出库') {
         packPlan.outMarketLog({
-          order_type: null,
-          order_id: null,
+          // order_type: null,
+          // order_id: null,
           limit: 10,
           page: this.pages,
           product_code: this.product_code,
-          client_id: this.client_id,
+          // client_id: this.client_id,
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          operate_user: this.operate_user
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+          // operate_user: this.operate_user
         }).then((res) => {
           this.list = res.data.data
           this.total = res.data.meta.total
           this.statistics.out_market = {
             avg_price: res.data.avg_price,
             total_number: res.data.total_number,
+            total_price: res.data.total_price
+          }
+          this.loading = false
+        })
+      } else if (this.type === '预订购入库') {
+        materialOrder.allLog({
+          material_name: this.material_name,
+          client_id: this.client_id && this.client_id[1],
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          stock_id: this.stock_id,
+          limit: 10,
+          page: this.pages
+        }).then((res) => {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.statistics.material_order = {
+            total_number: res.data.total_weight,
             total_price: res.data.total_price
           }
           this.loading = false
@@ -3311,6 +3477,22 @@ export default {
           { title: '总价', key: 'total_price' },
           { title: '备注', key: 'desc' }
         ])
+      } else if (this.type === '预订购入库') {
+        let data = this.checkList
+        downloadExcel(data, [
+          { title: '订购日期', key: 'order_time' },
+          { title: '纱线单位', key: 'client_name' },
+          { title: '物料名称', key: 'material_name' },
+          { title: '物料颜色', key: 'color_code' },
+          { title: '物料价格', key: 'price' },
+          { title: '入库数量', key: 'weight' },
+          { title: '入库仓库', key: 'stock_name' },
+          { title: '备注', key: 'desc' },
+          { title: '操作人', key: 'user_name' },
+          { title: '操作时间', key: 'create_time' }
+        ])
+      } else {
+        this.$message.warning(`未找到“${this.type}”相关数据`)
       }
     },
     downloadAllLog (data = [], total, page = 1, limit = 50) {
@@ -3867,6 +4049,40 @@ export default {
             }, 1000)
           }
         })
+      } else if (this.type === '预订购入库') {
+        materialOrder.allLog({
+          material_name: this.material_name,
+          client_id: this.client_id && this.client_id[1],
+          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          stock_id: this.stock_id,
+          limit: limit,
+          page: page
+        }).then((res) => {
+          data.push(...res.data.data)
+          total = res.data.meta.total
+          if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '订购日期', key: 'order_time' },
+              { title: '纱线单位', key: 'client_name' },
+              { title: '物料名称', key: 'material_name' },
+              { title: '物料颜色', key: 'color_code' },
+              { title: '物料价格', key: 'price' },
+              { title: '入库数量', key: 'weight' },
+              { title: '入库仓库', key: 'stock_name' },
+              { title: '备注', key: 'desc' },
+              { title: '操作人', key: 'user_name' },
+              { title: '操作时间', key: 'create_time' }
+            ])
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downloadAllLog(data, total, page + 1, limit)
+            }, 1000)
+          }
+        })
+      } else {
+        this.$message.warning(`未找到“${this.type}”相关数据`)
       }
     },
     searchClient (node, query) {

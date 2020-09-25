@@ -777,6 +777,7 @@ export default {
       // 预警数据
       isOpenWarn: false,
       warnType: '',
+      warnSettingId: null,
       warnList: [],
       timeData: [{ percent: 0.2, name: '物料计划' }, { percent: 0.2, name: '物料入库' }, { percent: 0.2, name: '织造入库' }, { percent: 0.2, name: '半成品回库' }, { percent: 0.2, name: '成品装箱' }],
       orderTypeArr: []
@@ -846,21 +847,27 @@ export default {
     // },
     checkedWarn (item) {
       this.warnType = item.title
+      this.warnSettingId = item.id // 预警id
+      const materialPlan = JSON.parse(item.material_plan)
+      const materialStock = JSON.parse(item.material_push)
+      const process = JSON.parse(item.semi_product_push)
+      const productStock = JSON.parse(item.product_push)
+      const pack = JSON.parse(item.product_pack)
       this.timeData = [
         {
-          percent: this.$toFixed(item.material_plan / 100),
+          percent: this.$toFixed((materialPlan.ratio || materialPlan) / 100),
           name: '物料计划'
         }, {
-          percent: this.$toFixed(item.material_push / 100),
+          percent: this.$toFixed((materialStock.ratio || materialStock) / 100),
           name: '物料入库'
         }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
+          percent: this.$toFixed((process.ratio || process) / 100),
           name: '织造入库'
         }, {
-          percent: this.$toFixed(item.product_push / 100),
+          percent: this.$toFixed((productStock.ratio || productStock) / 100),
           name: '半成品回库'
         }, {
-          percent: this.$toFixed(item.product_pack / 100),
+          percent: this.$toFixed((pack.ratio || pack) / 100),
           name: '成品装箱'
         }
       ]
@@ -1180,6 +1187,7 @@ export default {
       let warnData = this.isOpenWarn ? {
         order_time: this.order_time,
         end_time: this.getWarnEndTime(),
+        time_progress_demo_id: this.warnSettingId,
         progress_data: {
           material_plan: this.$toFixed(materialPlanFlag.percent * 100),
           material_push: this.$toFixed(materialPushFlag.percent * 100),
@@ -1411,6 +1419,13 @@ export default {
       this.computedTotalPrice()
       if (orderInfo.time_progress) {
         this.isOpenWarn = true
+        if (orderInfo.time_progress.time_progress_demo_id) {
+          let flag = this.warnList.find(itemF => itemF.id === orderInfo.time_progress.time_progress_demo_id)
+          if (flag) {
+            this.warnType = flag.title
+            this.warnSettingId = flag.id
+          }
+        }
         this.timeData = [
           {
             percent: this.$toFixed(orderInfo.time_progress.progress_data.material_plan / 100),

@@ -502,8 +502,9 @@ export default {
       // 预警数据
       isOpenWarn: false,
       warnType: '',
+      warnSettingId: null,
       warnList: [],
-      timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '半成品入库' }, { percent: 0.25, name: '成品入库' }]
+      timeData: [{ percent: 0.25, name: '物料计划' }, { percent: 0.25, name: '物料入库' }, { percent: 0.25, name: '织造入库' }, { percent: 0.25, name: '成品回库' }]
     }
   },
   methods: {
@@ -529,19 +530,24 @@ export default {
     },
     checkedWarn (item) {
       this.warnType = item.title
+      this.warnSettingId = item.id // 预警id
+      const materialPlan = JSON.parse(item.material_plan)
+      const materialStock = JSON.parse(item.material_push)
+      const process = JSON.parse(item.semi_product_push)
+      const productStock = JSON.parse(item.product_push)
       this.timeData = [
         {
-          percent: this.$toFixed(item.material_plan / 100),
+          percent: this.$toFixed((materialPlan.ratio || materialPlan) / 100),
           name: '物料计划'
         }, {
-          percent: this.$toFixed(item.material_push / 100),
+          percent: this.$toFixed((materialStock.ratio || materialStock) / 100),
           name: '物料入库'
         }, {
-          percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
+          percent: this.$toFixed((process.ratio || process) / 100),
+          name: '织造入库'
         }, {
-          percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
+          percent: this.$toFixed((productStock.ratio || productStock) / 100),
+          name: '成品回库'
         }
       ]
     },
@@ -721,12 +727,13 @@ export default {
         return
       }
       let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
-      let productPushFlag = this.timeData.find(item => item.name === '成品入库')
-      let semiProductPushFlag = this.timeData.find(item => item.name === '半成品入库')
+      let productPushFlag = this.timeData.find(item => item.name === '成品回库')
+      let semiProductPushFlag = this.timeData.find(item => item.name === '织造入库')
       let materialPushFlag = this.timeData.find(item => item.name === '物料入库')
       let warnData = this.isOpenWarn ? {
         order_time: this.order_time,
         end_time: this.compiled_time,
+        time_progress_demo_id: this.warnSettingId,
         progress_data: {
           material_plan: this.$toFixed(materialPlanFlag.percent * 100),
           material_push: this.$toFixed(materialPushFlag.percent * 100),
@@ -880,6 +887,9 @@ export default {
       }
       this.groupArr = res[1].data.data
       this.warnList = res[2].data.data.filter(item => item.order_type === 2)
+      if (this.warnList.length > 0) {
+        this.checkedWarn(this.warnList[0])
+      }
       this.sampleTypeArr = res[3].data.data
       this.loading = false
     })

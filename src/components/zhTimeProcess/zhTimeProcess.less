@@ -1,6 +1,7 @@
 
 @red:#F5222D;
 @orange:#E6A23C;
+@green:#01B48C;
 .zhTimeProcess{
   display: block;
   height: 20px;
@@ -29,6 +30,9 @@
       &.lastLine{
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
+      }
+      &.notStart{
+        background-color: #999;
       }
       &.isWarnStatus75{
         background-color: @orange;
@@ -90,6 +94,44 @@
         bottom: -28px;
         transform: translate(-50%);
         color: rgba(0,0,0,0.65);
+      }
+    }
+    .nowDay{
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: @green;
+      border-radius: 50%;
+      transition: all 0.5s linear;
+      .info{
+        position: absolute;
+        left: 50%;
+        top: -4px;
+        transform: translate(-50%,-100%);
+        font-size: 12px;
+        width: auto;
+        padding: 0 0.6em;
+        background-color: @green;
+        white-space: nowrap;
+        text-align: center;
+        border-radius: 8px;
+        color: #FFF;
+        z-index: 99;
+        opacity: 0.6;
+        &::after{
+          content: '';
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 10px;
+          height: 10px;
+          background-color: @green;
+          transform-origin: center center;
+          transform: rotateZ(-45deg) translateY(-50%) translateX(-50%);
+          z-index: -1;
+        }
       }
     }
   }

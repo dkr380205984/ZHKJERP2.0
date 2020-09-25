@@ -148,6 +148,7 @@
                   <span class="tb_row">总价</span>
                 </span>
               </span>
+              <span class="tb_row middle">操作</span>
             </span>
             <span class="tb_content"
               v-for="(itemBatch,indexBatch) in orderInfo.batch_info"
@@ -187,6 +188,13 @@
                   <span class="tb_row">{{canSeePriceFlag ? $toFixed((Number(itemPro.numbers) || 0 ) * (Number(itemPro.unit_price) || 0)) + orderInfo.account_unit : '/'}}</span>
                 </span>
               </span>
+              <span class="tb_row middle">
+                <span class="tb_handle_btn blue"
+                  v-if="itemBatch.status !== 1"
+                  @click="changeBatchStatus(itemBatch)">确认完成</span>
+                <span class="tb_handle_btn green"
+                  v-else>已确认</span>
+              </span>
             </span>
           </div>
         </div>
@@ -210,6 +218,7 @@
             :handleFlag="false"
             :startTime="warnData.startTime"
             :endTime='warnData.endTime'
+            nowDay
             style="width:100%"></zh-time-process>
         </div>
         <div class="rowCtn"
@@ -396,8 +405,8 @@
                         <span class="trow">
                           <span class="tcolumn">尺码颜色</span>
                           <span class="tcolumn">下单数量</span>
-                          <span class="tcolumn">出库数量</span>
-                          <span class="tcolumn">出库差值</span>
+                          <span class="tcolumn">实际装箱数量</span>
+                          <span class="tcolumn">装箱差值</span>
                         </span>
                       </span>
                     </span>
@@ -1697,10 +1706,10 @@ export default {
           name: '物料入库'
         }, {
           percent: this.$toFixed(item.semi_product_push / 100),
-          name: '半成品入库'
+          name: '织造入库'
         }, {
           percent: this.$toFixed(item.product_push / 100),
-          name: '成品入库'
+          name: '半成品回库'
         }, {
           percent: this.$toFixed(item.product_pack / 100),
           name: '成品装箱'
@@ -1900,23 +1909,28 @@ export default {
               {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_plan / 100),
                 name: '物料计划',
-                isWarnStatus: this.orderInfo.material_plan_progress_status
+                isWarnStatus: this.orderInfo.material_plan_progress_status,
+                porgress: 1
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.material_push / 100),
                 name: '物料入库',
-                isWarnStatus: this.orderInfo.material_push_progress_status
+                isWarnStatus: this.orderInfo.material_push_progress_status,
+                porgress: this.orderInfo.material_push_progress.r_push
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.semi_product_push / 100),
-                name: '半成品入库',
-                isWarnStatus: this.orderInfo.semi_product_push_progress_status
+                name: '织造入库',
+                isWarnStatus: this.orderInfo.semi_product_push_progress_status,
+                porgress: this.orderInfo.product_push_progress
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_push / 100),
-                name: '成品入库',
-                isWarnStatus: this.orderInfo.product_push_progress_status
+                name: '成品回库',
+                isWarnStatus: this.orderInfo.product_push_progress_status,
+                porgress: this.orderInfo.semi_push_progress
               }, {
                 percent: this.$toFixed(this.orderInfo.time_progress.progress_data.product_pack / 100),
-                name: '成品包装',
-                isWarnStatus: this.orderInfo.pack_push_progress_status
+                name: '成品装箱',
+                isWarnStatus: this.orderInfo.pack_push_progress_status,
+                porgress: this.orderInfo.pack_real_progress
               }
             ]
           }
@@ -2703,6 +2717,17 @@ export default {
       } else {
         this.$message.warning('未知操作')
       }
+    },
+    // 修改批次状态
+    changeBatchStatus (itemBatch) {
+      order.changeBatchStatus({
+        id: itemBatch.id
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('确认完成成功')
+          this.init()
+        }
+      })
     },
     // 取消时初始化原料、辅料、包装和产品信息
     getMaterialOrderAndProduct () {

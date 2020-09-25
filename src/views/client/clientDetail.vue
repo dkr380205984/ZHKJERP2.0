@@ -2638,7 +2638,7 @@ export default {
           console.log(error)
           item.isGetting = 3
         })
-      } else if (item.name === '物料预定购') {
+      } else if (item.name === '物料预订购') {
         materialOrder.allLog({
           limit: limit,
           page: page,
@@ -2653,6 +2653,7 @@ export default {
           if (res.data.status !== false) {
             data.push(...res.data.data)
             total = res.data.meta.total
+            debugger
             if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
               downloadExcel(data, [
                 { title: '订购日期', key: 'order_time' },

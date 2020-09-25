@@ -1943,7 +1943,8 @@
         </div>
       </template>
       <template v-if="cName==='订单预警'">
-        <div class="main">
+        <div class="main"
+          style="min-width:600px">
           <div class="title">
             <div class="text">添加订单预警设置</div>
             <i class="el-icon-close"
@@ -1960,56 +1961,141 @@
             <div class="row">
               <div class="label"
                 style='width:11em;'>订单下单-物料计划：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="orderWarningEditInfo.materialPlan"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="orderWarningEditInfo.materialPlan_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>物料计划-物料入库：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="orderWarningEditInfo.materialStock"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="orderWarningEditInfo.materialStock_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>生产织造-半成品加工：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="orderWarningEditInfo.process"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="orderWarningEditInfo.process_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>半成品加工-成品入库：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="orderWarningEditInfo.productStock"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="orderWarningEditInfo.productStock_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>成品检验-成品装箱：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="orderWarningEditInfo.pack"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="orderWarningEditInfo.pack_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
           </div>
@@ -2022,7 +2108,8 @@
         </div>
       </template>
       <template v-if="cName==='样单预警'">
-        <div class="main">
+        <div class="main"
+          style="min-width:600px">
           <div class="title">
             <div class="text">添加样单预警设置</div>
             <i class="el-icon-close"
@@ -2039,45 +2126,113 @@
             <div class="row">
               <div class="label"
                 style='width:11em;'>订单下单-物料计划：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="sampleWarningEditInfo.materialPlan"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="sampleWarningEditInfo.materialPlan_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>物料计划-物料入库：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="sampleWarningEditInfo.materialStock"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="sampleWarningEditInfo.materialStock_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>生产织造-半成品加工：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="sampleWarningEditInfo.process"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="sampleWarningEditInfo.process_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
             <div class="row">
               <div class="label"
                 style='width:11em;'>半成品加工-成品入库：</div>
-              <div class="info">
+              <div class="info"
+                style="display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;">
                 <zh-input type='number'
+                  style="width:200px"
                   v-model="sampleWarningEditInfo.productStock"
                   placeholder='时间比例'>
                   <template slot="append">%</template>
                 </zh-input>
+                <el-select style="margin-left:8px"
+                  v-model="sampleWarningEditInfo.productStock_user"
+                  filterable
+                  clearable
+                  multiple
+                  collapse-tags
+                  placeholder="请选择负责人">
+                  <el-option v-for="item in userList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
             </div>
           </div>
@@ -2579,15 +2734,21 @@ export default {
       editYarnInfo: [{ name: '' }],
       // 预警设置
       orderWarnList: [],
+      userList: [],
       orderWarnPages: 1,
       orderWarningEditInfo: {
         id: '',
         name: '',
         materialPlan: '',
+        materialPlan_user: '',
         materialStock: '',
+        materialStock_user: '',
         process: '',
+        process_user: '',
         productStock: '',
-        pack: ''
+        productStock_user: '',
+        pack: '',
+        pack_user: ''
       },
       sampleWarnList: [],
       sampleWarnPages: 1,
@@ -2595,9 +2756,13 @@ export default {
         id: '',
         name: '',
         materialPlan: '',
+        materialPlan_user: '',
         materialStock: '',
+        materialStock_user: '',
         process: '',
-        productStock: ''
+        process_user: '',
+        productStock: '',
+        productStock_user: ''
       },
       sampleOrderType: '',
       sampleOrderTypeList: [],
@@ -2662,6 +2827,8 @@ export default {
       } else if (val === '报价预加载') {
         this.getPriceLoading()
       } else if (val === '订单预警') {
+        this.getOrderSampleWarn()
+      } else if (val === '样单预警') {
         this.getOrderSampleWarn()
       }
     },
@@ -4522,6 +4689,12 @@ export default {
       data.splice(index, 1)
     },
     getOrderSampleWarn () { // 订单样单预警都是这个函数
+      if (this.userList.length === 0) { // 预警通知人员数据
+        auth.list().then(res => {
+          if (res.data.status === false) return
+          this.userList = res.data.data
+        })
+      }
       warnSetting.list().then(res => {
         if (res.data.status !== false) {
           this.orderWarnList = this.$newSplice(res.data.data.filter(item => item.order_type === 1), 5)
@@ -4530,13 +4703,23 @@ export default {
       })
     },
     changeOrderWarn (item) {
+      const materialPlan = JSON.parse(item.material_plan)
+      const materialStock = JSON.parse(item.material_push)
+      const process = JSON.parse(item.semi_product_push)
+      const productStock = JSON.parse(item.product_push)
+      const pack = JSON.parse(item.product_pack)
       this.orderWarningEditInfo = {
         id: item.id,
-        materialPlan: item.material_plan,
-        materialStock: item.material_push,
-        process: item.semi_product_push,
-        productStock: item.product_push,
-        pack: item.product_pack,
+        materialPlan: materialPlan.ratio || materialPlan,
+        materialPlan_user: materialPlan.users || '',
+        materialStock: materialStock.ratio || materialStock,
+        materialStock_user: materialStock.users || '',
+        process: process.ratio || process,
+        process_user: process.users || '',
+        productStock: productStock.ratio || productStock,
+        productStock_user: productStock.users || '',
+        pack: pack.ratio || pack,
+        pack_user: pack.users || '',
         name: item.title
       }
       this.showPopup = true
@@ -4553,11 +4736,26 @@ export default {
       warnSetting.create({
         id: this.orderWarningEditInfo.id,
         order_type: 1,
-        material_plan: this.orderWarningEditInfo.materialPlan,
-        material_push: this.orderWarningEditInfo.materialStock,
-        semi_product_push: this.orderWarningEditInfo.process,
-        product_push: this.orderWarningEditInfo.productStock,
-        product_pack: this.orderWarningEditInfo.pack,
+        material_plan: JSON.stringify({
+          ratio: this.orderWarningEditInfo.materialPlan,
+          users: this.orderWarningEditInfo.materialPlan_user
+        }),
+        material_push: JSON.stringify({
+          ratio: this.orderWarningEditInfo.materialStock,
+          users: this.orderWarningEditInfo.materialStock_user
+        }),
+        semi_product_push: JSON.stringify({
+          ratio: this.orderWarningEditInfo.process,
+          users: this.orderWarningEditInfo.process_user
+        }),
+        product_push: JSON.stringify({
+          ratio: this.orderWarningEditInfo.productStock,
+          users: this.orderWarningEditInfo.productStock_user
+        }),
+        product_pack: JSON.stringify({
+          ratio: this.orderWarningEditInfo.pack,
+          users: this.orderWarningEditInfo.pack_user
+        }),
         title: this.orderWarningEditInfo.name
       }).then(res => {
         if (res.data.status !== false) {
@@ -4575,12 +4773,20 @@ export default {
       })
     },
     changeSampleWarn (item) {
+      const materialPlan = JSON.parse(item.material_plan)
+      const materialStock = JSON.parse(item.material_push)
+      const process = JSON.parse(item.semi_product_push)
+      const productStock = JSON.parse(item.product_push)
       this.sampleWarningEditInfo = {
         id: item.id,
-        materialPlan: item.material_plan,
-        materialStock: item.material_push,
-        process: item.semi_product_push,
-        productStock: item.product_push,
+        materialPlan: materialPlan.ratio || materialPlan,
+        materialPlan_user: materialPlan.users || '',
+        materialStock: materialStock.ratio || materialStock,
+        materialStock_user: materialStock.users || '',
+        process: process.ratio || process,
+        process_user: process.users || '',
+        productStock: productStock.ratio || productStock,
+        productStock_user: productStock.users || '',
         name: item.title
       }
       this.showPopup = true
@@ -4597,10 +4803,22 @@ export default {
       warnSetting.create({
         id: this.sampleWarningEditInfo.id,
         order_type: 2,
-        material_plan: this.sampleWarningEditInfo.materialPlan,
-        material_push: this.sampleWarningEditInfo.materialStock,
-        semi_product_push: this.sampleWarningEditInfo.process,
-        product_push: this.sampleWarningEditInfo.productStock,
+        material_plan: JSON.stringify({
+          ratio: this.sampleWarningEditInfo.materialPlan,
+          users: this.sampleWarningEditInfo.materialPlan_user
+        }),
+        material_push: JSON.stringify({
+          ratio: this.sampleWarningEditInfo.materialStock,
+          users: this.sampleWarningEditInfo.materialStock_user
+        }),
+        semi_product_push: JSON.stringify({
+          ratio: this.sampleWarningEditInfo.process,
+          users: this.sampleWarningEditInfo.process_user
+        }),
+        product_push: JSON.stringify({
+          ratio: this.sampleWarningEditInfo.productStock,
+          users: this.sampleWarningEditInfo.productStock_user
+        }),
         title: this.sampleWarningEditInfo.name
       }).then(res => {
         if (res.data.status !== false) {

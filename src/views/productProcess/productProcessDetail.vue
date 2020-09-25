@@ -137,7 +137,7 @@
                         :style="{'color':itemChild.rejectNum>0?'#F5222D':'#01B48C'}">{{itemChild.rejectNum}}</div>
                       <div class="tcolumn">
                         <span class="blue"
-                          @click="normalProcess(item,itemChild)">加工</span>
+                          @click="normalProcess(item,itemChild)">加工检验</span>
                       </div>
                     </div>
                   </div>
@@ -148,7 +148,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      id="processEditCtn">
       <div class="titleCtn">
         <span class="title">{{processType}}加工</span>
       </div>
@@ -392,6 +393,7 @@
                           <div class="tcolumn">配色尺码</div>
                           <div class="tcolumn">加工检验数量</div>
                           <div class="tcolumn">次品数量</div>
+                          <div class="tcolumn">操作</div>
                         </div>
                       </div>
                     </div>
@@ -422,6 +424,11 @@
                             style="color:#e6a23c">{{itemSon.number}}</div>
                           <div class="tcolumn"
                             :style="{'color':itemSon.count?'#F5222D':'#01b48c'}">{{itemSon.count || 0}}</div>
+                          <div class="tcolumn">
+                            <span class="blue"
+                              @click="normalProcessAgain(item,itemChild,itemSon)">继续加工检验</span>
+
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -949,6 +956,29 @@ export default {
         }]
       })
     },
+    normalProcessAgain (item, itemChild, itemSon) {
+      if (this.inspectionForm.product_id && this.inspectionForm.product_id !== itemChild.product_id) {
+        this.$message.error('只能同时加工一种产品')
+      }
+      let flag = this.clientAuthArr.find(itemF => itemF.children.find(itemFI => +itemFI.value === +item.from_id))
+      this.inspectionForm.product_id = itemChild.product_id
+      this.getInspectionPro(itemChild.product_id)
+      if (this.inspectionForm.detail.length === 1 && !this.inspectionForm.detail[0].colorSize[0].colorSize && itemSon) {
+        this.inspectionForm.detail.splice(0, 1)
+      }
+      this.inspectionForm.detail.push({
+        client_auth: (flag ? [flag.value, String(item.from_id)] : ''),
+        colorSize: [{
+          showCheck: false,
+          colorSize: itemSon.color_id + '/' + itemSon.size_id,
+          number: '',
+          substandard: '',
+          reason: []
+        }]
+      })
+      this.$goElView('processEditCtn')
+      this.$forceUpdate()
+    },
     // 获取加工产品，初始化尺码配色信息
     getInspectionPro (ev) {
       let colorSizeArr = []
@@ -1410,6 +1440,7 @@ export default {
         this.inspection_log = res[3].data.data.filter((item) => item.product_flow === this.processType)
         this.inspection_log.forEach((item) => {
           item.from = item.inspection_user || item.client_name
+          item.from_id = item.inspection_user_id || item.client_id
           item.count = Number(JSON.parse(item.rejects_info).number) || 0
         })
         this.clientAuthArr = [{
@@ -1417,7 +1448,7 @@ export default {
           label: '已检验人员',
           children: this.inspection_log.filter((item) => item.inspection_user_id).map((item) => {
             return {
-              value: item.inspection_user_id,
+              value: String(item.inspection_user_id),
               label: item.inspection_user
             }
           })
@@ -1426,7 +1457,7 @@ export default {
           label: '常用人员',
           children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
             return {
-              value: item.id,
+              value: String(item.id),
               label: item.name
             }
           }) : []
@@ -1437,7 +1468,7 @@ export default {
             return item.station_id && item.station_id.map((item) => item.name).indexOf(this.processType) !== -1
           }).map((item) => {
             return {
-              value: item.id,
+              value: String(item.id),
               label: item.name
             }
           })
@@ -1446,7 +1477,7 @@ export default {
           label: '所有人员',
           children: res[4].data.data.map((item) => {
             return {
-              value: item.id,
+              value: String(item.id),
               label: item.name
             }
           })
@@ -1466,9 +1497,9 @@ export default {
         })
         let inspectionList = []
         this.$clone(this.inspection_log).forEach((item) => {
-          this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from'], ['number', 'count'])
+          this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from', 'from_id'], ['number', 'count'])
         })
-        this.inspectionList = this.$mergeData(inspectionList, { mainRule: 'from', childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
+        this.inspectionList = this.$mergeData(inspectionList, { mainRule: 'from_id', otherRule: [{ name: 'from' }], childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
         this.rate.allNum = this.inspection_detail.reduce((total, current) => {
           return total + current.childrenMergeInfo.reduce((total2, current2) => {
             return total2 + Number(current2.production_number)

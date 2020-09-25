@@ -11,24 +11,26 @@
             :content="`该工序时间进度已过${item.isWarnStatus > 1 ? 100 : 75}%，但是相关的生产进度未达预期要求的${item.isWarnStatus > 1 ? 100 : 75}%，请及时跟进确认。`">
             <div class="processLine"
               slot="reference"
-              :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1,'isWarnStatus75':item.isWarnStatus > 0,'isWarnStatus100':item.isWarnStatus > 1}"
+              :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1,'notStart': (!item.porgress && !handleFlag),'isWarnStatus75':item.isWarnStatus > 0,'isWarnStatus100':item.isWarnStatus > 1}"
               :style="{'width':item.width + 'px'}">{{Math.round(item.percent*needTime) + '天'}}({{$toFixed(item.percent * 100) + '%'}})</div>
-            <!-- <el-button >hover 激活</el-button> -->
           </el-popover>
         </template>
         <div class="processLine"
           v-else
           :key="'processLine' + index"
           slot="reference"
-          :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1}"
+          :class="{'firstLine':index === 0,'lastLine':index === renderData.length - 1,'notStart': !item.porgress && !handleFlag,}"
           :style="{'width':item.width + 'px'}">{{Math.round(item.percent*needTime) + '天'}}({{$toFixed(item.percent * 100) + '%'}})</div>
       </template>
       <div class="timeNode unEdit">
         <span class="time">{{startTime}}</span>
         <!-- <span class="name">下单日期</span> -->
       </div>
-      <!-- @mousemove="dragging($event,item,index)"
-        @mouseout="endDrag(item)" -->
+      <div class="nowDay"
+        v-if="nowDay"
+        :style="`left:${nowDayLeft || 0}`">
+        <div class="info">今日<br />{{$getTime()}}</div>
+      </div>
       <div class="timeNode"
         @mousedown.left="startDrag($event,item,index)"
         @mouseup.left="endDrag(item)"
@@ -63,6 +65,10 @@ export default {
     handleFlag: {
       type: Boolean,
       default: true
+    },
+    nowDay: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -123,7 +129,6 @@ export default {
       this.bodyEvent({ flag: true })
     },
     bodyEvent (item) {
-      // console.log(item)
       let windowEvent = window.document.getElementsByTagName('body')[0]
       let evFun = (event) => {
         if (item.item.draggble) {
@@ -140,7 +145,6 @@ export default {
             this.$forceUpdate()
           }
         }
-        // console.log(event.clientX)
       }
       if (item.flag) {
         windowEvent.removeEventListener('mousemove', evFun)
@@ -151,24 +155,6 @@ export default {
         item.item.draggble = false
         windowEvent.removeEventListener('mousemove', evFun)
       })
-    },
-    dragging (ev, item, index) {
-      // if (!this.handleFlag) {
-      //   return false
-      // }
-      // if (item.draggble) {
-      //   // this.bodyEvent(true)
-      //   let itemNext = this.renderData[index + 1]
-      //   let deltX = event.clientX - this.mousePosition
-      //   item.left = item.left + deltX
-      //   item.width = item.width + deltX
-      //   item.percent = (item.width / this.domWidth).toFixed(2)
-      //   itemNext.width = itemNext.width - deltX
-      //   itemNext.percent = (itemNext.width / this.domWidth).toFixed(2)
-      //   this.mousePosition = event.clientX
-      //   this.$forceUpdate()
-      // }
-      // console.log(ev)
     }
   },
   mounted () {
@@ -181,6 +167,13 @@ export default {
       item.left = left
       return item
     })
+  },
+  computed: {
+    nowDayLeft () {
+      let left = (new Date().getTime() - new Date(this.startTime).getTime()) / 1000 / 60 / 60 / 24 / this.needTime * this.domWidth
+      left = left > 0 ? ((left > (this.domWidth - 20)) ? (this.domWidth - 20) : left) : 0
+      return `${left}px`
+    }
   }
 }
 </script>
