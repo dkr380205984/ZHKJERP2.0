@@ -447,6 +447,36 @@
     </div>
     <div class="module">
       <div class="titleCtn">
+        <span class="title hasBorder">订单确认信息</span>
+      </div>
+      <div class="detailCtn">
+        <el-tabs type="border-card"
+          style="margin:0 32px">
+          <el-tab-pane>
+            <span slot="label"
+              style="color:#F5222D">原料出入库</span>
+            <span>红色代表有问题</span>
+          </el-tab-pane>
+          <el-tab-pane>
+            <span slot="label"
+              style="color:#01B48C">辅料出入库</span>
+            <span>绿色代表通过</span>
+          </el-tab-pane>
+          <el-tab-pane>
+            <span slot="label"
+              style="color:#F5222D">半成品加工</span>
+            <span>红色代表有问题</span>
+          </el-tab-pane>
+          <el-tab-pane>
+            <span slot="label"
+              style="color:#01B48C">成平加工</span>
+            <span>绿色代表通过</span>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
         <span class="btn btnBlue"
           style="float:right;margin-top:12px"
