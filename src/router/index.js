@@ -420,6 +420,14 @@ const routes = [
       path: '/transport/transportDetail/:id',
       name: '运输货款详情',
       component: () => import('../views/transport/transportDetail.vue')
+    }, {
+      path: '/xpManage/xpCreate',
+      name: '芯片添加',
+      component: () => import('../views/xpManage/xpCreate.vue')
+    }, {
+      path: '/xpManage/xpList/:params',
+      name: '芯片列表',
+      component: () => import('../views/xpManage/xinpianList.vue')
     }]
   }, {
     path: '/tagProductPrint/:id/:info',
@@ -611,7 +619,9 @@ router.beforeEach((to, from, next) => {
     '进仓单列表': ['织为云', '进仓单列表'],
     '进仓单详情': ['织为云', '进仓单列表', '进仓单详情'],
     '运输货款列表': ['织为云', '运输货款列表'],
-    '运输货款详情': ['织为云', '运输货款列表', '运输货款详情']
+    '运输货款详情': ['织为云', '运输货款列表', '运输货款详情'],
+    '芯片添加': ['织为云', '芯片添加'],
+    '芯片列表': ['织为云', '芯片列表']
   }
   store.commit('getRoute', routerTable[to.name])
   next()

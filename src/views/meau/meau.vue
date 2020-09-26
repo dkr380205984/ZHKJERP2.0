@@ -131,6 +131,12 @@ export default {
             icon: 'icon-kucunguanli'
           },
           {
+            name: '芯片管理',
+            id: 14,
+            path: '/xpManage/xpList/page=1&&keyword=',
+            icon: 'icon-xitongshezhi'
+          },
+          {
             name: '系统设置',
             id: 14,
             path: '/setting/setting',

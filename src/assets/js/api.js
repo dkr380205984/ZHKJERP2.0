@@ -11,6 +11,11 @@ const deleteFile = (params) => http.post(`${baseUrl}/file/delete`, params, 'appl
 // 潘通色号
 const pantongList = (params) => http.get(`${baseUrl}/pan/color/list`, params)
 
+// 芯片列表
+const xpManage = {
+  create: (params) => http.post(`${baseUrl}/chip/set/code`, params, 'application/json')
+}
+
 // 样品管理
 const sample = {
   create: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
@@ -505,6 +510,7 @@ const transport = {
   delete: (params) => http.post(`${baseUrl}/stock/out/delete`, params, 'application/json')
 }
 export {
+  xpManage,
   transport,
   warehouse,
   reimbursement,
