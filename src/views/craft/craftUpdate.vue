@@ -2461,6 +2461,7 @@ export default {
           }
         }
       }), 'weftBack')
+      console.log(this.$clone(this.colorNumber))
       warpTable.forEach((item) => {
         this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
         this.colorNumber.warp[item.color] += Number(item.number)

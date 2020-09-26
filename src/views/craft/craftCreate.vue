@@ -34,7 +34,7 @@
               :value="item.id">
               <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
               <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
-              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_info.product_category}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
+              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_name}}/{{item.type_name}}/{{item.style_name}})</span>
             </el-option>
           </el-select>
         </div>
@@ -3242,7 +3242,6 @@ export default {
             item.product_info.craft_code = item.craft_code
             return item.product_info
           })
-          console.log(this.gydArr)
           this.loadingS = false
         })
       } else {
