@@ -1677,8 +1677,11 @@ export default {
         return
       }
       this.loading = true
-      this.nativeOrder.quotation_id = this.priceInfo.id
-      order.create(this.nativeOrder).then(res => {
+      // this.nativeOrder.quotation_id = this.priceInfo.id
+      order.bindQuotation({
+        order_id: this.$route.params.id,
+        quotation_id: this.priceInfo.id
+      }).then(res => {
         if (res.data.status) {
           this.$message.success('绑定成功')
           this.showPricePopup = false
@@ -1690,7 +1693,7 @@ export default {
     getPriceList (queryString, cb) {
       price.list({
         code: queryString,
-        limit: 9999
+        limit: 50
       }).then(res => {
         if (res.data.status !== false) {
           this.priceList = res.data.data.map(item => {

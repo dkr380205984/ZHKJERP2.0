@@ -249,6 +249,7 @@
                 ref="warp"></hot-table> -->
               <div ref="warp"></div>
             </div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -1001,6 +1002,7 @@
                 ref="weft"></hot-table> -->
               <div ref="weft"></div>
             </div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -2892,7 +2894,7 @@ export default {
       }
       let formData = {
         id: this.craftId,
-        is_draft: 1,
+        is_draft: ifCaogao === '草稿' ? 2 : 1, //设计单字段，现改为是否为草稿
         title: this.ZDYMC,
         product_type: this.$route.params.type,
         company_id: window.sessionStorage.getItem('company_id'),

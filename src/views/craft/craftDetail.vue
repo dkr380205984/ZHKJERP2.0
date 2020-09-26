@@ -2128,7 +2128,7 @@ export default {
         if (this.$route.params.type === '1') {
           this.data = res.data.data
           if (this.data.is_draft === 2) {
-            this.$router.push('/craft/craftUpdate/' + this.$route.params.id + '/' + this.$route.params.type)
+            this.$router.replace('/craft/craftUpdate/' + res.data.data.id + '/' + this.$route.params.type)
           }
           this.init(res.data.data, 0)
         } else {

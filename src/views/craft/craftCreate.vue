@@ -284,6 +284,7 @@
                 ref="warp"></hot-table> -->
               <div ref="warp"></div>
             </div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -1046,6 +1047,7 @@
                 ref="weft"></hot-table> -->
               <div ref="weft"></div>
             </div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
           </div>
         </div>
         <div class="rowCtn"
