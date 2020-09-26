@@ -697,7 +697,8 @@
                     <div class="tcolumn">单价(元)</div>
                     <div class="tcolumn">数量</div>
                     <div class="tcolumn">总价(元)</div>
-                    <div class="tcolumn">操作</div>
+                    <div class="tcolumn"
+                      style="flex:1.5">操作</div>
                   </div>
                 </div>
                 <div class="tbody">
@@ -725,11 +726,13 @@
                       style="flex-direction:row;align-items: center;justify-content: flex-start;"><span style="color:#01B48C">{{item.number}}</span><span style="color:#E6A23C">{{item.motorise_number?'+' + parseInt(item.motorise_number):''}}</span></div>
                     <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                     <div class="tcolumn"
-                      style="flex-direction:row;align-items: center;justify-content: flex-start;">
+                      style="flex:1.5;flex-direction:row;align-items: center;justify-content: flex-start;">
                       <span style="color:#F5222D;cursor:pointer"
                         @click="deleteAllocationLog(item.id,index)">删除</span>
                       <span style="color:#1a95ff;cursor:pointer;margin-left:10px"
                         @click="lookDetail(item)">详情</span>
+                      <span style="color:#1a95ff;cursor:pointer;margin-left:10px"
+                        @click="bindXp(item)">绑定芯片</span>
                     </div>
                   </div>
                 </div>
@@ -1698,15 +1701,69 @@
         </div>
       </div>
     </div>
+    <!-- 绑定芯片 -->
+    <div class="popup"
+      v-show="otherData.xpFlag">
+      <div class="main"
+        style="width:830px;">
+        <div class="title">
+          <div class="text">绑定芯片</div>
+          <i class="el-icon-close"
+            @click="cancleBind"></i>
+        </div>
+        <div class="content">
+          <div class="stockTable">
+            <div class="line">
+              <div class="rowCtn">
+                <div class="label">产品编号</div>
+                <div class="info">{{otherData.xpData.product_code}}</div>
+              </div>
+              <div class="rowCtn">
+                <div class="label">尺码配色</div>
+                <div class="info noBorderRight">{{otherData.xpData.size_name}}/{{otherData.xpData.color_name}}</div>
+              </div>
+            </div>
+            <div class="line">
+              <div class="rowCtn">
+                <div class="label noBorderBottom">待绑数量</div>
+                <div class="info noBorderBottom">{{otherData.xpData.number}}个</div>
+              </div>
+              <div class="rowCtn">
+                <div class="label noBorderBottom">已读数量</div>
+                <div class="info noBorderBottom noBorderRight"
+                  :style="{'color':otherData.xpData.number===otherData.dataBuffer.length?'#01B48C':'#F5222D'}">{{otherData.dataBuffer.length}}个{{otherData.dataBuffer.length>otherData.xpData.number?'(芯片数量过多，请手动删除部分芯片)':''}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="stockState">
+            <span class="message"
+              v-for="item in otherData.dataBuffer"
+              :key="item">{{item}}
+              <i class="el-icon-close deleteIcon"
+                @click="deleteXp(item)"></i>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="cancleBind">取消</div>
+          <div class="btn"
+            :class="{'btnBlue':otherData.xpState===1||otherData.xpState===3,'btnOrange':otherData.xpState===2||otherData.xpState===4}"
+            @click="otherData.xpState===1?ReadEPC():otherData.xpState===3?bindOver():$message.error('数量不匹配')">{{otherData.xpState===1?'开始读取':otherData.xpState===2?'正在读取...':otherData.xpState===3?'绑定芯片':'数量超出'}}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { YOWORFIDReader } from '@/assets/js/YOWOCloudRFIDReader.js'
 import { processType } from '@/assets/js/dictionary.js'
 import { order, sampleOrder, client, process, materialStock, yarn, weave, inspection, receive, staff, station } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      rfidreader: null, // 读写器对象
       // 渲染层，用于渲染页面的数据
       renderData: {
         orderInfo: {
@@ -1796,6 +1853,18 @@ export default {
       },
       // 其他数据，一般是控制页面显隐的锁
       otherData: {
+        xpFlag: false,
+        xpState: 1,
+        xpData: {
+          number: '',
+          product_code: '',
+          product_id: '',
+          color_id: '',
+          size_id: '',
+          color_name: '',
+          size_name: ''
+        },
+        dataBuffer: [],
         defectiveType: [{
           label: '织片原因',
           value: '织片原因',
@@ -1944,6 +2013,13 @@ export default {
     }
   },
   watch: {
+    'otherData.dataBuffer': function (newVal) {
+      if (newVal.length === this.otherData.xpData.number) {
+        this.otherData.xpState = 3
+      } else {
+        this.otherData.xpState = 2
+      }
+    },
     // 切换模块的时候检测下日志是否和数据格式相匹配
     'otherData.whichModule': function (newVal) {
       this.checkUrl()
@@ -1986,6 +2062,61 @@ export default {
         item.checked = e
       })
       this.$forceUpdate()
+    },
+    deleteXp (item) {
+      this.otherData.dataBuffer.splice(this.otherData.dataBuffer.indexOf(item), 1)
+    },
+    bindXp (item) {
+      this.otherData.xpData = item
+      this.otherData.xpFlag = true
+      this.connectXp()
+    },
+    ReadEPC () {
+      this.otherData.xpState = 2
+      this.rfidreader.Repeat = 1
+      this.rfidreader.G2_Inventory(0)
+    },
+    connectXp () {
+      try {
+        this.rfidreader = YOWORFIDReader.createNew()
+      } catch (e) {
+        this.$message.error('连接芯片读写器失败，请先下载安装或插入设备！')
+      }
+      if (!this.rfidreader.TryConnect()) {
+        this.$message.error('连接芯片读写器失败，请先下载安装或插入设备！')
+      }
+      this.rfidreader.onResult((resultdata) => {
+        switch (resultdata.FunctionID) {
+          // 读EPC
+          case 23:
+            if (resultdata.Result > 0) {
+              let cardNoArr = resultdata.CardNo.split('\n')
+              cardNoArr.forEach((item) => {
+                if (item && !this.otherData.dataBuffer.includes(item)) {
+                  if (item.substring(0, 6) === '7A7779') {
+                    this.otherData.dataBuffer.push(item)
+                    this.otherData.dataBuffer.sort()
+                  } else {
+                    this.$message.error('检测到当前批次中部分芯片不合格，请自行处理')
+                  }
+                }
+              })
+            } else {
+              console.log('读EPC失败，错误：' + this.GetErrStr(resultdata.Result))
+            }
+            break
+        }
+      })
+    },
+    // 取消绑定
+    cancleBind () {
+      this.otherData.xpState = 1
+      this.otherData.xpFlag = false
+      this.otherData.dataBuffer = []
+      this.rfidreader.Disconnect()
+    },
+    bindOver () {
+
     },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
