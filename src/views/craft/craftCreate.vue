@@ -3521,7 +3521,7 @@ export default {
       }))
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
-          this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+          this.colorWeight.warp[itemChild] = ((this.colorNumber.warp[itemChild] || 0) * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
             return {
               name: item,
               value: this.coefficient[index]
@@ -3531,7 +3531,7 @@ export default {
       })
       this.weftInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
-          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
+          this.colorWeight.weft[itemChild] = ((this.colorNumber.weft[itemChild] || 0) * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
             return {
               name: item,
               value: this.coefficient[index]
