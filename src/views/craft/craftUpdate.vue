@@ -2466,18 +2466,23 @@ export default {
         this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
         this.colorNumber.warp[item.color] += Number(item.number)
       })
-      warpTableBack.forEach((item) => {
-        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
-        this.colorNumber.warp[item.color] += Number(item.number)
-      })
+      if (this.ifDouble.warp) {
+        warpTableBack.forEach((item) => {
+          this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+          this.colorNumber.warp[item.color] += Number(item.number)
+        })
+      }
       weftTable.forEach((item) => {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
-      weftBackTable.forEach((item) => {
-        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
-        this.colorNumber.weft[item.color] += Number(item.number)
-      })
+      if (this.ifDouble.weft) {
+        weftBackTable.forEach((item) => {
+          this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+          this.colorNumber.weft[item.color] += Number(item.number)
+        })
+      }
+      console.log(this.colorNumber)
       this.warpInfo.material_data = [{
         material_name: this.yarn.yarnWarp,
         type_material: 1,
@@ -2518,7 +2523,7 @@ export default {
       }))
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
-          this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+          this.colorWeight.warp[itemChild] = ((this.colorNumber.warp[itemChild] || 0) * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
             return {
               name: item,
               value: this.coefficient[index]
@@ -2528,7 +2533,7 @@ export default {
       })
       this.weftInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
-          this.colorWeight.weft[itemChild] = (this.colorNumber.weft[itemChild] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
+          this.colorWeight.weft[itemChild] = ((this.colorNumber.weft[itemChild] || 0) * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
             return {
               name: item,
               value: this.coefficient[index]
