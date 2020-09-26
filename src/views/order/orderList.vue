@@ -303,17 +303,17 @@
                 <span class="name">出</span>
               </div>
               <div class="stateCtn"
-                :class="{'green':fuckState(itemOrder,'织片')}">
+                :class="fuckState(itemOrder,'织片')">
                 <div class="state"></div>
                 <span class="name">织</span>
               </div>
               <div class="stateCtn"
-                :class="{'green':fuckState(itemOrder,'套口')}">
+                :class="fuckState(itemOrder,'套口')">
                 <div class="state"></div>
                 <span class="name">套</span>
               </div>
               <div class="stateCtn"
-                :class="{'green':fuckState(itemOrder,'其他')}">
+                :class="fuckState(itemOrder,'其他')">
                 <div class="state"></div>
                 <span class="name">其</span>
               </div>
@@ -562,22 +562,27 @@ export default {
   methods: {
     fuckState (itemOrder, type) {
       if (type === '织片' || type === '套口') {
-        return (itemOrder.product_weave_progress && itemOrder.product_weave_progress[type]) || (itemOrder.product_semi_inspection_progress && itemOrder.product_semi_inspection_progress[type]) || (itemOrder.product_push_progress && itemOrder.product_push_progress[type])
+        if ((itemOrder.product_weave_progress && itemOrder.product_weave_progress[type] && itemOrder.product_weave_progress[type] >= itemOrder.number) || (itemOrder.product_semi_inspection_progress && itemOrder.product_semi_inspection_progress[type] && itemOrder.product_semi_inspection_progress[type] >= itemOrder.number) || (itemOrder.product_push_progress && itemOrder.product_push_progress[type] && itemOrder.product_push_progress[type] >= itemOrder.number)) {
+          return 'green'
+        } else if ((itemOrder.product_weave_progress && itemOrder.product_weave_progress[type]) || (itemOrder.product_semi_inspection_progress && itemOrder.product_semi_inspection_progress[type]) || (itemOrder.product_push_progress && itemOrder.product_push_progress[type])) {
+          return 'orange'
+        }
+        return false
       } else {
         let flag = false
         for (let attr in itemOrder.product_weave_progress) {
           if (attr !== '织片' || attr !== '套口') {
-            flag = true
+            flag = 'green'
           }
         }
         for (let attr in itemOrder.product_semi_inspection_progress) {
           if (attr !== '织片' || attr !== '套口') {
-            flag = true
+            flag = 'green'
           }
         }
         for (let attr in itemOrder.product_push_progress) {
           if (attr !== '织片' || attr !== '套口') {
-            flag = true
+            flag = 'green'
           }
         }
         return flag

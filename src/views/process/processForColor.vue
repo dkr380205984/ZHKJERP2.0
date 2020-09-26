@@ -1222,6 +1222,8 @@
                             <div class="selfSelect"
                               v-if="itemChild.showCheck">
                               <div class="checkBoxCtn">
+                                <el-checkbox v-model="formData.inspectionForm.checkedAllOption"
+                                  @change="checkedAllOption($event,formData.inspectionForm.colorSizeArr)">全选</el-checkbox>
                                 <el-checkbox v-for="(itemCheck,indexCheck) in formData.inspectionForm.colorSizeArr"
                                   :key="indexCheck"
                                   v-model="itemCheck.checked"
@@ -1556,7 +1558,18 @@
                   <div class="rowCtn">
                     <div class="colCtn flex3"
                       style="max-width:319.3px">
-                      <div class="content"
+                      <div class="label">
+                        <span class="text">入库日期</span>
+                      </div>
+                      <div class="content">
+                        <el-date-picker v-model="item.complete_time"
+                          value-format="yyyy-MM-dd"
+                          style="width:100%"
+                          type="date"
+                          placeholder="选择入库日期">
+                        </el-date-picker>
+                      </div>
+                      <!-- <div class="content"
                         style="display:flex">
                         <div class="colCtn"
                           style="margin-right:16px">
@@ -1590,7 +1603,7 @@
                               v-if="item.complete_time === $getTime()">您的交货日期为今日，请再次确认!</div>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
                     </div>
                     <div class="colCtn">
                       <div class="label">
@@ -1766,6 +1779,7 @@ export default {
           product_id: '',
           colorSizeArr: [],
           clientAuth: [],
+          checkedAllOption: false,
           detail: [{
             client_auth: '',
             colorSize: [{
@@ -1991,6 +2005,12 @@ export default {
     }
   },
   methods: {
+    checkedAllOption (e, colroSizeArr) {
+      colroSizeArr.forEach(item => {
+        item.checked = e
+      })
+      this.$forceUpdate()
+    },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
     },
@@ -2825,8 +2845,8 @@ export default {
     singleStockIn (id, size, color, number) {
       this.formData.stockInForm.push({
         product_id: id,
-        order_time: this.$getTime(),
-        complete_time: '',
+        // order_time: this.$getTime(),
+        complete_time: this.$getTime(),
         desc: '',
         colorSizeArr: [],
         detail: [{
@@ -2859,8 +2879,8 @@ export default {
       this.formData.stockInForm = checkStockInList.map((item) => {
         return {
           product_id: item.product_id,
-          order_time: this.$getTime(),
-          complete_time: '',
+          // order_time: this.$getTime(),
+          complete_time: this.$getTime(),
           desc: '',
           colorSizeArr: this.renderData.allocationDetailCommon.find((itemFind) => itemFind.product_id === item.product_id).childrenMergeInfo,
           detail: item.checkList.map((itemChild) => {
