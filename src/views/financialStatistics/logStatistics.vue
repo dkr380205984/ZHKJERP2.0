@@ -2641,7 +2641,7 @@
               v-if="type==='预订购入库'">
               <div class="oneBox">
                 <div class="label">总数量:</div>
-                <div class="content">{{$formatNum(statistics.material_order.total_number)}}件</div>
+                <div class="content">{{$formatNum(statistics.material_order.total_number)}}kg</div>
               </div>
               <div class="oneBox">
                 <div class="label">总价:</div>

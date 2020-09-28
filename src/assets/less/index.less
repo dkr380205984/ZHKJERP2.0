@@ -397,4 +397,22 @@
       }
     }
   }
+  .canHandle{
+    cursor: pointer;
+  }
+  .notHandle{
+    cursor: not-allowed;
+    color: @font25;
+  }
+  .info{
+    position: relative;
+    .prompt{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      color: @orange;
+      transform: translateY(100%);
+      font-size: @fontSmall;
+    }
+  }
 }

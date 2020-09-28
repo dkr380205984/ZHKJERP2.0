@@ -114,6 +114,13 @@
             <span class="em">元</span>
           </div>
         </div>
+        <div class="box">
+          <div class="boxTop green">已收款</div>
+          <div class="boxBottom">
+            <span class="num">{{clientInfo.financial_data.transfer_count}}</span>
+            <span class="em">元</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="listCutCtn">
@@ -193,20 +200,10 @@
         v-if="clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 8))">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-wuliaodinggou"></use>
+          <use xlink:href="#icon-baozhuangdinggou2"></use>
         </svg>
         <span class="name">包装订购</span>
       </div>
-      <!-- <div class="cut_item"
-        :class="{'active':type === '装箱出库'}"
-        @click="type = '装箱出库'"
-        v-if="clientInfo.type.some(itemS => (itemS >= 35 && itemS <= 36))">
-        <svg class="iconFont"
-          aria-hidden="true">
-          <use xlink:href="#icon-zhuangxiangchuku"></use>
-        </svg>
-        <span class="name">装箱出库</span>
-      </div> -->
       <div class="cut_item"
         :class="{'active':type === '销售出库'}"
         @click="type = '销售出库'"
@@ -223,7 +220,7 @@
         <span class="title">相关财务明细</span>
         <span class="btnCtn">
           <span class="btn noBorder"
-            @click="oprFlag=true">查看所有结算扣款记录</span>
+            @click="oprFlag=true">查看所有结算、扣款、收款记录</span>
         </span>
       </div>
       <div class="listCtn hasBorderTop"
@@ -293,23 +290,26 @@
               <div class="col">
                 <span class="text">负责小组</span>
               </div>
-              <div class="col">
+              <div class="col flex07">
                 <span class="text">下单数量</span>
               </div>
-              <div class="col">
+              <div class="col flex07">
                 <span class="text">下单总额</span>
               </div>
-              <div class="col">
+              <div class="col flex07">
                 <span class="text">出库数量</span>
               </div>
-              <div class="col">
+              <div class="col flex07">
                 <span class="text">实际总值</span>
               </div>
-              <div class="col middle">
+              <div class="col middle flex07">
                 <span class="text">结算记录</span>
               </div>
-              <div class="col middle">
+              <div class="col middle flex07">
                 <span class="text">扣款记录</span>
+              </div>
+              <div class="col middle flex07">
+                <span class="text">收款记录</span>
               </div>
             </div>
             <div class="row"
@@ -325,12 +325,19 @@
               <div class="col">{{item.order_time}}</div>
               <div class="col">{{item.client_name}}</div>
               <div class="col">{{item.group_name}}</div>
-              <div class="col">{{item.order_number}}</div>
-              <div class="col">{{item.total_price}}</div>
-              <div class="col">{{item.pack_number}}</div>
-              <div class="col">{{item.reality_number}}</div>
-              <div class="col middle">{{0}}</div>
-              <div class="col middle">{{0}}</div>
+              <div class="col flex07">{{item.order_number}}</div>
+              <div class="col flex07">{{item.total_price}}</div>
+              <div class="col flex07">{{item.pack_number}}</div>
+              <div class="col flex07">{{item.reality_number}}</div>
+              <div class="col middle blue flex07"
+                style="cursor:pointer"
+                @click="showLog('结算',item)">{{item.settle_number || 0}}</div>
+              <div class="col middle orange flex07"
+                style="cursor:pointer"
+                @click="showLog('扣款',item)">{{item.deduct_number || 0}}</div>
+              <div class="col middle green flex07"
+                style="cursor:pointer"
+                @click="showLog('收款',item)">{{item.transfer_number || 0}}</div>
             </div>
           </div>
           <div class="list"
@@ -2044,6 +2051,73 @@
         </div>
       </div>
     </div>
+    <!-- 单位收款 -->
+    <div class="popup"
+      v-if="collectionFlag">
+      <div class="main">
+        <div class="title">
+          <div class="text">单位收款</div>
+          <i class="el-icon-close"
+            @click="collectionFlag=false"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="label">订单编号：</div>
+            <div class="info">
+              <el-tag v-for="(item,index) in checkOrder"
+                style="margin-right:8px"
+                :key="index">
+                {{item.order_code}}
+              </el-tag>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">收款日期：</div>
+            <div class="info">
+              <el-date-picker style="width:100%"
+                v-model="collection.date"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">收款金额：</div>
+            <div class="info">
+              <zh-input placeholder="请输入收款金额"
+                type="number"
+                v-model="collection.price">
+                <template slot="append">元</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">收款方式：</div>
+            <div class="info">
+              <el-autocomplete v-model="collection.type"
+                clearable
+                :fetch-suggestions="querySearchCollection"
+                placeholder="请选择收款方式"></el-autocomplete>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">备注信息：</div>
+            <div class="info">
+              <el-input type="textarea"
+                placeholder="请输入备注信息"
+                v-model="collection.desc"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="collectionFlag=false">取消</div>
+          <div class="btn btnBlue"
+            @click="collectionFn">确定</div>
+        </div>
+      </div>
+    </div>
     <!-- 操作记录 -->
     <div class="popup"
       v-show="oprFlag">
@@ -2056,14 +2130,19 @@
         </div>
         <div class="content"
           style="max-height:600px">
-          <div class="row">
+          <div class="row"
+            style="height:32px">
             <span class="label">筛选条件：</span>
             <span class="info">
+              <el-input v-model="log_order_code"
+                placeholder="输入订单号查询"
+                clearable
+                style="width:150px"></el-input>
               <el-select v-model="log_type"
                 clearable
-                style="width:200px"
+                style="margin-left:16px;width:150px;"
                 placeholder="请选择类型">
-                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'结算'}]"
+                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'结算'},{id:3,name:'收款'}]"
                   :key="item.id"
                   :label="item.name"
                   :value="item.name">
@@ -2071,7 +2150,7 @@
               </el-select>
               <el-date-picker v-model="log_date"
                 clearable
-                style="margin-left:16px;width:300px"
+                style="margin-left:16px;width:250px;height:32px"
                 value-format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="至"
@@ -2080,87 +2159,98 @@
               </el-date-picker>
             </span>
           </div>
-          <el-timeline>
-            <el-timeline-item v-for="(item, index) in oprListCom.list"
-              :key="index">
-              <el-collapse>
-                <el-collapse-item>
-                  <template slot="title">
-                    <span class="title_box"
-                      style="width:100%;display:flex;justify-content: space-between;align-items:center">
-                      <div>
-                        <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?$getTime(item.complete_time):'有问题'}}</span>
-                        <span :style="{'color':item.methods==='结算'?'#00A539':'#F2637B'}"
-                          style="margin-left:20px">{{item.methods}}</span>
-                        <span style="margin-left:20px">金额：
-                          <span style="font-size:14px">{{$formatNum(item.deduct_price  || item.settle_price || 0)}}元</span>
+          <div style="width:100%;max-height:400px;overflow-y:auto">
+            <el-timeline>
+              <el-timeline-item v-for="(item, index) in oprListCom.list"
+                :key="index">
+                <el-collapse>
+                  <el-collapse-item>
+                    <template slot="title">
+                      <span class="title_box"
+                        style="width:100%;display:flex;justify-content: space-between;align-items:center">
+                        <div>
+                          <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?$getTime(item.complete_time):'有问题'}}</span>
+                          <span :style="`color:${(item.methods==='结算'&&'#1A95FF') || (item.methods==='扣款'&&'#F2637B') || (item.methods==='收款'&&'#00A539')}`"
+                            style="margin-left:20px">{{item.methods}}</span>
+                          <span style="margin-left:20px">金额：
+                            <span style="font-size:14px">{{$formatNum(item.deduct_price  || item.settle_price || item.price || 0)}}元</span>
+                          </span>
+                        </div>
+                        <div class="blue"
+                          style="margin-right:20px"
+                          @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                      </span>
+                    </template>
+                    <template v-if="item.methods==='结算'">
+                      <div class="collapseBox">
+                        <span class="label">是否开票：</span>
+                        <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
+                      </div>
+                      <div class="collapseBox"
+                        v-for="(itemChild,indexChild) in item.invoice_info"
+                        :key="indexChild"
+                        v-show="item.is_invoice===1">
+                        <span class="label">发票信息：</span>
+                        <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
+                      </div>
+                      <div class="collapseBox">
+                        <span class="label">包含订单：</span>
+                        <span class="info">
+                          <el-tag v-for="order in item.order_code"
+                            :key="order.order_id">{{order.order_code}}</el-tag>
                         </span>
                       </div>
-                      <div class="blue"
-                        style="margin-right:20px"
-                        @click.stop="goSettleDeductDetail(item)">查看详情</div>
-                    </span>
-                  </template>
-                  <template v-if="item.methods==='结算'">
-                    <!-- <div class="collapseBox">
-                      <span class="label">操作：</span>
-                      <span class="info">
-                        <div class="blue"
-                          @click="goSettleDeductDetail(item)">查看详情</div>
-                      </span>
-                    </div> -->
-                    <div class="collapseBox">
-                      <span class="label">是否开票：</span>
-                      <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
-                    </div>
-                    <div class="collapseBox"
-                      v-for="(itemChild,indexChild) in item.invoice_info"
-                      :key="indexChild"
-                      v-show="item.is_invoice===1">
-                      <span class="label">发票信息：</span>
-                      <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
-                    </div>
-                    <div class="collapseBox">
-                      <span class="label">包含订单：</span>
-                      <span class="info">
-                        <el-tag v-for="order in item.order_code"
-                          :key="order.order_code">{{order.order_code}}</el-tag>
-                      </span>
-                    </div>
-                    <div class="collapseBox">
-                      <span class="label">备注信息：</span>
-                      <span class="info">{{item.desc}}</span>
-                    </div>
-                  </template>
-                  <template v-if="item.methods==='扣款'">
-                    <!-- <div class="collapseBox">
-                      <span class="label">操作：</span>
-                      <span class="info">
-                        <div class="blue"
-                          @click="goSettleDeductDetail(item)">查看详情</div>
-                      </span>
-                    </div> -->
-                    <div class="collapseBox">
-                      <span class="label">包含订单：</span>
-                      <span class="info">
-                        <el-tag v-for="order in item.order_code"
-                          :key="order.order_code">{{order.order_code}}</el-tag>
-                      </span>
-                    </div>
-                    <div class="collapseBox">
-                      <span class="label">扣款原因：</span>
-                      <span class="info">{{item.desc}}</span>
-                    </div>
-                  </template>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
+                      <div class="collapseBox">
+                        <span class="label">备注信息：</span>
+                        <span class="info">{{item.desc}}</span>
+                      </div>
+                    </template>
+                    <template v-if="item.methods==='扣款'">
+                      <div class="collapseBox">
+                        <span class="label">包含订单：</span>
+                        <span class="info">
+                          <el-tag v-for="order in item.order_code"
+                            :key="order.order_id">{{order.order_code}}</el-tag>
+                        </span>
+                      </div>
+                      <div class="collapseBox">
+                        <span class="label">扣款原因：</span>
+                        <span class="info">{{item.desc}}</span>
+                      </div>
+                    </template>
+                    <template v-if="item.methods==='收款'">
+                      <div class="collapseBox">
+                        <span class="label">包含订单：</span>
+                        <span class="info">
+                          <el-tag v-for="order in item.order_code"
+                            :key="order.order_id">{{order.order_code}}</el-tag>
+                        </span>
+                      </div>
+                      <div class="collapseBox">
+                        <span class="label">收款金额：</span>
+                        <span class="info">{{item.price || 0}}元</span>
+                      </div>
+                      <div class="collapseBox">
+                        <span class="label">收款方式：</span>
+                        <span class="info">{{item.type || ''}}</span>
+                      </div>
+                      <div class="collapseBox">
+                        <span class="label">收款备注：</span>
+                        <span class="info">{{item.desc}}</span>
+                      </div>
+                    </template>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
           <div class="row">
             <span class="label">合计结算：</span>
-            <span class="info green">{{$toFixed(oprListCom.settle)}}元</span>
+            <span class="info blue">{{$toFixed(oprListCom.settle)}}元</span>
             <span class="label">合计扣款：</span>
             <span class="info red">{{$toFixed(oprListCom.chargebacks)}}元</span>
+            <span class="label">合计收款：</span>
+            <span class="info green">{{$toFixed(oprListCom.collection)}}元</span>
           </div>
         </div>
         <div class="opr">
@@ -2168,49 +2258,6 @@
             @click="oprFlag=false">关闭</div>
           <div class="btn btnBlue"
             @click="oprFlag=false">确定</div>
-        </div>
-      </div>
-    </div>
-    <!-- 订单结算/扣款记录 -->
-    <div class="popup"
-      v-show="orderOprFlag">
-      <div class="main">
-        <div class="title">
-          <div class="text">操作记录</div>
-          <i class="el-icon-close"
-            @click="orderOprFlag=false"></i>
-        </div>
-        <div class="content">
-          <div class="list">
-            <div class="line lineHead">
-              <div class="once"
-                style="flex:1.5">结算单编号</div>
-              <div class="once">金额</div>
-              <div class="once"
-                style="flex:1.5">日期</div>
-              <div class="once">审核状态</div>
-              <div class="once">操作</div>
-            </div>
-            <div class="line"
-              v-for="(item,index) in orderOprList"
-              :key="index">
-              <div class="once"
-                style="flex:1.5">{{item.settle_code || item.deduct_code}}</div>
-              <div class="once">{{item.settle_price || item.deduct_price}}元</div>
-              <div class="once"
-                style="flex:1.5">{{$getTime(item.complete_time)}}</div>
-              <div class="once">{{item.status|filterStatus}}</div>
-              <div class="once blue"
-                style="cursor:pointer"
-                @click="$router.push('/financialStatistics/oprDetail/' +  $route.params.id+ '/' + type +'/' + oprOrderId + '/' + item.id + '/' + orderOprType)">查看</div>
-            </div>
-          </div>
-        </div>
-        <div class="opr">
-          <div class="btn btnGray"
-            @click="orderOprFlag=false">关闭</div>
-          <div class="btn btnBlue"
-            @click="orderOprFlag=false">确定</div>
         </div>
       </div>
     </div>
@@ -2223,6 +2270,10 @@
           <div class="btn btnWhiteRed"
             :class="{'btnWhiteGray':order_type === 0}"
             @click="goChargebacks">扣款</div>
+          <div class="btn btnWhiteGreen"
+            v-if="type === '所有订单'"
+            :class="{'btnWhiteGray':order_type === 0}"
+            @click="goCollection">收款</div>
         </div>
         <div class="btnCtn">
           <div class="btn btnGray"
@@ -2290,7 +2341,7 @@
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
-import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, statistics, inspection } from '@/assets/js/api.js'
+import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, collection, statistics, inspection } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2387,10 +2438,19 @@ export default {
       },
       oprFlag: false,
       log_type: '',
+      log_order_code: '',
       log_date: '',
       oprList: [],
       orderOprFlag: false,
       orderOprList: [],
+      // 收款数据
+      collectionFlag: false,
+      collection: {
+        data: this.$getTime(),
+        price: '',
+        desc: '',
+        type: ''
+      },
       // 2020-09-01新增修改数据
       group_id: '',
       groupList: [],
@@ -2401,6 +2461,11 @@ export default {
     }
   },
   methods: {
+    showLog (type, item) {
+      this.log_type = type
+      this.log_order_code = item.order_code
+      this.oprFlag = true
+    },
     downloadAllInfo () {
       if (!this.year) {
         this.$message.warning('请选择导出数据年份')
@@ -2501,6 +2566,11 @@ export default {
       }, {
         checked: true,
         name: '结算',
+        isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
+        propgress: 0 // 进度
+      }, {
+        checked: true,
+        name: '收款',
         isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
         propgress: 0 // 进度
       })
@@ -3060,6 +3130,47 @@ export default {
           console.log(error)
           item.isGetting = 3
         })
+      } else if (item.name === '收款') {
+        collection.log({
+          limit: limit,
+          page: page,
+          client_id: this.$route.params.id,
+          start_time: `${this.year}-01-01`,
+          end_time: `${this.year}-12-31`
+        }).then((res) => {
+          if (res.data.data && res.data.data.length === 0) {
+            item.isGetting = 5
+            return
+          }
+          if (res.data.status !== false) {
+            data.push(...res.data.data.map(item => {
+              item.order_code_str = item.order_code.map(itemM => itemM.order_code).join(';')
+              return item
+            }))
+            total = res.data.meta.total
+            if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
+              downloadExcel(data, [
+                { title: '收款日期', key: 'complete_time' },
+                // { title: '结算单位', key: 'client_name' },
+                { title: '包含订单', key: 'order_code_str' },
+                { title: '收款金额', key: 'price' },
+                { title: '收款方式', key: 'type' },
+                { title: '备注信息', key: 'desc' },
+                { title: '操作人', key: 'user_name' }
+              ], false, `收款-${this.year}年度-${new Date().getTime()}`)
+              item.isGetting = 4
+            } else {
+              setTimeout(() => {
+                this.getAllLog(item, data, total, page + 1, limit)
+              }, 1000)
+            }
+          } else {
+            item.isGetting = 3
+          }
+        }).catch(error => {
+          console.log(error)
+          item.isGetting = 3
+        })
       }
     },
     goSettleDeductDetail (item) {
@@ -3469,7 +3580,8 @@ export default {
             }],
             desc: ''
           }
-          this.init()
+          this.getList()
+          this.getSettleChargbacksLog()
         }
       })
     },
@@ -3499,19 +3611,67 @@ export default {
             price: '',
             desc: ''
           }
-          this.init()
+          this.getList()
+          this.getSettleChargbacksLog()
         }
       })
+    },
+    // 收款
+    goCollection () {
+      if (this.order_type === 0 && this.type === '所有订单') {
+        this.$message.warning('该功能仅在订单列表，并且筛选订单类型为订单或者样单时可用')
+        return
+      }
+      this.collectionFlag = true
+    },
+    collectionFn () {
+      collection.create({
+        id: null,
+        client_id: this.$route.params.id,
+        complete_time: this.collection.date,
+        order_id: JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
+        price: this.collection.price,
+        desc: this.collection.desc,
+        type: this.collection.type,
+        order_type: this.order_type
+      }).then((res) => {
+        if (res.data.status !== false) {
+          this.$message.success('收款成功')
+          if (this.collection.type) {
+            let list = window.localStorage.getItem('zh_collection_type')
+            list = list ? JSON.parse(list) : []
+            list.push({ value: this.collection.type })
+            list = this.$unique(list, 'value')
+            window.localStorage.setItem('zh_collection_type', JSON.stringify(list))
+          }
+          this.collectionFlag = false
+          this.collection = {
+            date: this.$getTime(),
+            price: '',
+            desc: '',
+            type: ''
+          }
+          this.getList()
+          this.getSettleChargbacksLog()
+        }
+      })
+    },
+    querySearchCollection (queryString, cb) {
+      let list = window.localStorage.getItem('zh_collection_type')
+      list = list ? JSON.parse(list) : []
+      list = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
+      cb(list)
     },
     getSettleChargbacksLog () {
       Promise.all([
         chargebacks.log({
           client_id: this.$route.params.id
-          // order_type: this.order_type
         }),
         settle.log({
           client_id: this.$route.params.id
-          // order_type: this.order_type
+        }),
+        collection.log({
+          client_id: this.$route.params.id
         })
       ]).then(res => {
         this.oprList = res[0].data.data.map((item) => {
@@ -3520,8 +3680,11 @@ export default {
         }).concat(res[1].data.data.map((item) => {
           item.methods = '结算'
           return item
+        }), res[2].data.data.map(item => {
+          item.methods = '收款'
+          return item
         })).sort((a, b) => {
-          return new Date(a.ccomplete_time) - new Date(b.complete_time)
+          return new Date(a.complete_time) - new Date(b.complete_time)
         })
       })
     },
@@ -3533,44 +3696,6 @@ export default {
     },
     deleteInvoice (index) {
       this.settle.invoiceDetail.splice(index, 1)
-    },
-    getLog (num, type, orderId) {
-      this.oprOrderId = orderId
-      this.orderOprType = type
-      if (Number(num) > 0) {
-        this.loading = true
-        if (type === '扣款') {
-          chargebacks.log({
-            client_id: this.$route.params.id,
-            client_type: this.type,
-            order_type: this.order_type,
-            order_id: orderId
-          }).then((res) => {
-            this.orderOprFlag = true
-            this.orderOprList = res.data.data.map((item) => {
-              item.methods = type
-              return item
-            })
-            this.loading = false
-          })
-        } else {
-          settle.log({
-            client_id: this.$route.params.id,
-            client_type: this.type,
-            order_type: this.order_type,
-            order_id: orderId
-          }).then((res) => {
-            this.orderOprFlag = true
-            this.orderOprList = res.data.data.map((item) => {
-              item.methods = type
-              return item
-            })
-            this.loading = false
-          })
-        }
-      } else {
-        this.$message.warning('该订单没有' + type + '记录')
-      }
     },
     cutOrderType (type) {
       this.order_type = type
@@ -3646,19 +3771,26 @@ export default {
       if (this.log_type) {
         list = list.filter(itemF => itemF.methods === this.log_type)
       }
+      if (this.log_order_code) {
+        list = list.filter(itemF => itemF.order_code.find(itemFI => itemFI.order_code === this.log_order_code))
+      }
       if (this.log_date && this.log_date.length === 2) {
         list = list.filter(itemF => (new Date(this.$getTime(itemF.complete_time)).getTime() >= new Date(this.log_date[0]).getTime()) && (new Date(this.log_date[1]).getTime() >= new Date(this.$getTime(itemF.complete_time)).getTime()))
       }
-      let settle = list.map(itemM => (+itemM.settle_price || 0)).reduce((a, b) => {
+      let settle = list.filter(itemF => itemF.methods === '结算').map(itemM => (+itemM.settle_price || 0)).reduce((a, b) => {
         return a + b
       }, 0)
-      let chargebacks = list.map(itemM => (+itemM.deduct_price || 0)).reduce((a, b) => {
+      let chargebacks = list.filter(itemF => itemF.methods === '扣款').map(itemM => (+itemM.deduct_price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0)
+      let collection = list.filter(itemF => itemF.methods === '收款').map(itemM => (+itemM.price || 0)).reduce((a, b) => {
         return a + b
       }, 0)
       return {
         list,
         settle,
-        chargebacks
+        chargebacks,
+        collection
       }
     }
   },

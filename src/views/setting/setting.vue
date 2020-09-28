@@ -384,45 +384,76 @@
           <template v-if="cName==='纱线原料'">
             <div class="flowerCtn">
               <div class="filterCtn"
-                style="justify-content: space-between;">
+                style="justify-content: space-between;margin-bottom:8px">
                 <el-autocomplete v-model="filterYarnKeyword"
                   clearable
                   :trigger-on-focus="false"
                   style="width:200px;height:32px"
                   :fetch-suggestions="querySearchYarn"
                   placeholder="搜索纱线"></el-autocomplete>
-                <div class="addBtn"
-                  @click="updataYarns"
-                  style="width:6em">批量添加纱线</div>
+                <div style="display:flex;align-items:center">
+                  <div class="btn"
+                    :class="!updatedBatchFlag ? 'btnOrange' : 'btnGray'"
+                    @click="openUpdatedBatchModel">{{updatedBatchFlag ? '取消' : '批量修改价格'}}</div>
+                  <div class="btn btnGreen"
+                    v-if="updatedBatchFlag"
+                    @click="updatedBatchSubmit">提交修改</div>
+                  <div class="btn btnBlue"
+                    v-if="!updatedBatchFlag"
+                    @click="updataYarns">批量添加纱线</div>
+                </div>
                 <!-- <div class="addBtn"
                   @click="updataYarn('add')"
                   style="width:6em">添加纱线</div> -->
               </div>
-              <div class="normalTb">
-                <div class="thead">
-                  <div class="trow">
-                    <div class="tcolumn padding40">纱线名称</div>
-                    <div class="tcolumn padding40">最新报价</div>
-                    <div class="tcolumn middle padding40">操作</div>
-                  </div>
-                </div>
-                <div class="tbody">
-                  <div class="trow"
-                    v-for="(item,index) in yarnNameArr"
-                    :key="index">
-                    <div class="tcolumn padding40">{{item.name}}</div>
-                    <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? '元/kg' : ''}}</div>
-                    <div class="tcolumn padding40">
-                      <span class="trow middle handleBtnCtn">
-                        <!-- <span class="blue"
-                          @click="getDetailInfo('yarn',item)">详情</span> -->
-                        <span class="blue"
-                          @click="updataYarn('updata',item)">更新</span>
-                        <span class="red"
-                          @click="deleteYarnName(item.id)">删除</span>
-                      </span>
+              <div class="tableCtnLv2">
+                <div class="tb_header">
+                  <div class="tb_row">纱线名称</div>
+                  <div class="tb_row tb_col"
+                    style="flex:2;">
+                    <div class="tb_col_item">
+                      <div class="tb_row">报价公司</div>
+                      <div class="tb_row right">最新报价</div>
                     </div>
                   </div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in yarnNameArr"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row tb_col"
+                    style="flex:2">
+                    <div class="tb_col_item"
+                      v-for="(itemPrice,indexPrice) in item.price"
+                      :key="indexPrice">
+                      <div class="tb_row">{{itemPrice.client_name}}</div>
+                      <div class="tb_row right">
+                        <template v-if="!updatedBatchFlag">{{`${itemPrice.price ? itemPrice.price + '元/kg' : ''}`}}</template>
+                        <template v-else>
+                          <zh-input type='number'
+                            v-model="itemPrice.price"
+                            placeholder='价格'>
+                            <template slot='append'>元/kg</template>
+                          </zh-input>
+                        </template>
+                      </div>
+                    </div>
+                    <div class="tb_col_item"
+                      v-if="item.price.length === 0">
+                      <span class="tb_row">/</span>
+                      <span class="tb_row right">/</span>
+                    </div>
+                  </div>
+                  <div class="tb_row middle">
+                    <span class="tb_handle_btn blue"
+                      @click="updataYarn('updata',item)">更新</span>
+                    <span class="tb_handle_btn red"
+                      @click="deleteYarnName(item.id)">删除</span>
+                  </div>
+                  <!-- <div class="tb_row">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? '元/kg' : ''}}</div>
+                  <div class="tb_row middle">
+                  </div> -->
                 </div>
               </div>
               <div class="pageCtn">
@@ -430,7 +461,8 @@
                   :page-size="5"
                   layout="prev, pager, next"
                   :total="yarnNameTotal"
-                  :current-page.sync="yarnNamePage">
+                  :current-page.sync="yarnNamePage"
+                  @current-change="updatedBatchFlag = false">
                 </el-pagination>
               </div>
             </div>
@@ -2771,7 +2803,8 @@ export default {
       orderType: '',
       orderTypeList: [],
       orderTypePage: 1,
-      orderTypeTotal: 1
+      orderTypeTotal: 1,
+      updatedBatchFlag: false
     }
   },
   watch: {
@@ -2901,6 +2934,41 @@ export default {
     }
   },
   methods: {
+    // 批量修改
+    updatedBatchSubmit () {
+      if (this.updatedBatchFlag) {
+        const data = this.yarnNameArr.map(itemM => {
+          return {
+            id: itemM.id,
+            name: itemM.name,
+            price_data: itemM.price.map(itemPrice => {
+              return {
+                client_id: itemPrice.client_id,
+                price: itemPrice.price || 0,
+                desc: itemPrice.desc || ''
+              }
+            })
+          }
+        })
+        yarn.create({
+          data: data
+        }).then((res) => {
+          if (res.data.status !== false) {
+            this.$message.success('修改成功')
+            this.getYarnName()
+            this.updatedBatchFlag = false
+          }
+        })
+      } else {
+        this.updatedBatchFlag = true
+      }
+    },
+    openUpdatedBatchModel () {
+      if (this.updatedBatchFlag) {
+        this.getYarnName()
+      }
+      this.updatedBatchFlag = !this.updatedBatchFlag
+    },
     // 保存结算工序
     saveStaffProcess () {
       if (this.staffProcess) {
@@ -4850,14 +4918,30 @@ export default {
     }
   },
   created () {
-    this.pName = '产品设置'
-    this.cName = '产品花型'
+    this.pName = '物料设置'
+    this.cName = '纱线原料'
   }
 }
 </script>
 
 <style lang="less" scoped>
 @import "~@/assets/less/setting/setting.less";
+.tableCtnLv2 {
+  .tb_col {
+    border-left: 1px solid #efefef;
+    border-right: 1px solid #efefef;
+    .tb_col_item {
+      .tb_row {
+        padding: 0 22px;
+        box-sizing: border-box;
+        border-right: 1px solid #efefef;
+        &:last-of-type {
+          border: none;
+        }
+      }
+    }
+  }
+}
 </style>
 <style lang="less">
 .tree_node_Ctn {

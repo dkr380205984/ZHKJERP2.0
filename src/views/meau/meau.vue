@@ -42,7 +42,7 @@ export default {
             name: '工艺单管理',
             id: 3,
             path: '/craft/craftList/page=1&&keyword=&&date=',
-            icon: 'icon-wuliaojihua'
+            icon: 'icon-gongyidan'
           },
           {
             name: '物料计划生产',
@@ -78,7 +78,7 @@ export default {
             name: '芯片读取出入库',
             id: 10,
             path: '/receiveDispatch/batchXpList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
-            icon: 'icon-chanpinjianyan'
+            icon: 'icon-xinpianguanli'
           },
           {
             name: '成品检验加工',

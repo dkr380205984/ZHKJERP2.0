@@ -224,9 +224,9 @@
                 <span class="tb_row"></span>
                 <span class="tb_row"></span>
                 <span class="tb_row">合计总价</span>
-                <span class="tb_row">{{totalPrice}}</span>
+                <span class="tb_row">{{totalPrice}}元</span>
                 <span class="tb_row">合计入库数量</span>
-                <span class="tb_row">{{totalNumber}}</span>
+                <span class="tb_row">{{totalNumber}}kg</span>
               </div>
               <div class="tb_content">
                 <span class="tb_row right">

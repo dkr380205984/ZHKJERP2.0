@@ -113,13 +113,6 @@
         </div>
         <div class="content">
           <div class="row">
-            <span class="label">原密码：</span>
-            <span class="info">
-              <zh-input placeholder="请输入原密码"
-                v-model="oldPasd" />
-            </span>
-          </div>
-          <div class="row">
             <span class="label">新密码：</span>
             <span class="info">
               <zh-input placeholder="请输入新密码"
@@ -131,6 +124,22 @@
             <span class="info">
               <zh-input placeholder="请再次输入新密码"
                 v-model="lastPasd" />
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">验证码：</span>
+            <span class="info">
+              <zh-input placeholder="请输入验证码"
+                v-model="verificationCode">
+                <template slot="append">
+                  <div :class="{'canHandle':!resetTime,'notHandle':resetTime}"
+                    @click="sendVerificationCode">{{resetTime ? `${resetTime}s后重试` : '发送验证码'}}</div>
+                </template>
+              </zh-input>
+              <div class="prompt"
+                v-if="resetTime">已向{{telephoneComp}}发送验证码,请注意查收</div>
+              <div class="prompt"
+                v-else>点击发送验证码,将会向手机号{{telephoneComp}}发送验证码</div>
             </span>
           </div>
         </div>
@@ -159,203 +168,12 @@ export default {
       msgList: [],
       total: 0,
       changePasPopupFlag: false,
-      oldPasd: '',
+      verificationCode: '',
+      lastTime: null,
+      resetTime: 0,
+      sendIntervalTime: 60, // 方便后期修改间隔时间
       firstPasd: '',
       lastPasd: '',
-      navData: [
-        // {
-        //   name: '样品管理',
-        //   icon: require('@/assets/image/index/样品管理.png'),
-        //   id: 1,
-        //   children: [{
-        //     name: '样品添加',
-        //     url: '/sample/sampleCreate'
-        //   }, {
-        //     name: '样品列表',
-        //     url: '/sample/sampleList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        //   }, {
-        //     name: '样品订单添加',
-        //     url: '/sample/sampleOrderCreate'
-        //   }, {
-        //     name: '样品订单列表',
-        //     url: '/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        //   }]
-        // },
-        // {
-        //   name: '报价管理',
-        //   icon: require('@/assets/image/index/报价单管理.png'),
-        //   id: 2,
-        //   children: [{
-        //     name: '添加报价单',
-        //     url: '/price/priceCreate'
-        //   }, {
-        //     name: '报价单列表',
-        //     url: '/price/priceList/page=1&&keyword=&&date=&&status=&&client_id=&&user_id='
-        //   }]
-        // },
-        // {
-        //   name: '产品管理',
-        //   id: 3,
-        //   icon: require('@/assets/image/index/产品管理.png'),
-        //   children: [{
-        //     name: '产品添加',
-        //     url: '/product/productCreate'
-        //   }, {
-        //     name: '产品列表',
-        //     url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation='
-        //   }]
-        // },
-        // {
-        //   name: '订单管理',
-        //   id: 5,
-        //   icon: require('@/assets/image/index/订单管理.png'),
-        //   children: [{
-        //     name: '添加订单',
-        //     url: '/order/orderCreate'
-        //   }, {
-        //     name: '订单列表',
-        //     url: '/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        //   }, {
-        //     name: '订单发货列表',
-        //     url: '/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id='
-        //   }]
-        // },
-        // {
-        //   name: '物料计划生产管理',
-        //   id: 6,
-        //   icon: require('@/assets/image/index/计划生产管理.png'),
-        //   url: '/materialPlan/materialPlanList/page=1&&keyword=&&date=&&has_materialPlan=&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        // },
-        // {
-        //   name: '物料订购管理',
-        //   id: 7,
-        //   icon: require('@/assets/image/index/物料管理.png'),
-        //   children: [{
-        //     name: '物料预订购',
-        //     url: '/materialOrder/materialOrderCreate'
-        //   }, {
-        //     name: '预订购列表',
-        //     url: '/materialOrder/materialOrderList/page=1&&client_id=&&date='
-        //   }, {
-        //     name: '订单物料列表',
-        //     url: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        //     // }, {
-        //     //   name: '批量订购列表',
-        //     //   url: '/material/materialBatchList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        //   }]
-        // },
-        // {
-        //   name: '物料出入库管理',
-        //   id: 15,
-        //   icon: require('@/assets/image/index/装箱管理.png'),
-        //   url: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        // },
-        // {
-        //   name: '织造加工管理',
-        //   id: 8,
-        //   icon: require('@/assets/image/index/织造加工管理.png'),
-        //   children: [{
-        //     name: '生产织造列表',
-        //     url: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        //   }, {
-        //     name: '半成品加工列表',
-        //     url: '/weavingProcessing/processingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1'
-        //   }]
-        // },
-        // {
-        //   name: '产品收发管理',
-        //   id: 9,
-        //   icon: require('@/assets/image/index/收发管理.png'),
-        //   url: '/receiveDispatch/receiveDispatchList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        // },
-        // {
-        //   name: '产品检验管理',
-        //   id: 10,
-        //   icon: require('@/assets/image/index/检验管理.png'),
-        //   url: '/inspection/inspectionList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        // },
-        // {
-        //   name: '装箱管理',
-        //   id: 11,
-        //   icon: require('@/assets/image/index/装箱管理.png'),
-        //   children: [{
-        //     name: '装箱计划单列表',
-        //     url: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        //   }, {
-        //     name: '包装订购列表',
-        //     url: '/packPlan/packOrderList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        //   }, {
-        //     name: '装箱出库列表',
-        //     url: '/packPlan/packStockList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct='
-        //   }]
-        // },
-        // {
-        //   name: '库存管理',
-        //   id: 12,
-        //   icon: require('@/assets/image/index/库存管理.png'),
-        //   url: '/stock/stockList/page=1&&keyword=&&type='
-        // },
-        // {
-        //   name: '客户管理',
-        //   id: 13,
-        //   icon: require('@/assets/image/index/客户管理.png'),
-        //   url: '/client/clientList/page=1&&keyword=&&clientType='
-        // },
-        // {
-        //   name: '财务统计',
-        //   id: 16,
-        //   icon: require('@/assets/image/index/财务管理.png'),
-        //   children: [{
-        //     name: '订单财务统计',
-        //     url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
-        //   }, {
-        //     name: '样单财务统计',
-        //     url: '/financialStatistics/sampleStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
-        //   }, {
-        //     name: '产品产量统计',
-        //     url: '/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL='
-        //   }, {
-        //     name: '物料使用统计',
-        //     url: '/financialStatistics/materialStatistics/page=1&&keyword=&&type=1&&HJSY=&&DGSL=&&PJJG=&&HJJG=&&KCSY='
-        //   }, {
-        //     name: '合作公司财务统计',
-        //     url: '/financialStatistics/clientStatistics/page=1&&keyword=&&company_id=&&company_type='
-        //   }, {
-        //     name: '操作记录统计',
-        //     url: '/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name='
-        //   }]
-        // },
-        // {
-        //   name: '员工管理',
-        //   id: 17,
-        //   icon: require('@/assets/image/index/员工管理.png'),
-        //   children: [{
-        //     name: '添加员工',
-        //     url: '/staff/staffCreate'
-        //   }, {
-        //     name: '员工列表',
-        //     url: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state='
-        //   }, {
-        //     name: '日常工资结算表',
-        //     url: '/staff/staffPay'
-        //   }, {
-        //     name: '合计工资结算单',
-        //     url: '/staff/staffSettle'
-        //   }]
-        // },
-        // {
-        //   name: '报销管理',
-        //   id: 18,
-        //   icon: require('@/assets/image/index/财务管理.png'),
-        //   children: [{
-        //     name: '添加报销单',
-        //     url: '/reimbursement/reimbursementCreate'
-        //   }, {
-        //     name: '报销单列表',
-        //     url: '/reimbursement/reimbursementList'
-        //   }]
-        // }
-      ],
       newNavData: [
         {
           name: '产品/订单',
@@ -391,6 +209,11 @@ export default {
     }
   },
   computed: {
+    telephoneComp () {
+      const telephone = window.sessionStorage.getItem('telephone') || false
+      if (telephone) return String().concat(telephone.slice(0, 3)).concat('****').concat(telephone.slice(-4))
+      return telephone
+    },
     title () {
       return this.$store.state.title
     },
@@ -427,6 +250,31 @@ export default {
     }
   },
   methods: {
+    // 发送验证码
+    sendVerificationCode () {
+      const outTime = (new Date().getTime() - this.lastTime) / 1000
+      if (!this.lastTime || (outTime > this.sendIntervalTime)) {
+        changeUserPasd.sendVerificationCode().then(res => {
+          if (res.data.status !== false) {
+            this.$message.success(`我们已向您的手机号发送一条6位长度验证码，请注意查收`)
+            this.lastTime = new Date().getTime()// 记录点击时间
+            this.sendInterval()
+          }
+        })
+      } else {
+        this.$message.warning(`${this.resetTime}s后在重试`)
+      }
+    },
+    // 重试倒计时
+    sendInterval () {
+      const outTime = (new Date().getTime() - this.lastTime) / 1000
+      this.resetTime = Math.ceil(this.sendIntervalTime - outTime)
+      if (outTime <= this.sendIntervalTime) {
+        window.requestAnimationFrame(() => {
+          this.sendInterval()
+        })
+      }
+    },
     goRouter (router) {
       window.location.href = router
     },
@@ -519,8 +367,16 @@ export default {
       this.changePasPopupFlag = false
     },
     changePasd () {
-      if (!this.oldPasd) {
-        this.$message.error('请输入原密码')
+      // if (!this.oldPasd) {
+      //   this.$message.error('请输入原密码')
+      //   return
+      // }
+      // if (!this.verificationCode) {
+      //   this.$message.error('请输入验证码')
+      //   return
+      // }
+      if (!/^[0-9]{6}$/.test(this.verificationCode)) {
+        this.$message.error('请输入正确的4位数字验证码')
         return
       }
       if (!this.firstPasd || !this.lastPasd) {
@@ -530,8 +386,8 @@ export default {
       if (this.firstPasd !== this.lastPasd) {
         this.$message.warning('请确认输入的密码一致')
       } else {
-        changeUserPasd({
-          old_pass: this.oldPasd,
+        changeUserPasd.updated({
+          sms_code: this.verificationCode,
           new_pass: this.firstPasd
         }).then(res => {
           if (res.data.status !== false) {

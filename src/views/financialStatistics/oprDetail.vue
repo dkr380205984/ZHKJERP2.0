@@ -14,16 +14,18 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">{{$route.params.oprType}}金额</span>
-              <span class="text">￥{{$formatNum(info.settle_price?info.settle_price:info.deduct_price)}}</span>
+              <span class="text">￥{{$formatNum(($route.params.oprType === '结算' && info.settle_price) || ($route.params.oprType === '扣款' && info.deduct_price) || ($route.params.oprType === '收款' && info.price))}}</span>
             </div>
-            <div class="block">
+            <div class="block"
+              v-if="$route.params.oprType !== '收款'">
               <span class="label">状态</span>
               <span class="text">{{info.status === 1 ? '待审核' : info.status === 2 ? '已通过' : '已驳回' }}</span>
             </div>
           </div>
         </div>
         <div :class="['statuIcon',info.status === 1 ? 'reasoning' : false,info.status === 3 ? 'pass' : false,info.status === 2 ? 'tongguo' : false]"></div>
-        <div class="rowCtn">
+        <div class="rowCtn"
+          v-if="$route.params.oprType !== '收款'">
           <div class="colCtn flex3">
             <span class="label">{{$route.params.oprType}}编号：</span>
             <span class="text">{{info.settle_code || info.deduct_code}}</span>
@@ -60,9 +62,15 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="colCtn flex3">
+          <div class="colCtn flex3"
+            v-if="$route.params.oprType !== '收款'">
             <span class="label">是否开票：</span>
             <span class="text">{{info.is_invoice===1?'已开票':'未开票'}}</span>
+          </div>
+          <div class="colCtn flex3"
+            v-if="$route.params.oprType === '收款'">
+            <span class="label">收款方式：</span>
+            <span class="text">{{info.type}}</span>
           </div>
           <div class="colCtn">
             <span class="label">包含订单：</span>
@@ -216,6 +224,17 @@
             </div>
           </div>
           <div class="row"
+            v-if="$route.params.oprType==='收款'">
+            <div class="label">收款金额：</div>
+            <div class="info">
+              <zh-input placeholder="请输入金额"
+                type="number"
+                v-model="updateInfo.price">
+                <template slot="append">元</template>
+              </zh-input>
+            </div>
+          </div>
+          <div class="row"
             v-if="$route.params.oprType==='结算'">
             <div class="label">是否开票：</div>
             <div class="info">
@@ -247,6 +266,16 @@
                 <el-input placeholder="请输入开票金额"
                   v-model="item.invoicePrice"></el-input>
               </div>
+            </div>
+          </div>
+          <div class="row"
+            v-if="$route.params.oprType === '收款'">
+            <div class="label">收款方式：</div>
+            <div class="info">
+              <el-autocomplete v-model="updateInfo.type"
+                clearable
+                :fetch-suggestions="querySearchCollection"
+                placeholder="请选择收款方式"></el-autocomplete>
             </div>
           </div>
           <div class="row">
@@ -285,7 +314,7 @@
 </template>
 
 <script>
-import { settle, chargebacks, notify } from '@/assets/js/api.js'
+import { settle, chargebacks, notify, collection } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -331,6 +360,13 @@ export default {
     }
   },
   methods: {
+    querySearchCollection (queryString, cb) {
+      let list = window.localStorage.getItem('zh_collection_type')
+      list = list ? JSON.parse(list) : []
+      list = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
+      // console.log(list)
+      cb(list)
+    },
     checkFn () {
       let api = this.$route.params.oprType === '结算' ? settle : chargebacks
       if (this.ifPass) {
@@ -391,54 +427,54 @@ export default {
     },
     updateFn () {
       if (this.lock) {
-        let data = {
-          id: this.updateInfo.id,
-          client_id: this.$route.params.clentId,
-          order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
-          order_type: this.$route.query.orderType || '',
-          type: this.$route.params.type
-        }
-        if (this.updateInfo.desc !== this.info.desc) {
-          data.desc = this.updateInfo.desc
-        }
-        if (this.updateInfo.complete_time !== this.info.complete_time) {
-          data.complete_time = this.updateInfo.complete_time
-        }
+        let data = null
         if (this.$route.params.oprType === '结算') {
-          data.is_invoice = this.updateInfo.is_invoice
-          if (this.updateInfo.settle_price !== this.info.settle_price) {
-            data.settle_price = this.updateInfo.settle_price
+          data = {
+            id: this.updateInfo.id,
+            client_id: this.$route.params.clentId,
+            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+            order_type: this.$route.query.orderType || '',
+            type: this.$route.params.type,
+            desc: this.updateInfo.desc,
+            complete_time: this.updateInfo.complete_time,
+            is_invoice: this.updateInfo.is_invoice,
+            settle_price: this.updateInfo.settle_price,
+            invoice_info: JSON.stringify(this.updateInfo.invoice_info)
           }
-          if (JSON.stringify(this.updateInfo.invoice_info) !== JSON.stringify(this.info.invoice_info)) {
-            data.invoice_info = JSON.stringify(this.updateInfo.invoice_info)
+        } else if (this.$route.params.oprType === '扣款') {
+          data = {
+            id: this.updateInfo.id,
+            client_id: this.$route.params.clentId,
+            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+            order_type: this.$route.query.orderType || '',
+            type: this.$route.params.type,
+            desc: this.updateInfo.desc,
+            complete_time: this.updateInfo.complete_time,
+            deduct_price: this.updateInfo.deduct_price
           }
-        } else {
-          if (this.updateInfo.deduct_price !== this.info.deduct_price) {
-            data.deduct_price = this.updateInfo.deduct_price
+        } else if (this.$route.params.oprType === '收款') {
+          data = {
+            id: this.updateInfo.id,
+            client_id: this.$route.params.clentId,
+            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+            order_type: this.$route.query.orderType || '',
+            type: this.updateInfo.type,
+            desc: this.updateInfo.desc,
+            complete_time: this.updateInfo.complete_time,
+            price: this.updateInfo.price
           }
         }
         this.lock = false
-        if (this.$route.params.oprType === '结算') {
-          settle.create(data).then(res => {
-            if (res.data.status) {
-              this.$message.success('修改成功')
-              this.init()
-              this.updateFlag = false
-            } else {
-              this.lock = true
-            }
-          })
-        } else if (this.$route.params.oprType === '扣款') {
-          chargebacks.create(data).then(res => {
-            if (res.data.status) {
-              this.$message.success('修改成功')
-              this.init()
-              this.updateFlag = false
-            } else {
-              this.lock = true
-            }
-          })
-        }
+        const api = (this.$route.params.oprType === '结算' && settle) || (this.$route.params.oprType === '收款' && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
+        api.create(data).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('修改成功')
+            this.init()
+            this.updateFlag = false
+          } else {
+            this.lock = true
+          }
+        })
       } else {
         this.$message.warning('请勿频繁点击')
       }
@@ -466,7 +502,7 @@ export default {
           this.loading = false
           this.lock = true
         })
-      } else {
+      } else if (this.$route.params.oprType === '结算') {
         settle.log({
           client_id: this.$route.params.clentId,
           type: [this.$route.params.type],
@@ -475,6 +511,17 @@ export default {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
           this.updateInfo = this.$clone(this.info)
           this.getChangeLog(this.info.id)
+          this.loading = false
+          this.lock = true
+        })
+      } else if (this.$route.params.oprType === '收款') {
+        collection.log({
+          client_id: this.$route.params.clentId,
+          order_id: this.$route.query.orderId || ''
+        }).then((res) => {
+          this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
+          this.updateInfo = this.$clone(this.info)
+          // this.getChangeLog(this.info.id)
           this.loading = false
           this.lock = true
         })
@@ -505,31 +552,18 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        if (this.$route.params.oprType === '扣款') {
-          chargebacks.deleteLog({
-            id: this.$route.params.oprId
-          }).then(res => {
-            if (res.data.status !== false) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.$router.go(-1)
-            }
-          })
-        } else if (this.$route.params.oprType === '结算') {
-          settle.deleteLog({
-            id: this.$route.params.oprId
-          }).then(res => {
-            if (res.data.status !== false) {
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              })
-              this.$router.go(-1)
-            }
-          })
-        }
+        const api = (this.$route.params.oprType === '结算' && settle) || (this.$route.params.oprType === '收款' && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
+        api.deleteLog({
+          id: this.$route.params.oprId
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.$router.go(-1)
+          }
+        })
       }).catch(() => {
         this.$message({
           type: 'info',

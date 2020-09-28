@@ -3,6 +3,15 @@
     <router-view />
   </div>
 </template>
+<script>
+export default {
+  watch: {
+    $route (newVal) {
+      document.title = `织为云-协同织造云平台-${newVal.name}`
+    }
+  }
+}
+</script>
 <style lang="less">
 @import "~@/assets/less/element.less";
 html,

@@ -407,6 +407,13 @@ const chargebacks = {
   log: (params) => http.get(`${baseUrl}/financial/deduct/list`, params),
   deleteLog: (params) => http.post(`${baseUrl}/financial/deduct/delete`, params)
 }
+// 订单收款
+const collection = {
+  create: (params) => http.post(`${baseUrl}/financial/transfer/save`, params, 'application/json'),
+  check: (params) => http.post(`${baseUrl}/financial/deduct/check`, params, 'application/json'),
+  log: (params) => http.get(`${baseUrl}/financial/transfer/list`, params),
+  deleteLog: (params) => http.post(`${baseUrl}/financial/transfer/delete`, params)
+}
 // 打印设置
 const print = {
   create: (params) => http.post(`${baseUrl}/print/edit/save`, params, 'application/json'),
@@ -422,7 +429,11 @@ const indexCount = {
   dispatchCount: (params) => http.get(`${baseUrl}/index/dispatch/count`, params)
 }
 // 修改账户密码
-const changeUserPasd = (params) => http.post(`${baseUrl}/user/edit/pass`, params, 'application/json')
+const changeUserPasd = {
+  // updated: (params) => http.post(`${baseUrl}/user/edit/pass`, params, 'application/json'),user/password/change
+  updated: (params) => http.post(`${baseUrl}/user/password/change`, params, 'application/json'),
+  sendVerificationCode: (params) => http.post(`${baseUrl}/user/password/change/send/code`, params, 'application/json')
+}
 // 报价单预加载
 const priceLoading = {
   create: (params) => http.post(`${baseUrl}/product/quotation/demo/save`, params, 'application/json'),
@@ -553,6 +564,7 @@ export {
   priceLoading,
   settle,
   chargebacks,
+  collection,
   statistics,
   changeUserPasd,
   indexCount,
