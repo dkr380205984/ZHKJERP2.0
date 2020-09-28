@@ -151,7 +151,7 @@
         v-if="clientInfo.type.includes(6)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-zhizaojiagong"></use>
+          <use xlink:href="#icon-taokouguanli"></use>
         </svg>
         <span class="name">套口分配</span>
       </div>
@@ -161,7 +161,7 @@
         v-if="clientInfo.type.some(itemS => (itemS >= 7 && itemS <= 11))">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-zhizaojiagong"></use>
+          <use xlink:href="#icon-gongxu2"></use>
         </svg>
         <span class="name">其它分配</span>
       </div>
@@ -171,7 +171,7 @@
         v-if="clientInfo.type.includes(4)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-wuliaodinggou"></use>
+          <use xlink:href="#icon-baozhuangdinggou2"></use>
         </svg>
         <span class="name">包装订购</span>
       </div>

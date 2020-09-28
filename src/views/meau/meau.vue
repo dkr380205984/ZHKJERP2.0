@@ -66,13 +66,13 @@ export default {
             name: '套口管理',
             id: 19,
             path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/2',
-            icon: 'icon-zhizaojiagong'
+            icon: 'icon-taokouguanli'
           },
           {
             name: '其他工序管理',
             id: 20,
             path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/3',
-            icon: 'icon-gongxuguanli'
+            icon: 'icon-gongxu2'
           },
           // {
           //   name: '产品收发',
@@ -90,7 +90,7 @@ export default {
             name: '包装订购',
             id: 11,
             path: '/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=',
-            icon: 'icon-baozhuangdinggou'
+            icon: 'icon-baozhuangdinggou2'
           },
           {
             name: '运输管理',

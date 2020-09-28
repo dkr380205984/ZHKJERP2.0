@@ -326,7 +326,7 @@
         @click="$router.push(`/process/processCommon/${$route.params.id}/1/2`)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-gongxufenpei"></use>
+          <use xlink:href="#icon-taokouguanli"></use>
         </svg>
         <span class="name">套口详情</span>
       </div>
@@ -334,7 +334,7 @@
         @click="$router.push(`/process/processCommon/${$route.params.id}/1/3`)">
         <svg class="iconFont"
           aria-hidden="true">
-          <use xlink:href="#icon-gongxuguanli"></use>
+          <use xlink:href="#icon-gongxu2"></use>
         </svg>
         <span class="name">其他工序</span>
       </div>
