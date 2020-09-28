@@ -282,7 +282,7 @@ export default {
                 this.timer = null
               }
             } else {
-              console.log('读EPC失败，错误：' + this.GetErrStr(resultdata.Result))
+              // console.log('读EPC失败，错误：' + this.GetErrStr(resultdata.Result))
             }
             break
         }
@@ -290,7 +290,7 @@ export default {
     },
     findBuffer (CardNo) {
       let flag = false
-      let cardNoArr = CardNo.trim().split(/\s+\n/).map((item) => Number(item)).filter((item) => !Number.isNaN(item))
+      let cardNoArr = CardNo.trim().split(/\s+\n/).filter((item) => item && item.length >= 16 && item.substring(0, 8) === 'ABABABAB').map((item) => Number(item.substring(8)))
       console.log(cardNoArr)
       cardNoArr.forEach((itemChild) => {
         if (this.dataBuffer.indexOf(itemChild) === -1) {
@@ -357,6 +357,8 @@ export default {
               item.blink = true
               return item
             }))
+            let resArr = new Map()
+            this.list = this.list.filter((item) => !resArr.has(item.id) && resArr.set(item.id, 1))
             this.today = this.cmpList(this.list)
             this.xpState = 1
             this.xpFlag = false
