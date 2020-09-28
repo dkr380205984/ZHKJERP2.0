@@ -1,6 +1,7 @@
 <template>
   <div id="xpList"
-    class="indexMain">
+    class="indexMain"
+    v-loading="loading">
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -40,11 +41,12 @@
           <div class="row"
             v-for="(item,index) in list"
             :key="index">
-            <div class="col"></div>
-            <div class="col"></div>
-            <div class="col"></div>
-            <div class="col"></div>
-            <div class="col"></div>
+            <div class="col">{{item.chip_id}}</div>
+            <div class="col"
+              :style="{'color':item.order_code?'#01B48C':'#ccc'}">{{item.order_code?'已绑定':'未绑定'}}</div>
+            <div class="col">{{item.order_code?item.order_code:'/'}}</div>
+            <div class="col">{{item.order_code?item.product_code:'/'}}</div>
+            <div class="col">{{item.order_code?item.size_name+'/'+item.color_name:'/'}}</div>
           </div>
         </div>
         <div class="pageCtn">
@@ -62,9 +64,11 @@
 
 <script>
 import { getHash } from '@/assets/js/common.js'
+import { xpManage } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      loading: true,
       keyword: '',
       page: 1,
       total: 1,
@@ -84,15 +88,15 @@ export default {
   methods: {
     getList () {
       this.loading = true
-      // product.list({
-      //   keyword: this.keyword,
-      //   limit: 10,
-      //   page: this.page
-      // }).then((res) => {
-      //   this.list = res.data.data
-      //   this.total = res.data.meta.total
-      //   this.loading = false
-      // })
+      xpManage.list({
+        keyword: this.keyword,
+        limit: 10,
+        page: this.page
+      }).then((res) => {
+        this.list = res.data.data
+        this.total = res.data.meta.total
+        this.loading = false
+      })
     },
     // 更新筛选条件
     getFilters () {
@@ -102,11 +106,15 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/product/productList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&flower_id=' + this.flower + '&&user_id=' + this.user_id + '&&has_plan=' + this.has_plan + '&&has_craft=' + this.has_craft + '&&has_quotation=' + this.has_quotation)
+      this.$router.push('/xpManage/xpList/page=' + pages + '&&keyword=' + this.keyword)
     },
     reset () {
-      this.$router.push('/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation=')
+      this.$router.push('/xpManage/xpList/page=1&&keyword=')
     }
+  },
+  created () {
+    this.getFilters()
+    this.getList()
   }
 }
 </script>

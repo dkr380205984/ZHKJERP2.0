@@ -74,6 +74,12 @@ export default {
             path: '/process/processList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1/3',
             icon: 'icon-gongxuguanli'
           },
+          {
+            name: '芯片出入库',
+            id: 8,
+            path: '/xpManage/xpOutIn',
+            icon: 'icon-gongxuguanli'
+          },
           // {
           //   name: '产品收发',
           //   id: 9,

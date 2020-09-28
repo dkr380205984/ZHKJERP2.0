@@ -698,7 +698,9 @@
                     <div class="tcolumn">数量</div>
                     <div class="tcolumn">总价(元)</div>
                     <div class="tcolumn"
-                      style="flex:1.5">操作</div>
+                      v-if="otherData.processType==='织片'">状态</div>
+                    <div class="tcolumn"
+                      style="flex:1.8">操作</div>
                   </div>
                 </div>
                 <div class="tbody">
@@ -726,12 +728,15 @@
                       style="flex-direction:row;align-items: center;justify-content: flex-start;"><span style="color:#01B48C">{{item.number}}</span><span style="color:#E6A23C">{{item.motorise_number?'+' + parseInt(item.motorise_number):''}}</span></div>
                     <div class="tcolumn">{{$toFixed(item.price*item.number)}}</div>
                     <div class="tcolumn"
-                      style="flex:1.5;flex-direction:row;align-items: center;justify-content: flex-start;">
+                      :style="{'color':item.bind_chip===0?'#ccc':'#01B48C'}">{{item.bind_chip===0?'未绑定':'已绑定'}}</div>
+                    <div class="tcolumn"
+                      style="flex:1.8;flex-direction:row;align-items: center;justify-content: flex-start;">
                       <span style="color:#F5222D;cursor:pointer"
                         @click="deleteAllocationLog(item.id,index)">删除</span>
                       <span style="color:#1a95ff;cursor:pointer;margin-left:10px"
                         @click="lookDetail(item)">详情</span>
-                      <span style="color:#1a95ff;cursor:pointer;margin-left:10px"
+                      <span v-if="otherData.processType==='织片'"
+                        style="color:#1a95ff;cursor:pointer;margin-left:10px"
                         @click="bindXp(item)">绑定芯片</span>
                     </div>
                   </div>
@@ -1752,7 +1757,7 @@
 <script>
 import { YOWORFIDReader } from '@/assets/js/YOWOCloudRFIDReader.js'
 import { processType } from '@/assets/js/dictionary.js'
-import { order, sampleOrder, client, process, materialStock, yarn, weave, inspection, receive, staff, station } from '@/assets/js/api.js'
+import { order, sampleOrder, client, process, materialStock, yarn, weave, inspection, receive, staff, station, xpManage } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2063,6 +2068,7 @@ export default {
       this.rfidreader.G2_Inventory(0)
     },
     connectXp () {
+      this.otherData.xpState = 1
       try {
         this.rfidreader = YOWORFIDReader.createNew()
       } catch (e) {
@@ -2096,13 +2102,32 @@ export default {
     },
     // 取消绑定
     cancleBind () {
+      console.log(this.otherData.xpState)
       this.otherData.xpState = 1
       this.otherData.xpFlag = false
       this.otherData.dataBuffer = []
       this.rfidreader.Disconnect()
     },
     bindOver () {
-
+      this.loading = true
+      xpManage.create({
+        chip_id: this.otherData.dataBuffer.map((item) => Number(item.substring(9))),
+        order_id: this.$route.params.id,
+        product_id: this.otherData.xpData.product_id,
+        color_id: this.otherData.xpData.color_id,
+        size_id: this.otherData.xpData.size_id
+      }).then((res) => {
+        if (res.data.status) {
+          weave.bindXp({
+            id: [this.otherData.xpData.id]
+          }).then((res) => {
+            this.$message.success('绑定成功')
+            this.loading = false
+            this.cancleBind()
+            this.init()
+          })
+        }
+      })
     },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
