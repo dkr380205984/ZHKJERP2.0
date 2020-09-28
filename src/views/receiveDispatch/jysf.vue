@@ -738,7 +738,7 @@
           <div class="btn btnGray"
             @click="cancleBind">取消</div>
           <div class="btn btnBlue"
-            @click="bindOver">完成</div>
+            @click="bindOver">确认完成</div>
         </div>
       </div>
     </div>
@@ -2009,8 +2009,8 @@ export default {
       this.rfidreader.G2_Inventory(0)
     },
     WriteEPC (id) {
-      let writeContont = (Array(8).join(0) + id).slice(-8) // 保证八位
-      this.otherData.dataBuffer.push(Number(writeContont))
+      let writeContont = 'ABABABAB' + (Array(8).join(0) + id).slice(-8) // 保证八位，前面zwy是标识
+      this.otherData.dataBuffer.push(id)
       this.rfidreader.KeyStringMode = 1
       this.rfidreader.KeyString = '0'
       this.rfidreader.Repeat = 0
@@ -2114,7 +2114,8 @@ export default {
           // 读EPC
           case 23:
             if (resultdata.Result > 0) {
-              if (this.otherData.dataBuffer.includes((Number(resultdata.CardNo)))) {
+              // 我也不知道为什么ABABABAB0000001.length等于18，我母鸡呀
+              if (resultdata.CardNo && resultdata.CardNo.length >= 16 && resultdata.CardNo.substring(0, 8) === 'ABABABAB' && this.otherData.dataBuffer.includes(Number(resultdata.CardNo.substring(8)))) {
                 this.otherData.xpState = 7
               } else {
                 clearInterval(this.otherData.readTimer)
