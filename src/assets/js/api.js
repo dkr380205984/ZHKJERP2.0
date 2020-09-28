@@ -13,7 +13,9 @@ const pantongList = (params) => http.get(`${baseUrl}/pan/color/list`, params)
 
 // 芯片列表
 const xpManage = {
-  create: (params) => http.post(`${baseUrl}/chip/set/code`, params, 'application/json')
+  create: (params) => http.post(`${baseUrl}/chip/set/code`, params, 'application/json'),
+  list: (params) => http.get(`${baseUrl}/chip/list`, params),
+  outAndIn: (params) => http.post(`${baseUrl}/chip/detail`, params, 'application/json')
 }
 
 // 样品管理
@@ -312,7 +314,8 @@ const weave = {
   deleteDress: (params) => http.post(`${baseUrl}/dress/material/distribute/delete`, params, 'application/json'),
   getDressMatInit: (params) => http.post(`${baseUrl}/dress/material/distribute/init`, params, 'application/json'),
   saveDressMat: (params) => http.post(`${baseUrl}/dress/material/distribute/save`, params, 'application/json'),
-  getDressMat: (params) => http.get(`${baseUrl}/dress/material/distribute/detail`, params)
+  getDressMat: (params) => http.get(`${baseUrl}/dress/material/distribute/detail`, params),
+  bindXp: (params) => http.post(`${baseUrl}/weave/bind/chip`, params, 'application/json')
 }
 // 半成品加工分配
 const processing = {
