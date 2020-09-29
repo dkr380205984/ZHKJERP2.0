@@ -220,7 +220,7 @@
         <span class="title">相关财务明细</span>
         <span class="btnCtn">
           <span class="btn noBorder"
-            @click="oprFlag=true">查看所有结算、扣款、收款记录</span>
+            @click="oprFlag=true;log_date=log_order_code=log_type=''">查看所有结算、扣款、收款记录</span>
         </span>
       </div>
       <div class="listCtn hasBorderTop"

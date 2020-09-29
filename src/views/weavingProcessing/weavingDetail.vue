@@ -1278,10 +1278,10 @@ export default {
       this.$openUrl('/replenishTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '?id=' + idArr.join(','))
     },
     normalWeaving (code, size, color, id, number) {
-      if (number !== 'undefined' && number <= 0) {
-        this.$message.warning('该部件已分配完毕')
-        return
-      }
+      // if (number !== 'undefined' && number <= 0) {
+      //   this.$message.warning('该部件已分配完毕')
+      //   return
+      // }
       this.weaving_flag = true
       this.weaving_data.push({
         company_id: '',
@@ -1289,7 +1289,7 @@ export default {
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           price: '',
-          number: number
+          number: number > 0 ? number : ''
         }],
         order_time: this.$getTime(),
         complete_time: '',
@@ -1464,14 +1464,11 @@ export default {
         let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
           let part = itemChild.part_data.find((itemFind) => { return Number(itemFind.id) === Number(item.checkPart) })
-          console.log(part)
-          if (part.number - part.weavingNum > 0) {
-            mixedData.push({
-              partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
-              price: '',
-              number: part.number - part.weavingNum
-            })
-          }
+          mixedData.push({
+            partColorSize: part.id + '/' + itemChild.size_id + '/' + itemChild.color_id,
+            price: '',
+            number: (part.number - part.weavingNum) > 0 ? (part.number - part.weavingNum) : ''
+          })
         })
         if (mixedData.length > 0) {
           this.weaving_data.push({
@@ -1485,12 +1482,12 @@ export default {
           })
         }
       })
-      if (this.weaving_data.length === 0) {
-        this.$message.warning('已选择的产品部件已分配完毕，如需分配其他部件，请手动分配')
-      } else {
-        this.weaving_flag = true
-        this.easyWeaving_flag = true
-      }
+      // if (this.weaving_data.length === 0) {
+      //   this.$message.warning('已选择的产品部件已分配完毕，如需分配其他部件，请手动分配')
+      // } else {
+      this.weaving_flag = true
+      this.easyWeaving_flag = true
+      // }
       this.weaving_data.forEach((item, index) => {
         item.company_id = this.commonCompany[index]
         item.mixedData.forEach((itemChild) => {

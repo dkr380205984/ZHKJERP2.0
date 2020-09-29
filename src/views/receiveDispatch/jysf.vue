@@ -82,6 +82,7 @@
                         <div class="trow">
                           <div class="tcolumn">尺码颜色</div>
                           <div class="tcolumn">分配数量</div>
+                          <div class="tcolumn">完成时间</div>
                         </div>
                       </div>
                     </div>
@@ -112,6 +113,8 @@
                           <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                           <div class="tcolumn"
                             :style="{'color':itemChild.number>0?'#01B48C':'#ccc'}">{{itemChild.number}}</div>
+                          <div class="tcolumn"
+                            v-html="$getZHTimeFormat(itemChild.complete_time)"></div>
                         </div>
                       </div>
                     </div>
@@ -1282,7 +1285,8 @@ export default {
           process: item.process,
           product_id: item.product_id,
           product_info: item.product_info,
-          number: item.number
+          number: item.number,
+          complete_time: item.complete_time
         }
       }).concat(resArr[4].data.data.map((item) => {
         return {
@@ -1295,12 +1299,13 @@ export default {
           process: item.type,
           product_id: item.product_id,
           product_info: item.product_info,
-          number: item.number
+          number: item.number,
+          complete_time: item.complete_time
         }
       }))
       let allocationAdd = []
       allocation.forEach((item) => {
-        this.$commonFind(allocationAdd, item, ['color_id', 'product_id', 'size_id', 'client_id', 'process'], ['number'])
+        this.$commonFind(allocationAdd, item, ['color_id', 'product_id', 'size_id', 'client_id', 'process', 'complete_time'], ['number'])
       })
       let allocationMerge = this.$mergeData(allocationAdd, {
         mainRule: ['client_id', 'process'],
