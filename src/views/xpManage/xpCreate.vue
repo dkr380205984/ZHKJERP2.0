@@ -25,7 +25,7 @@
                 <span v-if="xpState===5"
                   style="color:#F5222D">写入失败，请换一个芯片</span>
                 <span v-if="xpState===6"
-                  style="color:#F5222D">芯片已绑定，请换取下一个芯片
+                  style="color:#01B48C">芯片已绑定，请换取下一个芯片
                   <div>当前编号：{{xpNo}}</div>
                 </span>
                 <span v-if="xpState===7"
@@ -119,7 +119,7 @@ export default {
       return ErrText
     },
     goNext () {
-      this.xpState = 1
+      this.xpState = 2
       this.startRead()
     },
     connectXp () {

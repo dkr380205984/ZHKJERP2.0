@@ -601,7 +601,7 @@
                     <div class="tcolumn padding40">{{item.name}}</div>
                     <div class="tcolumn right padding40">
                       <span class="red"
-                        @click="deleteMaterialProcess(item.id)">删除</span>
+                        @click="deleteStaffProcess(item.id)">删除</span>
                     </div>
                   </div>
                 </div>
@@ -2559,6 +2559,25 @@ export default {
       }).then((res) => {
         this.staffProcessList = res.data.data
         this.staffProcessTotal = this.staffProcessList.length
+      })
+    },
+    deleteStaffProcess (id) {
+      this.$confirm('此操作将永久该标签, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        process.delete({
+          id: id
+        }).then((res) => {
+          this.$message.success('删除成功')
+          this.getStaffProcess()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     // 员工标签

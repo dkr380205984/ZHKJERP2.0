@@ -1,19 +1,13 @@
 <template>
   <div id="xpOutIn"
-    class="indexMain">
-    <!-- <div class="module">
+    class="indexMain"
+    v-loading="loading">
+    <div class="module">
       <div class="listHead">
         <div class="box">
-          <div class="boxTop">今日入库订单数量</div>
+          <div class="boxTop">今日入库产品数量</div>
           <div class="boxBottom">
             <span class="num">{{statistic.orderNumber}}</span>
-            <span class="em"></span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop">今日入库产品种类</div>
-          <div class="boxBottom">
-            <span class="num">{{statistic.productNumber}}</span>
             <span class="em"></span>
           </div>
         </div>
@@ -32,7 +26,7 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -41,7 +35,8 @@
             <span class="filter_line">
               <el-select style="width:200px"
                 v-model="process"
-                placeholder="请先选择工序">
+                placeholder="请先选择工序"
+                @change="getXpList">
                 <el-option v-for="item in processArr"
                   :key="item.value"
                   :value="item.value"
@@ -79,7 +74,10 @@
             v-for="item in todayList"
             :key="item.id">
             <div class="col">
-              <span class="text">{{item.chip_id}}</span>
+              <span class="text">{{item.chip_id}}
+                <span style="color:#01B48C"
+                  v-if="item.isNew">新</span>
+              </span>
             </div>
             <div class="col">
               <span class="text">{{item.order_code}}</span>
@@ -90,6 +88,15 @@
             <div class="col">
               <span class="text">{{item.size_name}}/{{item.color_name}}</span>
             </div>
+          </div>
+          <div class="pageCtn">
+            <el-pagination background
+              @current-change="getXpList"
+              :page-size="10"
+              layout="prev, pager, next"
+              :total="total"
+              :current-page.sync="page">
+            </el-pagination>
           </div>
         </div>
       </div>
@@ -128,7 +135,10 @@ import { YOWORFIDReader } from '@/assets/js/YOWOCloudRFIDReader.js'
 export default {
   data () {
     return {
+      loading: true,
       rfidreader: null,
+      page: 1,
+      total: 1,
       statistic: {
         orderNumber: '0',
         productNumber: '0',
@@ -197,7 +207,7 @@ export default {
     },
     ReadEPC () {
       setTimeout(() => {
-        // this.rfidreader.BeepOnSuccess = 0
+        this.rfidreader.BeepOnSuccess = 0
         this.rfidreader.Repeat = 1
         this.rfidreader.G2_Inventory(0)
       }, 3000)
@@ -230,6 +240,7 @@ export default {
       return ErrText
     },
     submitXp () {
+      this.loading = true
       this.rfidreader.Disconnect()
       this.xpState = 2
       console.log(this.dataBuffer)
@@ -239,14 +250,32 @@ export default {
       }).then((res) => {
         this.$message.success('读取成功')
         this.xpState = 3
-        setTimeout(() => {
-          this.xpState = 1
-          this.xpFlag = false
-        }, 2000)
+        this.xpState = 1
+        this.xpFlag = false
+        this.statistic.nowType = Array.from(new Set(res.data.data.map((item) => item.product_code))).length
+        this.statistic.nowNumber = res.data.data.length
+        this.statistic.orderNumber += Number(this.statistic.nowNumber)
+        res.data.data.forEach((item) => { item.isNew = true })
         this.dataBuffer = []
-        this.todayList = this.todayList.concat(res.data.data)
+        this.todayList = res.data.data.concat(this.todayList)
         this.connectXp()
         this.ReadEPC()
+        this.loading = false
+      })
+    },
+    getXpList () {
+      this.loading = true
+      xpManage.list({
+        process: this.process,
+        is_today: true,
+        is_bind: true,
+        page: this.page,
+        limit: 10
+      }).then((res) => {
+        this.todayList = res.data.data
+        this.statistic.orderNumber = res.data.meta.total
+        this.total = res.data.meta.total
+        this.loading = false
       })
     }
   },
@@ -269,6 +298,7 @@ export default {
     window.onbeforeunload = function () {
       _this.rfidreader.Disconnect()
     }
+    this.getXpList()
     this.connectXp()
     this.ReadEPC()
   },
