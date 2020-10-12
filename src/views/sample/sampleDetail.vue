@@ -423,6 +423,47 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">关联单据：</span>
+            <div class="rectCtn">
+              <div class="rect">
+                <div class="main">
+                  <div class="icon"
+                    :class="{'yellow':item.has_craft===1,'gray':item.has_craft!==1}">
+                    <img src="../../assets/image/sample/craft_icon.png" />
+                  </div>
+                  <div class="content">
+                    <div class="text title">工艺单</div>
+                    <div class="text"
+                      v-if="item.need_weave===1 && item.has_craft!==1">待添加</div>
+                    <div class="text"
+                      v-if="item.need_weave===1 && item.has_craft===1">已添加</div>
+                    <div class="text"
+                      v-if="item.need_weave===0">不需要工艺单</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <span v-if="!detail.craft_info &&detail.order_info.length === 0"
+                    class="text"
+                    style="color:#ccc">请先给产品添加订单</span>
+                  <span v-if="item.need_weave===1 && item.has_craft!==1"
+                    class="opration"
+                    @click="$router.push('/craft/craftCreate/'+ item.id + '/2')">添加</span>
+                  <span v-if="item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ item.id + '/2')">预览</span>
+                  <span v-if="item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="openWin('/craftTable/' + item.id +'/2/'+ detail.craft_info.id)">打印</span>
+                  <span v-if="item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ item.id + '/2')">详情</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="bottomFixBar">

@@ -1852,6 +1852,7 @@ export default {
   },
   filters: {
     filterMaterials (arr) {
+      console.log(arr)
       let str = ''
       if (arr[0] && arr[0].component_name) {
         arr.forEach((item) => {

@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="!productInfo.part_title">
+        v-if="!productInfo.part_title && !productInfo.name">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -89,11 +89,11 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="productInfo.part_title">
+        v-if="productInfo.part_title || productInfo.name">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">配件名称：</span>
-            <span class="text">{{productInfo.part_title}}</span>
+            <span class="text">{{productInfo.part_title || productInfo.name}}</span>
           </div>
         </div>
       </div>

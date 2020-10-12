@@ -118,11 +118,11 @@
             </div>
             <div class="col"
               style="flex-direction:column;flex:1.2;align-items: baseline;">
-              <span class="text">{{item.product_info.product_code}}</span>
-              <span class="text">({{item.product_info.category_name?item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name:'配件/'+item.product_info.product_title}})</span>
+              <span class="text">{{item.product_info&&item.product_info.category_name?item.product_info.product_code:''}}</span>
+              <span class="text">({{item.product_info&&item.product_info.category_name?item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name:'配件/'+(item.product_info?item.product_info.product_title:'异常')}})</span>
             </div>
             <div class="col middle">
-              <zh-img-list :list="item.product_info.image"></zh-img-list>
+              <zh-img-list :list="item.product_info?item.product_info.image:[]"></zh-img-list>
             </div>
             <div class="col">
               <span class="text one_line">
