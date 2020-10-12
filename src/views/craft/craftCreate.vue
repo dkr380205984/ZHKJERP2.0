@@ -34,12 +34,13 @@
               :value="item.id">
               <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
               <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
-              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_info.product_category}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
+              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_name}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
             </el-option>
           </el-select>
         </div>
       </div>
-      <div class="detailCtn">
+      <div class="detailCtn"
+        v-if="!productInfo.part_title">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -84,6 +85,15 @@
             <span class="label">备注信息：</span>
             <span class="text"
               :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detailCtn"
+        v-if="productInfo.part_title">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">配件名称：</span>
+            <span class="text">{{productInfo.part_title}}</span>
           </div>
         </div>
       </div>
@@ -2189,6 +2199,14 @@ export default {
       // 导入工艺单数据
       gyd: '',
       gydArr: [],
+      colorNumber: {
+        warp: [],
+        weft: []
+      },
+      colorWeight: {
+        warp: [],
+        weft: []
+      },
       // 设计模式数据
       designData: {
         weft: {
@@ -3469,18 +3487,22 @@ export default {
         this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
         this.colorNumber.warp[item.color] += Number(item.number)
       })
-      warpTableBack.forEach((item) => {
-        this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
-        this.colorNumber.warp[item.color] += Number(item.number)
-      })
+      if (this.ifDouble.warp) {
+        warpTableBack.forEach((item) => {
+          this.colorNumber.warp[item.color] = this.colorNumber.warp[item.color] ? this.colorNumber.warp[item.color] : 0
+          this.colorNumber.warp[item.color] += Number(item.number)
+        })
+      }
       weftTable.forEach((item) => {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
-      weftBackTable.forEach((item) => {
-        this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
-        this.colorNumber.weft[item.color] += Number(item.number)
-      })
+      if (this.ifDouble.weft) {
+        weftBackTable.forEach((item) => {
+          this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
+          this.colorNumber.weft[item.color] += Number(item.number)
+        })
+      }
       this.warpInfo.material_data = [{
         material_name: this.yarn.yarnWarp,
         type_material: 1,
@@ -3543,7 +3565,7 @@ export default {
         let colour_name = this.colourArr.find((itemFind) => itemFind.color_id === itemColour.value).color_name
         peise_yarn_weight[colour_name] = {}
         itemColour.colorWarp.forEach((itemColor, indexColor) => {
-          peise_yarn_weight[colour_name][itemColor.name] = {}
+          peise_yarn_weight[colour_name][itemColor.name] = peise_yarn_weight[colour_name][itemColor.name] || {}
           peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.warp[indexColor])
         })
         itemColour.colorWeft.forEach((itemColor, indexColor) => {

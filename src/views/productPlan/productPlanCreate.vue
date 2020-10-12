@@ -450,6 +450,7 @@ export default {
           })
         })
       })
+
       let part = this.productInfo.part_info || this.productInfo.part_data
       part.forEach((itemPart) => {
         let json = {
@@ -459,20 +460,40 @@ export default {
           colourSizeArr: [],
           colourSizeIndex: 0
         }
+        // 找一下有没有配件的工艺单
+        let findPart = res[4].data.data.part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name))
+        if (findPart) {
+          json.chooseMaterial = 1
+        }
         let colourSizeArr = JSON.parse(JSON.stringify(this.list[0].colourSizeArr))
         colourSizeArr.forEach((item) => {
           let finded = itemPart.size.find((itemFind) => itemFind.size_id === item.size_id)
           item.partNum = finded.number
-          item.materials = [{
-            name: itemPart.part_title || itemPart.name,
-            attr: item.colour_name,
-            number: 1,
-            unit: itemPart.unit
-          }]
+          if (findPart && findPart.peise_yarn_weight[item.colour_name]) {
+            item.materials = []
+            for (let keyColor in findPart.peise_yarn_weight[item.colour_name]) {
+              for (let keyMat in findPart.peise_yarn_weight[item.colour_name][keyColor]) {
+                item.materials.push({
+                  name: keyMat,
+                  attr: keyColor,
+                  number: findPart.peise_yarn_weight[item.colour_name][keyColor][keyMat],
+                  unit: 'g'
+                })
+              }
+            }
+          } else {
+            item.materials = [{
+              name: itemPart.part_title || itemPart.name,
+              attr: item.colour_name,
+              number: 1,
+              unit: itemPart.unit
+            }]
+          }
         })
         json.colourSizeArr = colourSizeArr
         this.list.push(json)
       })
+
       this.yarnList = res[1].data.data.map((item) => {
         return {
           value: item.name,
