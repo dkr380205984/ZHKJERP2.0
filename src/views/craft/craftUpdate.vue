@@ -9,26 +9,27 @@
           :url="msgUrl"
           :content="msgContent"></zh-message>
       </div>
-      <div class="detailCtn">
+      <div class="detailCtn"
+        v-if="productInfo.category_info">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-            <span class="text">{{productInfo.product_code}}</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.title}">{{productInfo.title?productInfo.title:'无'}}</span>
+              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
-            <span class="text">{{productInfo.category_info.product_category}}/{{productInfo.type_name}}/{{productInfo.style_name}}</span>
+            <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
-            <span class="text">{{productInfo.materials|filterMaterials}}</span>
+            <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
@@ -54,6 +55,15 @@
             <span class="label">备注信息：</span>
             <span class="text"
               :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detailCtn"
+        v-if="!productInfo.category_info">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">配件名称：</span>
+            <span class="text">{{productInfo.title}}</span>
           </div>
         </div>
       </div>
@@ -2482,7 +2492,6 @@ export default {
           this.colorNumber.weft[item.color] += Number(item.number)
         })
       }
-      console.log(this.colorNumber)
       this.warpInfo.material_data = [{
         material_name: this.yarn.yarnWarp,
         type_material: 1,
@@ -2545,7 +2554,7 @@ export default {
         let colour_name = this.colourArr.find((itemFind) => itemFind.color_id === itemColour.value).color_name
         peise_yarn_weight[colour_name] = {}
         itemColour.colorWarp.forEach((itemColor, indexColor) => {
-          peise_yarn_weight[colour_name][itemColor.name] = {}
+          peise_yarn_weight[colour_name][itemColor.name] = peise_yarn_weight[colour_name][itemColor.name] || {}
           peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.warp[indexColor])
         })
         itemColour.colorWeft.forEach((itemColor, indexColor) => {
@@ -2898,6 +2907,7 @@ export default {
       if (ifCaogao !== '草稿') {
         cmpYarn = this.computeYarn()
       }
+
       let formData = {
         id: this.craftId,
         is_draft: ifCaogao === '草稿' ? 2 : 1, //设计单字段，现改为是否为草稿

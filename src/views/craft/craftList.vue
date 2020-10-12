@@ -119,7 +119,7 @@
             <div class="col"
               style="flex-direction:column;flex:1.2;align-items: baseline;">
               <span class="text">{{item.product_info.product_code}}</span>
-              <span class="text">({{item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name}})</span>
+              <span class="text">({{item.product_info.category_name?item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name:'配件/'+item.product_info.product_title}})</span>
             </div>
             <div class="col middle">
               <zh-img-list :list="item.product_info.image"></zh-img-list>
