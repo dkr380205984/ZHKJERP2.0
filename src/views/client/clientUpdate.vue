@@ -11,6 +11,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">客户类型</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <el-radio-group v-model="type">
@@ -24,6 +25,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">客户名称</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <zh-input v-model="client_name"
@@ -44,6 +46,7 @@
             v-else>
             <span class="label">
               <span class="text">联系电话</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
@@ -54,6 +57,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">客户类型</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <el-cascader v-model="client_type"
@@ -70,6 +74,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">合作状态</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <el-radio-group v-model="cooperation">
@@ -81,6 +86,7 @@
           <div class="colCtn flex3">
             <span class="label">
               <span class="text">联系电话</span>
+              <span class="explanation">(必填)</span>
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
