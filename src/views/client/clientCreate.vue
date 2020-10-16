@@ -183,8 +183,7 @@ export default {
           post: '',
           telephone: ''
         }
-      ],
-      lock: true
+      ]
     }
   },
   methods: {
@@ -199,47 +198,47 @@ export default {
       item.splice(index, 1)
     },
     saveAll () {
-      if (this.lock) {
-        if (!this.client_name) {
-          this.$message.error('检测到未填写客户名称，请填写')
-        }
-        if (this.client_type.length < 0) {
-          this.$message.error('检测到未选择客户类型，请选择')
-        }
-        if (!this.phone) {
-          this.$message.error('检测到未填写联系电话，请填写')
-        }
-        if (this.type && this.contacts.filter(item => item.name || item.post || item.telephone).length === 0) {
-          this.$message.error('检测到未填写联系人信息，请填写')
-        }
-        this.lock = false
-        client.create({
-          name: this.client_name,
-          abbreviation: this.client_abb,
-          phone: this.phone,
-          address: this.address,
-          status: this.cooperation ? 1 : 2,
-          contacts: this.contacts.filter(item => item.name || item.post || item.telephone).map(item => {
-            return {
-              name: item.name,
-              station: item.post,
-              phone: item.telephone
-            }
-          }),
-          type: this.client_type.map((item) => {
-            return item.length > 1 ? item[1] : item[0]
-          })
-        }).then(res => {
-          if (res.data.status !== false) {
-            this.$message.success('保存成功，即将跳转至客户列表')
-            setTimeout(() => {
-              this.$router.push('/client/clientList/page=1&&keyword=&&date==&&clientType=')
-            }, 300)
-          }
-        })
-      } else {
-        this.$message.warning('请勿频繁操作')
+      if (this.$submitLock()) return
+      if (!this.client_name) {
+        this.$message.error('检测到未填写客户名称，请填写')
+        return
       }
+      if (this.client_type.length < 0) {
+        this.$message.error('检测到未选择客户类型，请选择')
+        return
+      }
+      if (!this.phone) {
+        this.$message.error('检测到未填写联系电话，请填写')
+        return
+      }
+      if (this.type && this.contacts.filter(item => item.name || item.post || item.telephone).length === 0) {
+        this.$message.error('检测到未填写联系人信息，请填写')
+        return
+      }
+      client.create({
+        name: this.client_name,
+        abbreviation: this.client_abb,
+        phone: this.phone,
+        address: this.address,
+        status: this.cooperation ? 1 : 2,
+        contacts: this.contacts.filter(item => item.name || item.post || item.telephone).map(item => {
+          return {
+            name: item.name,
+            station: item.post,
+            phone: item.telephone
+          }
+        }),
+        type: this.client_type.map((item) => {
+          return item.length > 1 ? item[1] : item[0]
+        })
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('保存成功，即将跳转至客户列表')
+          setTimeout(() => {
+            this.$router.push('/client/clientList/page=1&&keyword=&&date==&&clientType=')
+          }, 300)
+        }
+      })
     },
     querySearchAsync (queryString, cb) {
       client.list({
