@@ -11,11 +11,11 @@
         <span class="icon packOrder"></span>
         <span class="name">包装订购</span>
       </div>
-      <div class="cut_item"
+      <!-- <div class="cut_item"
         @click="$router.push('/packPlan/packIn/' + $route.params.id)">
         <span class="icon packOrder"></span>
         <span class="name">包装入库</span>
-      </div>
+      </div> -->
       <div class="cut_item"
         @click="$router.push('/packPlan/packStock/' + $route.params.id)">
         <span class="icon packOut"></span>

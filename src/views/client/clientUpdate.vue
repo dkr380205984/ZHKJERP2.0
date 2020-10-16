@@ -50,7 +50,6 @@
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
-                type='number'
                 placeholder="请输入联系电话"></zh-input>
             </span>
           </div>
@@ -90,7 +89,6 @@
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
-                type='number'
                 placeholder="请输入联系电话"></zh-input>
             </span>
           </div>
@@ -131,7 +129,6 @@
               <span class="tb_row">
                 <zh-input v-model="item.telephone"
                   class="tb_input"
-                  type="number"
                   placeholder="请输入联系电话"></zh-input>
               </span>
               <span class="tb_row middle flex05">

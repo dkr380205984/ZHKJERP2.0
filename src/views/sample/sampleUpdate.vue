@@ -17,9 +17,7 @@
               <span class="text">名称/款号</span>
             </div>
             <div class="content">
-              <zh-input errorMsg="样品名称不能超过10个字"
-                placeholder="请输入样品名称或款号"
-                maxLength="10"
+              <zh-input placeholder="请输入样品名称或款号"
                 v-model="name">
               </zh-input>
             </div>
@@ -662,7 +660,7 @@ export default {
       //   return
       // }
       error = this.size.some((item) => {
-        return !item.size || !item.weight || !item.desc
+        return !item.size
       })
       if (error) {
         this.$message.error('请将样品规格信息填写完整')

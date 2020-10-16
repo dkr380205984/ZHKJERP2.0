@@ -51,7 +51,6 @@
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
-                type='number'
                 placeholder="请输入联系电话"></zh-input>
             </span>
           </div>
@@ -91,7 +90,6 @@
             </span>
             <span class="content content_middle">
               <zh-input v-model="phone"
-                type='number'
                 placeholder="请输入联系电话"></zh-input>
             </span>
           </div>
@@ -132,7 +130,6 @@
               <span class="tb_row">
                 <zh-input v-model="item.telephone"
                   class="tb_input"
-                  type="number"
                   placeholder="请输入联系电话"></zh-input>
               </span>
               <span class="tb_row middle flex05">
@@ -213,6 +210,7 @@ export default {
         this.$message.error('检测到未选择客户类型，请选择')
         return
       }
+      console.log(!this.phone, this.phone)
       if (!this.phone) {
         this.$message.error('检测到未填写联系电话，请填写')
         return
