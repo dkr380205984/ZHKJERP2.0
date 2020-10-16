@@ -2549,6 +2549,9 @@ export default {
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
       })
+      console.log(this.warpInfo.material_data)
+      console.log(this.material.materialWarp)
+      console.log(this.colorWeight)
       this.colour.forEach((itemColour) => {
         let colour_name = this.colourArr.find((itemFind) => itemFind.color_id === itemColour.value).color_name
         peise_yarn_weight[colour_name] = {}

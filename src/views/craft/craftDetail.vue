@@ -181,12 +181,8 @@
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="item.weight.toFixed(1)+'g'"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(item.number)}}</span>
-                  </el-tooltip>
+                  <span class="colorText">{{filterMethods(item.number)}}</span>
+                  <span class="name">{{item.weight.toFixed(1)+'g'}}</span>
                 </div>
               </div>
             </div>
@@ -538,12 +534,8 @@
                 <div class="colorBox"
                   v-for="(item,index) in item.apply"
                   :key="index">
-                  <el-tooltip class="item"
-                    effect="dark"
-                    :content="item.weight.toFixed(1)+'g'"
-                    placement="top">
-                    <span class="colorText">{{filterMethods(item.number)}}</span>
-                  </el-tooltip>
+                  <span class="colorText">{{filterMethods(item.number)}}</span>
+                  <span class="name">{{item.weight.toFixed(1)+'g'}}</span>
                 </div>
               </div>
             </div>
@@ -1847,7 +1839,7 @@ export default {
         item.apply = item.apply.map((index) => {
           return {
             number: index,
-            weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
+            weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1) || 0
           }
         })
       })
@@ -1867,6 +1859,7 @@ export default {
           this.weight += (Number(itemApply.weight) === 'NaN' ? 0 : Number(itemApply.weight))
         })
       })
+      console.log(this.weight)
       this.weight = this.weight.toFixed(1)
       // 将展开的合并信息结合穿综和纹版信息
       let warpGetPMNum = []
