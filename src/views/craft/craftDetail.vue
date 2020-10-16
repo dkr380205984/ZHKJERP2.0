@@ -2,7 +2,8 @@
   <div id="craftDetail"
     class="indexMain"
     v-loading="loading">
-    <div class="module">
+    <div class="module"
+      v-if="productInfo.category_info">
       <div class="titleCtn"
         style="display: flex;justify-content: space-between;align-items: center;">
         <span class="title hasBorder">{{$route.params.type==='1'?'产':'样'}}品信息</span>
@@ -67,6 +68,21 @@
             @click="init(data[index - 1],index-1)">工艺单{{index}}</div>
           <div class="btn btnBlue"
             @click="setDefault">设为默认</div>
+        </div>
+      </div>
+    </div>
+    <div class="module"
+      v-if="$route.params.partId!=='0'">
+      <div class="titleCtn"
+        style="display: flex;justify-content: space-between;align-items: center;">
+        <span class="title hasBorder">配件信息</span>
+      </div>
+      <div class="detailCtn">
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">配件名称：</span>
+            <span class="text">{{productInfo.title}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -724,7 +740,8 @@
           <div class="btn btnOrange"
             @click="$router.push('/craft/craftUpdate/' + craftId + '/' + $route.params.type)">修改</div>
           <div class="btn btnBlue"
-            @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)">转为配料单</div>
+            @click="$router.push('/productPlan/productPlanCreate/'+$route.params.id+'/' + $route.params.type)"
+            v-if="productInfo.category_info">转为配料单</div>
           <div class="btn btnBlue"
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
           <div class="btn btnBlue"

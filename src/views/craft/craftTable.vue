@@ -42,7 +42,7 @@
           <span class="row_item w100 center">产品品类</span>
           <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
           <span class="row_item w100 center">产品编号</span>
-          <span class="row_item left">{{craftDetail.product_info.product_code}}</span>
+          <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span>
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
@@ -1201,7 +1201,7 @@ export default {
   },
   filters: {
     filterType (item) {
-      return [item.category_info.product_category, item.type_name, item.style_name, item.flower_id].join('/')
+      return item.category_info ? [item.category_info.product_category, item.type_name, item.style_name, item.flower_id].join('/') : '/'
     },
     filterMaterial (item) {
       return item.map(value => value.number + '%' + value.component_name).join('.')
