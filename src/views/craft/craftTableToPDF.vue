@@ -7,7 +7,7 @@
         <div class="left"
           style="width:100%;justify-content: center;">
           <span class="title"
-            style="text-align:center">桐庐凯瑞针纺有限公司工艺单设计稿</span>
+            style="text-align:center">{{companyName}}工艺单设计稿</span>
           <div class="info">
             <span class="item">
               <span class="label">创建人：</span>
@@ -177,6 +177,7 @@ export default {
   data () {
     return {
       loading: true,
+      companyName: window.sessionStorage.getItem('company_name'),
       qrCodeUrl: '',
       craftDetail: {
         product_info: {
