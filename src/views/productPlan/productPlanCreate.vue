@@ -461,7 +461,8 @@ export default {
           colourSizeIndex: 0
         }
         // 找一下有没有配件的工艺单
-        let findPart = res[4].data.data.part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name))
+        let craft = res[4].data.data
+        let findPart = this.$route.params.type === '1' ? craft.part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name)) : ((craft.length === 1 ? craft[0] : craft.find((itemFind) => itemFind.is_default === 1)).part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name)))
         if (findPart) {
           json.chooseMaterial = 1
         }
@@ -506,8 +507,8 @@ export default {
           unit: item.unit
         }
       })
-      // 导入工艺单数据
       let craft = res[4].data.data
+      // 导入工艺单数据
       if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft)) {
         this.$alert('检测到该产品已有工艺单信息，已自动为您同步了工艺单原料信息', '提示', {
           confirmButtonText: '确定'

@@ -811,7 +811,8 @@
           <div style="background:#ccc;color:rgba(0,0,0,0.85);font-size:14px;padding:8px;border-radius:4px">请仔细核对订单信息，产品信息是否匹配！！！</div>
           <div class="row">
             <span class="label">产品图片：</span>
-            <span class="info">
+            <span class="info"
+              style="max-height:120px">
               <img v-for="(itemImg,indexImg) in formData.codeData.image"
                 :key="indexImg"
                 :src="itemImg.thumb" />

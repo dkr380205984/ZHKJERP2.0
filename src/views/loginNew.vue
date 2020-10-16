@@ -82,6 +82,7 @@ export default {
               duration: 1000
             })
             window.sessionStorage.setItem('user_name', res.data.data.user_name)
+            window.sessionStorage.setItem('company_id', res.data.data.company_id)
             window.sessionStorage.setItem('company_name', res.data.data.company_name)
             window.sessionStorage.setItem('module_id', res.data.data.module_id)
             window.sessionStorage.setItem('logo', res.data.data.company_logo)

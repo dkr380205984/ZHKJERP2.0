@@ -744,9 +744,9 @@
                 default-first-option
                 placeholder="请选择成品加工工序">
                 <el-option v-for="item in finished_list"
-                  :key="item.value"
-                  :label="item.value"
-                  :value="item.value">
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </span>
@@ -1022,7 +1022,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading, process } from '@/assets/js/api'
 import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1723,6 +1723,9 @@ export default {
       priceLoading.list({
         page: 1,
         limit: 9999
+      }),
+      process.list({
+        type: 3
       })
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
@@ -1765,6 +1768,7 @@ export default {
       // }
       this.postData.token = res[7].data.data
       this.priceLoadingList = res[8].data.data.data
+      this.finished_list = res[9].data.data
     })
     this.product_type = this.$route.query.productType === '1' || !this.$route.query.productType
     this.getList()

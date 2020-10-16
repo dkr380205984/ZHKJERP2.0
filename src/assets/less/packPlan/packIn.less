@@ -1,0 +1,224 @@
+@import '../common.less';
+#packIn{
+  .swichCtn{
+    border-top: 0;
+    margin-top: 0;
+    margin-bottom: 0px;
+    position: relative;
+    height: 66px;
+    overflow: hidden;
+    .swich:hover{
+      background-color: rgba(26, 149, 255, 0.25);
+    }
+    .handleBtn{
+      position: absolute;
+      top: 50%;
+      width: 32px;
+      height: 66px;
+      line-height: 66px;
+      text-align: center;
+      background-color: #FFF;
+      transform: translateY(-50%);
+      cursor: pointer;
+      &::after{
+        content: '';
+        display: block;
+        border: 9px solid transparent;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+      }
+      &.right{
+        right: 0;
+        &:after{
+          border-left-color: @blue;
+        }
+      }
+      &.left{
+        left: 0;
+        &:after{
+          border-right-color: @blue;
+        }
+      }
+    }
+    .swichCtnBox{      
+      display: flex;
+      flex-wrap: nowrap;
+      transition: all 0.3s linear;
+      position: absolute;
+    }
+  }
+  .createModule{
+    position: relative;
+    background: #f8f8f8;
+    padding: 16px 0;
+    margin: 16px 0;
+    .text{
+      color: @font65;
+    }
+    .deleteIconBtn{
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      text-align: center;
+      background: @orange;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .flex3{
+      max-width: 319.3px;
+    }
+  }
+  .colCtn{
+    &.margin36{
+      margin-right: 36px;
+    }
+  }
+  .noMargin{
+    margin: 0!important;
+  }
+  .noPadding{
+    padding: 0!important;
+  }
+  .editCtn{
+    display: flex;
+    flex-direction: column;
+    .editRow{
+      width: 100%;
+      height: auto;
+      padding:  39px 32px 0 32px;
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      .editItem{
+        width: 400px;
+        margin-right: 32px;
+        min-height: 323px;
+        height: inherit;
+        box-shadow:3px 3px 12px rgba(26,148,255,0.2);
+        border: 1px solid #FEFEFE;
+        margin-bottom: 24px;
+        border-radius: 8px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 24px 27px 24px 16px;
+        box-sizing: border-box;
+        transition: height 0.2s linear;
+        &.addItem{
+          cursor: pointer;
+          border: 1px dashed @blue;
+          background-color: rgba(26,148,255,0.1);
+          align-items: center;
+          justify-content: center;
+          color: @blue;
+        }
+        .deleteIcon_page{
+          position: absolute;
+          top: 10px;
+          right: 14px;
+          color: @red;
+          font-size: 24px;
+          cursor: pointer;
+        }
+        .editItem__innerRow{
+          display: flex;
+          flex-direction: column;
+          color: @font65;
+          margin-bottom:16px;
+          .label{
+            display: flex;
+            height: auto;
+            font-size: @fontMiddle;
+            align-items: center;
+            margin-bottom: 12px;
+            line-height: 1em;
+            em.code{
+              color: @green;
+              font-size: 24px;
+              font-weight: 400;
+              margin-left: 16px;
+              font-style: normal;
+              line-height: 1em;
+            }
+          }
+          .content{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            .content__inner{
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              min-height: 32px;
+              position: relative;
+              margin-bottom: 16px;
+              padding-right: 36px;
+              box-sizing: border-box;
+              .handleCtn{
+                position: absolute;
+                width: 36px;
+                text-align: center;
+                top: 50%;
+                right: 0;
+                color: @blue;
+                transform: translateY(-50%);
+                font-size: @fontSmall;
+                cursor: pointer;
+                &.red{
+                  color: @red;
+                }
+              }
+              .width169{
+                width: 169px;
+              }
+              .width139{
+                width: 139px;
+              }
+              &:last-of-type{
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+        .showHiddle{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: @blue;
+          cursor: pointer;
+          .el-icon-d-arrow-right{
+            transition: transform 0.2s linear;            
+            &.bottom_icon{
+              transform: rotateZ(90deg);
+              margin-right: 8px;
+            }
+            &.top_icon{
+              transform: rotateZ(-90deg);
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+  .titleCtn{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .flex2{
+    flex: 2;
+  }
+  .flex3{
+    flex: 3;
+  }
+  .green{
+    color: @green;
+  }
+}
