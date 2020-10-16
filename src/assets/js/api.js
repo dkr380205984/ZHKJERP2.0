@@ -224,7 +224,10 @@ const packag = {
   create: (params) => http.post(`${baseUrl}/pack/material/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/pack/material/delete`, params, 'application/json'),
   list: (params) => http.get(`${baseUrl}/pack/material/list`, params),
-  priceLog: (params) => http.get(`${baseUrl}/pack/material/one`, params)
+  priceLog: (params) => http.get(`${baseUrl}/pack/material/one`, params),
+  stockIn: (params) => http.post(`${baseUrl}/pack/material/push`, params, 'application/json'),
+  stockDetail: (params) => http.get(`${baseUrl}/pack/material/push/list`, params),
+  stockDelete: (params) => http.post(`${baseUrl}/pack/material/push/delete`, params, 'application/json')
 }
 // 产品库存
 const productStock = {

@@ -27,8 +27,9 @@
         v-if="whichPrice==='weave_info'">
         <div class="once"
           v-for="(item,index) in weave_info"
-          :key="index">
-          <span class="name">{{item.name}}</span>
+          :key="index"
+          v-show="item.total_price">
+          <span class="name">{{item.name}}({{item.product_code}})</span>
           <span class="price">{{item.total_price}}元</span>
         </div>
       </div>
@@ -36,8 +37,9 @@
         v-if="whichPrice==='semi_product_info'">
         <div class="once"
           v-for="(item,index) in semi_product_info"
-          :key="index">
-          <span class="name">{{item.name.join('/')}}</span>
+          :key="index"
+          v-show="item.total_price">
+          <span class="name">{{item.name.join?item.name.join('/'):item.name}}({{item.product_code}})</span>
           <span class="price">{{item.total_price}}元</span>
         </div>
       </div>
@@ -45,8 +47,9 @@
         v-if="whichPrice==='production_info'">
         <div class="once"
           v-for="(item,index) in production_info"
-          :key="index">
-          <span class="name">{{item.name.join('/')}}</span>
+          :key="index"
+          v-show="item.total_price">
+          <span class="name">{{item.name.join?item.name.join('/'):item.name}}({{item.product_code}})</span>
           <span class="price">{{item.total_price}}元</span>
         </div>
       </div>

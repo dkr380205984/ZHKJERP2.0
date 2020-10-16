@@ -31,7 +31,7 @@
           </div>
           <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
-            <span class="text">{{productInfo.materials|filterMaterials}}</span>
+            <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
@@ -797,6 +797,7 @@ export default {
           product_category: '',
           name: ''
         },
+        component: [],
         color: [],
         materials: [],
         create_time: '',

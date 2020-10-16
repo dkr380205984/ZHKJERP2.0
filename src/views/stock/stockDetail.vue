@@ -851,7 +851,9 @@
             <div class="tb_content"
               v-for="(itemMa,indexMa) in productList"
               :key="indexMa">
-              <span class="tb_row two_line">{{itemMa.product_code}}<br />{{itemMa.category_info|filterProductType}}</span>
+              <span class="tb_row two_line"
+                style="color:#1a95ff;cursor:pointer"
+                @click="openUrl(itemMa.product_id)">{{itemMa.product_code}}<br />{{itemMa.category_info|filterProductType}}</span>
               <span class="tb_row two_line">
                 <zh-img-list :list="itemMa.category_info.image"></zh-img-list>
               </span>
@@ -1219,6 +1221,9 @@ export default {
     }
   },
   methods: {
+    openUrl (id) {
+      window.open('/product/productDetail/' + id)
+    },
     querySearchYarn (queryString, cb) {
       let list = this.yarnNameList.map(item => {
         return {

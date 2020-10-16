@@ -497,7 +497,7 @@
         <span class="title hasBorder">财务概览</span>
         <span class="btn btnBlue"
           style="float:right;margin-top:12px"
-          @click="showPricePopup = true">导入报价单</span>
+          @click="showPricePopup = true">{{nativeOrder.quotation_id?'查看':'导入'}}报价单</span>
       </div>
       <div class="detailCtn">
         <div class="flexTb">
@@ -1398,7 +1398,7 @@
     <div class="popup"
       v-show="showPricePopup">
       <div class="main"
-        style="width:600px">
+        style="width:1000px">
         <div class="title">
           <span class="text">绑定报价单</span>
           <span class="el-icon-close"
@@ -1406,54 +1406,260 @@
         </div>
         <div class="content">
           <div class="row">
-            <div style="font-size:14px;background:#eee;padding:8px;broder-radius:4px;width:100%">不知道报价单编号?前往<span style="color:#1a95ff;cursor:pointer"
-                @click="openPrice()">报价单列表</span>筛选
+            <div class="tagCtn">
+              <div class="tag"
+                v-if="productList.length>1"
+                :class="{'active':lookAllFlag}"
+                @click="lookAll">所有产品</div>
+              <div class="tag"
+                :class="{'active':item.checked}"
+                v-for="item in productList"
+                :key="item.product_id"
+                @click="checkProduct(item.product_id,item.product_code)">{{item.product_code}}</div>
             </div>
           </div>
-          <div class="row">
-            <div class="label">搜索报价单：</div>
-            <div class="info">
-              <el-autocomplete v-model="priceCode"
-                :fetch-suggestions="getPriceList"
-                placeholder="请输入报价单编号搜索"
-                :trigger-on-focus="false"
-                @select="getPriceInfo($event.id)">
-              </el-autocomplete>
+          <template v-if="!updatePriceFlag && (priceShowTable.assist_info.length>0 || priceShowTable.material_info.length>0 || priceShowTable.pack_material_info.length>0 || priceShowTable.production_info.length>0 || priceShowTable.semi_product_info.length>0 || priceShowTable.weave_info.length>0)">
+            <div class="flexTb"
+              style="margin:20px 0">
+              <div class="thead">
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;">报价信息</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow">
+                      <span class="tcolumn">产品</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow">
+                          <span class="tcolumn">名称</span>
+                          <span class="tcolumn">克重/数量</span>
+                          <span class="tcolumn">单价</span>
+                          <span class="tcolumn">损耗</span>
+                          <span class="tcolumn">其他</span>
+                          <span class="tcolumn">总价</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </div>
+              <div class="tbody">
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">原料信息</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.material_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name||'/'}}</span>
+                          <span class="tcolumn">{{itemChild.weight ? itemChild.weight + (itemChild.unit || 'g') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.prop ? itemChild.prop + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">辅料信息</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.assist_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name||'/'}}</span>
+                          <span class="tcolumn">{{itemChild.weight ? itemChild.weight + (itemChild.unit || 'g') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.prop ? itemChild.prop + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">织造信息</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.weave_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name}}</span>
+                          <span class="tcolumn">{{itemChild.number ? itemChild.number + (itemChild.unit || '') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.sunhao ? itemChild.sunhao + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">半成品加工</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.semi_product_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name.join?itemChild.name.join('/'):itemChild.name}}</span>
+                          <span class="tcolumn">{{itemChild.number ? itemChild.number + (itemChild.unit || '') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.sunhao ? itemChild.sunhao + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">成品加工</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.production_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name.join?itemChild.name.join('/'):itemChild.name}}</span>
+                          <span class="tcolumn">{{itemChild.number ? itemChild.number + (itemChild.unit || '') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.sunhao ? itemChild.sunhao + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+                <span class="trow">
+                  <span class="tcolumn"
+                    style="max-width:70px;background:#FAFAFA">包装辅料</span>
+                  <span class="tcolumn noPad"
+                    style="flex:7">
+                    <span class="trow"
+                      v-for="itemPro in priceShowTable.pack_material_info"
+                      :key="itemPro.product_code + 'material_info'">
+                      <span class="tcolumn">{{itemPro.product_code || '/'}}</span>
+                      <span class="tcolumn noPad"
+                        style="flex:6">
+                        <span class="trow"
+                          v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                          :key="indexChild">
+                          <span class="tcolumn">{{itemChild.name}}</span>
+                          <span class="tcolumn">{{itemChild.number ? itemChild.number + (itemChild.unit || '') : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.price ? itemChild.price + '元' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.sunhao ? itemChild.sunhao + '%' : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.other ? itemChild.other : '/'}}</span>
+                          <span class="tcolumn">{{itemChild.total_price ? itemChild.total_price + '元' : '0元'}}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="label">报价编号：</div>
-            <div class="info text">{{priceInfo.price_code}}</div>
-          </div>
-          <div class="row">
-            <div class="label">报价名称：</div>
-            <div class="info text">{{priceInfo.price_name||'无'}}</div>
-          </div>
-          <div class="row">
-            <div class="label">外贸公司：</div>
-            <div class="info text">{{priceInfo.client_name}}</div>
-          </div>
-          <div class="row">
-            <div class="label">图片信息：</div>
-            <span class="info imgCtn"
-              v-if="priceInfo.imgArr.length>0">
-              <el-image style="width: 80px; height: 80px"
-                :src="priceInfo.imgArr[0]"
-                :preview-src-list="priceInfo.imgArr">
-              </el-image>
-            </span>
-            <span class="info text"
-              v-else>待选择</span>
-          </div>
+          </template>
+          <template v-else>
+            <div class="row">
+              <div style="font-size:14px;background:#eee;padding:8px;broder-radius:4px;width:100%">
+                <div>
+                  <span v-if="lookAllFlag&&productList.length>1">注意：给订单绑定报价单会覆盖原有的报价单，如果每个产品都需要绑定独立报价单，请选中产品后进行绑定操作。</span>
+                  <span v-if="!lookAllFlag">正在给产品绑定报价单。</span>
+                  不知道报价单编号?前往<span style="color:#1a95ff;cursor:pointer"
+                    @click="openPrice()">报价单列表</span>筛选。
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">搜索报价单：</div>
+              <div class="info">
+                <el-autocomplete v-model="priceCode"
+                  :fetch-suggestions="getPriceList"
+                  placeholder="请输入报价单编号搜索"
+                  :trigger-on-focus="false"
+                  @select="getPriceInfo($event.id)">
+                </el-autocomplete>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">报价编号：</div>
+              <div class="info text">{{priceInfo.price_code}}</div>
+            </div>
+            <div class="row">
+              <div class="label">报价名称：</div>
+              <div class="info text">{{priceInfo.price_name||'无'}}</div>
+            </div>
+            <div class="row">
+              <div class="label">外贸公司：</div>
+              <div class="info text">{{priceInfo.client_name}}</div>
+            </div>
+            <div class="row">
+              <div class="label">图片信息：</div>
+              <span class="info imgCtn"
+                v-if="priceInfo.imgArr.length>0">
+                <el-image style="width: 80px; height: 80px"
+                  :src="priceInfo.imgArr[0]"
+                  :preview-src-list="priceInfo.imgArr">
+                </el-image>
+              </span>
+              <span class="info text"
+                v-else>暂无图片信息</span>
+            </div>
+          </template>
         </div>
         <div class="opr">
           <div style="display:flex">
             <div class="btn btnGray"
-              @click="showPricePopup = false">取消</div>
+              @click="canclePrice">取消</div>
           </div>
-          <div style="display:flex">
+          <div style="display:flex"
+            v-if="updatePriceFlag || !(priceShowTable.assist_info.length>0 || priceShowTable.material_info.length>0 || priceShowTable.pack_material_info.length>0 || priceShowTable.production_info.length>0 || priceShowTable.semi_product_info.length>0 || priceShowTable.weave_info.length>0)">
             <div class="btn btnBlue"
               @click="bindPrice">确认绑定</div>
+          </div>
+          <div style="display:flex"
+            v-if="!updatePriceFlag && (priceShowTable.assist_info.length>0 || priceShowTable.material_info.length>0 || priceShowTable.pack_material_info.length>0 || priceShowTable.production_info.length>0 || priceShowTable.semi_product_info.length>0 || priceShowTable.weave_info.length>0)">
+            <div class="btn btnOrange"
+              @click="updatePriceFlag = true">重新绑定</div>
           </div>
         </div>
       </div>
@@ -1597,12 +1803,25 @@ export default {
       // 文件更新模块
       showUpdateFilePopup: false,
       showPricePopup: false,
+      lookAllFlag: false,
+      updatePriceFlag: false,
+      checkWhichProduct: '',
+      priceTable: {},
+      priceShowTable: {
+        material_info: [],
+        production_info: [],
+        semi_product_info: [],
+        assist_info: [],
+        weave_info: [],
+        pack_material_info: []
+      },
       priceInfo: {
         price_code: '待选择',
         price_name: '待选择',
         client_name: '待选择',
         imgArr: []
       },
+      nativePriceInfo: {}, // 报价单重新提交一份给后台
       price_sts: {
         materialOrderPricePlan: 0,
         materialOrderTotalPlan: 0,
@@ -1641,6 +1860,37 @@ export default {
     }
   },
   methods: {
+    // 取消绑定初始化数据
+    canclePrice () {
+      this.showPricePopup = false
+      this.updatePriceFlag = false
+      if (this.nativeOrder.quotation_id) {
+        this.lookAll()
+      }
+    },
+    lookAll () {
+      this.lookAllFlag = true
+      this.productList.forEach((item) => { item.checked = false })
+      this.priceShowTable = this.priceTable
+    },
+    // 报价单选择产品
+    checkProduct (id, code) {
+      this.lookAllFlag = false
+      this.productList.forEach((item) => { item.checked = false })
+      this.productList.find((item) => item.product_id === id).checked = true
+      this.checkWhichProduct = code
+      this.$forceUpdate()
+      this.priceShowTable = {
+        material_info: this.priceTable.material_info.filter((item) => item.product_code === code),
+        production_info: this.priceTable.production_info.filter((item) => item.product_code === code),
+        semi_product_info: this.priceTable.semi_product_info.filter((item) => item.product_code === code),
+        assist_info: this.priceTable.assist_info.filter((item) => item.product_code === code),
+        weave_info: this.priceTable.weave_info.filter((item) => item.product_code === code),
+        pack_material_info: this.priceTable.pack_material_info.filter((item) => item.product_code === code)
+      }
+      console.log(this.priceShowTable)
+      this.updatePriceFlag = false
+    },
     // 处理产前确认信息
     getConfirmBeforeProductionInfo (orderInfo) {
       let materialPush = orderInfo.material_push_confirm && JSON.parse(orderInfo.material_push_confirm)
@@ -1668,7 +1918,6 @@ export default {
           ...(productProduction || {})
         }
       ]
-      console.log(this.compareInfo)
     },
     // 绑定报价单
     bindPrice () {
@@ -1677,17 +1926,158 @@ export default {
         return
       }
       this.loading = true
-      // this.nativeOrder.quotation_id = this.priceInfo.id
-      order.bindQuotation({
-        order_id: this.$route.params.id,
-        quotation_id: this.priceInfo.id
-      }).then(res => {
-        if (res.data.status) {
-          this.$message.success('绑定成功')
-          this.showPricePopup = false
-          this.init()
+      this.nativePriceInfo.id = this.nativeOrder.quotation_id || null
+      this.nativePriceInfo.order_id = this.$route.params.id
+      this.nativePriceInfo.product_info = JSON.stringify([])
+      // 如果是订单绑定的，那就覆盖掉原有的，或者没有的
+      if (this.lookAllFlag) {
+        this.nativePriceInfo.material_info = JSON.stringify(JSON.parse(this.nativePriceInfo.material_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        this.nativePriceInfo.assist_info = JSON.stringify(JSON.parse(this.nativePriceInfo.assist_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        this.nativePriceInfo.production_info = JSON.stringify(JSON.parse(this.nativePriceInfo.production_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        this.nativePriceInfo.semi_product_info = JSON.stringify(JSON.parse(this.nativePriceInfo.semi_product_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        this.nativePriceInfo.weave_info = JSON.stringify(JSON.parse(this.nativePriceInfo.weave_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        this.nativePriceInfo.pack_material_info = JSON.stringify(JSON.parse(this.nativePriceInfo.pack_material_info).map((item) => {
+          item.product_code = '所有产品'
+          return item
+        }))
+        price.create(this.nativePriceInfo).then((res) => {
+          order.bindQuotation({
+            order_id: this.$route.params.id,
+            quotation_id: res.data.data.id
+          }).then(res => {
+            if (res.data.status) {
+              this.$message.success('绑定成功')
+              this.showPricePopup = false
+              this.updatePriceFlag = false
+              this.init()
+            }
+          })
+        })
+      } else {
+        // 如果是产品绑定的
+        // 确认一下是不是绑定订单的，如果是绑定订单的，提醒他会覆盖
+        if (this.nativeOrder.quotation_id && this.priceTable.material_info.find((item) => item.product_code === '所有产品')) {
+          this.$confirm('该订单已经绑定过订单报价单，继续导入产品报价单会覆盖原有订单报价单，是否继续?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.nativePriceInfo.material_info = JSON.stringify(JSON.parse(this.nativePriceInfo.material_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            this.nativePriceInfo.assist_info = JSON.stringify(JSON.parse(this.nativePriceInfo.assist_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            this.nativePriceInfo.production_info = JSON.stringify(JSON.parse(this.nativePriceInfo.production_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            this.nativePriceInfo.semi_product_info = JSON.stringify(JSON.parse(this.nativePriceInfo.semi_product_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            this.nativePriceInfo.weave_info = JSON.stringify(JSON.parse(this.nativePriceInfo.weave_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            this.nativePriceInfo.pack_material_info = JSON.stringify(JSON.parse(this.nativePriceInfo.pack_material_info).map((item) => {
+              item.product_code = this.checkWhichProduct
+              return item
+            }))
+            price.create(this.nativePriceInfo).then((res) => {
+              order.bindQuotation({
+                order_id: this.$route.params.id,
+                quotation_id: res.data.data.id
+              }).then(res => {
+                if (res.data.status) {
+                  this.$message.success('绑定成功')
+                  this.showPricePopup = false
+                  this.updatePriceFlag = false
+                  this.init()
+                }
+              })
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消绑定'
+            })
+          })
+        } else {
+          this.priceTable.material_info = this.priceTable.material_info || []
+          this.priceTable.assist_info = this.priceTable.assist_info || []
+          this.priceTable.production_info = this.priceTable.production_info || []
+          this.priceTable.semi_product_info = this.priceTable.semi_product_info || []
+          this.priceTable.weave_info = this.priceTable.weave_info || []
+          this.priceTable.pack_material_info = this.priceTable.pack_material_info || []
+          console.log(this.priceTable.material_info.filter((item) => item.product_code !== this.checkWhichProduct))
+          this.nativePriceInfo.material_info = JSON.stringify(this.myFlatten(this.priceTable.material_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.material_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          this.nativePriceInfo.assist_info = JSON.stringify(this.myFlatten(this.priceTable.assist_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.assist_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          this.nativePriceInfo.production_info = JSON.stringify(this.myFlatten(this.priceTable.production_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.production_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          this.nativePriceInfo.semi_product_info = JSON.stringify(this.myFlatten(this.priceTable.semi_product_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.semi_product_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          this.nativePriceInfo.weave_info = JSON.stringify(this.myFlatten(this.priceTable.weave_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.weave_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          this.nativePriceInfo.pack_material_info = JSON.stringify(this.myFlatten(this.priceTable.pack_material_info.filter((item) => item.product_code !== this.checkWhichProduct)).concat(JSON.parse(this.nativePriceInfo.pack_material_info).map((item) => {
+            item.product_code = this.checkWhichProduct
+            return item
+          })))
+          price.create(this.nativePriceInfo).then((res) => {
+            order.bindQuotation({
+              order_id: this.$route.params.id,
+              quotation_id: res.data.data.id
+            }).then(res => {
+              if (res.data.status) {
+                this.$message.success('绑定成功')
+                this.showPricePopup = false
+                this.updatePriceFlag = false
+                this.init()
+              }
+            })
+          })
         }
+      }
+    },
+    // 自己写个符合业务场景的展开函数吧
+    myFlatten (json) {
+      let arr = []
+      json.forEach((item) => {
+        item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.product_code = item.product_code
+          arr.push(itemChild)
+        })
       })
+      return arr
     },
     // 搜索报价单
     getPriceList (queryString, cb) {
@@ -1720,6 +2110,10 @@ export default {
           client_name: data.client_name,
           imgArr: data.file_url || [require('@/assets/image/index/noPic.jpg')]
         }
+        // 保存一份原始报价单信息
+        this.nativePriceInfo = data
+        console.log(data)
+
         this.loading = false
       })
     },
@@ -1732,6 +2126,8 @@ export default {
         id: id
       }).then((res) => {
         let data = res.data.data
+        console.log(data)
+        // 把报价单导入订单价格统计
         this.price_sts.materialOrderPricePlan = JSON.parse(data.material_info).reduce((total, current) => {
           return total + Number(current.total_price)
         }, 0)
@@ -1770,6 +2166,16 @@ export default {
         this.orderDetailInfo.finance.finance[7].price_info[0].plan_total_price = this.$toFixed(this.price_sts.finishedProcessTotalPlan)
         this.orderDetailInfo.finance.finance[8].price_info[0].plan_pre_price = this.$toFixed(this.price_sts.packPricePlan)
         this.orderDetailInfo.finance.finance[8].price_info[0].plan_total_price = this.$toFixed(this.price_sts.packTotalPlan)
+        this.priceTable = {
+          material_info: this.$mergeData(JSON.parse(data.material_info), { mainRule: 'product_code' }),
+          production_info: this.$mergeData(JSON.parse(data.production_info), { mainRule: 'product_code' }),
+          semi_product_info: this.$mergeData(JSON.parse(data.semi_product_info), { mainRule: 'product_code' }),
+          assist_info: this.$mergeData(JSON.parse(data.assist_info), { mainRule: 'product_code' }),
+          weave_info: this.$mergeData(JSON.parse(data.weave_info), { mainRule: 'product_code' }),
+          pack_material_info: this.$mergeData(JSON.parse(data.pack_material_info), { mainRule: 'product_code' })
+        }
+        this.priceShowTable = this.$clone(this.priceTable)
+        console.log(this.priceShowTable)
         this.loading = false
       })
     },
@@ -1900,6 +2306,11 @@ export default {
           })
         })
         this.productList = productList
+        if (this.productList.length === 1) {
+          this.productList[0].checked = true
+        } else {
+          this.lookAllFlag = true
+        }
         this.productAllNumber = productList.reduce((total, current) => {
           return total + Number(current.numbers)
         }, 0)

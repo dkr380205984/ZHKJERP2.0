@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="!productInfo.part_title && !productInfo.name">
+        v-if="!productInfo.part_title">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -89,11 +89,11 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="productInfo.part_title || productInfo.name">
+        v-if="productInfo.part_title">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">配件名称：</span>
-            <span class="text">{{productInfo.part_title || productInfo.name}}</span>
+            <span class="text">{{productInfo.part_title}}</span>
           </div>
         </div>
       </div>
@@ -3572,7 +3572,7 @@ export default {
           peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] ?
             peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] += Number(this.colorWeight.weft[indexColor]) :
             peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.weft[indexColor])
-          peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name].toFixed(2)
+          peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name]).toFixed(2)
         })
       })
       return {

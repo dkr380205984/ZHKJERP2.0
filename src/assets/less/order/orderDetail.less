@@ -504,4 +504,29 @@
       }
     }
   }
+  .popup{
+    .content{
+      max-height: 600px;
+    }
+    .tagCtn{
+      display: block;
+      height: 32px;
+      line-height: 32px;
+      border: 1px solid #e9e9e9;
+      .tag{
+        cursor: pointer;
+        display: inline-block;
+        border-right: 1px solid #e9e9e9;
+        font-size: 14px;
+        padding: 0 12px;
+        &:nth-last-child(1){
+          border-right: 0;
+        }
+        &.active{
+          color: #ffffff;
+          background: @blue;
+        }
+      }
+    }
+  }
 }
