@@ -4,7 +4,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">桐庐凯瑞针纺有限公司</span>
+          <span class="title">{{companyName}}工艺单</span>
           <span class="item">
             <span class="label">工艺单编号：</span>
             {{craftDetail.craft_code}}
@@ -835,6 +835,7 @@ export default {
   data () {
     return {
       loading: true,
+      companyName: window.sessionStorage.getItem('company_name'),
       qrCodeUrl: '',
       craftDetail: {
         product_info: {

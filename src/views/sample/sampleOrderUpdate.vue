@@ -701,9 +701,13 @@ export default {
         time_progress_demo_id: this.warnSettingId,
         progress_data: {
           material_plan: this.$toFixed(materialPlanFlag.percent * 100),
+          material_plan_date: materialPlanFlag.date,
           material_push: this.$toFixed(materialPushFlag.percent * 100),
+          material_push_date: materialPushFlag.date,
           semi_product_push: this.$toFixed(semiProductPushFlag.percent * 100),
-          product_push: this.$toFixed(productPushFlag.percent * 100)
+          semi_product_push_date: semiProductPushFlag.date,
+          product_push: this.$toFixed(productPushFlag.percent * 100),
+          product_push_date: productPushFlag.date
         }
       } : null
       let data = {

@@ -77,17 +77,26 @@ export default {
     },
     startTime (newVal) { // 页面初始化时数据没进来导致数据错误优化
       this.needTime = (new Date(this.endTime).getTime() - new Date(newVal).getTime()) / 1000 / 60 / 60 / 24
+      this.renderData.forEach((item, index) => {
+        item.date = this.cmpDate(item.percent, index)
+      })
     },
     endTime (newVal) { // 页面初始化时数据没进来导致数据错误优化
       this.needTime = (new Date(newVal).getTime() - new Date(this.startTime).getTime()) / 1000 / 60 / 60 / 24
+      this.renderData.forEach((item, index) => {
+        item.date = this.cmpDate(item.percent, index)
+      })
     },
     processData (newVal) {
       let left = 0
-      this.renderData = newVal.map((item) => {
+      this.renderData = newVal.map((item, index) => {
         item.width = Math.round(this.domWidth * item.percent)
         left = left + item.width
         item.left = left
         return item
+      })
+      this.renderData.forEach((item, index) => {
+        item.date = this.cmpDate(item.percent, index)
       })
     }
   },
@@ -139,8 +148,10 @@ export default {
             item.item.left = item.item.left + deltX
             item.item.width = item.item.width + deltX
             item.item.percent = (item.item.width / this.domWidth).toFixed(2)
+            item.item.date = this.cmpDate(item.item.percent, item.index)
             itemNext.width = itemNext.width - deltX
             itemNext.percent = (itemNext.width / this.domWidth).toFixed(2)
+            itemNext.date = this.cmpDate(itemNext.percent, item.index + 1)
             this.mousePosition = event.clientX
             this.$forceUpdate()
           }
@@ -161,11 +172,14 @@ export default {
     this.needTime = (new Date(this.endTime).getTime() - new Date(this.startTime).getTime()) / 1000 / 60 / 60 / 24
     this.domWidth = this.$refs['zhTimeProcess' + this.id].offsetWidth
     let left = 0
-    this.renderData = this.processData.map((item) => {
+    this.renderData = this.processData.map((item, index) => {
       item.width = Math.round(this.domWidth * item.percent)
       left = left + item.width
       item.left = left
       return item
+    })
+    this.renderData.forEach((item, index) => {
+      item.date = this.cmpDate(item.percent, index)
     })
   },
   computed: {
