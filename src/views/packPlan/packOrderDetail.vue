@@ -195,7 +195,7 @@
               </span>
               <span class="content">
                 <el-radio-group v-model="itemOrder.computed_method"
-                  @change="computedPrice(itemOrder)">
+                  @change="computedPrice(itemOrder,null,true)">
                   <el-radio label="1">箱子</el-radio>
                   <el-radio label="2">袋子</el-radio>
                   <el-radio label="3">其他</el-radio>
@@ -1092,14 +1092,29 @@ export default {
         this.loading = false
       })
     },
-    computedPrice (item, itemS) {
+    computedPrice (item, itemS, flag) {
+      if (flag) { // 改变计算方式重新计算
+        item.size_info.forEach(itemSize => {
+          let long = itemSize.long_box ? itemSize.long_box / 100 : 0
+          let width = itemSize.width_box ? itemSize.width_box / 100 : 0
+          let height = itemSize.height_box ? itemSize.height_box / 100 : 0
+          let price = itemSize.price || 0
+          if (item.computed_method === '1') {
+            itemSize.one_price = this.$toFixed((long + width + 0.08) * (width + height + 0.04) * price)
+          } else if (item.computed_method === '2') {
+            itemSize.one_price = this.$toFixed(long * width * 1.08 * price)
+          }
+          this.computedTotalPrice(item)
+        })
+        return
+      }
+      if (!itemS) return // 改变单项计算
       let long = itemS.long_box ? itemS.long_box / 100 : 0
       let width = itemS.width_box ? itemS.width_box / 100 : 0
       let height = itemS.height_box ? itemS.height_box / 100 : 0
       let price = itemS.price || 0
       if (item.computed_method === '1') {
         itemS.one_price = this.$toFixed((long + width + 0.08) * (width + height + 0.04) * price)
-        // item.total_price = this.$toFixed(item.one_price * orderNum)
       } else if (item.computed_method === '2') {
         itemS.one_price = this.$toFixed(long * width * 1.08 * price)
       }
