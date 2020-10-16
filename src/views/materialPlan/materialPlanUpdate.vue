@@ -383,7 +383,6 @@ export default {
       fastWriteFlag: false, // 快捷填写颜色损耗
       msgUrl: '',
       msgContent: '',
-      lock: true,
       yarnList: [],
       materialList: [],
       orderInfo: {},
@@ -469,10 +468,7 @@ export default {
       }
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let isAllComplete = true
       for (let indexPro in this.materialPlanInfo) {
         let itemPro = this.materialPlanInfo[indexPro]
@@ -577,7 +573,6 @@ export default {
           flag.id = itemMa.id
         }
       })
-      this.lock = false
       if (!isAllComplete) {
         this.$confirm('该物料计划仍有部分产品物料信息没有计划, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -603,14 +598,12 @@ export default {
                 this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
               }
             }
-            this.lock = true
           })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消'
           })
-          this.lock = true
         })
       } else {
         materialPlan.create({
@@ -632,7 +625,6 @@ export default {
               this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
             }
           }
-          this.lock = true
         })
       }
     },
@@ -755,7 +747,7 @@ export default {
           }
         }))
       })
-      let totalInfo = this.$mergeData(arr, { mainRule: ['material_name', 'color'], otherRule: [{ name: 'total_number', type: 'add' }, { name: 'unit' }, { name: 'end_num', type: 'add' }, { name: 'type' }] })
+      let totalInfo = this.$mergeData(arr, { mainRule: ['material_name', 'color', 'type'], otherRule: [{ name: 'total_number', type: 'add' }, { name: 'unit' }, { name: 'end_num', type: 'add' }] })
       this.materialTotalInfo = totalInfo.map(itemMa => {
         delete itemMa.childrenMergeInfo
         itemMa.total_number = itemMa.type === 1 ? this.numberAutoMethod((itemMa.total_number || 0) / 1000) : this.numberAutoMethod((itemMa.total_number || 0))

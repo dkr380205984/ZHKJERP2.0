@@ -382,7 +382,6 @@ export default {
       msgUrl: '',
       msgContent: '',
       loading: true,
-      lock: true,
       yarnList: [],
       materialList: [],
       orderInfo: {},
@@ -467,10 +466,7 @@ export default {
       }
     },
     saveAll () {
-      if (!this.lock) {
-        this.$message.warning('请勿频繁点击')
-        return
-      }
+      if (this.$submitLock()) return
       let isAllComplete = true
       for (let indexPro in this.materialPlanInfo) {
         let itemPro = this.materialPlanInfo[indexPro]
@@ -559,7 +555,6 @@ export default {
           unit: itemMa.unit
         })
       })
-      this.lock = false
       if (!isAllComplete) {
         this.$confirm('该物料计划仍有部分产品物料信息没有计划, 是否继续?', '提示', {
           confirmButtonText: '确定',
@@ -583,14 +578,12 @@ export default {
                 this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
               }
             }
-            this.lock = true
           })
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消'
           })
-          this.lock = true
         })
       } else {
         materialPlan.create({
@@ -610,7 +603,6 @@ export default {
               this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
             }
           }
-          this.lock = true
         })
       }
     },

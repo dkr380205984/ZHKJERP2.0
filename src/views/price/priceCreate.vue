@@ -1098,7 +1098,8 @@ export default {
         { value: '干燥剂' },
         { value: '衣架' },
         { value: '警报器' },
-        { value: '洗标' }
+        { value: '洗标' },
+        { value: '贴纸' }
       ],
       yarnPriceList: [],
       product_type: true,

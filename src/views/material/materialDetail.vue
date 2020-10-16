@@ -400,6 +400,17 @@
                         type="number">
                         <template slot="append"
                           v-if="type==='1'">kg</template>
+                        <template v-else
+                          slot="append">
+                          <input type="text"
+                            style="width: 2em;
+                            border: none;
+                            background: transparent;
+                            text-align: center;
+                            outline: none;"
+                            v-model="itemMat.unit"
+                            placeholder="个">
+                        </template>
                       </zh-input>
                     </div>
                     <div class="editBtn addBtn"
@@ -1857,6 +1868,7 @@ export default {
       let finded = this.materialArr.find((item) => item.id === id)
       data.color = finded.material_attribute
       data.name = finded.material_name
+      data.unit = finded.unit
     },
     normalOrder (name, color, id, number, replenishFlag) {
       this.order_flag = true
@@ -1873,7 +1885,8 @@ export default {
         company_id: '',
         complete_time: '',
         order_time: this.$getTime(),
-        desc: ''
+        desc: '',
+        unit: ''
       })
     },
     easyOrder (type) {
@@ -2272,7 +2285,8 @@ export default {
             attribute: null,
             stock_id: null,
             client_id: itemF.company_id && itemF.company_id[1],
-            order_id: this.$route.params.id
+            order_id: this.$route.params.id,
+            unit: +this.type === 1 ? 'kg' : itemM.unit
           }
         })
       })
