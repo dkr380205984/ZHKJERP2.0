@@ -509,7 +509,7 @@ export default {
       })
       let craft = res[4].data.data
       // 导入工艺单数据
-      if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft)) {
+      if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft.peise_yarn_weight)) {
         this.$alert('检测到该产品已有工艺单信息，已自动为您同步了工艺单原料信息', '提示', {
           confirmButtonText: '确定'
         })
