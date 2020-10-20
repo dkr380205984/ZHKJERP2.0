@@ -9,9 +9,25 @@
   .flex01{
     flex:0.1;
   }
+  .flex04{
+    flex: 0.4;
+  }
   .price{
     color: @blue;
     font-size: @fontBig;
     font-weight: 600;
+  }
+  .main{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .checkedInfo{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .blue{
+        color: @blue;
+      }
+    }
   }
 }

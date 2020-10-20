@@ -59,6 +59,7 @@
             </span>
             <span class="content">
               <el-select v-model="contact_id"
+                clearable
                 placeholder="请选择联系人">
                 <el-option v-for="item in contactArr"
                   :key="item.id"
@@ -75,6 +76,7 @@
             </span>
             <span class="content">
               <el-select v-model="group_id"
+                clearable
                 placeholder="请选择负责小组">
                 <el-option v-for="item in groupArr"
                   :key="item.id"
@@ -93,6 +95,7 @@
             </span>
             <span class="content">
               <el-select v-model="unit"
+                clearable
                 placeholder="请选择结算单位">
                 <el-option v-for="item in unitArr"
                   :key="item.name"
@@ -442,6 +445,7 @@
               :key="indexPro">
               <span class="tb_row">
                 <el-select v-model="itemPro.id"
+                  clearable
                   class="editInput"
                   placeholder="请选择产品"
                   @change="selectPro($event,itemBatch.batch_info,indexPro)">

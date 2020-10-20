@@ -696,7 +696,7 @@
               </div>
             </div>
           </template>
-          <template v-if="cName==='系统账号管理'">
+          <template v-if="cName==='系统账户管理'">
             <div class="flowerCtn">
               <div class="addBtn"
                 @click="resetAuth">添加员工</div>
@@ -1696,7 +1696,7 @@
           </div>
         </div>
       </template>
-      <template v-if="cName==='系统账号管理'">
+      <template v-if="cName==='系统账户管理'">
         <div class="main">
           <div class="title">
             <div class="text">添加员工</div>
@@ -2468,7 +2468,7 @@ export default {
         '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
         '工序设置': ['原料工序', '半成品加工', '结算工序'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理', '员工标签管理'],
-        '系统账号管理': ['系统账号管理'],
+        '系统账户管理': ['系统账户管理'],
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载'],
         '预警设置': ['订单预警', '样单预警']
@@ -2851,7 +2851,7 @@ export default {
         this.getStation()
       } else if (val === '工厂信息设置') {
         this.getCompany()
-      } else if (val === '系统账号管理') {
+      } else if (val === '系统账户管理') {
         this.getAuth()
       } else if (val === '员工标签管理') {
         this.getAuthTagList()

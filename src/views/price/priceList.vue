@@ -94,6 +94,11 @@
         </div>
         <div class="list">
           <div class="title">
+            <div class="col flex04">
+              <el-checkbox v-model="checkedAll"
+                :indeterminate="indeterminate"
+                @change="changeCheckedAll"></el-checkbox>
+            </div>
             <div class="col">
               <span class="text">编号</span>
             </div>
@@ -127,6 +132,10 @@
           <div class="row"
             v-for="(item,index) in list"
             :key="index">
+            <div class="col flex04">
+              <el-checkbox v-model="item.checked"
+                @change="changeCheckedItem($event,item)"></el-checkbox>
+            </div>
             <div class="col">{{item.code}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col flex15">{{item.client_name}}</div>
@@ -175,6 +184,27 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar"
+      v-if="checkedList.length > 0">
+      <div class="main">
+        <div class="checkedInfo"
+          style="float:left">
+          已选择
+          <span class="blue">{{checkedList.length}}</span>
+          个报价单：
+          <template v-for="(item,index) in checkedList">
+            <span class="blue"
+              :key="index">{{item.code}}</span>;
+          </template>
+        </div>
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="changeCheckedAll(false)">取消</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl(`/priceBatchTable?priceId=${checkedList.map(itemM=>itemM.id).join(',')}`)">批量打印报价单</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -214,10 +244,45 @@ export default {
       pages: 1,
       list: [],
       min: '',
-      max: ''
+      max: '',
+      checkedAll: false,
+      indeterminate: false,
+      checkedList: []
     }
   },
   methods: {
+    changeCheckedAll (e) {
+      this.list.forEach(itemF => {
+        itemF.checked = e
+        let findItem = this.checkedList.find(itemFI => itemFI.id === itemF.id)
+        if (e && !findItem) {
+          this.checkedList.push(itemF)
+        } else if (!e && findItem) {
+          findItem.checked = false
+          this.checkedList = this.checkedList.filter(itemF => itemF.checked)
+        }
+      })
+      this.indeterminate = false
+    },
+    changeCheckedItem (e, item) {
+      let findItem = this.checkedList.find(itemF => itemF.id === item.id)
+      if (e && !findItem) {
+        this.checkedList.push(item)
+      } else if (!e && findItem) {
+        findItem.checked = false
+        this.checkedList = this.checkedList.filter(itemF => itemF.checked)
+      }
+      if (this.list.every(itemE => itemE.checked)) {
+        this.indeterminate = false
+        this.checkedAll = true
+      } else if (this.list.every(itemE => !itemE.checked)) {
+        this.indeterminate = false
+        this.checkedAll = false
+      } else {
+        this.indeterminate = true
+        this.checkedAll = false
+      }
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -278,7 +343,9 @@ export default {
                 product_id: vals.product_info.product_id
               } : vals.product_info.image
             })))
+            let findItem = this.checkedList.find(itemF => itemF.id === item.id)
             return {
+              checked: !!findItem,
               code: item.quotation_code,
               name: item.name,
               client_name: item.client_name,
@@ -295,6 +362,16 @@ export default {
             }
           })
           this.total = res.data.meta.total
+          if (this.list.every(itemE => itemE.checked)) {
+            this.indeterminate = false
+            this.checkedAll = true
+          } else if (this.list.every(itemE => !itemE.checked)) {
+            this.indeterminate = false
+            this.checkedAll = false
+          } else {
+            this.indeterminate = true
+            this.checkedAll = false
+          }
         }
         this.loading = false
       })

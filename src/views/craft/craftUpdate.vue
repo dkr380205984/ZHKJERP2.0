@@ -23,7 +23,8 @@
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
-            <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
+            <!-- <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span> -->
+            <span class="text">{{productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
           </div>
         </div>
         <div class="rowCtn">

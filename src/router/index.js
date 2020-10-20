@@ -538,6 +538,10 @@ const routes = [
     name: '报价单',
     component: () => import('../views/price/pricePrintTable.vue')
   }, {
+    path: '/priceBatchTable',
+    name: '报价单_批量',
+    component: () => import('../views/price/priceBatchTable.vue')
+  }, {
     path: '/staffAnnualTable',
     name: '合计结算单',
     component: () => import('../views/staff/staffAnnualTable.vue')
