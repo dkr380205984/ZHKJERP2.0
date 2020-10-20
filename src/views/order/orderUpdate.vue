@@ -59,6 +59,7 @@
             </span>
             <span class="content">
               <el-select v-model="contact_id"
+                clearable
                 placeholder="请选择联系人">
                 <el-option v-for="item in contactArr"
                   :key="item.id"
