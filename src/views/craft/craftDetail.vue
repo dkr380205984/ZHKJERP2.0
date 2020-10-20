@@ -1538,6 +1538,7 @@ export default {
         let weftColor = this.weftInfo.color_data[index].color_scheme
         let canvasMatrix = []
         let canvasMatrixBack = []
+        console.log(this.warpWidth)
         let warpWidth = 600 / this.warpCanvas.length * 4
         let weftWidth = this.canvasHeight / this.weftCanvas.length
         this.warpCanvas.reduce((totalWarp, itemWarp) => {
@@ -1859,7 +1860,6 @@ export default {
           this.weight += (Number(itemApply.weight) === 'NaN' ? 0 : Number(itemApply.weight))
         })
       })
-      console.log(this.weight)
       this.weight = this.weight.toFixed(1)
       // 将展开的合并信息结合穿综和纹版信息
       let warpGetPMNum = []
@@ -2107,6 +2107,8 @@ export default {
         this.warpCanvasBack = warpCanvas
         this.weftCanvasBack = weftCanvasBack
       }
+      console.log(this.weftCanvas)
+      console.log(this.warpCanvas)
     },
     deleteCraft () {
       this.$confirm('此操作将永久删除该工艺单, 是否继续?', '提示', {
@@ -2119,7 +2121,7 @@ export default {
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('删除成功')
-            this.$router.go(-1)
+            this.$router.push('/craft/craftList/page=1&&keyword=&&date=&&user_id=&&material_name=&&product_code=')
           }
         })
       }).catch(() => {

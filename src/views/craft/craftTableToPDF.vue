@@ -42,7 +42,7 @@
           </span>
           <span class="row_item w100 center">产品成分</span>
           <span class="row_item left">
-            {{craftDetail.product_info.materials |filterMaterials}}
+            {{craftDetail.product_info.component |filterMaterials}}
           </span>
         </div>
         <div class="print_row">

@@ -60,7 +60,7 @@
           <div class="boxTop">订单总额</div>
           <div class="boxBottom">
             <span class="num">{{$toFixed(orderStatistics.DDZE)}}</span>
-            <span class="em">万元</span>
+            <span class="em">万{{huobi==='USD'?'美元':'元'}}</span>
           </div>
         </div>
         <div class="box">
@@ -166,10 +166,12 @@
             <div class="filter_line">
               <el-input class="filter_item"
                 v-model="keyword"
+                style="width:200px"
                 @change="changeRouter(1)"
                 placeholder="输入订单号按回车键查询"></el-input>
               <el-cascader v-model="company_id"
                 class="filter_item"
+                style="width:180px"
                 :show-all-levels='false'
                 placeholder="筛选公司"
                 :options="companyArr"
@@ -178,6 +180,19 @@
                 :props="{ expandTrigger: 'hover' }"
                 @change="changeRouter(1)"
                 filterable></el-cascader>
+              <el-select v-model="huobi"
+                style="width:180px"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选货币">
+                <el-option value=""
+                  label="全部"></el-option>
+                <el-option value="RMB"
+                  label="人民币"></el-option>
+                <el-option value="USD"
+                  label="美元"></el-option>
+              </el-select>
               <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -245,7 +260,7 @@
             <div class="col">{{item.client_name}}</div>
             <div class="col">{{item.group_name}}</div>
             <div class="col">{{parseInt(item.order_number)}}</div>
-            <div class="col">{{parseInt(item.total_price)}}</div>
+            <div class="col">{{parseInt(item.total_price)}}{{huobi==='RMB'?'元':huobi==='USD'?'美元':''}}</div>
             <div class="col">{{item.pack_number}}</div>
             <div class="col">{{item.reality_number}}</div>
             <div class="col">{{parseInt(item.company_cost)}}</div>
@@ -275,6 +290,7 @@ import { group, client, statistics } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      huobi: '',
       loading: true,
       loadingTop: true,
       date: '',
@@ -345,7 +361,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
+      this.$router.push('/financialStatistics/orderStatistics/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&huobi=' + this.huobi)
     },
     reset () {
       this.$router.push('/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id=')
@@ -360,14 +376,16 @@ export default {
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         client_id: this.company_id && this.company_id[1],
-        group_id: this.group_id
+        group_id: this.group_id,
+        currency_type: this.huobi
       }).then((res) => {
         this.loading = false
         this.total = res.data.meta.total
         this.list = res.data.data
       })
       statistics.orderStatistics({
-        is_search: ((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id) ? 1 : 0,
+        currency_type: this.huobi,
+        is_search: ((this.date && this.date.length > 0) || this.keyword || this.company_id || this.group_id || this.huobi) ? 1 : 0,
         order_code: this.keyword,
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
@@ -400,6 +418,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.page = Number(params.page)
       this.keyword = params.keyword
+      this.huobi = params.huobi
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {

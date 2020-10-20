@@ -788,17 +788,31 @@
                 <div class="thead">
                   <div class="trow">
                     <div class="tcolumn padding40">小组名称</div>
-                    <div class="tcolumn right padding40">操作</div>
+                    <div class="tcolumn padding40">操作</div>
                   </div>
                 </div>
                 <div class="tbody">
                   <div class="trow"
                     v-for="(item,index) in groupArr"
                     :key="index">
-                    <div class="tcolumn padding40">{{item.name}}</div>
-                    <div class="tcolumn right padding40">
-                      <span class="red"
-                        @click="deleteGroup(item.id)">删除</span>
+                    <div class="tcolumn padding40">
+                      <span v-if="!item.updateFlag">{{item.name}}</span>
+                      <el-input v-model="item.name"
+                        placeholder="请输入名称"
+                        v-if="item.updateFlag"
+                        style="height:32px"></el-input>
+                    </div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="updateGroup(item)"
+                          v-if="item.updateFlag">确认修改</span>
+                        <span class="blue"
+                          @click="item.updateFlag = true;$forceUpdate()"
+                          v-if="!item.updateFlag">修改</span>
+                        <span class="red"
+                          @click="deleteGroup(item.id)">删除</span>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -4438,6 +4452,19 @@ export default {
       } else {
         this.$message.error('请输入小组名称')
       }
+    },
+    updateGroup (item) {
+      group.create({
+        type: 1,
+        name: item.name,
+        id: item.id
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          item.updateFlag = false
+          this.$forceUpdate()
+        }
+      })
     },
     deleteGroup (id) {
       this.$confirm('是否删除该小组?', '提示', {

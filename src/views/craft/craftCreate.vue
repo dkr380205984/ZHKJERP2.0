@@ -3560,8 +3560,32 @@ export default {
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
         })
       })
-      console.log(this.material.materialWarp)
-      console.log(this.colorWeight)
+      this.material.materialWarp.forEach((item) => {
+        item.apply = item.array.map((index) => {
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+              return {
+                name: item,
+                value: this.coefficient[index]
+              }
+            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
+          }
+        })
+      })
+      this.material.materialWeft.forEach((item) => {
+        item.apply = item.array.map((index) => {
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
+              return {
+                name: item,
+                value: this.coefficient[index]
+              }
+            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1) || 0
+          }
+        })
+      })
       this.colour.forEach((itemColour) => {
         let colour_name = this.colourArr.find((itemFind) => itemFind.color_id === itemColour.value).color_name
         peise_yarn_weight[colour_name] = {}
@@ -3576,6 +3600,18 @@ export default {
             peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.weft[indexColor])
           peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(peise_yarn_weight[colour_name][itemColor.name][this.weftInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name]).toFixed(2)
         })
+        this.material.materialWarp.forEach((item) => {
+          item.apply.forEach((itemChild) => {
+            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] = Number(itemChild.weight)
+          })
+        })
+        this.material.materialWeft.forEach((item) => {
+          item.apply.forEach((itemChild) => {
+            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] = peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] || 0
+            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] += Number(itemChild.weight)
+          })
+        })
+
       })
       return {
         yarn_color_weight: yarn_color_weight,
