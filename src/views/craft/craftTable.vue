@@ -64,6 +64,7 @@
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
+                  ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou || warp_data.reed_width_data}}根/筘)
                 </template>
               </span>
             </span>
@@ -73,6 +74,7 @@
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 2)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
+                  ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou || warp_data.reed_width_data}}根/筘)
                 </template>
               </span>
             </span>
@@ -926,6 +928,7 @@ export default {
         weft: []
       },
       zhujia_info: [],
+      yarn_coefficient: [],
       letterArr: letterArr
     }
   },
@@ -1234,6 +1237,7 @@ export default {
             this.colorWeight.weft[itemChild] = this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
           })
         })
+        this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
           window.print()
         }, 1000)
