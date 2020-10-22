@@ -1519,10 +1519,10 @@ export default {
         this.$message({ type: 'error', message: '请输入汇率' })
         return
       }
-      if (!this.priceInfo.product_cost) {
-        this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
-        return
-      }
+      // if (!this.priceInfo.product_cost) {
+      //   this.$message({ type: 'error', message: '检测到未填写价格信息，无法提交' })
+      //   return
+      // }
       if (!this.priceInfo.basic_fee.prop) {
         this.$message({ type: 'error', message: '请输入基本佣金占比' })
         return

@@ -64,7 +64,7 @@
               </span>
               <span class="row_item center flex08">
                 <template v-for="(itemC,indexC) in itemInner.components">
-                  {{`${itemC.number}%${itemC.component_name}`}}<br :key="indexC" />
+                  {{`${itemC.number || ''}%${itemC.component_name || ''}`}}<br :key="indexC" />
                 </template>
               </span>
               <span class="row_item center flex15 col">
@@ -78,6 +78,15 @@
                   </span>
                 </span>
               </span>
+            </span>
+            <span class="print_row noBorder"
+              v-if="item.product_info && item.product_info.length === 0">
+              <span class="row_item center">
+                <zh-img-list :list="item.image"></zh-img-list>
+              </span>
+              <span class="row_item center"></span>
+              <span class="row_item center flex08"></span>
+              <span class="row_item center flex15"></span>
             </span>
           </span>
           <span class="row_item right flex06">{{item.total_price}}元</span>
@@ -126,11 +135,22 @@ export default {
           code: itemPrice.quotation_code,
           product_info: itemPrice.product_info.map(itemPro => {
             return {
-              image: itemPro.product_info.image,
+              image: itemPro.product_info.image.concat(itemPrice.file_url.map(itemM => {
+                return {
+                  image_url: itemM,
+                  thumb: itemM
+                }
+              })),
               code: itemPro.product_info.product_code,
               type: [itemPro.product_info.category_name, itemPro.product_info.type_name, itemPro.product_info.style_name],
               components: itemPro.product_info.component,
               size_info: itemPro.product_info.size_measurement
+            }
+          }),
+          image: itemPrice.file_url.map(itemM => {
+            return {
+              image_url: itemM,
+              thumb: itemM
             }
           }),
           total_price: itemPrice.total_price,

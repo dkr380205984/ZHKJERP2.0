@@ -25,14 +25,37 @@
                   v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004"
                   popper-class='handleMenuSample'>
                   <template slot="title">已确定</template>
-                  <el-menu-item index="continue"
-                    class="elMenuItem">继续打样</el-menu-item>
+                  <!-- <el-menu-item index="continue"
+                    class="elMenuItem">继续打样</el-menu-item> -->
                   <el-menu-item index="addOrder"
                     class="elMenuItem"
                     v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">大货生产</el-menu-item>
-                  <el-menu-item index="ok"
+                  <!-- <el-menu-item index="waitOrder"
                     class="elMenuItem"
-                    v-if="sampleOrderInfo.status === 3002">不继续打样</el-menu-item>
+                    v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">待下单</el-menu-item> -->
+                  <!-- <el-menu-item index="ok"
+                    class="elMenuItem"
+                    v-if="sampleOrderInfo.status === 3002">待下单</el-menu-item> -->
+                </el-submenu>
+              </el-menu>
+            </el-menu>
+            <el-menu mode="horizontal"
+              class="orange"
+              style="margin-left:16px">
+              <el-menu class="editMenu"
+                mode="horizontal"
+                @select="changeOrderStatus">
+                <el-submenu index="1"
+                  v-if="sampleOrderInfo.status !== 3003 "
+                  popper-class='handleMenuSample'>
+                  <template slot="title">不确定</template>
+                  <el-menu-item index="continue"
+                    class="elMenuItem orange">继续打样</el-menu-item>
+                  <!-- <el-menu-item index="addOrder"
+                    class="elMenuItem"
+                    v-if="sampleOrderInfo.status === 3002 || sampleOrderInfo.status === 3004">结束打样</el-menu-item> -->
+                  <el-menu-item index="endOrder"
+                    class="elMenuItem orange">结束打样</el-menu-item>
                 </el-submenu>
               </el-menu>
             </el-menu>
@@ -2193,6 +2216,27 @@ export default {
             this.init()
           }
         })
+      } else if (type === 'endOrder') { // 结束打样
+        this.$confirm('此操作会将订单状态修改为“已完成”,并且客户状态修改为“不确定”, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          sampleOrder.changeStatus({
+            order_id: this.activeSampleOrderId,
+            type: 6
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.init()
+              this.$message.success('操作成功')
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
       } else if (type === 'isNoHandle') {
         this.$message.warning('已完成或已取消的样单无法操作')
       } else {
@@ -2463,10 +2507,20 @@ export default {
   .el-submenu,
   .el-submenu__title {
     background-color: #1a95ff;
+    border-color: #1a95ff;
     border-radius: 4px;
     color: #fff;
     i {
       color: #fff;
+    }
+  }
+  .orange {
+    &.el-menu,
+    .el-menu,
+    .el-submenu,
+    .el-submenu__title {
+      background-color: rgb(230, 162, 60) !important;
+      border-color: rgb(230, 162, 60) !important;
     }
   }
   .steps {
@@ -2497,6 +2551,9 @@ export default {
         color: #fff;
       }
     }
+  }
+  &.orange:hover {
+    background: rgb(230, 162, 60) !important;
   }
 }
 .handleMenuSample {

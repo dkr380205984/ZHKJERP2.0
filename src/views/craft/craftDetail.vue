@@ -30,10 +30,16 @@
             <span class="text">{{productInfo.craft_code}}</span>
           </div>
           <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{productInfo.user_name}}</span>
+          </div>
+          <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
             <span class="text">{{productInfo.component|filterMaterials}}</span>
           </div>
-          <div class="colCtn">
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
             <span class="text">
               <span v-for="(item,index) in productInfo.color"
@@ -41,9 +47,7 @@
               </span>
             </span>
           </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
             <div class="lineCtn">
               <div class="line"
@@ -1604,6 +1608,7 @@ export default {
       this.DSKZ = data.weight
       this.productInfo = data.product_info
       this.productInfo.craft_code = data.craft_code
+      this.productInfo.user_name = data.user_name
       this.colorWeight = {
         warp: [],
         weft: []
