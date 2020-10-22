@@ -364,7 +364,7 @@
         <div class="print_row h261">
           <span class="col_title">配色工艺</span>
           <span class="row_item col"
-            v-if="zhujia_info.length < 7 && color_data.length < 5">
+            v-if="zhujia_info.length < 7 && color_data.length < 4">
             <span class="print_row h60 noBorder bgGray">
               <span class="row_item w140 special_title">
                 <span class="top_right">具体配色</span>
@@ -383,15 +383,28 @@
               </span>
             </span>
             <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                v-for="item in 6"
+                :key="item">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(colorWeight.warp[item - 1] && colorWeight.warp[item - 1].number)}">{{(colorWeight.warp[item - 1] && colorWeight.warp[item - 1].number) ? colorWeight.warp[item - 1].number : ''}}</span>
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(colorWeight.weft[item - 1] && colorWeight.weft[item - 1].number)}">{{(colorWeight.weft[item - 1]&& colorWeight.weft[item - 1].number) ? colorWeight.weft[item - 1].number : ''}}</span>
+                </div>
+              </span>
+            </span>
+            <span class="print_row h40">
               <span class="row_item bgGray w140 center">克重</span>
               <span class="row_item center"
                 v-for="item in 6"
                 :key="item">
                 <div class="print_row h40 noBorder">
                   <span class="row_item center"
-                    :style="{'font-size':returnSize(colorWeight.warp[item-1] + 'g')}">{{colorWeight.warp[item-1] ? colorWeight.warp[item-1] + 'g' : ''}}</span>
+                    :style="{'font-size':returnSize((colorWeight.warp[item-1] && colorWeight.warp[item-1].weight) + 'g')}">{{(colorWeight.warp[item-1] && colorWeight.warp[item-1].weight) ? colorWeight.warp[item-1].weight + 'g' : ''}}</span>
                   <span class="row_item center"
-                    :style="{'font-size':returnSize(colorWeight.weft[item-1] + 'g')}">{{colorWeight.weft[item-1] ? colorWeight.weft[item-1] + 'g' : ''}}</span>
+                    :style="{'font-size':returnSize((colorWeight.weft[item-1] && colorWeight.weft[item-1].weight) + 'g')}">{{(colorWeight.weft[item-1] && colorWeight.weft[item-1].weight) ? colorWeight.weft[item-1].weight + 'g' : ''}}</span>
                 </div>
               </span>
             </span>
@@ -411,9 +424,9 @@
                 </span>
               </span>
             </span>
-            <template v-if="color_data.length < 5">
+            <template v-if="color_data.length < 4">
               <span class="print_row h40"
-                v-for="item in 4-color_data.length"
+                v-for="item in 3-color_data.length"
                 :key="item+'false'">
                 <span class="row_item bgGray w140 center"></span>
                 <span class="row_item center"
@@ -756,7 +769,7 @@
     </div>
     <!-- 配色超出时 -->
     <div class="printTable outTable"
-      v-if="zhujia_info.length >= 7 || color_data.length >= 5">
+      v-if="zhujia_info.length >= 7 || color_data.length >= 4">
       <div class="outItem">
         <span class="label">工艺单编号：</span>
         {{craftDetail.product_info.product_code}}
@@ -784,15 +797,28 @@
             </span>
           </span>
           <span class="print_row h40">
+            <span class="row_item bgGray w140 center">根数</span>
+            <span class="row_item center"
+              v-for="item in 6"
+              :key="item">
+              <div class="print_row h40 noBorder">
+                <span class="row_item center"
+                  :style="{'font-size':returnSize(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].number)}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].number) ? colorWeight.warp[item - 1 + (indexs * 6)].number : ''}}</span>
+                <span class="row_item center"
+                  :style="{'font-size':returnSize(colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].number)}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].number) ? colorWeight.weft[item - 1 + (indexs * 6)].number : ''}}</span>
+              </div>
+            </span>
+          </span>
+          <span class="print_row h40">
             <span class="row_item bgGray w140 center">克重</span>
             <span class="row_item center"
               v-for="item in 6"
               :key="item">
               <div class="print_row h40 noBorder">
                 <span class="row_item center"
-                  :style="{'font-size':returnSize(colorWeight.warp[item - 1+ (indexs * 6)] + 'g')}">{{colorWeight.warp[item - 1 + (indexs * 6)] ? colorWeight.warp[item - 1 + (indexs * 6)] + 'g' : ''}}</span>
+                  :style="{'font-size':returnSize((colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].weight) + 'g')}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].weight) ? colorWeight.warp[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
                 <span class="row_item center"
-                  :style="{'font-size':returnSize(colorWeight.weft[item - 1+ (indexs * 6)] + 'g')}">{{colorWeight.weft[item - 1 + (indexs * 6)] ? colorWeight.weft[item - 1 + (indexs * 6)] + 'g' : ''}}</span>
+                  :style="{'font-size':returnSize((colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].weight) + 'g')}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].weight) ? colorWeight.weft[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
               </div>
             </span>
           </span>
@@ -812,9 +838,9 @@
               </span>
             </span>
           </span>
-          <template v-if="color_data.length < 5">
+          <template v-if="color_data.length < 4">
             <span class="print_row h40"
-              v-for="item in 4-color_data.length"
+              v-for="item in 3-color_data.length"
               :key="item+'false'">
               <span class="row_item bgGray w140 center"></span>
               <span class="row_item center"
@@ -987,6 +1013,7 @@ export default {
     },
     // 返回字号
     returnSize (str) {
+      str = `${str}`
       let num = 0
       str.split('').forEach(item => {
         num += (item.charCodeAt(0) > 255 ? 2 : 1)
@@ -1224,14 +1251,21 @@ export default {
           colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
           colorNumber.weft[arrWeftBack[0][i]] += x * y * z
         }
+        console.log(colorNumber)
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
-            this.colorWeight.warp[itemChild] = this.$toFixed(colorNumber.warp[itemChild] * (this.weft_data.neichang + this.weft_data.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
+            this.colorWeight.warp[itemChild] = {
+              number: colorNumber.warp[itemChild],
+              weight: this.$toFixed(colorNumber.warp[itemChild] * (this.weft_data.neichang + this.weft_data.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
+            }
           })
         })
         this.weft_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
-            this.colorWeight.weft[itemChild] = this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
+            this.colorWeight.weft[itemChild] = {
+              number: colorNumber.weft[itemChild],
+              weight: this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
+            }
           })
         })
         setTimeout(() => {

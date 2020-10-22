@@ -95,9 +95,9 @@
             <div class="col">
               <span class="text">状态</span>
             </div>
-            <!-- <div class="col">
+            <div class="col">
               <span class="text">创建人</span>
-            </div> -->
+            </div>
             <div class="col">
               <span class="text">创建时间</span>
             </div>
@@ -150,7 +150,7 @@
                 <span class="name">{{item.is_draft===1?'完整':'草稿'}}</span>
               </div>
             </div>
-            <!-- <div class="col">{{item.user_name}}</div> -->
+            <div class="col">{{item.user_name}}</div>
             <div class="col">{{item.create_time.slice(0,10)}}</div>
             <div class="col">
               <span class="opr orange"
