@@ -164,6 +164,15 @@
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入主要原料">
               </el-autocomplete>
+              <el-tooltip class="item"
+                effect="dark"
+                content="保存该原料"
+                placement="top">
+                <div @click="saveYarn(yarn.yarnWarp)"
+                  class="tips">
+                  <i class="el-icon-upload"></i>
+                </div>
+              </el-tooltip>
             </div>
           </div>
         </div>
@@ -434,6 +443,7 @@
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">穿筘法</span>
+              <span class="explanation">(不同原料穿筘法不同请在其他信息中补充)</span>
             </div>
             <div class="content">
               <zh-input placeholder="请输入穿筘法"
@@ -463,20 +473,37 @@
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入筘幅"
-                type="number"
+              <el-input placeholder="由筘幅说明计算得到"
+                disabled
                 v-model="warpInfo.reed_width">
                 <template slot="append">cm</template>
-              </zh-input>
+              </el-input>
             </div>
           </div>
-          <div class="colCtn flex3">
+          <div class="colCtn flex1">
             <div class="label">
               <span class="text">筘幅说明</span>
+              <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <zh-input placeholder="请输入筘幅说明"
-                v-model="warpInfo.reed_width_data">
+            <div class="content"
+              style="display:flex">
+              <zh-input style="flex:0.5;margin-right:15px"
+                placeholder="左边"
+                v-model="warpInfo.reed_width_data[0]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
+              </zh-input>
+              <zh-input style="flex:1;margin-right:15px"
+                placeholder="中间"
+                v-model="warpInfo.reed_width_data[1]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
+              </zh-input>
+              <zh-input style="flex:0.5;"
+                placeholder="右边"
+                v-model="warpInfo.reed_width_data[2]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
               </zh-input>
             </div>
           </div>
@@ -930,6 +957,15 @@
                 :fetch-suggestions="searchYarn"
                 placeholder="请输入主要原料">
               </el-autocomplete>
+              <el-tooltip class="item"
+                effect="dark"
+                content="保存该原料"
+                placement="top">
+                <div @click="saveYarn(yarn.yarnWeft)"
+                  class="tips">
+                  <i class="el-icon-upload"></i>
+                </div>
+              </el-tooltip>
             </div>
           </div>
         </div>
@@ -1170,15 +1206,23 @@
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
-              <span class="text">物料系数</span>
+              <span class="text">物料系数/穿筘法</span>
             </div>
-            <div class="content">
-              <zh-input v-model="coefficient[index]"
+            <div class="content"
+              style="display:flex">
+              <zh-input style="flex:1.2;margin-right:12px"
+                v-model="coefficient[index]"
                 type="number"
                 placeholder="请输入物料系数">
-                <template slot="prepend">{{item}}</template>
+                <template slot="prepend">{{item.name}}</template>
                 <template slot="append">g/m</template>
               </zh-input>
+              <el-input style="flex:1"
+                v-model="chuankouDetail[index]"
+                :disabled="!item.hasCK"
+                placeholder="请输入穿筘法,默认为经向穿筘法">
+                <template slot="append">根/筘</template>
+              </el-input>
             </div>
           </div>
         </div>
@@ -1867,7 +1911,6 @@ export default {
               })
               this.warpInfo.weft = sum
             }
-
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -2129,7 +2172,7 @@ export default {
         reed: null, // 筘号
         reed_method: null, // 穿筘法
         reed_width: null, // 筘幅
-        reed_width_data: null, // 筘幅说明
+        reed_width_data: ['', '', ''], // 筘幅说明
         sum_up: null, // 综页
         drafting_method: null // 穿综法
         // additional_data: null// 穿综法备注
@@ -2597,10 +2640,16 @@ export default {
         designWarpBack: '',
         designWeft: '',
         designWeftBack: ''
-      }
+      },
+      chuankouDetail: []
     }
   },
   watch: {
+    "warpInfo.reed_method": function (newVal) {
+      this.allMaterial.forEach((item, index) => {
+        this.chuankouDetail[index] = newVal
+      })
+    },
     GLFlag (newVal) {
       if (newVal === 'normal') {
         this.GL.length = 1
@@ -2662,7 +2711,12 @@ export default {
       arr.push(this.yarn.yarnWeft)
       arr = arr.concat(this.yarn.yarnOtherWarp.map(item => item.value)).concat(this.yarn.yarnOtherWeft.map(item => item.value))
       arr = arr.concat(this.material.materialWarp.map((item) => item.value)).concat(this.material.materialWeft.map(item => item.value))
-      return Array.from(new Set(arr)).filter(item => !!item).length > 0 ? Array.from(new Set(arr)).filter(item => !!item) : ['未选择']
+      return Array.from(new Set(arr)).filter(item => !!item).length > 0 ? Array.from(new Set(arr)).filter(item => !!item).map((item) => {
+        return {
+          name: item,
+          hasCK: !(this.material.materialWarp.find((itemFind) => itemFind.value === item) || this.material.materialWeft.find((itemFind) => itemFind.value === item))
+        }
+      }) : [{ name: '未选择', hasCK: false }]
     },
     // 纹版图下拉框选项
     GLArr () {
@@ -2689,6 +2743,12 @@ export default {
     }
   },
   methods: {
+    // 计算下筘幅
+    cmpReedWidth () {
+      this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
+        return total + (Number(cur) || 0)
+      }, 0)
+    },
     // 预览纹版图
     showGL (GL) {
       this.$message.warning('纹版图预览暂不支持结合纹版图循环预览，如果填写纹版图循环信息，可在详情页预览完整纹版图')
@@ -3175,6 +3235,37 @@ export default {
         item.colorWeft = JSON.parse(JSON.stringify(item.colorWarp))
       })
     },
+    saveYarn (name) {
+      if (!name) {
+        return
+      }
+      this.$confirm('是否保存本次原料?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        yarn.create({
+          data: [{
+            id: '',
+            name: name,
+            price_data: [{
+              client_id: '',
+              price: 0,
+              desc: ''
+            }]
+          }]
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('添加成功')
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消保存'
+        })
+      })
+    },
     // 保存穿综法
     savePM () {
       this.$prompt('<div style="font-size:16px">本次操作将以<strong style="color:#1A95FF">穿综法</strong>中实际填写的信息为准，请为该常用穿综法<strong style="color:#1A95FF">命名</strong>，在确认信息无误后点击保存：</div>', '提示', {
@@ -3402,7 +3493,7 @@ export default {
         this.desc = data.desc
         this.weight = data.weight
         this.coefficient = data.yarn_coefficient.map((item) => item.value)
-
+        this.chuankouDetail = data.yarn_coefficient.map((item) => item.chuankou || 0)
         // 懒得改，直接重置，如果遇到设计模式有问题，可照此方法，直接覆盖掉之前的表格，解决一切烦恼
         // 加一个定时器，解决反面有时候需要按一下才会出来的bug,保守估计，页面dom v-show为false的时候发生了一些神奇的事情
         setTimeout(() => {
@@ -3544,7 +3635,7 @@ export default {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = ((this.colorNumber.warp[itemChild] || 0) * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
             return {
-              name: item,
+              name: item.name,
               value: this.coefficient[index]
             }
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -3554,7 +3645,7 @@ export default {
         item.apply.forEach((itemChild) => {
           this.colorWeight.weft[itemChild] = ((this.colorNumber.weft[itemChild] || 0) * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
             return {
-              name: item,
+              name: item.name,
               value: this.coefficient[index]
             }
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -3566,7 +3657,7 @@ export default {
             number: index,
             weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
               return {
-                name: item,
+                name: item.name,
                 value: this.coefficient[index]
               }
             }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
@@ -3579,7 +3670,7 @@ export default {
             number: index,
             weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
               return {
-                name: item,
+                name: item.name,
                 value: this.coefficient[index]
               }
             }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1) || 0
@@ -4040,8 +4131,9 @@ export default {
         peise_yarn_weight: cmpYarn.peise_yarn_weight,
         yarn_coefficient: this.allMaterial.map((item, index) => {
           return {
-            name: item,
-            value: this.coefficient[index]
+            name: item.name,
+            value: this.coefficient[index],
+            chuankou: this.chuankouDetail[index] //新增穿筘字段
           }
         }),
         warp_data: {
@@ -4131,7 +4223,7 @@ export default {
           side_id: this.warpInfo.side_id,
           machine_id: this.warpInfo.machine_id,
           width: this.warpInfo.width,
-          reed_width_data: this.warpInfo.reed_width_data,
+          reed_width_data: JSON.stringify(this.warpInfo.reed_width_data),
           reed: this.warpInfo.reed,
           reed_method: this.warpInfo.reed_method,
           reed_width: this.warpInfo.reed_width,

@@ -34,36 +34,26 @@
           <div class="thead">
             <span class="trow">
               <span class="tcolumn">订购单位</span>
-              <span class="tcolumn noPad"
-                style="flex:4">
-                <span class="trow">
-                  <span class="tcolumn">包装辅料</span>
-                  <span class="tcolumn">已订购数量</span>
-                  <span class="tcolumn">已入库数量</span>
-                  <span class="tcolumn center">操作</span>
-                </span>
-              </span>
+              <span class="tcolumn">包装辅料</span>
+              <span class="tcolumn">规格</span>
+              <span class="tcolumn">属性</span>
+              <span class="tcolumn">已订购数量</span>
+              <span class="tcolumn">已入库数量</span>
+              <span class="tcolumn center">操作</span>
             </span>
           </div>
           <div class="tbody">
             <span class="trow"
               v-for="(item,index) in packOrderInfo"
               :key="index">
-              <span class="tcolumn">{{item.client_name}}</span>
-              <span class="tcolumn noPad"
-                style="flex:4">
-                <span class="trow"
-                  v-for="(itemChild,indexChild) in item.childrenMergeInfo"
-                  :key="indexChild">
-                  <span class="tcolumn">{{itemChild.material_name}}</span>
-                  <span class="tcolumn">{{itemChild.number ? itemChild.number + itemChild.unit : '/'}}</span>
-                  <span class="tcolumn">{{itemChild.stockInNum  + itemChild.unit}}</span>
-                  <span class="tcolumn center">
-                    <div class="btn noBorder noMargin"
-                      @click="normalPackIn(itemChild.material_name,itemChild.number -itemChild.stockInNum,item.client_id)">入库</div>
-                  </span>
-                </span>
-              </span>
+              <!-- <span class="tcolumn">{{item.client_name}}</span>
+              <span class="tcolumn">{{item.material_name}}</span>
+              <span class="tcolumn">{{item.number ? item.number + item.unit : '/'}}</span>
+              <span class="tcolumn">{{item.stockInNum  + item.unit}}</span>
+              <span class="tcolumn center">
+                <div class="btn noBorder noMargin"
+                  @click="normalPackIn(item.material_name,item.number - item.stockInNum,item.client_id)">入库</div>
+              </span> -->
             </span>
           </div>
         </div>
@@ -192,7 +182,7 @@
         </div>
       </div>
     </div>
-    <div class="module log"
+    <!-- <div class="module log"
       v-if="packLog.length>0">
       <div class="titleCtn rightBtn">
         <span class="title">订购入库日志</span>
@@ -251,7 +241,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
@@ -417,18 +407,11 @@ export default {
       })
     },
     getLog () {
-      packag.stockDetail({
+      packPlan.packOrderLog({
         order_id: this.$route.params.id,
-        material_name: ''
+        order_type: 1
       }).then((res) => {
-        this.packLog = res.data.data
-        this.packOrderInfo.forEach((item) => {
-          item.childrenMergeInfo.forEach((itemChild) => {
-            itemChild.stockInNum = this.packLog.filter((itemFind) => itemFind.material_name === itemChild.material_name).reduce((total, cur) => {
-              return total + Number(cur.number)
-            }, 0)
-          })
-        })
+        this.packOrderInfo = res[0].data.data
       })
     }
   },
@@ -439,9 +422,10 @@ export default {
     }), stock.list({
       type: 3
     })]).then((res) => {
-      this.packOrderInfo = this.$mergeData(res[0].data.data, { mainRule: 'client_id', otherRule: [{ name: 'client_name' }], childrenRule: { mainRule: ['material_name'], otherRule: [{ name: 'number', type: 'add' }, { name: 'unit' }, { name: 'desc' }] } })
+      console.log(res[0].data.data)
+      // 直接根据入库日志进行入库，不进行合并操作
+      this.packOrderInfo = res[0].data.data
       this.stockArr = res[1].data.data
-      console.log(this.packOrderInfo)
       this.getLog()
       this.loading = false
     })

@@ -209,6 +209,7 @@ export default {
         length_is: 0,
         length_back: 0
       },
+      coefficient: [],
       warpInfo: {
         color_data: '',
         weft: null, // 总头纹
@@ -715,9 +716,18 @@ export default {
         let weftColor = this.weftInfo.color_data[index].color_scheme
         let canvasMatrix = []
         let canvasMatrixBack = []
-        let warpWidth = 400 / this.warpCanvas.length * 6
+        let warpCK = []
+        this.warpInfo.material_data.forEach((item) => {
+          item.apply.forEach((itemChild) => {
+            warpCK[itemChild] = this.coefficient.find((itemFind) => itemFind.name === item.material_name).chuankou ? 1 / this.coefficient.find((itemFind) => itemFind.name === item.material_name).chuankou : 1
+          })
+        })
+        let warpWidthPJ = 600 / this.warpCanvas.reduce((total, cur) => {
+          return total + Number(warpCK[cur.color])
+        }, 0) * 4 // 经向平均长度
         let weftWidth = this.canvasHeight / this.weftCanvas.length
         this.warpCanvas.reduce((totalWarp, itemWarp) => {
+          let warpWidth = warpWidthPJ * warpCK[itemWarp.color]// 重新计算经向，用穿筘法
           let reverseWeft = [...this.weftCanvas].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
           reverseWeft.reduce((totalWeft, itemWeft) => {
             canvasMatrix.push({
@@ -732,6 +742,7 @@ export default {
           return totalWarp + warpWidth
         }, 0)
         this.warpCanvasBack.reduce((totalWarp, itemWarp) => {
+          let warpWidth = warpWidthPJ * warpCK[itemWarp.color]// 重新计算经向，用穿筘法
           let reverseWeftBack = [...this.weftCanvasBack].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
           reverseWeftBack.reverse().reduce((totalWeft, itemWeft) => {
             canvasMatrixBack.push({
@@ -799,6 +810,7 @@ export default {
         this.weft_data = this.$clone(data.weft_data)
         this.weft_data.length_is = this.weft_data.weft_rank[0].length
         this.weft_data.length_back = this.weft_data.weft_rank_back[0].length
+        this.coefficient = data.yarn_coefficient
         this.pushValue(this.warp_data, 'warp_rank', 'merge_data') // 给合并规则里附上value
         this.pushValue(this.warp_data, 'warp_rank_back', 'merge_data_back')// 给合并规则里附上value
         this.pushValue(this.weft_data, 'weft_rank', 'merge_data')// 给合并规则里附上value

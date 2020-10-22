@@ -268,7 +268,7 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">筘幅说明：</div>
-            <div class="text">{{warpInfo.reed_width_data?warpInfo.reed_width_data:'无'}}</div>
+            <div class="text">{{JSON.parse(warpInfo.reed_width_data)?JSON.parse(warpInfo.reed_width_data).join('+'):'无'}}</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -595,7 +595,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in coefficient"
-                :key="index">{{item.name}}：{{item.value}}g
+                :key="index">{{item.name}}：{{item.value}}g <span style="margin-left:15px;color:#1a95ff">{{item.chuankou?item.chuankou + '根/筘':''}}</span>
               </div>
             </div>
           </div>
@@ -1177,7 +1177,6 @@ export default {
     },
     // 预览纹版图
     showGL (GLIndex) {
-      console.log(this.GL[GLIndex])
       let GLArr = []
       this.GL[GLIndex].forEach((item) => {
         item.forEach((itemChild) => {
@@ -1542,10 +1541,18 @@ export default {
         let weftColor = this.weftInfo.color_data[index].color_scheme
         let canvasMatrix = []
         let canvasMatrixBack = []
-        console.log(this.warpWidth)
-        let warpWidth = 600 / this.warpCanvas.length * 4
+        let warpCK = []
+        this.warpInfo.material_data.forEach((item) => {
+          item.apply.forEach((itemChild) => {
+            warpCK[itemChild] = this.coefficient.find((itemFind) => itemFind.name === item.material_name).chuankou ? 1 / this.coefficient.find((itemFind) => itemFind.name === item.material_name).chuankou : 1
+          })
+        })
+        let warpWidthPJ = 600 / this.warpCanvas.reduce((total, cur) => {
+          return total + Number(warpCK[cur.color])
+        }, 0) * 4 // 经向平均长度
         let weftWidth = this.canvasHeight / this.weftCanvas.length
         this.warpCanvas.reduce((totalWarp, itemWarp) => {
+          let warpWidth = warpWidthPJ * warpCK[itemWarp.color]// 重新计算经向，用穿筘法
           let reverseWeft = [...this.weftCanvas].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
           reverseWeft.reduce((totalWeft, itemWeft) => {
             canvasMatrix.push({
@@ -1560,6 +1567,7 @@ export default {
           return totalWarp + warpWidth
         }, 0)
         this.warpCanvasBack.reduce((totalWarp, itemWarp) => {
+          let warpWidth = warpWidthPJ * warpCK[itemWarp.color]// 重新计算经向，用穿筘法
           let reverseWeftBack = [...this.weftCanvasBack].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
           reverseWeftBack.reverse().reduce((totalWeft, itemWeft) => {
             canvasMatrixBack.push({
@@ -2112,8 +2120,6 @@ export default {
         this.warpCanvasBack = warpCanvas
         this.weftCanvasBack = weftCanvasBack
       }
-      console.log(this.weftCanvas)
-      console.log(this.warpCanvas)
     },
     deleteCraft () {
       this.$confirm('此操作将永久删除该工艺单, 是否继续?', '提示', {

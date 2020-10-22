@@ -429,20 +429,37 @@
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入筘幅"
-                type="number"
+              <el-input placeholder="由筘幅说明计算得到"
+                disabled
                 v-model="warpInfo.reed_width">
                 <template slot="append">cm</template>
-              </zh-input>
+              </el-input>
             </div>
           </div>
-          <div class="colCtn flex3">
+          <div class="colCtn flex1">
             <div class="label">
               <span class="text">筘幅说明</span>
+              <span class="explanation">(必填)</span>
             </div>
-            <div class="content">
-              <zh-input placeholder="请输入筘幅说明"
-                v-model="warpInfo.reed_width_data">
+            <div class="content"
+              style="display:flex">
+              <zh-input style="flex:0.5;margin-right:15px"
+                placeholder="左边"
+                v-model="warpInfo.reed_width_data[0]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
+              </zh-input>
+              <zh-input style="flex:1;margin-right:15px"
+                placeholder="中间"
+                v-model="warpInfo.reed_width_data[1]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
+              </zh-input>
+              <zh-input style="flex:0.5;"
+                placeholder="右边"
+                v-model="warpInfo.reed_width_data[2]"
+                @input="cmpReedWidth">
+                <template slot="append">cm</template>
               </zh-input>
             </div>
           </div>
@@ -1125,15 +1142,23 @@
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
-              <span class="text">物料系数</span>
+              <span class="text">物料系数/穿筘法</span>
             </div>
-            <div class="content">
-              <zh-input v-model="coefficient[index]"
+            <div class="content"
+              style="display:flex">
+              <zh-input style="flex:1.2;margin-right:12px"
+                v-model="coefficient[index]"
                 type="number"
                 placeholder="请输入物料系数">
-                <template slot="prepend">{{item}}</template>
+                <template slot="prepend">{{item.name}}</template>
                 <template slot="append">g/m</template>
               </zh-input>
+              <el-input style="flex:1"
+                v-model="chuankouDetail[index]"
+                :disabled="!item.hasCK"
+                placeholder="请输入穿筘法,默认为经向穿筘法">
+                <template slot="append">根/筘</template>
+              </el-input>
             </div>
           </div>
         </div>
@@ -1752,7 +1777,7 @@ export default {
         reed: null, // 筘号
         reed_method: null, // 穿筘法
         reed_width: null, // 筘幅
-        reed_width_data: null, // 筘幅说明
+        reed_width_data: ['', '', ''], // 筘幅说明
         sum_up: null, // 综页
         drafting_method: null // 穿综法
         // additional_data: null// 穿综法备注
@@ -1829,10 +1854,16 @@ export default {
       colorWeight: {
         warp: [],
         weft: []
-      }
+      },
+      chuankouDetail: []
     }
   },
   watch: {
+    // "warpInfo.reed_method": function (newVal) {
+    //   this.allMaterial.forEach((item, index) => {
+    //     this.chuankouDetail[index] = newVal
+    //   })
+    // },
     GLFlag (newVal) {
       if (newVal === 'normal') {
         this.GL.length = 1
@@ -1894,7 +1925,12 @@ export default {
       arr.push(this.yarn.yarnWeft)
       arr = arr.concat(this.yarn.yarnOtherWarp.map(item => item.value)).concat(this.yarn.yarnOtherWeft.map(item => item.value))
       arr = arr.concat(this.material.materialWarp.map((item) => item.value)).concat(this.material.materialWeft.map(item => item.value))
-      return Array.from(new Set(arr)).filter(item => !!item).length > 0 ? Array.from(new Set(arr)).filter(item => !!item) : ['未选择']
+      return Array.from(new Set(arr)).filter(item => !!item).length > 0 ? Array.from(new Set(arr)).filter(item => !!item).map((item) => {
+        return {
+          name: item,
+          hasCK: !(this.material.materialWarp.find((itemFind) => itemFind.value === item) || this.material.materialWeft.find((itemFind) => itemFind.value === item))
+        }
+      }) : [{ name: '未选择', hasCK: false }]
     },
     // 纹版图下拉框选项
     GLArr () {
@@ -1913,6 +1949,12 @@ export default {
     }
   },
   methods: {
+    // 计算下筘幅
+    cmpReedWidth () {
+      this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
+        return total + (Number(cur) || 0)
+      }, 0)
+    },
     afterSave (data) {
       this.msgFlag = data.msgFlag
     },
@@ -2534,7 +2576,7 @@ export default {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = ((this.colorNumber.warp[itemChild] || 0) * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
             return {
-              name: item,
+              name: item.name,
               value: this.coefficient[index]
             }
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -2544,7 +2586,7 @@ export default {
         item.apply.forEach((itemChild) => {
           this.colorWeight.weft[itemChild] = ((this.colorNumber.weft[itemChild] || 0) * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
             return {
-              name: item,
+              name: item.name,
               value: this.coefficient[index]
             }
           }).find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -2556,7 +2598,7 @@ export default {
             number: index,
             weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
               return {
-                name: item,
+                name: item.name,
                 value: this.coefficient[index]
               }
             }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
@@ -2569,7 +2611,7 @@ export default {
             number: index,
             weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
               return {
-                name: item,
+                name: item.name,
                 value: this.coefficient[index]
               }
             }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1) || 0
@@ -2957,8 +2999,9 @@ export default {
         desc: this.desc,
         yarn_coefficient: this.allMaterial.map((item, index) => {
           return {
-            name: item,
-            value: this.coefficient[index]
+            name: item.name,
+            value: this.coefficient[index],
+            chuankou: this.chuankouDetail[index]
           }
         }),
         yarn_color_weight: cmpYarn.yarn_color_weight,
@@ -3050,7 +3093,7 @@ export default {
           side_id: this.warpInfo.side_id,
           machine_id: this.warpInfo.machine_id,
           width: this.warpInfo.width,
-          reed_width_data: this.warpInfo.reed_width_data,
+          reed_width_data: JSON.stringify(this.warpInfo.reed_width_data),
           reed: this.warpInfo.reed,
           reed_method: this.warpInfo.reed_method,
           reed_width: this.warpInfo.reed_width,
@@ -3229,6 +3272,8 @@ export default {
       this.craftId = data.id
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
+
+      this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
           value: item.color_id,
@@ -3352,6 +3397,7 @@ export default {
       this.desc = data.desc
       this.weight = data.weight
       this.coefficient = data.yarn_coefficient.map((item) => item.value)
+      this.chuankouDetail = data.yarn_coefficient.map((item) => item.chuankou || 0)
       this.loading = false
     })
   }
