@@ -10,12 +10,12 @@
             {{craftDetail.craft_code}}
           </span>
           <span class="item">
-            <span class="label">产品信息：</span>
-            {{craftDetail.product_info.product_code}}&nbsp;&nbsp;{{craftDetail.product_info|filterType}}
+            <span class="label">创建人：</span>
+            {{craftDetail.user_name}}
           </span>
           <span class="item">
-            <span class="label">创建信息：</span>
-            {{`${craftDetail.user_name} ${$getTime(craftDetail.create_time)}`}}
+            <span class="label">创建日期：</span>
+            {{craftDetail.create_time}}
           </span>
         </div>
         <div class="right">
@@ -41,9 +41,8 @@
           <span class="row_item left">{{craftDetail.product_info.title}}</span>
           <span class="row_item w100 center">产品品类</span>
           <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
-          <span class="row_item w100 center">花版号</span>
-          <span class="row_item left"></span>
-          <!-- <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span> -->
+          <span class="row_item w100 center">产品编号</span>
+          <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span>
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
@@ -65,7 +64,6 @@
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
-                  ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou || warp_data.reed_width_data}}根/筘)
                 </template>
               </span>
             </span>
@@ -75,7 +73,6 @@
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 2)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
-                  ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou || warp_data.reed_width_data}}根/筘)
                 </template>
               </span>
             </span>
@@ -912,7 +909,7 @@ export default {
   data () {
     return {
       loading: true,
-      companyName: window.sessionStorage.getItem('full_name'),
+      companyName: window.sessionStorage.getItem('company_name'),
       qrCodeUrl: '',
       craftDetail: {
         product_info: {
@@ -955,7 +952,6 @@ export default {
         weft: []
       },
       zhujia_info: [],
-      yarn_coefficient: [],
       letterArr: letterArr
     }
   },
@@ -1272,7 +1268,6 @@ export default {
             }
           })
         })
-        this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
           window.print()
         }, 1000)
