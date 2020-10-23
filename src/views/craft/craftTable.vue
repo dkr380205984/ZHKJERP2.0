@@ -10,12 +10,12 @@
             {{craftDetail.craft_code}}
           </span>
           <span class="item">
-            <span class="label">创建人：</span>
-            {{craftDetail.user_name}}
+            <span class="label">产品信息：</span>
+            {{craftDetail.product_info.product_code}}&nbsp;&nbsp;{{craftDetail.product_info|filterType}}
           </span>
           <span class="item">
-            <span class="label">创建日期：</span>
-            {{craftDetail.create_time}}
+            <span class="label">创建信息：</span>
+            {{`${craftDetail.user_name} ${$getTime(craftDetail.create_time)}`}}
           </span>
         </div>
         <div class="right">
@@ -41,8 +41,9 @@
           <span class="row_item left">{{craftDetail.product_info.title}}</span>
           <span class="row_item w100 center">产品品类</span>
           <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
-          <span class="row_item w100 center">产品编号</span>
-          <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span>
+          <span class="row_item w100 center">花版号</span>
+          <span class="row_item left"></span>
+          <!-- <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span> -->
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
@@ -909,7 +910,7 @@ export default {
   data () {
     return {
       loading: true,
-      companyName: window.sessionStorage.getItem('company_name'),
+      companyName: window.sessionStorage.getItem('full_name'),
       qrCodeUrl: '',
       craftDetail: {
         product_info: {

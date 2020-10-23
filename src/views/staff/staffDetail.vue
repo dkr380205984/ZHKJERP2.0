@@ -53,7 +53,7 @@
             </div>
             <div class="box">
               <div class="label">负责工序：</div>
-              <div class="content">{{staffInfo.station_id.map((item)=>item.name).join(',')}}</div>
+              <div class="content">{{staffInfo.station_id && staffInfo.station_id.map((item)=>item.name).join(',')}}</div>
             </div>
           </div>
           <div class="tabelBody">
@@ -248,7 +248,8 @@ export default {
         nation: '',
         address: '',
         academic: '',
-        staff_tag: []
+        staff_tag: [],
+        station_id: []
       },
       payInfo: [],
       payOtherInfo: [],
@@ -320,7 +321,7 @@ export default {
           })
         })
       })
-      this.date = this.yearMonth[0].date || this.$getTime(new Date()).slice(0, 7)
+      this.date = (this.yearMonth[0] && this.yearMonth[0].date) || this.$getTime(new Date()).slice(0, 7)
       this.otherDate = this.payOtherInfo[0] ? this.payOtherInfo[0].year + '-' + this.payOtherInfo[0].month : this.$getTime(new Date()).slice(0, 7)
     })
   }

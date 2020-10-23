@@ -405,8 +405,22 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">产品报价</span>
+        <div>
+          <el-select v-model="price_loading_value"
+            style="width:200px;height:32px"
+            filterable
+            clearable
+            placeholder="导入预加载项"
+            @change="setPriceLoading">
+            <el-option v-for="item in priceLoadingList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn"
@@ -1009,7 +1023,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
 import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1093,7 +1107,9 @@ export default {
       priceCode: '',
       priceList: [],
       fileArr: [],
-      pid: ''
+      pid: '',
+      priceLoadingList: [],
+      price_loading_value: ''
     }
   },
   methods: {
@@ -1639,6 +1655,57 @@ export default {
     searchCodeChange (newVal) {
       this.pages = 1
       this.getList()
+    },
+    setPriceLoading (id) {
+      let findedItem = this.priceLoadingList.find(itemF => itemF.id === id)
+      if (!findedItem) return
+      this.priceInfo.weave = JSON.parse(findedItem.weave_info || '[]').map(val => {
+        return {
+          name: val.name,
+          number: '',
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.weave || this.priceInfo.weave.length === 0) {
+        this.priceInfo.weave = [{ name: '', number: '', total_price: '' }]
+      }
+      this.priceInfo.semi_process = JSON.parse(findedItem.semi_product_info || '[]').map(val => {
+        return {
+          name: val.name,
+          number: '',
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.semi_process || this.priceInfo.semi_process.length === 0) {
+        this.priceInfo.semi_process = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.finished_process = JSON.parse(findedItem.product_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.finished_process || this.priceInfo.finished_process.length === 0) {
+        this.priceInfo.finished_process = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.packag = JSON.parse(findedItem.pack_material_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.packag || this.priceInfo.packag.length === 0) {
+        this.priceInfo.packag = [{ name: '', total_price: '' }]
+      }
+      this.priceInfo.other_fee = JSON.parse(findedItem.others_info || '[]').map(val => {
+        return {
+          name: val.name,
+          total_price: ''
+        }
+      })
+      if (!this.priceInfo.other_fee || this.priceInfo.other_fee.length === 0) {
+        this.priceInfo.other_fee = [{ name: '', total_price: '' }]
+      }
     }
   },
   created () {
@@ -1653,7 +1720,11 @@ export default {
       course.list({
         type: 2
       }),
-      getToken({})
+      getToken({}),
+      priceLoading.list({
+        page: 1,
+        limit: 9999
+      })
     ]).then((res) => {
       this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
       this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
@@ -1683,6 +1754,7 @@ export default {
       this.material_list = res[5].data.data.map(item => { return { value: item.name, unit: item.unit, priceArr: item.price } })
       this.semi_list = res[6].data.data.map(item => { return { value: item.name } })
       this.postData.token = res[7].data.data
+      this.priceLoadingList = res[8].data.data.data
       this.getPriceInfo(this.$route.params.id)
     })
   },

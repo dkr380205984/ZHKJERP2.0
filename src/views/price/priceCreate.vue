@@ -412,16 +412,30 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">产品报价</span>
+        <div>
+          <el-select v-model="price_loading_value"
+            style="width:200px;height:32px"
+            filterable
+            clearable
+            placeholder="导入预加载项"
+            @change="setPriceLoading">
+            <el-option v-for="item in priceLoadingList"
+              :key="item.id"
+              :label="item.title"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </div>
       </div>
       <div class="editCtn hasBorderTop">
-        <div class="rowCtn"
+        <!-- <div class="rowCtn"
           v-if="priceLoadingList.length>0">
           <zh-transition :list='priceLoadingList'
             showKey='title'
             @changed='setPriceLoading'></zh-transition>
-        </div>
+        </div> -->
         <div class="rowCtn"
           v-for="(item,index) in priceInfo.raw_material"
           :key="index + 'raw_material'">
@@ -1106,7 +1120,8 @@ export default {
       priceCode: '',
       priceList: [],
       fileArr: [],
-      priceLoadingList: []
+      priceLoadingList: [],
+      price_loading_value: ''
     }
   },
   methods: {
@@ -1647,19 +1662,10 @@ export default {
       this.pages = 1
       this.getList()
     },
-    // 报价单预加载
-    getPriceLoading () {
-      priceLoading.list({
-        page: 1,
-        limit: 9999
-      }).then(res => {
-        if (res.data.status !== false) {
-          console.log(res.data.data)
-        }
-      })
-    },
-    setPriceLoading (item) {
-      this.priceInfo.weave = JSON.parse(item.weave_info || '[]').map(val => {
+    setPriceLoading (id) {
+      let findedItem = this.priceLoadingList.find(itemF => itemF.id === id)
+      if (!findedItem) return
+      this.priceInfo.weave = JSON.parse(findedItem.weave_info || '[]').map(val => {
         return {
           name: val.name,
           number: '',
@@ -1669,7 +1675,7 @@ export default {
       if (!this.priceInfo.weave || this.priceInfo.weave.length === 0) {
         this.priceInfo.weave = [{ name: '', number: '', total_price: '' }]
       }
-      this.priceInfo.semi_process = JSON.parse(item.semi_product_info || '[]').map(val => {
+      this.priceInfo.semi_process = JSON.parse(findedItem.semi_product_info || '[]').map(val => {
         return {
           name: val.name,
           number: '',
@@ -1679,7 +1685,7 @@ export default {
       if (!this.priceInfo.semi_process || this.priceInfo.semi_process.length === 0) {
         this.priceInfo.semi_process = [{ name: '', total_price: '' }]
       }
-      this.priceInfo.finished_process = JSON.parse(item.product_info || '[]').map(val => {
+      this.priceInfo.finished_process = JSON.parse(findedItem.product_info || '[]').map(val => {
         return {
           name: val.name,
           total_price: ''
@@ -1688,7 +1694,7 @@ export default {
       if (!this.priceInfo.finished_process || this.priceInfo.finished_process.length === 0) {
         this.priceInfo.finished_process = [{ name: '', total_price: '' }]
       }
-      this.priceInfo.packag = JSON.parse(item.pack_material_info || '[]').map(val => {
+      this.priceInfo.packag = JSON.parse(findedItem.pack_material_info || '[]').map(val => {
         return {
           name: val.name,
           total_price: ''
@@ -1697,7 +1703,7 @@ export default {
       if (!this.priceInfo.packag || this.priceInfo.packag.length === 0) {
         this.priceInfo.packag = [{ name: '', total_price: '' }]
       }
-      this.priceInfo.other_fee = JSON.parse(item.others_info || '[]').map(val => {
+      this.priceInfo.other_fee = JSON.parse(findedItem.others_info || '[]').map(val => {
         return {
           name: val.name,
           total_price: ''
