@@ -953,6 +953,7 @@ export default {
         warp: [],
         weft: []
       },
+      yarn_coefficient: [],
       zhujia_info: [],
       letterArr: letterArr
     }
@@ -1253,7 +1254,6 @@ export default {
           colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
           colorNumber.weft[arrWeftBack[0][i]] += x * y * z
         }
-        console.log(colorNumber)
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.warp[itemChild] = {
@@ -1270,6 +1270,7 @@ export default {
             }
           })
         })
+        this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
           window.print()
         }, 1000)

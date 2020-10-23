@@ -3335,6 +3335,14 @@ export default {
     copyGL (index1, index2) {
       this.GL[index1].splice(index2, 0, JSON.parse(JSON.stringify(this.GL[index1][index2])))
     },
+    stringToJson (str) {
+      try {
+        var obj = JSON.parse(str)
+        return obj.join('+')
+      } catch (e) {
+        return str || '无'
+      }
+    },
     // 查找工艺单
     remoteMethod (query) {
       if (query !== '') {
@@ -3370,7 +3378,13 @@ export default {
         this.DSKZ = data.weight
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
-        this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+        console.log('cnm1')
+        try {
+          this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+        } catch (e) {
+          this.warpInfo.reed_width_data = ['', '', '']
+        }
+        console.log(this.warpInfo.reed_width_data)
         this.colour = this.warpInfo.color_data.map((item, index) => {
           return {
             value: '',
@@ -3478,7 +3492,7 @@ export default {
             return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
           }))
         }
-
+        console.log('cnm3')
         this.tableData.warp.number = JSON.parse(this.warpInfo.warp_rank)[0].length
         this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
         this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
@@ -3496,6 +3510,7 @@ export default {
         this.weight = data.weight
         this.coefficient = data.yarn_coefficient.map((item) => item.value)
         this.chuankouDetail = data.yarn_coefficient.map((item) => item.chuankou || 0)
+        console.log(this.chuankouDetail)
         // 懒得改，直接重置，如果遇到设计模式有问题，可照此方法，直接覆盖掉之前的表格，解决一切烦恼
         // 加一个定时器，解决反面有时候需要按一下才会出来的bug,保守估计，页面dom v-show为false的时候发生了一些神奇的事情
         setTimeout(() => {
