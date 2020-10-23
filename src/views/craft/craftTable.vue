@@ -954,7 +954,6 @@ export default {
         weft: []
       },
       zhujia_info: [],
-      yarn_coefficient: [],
       letterArr: letterArr
     }
   },
@@ -1271,7 +1270,6 @@ export default {
             }
           })
         })
-        this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
           window.print()
         }, 1000)
