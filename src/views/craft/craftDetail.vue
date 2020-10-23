@@ -268,7 +268,7 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">筘幅说明：</div>
-            <div class="text">{{JSON.parse(warpInfo.reed_width_data)?JSON.parse(warpInfo.reed_width_data).join('+'):'无'}}</div>
+            <div class="text">{{stringToJson(warpInfo.reed_width_data)}}</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -1094,6 +1094,14 @@ export default {
     }
   },
   methods: {
+    stringToJson (str) {
+      try {
+        var obj = JSON.parse(str)
+        return obj.join('+')
+      } catch (e) {
+        return str || '无'
+      }
+    },
     // 上传图片
     uploadImg () {
       let _this = this

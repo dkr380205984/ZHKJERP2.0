@@ -3364,11 +3364,13 @@ export default {
         id: code
       }).then((res) => {
         let data = res.data.data
+        console.log(data)
         this.ZDYMC = data.title
         this.DSGG = data.size
         this.DSKZ = data.weight
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
+        this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
         this.colour = this.warpInfo.color_data.map((item, index) => {
           return {
             value: '',
