@@ -181,6 +181,7 @@ export default {
       qrCodeUrl: '',
       craftDetail: {
         product_info: {
+          component: [],
           category_info: {},
           size: [],
           materials: []
@@ -941,8 +942,8 @@ export default {
             this.colorWeight.weft[itemChild] = {
               weight: this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100),
               material_name: item.material_name,
-              colorName: this.color_data[this.$route.params.colorIndex].color_scheme.warp[itemChild].name,
-              colorValue: this.color_data[this.$route.params.colorIndex].color_scheme.warp[itemChild].value,
+              colorName: this.color_data[this.$route.params.colorIndex].color_scheme.weft[itemChild].name,
+              colorValue: this.color_data[this.$route.params.colorIndex].color_scheme.weft[itemChild].value,
               warpOrWeft: '纬' + this.letterArr[itemChild]
             }
           })
