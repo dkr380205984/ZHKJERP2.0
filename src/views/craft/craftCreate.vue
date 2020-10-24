@@ -3372,19 +3372,16 @@ export default {
         id: code
       }).then((res) => {
         let data = res.data.data
-        console.log(data)
         this.ZDYMC = data.title
         this.DSGG = data.size
         this.DSKZ = data.weight
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
-        console.log('cnm1')
         try {
           this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
         } catch (e) {
           this.warpInfo.reed_width_data = ['', '', '']
         }
-        console.log(this.warpInfo.reed_width_data)
         this.colour = this.warpInfo.color_data.map((item, index) => {
           return {
             value: '',
@@ -3492,7 +3489,6 @@ export default {
             return index !== 1 ? item : item.map((itemJia) => { return this.filterMethods(itemJia) })
           }))
         }
-        console.log('cnm3')
         this.tableData.warp.number = JSON.parse(this.warpInfo.warp_rank)[0].length
         this.tableData.warpBack.number = JSON.parse(this.warpInfo.warp_rank_back)[0].length
         this.tableData.weft.number = JSON.parse(this.weftInfo.weft_rank)[0].length
@@ -3510,7 +3506,6 @@ export default {
         this.weight = data.weight
         this.coefficient = data.yarn_coefficient.map((item) => item.value)
         this.chuankouDetail = data.yarn_coefficient.map((item) => item.chuankou || 0)
-        console.log(this.chuankouDetail)
         // 懒得改，直接重置，如果遇到设计模式有问题，可照此方法，直接覆盖掉之前的表格，解决一切烦恼
         // 加一个定时器，解决反面有时候需要按一下才会出来的bug,保守估计，页面dom v-show为false的时候发生了一些神奇的事情
         setTimeout(() => {
@@ -3669,20 +3664,23 @@ export default {
         })
       })
       this.material.materialWarp.forEach((item) => {
-        item.apply = item.array.map((index) => {
-          return {
-            number: index,
-            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
-              return {
-                name: item.name,
-                value: this.coefficient[index]
-              }
-            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
+        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
+          if (index) {
+            return {
+              number: index,
+              weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+                return {
+                  name: item.name,
+                  value: this.coefficient[index]
+                }
+              }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
+            }
           }
+
         })
       })
       this.material.materialWeft.forEach((item) => {
-        item.apply = item.array.map((index) => {
+        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
           return {
             number: index,
             weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
