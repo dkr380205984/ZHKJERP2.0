@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="!productInfo.part_title">
+        v-if="productInfo.category_info">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -89,7 +89,7 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="productInfo.part_title">
+        v-if="!productInfo.category_info">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">配件名称：</span>
@@ -1200,6 +1200,23 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">后道工序：</span>
+            </div>
+            <div class="content">
+              <el-select multiple
+                v-model="warpInfo.additional_data"
+                placeholder="请选择后道工序">
+                <el-option v-for="item in gongxuArr"
+                  :key="item.id"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
           :key="index">
@@ -1582,7 +1599,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/handsontable@7.3.0/dist/handsontable.full.min.js"></script>
 <script>
-import { product, sample, yarn, yarnColor, material, craftConfig, penetrationMethod, craft } from '@/assets/js/api.js'
+import { product, sample, yarn, yarnColor, material, craftConfig, penetrationMethod, craft, process } from '@/assets/js/api.js'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
 import 'handsontable/dist/handsontable.full.css'
@@ -1594,6 +1611,7 @@ export default {
   },
   data () {
     return {
+      gongxuArr: [],
       showGLFlag: false,
       GLYulan: [], // 预览纹版图
       camera: null,
@@ -2174,8 +2192,8 @@ export default {
         reed_width: null, // 筘幅
         reed_width_data: ['', '', ''], // 筘幅说明
         sum_up: null, // 综页
-        drafting_method: null // 穿综法
-        // additional_data: null// 穿综法备注
+        drafting_method: null, // 穿综法
+        additional_data: []// 穿综法备注字段现在改成后道工序
       },
       weftInfo: {
         organization_id: null, // 组织法
@@ -3377,6 +3395,7 @@ export default {
         this.DSKZ = data.weight
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
+        this.warpInfo.additional_data = this.warpInfo.additional_data ? this.warpInfo.additional_data.split(',') : []
         try {
           this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
         } catch (e) {
@@ -4056,74 +4075,7 @@ export default {
         return
       }
       // 重算下经纬根数，保证提交的数据是对的
-      let arrWarp = JSON.parse(JSON.stringify(this.tableData.warp.data.slice(2, 5)))
-      let arrWarpBack = JSON.parse(JSON.stringify(this.tableData.warpBack.data.slice(2, 5)))
-      let merge = this.tableHot.warp.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-      let mergeBack = this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-      merge.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWarp[item.row - 2][i] = arrWarp[item.row - 2][item.col]
-          }
-        }
-      })
-      mergeBack.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWarpBack[item.row - 2][i] = arrWarpBack[item.row - 2][item.col]
-          }
-        }
-      })
-      let sum = 0
-      arrWarp[0].forEach((item, index) => {
-        let item1 = item ? Number(item) : 0
-        let item2 = arrWarp[1][index] ? Number(arrWarp[1][index]) : 1
-        let item3 = arrWarp[2][index] ? Number(arrWarp[2][index]) : 1
-        sum += item1 * item2 * item3
-      })
-      if (this.ifDouble.warp) {
-        arrWarpBack[0].forEach((item, index) => {
-          let item1 = item ? Number(item) : 0
-          let item2 = arrWarpBack[1][index] ? Number(arrWarpBack[1][index]) : 1
-          let item3 = arrWarpBack[2][index] ? Number(arrWarpBack[2][index]) : 1
-          sum += item1 * item2 * item3
-        })
-      }
-      this.warpInfo.weft = sum
-      let arrWeft = JSON.parse(JSON.stringify(this.tableData.weft.data.slice(2, 5)))
-      let arrWeftBack = JSON.parse(JSON.stringify(this.tableData.weftBack.data.slice(2, 5)))
-      merge = this.tableHot.weft.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-      mergeBack = this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells
-      merge.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWeft[item.row - 2][i] = arrWeft[item.row - 2][item.col]
-          }
-        }
-      })
-      mergeBack.forEach((item) => {
-        if (item.row === 3 || item.row === 4) {
-          for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-            arrWeftBack[item.row - 2][i] = arrWeftBack[item.row - 2][item.col]
-          }
-        }
-      })
-      sum = 0
-      arrWeft[0].forEach((item, index) => {
-        let item1 = item ? Number(item) : 0
-        let item2 = arrWeft[1][index] ? Number(arrWeft[1][index]) : 1
-        let item3 = arrWeft[2][index] ? Number(arrWeft[2][index]) : 1
-        sum += item1 * item2 * item3
-      })
-      if (this.ifDouble.weft) {
-        arrWeftBack[0].forEach((item, index) => {
-          let item1 = item ? Number(item) : 0
-          let item2 = arrWeftBack[1][index] ? Number(arrWeftBack[1][index]) : 1
-          let item3 = arrWeftBack[2][index] ? Number(arrWeftBack[2][index]) : 1
-          sum += item1 * item2 * item3
-        })
-      }
-      this.weftInfo.total = sum
+      // 代码删了
       // 重算经纬代码到此截至
       let cmpYarn = {
         yarn_color_weight: {},
@@ -4244,7 +4196,7 @@ export default {
           reed_width: this.warpInfo.reed_width,
           sum_up: this.warpInfo.sum_up,
           contract_ratio: 100, // 缩率工艺单用不到，默认100
-          additional_data: '' // 废弃字段
+          additional_data: this.warpInfo.additional_data.join(',') // 穿综法备注改工序字段
         },
         weft_data: {
           color_data: this.colour.map((item) => {
@@ -4461,7 +4413,10 @@ export default {
     craftConfig.getAll(),
     yarnColor.list(),
     material.list(),
-    penetrationMethod.list()
+    penetrationMethod.list(),
+    process.list({
+      type: 2
+    })
     ]).then((res) => {
       this.productInfo = res[0].data.data
       this.yarn.yarnArr = res[1].data.data.map((item) => {
@@ -4475,6 +4430,7 @@ export default {
       this.methodArr = res[2].data.data.method
       this.colorArr = res[3].data.data
       this.commonPMArr = res[5].data.data
+      this.gongxuArr = res[6].data.data
       this.loading = false
     })
 
