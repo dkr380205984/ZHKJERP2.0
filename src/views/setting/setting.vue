@@ -1737,7 +1737,7 @@
               <div class="label">登录帐号：</div>
               <div class="info">
                 <zh-input placeholder="请输入自定义帐号"
-                  disabled
+                  :disabled="authInfo.id ? true : false"
                   v-model="authInfo.user_name"></zh-input>
               </div>
             </div>
