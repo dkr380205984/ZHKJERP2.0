@@ -106,8 +106,12 @@
                   v-for="(item,index) in process_info"
                   :key="index">
                   <div class="tcolumn">
-                    <el-checkbox v-model="item.checked"> <span>{{item.product_code}}</span>
-                      <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span></el-checkbox>
+                    <el-checkbox v-model="item.checked"
+                      style="display:flex;align-items:center">
+                      <span>{{item.product_code}}</span>
+                      <br />
+                      <span>{{item.category_name}}/{{item.type_name}}/{{item.style_name}}</span>
+                    </el-checkbox>
                   </div>
                   <div class="tcolumn noPad"
                     style="flex:4">
@@ -470,7 +474,8 @@
                     <span style="color:#01B48C">
                       {{item.type}}
                     </span>
-                    <span>{{item.client_name}}</span></div>
+                    <span>{{item.client_name}}</span>
+                  </div>
                   <div class="tcolumn"
                     style="flex:1.5">
                     <span>{{item.product_info.product_code}}</span>

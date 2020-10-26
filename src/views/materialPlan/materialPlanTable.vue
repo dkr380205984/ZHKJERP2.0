@@ -1,6 +1,8 @@
 <template>
   <div class='printHtml'
-    id="materialPlanTable">
+    id="materialPlanTable"
+    @click="showRMeau = false"
+    @click.right="showRMeau = false">
     <div class="printTable">
       <div class="print_head">
         <div class="left">
@@ -66,12 +68,16 @@
           </div>
           <div class="print_row"
             v-for="(itemColor,indexColor) in item.color_info"
-            :key='index + "body" + indexColor'>
-            <span class="row_item w180 center">颜色重量{{indexColor+1}}</span>
+            :key='index + "body" + indexColor'
+            @click.right="handleClickRight">
+            <span class="row_item w180 center"
+              :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">颜色重量{{indexColor+1}}</span>
             <span class="row_item left">
               <span class="print_row noBorder">
-                <span class="row_item noBorder w180">{{itemColor.color}}</span>
-                <span class="row_item noBorder">{{ item.type === 1 ? $toFixed(itemColor.weight/1000) + 'kg' : $toFixed(itemColor.weight) + item.unit}}</span>
+                <span class="row_item noBorder w180"
+                  :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">{{itemColor.color}}</span>
+                <span class="row_item noBorder"
+                  :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">{{ item.type === 1 ? $toFixed(itemColor.weight/1000) + 'kg' : $toFixed(itemColor.weight) + item.unit}}</span>
               </span>
             </span>
           </div>
@@ -82,6 +88,21 @@
           <span class="row_item w180 center">备注</span>
           <span class="row_item left"></span>
         </div>
+      </div>
+    </div>
+    <div class="setting_row_height"
+      v-if="showRMeau"
+      :style="`left:${X_position || 0}px;top:${Y_position}px`"
+      @click="noCloseRMeau">
+      <div class="setting_item">
+        {{`设置行高(×${defaultMultiple})`}}
+        <el-input-number v-model="defaultMultiple"
+          size='small'
+          :precision="1"
+          :step="0.1"
+          :min='1'
+          :max="2"
+          @change="setDefaultMultiple"></el-input-number>
       </div>
     </div>
   </div>
@@ -100,16 +121,30 @@ export default {
       contact_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       productInfo: [],
-      materialInfo: []
+      materialInfo: [],
+      showRMeau: false,
+      X_position: 0,
+      Y_position: 0,
+      defaultMultiple: window.localStorage.getItem('default_multiple') || 1
     }
   },
   methods: {
+    handleClickRight (e) {
+      console.log(e)
+      this.showRMeau = true
+      this.X_position = e.clientX
+      this.Y_position = e.clientY
+      e.preventDefault()
+      e.stopPropagation()
+    },
+    noCloseRMeau (e) {
+      e.stopPropagation()
+    },
+    setDefaultMultiple () {
+      window.localStorage.setItem('default_multiple', this.defaultMultiple)
+    }
   },
   created () {
-    // this.$route.params.params.split('&').forEach(item => {
-    //   let data = item.split('=')
-    //   this.params[data[0]] = data[1]
-    // })
     let orderOrSample = this.$route.params.type === '1' ? order.detailInfo : sampleOrder.detail
     Promise.all([
       materialPlan.detail({
