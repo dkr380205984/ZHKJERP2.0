@@ -356,17 +356,9 @@ export default {
     getFlatTable (table, type, merge) {
       let tableArr = table
       let mergeTable = this[type][merge]
-      // 获取完整的合并项信息
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
-      // 第一步，处理纹版图的合并信息
-      let GLMerge = mergeTable.filter(item => item.row === 5)
-      GLMerge.forEach((item) => {
-        for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-          tableArr[item.row][i] = tableArr[item.row][item.col]
-        }
-      })
-      // 第二步，处理合并项的合并信息
+      // 处理合并项的合并信息
       let firstArr = []
       firstMerge.forEach((item) => {
         let temporaryStorage = [] // 临时存储合并项
@@ -374,12 +366,19 @@ export default {
           temporaryStorage.push({
             order: tableArr[0][i],
             color: tableArr[1][i],
-            number: tableArr[2][i],
-            GLorPM: tableArr[5][i]
+            number: tableArr[2][i]
+            // GLorPM: tableArr[5][i]
           })
         }
-        for (let i = 0; i < (tableArr[item.row][item.col] || 1); i++) {
-          firstArr.push(temporaryStorage)
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              return item.order < forNum.start || item.order > forNum.end
+            })
+          }
+          firstArr.push(realStorage)
         }
       })
       let secondArr = []
@@ -387,8 +386,21 @@ export default {
         let temporaryStorage = firstArr.filter((itemFilter) => {
           return itemFilter[0].order > item.col && itemFilter[0].order <= (item.col + item.colspan)
         })
-        for (let i = 0; i < (tableArr[item.row][item.col] || 1); i++) {
-          secondArr.push(temporaryStorage)
+        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+        for (let i = 0; i < forNum.number; i++) {
+          let realStorage = temporaryStorage
+          if (forNum.start && i === (forNum.number - 1)) {
+            realStorage = temporaryStorage.filter((item) => {
+              let flag = true
+              item.forEach((itemChild) => {
+                if (itemChild.order >= forNum.start && itemChild.order <= forNum.end) {
+                  flag = false
+                }
+              })
+              return flag
+            })
+          }
+          secondArr.push(realStorage)
         }
       })
       // 多维数组展平
@@ -446,8 +458,22 @@ export default {
       })
       return array
     },
+    // 获取特殊数据,用于处理 乘以[n]遍，最后一遍去掉[x]列到[y]列
+    getSpecial (info) {
+      if (Number(info)) {
+        return {
+          number: Number(info)
+        }
+      }
+      // 只解析上列字符串，别的不管
+      let arr = info.split(']')
+      return {
+        number: arr[0].split('[')[1],
+        start: arr[1].split('[')[1],
+        end: arr[2].split('[')[1]
+      }
+    },
     init (data) {
-      console.log(data)
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.weftCmp = this.warpInfo.weight_calculate_formula
@@ -861,71 +887,52 @@ export default {
             }
           })
         })
-        // 计算克重信息
-        let arrWarp = data.warp_data.warp_rank.slice(1, 5)
-        data.warp_data.merge_data.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
-            }
-          }
-        })
-        let arrWeft = data.weft_data.weft_rank.slice(1, 5)
-        data.weft_data.merge_data.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
-            }
-          }
-        })
-        let arrWarpBack = data.warp_data.warp_rank_back.slice(1, 5)
-        data.warp_data.merge_data_back.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
-            }
-          }
-        })
-        let arrWeftBack = data.weft_data.weft_rank_back.slice(1, 5)
-        data.weft_data.merge_data_back.forEach((item) => {
-          if (item.row === 3 || item.row === 4) {
-            for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-              arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
-            }
-          }
-        })
         let colorNumber = {
           warp: [],
           weft: []
         }
-        for (let i = 0; i < arrWarp[0].length; i++) {
-          const x = arrWarp[1][i] ? arrWarp[1][i] : 1
-          const y = arrWarp[2][i] ? arrWarp[2][i] : 1
-          const z = arrWarp[3][i] ? arrWarp[3][i] : 1
-          colorNumber.warp[arrWarp[0][i]] = colorNumber.warp[arrWarp[0][i]] ? colorNumber.warp[arrWarp[0][i]] : 0
-          colorNumber.warp[arrWarp[0][i]] += x * y * z
-        }
-        for (let i = 0; i < arrWeft[0].length; i++) {
-          const x = arrWeft[1][i] ? arrWeft[1][i] : 1
-          const y = arrWeft[2][i] ? arrWeft[2][i] : 1
-          const z = arrWeft[3][i] ? arrWeft[3][i] : 1
-          colorNumber.weft[arrWeft[0][i]] = colorNumber.weft[arrWeft[0][i]] ? colorNumber.weft[arrWeft[0][i]] : 0
-          colorNumber.weft[arrWeft[0][i]] += x * y * z
-        }
-        for (let i = 0; i < arrWarpBack[0].length; i++) {
-          const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
-          const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
-          const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
-          colorNumber.warp[arrWarpBack[0][i]] = colorNumber.warp[arrWarpBack[0][i]] ? colorNumber.warp[arrWarpBack[0][i]] : 0
-          colorNumber.warp[arrWarpBack[0][i]] += x * y * z
-        }
-        for (let i = 0; i < arrWeftBack[0].length; i++) {
-          const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
-          const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
-          const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-          colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
-          colorNumber.weft[arrWeftBack[0][i]] += x * y * z
-        }
+        // 展平合并信息
+        let warpTable = this.getFlatTable(this.warp_data.warp_rank, 'warp_data', 'merge_data').map((item) => {
+          if (!item.GLorPM) {
+            item.GLorPM = 'Ⅰ'
+          }
+          return item
+        })
+        let weftTable = this.getFlatTable(this.weft_data.weft_rank, 'weft_data', 'merge_data').map((item) => {
+          if (!item.GLorPM) {
+            item.GLorPM = 'A'
+          }
+          return item
+        })
+        let warpTableBack = this.getFlatTable(this.warp_data.warp_rank_back, 'warp_data', 'merge_data_back').map((item) => {
+          if (!item.GLorPM) {
+            item.GLorPM = 'Ⅰ'
+          }
+          return item
+        })
+        let weftTableBack = this.getFlatTable(this.weft_data.weft_rank_back, 'weft_data', 'merge_data_back').map((item) => {
+          if (!item.GLorPM) {
+            item.GLorPM = 'A'
+          }
+          return item
+        })
+        // 将展平的数据用于克重计算
+        warpTable.forEach((item) => {
+          colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
+          colorNumber.warp[item.color] += Number(item.number)
+        })
+        weftTable.forEach((item) => {
+          colorNumber.weft[item.color] = colorNumber.weft[item.color] ? colorNumber.weft[item.color] : 0
+          colorNumber.weft[item.color] += Number(item.number)
+        })
+        warpTableBack.forEach((item) => {
+          colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
+          colorNumber.warp[item.color] += Number(item.number)
+        })
+        weftTableBack.forEach((item) => {
+          colorNumber.weft[item.color] = colorNumber.weft[item.color] ? colorNumber.weft[item.color] : 0
+          colorNumber.weft[item.color] += Number(item.number)
+        })
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.warp[itemChild] = {

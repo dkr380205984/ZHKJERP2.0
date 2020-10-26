@@ -1136,6 +1136,23 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">后道工序：</span>
+            </div>
+            <div class="content">
+              <el-select multiple
+                v-model="warpInfo.additional_data"
+                placeholder="请选择后道工序">
+                <el-option v-for="item in gongxuArr"
+                  :key="item.id"
+                  :value="item.name"
+                  :label="item.name"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
           :key="index">
@@ -1191,7 +1208,7 @@
 </template>
 <script src="https://cdn.jsdelivr.net/npm/handsontable@7.3.0/dist/handsontable.full.min.js"></script>
 <script>
-import { yarn, yarnColor, material, craftConfig, penetrationMethod, craft } from '@/assets/js/api.js'
+import { yarn, yarnColor, material, craftConfig, penetrationMethod, craft, process } from '@/assets/js/api.js'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
 import 'handsontable/dist/handsontable.full.css'
@@ -1199,6 +1216,7 @@ Handsontable.languages.registerLanguageDictionary(enCH) // 注册中文字典
 export default {
   data () {
     return {
+      gongxuArr: [],
       weftCmp: '1',
       loading: true,
       ZDYMC: '',
@@ -1779,8 +1797,8 @@ export default {
         reed_width: null, // 筘幅
         reed_width_data: ['', '', ''], // 筘幅说明
         sum_up: null, // 综页
-        drafting_method: null // 穿综法
-        // additional_data: null// 穿综法备注
+        drafting_method: null, // 穿综法
+        additional_data: []
       },
       weftInfo: {
         organization_id: null, // 组织法
@@ -2593,7 +2611,7 @@ export default {
         })
       })
       this.material.materialWarp.forEach((item) => {
-        item.apply = item.array.map((index) => {
+        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
           return {
             number: index,
             weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
@@ -2606,7 +2624,7 @@ export default {
         })
       })
       this.material.materialWeft.forEach((item) => {
-        item.apply = item.array.map((index) => {
+        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
           return {
             number: index,
             weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
@@ -3099,7 +3117,7 @@ export default {
           reed_width: this.warpInfo.reed_width,
           sum_up: this.warpInfo.sum_up,
           contract_ratio: 100, // 缩率工艺单用不到，默认100
-          additional_data: '' // 废弃字段
+          additional_data: this.warpInfo.additional_data.join(',') // 废弃字段
         },
         weft_data: {
           color_data: this.colour.map((item) => {
@@ -3251,6 +3269,9 @@ export default {
       penetrationMethod.list(),
       craft.detail({
         id: this.$route.params.id
+      }),
+      process.list({
+        type: 2
       })
     ]).then((res) => {
       this.yarn.yarnArr = res[0].data.data.map((item) => {
@@ -3272,8 +3293,9 @@ export default {
       this.craftId = data.id
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
-
+      this.gongxuArr = res[6].data.data
       this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+      this.warpInfo.additional_data = this.warpInfo.additional_data ? this.warpInfo.additional_data.split(',') : []
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
           value: item.color_id,

@@ -76,7 +76,7 @@
       </div>
     </div>
     <div class="module"
-      v-if="$route.params.partId!=='0'">
+      v-if="!productInfo.category_info">
       <div class="titleCtn"
         style="display: flex;justify-content: space-between;align-items: center;">
         <span class="title hasBorder">配件信息</span>
@@ -598,6 +598,12 @@
                 :key="index">{{item.name}}：{{item.value}}g <span style="margin-left:15px;color:#1a95ff">{{item.chuankou?item.chuankou + '根/筘':''}}</span>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">后道工序：</div>
+            <div class="text">{{warpInfo.additional_data||'未填写'}}</div>
           </div>
         </div>
         <div class="rowCtn">
@@ -1839,6 +1845,7 @@ export default {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
+      console.log(this.colorNumber)
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
@@ -2170,6 +2177,9 @@ export default {
               this.craftIndex = index
             }
           })
+          if (this.data[this.craftIndex].is_draft === 2) {
+            this.$router.replace('/craft/craftUpdate/' + res.data.data.id + '/' + this.$route.params.type)
+          }
           this.init(this.data[this.craftIndex], this.craftIndex)
         }
         this.loading = false
