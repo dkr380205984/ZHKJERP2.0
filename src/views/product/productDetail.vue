@@ -63,7 +63,26 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">产品编号：</span>
-            <span class="text">{{detail.product_code}}</span>
+            <span class="text">
+              <span v-if="!updateFlag">{{detail.product_code}}</span>
+              <el-input v-if="updateFlag"
+                v-model="detail.product_code"
+                placeholder="请输入产品编号"
+                style="height:32px;width:200px"></el-input>
+              <el-tooltip class="item"
+                effect="dark"
+                content="修改的产品编号尽量不要重复以便于搜索"
+                placement="top-start"
+                v-if="!updateFlag">
+                <span class="btn noBorder"
+                  style="margin-left:12px;padding:0"
+                  @click="updateFlag = true">点击修改</span>
+              </el-tooltip>
+              <span class="btn noBorder"
+                style="margin-left:12px;padding:0"
+                v-if="updateFlag"
+                @click="saveProcode">确认修改</span>
+            </span>
           </div>
           <div class="colCtn flex3">
             <span class="label">名称/款号：</span>
@@ -423,6 +442,7 @@ import { product } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      updateFlag: false,
       canSeePrice: false,
       canSeeOrder: false,
       loading: true,
@@ -476,6 +496,22 @@ export default {
     }
   },
   methods: {
+    saveProcode () {
+      if (!this.detail.product_code) {
+        this.$message.error('请输入产品编号')
+        return
+      }
+      this.loading = true
+      product.updateCode({
+        id: this.$route.params.id,
+        product_code: this.detail.product_code
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          this.loading = true
+        }
+      })
+    },
     noOpr () {
       this.$message.warning('暂未开放该功能')
     },
