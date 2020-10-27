@@ -1206,7 +1206,10 @@
               <span class="text">后道工序：</span>
             </div>
             <div class="content">
-              <el-select multiple
+              <el-select clearable
+                filterable
+                multiple
+                allow-create
                 v-model="warpInfo.additional_data"
                 placeholder="请选择后道工序">
                 <el-option v-for="item in gongxuArr"

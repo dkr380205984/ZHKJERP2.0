@@ -14,12 +14,12 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-            <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
+            <span class="text">{{productInfo.product_code}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
             <span class="text"
-              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
+              :class="{'blue':productInfo.name || productInfo.title}">{{$route.params.type==='1'?productInfo.name:productInfo.title}}</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
@@ -1142,7 +1142,10 @@
               <span class="text">后道工序：</span>
             </div>
             <div class="content">
-              <el-select multiple
+              <el-select clearable
+                filterable
+                multiple
+                allow-create
                 v-model="warpInfo.additional_data"
                 placeholder="请选择后道工序">
                 <el-option v-for="item in gongxuArr"

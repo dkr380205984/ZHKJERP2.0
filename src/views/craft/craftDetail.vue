@@ -2178,7 +2178,7 @@ export default {
             }
           })
           if (this.data[this.craftIndex].is_draft === 2) {
-            this.$router.replace('/craft/craftUpdate/' + res.data.data.id + '/' + this.$route.params.type)
+            this.$router.replace('/craft/craftUpdate/' + this.data[this.craftIndex].id + '/' + this.$route.params.type)
           }
           this.init(this.data[this.craftIndex], this.craftIndex)
         }
