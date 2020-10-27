@@ -37,11 +37,11 @@
       </div>
       <div class="print_body">
         <div class="print_row">
-          <span class="row_item w100 center">产品名称</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品名称</span>
           <span class="row_item left">{{craftDetail.product_info.title}}</span>
-          <span class="row_item w100 center">产品品类</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品品类</span>
           <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
-          <span class="row_item w100 center">产品编号</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品编号</span>
           <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span>
         </div>
         <div class="print_row">
