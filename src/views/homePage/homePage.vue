@@ -247,20 +247,51 @@
             <span v-if="item.tag==='工序'|| item.tag==='审核'"
               v-html="item.content"
               @click="openWin(item.router_url)"></span>
-            <span v-if="item.tag==='系统'|| item.tag==='公司'">这是一条{{item.tag}}通知,<span class="blue"
+            <span v-if="item.tag==='系统'|| item.tag==='公司'|| item.tag==='版本更新公告'">这是一条{{item.tag}}通知,<span class="blue"
                 @click="showMsg(item.content,item.title)">点击查看详情</span></span>
           </div>
         </div>
       </div>
       <div class="rightCtn">
-        <div class="container"
-          style="height:calc(100% - 350px);border-bottom:24px solid #F0F2F5">
-          <img style="width:177px;height:177px;margin: 20px auto;display:block"
-            :src="require('../../assets/image/homePage/二维码.png')" />
-          <div style="font-size:18px;color:rgba(0,0,0,0.65);text-align:center">微信扫一扫使用小程序</div>
+        <div class="container container_client_update"
+          style="height:345px;border-bottom:24px solid #F0F2F5">
+          <div class="title">
+            <span class="title_container">
+              <span>{{ showWXQrcode ? '小程序' : '版本更新公告'}}</span>
+              <span class="small_title"
+                @click="showWXQrcode = !showWXQrcode">{{ showWXQrcode ? '版本更新公告' : '小程序'}}</span>
+            </span>
+            <!-- <span class="btn noBorder"
+              style="padding-right:0"
+              @click="$openUrl('/tutorialSystem/tutorialSystemList')">查看全部</span> -->
+          </div>
+          <template v-if="showWXQrcode">
+            <img style="width:177px;height:177px;margin: 20px auto;display:block"
+              :src="require('../../assets/image/homePage/二维码.png')" />
+            <div style="font-size:18px;color:rgba(0,0,0,0.65);text-align:center">微信扫一扫使用小程序</div>
+          </template>
+          <template v-else>
+            <ul class="client_update_list"
+              v-infinite-scroll="getList"
+              :infinite-scroll-disabled="disabledScroll">
+              <li v-for="(item,index) in clientUpdateList"
+                class="client_update_item"
+                :key="index"
+                @click="showUpdateMessage = item">
+                <span class="info">{{item.title}}</span>
+                <span class="date">发布于 {{$getTime(item.create_time)}}</span>
+              </li>
+              <p style="text-align:center;color:#CCC;margin:0"
+                v-if="loading_scroll">加载中。。。</p>
+              <p style="text-align:center;color:#CCC;margin:0"
+                v-else-if="clientUpdateList.length === 0">暂无更新公告</p>
+              <p style="text-align:center;color:#CCC;margin:0"
+                v-else-if="disabledScroll">已加载完成。。。</p>
+            </ul>
+          </template>
         </div>
         <div class="container"
-          style="height:306px">
+          style="height:326px">
           <div class="title">使用教学
             <span class="btn noBorder"
               style="padding-right:0"
@@ -275,7 +306,19 @@
           </div>
         </div>
       </div>
-
+    </div>
+    <div class="popup"
+      v-show="showUpdateMessage">
+      <div class="main">
+        <div class="title">
+          <div class="text">{{showUpdateMessage && showUpdateMessage.title}}</div>
+          <i class="el-icon-close"
+            @click="showUpdateMessage = null"></i>
+        </div>
+        <div class="content"
+          v-html="showUpdateMessage && showUpdateMessage.content">
+        </div>
+      </div>
     </div>
     <!-- <div class="popup"
       v-show="easyOprFlag">
@@ -342,7 +385,8 @@ export default {
         '公司': require('../../assets/image/homePage/公司消息.png'),
         '工序': require('../../assets/image/homePage/工序消息.png'),
         '审核': require('../../assets/image/homePage/审核消息.png'),
-        '系统': require('../../assets/image/homePage/系统消息.png')
+        '系统': require('../../assets/image/homePage/系统消息.png'),
+        '版本更新公告': require('../../assets/image/homePage/系统消息.png')
       },
       easyOprFlag: false,
       easyOpr: [{
@@ -503,7 +547,14 @@ export default {
         week: 0,
         month: 0
       },
-      tutorialSystemArr: []
+      tutorialSystemArr: [],
+      showWXQrcode: false,
+      clientUpdateList: [],
+      page: 1, // 现在更新公共没有分页所以没必要
+      total: 1,
+      disabledScroll: false,
+      loading_scroll: false,
+      showUpdateMessage: null
     }
   },
   computed: {
@@ -584,6 +635,25 @@ export default {
     }
   },
   methods: {
+    getList () {
+      if (this.loading_scroll) return
+      this.loading_scroll = true
+      notify.list({
+        limit: 20,
+        page: this.pages,
+        status: null,
+        tag: '版本更新公告'
+      }).then(res => {
+        this.loading_scroll = false
+        if (res.data.status !== false) {
+          this.clientUpdateList.push(...res.data.data)
+          this.page += 1
+          if (this.page > Math.ceil(this.total / 20)) {
+            this.disabledScroll = true
+          }
+        }
+      })
+    },
     addFastList (item) {
       if (this.userCheckedOpr.length >= 6) {
         this.$message.warning('最多可添加6个快捷操作入口')
@@ -690,6 +760,7 @@ export default {
     })
   },
   created () {
+    this.getList()
     let modules = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : []
     this.easyOpr = this.easyOpr.filter(itemF => modules.indexOf(itemF.id) !== -1)
     let userEasyOpr = window.localStorage.getItem('userEasyOpr') ? JSON.parse(window.localStorage.getItem('userEasyOpr')) : []

@@ -446,8 +446,9 @@
             v-else>见附件</span>
         </div>
         <div class="print_row">
-          <span class="row_item w140 center">备注：</span>
-          <span class="row_item left">{{craftDetail.desc}}</span>
+          <span class="row_item w140 center">工序与备注：</span>
+          <span class="row_item left noBorder">后道工序：{{warp_data.additional_data}}</span>
+          <span class="row_item left">其它备注：{{craftDetail.desc}}</span>
         </div>
       </div>
     </div>
@@ -955,6 +956,7 @@ export default {
       },
       yarn_coefficient: [],
       zhujia_info: [],
+      // yarn_coefficient: [],
       letterArr: letterArr
     }
   },
@@ -1254,9 +1256,12 @@ export default {
             }
           })
         })
+        console.log(this.craftDetail.draft_method)
+        let reedWidthData = data.warp_data.reed_width_data && JSON.parse(data.warp_data.reed_width_data)
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
         this.warp_data.length_back = this.warp_data.warp_rank_back[0].length
+        this.warp_data.reed_width_data = Array.isArray(reedWidthData) ? reedWidthData.join('+') : (reedWidthData || '')
         this.weft_data = this.$clone(data.weft_data)
         this.weft_data.length_is = this.weft_data.weft_rank[0].length
         this.weft_data.length_back = this.weft_data.weft_rank_back[0].length
@@ -1374,7 +1379,7 @@ export default {
         //   colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
         //   colorNumber.weft[arrWeftBack[0][i]] += x * y * z
         // }
-        this.yarn_coefficient = data.yarn_coefficient
+        // this.yarn_coefficient = data.yarn_coefficient
         // 展平合并信息
         let warpTable = this.getFlatTable(this.warp_data.warp_rank, 'warp_data', 'merge_data').map((item) => {
           if (!item.GLorPM) {
@@ -1433,6 +1438,7 @@ export default {
             }
           })
         })
+        this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
           window.print()
         }, 1000)

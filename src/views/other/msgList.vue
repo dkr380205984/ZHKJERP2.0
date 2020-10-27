@@ -64,7 +64,7 @@
             <div class="oneMsgLeft">
               <div class="oneMsgLine1">
                 <span class="mark"
-                  :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统'}">{{item.tag}}</span>
+                  :class="{'blue':item.tag==='工序'||item.tag==='审核','purple':item.tag==='公司','yellow':item.tag==='系统' || item.tag === '版本更新公告'}">{{item.tag}}</span>
                 <span class="oneMsgTitle"
                   @click="readMsg(item)"
                   :class="{'must':item.type==='紧急','normal':item.type==='普通','important':item.type==='重要'}">{{item.title}}</span>
@@ -137,7 +137,7 @@ export default {
       })
     },
     readMsg (item) {
-      if (item.tag === '公司' || item.tag === '系统') {
+      if (item.tag === '公司' || item.tag === '系统' || item.tag === '版本更新公告') {
         this.$alert('通知详情：' + item.content, item.title, {
           confirmButtonText: '确定',
           dangerouslyUseHTMLString: true
