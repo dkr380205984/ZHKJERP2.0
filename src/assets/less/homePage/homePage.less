@@ -120,6 +120,42 @@
     .rightCtn{
       width: 416px;
       background: #fff;
+      .container_client_update{
+        display: flex;
+        overflow: hidden;
+        flex-direction: column;
+        .client_update_list{
+          margin: 0;
+          flex: 1;
+          overflow-y: auto;
+          max-height: 400px;
+          padding: 0;
+          .client_update_item{
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0 24px;
+            box-sizing: border-box;
+            &:hover{
+              color: @blue;
+              background-color: rgba(49, 137, 252, 0.3)
+            }
+            .info{
+              margin-right: 16px;
+              flex: 1;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            .date{
+              color: @font45;
+              font-size: 12px;
+            }
+          }
+        }
+      }
     }
     .title{
       line-height: 55px;
@@ -131,6 +167,16 @@
       color: @font85;
       border-bottom: 1px solid #e9e9e9;
       align-items: center;
+      .title_container{
+        display: flex;
+        align-items: flex-end;
+        .small_title{
+          color: @font65;
+          font-size: @fontMiddle;
+          margin-left: 16px;
+          cursor: pointer;
+        }
+      }
       .btn{
         font-size: @fontMiddle;
       }
