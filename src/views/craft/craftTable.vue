@@ -446,8 +446,9 @@
             v-else>见附件</span>
         </div>
         <div class="print_row">
-          <span class="row_item w140 center">备注：</span>
-          <span class="row_item left">{{craftDetail.desc}}</span>
+          <span class="row_item w140 center">工序与备注：</span>
+          <span class="row_item left noBorder">后道工序：{{warp_data.additional_data}}</span>
+          <span class="row_item left">其它备注：{{craftDetail.desc}}</span>
         </div>
       </div>
     </div>

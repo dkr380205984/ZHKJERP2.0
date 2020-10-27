@@ -254,7 +254,7 @@
       </div>
       <div class="rightCtn">
         <div class="container container_client_update"
-          style="height:calc(100% - 326px);border-bottom:24px solid #F0F2F5">
+          style="height:345px;border-bottom:24px solid #F0F2F5">
           <div class="title">
             <span class="title_container">
               <span>{{ showWXQrcode ? '小程序' : '版本更新公告'}}</span>
