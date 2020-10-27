@@ -28,7 +28,7 @@
                 @change="changeRouter(1)"
                 placeholder="输入物料名称按回车键查询">
               </el-input>
-              <!-- <el-select v-model="user_id"
+              <el-select v-model="user_id"
                 class="filter_item"
                 @change="changeRouter(1)"
                 filterable
@@ -39,7 +39,7 @@
                   :label="item.name"
                   :value="item.id">
                 </el-option>
-              </el-select> -->
+              </el-select>
               <el-date-picker v-model="date"
                 style="width:250px"
                 class="filter_item"
@@ -298,7 +298,7 @@ export default {
         }
       })
       this.flowerArr = res[1].data.data
-      this.userArr = res[2].data.data
+      this.userArr = res[2].data.data.filter(itemF => (itemF.module_id && itemF.module_id.includes(3)))
     })
   }
 }

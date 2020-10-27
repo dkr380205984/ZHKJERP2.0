@@ -956,6 +956,14 @@ export default {
         auth.list()
       ]).then(res => {
         this.clientList = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
+        let flagC = this.clientList.find(itemF => itemF.children.find(itemC => itemC.value === this.$route.query.clientId))
+        if (flagC) {
+          this.orderInfo.client_id = [flagC.value, this.$route.query.clientId]
+        }
+        if (this.orderInfo.client_id) {
+          this.changeContacts(this.orderInfo.client_id)
+          this.orderInfo.contacts_id = Number(this.$route.query.contacts_id) || ''
+        }
         let flag = res[1].data.data.find(item => item.name === window.sessionStorage.getItem('user_name'))
         if (flag) {
           this.orderInfo.group_id = flag.group_id
@@ -996,6 +1004,7 @@ export default {
       })
       sampleOrder.create({
         ...orderInfo,
+        pid: this.$route.query.parentId || null,
         client_id: orderInfo.client_id && orderInfo.client_id[1]
       }).then(res => {
         if (res.data.status !== false) {
@@ -1005,10 +1014,13 @@ export default {
       })
     },
     changeContacts (e) {
+      console.log(e)
       let flag = this.clientList.find(item => item.value === e[0])
+      console.log(flag)
       if (flag) {
         let flagI = flag.children.find(itemF => itemF.value === e[1])
-        this.contacts = flagI.contacts
+        console.log(flagI)
+        this.contacts = (flagI && flagI.contacts) || ''
       }
     },
     querySearchSample (queryString, cb) {
@@ -1169,7 +1181,6 @@ export default {
     }
   },
   mounted () {
-    window.initCreateOrder = this.initCreateOrder
     this.sample_code[1] = new Date().getFullYear().toString().substring(2, 4)
     Promise.all([
       productType.list(),

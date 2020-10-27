@@ -108,7 +108,8 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">客户确认：</span>
-            <span class="text">{{sampleOrderInfo.client_confirm|filterSampleStatus}}</span>
+            <span class="text"
+              :class="{'orange':sampleOrderInfo.client_confirm !== 2 && sampleOrderInfo.client_confirm !== 3,'green':sampleOrderInfo.client_confirm === 2,'red':sampleOrderInfo.client_confirm === 3}">{{sampleOrderInfo.client_confirm|filterSampleStatus}}</span>
           </div>
           <div class="colCtn flex3">
             <span class="label">样单类型：</span>
@@ -770,14 +771,28 @@
           <el-steps :active="showChangeSampleOrderPopup-1"
             finish-status="success"
             align-center>
-            <el-step title="修改样品信息"></el-step>
-            <el-step title="打样信息"></el-step>
+            <!-- <el-step title="打样信息"></el-step> -->
             <!-- <el-step title="客户付费"></el-step> -->
-            <el-step title="完成"></el-step>
+            <el-step title="提交客户信息"></el-step>
+            <el-step title="新增打样订单"></el-step>
           </el-steps>
         </div>
+        <div class="content center_popup"
+          v-if="showChangeSampleOrderPopup === 1 || showChangeSampleOrderPopup === 2">
+          <!-- <span class="el-icon-warning-outline orange">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户不确定”，是否继续?</span> -->
+          <!-- <div class="row"> -->
+          <span class="el-icon-warning-outline orange"
+            v-if="isCommit === 'before'">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户不确定”，是否继续?</span>
+          <span class="blue"
+            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
+          <span class="green"
+            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
+          <span class="red"
+            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
+          <!-- </div> -->
+        </div>
         <div class="content"
-          v-if="showChangeSampleOrderPopup === 1">
+          v-if="showChangeSampleOrderPopup === 3">
           <div class="row">
             <el-radio-group v-model="changeSampleId"
               class="col">
@@ -788,7 +803,7 @@
             </el-radio-group>
           </div>
         </div>
-        <div class="content"
+        <!-- <div class="content"
           v-if="showChangeSampleOrderPopup === 2">
           <div class="row">
             <span class="label">样单类型：</span>
@@ -854,7 +869,7 @@
               </el-date-picker>
             </span>
           </div>
-        </div>
+        </div> -->
         <!-- <div class="content"
           v-if="showChangeSampleOrderPopup === 3">
           <div class="row">
@@ -925,43 +940,31 @@
             </template>
           </template>
         </div> -->
-        <div class="content center_popup"
-          v-if="showChangeSampleOrderPopup === 3 || showChangeSampleOrderPopup === 4">
-          <!-- <div class="row"> -->
-          <span class="el-icon-warning-outline orange"
-            v-if="isCommit === 'before'">确认提交后将修改该订单状态为“已完成”，客户确认状态为“客户已确定”，是否继续?</span>
-          <span class="blue"
-            v-if="isCommit === 'commit'">提交中<em class="el-icon-loading"></em></span>
-          <span class="green"
-            v-if="isCommit === 'compiled'">提交完成<em class="el-icon-check"></em></span>
-          <span class="red"
-            v-if="isCommit === 'error'">提交失败，请尝试重新提交或刷新页面！<em class="el-icon-close"></em></span>
-          <!-- </div> -->
-        </div>
+
         <div class="opr">
           <div class="btn btnGray"
             v-show="showChangeSampleOrderPopup === 1"
             @click="closePopup">取消</div>
-          <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup === 1"
-            @click="changeSampleId ? $openUrl('/sample/sampleUpdate/' + changeSampleId) : $message.warning('请选择需要修改的样品')">去修改</div>
           <div class="btn btnGray"
-            v-show="showChangeSampleOrderPopup > 1 && (isCommit === 'before' || isCommit === 'error')"
-            @click="showChangeSampleOrderPopup--">上一步</div>
+            v-show="showChangeSampleOrderPopup === 3"
+            @click="showChangeSampleOrderPopup = 1">上一步</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup < 3"
-            @click="addShowChangeSampleOrderPopup(showChangeSampleOrderPopup)">下一步</div>
+            v-show="showChangeSampleOrderPopup === 3"
+            @click="changeSampleId ? $openUrl(`/sample/sampleCreate?sampleId=${changeSampleId}&clientId=${sampleOrderInfo.client_id}&contacts_id=${sampleOrderInfo.contacts_id}&parentId=${$route.params.id}`) : $message.warning('请选择需要修改的样品')">去修改</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'before'"
+            v-show="showChangeSampleOrderPopup === 1 && isCommit === 'before'"
             @click="changeOrderStatus('continueSample')">确定</div>
           <div class="btn btnBlue"
-            v-show="showChangeSampleOrderPopup === 3 && isCommit === 'error'"
+            v-show="showChangeSampleOrderPopup === 1 && isCommit === 'error'"
             @click="changeOrderStatus('continueSample')">重试<em class="el-icon-refresh-left"></em></div>
           <div class="btn btnBlue"
-            v-if="showChangeSampleOrderPopup === 3  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
+            v-if="showChangeSampleOrderPopup === 1  && isCommit === 'commit'">提交中<em class="el-icon-loading"></em></div>
           <div class="btn btnBlue"
-            v-if="showChangeSampleOrderPopup === 4 && isCommit === 'compiled'"
-            @click="closePopup">完成</div>
+            v-show="showChangeSampleOrderPopup < 3 && isCommit === 'compiled'"
+            @click="showChangeSampleOrderPopup = 3">下一步</div>
+          <!-- <div class="btn btnBlue"
+            v-if="showChangeSampleOrderPopup === 2 && isCommit === 'compiled'"
+            @click="closePopup">完成</div> -->
         </div>
       </div>
     </div>
@@ -1376,7 +1379,7 @@ export default {
         id: this.$route.params.id
       }).then(res => {
         let sampleOrderInfo = res.data.data
-        this.sampleOrderArr = [sampleOrderInfo].concat(this.$clone(sampleOrderInfo.child_data)).map((item, index) => {
+        this.sampleOrderArr = [sampleOrderInfo].concat(this.$clone(sampleOrderInfo.child_data || [])).map((item, index) => {
           item.product_info.forEach(itemPro => {
             itemPro.size_info.forEach(itemSize => {
               let flag = item.client_pay.find(itemInner => (+itemInner.size_id === +itemSize.size_id && +itemInner.color_id === +itemSize.color_id && +itemPro.id === +itemInner.product_info.product_id))
@@ -1863,118 +1866,10 @@ export default {
       } else if (type === 'continue') {
         this.showChangeSampleOrderPopup = 1
       } else if (type === 'continueSample') {
-        if (this.continueSampleInfo.type !== 0 && !this.continueSampleInfo.type) {
-          this.$message.error('请选择打样类型')
-          return
-        }
-        if (!this.continueSampleInfo.time) {
-          this.$message.error('请选择打样完成时间')
-          return
-        }
-        let flag = {
-          id: true,
-          sizeColor: true,
-          number: true,
-          numbers: true,
-          price: true,
-          total_price: true
-        }
-        let productInfo = this.$mergeData(this.continueSampleInfo.product_info, { mainRule: 'product_id', childrenName: 'size_info', childrenRule: { mainRule: 'size_color', otherRule: [{ name: 'number', type: 'add' }] } }).map(item => {
-          if (!item.product_id) {
-            flag.id = false
-          }
-          return {
-            product_id: item.product_id,
-            size_info: item.size_info.map(itemSize => {
-              if (!itemSize.size_color[0] || !itemSize.size_color[1]) {
-                flag.sizeColor = false
-              }
-              if (!itemSize.number) {
-                flag.number = false
-              }
-              return {
-                size_id: itemSize.size_color[0],
-                color_id: itemSize.size_color[1],
-                numbers: itemSize.number
-              }
-            })
-          }
-        })
-        if (!flag.id) {
-          this.$message.error('请选择需要打样的样品')
-          return
-        }
-        if (!flag.sizeColor) {
-          this.$message.error('请选择需要打样样品的尺码颜色')
-          return
-        }
-        if (!flag.number) {
-          this.$message.error('请填写需要打样样品的数量')
-          return
-        }
-        // let clientPay = []
-        // if (this.continueSampleInfo.isCustomerPay) {
-        //   clientPay = this.continueSampleInfo.product_info.map(item => {
-        //     if (!item.product_id) {
-        //       flag.id = false
-        //     }
-        //     if (!item.size_color[0] || !item.size_color[1]) {
-        //       flag.sizeColor = false
-        //     }
-        //     if (!item.price) {
-        //       flag.price = false
-        //     }
-        //     if (!item.numbers) {
-        //       flag.numbers = false
-        //     }
-        //     if (!item.total_price) {
-        //       flag.total_price = false
-        //     }
-        //     return {
-        //       product_id: item.product_id,
-        //       color: item.size_color[1],
-        //       size: item.size_color[0],
-        //       price: item.price,
-        //       number: item.numbers,
-        //       total_price: item.total_price
-        //     }
-        //   })
-        // }
-        // if (!flag.id) {
-        //   this.$message.error('请选择需要付费的样品')
-        //   return
-        // }
-        // if (!flag.sizeColor) {
-        //   this.$message.error('请选择需要付费样品的尺码颜色')
-        //   return
-        // }
-        // if (!flag.numbers) {
-        //   this.$message.error('请填写需要付费样品的数量')
-        //   return
-        // }
-        // if (!flag.price) {
-        //   this.$message.error('请填写需要付费样品的单价')
-        //   return
-        // }
-        // if (!flag.total_price) {
-        //   this.$message.error('请填写需要付费总价')
-        //   return
-        // }
         this.isCommit = 'commit'
-        let title = this.sampleOrderArr[this.sampleOrderArr.length - 1].title
-        title += '-第' + (this.chinaNum[this.sampleOrderArr.length] || this.sampleOrderArr.length) + '次'
-        sampleOrder.create({
-          type: this.continueSampleInfo.type,
-          title: title,
-          pid: this.$route.params.id,
-          order_time: this.$getTime(),
-          group_id: this.sampleOrderInfo.group_id,
-          client_id: this.sampleOrderInfo.client_id,
-          contacts_id: this.sampleOrderInfo.contacts_id,
-          deliver_time: this.continueSampleInfo.time,
-          desc: '',
-          product_info: productInfo
-          // client_pay: clientPay
+        sampleOrder.changeStatus({
+          order_id: this.activeSampleOrderId,
+          type: 6
         }).then(res => {
           if (res.data.status !== false) {
             this.showChangeSampleOrderPopup++
@@ -2488,6 +2383,8 @@ export default {
         return '待确认'
       } else if (value === 2) {
         return '已确认'
+      } else if (value === 3) {
+        return '不确认'
       } else if (value === 5) {
         return '大货生产'
       } else {

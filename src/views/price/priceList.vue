@@ -446,7 +446,7 @@ export default {
       auth.list()
     ]).then(res => {
       this.clientArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
-      this.userArr = res[1].data.data
+      this.userArr = res[1].data.data.filter(itemF => (itemF.module_id && itemF.module_id.includes(2)))
     })
   },
   filters: {
