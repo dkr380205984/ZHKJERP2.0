@@ -238,11 +238,14 @@
         </div>
         <div class="list">
           <div class="title">
-            <div class="col flex12">
+            <div class="col flex08">
               <span class="text">订单号</span>
             </div>
             <div class="col flex12">
               <span class="text">外贸公司</span>
+            </div>
+            <div class="col flex08">
+              <span class="text">产品编号</span>
             </div>
             <div class="col middle">
               <span class="text">产品图片</span>
@@ -288,8 +291,25 @@
           <div class="row"
             v-for="(itemOrder,indexOrder) in list"
             :key="indexOrder">
-            <div class="col flex12">{{itemOrder.order_code}}</div>
+            <div class="col flex08">{{itemOrder.order_code}}</div>
             <div class="col flex12">{{itemOrder.client_name}}</div>
+            <div class="col flex08">
+              <span class="text">
+                <el-popover placement="right"
+                  v-if="itemOrder.product_info.length>1"
+                  width="200"
+                  trigger="click">
+                  <span v-for="(itemPro,indexPro) in itemOrder.product_info"
+                    :key="indexPro">{{itemPro.product_code}},</span>
+                  <span class="btn noBorder"
+                    style="padding:0;margin:0"
+                    slot="reference">查看详情</span>
+                </el-popover>
+                <template v-if="itemOrder.product_info.length===1">
+                  <span v-for="(itemPro,indexPro) in itemOrder.product_info"
+                    :key="indexPro">{{itemPro.product_code}}</span></template>
+              </span>
+            </div>
             <div class="col middle">
               <zh-img-list :list="itemOrder.image"
                 type='open'></zh-img-list>

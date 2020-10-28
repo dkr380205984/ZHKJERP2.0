@@ -67,7 +67,26 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">样品编号：</span>
-            <span class="text">{{detail.sample_product_code}}</span>
+            <span class="text">
+              <span v-if="!updateFlag">{{detail.sample_product_code}}</span>
+              <el-input v-if="updateFlag"
+                v-model="detail.sample_product_code"
+                placeholder="请输入样品编号"
+                style="height:32px;width:200px"></el-input>
+              <el-tooltip class="item"
+                effect="dark"
+                content="修改的样品编号尽量不要重复以便于搜索"
+                placement="top-start"
+                v-if="!updateFlag">
+                <span class="btn noBorder"
+                  style="margin-left:12px;padding:0"
+                  @click="updateFlag = true">点击修改</span>
+              </el-tooltip>
+              <span class="btn noBorder"
+                style="margin-left:12px;padding:0"
+                v-if="updateFlag"
+                @click="saveProcode">确认修改</span>
+            </span>
           </div>
           <div class="colCtn flex3">
             <span class="label">名称/款号：</span>
@@ -305,7 +324,7 @@
                     <img src="../../assets/image/sample/price_icon.png" />
                   </div>
                   <div class="content">
-                    <div class="text title">订单</div>
+                    <div class="text title">样单</div>
                     <div class="text"
                       v-if="detail.order_info.length ===0">待添加</div>
                     <div class="text"
@@ -539,6 +558,8 @@ import { sample } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      canSeeUpdate: false,
+      updateFlag: false,
       loading: true,
       detail: {
         category_info: {
@@ -593,6 +614,24 @@ export default {
     }
   },
   methods: {
+    saveProcode () {
+      if (!this.detail.sample_product_code) {
+        this.$message.error('请输入样品编号')
+        return
+      }
+      this.loading = true
+      sample.updateCode({
+        id: this.$route.params.id,
+        product_code: this.detail.sample_product_code,
+        product_type: 2
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          this.updateFlag = false
+          this.loading = false
+        }
+      })
+    },
     noOpr () {
       this.$message.warning('暂未开放该功能')
     },
