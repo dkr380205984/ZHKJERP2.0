@@ -912,7 +912,7 @@ export default {
   data () {
     return {
       loading: true,
-      companyName: window.sessionStorage.getItem('company_name'),
+      companyName: window.sessionStorage.getItem('full_name'),
       qrCodeUrl: '',
       craftDetail: {
         product_info: {

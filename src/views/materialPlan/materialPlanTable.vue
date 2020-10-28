@@ -6,7 +6,7 @@
     <div class="printTable">
       <div class="print_head">
         <div class="left">
-          <span class="title">{{company_name}}{{$route.query.type === '1' ? '原' : '辅'}}料计划单{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
+          <span class="title"> {{`${title || company_name + ($route.query.type === '1' ? '原' : '辅') + '料计划单'}`}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
           <span class="item">
             <span class="label">联系人：</span>
             <span>{{contact_name}}</span>
@@ -41,7 +41,7 @@
         </div>
         <div class="print_row">
           <span class="row_item center w180">订单公司</span>
-          <span class="row_item left">{{orderInfo.client_name}}</span>
+          <span class="row_item left">{{ isHideClient !== 1 ? orderInfo.client_name : ''}}</span>
           <span class="row_item center w180">负责小组</span>
           <span class="row_item left">{{orderInfo.group_name}}</span>
         </div>
@@ -86,7 +86,8 @@
       <div class="print_remark">
         <div class="print_row noBorder">
           <span class="row_item w180 center">备注</span>
-          <span class="row_item left"></span>
+          <span class="row_item left remark_span"
+            v-html="desc"></span>
         </div>
       </div>
     </div>
@@ -109,14 +110,16 @@
 </template>
 
 <script>
-import { materialPlan, order, sampleOrder } from '@/assets/js/api.js'
+import { materialPlan, order, sampleOrder, print } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      loading: true,
       params: {},
       orderInfo: {},
-      company_name: window.sessionStorage.getItem('company_name'),
+      company_name: window.sessionStorage.getItem('full_name'),
+      title: '',
+      desc: '',
+      isHideClient: false,
       contact_name: window.sessionStorage.getItem('user_name'),
       contact_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
@@ -130,7 +133,6 @@ export default {
   },
   methods: {
     handleClickRight (e) {
-      console.log(e)
       this.showRMeau = true
       this.X_position = e.clientX
       this.Y_position = e.clientY
@@ -153,6 +155,9 @@ export default {
       }),
       orderOrSample({
         id: this.$route.params.id
+      }),
+      print.detail({
+        type: this.$route.query.type === '1' ? 11 : 12
       })
     ]).then(res => {
       let orderProInfo = []
@@ -214,6 +219,11 @@ export default {
           itemMa.total_weight = Number(itemMa.total_weight || 0) + Number(itemColor.weight)
         })
       })
+      if (res[2].data.status !== false) {
+        this.title = res[2].data.data && res[2].data.data.title
+        this.desc = res[2].data.data && res[2].data.data.desc
+        this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
+      }
       setTimeout(() => {
         window.print()
       }, 1000)

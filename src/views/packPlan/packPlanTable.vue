@@ -100,7 +100,7 @@ import { packPlan, order, packag } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: window.sessionStorage.getItem('company_name'),
+      companyName: window.sessionStorage.getItem('full_name'),
       chinaNum: chinaNum,
       user_name: window.sessionStorage.getItem('user_name'),
       index: 0,

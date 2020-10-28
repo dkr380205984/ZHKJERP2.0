@@ -70,7 +70,7 @@ import { materialOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: window.sessionStorage.getItem('company_name'),
+      companyName: window.sessionStorage.getItem('full_name'),
       user_name: window.sessionStorage.getItem('user_name'),
       user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',

@@ -59,7 +59,7 @@ import { materialOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: '桐庐凯瑞针纺',
+      companyName: window.sessionStorage.getItem('full_name'),
       qrCodeUrl: '',
       orderDetail: {
         material_info: []

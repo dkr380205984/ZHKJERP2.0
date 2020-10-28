@@ -154,6 +154,22 @@
               font-size: 12px;
             }
           }
+          &.havePrompt{
+            padding-bottom: 30px;
+            position: relative;
+            box-sizing: border-box;
+            .prompt{
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              height: 30px;
+              line-height: 30px;
+              transform: translateX(-50%);
+              text-align: center;
+              color: #CCC;
+              margin: 0
+            }
+          }
         }
       }
     }
@@ -173,7 +189,6 @@
         .small_title{
           color: @font65;
           font-size: @fontMiddle;
-          margin-left: 16px;
           cursor: pointer;
         }
       }

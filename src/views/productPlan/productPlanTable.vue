@@ -93,7 +93,7 @@ export default {
   data () {
     return {
       loading: true,
-      company_name: window.sessionStorage.getItem('company_name'),
+      company_name: window.sessionStorage.getItem('full_name'),
       qrCodeUrl: '',
       update_time: '',
       user_name: '',

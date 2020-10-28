@@ -257,9 +257,11 @@
           style="height:345px;border-bottom:24px solid #F0F2F5">
           <div class="title">
             <span class="title_container">
-              <span>{{ showWXQrcode ? '小程序' : '版本更新公告'}}</span>
-              <span class="small_title"
-                @click="showWXQrcode = !showWXQrcode">{{ showWXQrcode ? '版本更新公告' : '小程序'}}</span>
+              <span :class="{'small_title': showWXQrcode}"
+                @click="showWXQrcode = false">版本更新公告</span>
+              <span :class="{'small_title': !showWXQrcode}"
+                style="margin-left:16px"
+                @click="showWXQrcode = true">小程序</span>
             </span>
             <!-- <span class="btn noBorder"
               style="padding-right:0"
@@ -272,6 +274,7 @@
           </template>
           <template v-else>
             <ul class="client_update_list"
+              :class="{'havePrompt':loading_scroll || clientUpdateList.length === 0 || disabledScroll}"
               v-infinite-scroll="getList"
               :infinite-scroll-disabled="disabledScroll">
               <li v-for="(item,index) in clientUpdateList"
@@ -281,12 +284,12 @@
                 <span class="info">{{item.title}}</span>
                 <span class="date">发布于 {{$getTime(item.create_time)}}</span>
               </li>
-              <p style="text-align:center;color:#CCC;margin:0"
-                v-if="loading_scroll">加载中。。。</p>
-              <p style="text-align:center;color:#CCC;margin:0"
+              <p class="prompt"
+                v-if="loading_scroll">加载中...</p>
+              <p class="prompt"
                 v-else-if="clientUpdateList.length === 0">暂无更新公告</p>
-              <p style="text-align:center;color:#CCC;margin:0"
-                v-else-if="disabledScroll">已加载完成。。。</p>
+              <p class="prompt"
+                v-else-if="disabledScroll">暂无更多</p>
             </ul>
           </template>
         </div>
@@ -310,9 +313,15 @@
     <div class="popup"
       v-show="showUpdateMessage">
       <div class="main">
-        <div class="title">
+        <div class="title"
+          style="height:auto;padding:8px 0;flex-direction:column;align-items:center;position:relative">
+          <img :src="require('@/assets/image/homePage/version_update.png')"
+            style="height:60px;margin-bottom:16px"
+            alt=""
+            srcset="">
           <div class="text">{{showUpdateMessage && showUpdateMessage.title}}</div>
           <i class="el-icon-close"
+            style="position:absolute;right:0;top:0;transform: translate(-50%,50%);"
             @click="showUpdateMessage = null"></i>
         </div>
         <div class="content"

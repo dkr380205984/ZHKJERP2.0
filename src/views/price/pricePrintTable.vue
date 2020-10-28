@@ -126,7 +126,7 @@ export default {
   data () {
     return {
       loading: true,
-      company_name: window.sessionStorage.getItem('company_name'),
+      company_name: window.sessionStorage.getItem('full_name'),
       price_code: '',
       create_time: '',
       create_user: '',

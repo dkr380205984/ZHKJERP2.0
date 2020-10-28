@@ -29,7 +29,7 @@
           <div class="print_row has_marginBottom"
             :key="indexOrder + 'client'">
             <span class="row_item center w180">订单公司</span>
-            <span class="row_item left">{{itemOrder.client_name}}</span>
+            <span class="row_item left">{{ isHideClient !== 1 ? itemOrder.client_name : ''}}</span>
             <span class="row_item center w180">负责小组</span>
             <span class="row_item left flex08">{{itemOrder.group_name}}</span>
           </div>
@@ -85,7 +85,8 @@ export default {
       processInfo: [],
       total_price: '',
       title: '',
-      remark: ''
+      remark: '',
+      isHideClient: false
     }
   },
   methods: {
@@ -115,8 +116,9 @@ export default {
             return item
           })
           this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
-          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
+          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('full_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
           this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
           setTimeout(() => {
             window.print()
           }, 1000)
@@ -145,8 +147,9 @@ export default {
             return item
           })
           this.total_price = this.processInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
-          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
+          this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('full_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + '加工单')
           this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
           setTimeout(() => {
             window.print()
           }, 1000)
