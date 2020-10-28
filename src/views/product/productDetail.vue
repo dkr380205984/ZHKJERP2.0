@@ -174,40 +174,46 @@
             <span class="label">关联单据：</span>
             <div class="rectCtn">
               <div class="rect">
+                <div class="tab"
+                  v-if="detail.craft_info&&detail.craft_info.length>1">
+                  <div class="circle"
+                    :class="{'active':craft_index===index-1}"
+                    v-for="index in detail.craft_info.length"
+                    :key="index"
+                    @click="craft_index=index-1">
+                  </div>
+                </div>
                 <div class="main">
                   <div class="icon"
-                    :class="{'yellow':detail.craft_info,'gray':!detail.craft_info}">
+                    :class="{'yellow':detail.craft_info&&detail.craft_info.length>0,'gray':!detail.craft_info||detail.craft_info.length===0}">
                     <img src="../../assets/image/sample/craft_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="!detail.craft_info">待添加</div>
+                      v-if="!detail.craft_info||detail.craft_info.length===0">待添加</div>
                     <div class="text"
-                      v-if="detail.craft_info">{{detail.craft_info.user_name}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].user_name}}</div>
                     <div class="text"
-                      v-if="detail.craft_info">{{detail.craft_info.create_time.slice(0,10)}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="!detail.craft_info &&detail.order_info.length === 0"
-                    class="text"
-                    style="color:#ccc">请先给产品添加订单</span>
-                  <span v-if="!detail.craft_info && detail.order_info.length>0"
+                  <span v-if="(!detail.craft_info||detail.craft_info.length===0)"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">预览</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="openWin('/craftTable/' + $route.params.id +'/1/'+ detail.craft_info.id)">打印</span>
-                  <span v-if="detail.craft_info"
+                    @click="openWin('/craftTable/'+ $route.params.id + '/1/' + detail.craft_info[craft_index].id)">打印</span>
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">详情</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="noOpr">...</span>
+                    @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                 </div>
               </div>
               <div class="rect">
@@ -488,6 +494,7 @@ export default {
       canSeePrice: false,
       canSeeOrder: false,
       loading: true,
+      craft_index: 0,
       detail: {
         category_info: {
           product_category: '',

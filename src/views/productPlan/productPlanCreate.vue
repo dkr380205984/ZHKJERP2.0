@@ -509,12 +509,16 @@ export default {
       })
       let craft = res[4].data.data
       // 导入工艺单数据
-      if ((this.$route.params.type === '2' && craft.length > 0) || (this.$route.params.type === '1' && craft.peise_yarn_weight)) {
+      if (craft.length > 0) {
         this.$alert('检测到该产品已有工艺单信息，已自动为您同步了工艺单原料信息', '提示', {
           confirmButtonText: '确定'
         })
-        // console.log(craft.find((itemFind) => itemFind.is_default === 1).peise_yarn_weight)
-        let craftMat = this.$route.params.type === '1' ? craft.peise_yarn_weight : ((craft.length === 1 ? craft[0] : craft.find((itemFind) => itemFind.is_default === 1)).peise_yarn_weight)
+        let craftMat = {}
+        craft.forEach((item) => {
+          for (let key in item.peise_yarn_weight) {
+            craftMat[key] = item.peise_yarn_weight[key]
+          }
+        })
         this.list[0].colourSizeArr.forEach((item) => {
           if (craftMat[item.colour_name]) {
             let arr = []
