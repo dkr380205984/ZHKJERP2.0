@@ -3297,7 +3297,11 @@ export default {
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.gongxuArr = res[6].data.data
-      this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+      try {
+        this.warpInfo.reed_width_data = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+      } catch (e) {
+        this.warpInfo.reed_width_data = ['', '', '']
+      }
       this.warpInfo.additional_data = this.warpInfo.additional_data ? this.warpInfo.additional_data.split(',') : []
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
