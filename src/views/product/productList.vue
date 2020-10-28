@@ -129,6 +129,9 @@
             <div class="col">
               <span class="text">编号</span>
             </div>
+            <div class="col">
+              <span class="text">名称</span>
+            </div>
             <div class="col"
               style="flex:1.5">
               <span class="text">品类</span>
@@ -137,7 +140,7 @@
               <span class="text">花型</span>
             </div>
             <div class="col">
-              <span class="text">名称或款号</span>
+              <span class="text">款号</span>
             </div>
             <div class="col">
               <span class="text middle">图片</span>
@@ -159,10 +162,11 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">{{item.product_code}}</div>
+            <div class="col">{{item.name || '无'}}</div>
             <div class="col"
               style="flex:1.5">{{item.category_info.product_category + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
             <div class="col">{{item.flower_id}}</div>
-            <div class="col">{{item.name?item.name:'无'}}</div>
+            <div class="col">{{item.style_code?item.style_code:'无'}}</div>
             <div class="col">
               <zh-img-list :list="item.image"></zh-img-list>
             </div>

@@ -14,14 +14,36 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">名称/款号</span>
+              <span class="text">样品编号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入样品名称或款号"
+              <zh-input placeholder="请输入样品编号"
+                v-model="product_code">
+              </zh-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">样品名称</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入样品名称"
                 v-model="name">
               </zh-input>
             </div>
           </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">款号</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入款号"
+                v-model="model_code">
+              </zh-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">样品品类</span>
@@ -50,8 +72,6 @@
               </el-select>
             </div>
           </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">针型名称</span>
@@ -404,7 +424,9 @@ export default {
       msgContent: '',
       sample_product_code: '',
       chinaNum: chinaNum,
+      product_code: '',
       name: '',
+      model_code: '',
       type: [],
       typeArr: [],
       flower: '',
@@ -724,7 +746,9 @@ export default {
       // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         id: this.$route.params.id,
-        sample_product_code: this.sample_product_code,
+        sample_product_code: this.product_code || this.sample_product_code,
+        is_user_input: 1,
+        style_code: this.model_code,
         name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
@@ -848,6 +872,8 @@ export default {
       })
       let productInfo = res[6].data.data
       this.sample_product_code = productInfo.product_code
+      this.product_code = productInfo.product_code
+      this.model_code = productInfo.style_code
       this.sampleName = productInfo.name
       this.fileArr = productInfo.image.map(item => {
         return {
@@ -863,7 +889,6 @@ export default {
           weight: item.weight
         }
       })
-      this.product_code = productInfo.product_code
       this.colour = productInfo.color.map(item => {
         return {
           color_id: item.color_id || null,
