@@ -24,14 +24,43 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">名称/款号</span>
+              <span class="text">产品编号
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="选填：未填写则使用系统默认生成编号"
+                  placement="top-start">
+                  <span class="el-icon-question"></span>
+                </el-tooltip>
+              </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入产品名称或款号"
+              <zh-input placeholder="请输入产品编号"
+                v-model="product_code_user">
+              </zh-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">产品名称</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入产品名称"
                 v-model="name">
               </zh-input>
             </div>
           </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">款号</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入款号"
+                v-model="model_code">
+              </zh-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">产品品类</span>
@@ -61,8 +90,6 @@
               </el-select>
             </div>
           </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">针型名称</span>
@@ -414,7 +441,9 @@ export default {
       msgContent: '',
       product_code: ['C', '00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
+      product_code_user: '',
       name: '',
+      model_code: '',
       type: [],
       typeArr: [],
       flower: '',
@@ -740,7 +769,9 @@ export default {
       })
       // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
-        product_code: this.product_code.join(''),
+        product_code: this.product_code_user || this.product_code.join(''),
+        is_user_input: this.product_code_user ? 1 : 0,
+        style_code: this.model_code,
         name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
@@ -810,6 +841,8 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let productInfo = res.data.data
+          this.product_code_user = productInfo.product_code
+          this.model_code = productInfo.style_code
           this.name = productInfo.name
           this.fileArr = productInfo.image.map(item => {
             return {

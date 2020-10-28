@@ -85,12 +85,17 @@
             </span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">名称/款号：</span>
+            <span class="label">产品名称：</span>
             <span class="text"
               :class="{'blue':detail.name}">{{detail.name?detail.name:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">款号：</span>
+            <span class="text"
+              :class="{'blue':detail.style_code}">{{detail.style_code?detail.style_code:'无'}}</span>
+          </div>
           <div class="colCtn flex3">
             <span class="label">创建人：</span>
             <span class="text">{{detail.user_name}}</span>
