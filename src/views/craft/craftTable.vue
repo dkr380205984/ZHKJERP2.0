@@ -37,11 +37,11 @@
       </div>
       <div class="print_body">
         <div class="print_row">
-          <span class="row_item w100 center">产品名称</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品名称</span>
           <span class="row_item left">{{craftDetail.product_info.title}}</span>
-          <span class="row_item w100 center">产品品类</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品品类</span>
           <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
-          <span class="row_item w100 center">产品编号</span>
+          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品编号</span>
           <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span>
         </div>
         <div class="print_row">
@@ -446,7 +446,7 @@
             v-else>见附件</span>
         </div>
         <div class="print_row">
-          <span class="row_item w140 center">工序与备注：</span>
+          <span class="row_item w140 center">工序与备注</span>
           <span class="row_item left noBorder">后道工序：{{warp_data.additional_data}}</span>
           <span class="row_item left">其它备注：{{craftDetail.desc}}</span>
         </div>
@@ -456,7 +456,7 @@
     <div class="printTable outTable"
       v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status">
       <div class="outItem">
-        <span class="label">工艺单编号：</span>
+        <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
         {{craftDetail.product_info.product_code}}
       </div>
       <div class="outItem">
@@ -774,7 +774,7 @@
     <div class="printTable outTable"
       v-if="zhujia_info.length >= 7 || color_data.length >= 4">
       <div class="outItem">
-        <span class="label">工艺单编号：</span>
+        <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
         {{craftDetail.product_info.product_code}}
       </div>
       <div class="outItem">
@@ -863,7 +863,7 @@
     <div class="printTable outTable"
       v-if="craftDetail.draft_method.GLFlag !== 'normal' || 5 < craftDetail.draft_method.GL[0].length">
       <div class="outItem">
-        <span class="label">工艺单编号：</span>
+        <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
         {{craftDetail.product_info.product_code}}
       </div>
       <div class="outItem">
