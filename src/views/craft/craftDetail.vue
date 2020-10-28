@@ -64,7 +64,7 @@
           </div>
         </div>
         <div class="swichCtn"
-          v-if="$route.params.type==='2' && data.length>1">
+          v-if="data.length>1">
           <div class="swich"
             v-for="index in data.length"
             :key="index"
@@ -2164,24 +2164,16 @@ export default {
       product_type: this.$route.params.type
     }).then((res) => {
       if (res.data.status) {
-        if (this.$route.params.type === '1') {
-          this.data = res.data.data
-          if (this.data.is_draft === 2) {
-            this.$router.replace('/craft/craftUpdate/' + res.data.data.id + '/' + this.$route.params.type)
+        this.data = res.data.data
+        this.data.forEach((item, index) => {
+          if (item.is_default === 1) {
+            this.craftIndex = index
           }
-          this.init(res.data.data, 0)
-        } else {
-          this.data = res.data.data
-          this.data.forEach((item, index) => {
-            if (item.is_default === 1) {
-              this.craftIndex = index
-            }
-          })
-          if (this.data[this.craftIndex].is_draft === 2) {
-            this.$router.replace('/craft/craftUpdate/' + res.data.data.id + '/' + this.$route.params.type)
-          }
-          this.init(this.data[this.craftIndex], this.craftIndex)
+        })
+        if (this.data[this.craftIndex].is_draft === 2) {
+          this.$router.replace('/craft/craftUpdate/' + this.data[this.craftIndex].id + '/' + this.$route.params.type)
         }
+        this.init(this.data[this.craftIndex], this.craftIndex)
         this.loading = false
       }
     })

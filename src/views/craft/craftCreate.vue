@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="productInfo.category_info">
+        v-if="productInfo.category_id">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -89,11 +89,11 @@
         </div>
       </div>
       <div class="detailCtn"
-        v-if="!productInfo.category_info">
+        v-if="!productInfo.category_id">
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">配件名称：</span>
-            <span class="text">{{productInfo.part_title}}</span>
+            <span class="text">{{productInfo.part_title || productInfo.name}}</span>
           </div>
         </div>
       </div>
@@ -1206,7 +1206,10 @@
               <span class="text">后道工序：</span>
             </div>
             <div class="content">
-              <el-select multiple
+              <el-select clearable
+                filterable
+                multiple
+                allow-create
                 v-model="warpInfo.additional_data"
                 placeholder="请选择后道工序">
                 <el-option v-for="item in gongxuArr"

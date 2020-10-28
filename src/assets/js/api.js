@@ -18,7 +18,8 @@ const sample = {
   detail: (params) => http.get(`${baseUrl}/sample/product/detail`, params),
   editDetail: (params) => http.get(`${baseUrl}/sample/product/edit`, params), // 样品修改时获取的详情数据
   delete: (params) => http.post(`${baseUrl}/sample/product/delete`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/sample/product/list`, params)
+  list: (params) => http.get(`${baseUrl}/sample/product/list`, params),
+  updateCode: (params) => http.post(`${baseUrl}/product/code/edit`, params, 'application/json')
 }
 // 产品管理
 const product = {
@@ -26,7 +27,8 @@ const product = {
   update: (params) => http.post(`${baseUrl}/product/save`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/product/one`, params),
   delete: (params) => http.post(`${baseUrl}/product/delete`, params, 'application/json'),
-  list: (params) => http.get(`${baseUrl}/product/list`, params)
+  list: (params) => http.get(`${baseUrl}/product/list`, params),
+  updateCode: (params) => http.post(`${baseUrl}/product/code/edit`, params, 'application/json')
 }
 // 产品类型
 const productType = {

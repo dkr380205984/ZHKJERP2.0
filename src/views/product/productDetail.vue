@@ -63,7 +63,26 @@
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">产品编号：</span>
-            <span class="text">{{detail.product_code}}</span>
+            <span class="text">
+              <span v-if="!updateFlag">{{detail.product_code}}</span>
+              <el-input v-if="updateFlag"
+                v-model="detail.product_code"
+                placeholder="请输入产品编号"
+                style="height:32px;width:200px"></el-input>
+              <el-tooltip class="item"
+                effect="dark"
+                content="修改的产品编号尽量不要重复以便于搜索"
+                placement="top-start"
+                v-if="!updateFlag && canSeeUpdate">
+                <span class="btn noBorder"
+                  style="margin-left:12px;padding:0"
+                  @click="updateFlag = true">点击修改</span>
+              </el-tooltip>
+              <span class="btn noBorder"
+                style="margin-left:12px;padding:0"
+                v-if="updateFlag"
+                @click="saveProcode">确认修改</span>
+            </span>
           </div>
           <div class="colCtn flex3">
             <span class="label">名称/款号：</span>
@@ -155,40 +174,46 @@
             <span class="label">关联单据：</span>
             <div class="rectCtn">
               <div class="rect">
+                <div class="tab"
+                  v-if="detail.craft_info&&detail.craft_info.length>1">
+                  <div class="circle"
+                    :class="{'active':craft_index===index-1}"
+                    v-for="index in detail.craft_info.length"
+                    :key="index"
+                    @click="craft_index=index-1">
+                  </div>
+                </div>
                 <div class="main">
                   <div class="icon"
-                    :class="{'yellow':detail.craft_info,'gray':!detail.craft_info}">
+                    :class="{'yellow':detail.craft_info&&detail.craft_info.length>0,'gray':!detail.craft_info||detail.craft_info.length===0}">
                     <img src="../../assets/image/sample/craft_icon.png" />
                   </div>
                   <div class="content">
                     <div class="text title">工艺单</div>
                     <div class="text"
-                      v-if="!detail.craft_info">待添加</div>
+                      v-if="!detail.craft_info||detail.craft_info.length===0">待添加</div>
                     <div class="text"
-                      v-if="detail.craft_info">{{detail.craft_info.user_name}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].user_name}}</div>
                     <div class="text"
-                      v-if="detail.craft_info">{{detail.craft_info.create_time.slice(0,10)}}</div>
+                      v-if="detail.craft_info&&detail.craft_info.length>0">{{detail.craft_info[craft_index].create_time.slice(0,10)}}</div>
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="!detail.craft_info &&detail.order_info.length === 0"
-                    class="text"
-                    style="color:#ccc">请先给产品添加订单</span>
-                  <span v-if="!detail.craft_info && detail.order_info.length>0"
+                  <span v-if="(!detail.craft_info||detail.craft_info.length===0)"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">预览</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="openWin('/craftTable/' + $route.params.id +'/1/'+ detail.craft_info.id)">打印</span>
-                  <span v-if="detail.craft_info"
+                    @click="openWin('/craftTable/'+ $route.params.id + '/1/' + detail.craft_info[craft_index].id)">打印</span>
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">详情</span>
-                  <span v-if="detail.craft_info"
+                  <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="noOpr">...</span>
+                    @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                 </div>
               </div>
               <div class="rect">
@@ -350,6 +375,47 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">关联单据：</span>
+            <div class="rectCtn">
+              <div class="rect">
+                <div class="main">
+                  <div class="icon"
+                    :class="{'yellow':item.has_craft===1,'gray':item.has_craft!==1}">
+                    <img src="../../assets/image/sample/craft_icon.png" />
+                  </div>
+                  <div class="content">
+                    <div class="text title">工艺单</div>
+                    <div class="text"
+                      v-if="item.need_weave===1 && item.has_craft!==1">待添加</div>
+                    <div class="text"
+                      v-if="item.need_weave===1 && item.has_craft===1">已添加</div>
+                    <div class="text"
+                      v-if="item.need_weave===0">不需要工艺单</div>
+                  </div>
+                </div>
+                <div class="menu">
+                  <span v-if="!detail.craft_info &&detail.order_info.length === 0"
+                    class="text"
+                    style="color:#ccc">请先给产品添加订单</span>
+                  <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft!==1"
+                    class="opration"
+                    @click="$router.push('/craft/craftCreate/'+ item.id + '/1')">添加</span>
+                  <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ item.id + '/1')">预览</span>
+                  <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="openWin('/craftTable/' + item.id +'/1/'+ detail.craft_info.id)">打印</span>
+                  <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft===1"
+                    class="opration"
+                    @click="$router.push('/craft/craftDetail/'+ item.id + '/1')">详情</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="bottomFixBar">
@@ -423,9 +489,12 @@ import { product } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      updateFlag: false,
+      canSeeUpdate: false,
       canSeePrice: false,
       canSeeOrder: false,
       loading: true,
+      craft_index: 0,
       detail: {
         category_info: {
           product_category: '',
@@ -476,6 +545,24 @@ export default {
     }
   },
   methods: {
+    saveProcode () {
+      if (!this.detail.product_code) {
+        this.$message.error('请输入产品编号')
+        return
+      }
+      this.loading = true
+      product.updateCode({
+        id: this.$route.params.id,
+        product_code: this.detail.product_code,
+        product_type: 1
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          this.updateFlag = false
+          this.loading = false
+        }
+      })
+    },
     noOpr () {
       this.$message.warning('暂未开放该功能')
     },
@@ -561,6 +648,7 @@ export default {
   },
   mounted () {
     let modules = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : []
+    this.canSeeUpdate = modules.indexOf(3)
     this.canSeePrice = modules.indexOf(2)
     this.canSeeOrder = modules.indexOf(5)
     const QRCode = require('qrcode')
