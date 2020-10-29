@@ -813,11 +813,7 @@ export default {
     }).then(res => {
       if (res.data.stauts !== false) {
         let data = null
-        if (this.$route.params.type === '1') {
-          data = res.data.data
-        } else {
-          data = res.data.data.find(item => item.id === this.$route.params.craftId)
-        }
+        data = res.data.data.find(item => item.id === this.$route.params.craftId)
         if (!data) {
           this.$message('未找到工艺单ID为' + this.$route.params.craftId + '的工艺单')
           return

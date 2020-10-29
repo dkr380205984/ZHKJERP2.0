@@ -1845,7 +1845,6 @@ export default {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
-      console.log(this.colorNumber)
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)
