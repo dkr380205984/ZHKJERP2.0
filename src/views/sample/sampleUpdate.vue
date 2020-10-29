@@ -5,7 +5,7 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
-        <span class="productCode">{{sample_product_code}}</span>
+        <!-- <span class="productCode">{{sample_product_code}}</span> -->
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"></zh-message>
@@ -14,10 +14,17 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">样品编号</span>
+              <span class="text">样品编号
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="选填：未填写则使用系统默认生成编号"
+                  placement="top-start">
+                  <span class="el-icon-question"></span>
+                </el-tooltip>
+              </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入样品编号"
+              <zh-input :placeholder="`${sample_product_code}(默认)`"
                 v-model="product_code">
               </zh-input>
             </div>
@@ -34,10 +41,10 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">款号</span>
+              <span class="text">客户款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入款号"
+              <zh-input placeholder="请输入客户款号"
                 v-model="model_code">
               </zh-input>
             </div>

@@ -14,7 +14,7 @@
         style="display:flex;align-items:center;justify-content: space-between;">
         <span class="title">
           基本信息
-          <span class="sampleCode">{{sampleCode}}</span>
+          <!-- <span class="sampleCode">{{sampleCode}}</span> -->
           <zh-message :msgSwitch="msgSwitch"
             :url="msgUrl"
             :content="msgContent"></zh-message>
@@ -40,7 +40,7 @@
               </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入样品编号"
+              <zh-input :placeholder="`${sampleCode}(默认)`"
                 v-model="product_code">
               </zh-input>
             </div>
@@ -57,10 +57,10 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">款号</span>
+              <span class="text">客户款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入款号"
+              <zh-input placeholder="请输入客户款号"
                 v-model="model_code">
               </zh-input>
             </div>

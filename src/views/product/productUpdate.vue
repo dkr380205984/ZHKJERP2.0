@@ -5,7 +5,7 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title">基本信息</span>
-        <span class="productCode">{{product_code}}</span>
+        <!-- <span class="productCode">{{product_code}}</span> -->
         <zh-message :msgSwitch="msgSwitch"
           :url="msgUrl"
           :content="msgContent"></zh-message>
@@ -24,7 +24,7 @@
               </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入产品编号"
+              <zh-input :placeholder="`${product_code}(默认)`"
                 v-model="product_code_user">
               </zh-input>
             </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="content">
               <zh-input errorMsg="产品名称不能超过10个字"
-                placeholder="请输入产品名称或款号"
+                placeholder="请输入产品名称"
                 maxLength="10"
                 v-model="name">
               </zh-input>
@@ -43,10 +43,10 @@
           </div>
           <div class="colCtn">
             <div class="label">
-              <span class="text">款号</span>
+              <span class="text">客户款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入款号"
+              <zh-input placeholder="请输入客户款号"
                 v-model="model_code">
               </zh-input>
             </div>
