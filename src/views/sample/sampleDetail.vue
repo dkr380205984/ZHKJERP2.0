@@ -96,7 +96,7 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">款号：</span>
+            <span class="label">客户款号：</span>
             <span class="text"
               :class="{'blue':detail.style_code}">{{detail.style_code?detail.style_code:'无'}}</span>
           </div>
@@ -496,7 +496,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
-            @click="$router.push('/sample/sampleUpdate/'+$route.params.id)">修改</div>
+            @click="updatePro">修改</div>
           <div class="btn btnBlue"
             @click="$router.push('/sample/sampleCreate?sampleId='+$route.params.id)">复制此样品</div>
         </div>
@@ -696,6 +696,28 @@ export default {
         return
       }
       this.$openUrl('/tagSamplePrint/' + this.$route.params.id + '/' + this.checkedSize.join('&') + '&&' + this.checkedColor.join('&'))
+    },
+    // 修改样品判断是否新建订单
+    updatePro () {
+      if (this.detail.order_info.length === 0) {
+        this.$router.push('/sample/sampleUpdate/' + this.$route.params.id)
+      } else {
+        this.$confirm('该产品已有样单信息，请问您修改此样品的目的是?', '提示', {
+          confirmButtonText: '修改已有订单的样品',
+          cancelButtonText: '创建新样品订单',
+          showClose: false,
+          type: 'warning'
+        }).then(() => {
+          this.$router.push('/sample/sampleUpdate/' + this.$route.params.id)
+        }).catch(() => {
+          this.$router.push('/sample/sampleCreate?sampleId=' + this.$route.params.id)
+          this.$message({
+            showClose: true,
+            type: 'success',
+            message: '创建新样品订单需要创建一个新的样品以便后续操作，已为您复制了原有的样品信息'
+          })
+        })
+      }
     }
   },
   mounted () {

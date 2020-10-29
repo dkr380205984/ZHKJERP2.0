@@ -92,7 +92,7 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">款号：</span>
+            <span class="label">客户款号：</span>
             <span class="text"
               :class="{'blue':detail.style_code}">{{detail.style_code?detail.style_code:'无'}}</span>
           </div>

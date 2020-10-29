@@ -7,7 +7,7 @@
         style="display:flex;align-items:center;justify-content: space-between;">
         <span class="title">
           基本信息
-          <span class="productCode">{{productCode}}</span>
+          <!-- <span class="productCode">{{productCode}}</span> -->
           <zh-message :msgSwitch="msgSwitch"
             :url="msgUrl"
             :content="msgContent">
@@ -22,7 +22,7 @@
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">产品编号
                 <el-tooltip class="item"
@@ -34,12 +34,12 @@
               </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入产品编号"
+              <zh-input :placeholder="`${productCode}(默认)`"
                 v-model="product_code_user">
               </zh-input>
             </div>
           </div>
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
               <span class="text">产品名称</span>
             </div>
@@ -49,12 +49,12 @@
               </zh-input>
             </div>
           </div>
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
-              <span class="text">款号</span>
+              <span class="text">客户款号</span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入款号"
+              <zh-input placeholder="请输入客户款号"
                 v-model="model_code">
               </zh-input>
             </div>
@@ -92,11 +92,11 @@
           </div>
           <div class="colCtn flex3">
             <div class="label">
-              <span class="text">针型名称</span>
+              <span class="text">针织针型</span>
             </div>
             <div class="content">
-              <zh-input errorMsg="针型名称不能超过5个字"
-                placeholder="请输入针型名称"
+              <zh-input errorMsg="针织针型不能超过5个字"
+                placeholder="请输入针织针型"
                 maxLength="5"
                 v-model="needleType">
               </zh-input>

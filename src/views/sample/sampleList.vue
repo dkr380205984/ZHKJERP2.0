@@ -127,10 +127,10 @@
         <div class="list">
           <div class="title">
             <div class="col">
-              <div class="col"><span class="text">编号</span></div>
+              <div class="col"><span class="text">样品编号</span></div>
             </div>
             <div class="col">
-              <span class="text">名称</span>
+              <span class="text">样品名称</span>
             </div>
             <div class="col"
               style="flex:1.5">
@@ -140,7 +140,7 @@
               <span class="text">花型</span>
             </div>
             <div class="col">
-              <span class="text">款号</span>
+              <span class="text">客户款号</span>
             </div>
             <div class="col">
               <span class="text middle">图片</span>
