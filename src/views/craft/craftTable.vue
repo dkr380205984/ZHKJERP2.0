@@ -1168,11 +1168,7 @@ export default {
     }).then(res => {
       if (res.data.stauts !== false) {
         let data = null
-        if (this.$route.params.type === '1') {
-          data = res.data.data
-        } else {
-          data = res.data.data.find(item => item.id === this.$route.params.craftId)
-        }
+        data = res.data.data.find(item => item.id === this.$route.params.craftId)
         if (!data) {
           this.$message('未找到工艺单ID为' + this.$route.params.craftId + '的工艺单')
           return
@@ -1256,7 +1252,6 @@ export default {
             }
           })
         })
-        console.log(this.craftDetail.draft_method)
         let reedWidthData = data.warp_data.reed_width_data && JSON.parse(data.warp_data.reed_width_data)
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length

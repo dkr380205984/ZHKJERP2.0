@@ -4330,8 +4330,8 @@ export default {
       }
       this.loading = true
       craft.create(formData).then((res) => {
+        this.loading = false
         if (res.data.code === 200) {
-          this.loading = false
           this.$message.success('保存成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
             this.msgUrl = '/craft/craftDetail/' + this.$route.params.id + '/' + this.$route.params.type
