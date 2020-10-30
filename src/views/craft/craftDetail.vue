@@ -12,7 +12,25 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-            <span class="text">{{productInfo.product_code}}</span>
+            <span v-if="!updateFlag"
+              class="text">{{productInfo.product_code}}</span>
+            <el-input v-if="updateFlag"
+              v-model="productInfo.product_code"
+              placeholder="请输入产品编号"
+              style="height:32px;width:200px"></el-input>
+            <el-tooltip class="text"
+              effect="dark"
+              content="修改的产品编号尽量不要重复以便于搜索"
+              placement="top-start"
+              v-if="!updateFlag">
+              <span class="btn noBorder"
+                style="margin-left:12px;padding:0"
+                @click="updateFlag = true">点击修改</span>
+            </el-tooltip>
+            <span class="btn noBorder text"
+              style="margin-left:12px;padding:0"
+              v-if="updateFlag"
+              @click="saveProcode">确认修改</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
@@ -778,7 +796,7 @@
 
 <script>
 import * as THREE from 'three'
-import { craft, getToken } from '@/assets/js/api.js'
+import { craft, getToken, product } from '@/assets/js/api.js'
 import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
@@ -790,6 +808,7 @@ export default {
   },
   data () {
     return {
+      updateFlag: false,
       showImageLoading: false,
       showImageUrl: require('../../assets/image/craft/loading.png'),
       token: '',
@@ -1117,6 +1136,24 @@ export default {
     }
   },
   methods: {
+    saveProcode () {
+      if (!this.productInfo.product_code) {
+        this.$message.error('请输入产品编号')
+        return
+      }
+      this.loading = true
+      product.updateCode({
+        id: this.$route.params.id,
+        product_code: this.productInfo.product_code,
+        product_type: 1
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          this.updateFlag = false
+          this.loading = false
+        }
+      })
+    },
     stringToJson (str) {
       try {
         var obj = JSON.parse(str)

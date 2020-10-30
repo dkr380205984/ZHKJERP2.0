@@ -1435,6 +1435,14 @@ export default {
         start: arr[1].split('[')[1],
         end: arr[2].split('[')[1]
       }
+    },
+    stringToJson (str) {
+      try {
+        var obj = JSON.parse(str)
+        return obj.join('+')
+      } catch (e) {
+        return str || '无'
+      }
     }
   },
   created () {
@@ -1528,16 +1536,11 @@ export default {
             }
           })
         })
-        let reedWidthData
-        try {
-          reedWidthData = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
-        } catch (e) {
-          reedWidthData = ['', '', '']
-        }
+
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
         this.warp_data.length_back = this.warp_data.warp_rank_back[0].length
-        this.warp_data.reed_width_data = Array.isArray(reedWidthData) ? reedWidthData.join('+') : (reedWidthData || '')
+        this.warp_data.reed_width_data = this.stringToJson(this.warp_data.reed_width_data)
         this.weft_data = this.$clone(data.weft_data)
         this.weft_data.length_is = this.weft_data.weft_rank[0].length
         this.weft_data.length_back = this.weft_data.weft_rank_back[0].length
