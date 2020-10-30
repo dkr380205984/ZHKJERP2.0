@@ -76,6 +76,7 @@
       </div>
     </div>
     <div class="module">
+
       <div class="listCtn">
         <div class="filterCtn2">
           <div class="leftCtn">
@@ -144,85 +145,6 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <!-- <el-dropdown :hide-on-click="false"
-                class="filter_item"
-                trigger="click"
-                style="cursor:pointer">
-                <span class="el-dropdown-link">
-                  筛选流程<i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>
-                    物料计划：
-                    <el-radio-group v-model="has_materialPlan"
-                      @change="changeRouter(1)">
-                      <el-radio label="">全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    物料订购：
-                    <el-radio-group v-model="has_materialOrder"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    物料入库：
-                    <el-radio-group v-model="has_materialStock"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    织造分配：
-                    <el-radio-group v-model="has_weave"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    产品收发：
-                    <el-radio-group v-model="has_productInOut"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="0">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    成品检验：
-                    <el-radio-group v-model="has_inspection"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    装箱出库：
-                    <el-radio-group v-model="has_boxing"
-                      @change="changeRouter(1)"
-                      divided>
-                      <el-radio label=''>全部</el-radio>
-                      <el-radio label="1">有</el-radio>
-                      <el-radio label="2">无</el-radio>
-                    </el-radio-group>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown> -->
             </div>
           </div>
           <div class="rightCtn"
@@ -237,7 +159,133 @@
             @click="$router.push('/order/orderCreate')">新建订单</div>
         </div>
         <div class="list">
-          <div class="title">
+          <el-table :data="list"
+            style="width: 100%">
+            <el-table-column fixed
+              prop="order_code"
+              label="订单号"
+              width="180">
+            </el-table-column>
+            <el-table-column prop="client_name"
+              fixed
+              label="外贸公司"
+              width="180">
+            </el-table-column>
+            <el-table-column label="产品图片"
+              width="150"
+              align="center">
+              <template slot-scope="scope">
+                <zh-img-list :list="scope.row.image"
+                  type='open'></zh-img-list>
+              </template>
+            </el-table-column>
+            <el-table-column prop="product_code"
+              label="产品编号"
+              width="150">
+            </el-table-column>
+            <el-table-column label="下单数量"
+              width="150">
+              <template slot-scope="scope">
+                <div style="display:flex;justify-content:space-between;padding-right:15px">
+                  <span>{{scope.row.product_number}}</span>
+                  <div class="jtCtn"
+                    v-show="scope.row.product_info.length>1">
+                    <div class="jt el-icon-caret-top"
+                      @click="checkPro(scope.row,'last')"></div>
+                    <div class="jt el-icon-caret-bottom"
+                      @click="checkPro(scope.row,'next')"></div>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="order_time"
+              label="订单状态"
+              width="243">
+              <template slot-scope="scope">
+                <div style="display:flex">
+                  <div class="stateCtn"
+                    title="物料计划状态"
+                    :class="{'green':scope.row.has_plan===1}">
+                    <div class="state"></div>
+                    <span class="name">计</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="原料入库状态"
+                    :class="{'orange':scope.row.material_push_progress.r_push>0,'green':scope.row.material_push_progress.r_push>=100}">
+                    <div class="state"></div>
+                    <span class="name">入</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="原料出库状态"
+                    :class="{'orange':scope.row.material_push_progress.r_pop>0,'green':scope.row.material_push_progress.r_pop>=100}">
+                    <div class="state"></div>
+                    <span class="name">出</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="半成品检验状态"
+                    :class="{'orange':scope.row.product_push_progress>0,'green':scope.row.product_push_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">检</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="半成品回库状态"
+                    :class="{'orange':scope.row.semi_push_progress>0,'green':scope.row.semi_push_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">回</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="成品装箱状态"
+                    :class="{'orange':scope.row.pack_real_progress>0,'green':scope.row.pack_real_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">箱</span>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="order_time"
+              label="下单日期"
+              width="120">
+            </el-table-column>
+            <el-table-column prop="total_number"
+              label="下单总量"
+              width="120">
+            </el-table-column>
+            <el-table-column prop="group_name"
+              label="负责小组"
+              width="120">
+            </el-table-column>
+            <el-table-column prop="order_time"
+              label="发货日期"
+              width="180">
+              <template slot-scope="scope">
+                <div style="display:flex;justify-content:space-between;padding-right:15px">
+                  <span>第{{scope.row.timeIndex+1}}批：{{scope.row.dtime}}</span>
+                  <div class="jtCtn"
+                    v-show="scope.row.delivery_time.length>1">
+                    <div class="jt el-icon-caret-top"
+                      @click="checkTime(scope.row,'last')"></div>
+                    <div class="jt el-icon-caret-bottom"
+                      @click="checkTime(scope.row,'next')"></div>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作"
+              fixed="right"
+              width="150">
+              <template slot-scope="scope">
+                <span class="tOpr"
+                  @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+                <span class="tOpr"
+                  style="color:rgb(230, 162, 60)"
+                  @click="handleCommand('change',scope.row.id)">修改</span>
+                <span class="tOpr"
+                  style="color:#F5222D"
+                  @click="handleCommand('delete',scope.row.id)">删除</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <!-- <div class="title">
             <div class="col flex08">
               <span class="text">订单号</span>
             </div>
@@ -387,7 +435,7 @@
                 </el-dropdown>
               </span>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -662,28 +710,90 @@ export default {
         status_stock_out: this.has_boxing
       }).then(res => {
         this.list = res.data.data.map(item => {
-          item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
-            return item.image.length > 0 ? item.image.map(itemImg => {
-              return {
-                ...itemImg,
-                product_id: item.product_id
-              }
-            }) : [{
-              image_url: '',
-              thumb: '',
-              product_id: item.product_id
-            }]
-          }).reduce((total, item) => {
-            return total.concat(item)
-          }, [])
-          item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+          item.nowIndex = 0
+          item.timeIndex = 0
+          item.product_info = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] })
+          item.total_number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
             return Number(total) + Number(itemNum)
           }, 0)
+          this.checkPro(item, 'init')
+          this.checkTime(item, 'init')
           return item
         })
         this.total = res.data.meta.total
         this.loading = false
       })
+    },
+    checkTime (item, opr) {
+      if (item.product_info.length > 0) {
+        if (opr === 'init' || !opr) {
+          item.dtime = item.delivery_time[item.timeIndex]
+        }
+        if (opr === 'next') {
+          if (item.timeIndex === item.delivery_time.length - 1) {
+            item.timeIndex = 0
+            this.checkTime(item)
+          } else {
+            item.timeIndex += 1
+            this.checkTime(item)
+          }
+          this.$forceUpdate()
+        }
+        if (opr === 'last') {
+          if (item.timeIndex === 0) {
+            item.timeIndex = item.delivery_time.length - 1
+            this.checkTime(item)
+          } else {
+            item.timeIndex -= 1
+            this.checkTime(item)
+          }
+          this.$forceUpdate()
+        }
+      } else {
+        item.product_code = '无产品'
+        item.product_number = 0
+      }
+    },
+    checkPro (item, opr) {
+      if (item.product_info.length > 0) {
+        if (opr === 'init' || !opr) {
+          item.product_code = item.product_info[item.nowIndex].product_code
+          item.image = item.product_info[item.nowIndex].image.length > 0 ? item.product_info[item.nowIndex].image.map(itemImg => {
+            return {
+              ...itemImg,
+              product_id: item.product_id
+            }
+          }) : [{
+            image_url: '',
+            thumb: '',
+            product_id: item.product_info[item.nowIndex].product_id
+          }]
+          item.product_number = item.product_info[item.nowIndex].numbers
+        }
+        if (opr === 'next') {
+          if (item.nowIndex === item.product_info.length - 1) {
+            item.nowIndex = 0
+            this.checkPro(item)
+          } else {
+            item.nowIndex += 1
+            this.checkPro(item)
+          }
+          this.$forceUpdate()
+        }
+        if (opr === 'last') {
+          if (item.nowIndex === 0) {
+            item.nowIndex = item.product_info.length - 1
+            this.checkPro(item)
+          } else {
+            item.nowIndex -= 1
+            this.checkPro(item)
+          }
+          this.$forceUpdate()
+        }
+      } else {
+        item.product_code = '无产品'
+        item.product_number = 0
+      }
     },
     handleCommand (type, id) {
       if (type === 'change') {
@@ -744,7 +854,6 @@ export default {
     }
     todayLess14 = todayLess14.reverse()
     chartsAPI.order().then((res) => {
-      console.log(res)
       let data = res.data.data
       this.processData.xAxis.data = todayMore14
       todayMore14.forEach((item) => {

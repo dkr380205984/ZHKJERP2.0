@@ -204,7 +204,10 @@
                   </div>
                 </div>
                 <div class="menu">
-                  <span v-if="(!detail.craft_info||detail.craft_info.length===0)"
+                  <div class="text"
+                    style="color:#ccc"
+                    v-if="detail.order_info.length ===0">暂无订单</div>
+                  <span v-if="detail.order_info.length >0&&(!detail.craft_info||detail.craft_info.length===0)"
                     class="opration"
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"

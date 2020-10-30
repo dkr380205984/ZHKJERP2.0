@@ -1157,6 +1157,23 @@
           </div>
         </div>
         <div class="rowCtn"
+          v-for="(item,index) in colour"
+          :key="index">
+          <div class="colCtn">
+            <div class="label"
+              v-if="index===0">
+              <span class="text">织造数量</span>
+              <span class="explanation">(可在打印页面手动填写)</span>
+            </div>
+            <div class="content">
+              <el-input v-model="weaveNumber[index]"
+                placeholder="请输入需要织造的数量">
+                <template slot="prepend">{{filterColor(item.value)}}</template>
+              </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn"
           v-for="(item,index) in allMaterial"
           :key="index">
           <div class="colCtn">
@@ -1179,6 +1196,20 @@
                 placeholder="请输入穿筘法,默认为经向穿筘法">
                 <template slot="append">根/筘</template>
               </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">下机时间</span>
+            </div>
+            <div class="content">
+              <el-date-picker v-model="date"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="请选择下单日期">
+              </el-date-picker>
             </div>
           </div>
         </div>
@@ -1219,6 +1250,8 @@ Handsontable.languages.registerLanguageDictionary(enCH) // 注册中文字典
 export default {
   data () {
     return {
+      date: '',
+      weaveNumber: [],
       gongxuArr: [],
       weftCmp: '1',
       loading: true,
@@ -1970,10 +2003,22 @@ export default {
     }
   },
   methods: {
+    // 匹配下配色名称
+    filterColor (id) {
+      if (id) {
+        return this.colourArr.find((item) => {
+          return Number(item.color_id) === Number(id)
+        }).color_name
+      } else {
+        return '未选择'
+      }
+    },
     // 计算下筘幅
     cmpReedWidth () {
       this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
-        return total + (Number(cur) || 0)
+        return total + cur.split('+').reduce((totalChild, curChild) => {
+          return totalChild + (Number(curChild || 0))
+        }, 0)
       }, 0)
     },
     afterSave (data) {
@@ -3029,8 +3074,9 @@ export default {
         peise_yarn_weight: cmpYarn.peise_yarn_weight,
         warp_data: {
           weight_calculate_formula: this.weftCmp,
-          color_data: this.colour.map((item) => {
+          color_data: this.colour.map((item, index) => {
             return {
+              weave_number: this.weaveNumber[index],
               color_id: item.value,
               color_scheme: item.colorWarp.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
@@ -3119,13 +3165,14 @@ export default {
           reed_method: this.warpInfo.reed_method,
           reed_width: this.warpInfo.reed_width,
           sum_up: this.warpInfo.sum_up,
-          contract_ratio: 100, // 缩率工艺单用不到，默认100
+          contract_ratio: this.date, // 缩率工艺单用不到，默认100
           additional_data: this.warpInfo.additional_data.join(',') // 废弃字段
         },
         weft_data: {
-          color_data: this.colour.map((item) => {
+          color_data: this.colour.map((item, index) => {
             return {
               color_id: item.value,
+              weave_number: this.weaveNumber[index],
               color_scheme: item.colorWeft.map((itemColor) => {
                 if (itemColor.name !== '空梭') {
                   return {
@@ -3303,6 +3350,7 @@ export default {
         this.warpInfo.reed_width_data = ['', '', '']
       }
       this.warpInfo.additional_data = this.warpInfo.additional_data ? this.warpInfo.additional_data.split(',') : []
+      this.weaveNumber = this.warpInfo.color_data.map((item) => item.weave_number)
       this.colour = this.warpInfo.color_data.map((item, index) => {
         return {
           value: item.color_id,
@@ -3320,6 +3368,7 @@ export default {
           })
         }
       })
+      this.date = Number(this.warpInfo.contract_ratio) === 100 ? '' : this.warpInfo.contract_ratio
       this.weftCmp = data.warp_data.weight_calculate_formula.toString()
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1).material_name
       this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1).material_name

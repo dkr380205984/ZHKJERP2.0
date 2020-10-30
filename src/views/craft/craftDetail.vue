@@ -591,6 +591,17 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">织造数量：</div>
+            <div class="lineCtn">
+              <div class="line"
+                v-for="(item,index) in warpInfo.color_data"
+                :key="index">{{item.product_color}}：{{item.weave_number||'0'}}条
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <div class="label">物料系数：</div>
             <div class="lineCtn">
               <div class="line"
@@ -598,6 +609,12 @@
                 :key="index">{{item.name}}：{{item.value}}g <span style="margin-left:15px;color:#1a95ff">{{item.chuankou?item.chuankou + '根/筘':''}}</span>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">下机时间：</div>
+            <div class="text">{{Number(warpInfo.contract_ratio) === 100 ? '' : warpInfo.contract_ratio}}</div>
           </div>
         </div>
         <div class="rowCtn">
