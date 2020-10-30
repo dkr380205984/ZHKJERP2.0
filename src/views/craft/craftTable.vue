@@ -42,7 +42,7 @@
           <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品名称</span>
           <span class="row_item left">{{craftDetail.product_info.title}}</span>
           <span class="row_item w100 center">客户款号</span>
-          <span class="row_item left"></span>
+          <span class="row_item left">{{craftDetail.product_info.style_code || ''}}</span>
           <span class="row_item w100 center">其它信息</span>
           <span class="row_item left"></span>
           <!-- <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品品类</span>
