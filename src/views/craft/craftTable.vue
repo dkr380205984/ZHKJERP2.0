@@ -1252,7 +1252,12 @@ export default {
             }
           })
         })
-        let reedWidthData = data.warp_data.reed_width_data && JSON.parse(data.warp_data.reed_width_data)
+        let reedWidthData
+        try {
+          reedWidthData = JSON.parse(this.warpInfo.reed_width_data) || ['', '', '']
+        } catch (e) {
+          reedWidthData = ['', '', '']
+        }
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
         this.warp_data.length_back = this.warp_data.warp_rank_back[0].length
