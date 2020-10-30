@@ -682,9 +682,7 @@ export default {
     // 改变生产数量
     changeEndNum (item) {
       if (Number(item.production_num) > Number(item.order_num)) {
-        this.$message.error('生产数量不可超出下单数量')
-        item.production_num = item.order_num
-        return
+        this.$message.warning('生产数量已超出下单数量')
       }
       if (item.production_num) {
         item.material_info.forEach(itemMa => {
