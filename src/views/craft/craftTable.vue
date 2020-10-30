@@ -17,7 +17,7 @@
           </span>
           <span class="item">
             <span class="label">创建信息</span>
-            {{`${craftDetail.user_name}，${$getTime(craftDetail.create_time)}`}}
+            {{`${craftDetail.user_name}，${craftDetail.user_phone}，${$getTime(craftDetail.create_time)}`}}
           </span>
         </div>
         <div class="right">
@@ -1713,7 +1713,7 @@ export default {
         })
         this.yarn_coefficient = data.yarn_coefficient
         setTimeout(() => {
-          // window.print()
+          window.print()
         }, 1000)
       }
     })
