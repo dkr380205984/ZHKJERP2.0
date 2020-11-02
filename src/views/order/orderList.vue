@@ -76,7 +76,6 @@
       </div>
     </div>
     <div class="module">
-
       <div class="listCtn">
         <div class="filterCtn2">
           <div class="leftCtn">
@@ -169,7 +168,7 @@
             <el-table-column prop="client_name"
               fixed
               label="外贸公司"
-              width="180">
+              width="150">
             </el-table-column>
             <el-table-column label="产品图片"
               width="150"
@@ -184,7 +183,7 @@
               width="150">
             </el-table-column>
             <el-table-column label="下单数量"
-              width="150">
+              width="120">
               <template slot-scope="scope">
                 <div style="display:flex;justify-content:space-between;padding-right:15px">
                   <span>{{scope.row.product_number}}</span>
@@ -199,8 +198,8 @@
               </template>
             </el-table-column>
             <el-table-column prop="order_time"
-              label="订单状态"
-              width="243">
+              label="流程进度"
+              width="183">
               <template slot-scope="scope">
                 <div style="display:flex">
                   <div class="stateCtn"
@@ -239,6 +238,17 @@
                     <div class="state"></div>
                     <span class="name">箱</span>
                   </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="订单状态"
+              width="120">
+              <template slot-scope="scope">
+                <div class="stateCtn rowFlex"
+                  :class="{'red':scope.row.status === 2003 || scope.row.status === 2005,'green':scope.row.status === 2004,'blue':scope.row.status === 2002,'orange':scope.row.status === 2001}">
+                  <div class="state"
+                    style="margin-left:0"></div>
+                  <span class="name">{{scope.row.status|filterStatus}}</span>
                 </div>
               </template>
             </el-table-column>
@@ -720,6 +730,7 @@ export default {
           this.checkTime(item, 'init')
           return item
         })
+        console.log(this.list)
         this.total = res.data.meta.total
         this.loading = false
       })

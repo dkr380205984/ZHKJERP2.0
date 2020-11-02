@@ -296,6 +296,79 @@
             </div>
           </div>
         </div>
+        <!-- <el-table :data="list"
+          style="width: 100%">
+          <el-table-column fixed
+            prop="order_code"
+            label="样单号"
+            width="180">
+          </el-table-column>
+          <el-table-column prop="client_name"
+            fixed
+            label="样单公司"
+            width="180">
+          </el-table-column>
+          <el-table-column label="样品图片"
+            width="150"
+            align="center">
+            <template slot-scope="scope">
+              <zh-img-list :list="scope.row.image"
+                type='open'></zh-img-list>
+            </template>
+          </el-table-column>
+          <el-table-column label="下单数量"
+            prop="number"
+            width="150">
+          </el-table-column>
+          <el-table-column prop="order_time"
+            label="订单状态"
+            width="150">
+            <template slot-scope="scope">
+              <div style="display:flex">
+                <div class="stateCtn"
+                  title="物料计划状态"
+                  :class="{'green':scope.row.has_plan===1}">
+                  <div class="state"></div>
+                  <span class="name">计</span>
+                </div>
+                <div class="stateCtn"
+                  title="原料入库状态"
+                  :class="{'orange':scope.row.material_push_progress.r_push>0,'green':scope.row.material_push_progress.r_push>=100}">
+                  <div class="state"></div>
+                  <span class="name">入</span>
+                </div>
+                <div class="stateCtn"
+                  title="原料出库状态"
+                  :class="{'orange':scope.row.material_push_progress.r_pop>0,'green':scope.row.material_push_progress.r_pop>=100}">
+                  <div class="state"></div>
+                  <span class="name">出</span>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="group_name"
+            label="负责小组"
+            width="120">
+          </el-table-column>
+          <el-table-column prop="deliver_time"
+            label="交货时间"
+            width="120">
+          </el-table-column>
+          <el-table-column label="操作"
+            fixed="right"
+            width="150">
+            <template slot-scope="scope">
+              <span class="tOpr"
+                @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+              <span class="tOpr"
+                style="color:rgb(230, 162, 60)"
+                @click="handleCommand('change',scope.row.id)">修改</span>
+              <span class="tOpr"
+                style="color:#F5222D"
+                @click="handleCommand('delete',scope.row.id)">删除</span>
+            </template>
+          </el-table-column>
+        </el-table> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

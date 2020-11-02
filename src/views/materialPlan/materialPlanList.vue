@@ -88,7 +88,8 @@
               :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"></order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">{{orderType?'订':'样'}}单号</span>
@@ -144,7 +145,7 @@
                 @click="$router.push('/materialPlan/materialPlanCreate/' + itemOrder.id + '/' + (orderType ? 1 : 2))">添加</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

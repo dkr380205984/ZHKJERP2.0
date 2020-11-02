@@ -4,6 +4,10 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
+        <div class="addCtn">
+          <div class="btn btnBlue"
+            @click="$router.push('/craft/craftCreate/noProId')">新增工艺单</div>
+        </div>
         <div class="filterCtn2">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
