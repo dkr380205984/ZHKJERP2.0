@@ -60,7 +60,28 @@
             </div>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          oprWidth="120">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn rowFlex"
+                :class="{'green':scope.itemOrder.product_production_progress>0,'orange':scope.itemOrder.product_production_progress===0}">
+                <div class="state"
+                  style="margin-left:0"></div>
+                <span class="name">{{scope.itemOrder.product_production_progress>0?'已添加':'待添加'}}</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/productProcess/productProcessDetail/' + scope.itemOrder.id)">成品加工</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -106,7 +127,7 @@
                 @click="$saveHistoryOrder(itemOrder);$router.push('/productProcess/productProcessDetail/' + itemOrder.id)">成品加工</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

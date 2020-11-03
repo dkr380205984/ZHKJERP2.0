@@ -206,7 +206,7 @@
           <div class="btn btnBlue"
             @click="$router.push('/sample/sampleOrderCreate')">新建样单</div>
         </div>
-        <div class="list">
+        <!-- <div class="list">
           <div class="title">
             <div class="col">
               <span class="text">样单标题</span>
@@ -295,18 +295,22 @@
                 @click="$router.push('/sample/sampleOrderDetail/' + (itemOrder.pid || itemOrder.id))">详情</span>
             </div>
           </div>
-        </div>
-        <!-- <el-table :data="list"
+        </div> -->
+        <el-table :data="list"
           style="width: 100%">
           <el-table-column fixed
-            prop="order_code"
+            prop="title"
             label="样单号"
             width="180">
+          </el-table-column>
+          <el-table-column prop="product_code"
+            label="样品编号"
+            width="150">
           </el-table-column>
           <el-table-column prop="client_name"
             fixed
             label="样单公司"
-            width="180">
+            width="150">
           </el-table-column>
           <el-table-column label="样品图片"
             width="150"
@@ -317,11 +321,11 @@
             </template>
           </el-table-column>
           <el-table-column label="下单数量"
-            prop="number"
+            prop="product_number"
             width="150">
           </el-table-column>
           <el-table-column prop="order_time"
-            label="订单状态"
+            label="流程进度"
             width="150">
             <template slot-scope="scope">
               <div style="display:flex">
@@ -346,6 +350,19 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column label="样单状态"
+            width="120">
+            <template slot-scope="scope">
+              <div :class="{'stateCtn':true, 'rowFlex':true, 'red':scope.row.status === 3003,'green':scope.row.status === 3004,'blue':scope.row.status === 3002,'orange':scope.row.status === 3001}">
+                <div class="state"
+                  style="margin-left:0"></div>
+                <span class="name">{{scope.row.status === 3001 ? '已创建' :(scope.row.status=== 3002 ? '进行中':( scope.row.status === 3004 ? '已完成' : '已取消'))}}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="order_time"
+            label="下单日期"
+            width="120"></el-table-column>
           <el-table-column prop="group_name"
             label="负责小组"
             width="120">
@@ -356,19 +373,16 @@
           </el-table-column>
           <el-table-column label="操作"
             fixed="right"
-            width="150">
+            width="130">
             <template slot-scope="scope">
               <span class="tOpr"
-                @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+                @click="$router.push('/sample/sampleOrderDetail/' + (scope.row.pid || scope.row.id))">详情</span>
               <span class="tOpr"
                 style="color:rgb(230, 162, 60)"
-                @click="handleCommand('change',scope.row.id)">修改</span>
-              <span class="tOpr"
-                style="color:#F5222D"
-                @click="handleCommand('delete',scope.row.id)">删除</span>
+                @click="$router.push('/sample/sampleOrderUpdate/' + (scope.row.pid || scope.row.id))">修改</span>
             </template>
           </el-table-column>
-        </el-table> -->
+        </el-table>
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"
@@ -658,43 +672,59 @@ export default {
         status_material_push: this.has_materialStock
       }).then(res => {
         this.list = res.data.data.map(item => {
-          let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })
-          let img = item.image || []
-          img = img.map(itemImg => {
-            return {
-              thumb: itemImg.thumb,
-              image_url: itemImg.file_url,
-              product_id: itemImg.sample_product_id
-            }
-          })
-          proArr.forEach(itemPro => {
-            if (!img.find(itemImg => itemImg.product_id === itemPro.product_id)) {
-              img.push({
-                thumb: '',
-                image_url: '',
-                product_id: itemPro.product_id
-              })
-            }
-          })
-          return {
-            id: item.id,
-            pid: item.pid,
-            order_code: item.title,
-            client_name: item.client_name,
-            image: img,
-            number: item.total_number.map(item => Number(item.numbers)).reduce((total, item) => {
-              return total + item
-            }),
-            status: item.status,
-            group_name: item.group_name,
-            deliver_time: item.deliver_time,
-            has_plan: item.has_plan,
-            material_push_progress: item.material_push_progress
-          }
+          item.nowIndex = 0
+          item.timeIndex = 0
+          item.product_info = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] })
+          item.total_number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+            return Number(total) + Number(itemNum)
+          }, 0)
+          this.checkPro(item, 'init')
+          return item
         })
         this.total = res.data.meta.total
         this.loading = false
       })
+    },
+    checkPro (item, opr) {
+      if (item.product_info.length > 0) {
+        if (opr === 'init' || !opr) {
+          item.product_code = item.product_info[item.nowIndex].product_code
+          item.image = item.product_info[item.nowIndex].image.length > 0 ? item.product_info[item.nowIndex].image.map(itemImg => {
+            return {
+              ...itemImg,
+              product_id: item.product_info[item.nowIndex]
+            }
+          }) : [{
+            image_url: '',
+            thumb: '',
+            product_id: item.product_info[item.nowIndex].product_id
+          }]
+          item.product_number = item.product_info[item.nowIndex].numbers
+        }
+        if (opr === 'next') {
+          if (item.nowIndex === item.product_info.length - 1) {
+            item.nowIndex = 0
+            this.checkPro(item)
+          } else {
+            item.nowIndex += 1
+            this.checkPro(item)
+          }
+          this.$forceUpdate()
+        }
+        if (opr === 'last') {
+          if (item.nowIndex === 0) {
+            item.nowIndex = item.product_info.length - 1
+            this.checkPro(item)
+          } else {
+            item.nowIndex -= 1
+            this.checkPro(item)
+          }
+          this.$forceUpdate()
+        }
+      } else {
+        item.product_code = '无样品'
+        item.product_number = 0
+      }
     },
     handleCommand (type, id) {
       if (type === 'change') {

@@ -68,6 +68,17 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
+              <el-select v-model="has_materialPlan"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选状态">
+                <el-option v-for="(item,index) in stateArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </div>
           </div>
           <div class="rightCtn"
@@ -77,7 +88,44 @@
               :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="210">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.production_weave_progress.product>0,'green':scope.itemOrder.production_weave_progress.product>=100}">
+                <div class="state"></div>
+                <span class="name">织</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.production_weave_progress.semi_product>0,'green':scope.itemOrder.production_weave_progress.semi_product>=100}">
+                <div class="state"></div>
+                <span class="name">加</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                v-if="scope.itemOrder.has_plan!==0"
+                @click="$router.push('/weavingProcessing/weavingDetail/'+scope.itemOrder.id +'/' + (orderType ? '1' : '2'))">
+                织造分配
+              </span>
+              <span class="opr"
+                v-if="scope.itemOrder.has_plan!==0"
+                @click="$router.push('/weavingProcessing/processingDetail/'+scope.itemOrder.id +'/' + (orderType ? '1' : '2'))">
+                半成品加工
+              </span>
+              <span class="opr"
+                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
+                v-if="scope.itemOrder.has_plan===0">暂无物料计划</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -152,7 +200,7 @@
                 v-if="itemOrder.has_plan===0">暂无物料计划</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"
@@ -186,7 +234,18 @@ export default {
       group_id: '',
       groupArr: [],
       company_id: '',
-      companyArr: []
+      companyArr: [],
+      stateArr: [{
+        name: '全部',
+        id: '0'
+      }, {
+        name: '可添加',
+        id: '1'
+      }, {
+        name: '待添加',
+        id: '2'
+      }],
+      has_materialPlan: 1
     }
   },
   watch: {
@@ -237,10 +296,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/weavingProcessing/weavingList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
+      this.$router.push('/weavingProcessing/weavingList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
     },
     reset () {
-      this.$router.push('/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1')
+      this.$router.push('/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&has_materialPlan=1&&searchOrderOrProduct=/1')
     },
     getOrderList () {
       this.loading = true
@@ -253,6 +312,7 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id && this.company_id[1],
+          status_material_plan: this.has_materialPlan,
           group_id: this.group_id,
           status: this.state
         }).then(res => {
@@ -287,6 +347,7 @@ export default {
           keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          status_material_plan: this.has_materialPlan,
           client_id: this.company_id && this.company_id[1],
           group_id: this.group_id
         }).then(res => {

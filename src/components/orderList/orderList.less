@@ -1,0 +1,86 @@
+#orderListComponent{
+  .stateCtn{
+    margin-right: 8px;
+    display: flex;
+    flex-direction: column;
+    &.rowFlex{
+      flex-direction: row;
+      .state{
+        margin-right: 8px;
+        margin-top: 7px;
+      }
+    }
+    &.blue{
+      .state{
+        background:#1a95ff;
+      }
+      .name{
+        color: #1a95ff;
+      }
+    }
+    &.red{
+      .state{
+        background:#F5222D;
+      }
+      .name{
+        color: #F5222D;
+      }
+    }
+    &.orange{
+      .state{
+        background:rgb(230, 162, 60);
+      }
+      .name{
+        color: rgb(230, 162, 60);
+      }
+    }
+    &.green{
+      .state{
+        background:#01B48C ;
+      }
+      .name{
+        color: #01B48C;
+      }
+    }
+    .state{
+      width:6px;
+      height:6px;
+      border-radius: 50%;
+      background: #ccc;
+      margin:5px auto;
+    }
+  }
+  .jtCtn{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .jt{
+      color: #ccc;
+      cursor: pointer;
+      &:hover{
+        color: #1a95ff;
+      }
+    }
+  }
+  .tOpr{
+    color:#1a95ff;
+    padding: 0 8px;
+    border-right: 1px solid #E9E9E9;
+    cursor: pointer;
+    &:nth-last-child(1){
+      border-right: 0;
+    }
+    &:nth-child(1){
+      padding-left: 0;
+    }
+    &.orange{
+      color: rgb(230, 162, 60);
+    }
+    &.red{
+      color: #F5222D;
+    }
+    .el-dropdown{
+      color: #1a95ff!important;
+    }
+  }
+}

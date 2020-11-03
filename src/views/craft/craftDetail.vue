@@ -1145,7 +1145,7 @@ export default {
       product.updateCode({
         id: this.$route.params.id,
         product_code: this.productInfo.product_code,
-        product_type: 1
+        product_type: this.$route.params.type
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('修改成功')

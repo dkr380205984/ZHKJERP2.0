@@ -110,7 +110,7 @@
                     style="flex:7">
                     <div class="trow">
                       <div class="tcolumn">尺码颜色</div>
-                      <div class="tcolumn">下单数量</div>
+                      <div class="tcolumn">计划生产数量</div>
                       <div class="tcolumn">加工检验数量</div>
                       <div class="tcolumn">次品数量</div>
                       <div class="tcolumn">操作</div>
@@ -132,7 +132,7 @@
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
-                      <div class="tcolumn">{{itemChild.production_number}}</div>
+                      <div class="tcolumn">{{itemChild.production_number || itemChild.numbers}}</div>
                       <div class="tcolumn"
                         style="color:#E6A23C">{{itemChild.inspectionNum}}</div>
                       <div class="tcolumn"
@@ -1556,6 +1556,7 @@ export default {
             }, 0)
           })
         })
+        console.log(this.inspection_detail)
         let inspectionList = []
         this.$clone(this.inspection_log).forEach((item) => {
           this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from', 'from_id'], ['number', 'count'])
