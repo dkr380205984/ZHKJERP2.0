@@ -60,7 +60,32 @@
             </div>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn"
+                :class="{'green':scope.itemOrder.has_pack_plan>0}">
+                <div class="state"></div>
+                <span class="name">计</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.pack_order_progress>0,'green':scope.itemOrder.pack_order_progress>=100}">
+                <div class="state"></div>
+                <span class="name">订</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/packPlan/packPlanCreate/' + scope.itemOrder.id)">查看详情</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -112,11 +137,6 @@
                 <div class="state"></div>
                 <span class="name">订</span>
               </div>
-              <!-- <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
-                <div class="state"></div>
-                <span class="name">库</span>
-              </div> -->
             </div>
             <div class="col">
               {{itemOrder.order_time}}
@@ -126,7 +146,7 @@
                 @click="$router.push('/packPlan/packPlanCreate/' + itemOrder.id)">详情</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

@@ -117,11 +117,11 @@
               v-if="type===1">
               <div class="stateCtn rowFlex"
                 :class="scope.itemOrder.material_push_progress.r_push>0?scope.itemOrder.material_push_progress.r_push>=100?'green':'orange':'gray'">
-                <span class="name">{{scope.itemOrder.material_push_progress.r_push}}%(入)</span>
+                <span class="name">{{parseInt(scope.itemOrder.material_push_progress.r_push)}}%(入)</span>
               </div>
               <div class="stateCtn rowFlex"
                 :class="scope.itemOrder.material_push_progress.r_pop>0?scope.itemOrder.material_push_progress.r_pop>=100?'green':'orange':'gray'">
-                <span class="name">{{scope.itemOrder.material_push_progress.r_pop}}%(出)</span>
+                <span class="name">{{parseInt(scope.itemOrder.material_push_progress.r_pop)}}%(出)</span>
               </div>
             </div>
             <span v-else

@@ -20,11 +20,12 @@
           label="外贸公司"
           :width="320-oprWidth">
         </el-table-column>
-        <el-table-column :label="Number(orderType)===1?'订品图片':'样品图片'"
+        <el-table-column :label="Number(orderType)===1?'产品图片':'样品图片'"
           width="150"
           align="center">
           <template slot-scope="scope">
-            <zh-img-list :list="scope.row.image"
+            <zh-img-list :order_type="Number(orderType)===1?'product':'sample'"
+              :list="scope.row.image"
               type='open'></zh-img-list>
           </template>
         </el-table-column>
@@ -187,7 +188,7 @@ export default {
           item.image = item.product_info[item.nowIndex].image.length > 0 ? item.product_info[item.nowIndex].image.map(itemImg => {
             return {
               ...itemImg,
-              product_id: item.product_info[item.nowIndex]
+              product_id: item.product_info[item.nowIndex].product_id
             }
           }) : [{
             image_url: '',
@@ -229,7 +230,6 @@ export default {
 
   },
   mounted () {
-
   }
 }
 </script>

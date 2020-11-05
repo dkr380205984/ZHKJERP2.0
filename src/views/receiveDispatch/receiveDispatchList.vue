@@ -81,7 +81,7 @@
             slot-scope="scope">
             <div class="col">
               <span class="opr"
-                @click="$saveHistoryOrder(itemOrder);$router.push('/receiveDispatch/jysf/' + scope.itemOrder.id)">检验收发</span>
+                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/receiveDispatch/jysf/' + scope.itemOrder.id)">检验收发</span>
             </div>
           </template>
         </order-list>

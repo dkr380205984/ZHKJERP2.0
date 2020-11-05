@@ -772,7 +772,7 @@ export default {
           item.image = item.product_info[item.nowIndex].image.length > 0 ? item.product_info[item.nowIndex].image.map(itemImg => {
             return {
               ...itemImg,
-              product_id: item.product_info[item.nowIndex]
+              product_id: item.product_info[item.nowIndex].product_id
             }
           }) : [{
             image_url: '',

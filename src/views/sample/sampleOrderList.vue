@@ -317,7 +317,8 @@
             align="center">
             <template slot-scope="scope">
               <zh-img-list :list="scope.row.image"
-                type='open'></zh-img-list>
+                type='open'
+                order_type='sample'></zh-img-list>
             </template>
           </el-table-column>
           <el-table-column label="下单数量"
@@ -692,7 +693,7 @@ export default {
           item.image = item.product_info[item.nowIndex].image.length > 0 ? item.product_info[item.nowIndex].image.map(itemImg => {
             return {
               ...itemImg,
-              product_id: item.product_info[item.nowIndex]
+              product_id: item.product_info[item.nowIndex].product_id
             }
           }) : [{
             image_url: '',

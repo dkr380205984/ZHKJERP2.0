@@ -12,8 +12,8 @@
             {{craftDetail.craft_code}}
           </span>
           <span class="item">
-            <span class="label">产品信息</span>
-            {{`${craftDetail.product_info.product_code}`}}，{{craftDetail.product_info|filterType}}
+            <span class="label">产品编号</span>
+            <span style="font-weight:bold">{{`${craftDetail.product_info.product_code}`}}</span>
           </span>
           <span class="item">
             <span class="label">创建信息</span>
@@ -1316,9 +1316,10 @@ export default {
       return this.$clone(item).splice(index * 16, 16)
     },
     // 展平合并信息
-    getFlatTable (table, type, merge) {
+    getFlatTable (table, mergeData) {
       let tableArr = table
-      let mergeTable = this[type][merge]
+      let mergeTable = mergeData || []
+      console.log(mergeTable)
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
       // 处理合并项的合并信息
@@ -1456,6 +1457,13 @@ export default {
         if (!data) {
           this.$message('未找到工艺单ID为' + this.$route.params.craftId + '的工艺单')
           return
+        }
+        // 计算箭头的代码有问题，我自己计算根数保留一份合并项的原始数据
+        let mergeNative = {
+          warp_merge: this.$clone(JSON.parse(data.warp_data.merge_data)),
+          warp_merge_back: this.$clone(JSON.parse(data.warp_data.merge_data_back)),
+          weft_merge: this.$clone(JSON.parse(data.weft_data.merge_data)),
+          werf_merge_back: this.$clone(JSON.parse(data.weft_data.merge_data_back))
         }
         data.warp_data.merge_data = JSON.parse(data.warp_data.merge_data)
         data.warp_data.merge_data_back = JSON.parse(data.warp_data.merge_data_back)
@@ -1600,92 +1608,32 @@ export default {
           warp: [],
           weft: []
         }
-        // let arrWarp = data.warp_data.warp_rank.slice(1, 5)
-        // data.warp_data.merge_data.forEach((item) => {
-        //   if (item.row === 3 || item.row === 4) {
-        //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-        //       arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
-        //     }
-        //   }
-        // })
-        // let arrWeft = data.weft_data.weft_rank.slice(1, 5)
-        // data.weft_data.merge_data.forEach((item) => {
-        //   if (item.row === 3 || item.row === 4) {
-        //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-        //       arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
-        //     }
-        //   }
-        // })
-        // let arrWarpBack = data.warp_data.warp_rank_back.slice(1, 5)
-        // data.warp_data.merge_data_back.forEach((item) => {
-        //   if (item.row === 3 || item.row === 4) {
-        //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-        //       arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
-        //     }
-        //   }
-        // })
-        // let arrWeftBack = data.weft_data.weft_rank_back.slice(1, 5)
-        // data.weft_data.merge_data_back.forEach((item) => {
-        //   if (item.row === 3 || item.row === 4) {
-        //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-        //       arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
-        //     }
-        //   }
-        // })
-        // for (let i = 0; i < arrWarp[0].length; i++) {
-        //   const x = arrWarp[1][i] ? arrWarp[1][i] : 1
-        //   const y = arrWarp[2][i] ? arrWarp[2][i] : 1
-        //   const z = arrWarp[3][i] ? arrWarp[3][i] : 1
-        //   colorNumber.warp[arrWarp[0][i]] = colorNumber.warp[arrWarp[0][i]] ? colorNumber.warp[arrWarp[0][i]] : 0
-        //   colorNumber.warp[arrWarp[0][i]] += x * y * z
-        // }
-        // for (let i = 0; i < arrWeft[0].length; i++) {
-        //   const x = arrWeft[1][i] ? arrWeft[1][i] : 1
-        //   const y = arrWeft[2][i] ? arrWeft[2][i] : 1
-        //   const z = arrWeft[3][i] ? arrWeft[3][i] : 1
-        //   colorNumber.weft[arrWeft[0][i]] = colorNumber.weft[arrWeft[0][i]] ? colorNumber.weft[arrWeft[0][i]] : 0
-        //   colorNumber.weft[arrWeft[0][i]] += x * y * z
-        // }
-        // for (let i = 0; i < arrWarpBack[0].length; i++) {
-        //   const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
-        //   const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
-        //   const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
-        //   colorNumber.warp[arrWarpBack[0][i]] = colorNumber.warp[arrWarpBack[0][i]] ? colorNumber.warp[arrWarpBack[0][i]] : 0
-        //   colorNumber.warp[arrWarpBack[0][i]] += x * y * z
-        // }
-        // for (let i = 0; i < arrWeftBack[0].length; i++) {
-        //   const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
-        //   const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
-        //   const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-        //   colorNumber.weft[arrWeftBack[0][i]] = colorNumber.weft[arrWeftBack[0][i]] ? colorNumber.weft[arrWeftBack[0][i]] : 0
-        //   colorNumber.weft[arrWeftBack[0][i]] += x * y * z
-        // }
-        // this.yarn_coefficient = data.yarn_coefficient
         // 展平合并信息
-        let warpTable = this.getFlatTable(this.warp_data.warp_rank, 'warp_data', 'merge_data').map((item) => {
+        let warpTable = this.getFlatTable(this.warp_data.warp_rank, mergeNative.warp_merge).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'Ⅰ'
           }
           return item
         })
-        let weftTable = this.getFlatTable(this.weft_data.weft_rank, 'weft_data', 'merge_data').map((item) => {
+        let weftTable = this.getFlatTable(this.weft_data.weft_rank, mergeNative.warp_merge_back).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'A'
           }
           return item
         })
-        let warpTableBack = this.getFlatTable(this.warp_data.warp_rank_back, 'warp_data', 'merge_data_back').map((item) => {
+        let warpTableBack = this.getFlatTable(this.warp_data.warp_rank_back, mergeNative.weft_merge).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'Ⅰ'
           }
           return item
         })
-        let weftTableBack = this.getFlatTable(this.weft_data.weft_rank_back, 'weft_data', 'merge_data_back').map((item) => {
+        let weftTableBack = this.getFlatTable(this.weft_data.weft_rank_back, mergeNative.weft_merge_back).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'A'
           }
           return item
         })
+        console.log(warpTable)
         // 将展平的数据用于克重计算
         warpTable.forEach((item) => {
           colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
@@ -1703,6 +1651,7 @@ export default {
           colorNumber.weft[item.color] = colorNumber.weft[item.color] ? colorNumber.weft[item.color] : 0
           colorNumber.weft[item.color] += Number(item.number)
         })
+
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.warp[itemChild] = {

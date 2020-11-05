@@ -4,33 +4,28 @@
     v-loading="loading">
     <div class="module">
       <div class="listCtn">
-        <div class="addCtn">
-          <div class="btn btnBlue"
-            @click="$router.push('/craft/craftCreate/noProId')">新增工艺单</div>
-        </div>
-        <div class="filterCtn2">
+        <div class="filterCtn2"
+          style="justify-content:space-between">
           <div class="leftCtn">
             <span class="label">筛选条件：</span>
             <div class="filter_line">
-              <!-- <el-input class="filter_item"
-                v-model="keyword"
+              <el-select class="filter_item"
+                v-model="type"
                 @change="changeRouter(1)"
-                placeholder="输入工艺单编号按回车键查询">
-              </el-input> -->
+                placeholder="请选择搜索方式">
+                <el-option label="按产品编号搜索"
+                  value="product_code"></el-option>
+                <el-option label="按样品编号搜索"
+                  value="sample_code"></el-option>
+                <el-option label="按工艺单名称搜索"
+                  value="title"></el-option>
+                <el-option label="按物料名称搜索"
+                  value="material_name"></el-option>
+              </el-select>
               <el-input class="filter_item"
                 v-model="keyword"
                 @change="changeRouter(1)"
-                placeholder="输入工艺单名称按回车键查询">
-              </el-input>
-              <el-input class="filter_item"
-                v-model="product_code"
-                @change="changeRouter(1)"
-                placeholder="输入产品编号按回车键查询">
-              </el-input>
-              <el-input class="filter_item"
-                v-model="material_name"
-                @change="changeRouter(1)"
-                placeholder="输入物料名称按回车键查询">
+                placeholder="输入查询信息按回车搜索">
               </el-input>
               <el-select v-model="user_id"
                 class="filter_item"
@@ -63,12 +58,13 @@
               :class="openHiddleFilter ? false : 'hiddle'">
             </div> -->
           </div>
-          <!-- <div class="rightCtn"
-            @click="openHiddleFilter = !openHiddleFilter">
-            {{openHiddleFilter ? '收起' : '展开'}}
-            <span class="el-icon-arrow-down openIcon"
-              :class="openHiddleFilter ? 'active' : false"></span>
-          </div> -->
+          <div class="leftCtn"
+            style="padding-left:0;flex:0.2;width:200px">
+            <div class="addCtn">
+              <div class="btn btnBlue"
+                @click="$router.push('/craft/craftCreate/noProId/noType')">新增工艺单</div>
+            </div>
+          </div>
         </div>
         <div class="list">
           <div class="title">
@@ -186,11 +182,10 @@ export default {
       openHiddleFilter: false,
       user_id: '',
       userArr: [],
-      material_name: '',
       loading: true,
       list: [],
       keyword: '',
-      product_code: '',
+      type: 'product_code',
       date: '',
       pickerOptions: {
         shortcuts: [{
@@ -238,10 +233,10 @@ export default {
       this.loading = true
       craft.list({
         user_id: this.user_id || '',
-        product_code: this.product_code || '',
-        material_name: this.material_name,
-        // craft_code: this.keyword,
-        title: this.keyword,
+        product_code: this.type === 'product_code' ? this.keyword : '',
+        sample_code: this.type === 'sample_code' ? this.keyword : '',
+        material_name: this.type === 'material_name' ? this.keyword : '',
+        title: this.type === 'title' ? this.keyword : '',
         limit: 10,
         page: this.page
       }).then((res) => {
