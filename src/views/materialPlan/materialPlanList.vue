@@ -88,7 +88,31 @@
               :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="120">
+          <template slot="state"
+            slot-scope="scope">
+            <div class="stateCtn rowFlex"
+              :class="{'green':scope.itemOrder.has_plan>0,'orange':scope.itemOrder.has_plan===0}">
+              <div class="state"
+                style="margin-left:0"></div>
+              <span class="name">{{scope.itemOrder.has_plan>0?'已创建':'待添加'}}</span>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                v-if="scope.itemOrder.has_plan>0"
+                @click="$router.push('/materialPlan/materialPlanDetail/' + scope.itemOrder.id + '/' + (orderType ? 1 : 2))">详情</span>
+              <span class="opr"
+                v-if="scope.itemOrder.has_plan===0"
+                @click="$router.push('/materialPlan/materialPlanCreate/' + scope.itemOrder.id + '/' + (orderType ? 1 : 2))">添加</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">{{orderType?'订':'样'}}单号</span>
@@ -144,7 +168,7 @@
                 @click="$router.push('/materialPlan/materialPlanCreate/' + itemOrder.id + '/' + (orderType ? 1 : 2))">添加</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"
@@ -193,7 +217,7 @@ export default {
     }
   },
   watch: {
-    page (newVal) {
+    pages (newVal) {
       this.changeRouter(newVal)
     },
     $route (newVal) {
@@ -233,6 +257,7 @@ export default {
       } else {
         this.date = ''
       }
+      this.has_materialPlan = params.has_materialPlan
       this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id.split(',')
       this.orderType = this.$route.params.type === '1'

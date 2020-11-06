@@ -1,31 +1,4 @@
-@import '../common.less';
-#sampleOrderList{
-  .flex08{
-    flex: 0.8;
-  }
-  .flex12{
-    flex: 1.2;
-  }
-  .chartsCtn{
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    .title{
-      font-size: @fontMiddle;
-      color: @font45;
-      line-height: 42px;
-      padding: 0 24px;
-    }
-    .number{
-      font-size:30px;
-      color: @font85;
-      padding: 0 24px;
-    }
-    .charts{
-      width: 320px;
-      background: #fff;
-    }
-  }
+#orderListComponent{
   .stateCtn{
     margin-right: 8px;
     display: flex;
@@ -39,26 +12,26 @@
     }
     &.blue{
       .state{
-        background:@blue;
+        background:#1a95ff;
       }
       .name{
-        color: @blue;
+        color: #1a95ff;
       }
     }
     &.red{
       .state{
-        background:@red;
+        background:#F5222D;
       }
       .name{
-        color: @red;
+        color: #F5222D;
       }
     }
     &.orange{
       .state{
-        background:@orange;
+        background:rgb(230, 162, 60);
       }
       .name{
-        color: @orange;
+        color: rgb(230, 162, 60);
       }
     }
     &.green{
@@ -85,12 +58,12 @@
       color: #ccc;
       cursor: pointer;
       &:hover{
-        color: @blue;
+        color: #1a95ff;
       }
     }
   }
   .tOpr{
-    color:@blue;
+    color:#1a95ff;
     padding: 0 8px;
     border-right: 1px solid #E9E9E9;
     cursor: pointer;
@@ -101,13 +74,13 @@
       padding-left: 0;
     }
     &.orange{
-      color: @orange;
+      color: rgb(230, 162, 60);
     }
     &.red{
-      color: @red;
+      color: #F5222D;
     }
     .el-dropdown{
-      color: @blue!important;
+      color: #1a95ff!important;
     }
   }
 }

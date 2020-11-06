@@ -53,19 +53,19 @@ export default {
           {
             name: '物料订购',
             id: 7,
-            path: '/material/materialList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
+            path: '/material/materialList/page=1&&keyword=&&has_materialPlan=1&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
             icon: 'icon-wuliaodinggou'
           },
           {
             name: '物料出入库',
             id: 15,
-            path: '/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
+            path: '/materialStock/materialStockList/page=1&&keyword=&&has_materialPlan=1&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
             icon: 'icon-wuliaochuruku'
           },
           {
             name: '织造加工计划',
             id: 8,
-            path: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
+            path: '/weavingProcessing/weavingList/page=1&&keyword=&&date==&&group_id=&&company_id=&&has_materialPlan=1&&searchOrderOrProduct=/1',
             icon: 'icon-zhizaojiagong'
           },
           {

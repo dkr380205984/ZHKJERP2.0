@@ -1014,6 +1014,18 @@
                 </el-input>
               </div>
             </div>
+            <div class="row">
+              <div class="label">交货日期：</div>
+              <div class="info">
+                <el-date-picker v-model="commonOrderDate[index]"
+                  value-format="yyyy-MM-dd"
+                  style="width:100%"
+                  type="date"
+                  placeholder="选择交货日期"
+                  :picker-options="{disabledDate:filterDate}">
+                </el-date-picker>
+              </div>
+            </div>
           </div>
         </div>
         <div class="opr">
@@ -1591,6 +1603,7 @@ export default {
       processList: [],
       commonCompany: [],
       commonPrice: [],
+      commonOrderDate: [],
       commonProcessCompany: [], // 一键加工公共单位
       commonProcessPrice: [],
       commonProcess: [],
@@ -2391,7 +2404,9 @@ export default {
       this.order_data.forEach((item, index) => {
         item.price = this.commonPrice[index]
         item.company_id = this.commonCompany[index]
+        item.complete_time = this.commonOrderDate[index]
       })
+      this.commonOrderDate = []
       this.commonCompany = []
       this.commonPrice = []
       this.easyOrderFlag = false

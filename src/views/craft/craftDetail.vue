@@ -12,7 +12,25 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-            <span class="text">{{productInfo.product_code}}</span>
+            <span v-if="!updateFlag"
+              class="text">{{productInfo.product_code}}</span>
+            <el-input v-if="updateFlag"
+              v-model="productInfo.product_code"
+              placeholder="请输入产品编号"
+              style="height:32px;width:200px"></el-input>
+            <el-tooltip class="text"
+              effect="dark"
+              content="修改的产品编号尽量不要重复以便于搜索"
+              placement="top-start"
+              v-if="!updateFlag">
+              <span class="btn noBorder"
+                style="margin-left:12px;padding:0"
+                @click="updateFlag = true">点击修改</span>
+            </el-tooltip>
+            <span class="btn noBorder text"
+              style="margin-left:12px;padding:0"
+              v-if="updateFlag"
+              @click="saveProcode">确认修改</span>
           </div>
           <div class="colCtn">
             <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
@@ -595,7 +613,7 @@
             <div class="lineCtn">
               <div class="line"
                 v-for="(item,index) in warpInfo.color_data"
-                :key="index">{{item.product_color}}：{{item.weave_number||'0'}}条
+                :key="index">{{item.product_color}}：{{item.weave_number||'0'}}
               </div>
             </div>
           </div>
@@ -778,7 +796,7 @@
 
 <script>
 import * as THREE from 'three'
-import { craft, getToken } from '@/assets/js/api.js'
+import { craft, getToken, product } from '@/assets/js/api.js'
 import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
@@ -790,6 +808,7 @@ export default {
   },
   data () {
     return {
+      updateFlag: false,
       showImageLoading: false,
       showImageUrl: require('../../assets/image/craft/loading.png'),
       token: '',
@@ -1117,6 +1136,24 @@ export default {
     }
   },
   methods: {
+    saveProcode () {
+      if (!this.productInfo.product_code) {
+        this.$message.error('请输入产品编号')
+        return
+      }
+      this.loading = true
+      product.updateCode({
+        id: this.$route.params.id,
+        product_code: this.productInfo.product_code,
+        product_type: this.$route.params.type
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('修改成功')
+          this.updateFlag = false
+          this.loading = false
+        }
+      })
+    },
     stringToJson (str) {
       try {
         var obj = JSON.parse(str)
@@ -1427,6 +1464,8 @@ export default {
     getFlatTable (table, type, merge) {
       let tableArr = JSON.parse(table)
       let mergeTable = JSON.parse(this[type][merge])
+      console.log(tableArr)
+      console.log(mergeTable)
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
       // 处理合并项的合并信息
@@ -1759,68 +1798,9 @@ export default {
         })
       })
       // 计算克重信息
-      // let arrWarp = JSON.parse(this.warpInfo.warp_rank).slice(1, 5)
-      // this.tableData.warp.mergeCells.forEach((item) => {
-      //   if (item.row === 3 || item.row === 4) {
-      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-      //       arrWarp[item.row - 1][i] = arrWarp[item.row - 1][item.col]
-      //     }
-      //   }
-      // })
-      // let arrWeft = JSON.parse(this.weftInfo.weft_rank).slice(1, 5)
-      // this.tableData.weft.mergeCells.forEach((item) => {
-      //   if (item.row === 3 || item.row === 4) {
-      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-      //       arrWeft[item.row - 1][i] = arrWeft[item.row - 1][item.col]
-      //     }
-      //   }
-      // })
-      // let arrWarpBack = JSON.parse(this.warpInfo.warp_rank_back).slice(1, 5)
-      // this.tableData.warpBack.mergeCells.forEach((item) => {
-      //   if (item.row === 3 || item.row === 4) {
-      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-      //       arrWarpBack[item.row - 1][i] = arrWarpBack[item.row - 1][item.col]
-      //     }
-      //   }
-      // })
-      // let arrWeftBack = JSON.parse(this.weftInfo.weft_rank_back).slice(1, 5)
-      // this.tableData.weftBack.mergeCells.forEach((item) => {
-      //   if (item.row === 3 || item.row === 4) {
-      //     for (let i = (item.col + 1); i < (item.col + item.colspan); i++) {
-      //       arrWeftBack[item.row - 1][i] = arrWeftBack[item.row - 1][item.col]
-      //     }
-      //   }
-      // })
-      // for (let i = 0; i < arrWarp[0].length; i++) {
-      //   const x = arrWarp[1][i] ? arrWarp[1][i] : 1
-      //   const y = arrWarp[2][i] ? arrWarp[2][i] : 1
-      //   const z = arrWarp[3][i] ? arrWarp[3][i] : 1
-      //   this.colorNumber.warp[arrWarp[0][i]] = this.colorNumber.warp[arrWarp[0][i]] ? this.colorNumber.warp[arrWarp[0][i]] : 0
-      //   this.colorNumber.warp[arrWarp[0][i]] += x * y * z
-      // }
-      // for (let i = 0; i < arrWeft[0].length; i++) {
-      //   const x = arrWeft[1][i] ? arrWeft[1][i] : 1
-      //   const y = arrWeft[2][i] ? arrWeft[2][i] : 1
-      //   const z = arrWeft[3][i] ? arrWeft[3][i] : 1
-      //   this.colorNumber.weft[arrWeft[0][i]] = this.colorNumber.weft[arrWeft[0][i]] ? this.colorNumber.weft[arrWeft[0][i]] : 0
-      //   this.colorNumber.weft[arrWeft[0][i]] += x * y * z
-      // }
-      // for (let i = 0; i < arrWarpBack[0].length; i++) {
-      //   const x = arrWarpBack[1][i] ? arrWarpBack[1][i] : 1
-      //   const y = arrWarpBack[2][i] ? arrWarpBack[2][i] : 1
-      //   const z = arrWarpBack[3][i] ? arrWarpBack[3][i] : 1
-      //   this.colorNumber.warp[arrWarpBack[0][i]] = this.colorNumber.warp[arrWarpBack[0][i]] ? this.colorNumber.warp[arrWarpBack[0][i]] : 0
-      //   this.colorNumber.warp[arrWarpBack[0][i]] += x * y * z
-      // }
-      // for (let i = 0; i < arrWeftBack[0].length; i++) {
-      //   const x = arrWeftBack[1][i] ? arrWeftBack[1][i] : 1
-      //   const y = arrWeftBack[2][i] ? arrWeftBack[2][i] : 1
-      //   const z = arrWeftBack[3][i] ? arrWeftBack[3][i] : 1
-      //   this.colorNumber.weft[arrWeftBack[0][i]] = this.colorNumber.weft[arrWeftBack[0][i]] ? this.colorNumber.weft[arrWeftBack[0][i]] : 0
-      //   this.colorNumber.weft[arrWeftBack[0][i]] += x * y * z
-      // }
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
+      console.log(this.warpInfo.warp_rank.merge_data)
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
         if (!item.GLorPM) {
           item.GLorPM = 'Ⅰ'
@@ -1862,6 +1842,8 @@ export default {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
+      console.log(this.colorNumber, warpTable)
+
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
           this.colorWeight.warp[itemChild] = (this.colorNumber.warp[itemChild] * (this.weftInfo.neichang + this.weftInfo.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100).toFixed(1)

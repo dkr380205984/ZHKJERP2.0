@@ -3892,6 +3892,7 @@ export default {
                 item.rejects_info = 0
               }
             }
+            item.total_price = item.price ? item.price * item.number : 0
             item.client_or_user_name = item.client_name || item.inspection_user
             item.product_code = item.product_info.product_code
             item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
@@ -3909,13 +3910,15 @@ export default {
             downloadExcel(data, [
               { title: '创建日期', key: 'complete_time' },
               { title: '加工类型', key: 'product_flow' },
-              { titla: '加工单位/人员', key: 'client_or_user_name' },
+              { title: '单位人员', key: 'client_or_user_name' },
               { title: '关联单号', key: 'order_code' },
               { title: '产品编号', key: 'product_code' },
               { title: '产品品类', key: 'product_types' },
               { title: '尺码', key: 'size_name' },
               { title: '颜色', key: 'color_name' },
               { title: '数量', key: 'number' },
+              { title: '单价(元)', key: 'price' },
+              { title: '总价(元)', key: 'total_price' },
               { title: '次品数量', key: 'rejects_number' },
               { title: '次品原因', key: 'rejects_infos' },
               { title: '备注', key: 'desc' },

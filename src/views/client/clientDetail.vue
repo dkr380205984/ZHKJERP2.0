@@ -255,6 +255,19 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
+                <el-select v-model="huobi"
+                  style="width:180px"
+                  class="filter_item"
+                  @change="getList(1)"
+                  clearable
+                  placeholder="筛选货币">
+                  <el-option value=""
+                    label="全部"></el-option>
+                  <el-option value="RMB"
+                    label="人民币"></el-option>
+                  <el-option value="USD"
+                    label="美元"></el-option>
+                </el-select>
                 <el-date-picker v-model="date"
                   style="width:250px"
                   class="filter_item"
@@ -2346,6 +2359,7 @@ export default {
   data () {
     return {
       loading: true,
+      huobi: '',
       companyType: companyType,
       clientInfo: {
         type: [],
@@ -2924,6 +2938,7 @@ export default {
                 item.rejects_number = 0
                 item.rejects_infos = ''
               }
+              item.total_price = item.price ? item.price * item.number : 0
               return item
             }))
             total = res.data.meta.total
@@ -2931,13 +2946,15 @@ export default {
               downloadExcel(data, [
                 { title: '创建日期', key: 'complete_time' },
                 { title: '加工类型', key: 'product_flow' },
-                { titla: '加工单位', key: 'client_or_user_name' },
+                { title: '加工单位', key: 'client_or_user_name' },
                 { title: '关联单号', key: 'order_code' },
                 { title: '产品编号', key: 'product_code' },
                 { title: '产品品类', key: 'product_types' },
                 { title: '尺码', key: 'size_name' },
                 { title: '颜色', key: 'color_name' },
                 { title: '数量', key: 'number' },
+                { title: '单价(元)', key: 'price' },
+                { title: '总价(元)', key: 'total_price' },
                 { title: '次品数量', key: 'rejects_number' },
                 { title: '次品原因', key: 'rejects_infos' },
                 { title: '备注', key: 'desc' },
@@ -3242,7 +3259,8 @@ export default {
             start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
             end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
             client_id: this.$route.params.id,
-            group_id: this.group_id
+            group_id: this.group_id,
+            currency_type: this.huobi
           }).then((res) => {
             this.total = res.data.meta.total
             this.list = res.data.data.map(itemM => {
@@ -3261,7 +3279,8 @@ export default {
             start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
             end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
             client_id: this.$route.params.id,
-            group_id: this.group_id
+            group_id: this.group_id,
+            currency_type: this.huobi
           }).then((res) => {
             this.total = res.data.meta.total
             this.list = res.data.data.map(itemM => {

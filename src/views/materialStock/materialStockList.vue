@@ -88,6 +88,17 @@
                 end-placeholder="结束日期"
                 @change="changeRouter(1)">
               </el-date-picker>
+              <el-select v-model="has_materialPlan"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选状态">
+                <el-option v-for="(item,index) in stateArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </div>
           </div>
           <div class="rightCtn"
@@ -97,7 +108,38 @@
               :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex"
+              v-if="type===1">
+              <div class="stateCtn rowFlex"
+                :class="scope.itemOrder.material_push_progress.r_push>0?scope.itemOrder.material_push_progress.r_push>=100?'green':'orange':'gray'">
+                <span class="name">{{parseInt(scope.itemOrder.material_push_progress.r_push)}}%(入)</span>
+              </div>
+              <div class="stateCtn rowFlex"
+                :class="scope.itemOrder.material_push_progress.r_pop>0?scope.itemOrder.material_push_progress.r_pop>=100?'green':'orange':'gray'">
+                <span class="name">{{parseInt(scope.itemOrder.material_push_progress.r_pop)}}%(出)</span>
+              </div>
+            </div>
+            <span v-else
+              class="gray">未统计</span>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                v-if="scope.itemOrder.has_plan!==0"
+                @click="$router.push(`/materialStock/materialStockDetail/${scope.itemOrder.id}/${type}/${orderType ? '1' : '2'}`)">{{type === 1 ? '原料出入库' : '辅料出入库'}}</span>
+              <span class="opr"
+                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
+                v-else>暂无物料计划</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex04">
               <span class="text"></span>
@@ -175,7 +217,7 @@
                 v-else>暂无物料计划</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"
@@ -235,6 +277,17 @@ export default {
       companyArr: [],
       // 批量订购勾选数据
       checkedList: [],
+      has_materialPlan: 1,
+      stateArr: [{
+        name: '全部',
+        id: '0'
+      }, {
+        name: '可添加',
+        id: '1'
+      }, {
+        name: '待添加',
+        id: '2'
+      }],
       type: 1
     }
   },
@@ -305,10 +358,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/materialStock/materialStockList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
+      this.$router.push('/materialStock/materialStockList/page=' + pages + '&&keyword=' + this.keyword + '&&has_materialPlan=' + this.has_materialPlan + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
     },
     reset () {
-      this.$router.push('/materialStock/materialStockList/page=1&&keyword=&&date==&&group_id=&&searchOrderOrProduct=&&company_id=/1')
+      this.$router.push('/materialStock/materialStockList/page=1&&keyword=&&has_materialPlan=1&&date==&&group_id=&&searchOrderOrProduct=&&company_id=/1')
     },
     getOrderList () {
       this.loading = true
@@ -322,6 +375,7 @@ export default {
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id && this.company_id[1],
           group_id: this.group_id,
+          status_material_plan: this.has_materialPlan,
           status: this.state
         }).then(res => {
           this.list = res.data.data.map(item => {
@@ -361,6 +415,7 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id && this.company_id[1],
+          status_material_plan: this.has_materialPlan,
           group_id: this.group_id
         }).then(res => {
           this.list = res.data.data

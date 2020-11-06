@@ -1158,7 +1158,7 @@
         </div>
         <div class="rowCtn"
           v-for="(item,index) in colour"
-          :key="index">
+          :key="index + 'zaaaa'">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -1175,7 +1175,7 @@
         </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
-          :key="index">
+          :key="index + 'adafasd'">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -1921,6 +1921,11 @@ export default {
     GLFlag (newVal) {
       if (newVal === 'normal') {
         this.GL.length = 1
+        this.GLRepeat = [[{
+          start: '',
+          end: '',
+          repeat: ''
+        }]]
       }
     },
     repeatPM: {
@@ -2019,7 +2024,7 @@ export default {
         return total + cur.split('+').reduce((totalChild, curChild) => {
           return totalChild + (Number(curChild || 0))
         }, 0)
-      }, 0)
+      }, 0).toFixed(2)
     },
     afterSave (data) {
       this.msgFlag = data.msgFlag
@@ -2213,7 +2218,12 @@ export default {
       })
     },
     deleteGLrepeat (index, indexChild) {
-      this.GLRepeat[index].splice(indexChild, 1)
+      if (this.GLRepeat[index].length > 0) {
+        this.GLRepeat[index].splice(indexChild, 1)
+      } else {
+        this.$message.error('至少保留一个填写区域')
+      }
+
     },
     // 插入列操作
     addCol (type) {
@@ -2660,15 +2670,18 @@ export default {
       })
       this.material.materialWarp.forEach((item) => {
         item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
-          return {
-            number: index,
-            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
-              return {
-                name: item.name,
-                value: this.coefficient[index]
-              }
-            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
+          if (index) {
+            return {
+              number: index,
+              weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+                return {
+                  name: item.name,
+                  value: this.coefficient[index]
+                }
+              }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
+            }
           }
+
         })
       })
       this.material.materialWeft.forEach((item) => {
@@ -2705,8 +2718,8 @@ export default {
         })
         this.material.materialWeft.forEach((item) => {
           item.apply.forEach((itemChild) => {
-            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] = peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] || 0
-            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] += Number(itemChild.weight)
+            peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] = peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] || 0
+            peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] += Number(itemChild.weight)
           })
         })
 
@@ -3079,16 +3092,9 @@ export default {
               weave_number: this.weaveNumber[index],
               color_id: item.value,
               color_scheme: item.colorWarp.map((itemColor) => {
-                if (itemColor.name !== '空梭') {
-                  return {
-                    name: itemColor.name,
-                    value: itemColor.color
-                  }
-                } else {
-                  return {
-                    name: null,
-                    value: null
-                  }
+                return {
+                  name: itemColor.name,
+                  value: itemColor.color
                 }
               })
             }
@@ -3174,16 +3180,9 @@ export default {
               color_id: item.value,
               weave_number: this.weaveNumber[index],
               color_scheme: item.colorWeft.map((itemColor) => {
-                if (itemColor.name !== '空梭') {
-                  return {
-                    name: itemColor.name,
-                    value: itemColor.color
-                  }
-                } else {
-                  return {
-                    name: null,
-                    value: null
-                  }
+                return {
+                  name: itemColor.name,
+                  value: itemColor.color
                 }
               })
             }

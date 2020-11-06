@@ -60,7 +60,32 @@
             </div>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          oprWidth="120">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.product_push_progress>0,'green':scope.itemOrder.product_push_progress>=100}">
+                <div class="state"></div>
+                <span class="name">检</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.semi_push_progress>0,'green':scope.itemOrder.semi_push_progress>=100}">
+                <div class="state"></div>
+                <span class="name">回</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/receiveDispatch/jysf/' + scope.itemOrder.id)">检验收发</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -121,7 +146,7 @@
                 @click="$saveHistoryOrder(itemOrder);$router.push('/receiveDispatch/jysf/' + itemOrder.id)">检验收发</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

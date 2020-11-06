@@ -2,102 +2,331 @@
   <div id="craftCreate"
     class="indexMain"
     v-loading="loading">
-    <div class="module">
-      <div class="titleCtn">
-        <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
-        <zh-message :msgSwitch="msgSwitch"
-          :url="msgUrl"
-          :content="msgContent"></zh-message>
-        <div class="selectCtn"
-          style="width:460px;margin:10px 0">
-          <el-select v-model="selectSearchWhich"
-            style="width:170px;float:left">
-            <el-option label="搜产品编号"
-              value="搜产品编号"></el-option>
-            <el-option label="搜样品编号"
-              value="搜样品编号"></el-option>
-            <el-option label="搜工艺单编号"
-              value="搜工艺单编号"></el-option>
-          </el-select>
-          <el-select filterable
-            style="width:270px;float:right"
-            remote
-            reserve-keyword
-            v-model="gyd"
-            :remote-method="remoteMethod"
-            :loading="loadingS"
-            @change="getCraft"
-            placeholder="输入编号导入工艺单">
-            <el-option v-for="item in gydArr"
-              :key="item.id"
-              :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
-              :value="item.id">
-              <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
-              <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
-              <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_name}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
-            </el-option>
-          </el-select>
-        </div>
-      </div>
-      <div class="detailCtn"
-        v-if="productInfo.category_id">
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-            <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
-          </div>
-          <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
-            <span class="text"
-              :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
-          </div>
-          <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
-            <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
+    <template v-if="$route.params.id!=='noProId'">
+      <div class="module">
+        <div class="titleCtn">
+          <span class="title">{{$route.params.type==='1'?'产':'样'}}品信息</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+          <div class="selectCtn"
+            style="width:460px;margin:10px 0">
+            <el-select v-model="selectSearchWhich"
+              style="width:170px;float:left">
+              <el-option label="搜产品编号"
+                value="搜产品编号"></el-option>
+              <el-option label="搜样品编号"
+                value="搜样品编号"></el-option>
+              <el-option label="搜工艺单编号"
+                value="搜工艺单编号"></el-option>
+            </el-select>
+            <el-select filterable
+              style="width:270px;float:right"
+              remote
+              reserve-keyword
+              v-model="gyd"
+              :remote-method="remoteMethod"
+              :loading="loadingS"
+              @change="getCraft"
+              placeholder="输入编号导入工艺单">
+              <el-option v-for="item in gydArr"
+                :key="item.id"
+                :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
+                :value="item.id">
+                <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
+                <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
+                <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_name}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
+              </el-option>
+            </el-select>
           </div>
         </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
-            <span class="text">{{productInfo.component|filterMaterials}}</span>
+        <div class="detailCtn"
+          v-if="productInfo.category_id">
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+              <span class="text">{{$route.params.type==='1'?productInfo.product_code:productInfo.sample_product_code}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品名称：</span>
+              <span class="text"
+                :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品品类：</span>
+              <span class="text">{{$route.params.type==='1'?productInfo.category_info.product_category+'/'+productInfo.type_name+'/'+productInfo.style_name:productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
+            </div>
           </div>
-          <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
-            <span class="text">
-              <span v-for="(item,index) in productInfo.color"
-                :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
+          <div class="rowCtn">
+            <div class="colCtn flex3">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品成分：</span>
+              <span class="text">{{productInfo.component|filterMaterials}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品配色：</span>
+              <span class="text">
+                <span v-for="(item,index) in productInfo.color"
+                  :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
+                </span>
               </span>
-            </span>
+            </div>
           </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
-            <div class="lineCtn">
-              <div class="line"
-                v-for="(item,index) in productInfo.size"
-                :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">{{$route.params.type==='1'?'产':'样'}}品规格：</span>
+              <div class="lineCtn">
+                <div class="line"
+                  v-for="(item,index) in productInfo.size"
+                  :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">备注信息：</span>
+              <span class="text"
+                :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
             </div>
           </div>
         </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">备注信息：</span>
-            <span class="text"
-              :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
+        <div class="detailCtn"
+          v-if="!productInfo.category_id">
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">配件名称：</span>
+              <span class="text">{{productInfo.part_title || productInfo.name}}</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="detailCtn"
-        v-if="!productInfo.category_id">
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">配件名称：</span>
-            <span class="text">{{productInfo.part_title || productInfo.name}}</span>
+    </template>
+    <template v-if="$route.params.id==='noProId'">
+      <div class="module">
+        <div class="titleCtn">
+          <span class="title">产/样品筛选</span>
+          <div class="selectCtn"
+            style="width:460px;margin:10px 0">
+            <el-select v-model="selectSearchWhich"
+              style="width:170px;float:left">
+              <el-option label="搜产品编号"
+                value="搜产品编号"></el-option>
+              <el-option label="搜样品编号"
+                value="搜样品编号"></el-option>
+              <el-option label="搜工艺单编号"
+                value="搜工艺单编号"></el-option>
+            </el-select>
+            <el-select filterable
+              style="width:270px;float:right"
+              remote
+              reserve-keyword
+              v-model="gyd"
+              :remote-method="remoteMethod"
+              :loading="loadingS"
+              @change="getCraft"
+              placeholder="输入编号导入工艺单">
+              <el-option v-for="item in gydArr"
+                :key="item.id"
+                :label="selectSearchWhich!=='搜工艺单编号'?item.product_code:item.craft_code"
+                :value="item.id">
+                <span v-if="selectSearchWhich!=='搜工艺单编号'">{{ item.product_code }}</span>
+                <span v-if="selectSearchWhich==='搜工艺单编号'">{{ item.craft_code }}</span>
+                <span style="margin-left:10px;color: #8492a6; font-size: 13px">({{item.category_name}}/{{item.type_name}}/{{item.style_name}}/{{item.flower_id}})</span>
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="listCtn hasBorderTop">
+          <div class="filterCtn">
+            <div class="leftCtn">
+              <span class="label">筛选条件：</span>
+              <el-input class="inputs"
+                placeholder="请输入编号查询"
+                v-model="searchCode"
+                @change="searchCodeChange"></el-input>
+              <el-date-picker v-model="date"
+                style="width:290px"
+                class="inputs"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+              </el-date-picker>
+              <div class="btn btnGray"
+                style="margin-left:0">重置</div>
+            </div>
+            <div class="rightCtn">
+              <el-switch v-model="product_type"
+                active-text="产品"
+                inactive-text="样品"
+                active-color="#1A95FF"
+                inactive-color="#E6A23C"
+                @change="getList"></el-switch>
+            </div>
+          </div>
+          <div class="list"
+            style="min-height:330px">
+            <div class="title">
+              <div class="col">
+                <span class="text">编号</span>
+              </div>
+              <div class="col">
+                <transition v-show="!searchTypeFlag"
+                  name="el-zoom-in-bottom">
+                  <span class="text">品类
+                    <i class="el-icon-search iconBtn"
+                      @click="searchTypeFlag=true"></i>
+                  </span>
+                </transition>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchTypeFlag"
+                    class="filterBox">
+                    <el-cascader class="filter"
+                      v-model="type"
+                      placeholder="筛选品类"
+                      :options="typeArr"
+                      clearable
+                      filterable>
+                    </el-cascader>
+                  </div>
+                </transition>
+              </div>
+              <div class="col">
+                <span class="text">花型</span>
+                <i class="el-icon-search iconBtn"
+                  @click="searchFlowerFlag=true"></i>
+                <transition name="el-zoom-in-top">
+                  <div v-show="searchFlowerFlag"
+                    class="filterBox">
+                    <el-select v-model="flower_id"
+                      clearable
+                      placeholder="筛选花型">
+                      <el-option v-for="(item,index) in flowerArr"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </transition>
+              </div>
+              <div class="col">
+                <span class="text">名称</span>
+              </div>
+              <div class="col middle">
+                <span class="text">图片</span>
+              </div>
+              <div class="col">
+                <span class="text">创建人</span>
+              </div>
+              <div class="col">
+                <span class="text">创建时间
+                  <span class="iconCtn">
+                    <i class="el-icon-caret-top"></i>
+                    <i class="el-icon-caret-bottom"></i>
+                  </span>
+                </span>
+              </div>
+              <div class="col">
+                <span class="text">
+                  <span class="text"
+                    v-show="!searchStateFlag">状态
+                    <i class="el-icon-search iconBtn"
+                      @click="searchStateFlag=true"></i>
+                  </span>
+                  <transition name="el-zoom-in-top">
+                    <div v-show="searchStateFlag"
+                      class="filterBox">
+                      <el-dropdown :hide-on-click="false"
+                        trigger="click"
+                        style="cursor:pointer">
+                        <span class="el-dropdown-link">
+                          状态筛选<i class="el-icon-arrow-down el-icon--right"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item>
+                            工艺单：
+                            <el-radio-group @changed="getList"
+                              v-model="has_craft">
+                              <el-radio label=''>全部</el-radio>
+                              <el-radio label="1">有</el-radio>
+                              <el-radio label="0">无</el-radio>
+                            </el-radio-group>
+                          </el-dropdown-item>
+                          <el-dropdown-item>
+                            配料单：
+                            <el-radio-group v-model="has_plan"
+                              divided>
+                              <el-radio label=''>全部</el-radio>
+                              <el-radio label="1">有</el-radio>
+                              <el-radio label="0">无</el-radio>
+                            </el-radio-group>
+                          </el-dropdown-item>
+                          <el-dropdown-item>
+                            报价单：
+                            <el-radio-group v-model="has_quotation"
+                              divided>
+                              <el-radio label=''>全部</el-radio>
+                              <el-radio label="1">有</el-radio>
+                              <el-radio label="0">无</el-radio>
+                            </el-radio-group>
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                    </div>
+                  </transition>
+                </span>
+              </div>
+              <div class="col">
+                <span class="text">操作</span>
+              </div>
+            </div>
+            <div class="row"
+              v-for="(item,index) in productList"
+              :key="index">
+              <div class="col">{{item.product_code}}</div>
+              <div class="col">{{item|filterType}}</div>
+              <div class="col">{{item.flower_id}}</div>
+              <div class="col">{{item.name}}</div>
+              <div class="col">
+                <zh-img-list :list="item.image"></zh-img-list>
+              </div>
+              <div class="col">{{item.user_name}}</div>
+              <div class="col">{{item.create_time.slice(0,10)}}</div>
+              <div class="col">
+                <div :class="{'stateCtn':true, 'green':item.has_craft === 1}">
+                  <div class="state"></div>
+                  <span class="name">工</span>
+                </div>
+                <div :class="{'stateCtn':true, 'green':item.has_plan === 1}">
+                  <div class="state"></div>
+                  <span class="name">配</span>
+                </div>
+                <div :class="{'stateCtn':true, 'green':item.quotation_id === 1}">
+                  <div class="state"></div>
+                  <span class="name">报</span>
+                </div>
+              </div>
+              <div class="col">
+                <span class="opr"
+                  @click="checkedPro(item)">{{item.choosed?'已选择':'添加工艺单'}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="pageCtn">
+            <el-pagination background
+              :page-size="10"
+              layout="prev, pager, next"
+              :total="total"
+              :current-page.sync="pages"
+              @current-change="getList">
+            </el-pagination>
           </div>
         </div>
       </div>
-    </div>
+    </template>
     <div class="module">
       <div class="titleCtn">
         <span class="title">原料经向</span>
@@ -299,8 +528,6 @@
                 @click="clearTable('warp')">重置</div>
             </div>
             <div class="hotTable">
-              <!-- <hot-table :settings="tableData.warp"
-                ref="warp"></hot-table> -->
               <div ref="warp"></div>
             </div>
             <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
@@ -348,8 +575,6 @@
                 @click="clearTable('warpBack')">重置</div>
             </div>
             <div class="hotTable">
-              <!-- <hot-table :settings="tableData.warpBack"
-                ref="warpBack"></hot-table> -->
               <div ref="warpBack"></div>
             </div>
           </div>
@@ -1222,7 +1447,7 @@
         </div>
         <div class="rowCtn"
           v-for="(item,index) in colour"
-          :key="index">
+          :key="index + 'colour'">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -1239,7 +1464,7 @@
         </div>
         <div class="rowCtn"
           v-for="(item,index) in allMaterial"
-          :key="index">
+          :key="index + 'chuankou'">
           <div class="colCtn">
             <div class="label"
               v-if="index===0">
@@ -1296,9 +1521,11 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnOrange"
-            @click="submit('草稿')">保存为草稿</div>
+            @click="submit('草稿')"
+            v-if="$route.params.id!=='noProId'||chooseId">保存为草稿</div>
           <div class="btn btnBlue"
-            @click="submit">提交</div>
+            @click="submit"
+            v-if="$route.params.id!=='noProId'||chooseId">提交</div>
         </div>
       </div>
     </div>
@@ -1645,6 +1872,23 @@ export default {
   },
   data () {
     return {
+      product_type: true,
+      productList: [],
+      searchCode: '',
+      searchTypeFlag: false,
+      type: [],
+      typeArr: [],
+      searchFlowerFlag: false,
+      flower_id: '',
+      flowerArr: [],
+      searchStateFlag: false,
+      has_plan: '0',
+      has_craft: '0',
+      has_quotation: '',
+      total: 0,
+      pages: 1,
+      chooseId: '',
+      chooseType: '',
       date: '',
       gongxuArr: [],
       showGLFlag: false,
@@ -2699,6 +2943,23 @@ export default {
     }
   },
   watch: {
+    flower_id (newVal) {
+      console.log(newVal)
+      this.pages = 1
+      this.getList()
+    },
+    has_plan (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_craft (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    has_quotation (newVal) {
+      this.pages = 1
+      this.getList()
+    },
     "warpInfo.reed_method": function (newVal) {
       this.allMaterial.forEach((item, index) => {
         this.chuankouDetail[index] = newVal
@@ -2707,6 +2968,11 @@ export default {
     GLFlag (newVal) {
       if (newVal === 'normal') {
         this.GL.length = 1
+        this.GLRepeat = [[{
+          start: '',
+          end: '',
+          repeat: ''
+        }]]
       }
     },
     repeatPM: {
@@ -2723,6 +2989,9 @@ export default {
     }
   },
   filters: {
+    filterType (item) {
+      return [item.category_info.product_category, item.type_name, item.style_name].join('/')
+    },
     filterMaterials (arr) {
       let str = ''
       if (arr[0] && arr[0].component_name) {
@@ -2797,6 +3066,112 @@ export default {
     }
   },
   methods: {
+    getApi () {
+      return new Promise((resolove, reject) => {
+        if (this.product_type) {
+          product.list({
+            limit: 10,
+            page: this.pages,
+            product_code: this.searchCode,
+            category_id: this.category_id,
+            type_id: this.type_id,
+            style_id: this.style_id,
+            flower_id: this.flower_id,
+            has_plan: this.has_plan,
+            has_craft: this.has_craft,
+            has_quotation: this.has_quotation,
+            start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+            end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+          }).then(res => {
+            if (res.data.status !== false) {
+              resolove(res)
+            } else {
+              reject(res)
+            }
+          })
+        } else {
+          sample.list({
+            limit: 10,
+            page: this.pages,
+            product_code: this.searchCode,
+            category_id: this.category_id,
+            type_id: this.type_id,
+            style_id: this.style_id,
+            flower_id: this.flower_id,
+            has_plan: this.has_plan,
+            has_craft: this.has_craft,
+            has_quotation: this.has_quotation,
+            start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+            end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
+          }).then(res => {
+            if (res.data.status !== false) {
+              resolove(res)
+            } else {
+              reject(res)
+            }
+          })
+        }
+      })
+    },
+    getList () {
+      // this.loading = true
+      this.getApi().then((res) => {
+        if (this.product_type) {
+          this.productList = res.data.data
+          this.total = res.data.meta.total
+        } else {
+          this.productList = res.data.data.map(item => {
+            return {
+              checked: false,
+              product_type: 2,
+              id: item.id,
+              product_code: item.sample_product_code,
+              size: item.size.map(itemSize => {
+                return {
+                  size_name: itemSize.size_name,
+                  size_info: itemSize.size_info,
+                  weight: itemSize.weight
+                }
+              }),
+              color: item.color,
+              flower_id: item.flower_name,
+              image: item.image,
+              name: item.name,
+              user_name: item.user_name,
+              create_time: item.create_time,
+              has_craft: item.has_craft,
+              has_plan: item.has_plan,
+              has_quotation: item.has_quotation,
+              style_name: item.style_name,
+              type_name: item.type_name,
+              category_info: {
+                product_category: item.category_name,
+                unit: item.unit
+              }
+            }
+          })
+          this.total = res.data.meta.total
+        }
+        this.loading = false
+      })
+    },
+    checkedPro (product) {
+      if (product.size.length > 1) {
+        this.$message.error('产品规格不符合条件，选择产品失败')
+      } else {
+        this.productList.forEach((item) => item.choosed = false)
+        product.choosed = true
+        this.colourArr = product.color
+        this.chooseId = product.id
+        this.chooseType = this.product_type ? 1 : 2
+        this.$message.success('选择成功，请完善工艺单信息')
+      }
+    },
+    // 筛选产品编号
+    searchCodeChange (newVal) {
+      this.pages = 1
+      this.getList()
+    },
     // 匹配下配色名称
     filterColor (id) {
       if (id) {
@@ -2813,7 +3188,7 @@ export default {
         return total + cur.split('+').reduce((totalChild, curChild) => {
           return totalChild + (Number(curChild || 0))
         }, 0)
-      }, 0)
+      }, 0).toFixed(2)
     },
     // 预览纹版图
     showGL (GL) {
@@ -3433,7 +3808,7 @@ export default {
     },
     // 导入单张工艺单
     getCraft (code) {
-      this.loading = true
+      // this.loading = true
       craft.detail({
         id: code
       }).then((res) => {
@@ -3780,8 +4155,8 @@ export default {
         })
         this.material.materialWeft.forEach((item) => {
           item.apply.forEach((itemChild) => {
-            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] = peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] || 0
-            peise_yarn_weight[colour_name][itemColour.colorWarp[itemChild.number].name][item.value] += Number(itemChild.weight)
+            peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] = peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] || 0
+            peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] += Number(itemChild.weight)
           })
         })
 
@@ -3917,6 +4292,10 @@ export default {
     submit (ifCaogao) {
       // 获取合并单元格信息
       let errorInput = false
+      if (ifCaogao === '草稿' && !this.chooseId && this.$router.params.id === 'noProId') {
+        this.$message.error('请选择产品后保存草稿')
+        return
+      }
       if (ifCaogao !== '草稿') {
         errorInput = this.colour.some((itemColour) => {
           if (!itemColour.value) {
@@ -4136,9 +4515,9 @@ export default {
         id: null,
         is_draft: ifCaogao === '草稿' ? 2 : 1, //设计单字段，现改为是否为草稿
         title: this.ZDYMC,
-        product_type: this.$route.params.type,
+        product_type: this.chooseType || this.$route.params.type,
         company_id: window.sessionStorage.getItem('company_id'),
-        product_id: this.$route.params.id,
+        product_id: this.chooseId || this.$route.params.id,
         size: this.DSGG,
         weight: this.DSKZ,
         desc: this.desc,
@@ -4158,16 +4537,9 @@ export default {
               color_id: item.value,
               weave_number: this.weaveNumber[index],
               color_scheme: item.colorWarp.map((itemColor) => {
-                if (itemColor.name !== '空梭') {
-                  return {
-                    name: itemColor.name,
-                    value: itemColor.color
-                  }
-                } else {
-                  return {
-                    name: null,
-                    value: null
-                  }
+                return {
+                  name: itemColor.name,
+                  value: itemColor.color
                 }
               })
             }
@@ -4253,16 +4625,9 @@ export default {
               color_id: item.value,
               weave_number: this.weaveNumber[index],
               color_scheme: item.colorWeft.map((itemColor) => {
-                if (itemColor.name !== '空梭') {
-                  return {
-                    name: itemColor.name,
-                    value: itemColor.color
-                  }
-                } else {
-                  return {
-                    name: null,
-                    value: null
-                  }
+                return {
+                  name: itemColor.name,
+                  value: itemColor.color
                 }
               })
             }
@@ -4375,7 +4740,7 @@ export default {
           GLRepeat: this.GLRepeat
         }
       }
-      this.loading = true
+      // this.loading = true
       craft.create(formData).then((res) => {
         this.loading = false
         if (res.data.code === 200) {
@@ -4385,7 +4750,7 @@ export default {
             this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新工艺单<span style="color:#1A95FF">' + res.data.data.product_info.product_code + '</span>(' + res.data.data.product_info.category_info.product_category + '/' + res.data.data.product_info.type_name + '/' + res.data.data.product_info.style_name + '/' + res.data.data.product_info.flower_id + ')'
             this.msgSwitch = true
           } else {
-            this.$router.push('/craft/craftDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+            this.$router.push('/craft/craftDetail/' + (this.chooseId || this.$route.params.id) + '/' + (this.chooseType || this.$route.params.type))
           }
         }
       })
@@ -4456,34 +4821,39 @@ export default {
     }
   },
   mounted () {
-    let sampleOrProduct = this.$route.params.type === '1' ? product : sample
-    Promise.all([sampleOrProduct.detail({
-      id: this.$route.params.id
-    }), yarn.list(),
+    Promise.all([yarn.list(),
     craftConfig.getAll(),
     yarnColor.list(),
     material.list(),
     penetrationMethod.list(),
     process.list({
       type: 2
-    })
-    ]).then((res) => {
-      this.productInfo = res[0].data.data
-      this.yarn.yarnArr = res[1].data.data.map((item) => {
+    })]).then((res) => {
+      this.yarn.yarnArr = res[0].data.data.map((item) => {
         return {
           value: item.name
         }
       })
-      this.colourArr = this.productInfo.color
-      this.sideArr = res[2].data.data.side
-      this.modeleArr = res[2].data.data.type
-      this.methodArr = res[2].data.data.method
-      this.colorArr = res[3].data.data
-      this.commonPMArr = res[5].data.data
-      this.gongxuArr = res[6].data.data
-      this.loading = false
+      this.sideArr = res[1].data.data.side
+      this.modeleArr = res[1].data.data.type
+      this.methodArr = res[1].data.data.method
+      this.colorArr = res[2].data.data
+      this.commonPMArr = res[4].data.data
+      this.gongxuArr = res[5].data.data
+      if (this.$route.params.id === 'noProId') {
+        this.loading = false
+      } else {
+        let sampleOrProduct = this.$route.params.type === '1' ? product : sample
+        sampleOrProduct.detail({
+          id: this.$route.params.id
+        }).then((res) => {
+          this.productInfo = res.data.data
+          this.colourArr = this.productInfo.color
+          this.loading = false
+        })
+      }
     })
-
+    this.getList()
     this.tableHot.warp = new Handsontable(this.$refs.warp, this.tableData.warp)
     this.tableHot.weft = new Handsontable(this.$refs.weft, this.tableData.weft)
     this.tableHot.warpBack = new Handsontable(this.$refs.warpBack, this.tableData.warpBack)
