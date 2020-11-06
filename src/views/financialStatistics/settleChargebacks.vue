@@ -90,6 +90,19 @@
                   :label="item.name"
                   :value="item.id"></el-option>
               </el-select>
+              <el-select v-model="huobi"
+                style="width:180px"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选货币">
+                <el-option value=""
+                  label="全部"></el-option>
+                <el-option value="RMB"
+                  label="人民币"></el-option>
+                <el-option value="USD"
+                  label="美元"></el-option>
+              </el-select>
               <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
@@ -133,7 +146,7 @@
             <div class="col">{{item.client_name}}</div>
             <div class="col">{{item.methods}}</div>
             <div class="col">{{item.order_code_str}}</div>
-            <div class="col right">{{$toFixed(item.settle_price || item.deduct_price || 0)}}元</div>
+            <div class="col right">{{$toFixed(item.settle_price || item.deduct_price || 0)}}{{huobi==='RMB'?'元':huobi==='USD'?'美元':''}}</div>
             <div class="col">{{item.user_name}}</div>
             <div class="col"
               :class="item.status === 1 ? 'orange' : item.status === 2  ? 'green' : 'red'">{{item.status === 1 ? '待审核' : item.status === 2  ? '已通过' : '已驳回'}}</div>
@@ -144,7 +157,7 @@
           </div>
           <div class="row">
             <span class="col">合计：</span>
-            <span class="col">{{$toFixed(totalPrice)}}元</span>
+            <span class="col">{{$toFixed(totalPrice)}}{{huobi==='RMB'?'元':huobi==='USD'?'美元':''}}</span>
             <span class="col"></span>
             <span class="col"></span>
             <span class="col"></span>
@@ -173,6 +186,7 @@ import { settle, chargebacks, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
+      huobi: '',
       loading: true,
       keyword: '',
       client_id: '',
@@ -226,10 +240,10 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/financialStatistics/settleChargebacks/page=' + pages + '&&keyword=' + this.$strToAscII(this.keyword) + '&&clientId=' + this.client_id + '&&type=' + this.type + '&&status=' + this.status)
+      this.$router.push('/financialStatistics/settleChargebacks/page=' + pages + '&&keyword=' + this.$strToAscII(this.keyword) + '&&clientId=' + this.client_id + '&&type=' + this.type + '&&status=' + this.status + '&&huobi=' + this.huobi)
     },
     reset () {
-      this.$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')
+      this.$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=&&huobi=')
     },
     getList () {
       this.loading = true
@@ -242,6 +256,7 @@ export default {
           client_type: this.client_type,
           start_time: this.date ? this.date[0] : '',
           end_time: this.date ? this.date[1] : '',
+          currency_type: this.huobi,
           status: this.status,
           sort: this.sortFn
         }).then(res => {
@@ -265,6 +280,7 @@ export default {
           client_type: this.client_type,
           start_time: this.date ? this.date[0] : '',
           end_time: this.date ? this.date[1] : '',
+          currency_type: this.huobi,
           status: this.status,
           sort: this.sortFn
         }).then(res => {
@@ -288,6 +304,7 @@ export default {
       this.type = params.type
       this.status = params.status
       this.client_id = params.clientId.split(',')
+      this.huobi = params.huobi || ''
     }
   },
   created () {

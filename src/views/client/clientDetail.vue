@@ -255,6 +255,19 @@
                     :label="item.name"
                     :value="item.id"></el-option>
                 </el-select>
+                <el-select v-model="huobi"
+                  style="width:180px"
+                  class="filter_item"
+                  @change="getList(1)"
+                  clearable
+                  placeholder="筛选货币">
+                  <el-option value=""
+                    label="全部"></el-option>
+                  <el-option value="RMB"
+                    label="人民币"></el-option>
+                  <el-option value="USD"
+                    label="美元"></el-option>
+                </el-select>
                 <el-date-picker v-model="date"
                   style="width:250px"
                   class="filter_item"
@@ -2346,6 +2359,7 @@ export default {
   data () {
     return {
       loading: true,
+      huobi: '',
       companyType: companyType,
       clientInfo: {
         type: [],
@@ -3245,7 +3259,8 @@ export default {
             start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
             end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
             client_id: this.$route.params.id,
-            group_id: this.group_id
+            group_id: this.group_id,
+            currency_type: this.huobi
           }).then((res) => {
             this.total = res.data.meta.total
             this.list = res.data.data.map(itemM => {
@@ -3264,7 +3279,8 @@ export default {
             start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
             end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
             client_id: this.$route.params.id,
-            group_id: this.group_id
+            group_id: this.group_id,
+            currency_type: this.huobi
           }).then((res) => {
             this.total = res.data.meta.total
             this.list = res.data.data.map(itemM => {
