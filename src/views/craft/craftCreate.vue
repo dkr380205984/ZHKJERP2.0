@@ -1494,7 +1494,7 @@
               <span class="text">下机时间</span>
             </div>
             <div class="content">
-              <el-date-picker v-model="date"
+              <el-date-picker v-model="xiajidate"
                 value-format="yyyy-MM-dd"
                 type="date"
                 placeholder="请选择下单日期">
@@ -1890,6 +1890,7 @@ export default {
       chooseId: '',
       chooseType: '',
       date: '',
+      xiajidate: '',
       gongxuArr: [],
       showGLFlag: false,
       GLYulan: [], // 预览纹版图
@@ -4290,6 +4291,8 @@ export default {
       return array
     },
     submit (ifCaogao) {
+      console.log(this.xiajidate)
+      return
       // 获取合并单元格信息
       let errorInput = false
       if (ifCaogao === '草稿' && !this.chooseId && this.$router.params.id === 'noProId') {
@@ -4616,7 +4619,7 @@ export default {
           reed_method: this.warpInfo.reed_method,
           reed_width: this.warpInfo.reed_width,
           sum_up: this.warpInfo.sum_up,
-          contract_ratio: this.date, // 经向缩率废弃字段，给下机时间用
+          contract_ratio: this.xiajidate, // 经向缩率废弃字段，给下机时间用
           additional_data: this.warpInfo.additional_data.join(',') // 穿综法备注改工序字段
         },
         weft_data: {

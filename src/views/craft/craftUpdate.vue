@@ -2011,9 +2011,13 @@ export default {
     // 匹配下配色名称
     filterColor (id) {
       if (id) {
-        return this.colourArr.find((item) => {
+        let finded = this.colourArr.find((item) => {
           return Number(item.color_id) === Number(id)
-        }).color_name
+        })
+        if (!finded) {
+          this.$message.error('该工艺单配色方案需要重新选择，请重选配色方案！！！！')
+        }
+        return finded ? finded.color_name : '请重新选择配色方案'
       } else {
         return '未选择'
       }
@@ -3367,7 +3371,7 @@ export default {
           })
         }
       })
-      this.date = Number(this.warpInfo.contract_ratio) === 100 ? '' : this.warpInfo.contract_ratio
+      this.date = Number(this.warpInfo.contract_ratio) === 100 || Number(this.warpInfo.contract_ratio) === 0 ? '' : this.warpInfo.contract_ratio
       this.weftCmp = data.warp_data.weight_calculate_formula.toString()
       this.yarn.yarnWarp = this.warpInfo.material_data.find((item) => item.type_material === 1).material_name
       this.yarn.yarnWeft = this.weftInfo.material_data.find((item) => item.type_material === 1).material_name
