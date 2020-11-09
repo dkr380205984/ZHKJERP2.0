@@ -85,7 +85,7 @@
       </div>
       <div class="print_remark">
         <div class="print_row noBorder">
-          <span class="row_item w180 center">备注</span>
+          <span class="row_item w180 center">合同备注</span>
           <span class="row_item left remark_span"
             v-html="desc"></span>
         </div>
@@ -102,7 +102,7 @@
           :precision="1"
           :step="0.1"
           :min='1'
-          :max="2"
+          :max="3"
           @change="setDefaultMultiple"></el-input-number>
       </div>
     </div>
@@ -121,7 +121,7 @@ export default {
       desc: '',
       isHideClient: false,
       contact_name: window.sessionStorage.getItem('user_name'),
-      contact_tel: window.localStorage.getItem('zhUsername'),
+      contact_tel: window.sessionStorage.getItem('telephone') || window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       productInfo: [],
       materialInfo: [],

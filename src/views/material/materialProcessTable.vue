@@ -61,9 +61,14 @@
           </template>
         </template>
       </div>
-      <div class="print_remark">
+      <div class="print_remark"
+        style="flex-direction:column">
         <div class="print_row noBorder">
           <span class="row_item center w180">备注</span>
+          <span class="row_item left">{{processInfo|filterDesc}}</span>
+        </div>
+        <div class="print_row">
+          <span class="row_item center w180">合同备注</span>
           <span class="row_item left remark_span"
             v-html="remark"></span>
         </div>
@@ -79,7 +84,7 @@ export default {
     return {
       companyName: window.sessionStorage.getItem('company_name'),
       user_name: window.sessionStorage.getItem('user_name'),
-      user_tel: window.localStorage.getItem('zhUsername'),
+      user_tel: window.sessionStorage.getItem('telephone') || window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
       orderInfo: [],
       processInfo: [],
@@ -111,7 +116,7 @@ export default {
             let logId = this.$route.query.logId.split('-')
             processInfo = processInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
           }
-          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }] } }).map(item => {
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }, { name: 'desc' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item
           })
@@ -142,7 +147,7 @@ export default {
             let logId = this.$route.query.logId.split('-')
             processInfo = processInfo.filter(itemF => logId.indexOf(itemF.id.toString()) !== -1)
           }
-          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }] } }).map(item => {
+          this.processInfo = this.$mergeData(processInfo, { mainRule: 'material_name', childrenName: 'color_info', childrenRule: { mainRule: ['material_color/color', 'price'], otherRule: [{ name: 'weight/number', type: 'add' }, { name: 'deliver_time' }, { name: 'process_type' }, { name: 'desc' }] } }).map(item => {
             item.total_price = item.color_info.map(val => this.$toFixed((val.number * val.price) || 0)).reduce((a, b) => a + b)
             return item
           })
@@ -173,6 +178,13 @@ export default {
         this.qrCodeUrl = url
       }
     })
+  },
+  filters: {
+    filterDesc (data) {
+      return [...new Set(data.map(item => {
+        return item.color_info.map(itemC => itemC.desc)
+      }).flat())].join(';')
+    }
   }
 }
 </script>

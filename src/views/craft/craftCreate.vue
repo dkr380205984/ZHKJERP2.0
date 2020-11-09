@@ -140,9 +140,25 @@
             <div class="leftCtn">
               <span class="label">筛选条件：</span>
               <el-input class="inputs"
-                placeholder="请输入编号查询"
+                placeholder="请输入编号或名称查询"
                 v-model="searchCode"
                 @change="searchCodeChange"></el-input>
+              <el-input class="inputs"
+                placeholder="请输入客户款号查询"
+                v-model="searchStyleCode"
+                @change="searchStyleCodeChange"></el-input>
+              <el-select v-model="searchUser"
+                class="inputs"
+                @change="searchUserChange"
+                filterable
+                clearable
+                placeholder="筛选创建人">
+                <el-option v-for="(item,index) in userList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="inputs"
@@ -167,6 +183,7 @@
             </div>
           </div>
           <div class="list"
+            v-loading='list_loading'
             style="min-height:330px">
             <div class="title">
               <div class="col">
@@ -214,6 +231,9 @@
               </div>
               <div class="col">
                 <span class="text">名称</span>
+              </div>
+              <div class="col">
+                <span class="text">客户款号</span>
               </div>
               <div class="col middle">
                 <span class="text">图片</span>
@@ -286,10 +306,13 @@
             <div class="row"
               v-for="(item,index) in productList"
               :key="index">
-              <div class="col">{{item.product_code}}</div>
+              <div class="col"
+                style="cursor: pointer;color:#1A95FF"
+                @click="$openUrl(product_type ? `/product/productDetail/${item.id}` : `/sample/sampleDetail/${item.id}`)">{{item.product_code}}</div>
               <div class="col">{{item|filterType}}</div>
               <div class="col">{{item.flower_id}}</div>
               <div class="col">{{item.name}}</div>
+              <div class="col">{{item.style_code}}</div>
               <div class="col">
                 <zh-img-list :list="item.image"></zh-img-list>
               </div>
@@ -311,7 +334,8 @@
               </div>
               <div class="col">
                 <span class="opr"
-                  @click="checkedPro(item)">{{item.choosed?'已选择':'添加工艺单'}}</span>
+                  :class="{'green':item.id === chooseId}"
+                  @click="checkedPro(item)">{{item.id === chooseId?'已选择':'添加工艺单'}}</span>
               </div>
             </div>
           </div>
@@ -327,6 +351,73 @@
         </div>
       </div>
     </template>
+    <!-- <template v-if="chooseId">
+      <div class="module">
+        <div class="titleCtn">
+          <span class="title">{{chooseType===1?'产':'样'}}品信息</span>
+          <zh-message :msgSwitch="msgSwitch"
+            :url="msgUrl"
+            :content="msgContent"></zh-message>
+        </div>
+        <div class="detailCtn">
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">{{chooseType === 1 ?'产':'样'}}品编号：</span>
+              <span class="text">{{productInfo.product_code}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{chooseType === 1 ?'产':'样'}}品名称：</span>
+              <span class="text"
+                :class="{'blue':productInfo.name}">{{productInfo.name?productInfo.name:'无'}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{chooseType === 1 ?'产':'样'}}品品类：</span>
+              <span class="text">{{productInfo.category_name+'/'+productInfo.type_name+'/'+productInfo.style_name}}</span>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn flex3">
+              <span class="label">{{chooseType === 1 ?'产':'样'}}品成分：</span>
+              <span class="text">{{productInfo.component|filterMaterials}}</span>
+            </div>
+            <div class="colCtn">
+              <span class="label">{{chooseType === 1 ?'产':'样'}}品配色：</span>
+              <span class="text">
+                <span v-for="(item,index) in productInfo.color"
+                  :key="index">{{(index+1) + '. ' +item.color_name + ' '}}
+                </span>
+              </span>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">{{chooseType===1?'产':'样'}}品规格：</span>
+              <div class="lineCtn">
+                <div class="line"
+                  v-for="(item,index) in productInfo.size"
+                  :key="index">{{item.size_name+ ' ' + item.size_info + 'cm ' + item.weight + 'g'}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">备注信息：</span>
+              <span class="text"
+                :class="{'blue':productInfo.description}">{{productInfo.description?productInfo.description:'无'}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="detailCtn"
+          v-if="!productInfo.category_id">
+          <div class="rowCtn">
+            <div class="colCtn">
+              <span class="label">配件名称：</span>
+              <span class="text">{{productInfo.part_title || productInfo.name}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template> -->
     <div class="module">
       <div class="titleCtn">
         <span class="title">原料经向</span>
@@ -1497,7 +1588,7 @@
               <el-date-picker v-model="xiajidate"
                 value-format="yyyy-MM-dd"
                 type="date"
-                placeholder="请选择下单日期">
+                placeholder="请选择下机时间">
               </el-date-picker>
             </div>
           </div>
@@ -1860,7 +1951,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/handsontable@7.3.0/dist/handsontable.full.min.js"></script>
 <script>
-import { product, sample, yarn, yarnColor, material, craftConfig, penetrationMethod, craft, process } from '@/assets/js/api.js'
+import { product, sample, yarn, yarnColor, material, craftConfig, penetrationMethod, craft, process, auth } from '@/assets/js/api.js'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
 import 'handsontable/dist/handsontable.full.css'
@@ -1872,9 +1963,13 @@ export default {
   },
   data () {
     return {
+      list_loading: true,
       product_type: true,
       productList: [],
       searchCode: '',
+      searchStyleCode: '',
+      searchUser: '',
+      userList: [],
       searchTypeFlag: false,
       type: [],
       typeArr: [],
@@ -3078,6 +3173,8 @@ export default {
             type_id: this.type_id,
             style_id: this.style_id,
             flower_id: this.flower_id,
+            user_name: this.searchUser,
+            style_code: this.searchStyleCode,
             has_plan: this.has_plan,
             has_craft: this.has_craft,
             has_quotation: this.has_quotation,
@@ -3099,6 +3196,8 @@ export default {
             type_id: this.type_id,
             style_id: this.style_id,
             flower_id: this.flower_id,
+            user_name: this.searchUser,
+            style_code: this.searchStyleCode,
             has_plan: this.has_plan,
             has_craft: this.has_craft,
             has_quotation: this.has_quotation,
@@ -3115,7 +3214,7 @@ export default {
       })
     },
     getList () {
-      // this.loading = true
+      this.list_loading = true
       this.getApi().then((res) => {
         if (this.product_type) {
           this.productList = res.data.data
@@ -3153,7 +3252,7 @@ export default {
           })
           this.total = res.data.meta.total
         }
-        this.loading = false
+        this.list_loading = false
       })
     },
     checkedPro (product) {
@@ -3165,11 +3264,31 @@ export default {
         this.colourArr = product.color
         this.chooseId = product.id
         this.chooseType = this.product_type ? 1 : 2
+        // this.productInfo = {
+        //   product_code:product.product_code,
+        //   name:product.name,
+        //   category_name:product.product_category,
+        //   type_name:product.type_name,
+        //   style_name:product.style_name,
+        //   color:product.color,
+        //   size:product.size,
+        //   description:product.
+        // }
         this.$message.success('选择成功，请完善工艺单信息')
       }
     },
     // 筛选产品编号
     searchCodeChange (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    // 筛选客户款号
+    searchStyleCodeChange (newVal) {
+      this.pages = 1
+      this.getList()
+    },
+    // 筛选创建人
+    searchUserChange (newVal) {
       this.pages = 1
       this.getList()
     },
@@ -4831,7 +4950,9 @@ export default {
     penetrationMethod.list(),
     process.list({
       type: 2
-    })]).then((res) => {
+    }),
+    auth.list()
+    ]).then((res) => {
       this.yarn.yarnArr = res[0].data.data.map((item) => {
         return {
           value: item.name
@@ -4843,6 +4964,7 @@ export default {
       this.colorArr = res[2].data.data
       this.commonPMArr = res[4].data.data
       this.gongxuArr = res[5].data.data
+      this.userList = res[6].data.data
       if (this.$route.params.id === 'noProId') {
         this.loading = false
       } else {

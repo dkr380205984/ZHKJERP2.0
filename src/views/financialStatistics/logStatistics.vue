@@ -2661,6 +2661,33 @@
         </div>
       </div>
     </div>
+    <!-- 导出月度或年度报表数据窗口 -->
+    <div class="popup"
+      v-if="importType">
+      <div class="main"
+        style="width:300px">
+        <div class="title">
+          {{`选择需要导出${(importType === 'month' && '月度') || ''}${(importType === 'year' && '年度') || ''}报表的${(importType === 'month' && '月份') || ''}${(importType === 'year' && '年份') || ''}`}}
+          <i class="el-icon-close"
+            @click="importType = null"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <el-date-picker v-model="selectImportDate"
+              :type="importType || 'month'"
+              :placeholder="`选择${importType === 'year' ? '年' : '月'}`"
+              :picker-options="pickerOptions">
+            </el-date-picker>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="importType = null">取消</div>
+          <div class="btn btnBlue"
+            @click="importStart">开始</div>
+        </div>
+      </div>
+    </div>
     <!-- 导所有数据蒙层 -->
     <div class="popup"
       v-if="downloading"
@@ -2672,6 +2699,10 @@
     <div class="bottomFixBar">
       <div class="main">
         <div class="btnCtn">
+          <div class="btn btnBlue"
+            @click="importType = 'year',selectImportDate = new Date()">导出年度报表</div>
+          <div class="btn btnBlue"
+            @click="importType = 'month',selectImportDate = new Date()">导出月度报表</div>
           <div class="btn btnBlue"
             @click="downloadAllLog()">导出所有数据</div>
           <div class="btn btnBlue"
@@ -2790,7 +2821,15 @@ export default {
       // 2020-09-01修改新增数据
       openHiddleFilter: false,
       group_id: '',
-      groupList: []
+      groupList: [],
+      // 导出类型
+      importType: null,
+      selectImportDate: '',
+      pickerOptions: {
+        disabledDate: (date) => {
+          return !(new Date(date).getTime() < new Date().getTime())
+        }
+      }
     }
   },
   computed: {
@@ -3495,7 +3534,7 @@ export default {
         this.$message.warning(`未找到“${this.type}”相关数据`)
       }
     },
-    downloadAllLog (data = [], total, page = 1, limit = 50) {
+    downloadAllLog (data = [], total, page = 1, limit = 50, startDate, endDate) {
       this.downloading = true
       this.propgress = this.$toFixed(page / Math.ceil(total / limit) * 100)
       if (this.type === '物料订购调取') {
@@ -3508,8 +3547,8 @@ export default {
           order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3538,7 +3577,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3551,8 +3590,8 @@ export default {
           order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3580,7 +3619,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3593,8 +3632,8 @@ export default {
           order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[2],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           type: this.operate_type,
           group_id: this.group_id
@@ -3620,7 +3659,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3633,8 +3672,8 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3663,7 +3702,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3676,8 +3715,8 @@ export default {
           order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3698,7 +3737,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3711,8 +3750,8 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3743,7 +3782,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3757,8 +3796,8 @@ export default {
           production_type: this.production_type,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[2],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3783,7 +3822,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3797,8 +3836,8 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[2],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3823,7 +3862,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3836,8 +3875,8 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3867,7 +3906,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3879,8 +3918,8 @@ export default {
           page: page,
           order_code: this.order_code,
           product_code: this.product_code,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id,
           client_id: this.client_id && this.client_id[1]
@@ -3927,7 +3966,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3940,8 +3979,8 @@ export default {
           order_code: this.order_code,
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -3969,7 +4008,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -3982,8 +4021,8 @@ export default {
           order_code: this.order_code,
           product_code: this.product_code,
           client_id: this.client_id,
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user,
           group_id: this.group_id
         }).then((res) => {
@@ -4010,7 +4049,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -4022,8 +4061,8 @@ export default {
           page: page,
           product_code: this.product_code,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           operate_user: this.operate_user
         }).then((res) => {
           data.push(...res.data.data.map(item => {
@@ -4048,7 +4087,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -4056,8 +4095,8 @@ export default {
         materialOrder.allLog({
           material_name: this.material_name,
           client_id: this.client_id && this.client_id[1],
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+          start_time: startDate || ((this.date && this.date.length > 0) ? this.date[0] : ''),
+          end_time: endDate || ((this.date && this.date.length > 0) ? this.date[1] : ''),
           stock_id: this.stock_id,
           limit: limit,
           page: page
@@ -4080,7 +4119,7 @@ export default {
             this.downloading = false
           } else {
             setTimeout(() => {
-              this.downloadAllLog(data, total, page + 1, limit)
+              this.downloadAllLog(data, total, page + 1, limit, startDate, endDate)
             }, 1000)
           }
         })
@@ -4104,6 +4143,24 @@ export default {
         }
       }
       return flag
+    },
+    // 导出年度或月度窗口确定
+    importStart () {
+      if (!this.selectImportDate) {
+        this.$message.warning('请选择')
+        return
+      }
+      let year = new Date(this.selectImportDate).getFullYear()
+      if (this.importType === 'year') {
+        this.importType = null
+        this.downloadAllLog([], null, 1, 50, `${year}-01-01`, `${year}-12-31`)
+      } else if (this.importType === 'month') {
+        this.importType = null
+        let month = new Date(this.selectImportDate).getMonth()
+        this.downloadAllLog([], null, 1, 50, this.$getTime(new Date(year, month, 1)), this.$getTime(new Date(year, month + 1, 0)))
+      } else {
+        this.$message.warning('未知错误，请刷新重试或联系管理员')
+      }
     }
   },
   created () {
