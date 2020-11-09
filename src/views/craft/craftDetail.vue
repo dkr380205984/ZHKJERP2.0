@@ -431,7 +431,8 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">穿综备注：</div>
-            <div class="text"> {{remarkPM?remarkPM:'无'}}</div>
+            <div class="text"
+              style="word-break: break-word;"> {{remarkPM?remarkPM:'无'}}</div>
           </div>
         </div>
       </div>
@@ -1464,8 +1465,6 @@ export default {
     getFlatTable (table, type, merge) {
       let tableArr = JSON.parse(table)
       let mergeTable = JSON.parse(this[type][merge])
-      console.log(tableArr)
-      console.log(mergeTable)
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
       // 处理合并项的合并信息
@@ -1800,7 +1799,6 @@ export default {
       // 计算克重信息
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
-      console.log(this.warpInfo.warp_rank.merge_data)
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
         if (!item.GLorPM) {
           item.GLorPM = 'Ⅰ'
@@ -1842,7 +1840,6 @@ export default {
         this.colorNumber.weft[item.color] = this.colorNumber.weft[item.color] ? this.colorNumber.weft[item.color] : 0
         this.colorNumber.weft[item.color] += Number(item.number)
       })
-      console.log(this.colorNumber, warpTable)
 
       this.warpInfo.material_data.forEach((item) => {
         item.apply.forEach((itemChild) => {
