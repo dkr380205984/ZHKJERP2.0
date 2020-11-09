@@ -5,10 +5,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">基本信息</span>
-      </div>
-      <div class="detailCtn">
-        <div class="floatRight">
-          <div class="btnCtn">
+        <div style="margin:10px 0;float:right">
+          <div class="btnCtn"
+            style="display:flex">
             <div class="btn noBorder">预览标签
               <div class="printInfo">
                 <div class="items">
@@ -60,15 +59,21 @@
               @click="printFlag = true">打印标签</div>
           </div>
         </div>
+      </div>
+      <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn flex3">
             <span class="label">产品编号：</span>
             <span class="text">{{detail.product_code}}</span>
           </div>
           <div class="colCtn flex3">
-            <span class="label">名称/款号：</span>
+            <span class="label">产品名称：</span>
             <span class="text"
               :class="{'blue':detail.name}">{{detail.name?detail.name:'无'}}</span>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">产品款号：</span>
+            <span class="text">{{detail.style_code?detail.style_code:'无'}}</span>
           </div>
         </div>
         <div class="rowCtn">

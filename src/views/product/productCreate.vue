@@ -642,6 +642,8 @@ export default {
             }
           })
           this.needleType = productInfo.needle_type
+          this.product_code_user = productInfo.product_code
+          this.model_code = productInfo.style_code
           this.loading = false
         }
       })

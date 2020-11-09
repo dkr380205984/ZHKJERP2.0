@@ -71,29 +71,58 @@
               <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
-            <!-- <div class="filter_line"
-              :class="openHiddleFilter ? false : 'hiddle'">
-              <el-select v-model="group_id"
-                class="filter_item"
-                @change="changeRouter(1)"
-                clearable
-                placeholder="筛选小组">
-                <el-option v-for="(item,index) in groupArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div> -->
           </div>
-          <!-- <div class="rightCtn"
-            @click="openHiddleFilter = !openHiddleFilter">
-            {{openHiddleFilter ? '收起' : '展开'}}
-            <span class="el-icon-arrow-down openIcon"
-              :class="openHiddleFilter ? 'active' : false"></span>
-          </div> -->
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="140">
+          <template slot="codeCheck"
+            slot-scope="scope">
+            <el-checkbox style="margin-right:8px"
+              v-model="scope.itemOrder.checked"
+              :disabled="scope.itemOrder.has_plan === 0"
+              @change="checkedChange(scope.itemOrder,$event)"></el-checkbox>
+          </template>
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex"
+              v-if="material_type==='1'">
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.material_push_progress.yl.push>0,'green':scope.itemOrder.material_push_progress.yl.push>100}">
+                <div class="state"></div>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.material_push_progress.yl.pop>0,'green':scope.itemOrder.material_push_progress.yl.pop>100}">
+                <div class="state"></div>
+                <span class="name">出</span>
+              </div>
+            </div>
+            <div style="display:flex"
+              v-else>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.material_push_progress.fl.push>0,'green':scope.itemOrder.material_push_progress.fl.push>100}">
+                <div class="state"></div>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.material_push_progress.fl.pop>0,'green':scope.itemOrder.material_push_progress.fl.pop>100}">
+                <div class="state"></div>
+                <span class="name">出</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/materialStock/materialGoStockDetail/'+ scope.itemOrder.id + '/' + material_type + '/' + (orderType ? '1' : '2'))">
+                {{material_type==='1'?'原':'辅'}}料出入库
+              </span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex04">
               <span class="text"></span>
@@ -110,9 +139,6 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <!-- <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div> -->
             <div class="col flex12">
               <span class="text">入库状态(原)</span>
             </div>
@@ -139,16 +165,6 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <!-- <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div> -->
-            <!-- <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.y_percent>0?'green':'orange'">
-                <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.y_percent>0?'已采购':'未采购'}}</span>
-              </div>
-            </div> -->
             <div class="col flex12">
               <div class="col flex12"
                 v-if="material_type==='1'">
@@ -187,7 +203,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

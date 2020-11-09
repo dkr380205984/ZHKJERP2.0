@@ -137,7 +137,7 @@
               <span class="text">花型</span>
             </div>
             <div class="col">
-              <span class="text">名称/款号</span>
+              <span class="text">名称</span>
             </div>
             <div class="col">
               <span class="text middle">图片</span>
@@ -163,6 +163,7 @@
               style="flex:1.5">{{item.category_name + ' / ' + item.type_name + ' / ' + item.style_name}}</div>
             <div class="col">{{item.flower_name}}</div>
             <div class="col">{{item.name?item.name:'无'}}</div>
+            <div class="col">{{item.style_code?item.style_code:'无'}}</div>
             <div class="col">
               <zh-img-list :list="item.image"></zh-img-list>
             </div>

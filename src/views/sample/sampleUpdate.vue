@@ -14,16 +14,43 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
-              <span class="text">名称/款号</span>
+              <span class="text">样品编号
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="选填：未填写则使用系统默认生成编号"
+                  placement="top-start">
+                  <span class="el-icon-question"></span>
+                </el-tooltip>
+              </span>
             </div>
             <div class="content">
-              <zh-input errorMsg="样品名称不能超过10个字"
-                placeholder="请输入样品名称或款号"
-                maxLength="10"
+              <zh-input :placeholder="`${sampleCode}(默认)`"
+                v-model="product_code">
+              </zh-input>
+            </div>
+          </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">样品名称</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入样品名称"
                 v-model="name">
               </zh-input>
             </div>
           </div>
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">客户款号</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入客户款号"
+                v-model="model_code">
+              </zh-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">样品品类</span>
@@ -52,8 +79,6 @@
               </el-select>
             </div>
           </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">针型名称</span>
@@ -286,6 +311,7 @@ export default {
       desc: '',
       postData: { token: '' },
       fileArr: [],
+      model_code: '',
       // 配件类型从辅料里面选
       materialArr: [],
       needleType: '',
@@ -467,7 +493,9 @@ export default {
       // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
       let formData = {
         id: this.$route.params.id,
-        sample_product_code: this.sample_product_code,
+        sample_product_code: this.product_code || this.sample_code.join(''),
+        is_user_input: this.product_code ? 1 : 0,
+        style_code: this.model_code,
         name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
@@ -608,6 +636,7 @@ export default {
           ingredient_value: item.number
         }
       })
+      this.model_code = productInfo.style_code
       this.needleType = productInfo.needle_type
       this.loading = false
     })

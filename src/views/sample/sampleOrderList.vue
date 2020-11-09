@@ -208,7 +208,53 @@
           <div class="btn btnBlue"
             @click="$router.push('/sample/sampleOrderCreate')">新建样单</div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          orderType="2"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn"
+                :class="{'green':scope.itemOrder.material_push_progress.yl.push>0}">
+                <div class="state"></div>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'green':scope.itemOrder.material_push_progress.yl.pop>0}">
+                <div class="state"></div>
+                <span class="name">出</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'green':fuckState(scope.itemOrder,'织片')}">
+                <div class="state"></div>
+                <span class="name">织</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'green':fuckState(scope.itemOrder,'套口')}">
+                <div class="state"></div>
+                <span class="name">套</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'green':fuckState(scope.itemOrder,'其他')}">
+                <div class="state"></div>
+                <span class="name">其</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':scope.itemOrder.product_inspection_progress>0,'green':scope.itemOrder.product_inspection_progress>=100}">
+                <div class="state"></div>
+                <span class="name">检</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/sample/sampleOrderDetail/' + (scope.itemOrder.pid || scope.itemOrder.id))">详情</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col">
               <span class="text">样单标题</span>
@@ -222,9 +268,6 @@
             <div class="col">
               <span class="text">样单数量(件)</span>
             </div>
-            <!-- <div class="col">
-              <span class="text">负责小组</span>
-            </div> -->
             <div class="col">
               <span class="text">流程进度</span>
             </div>
@@ -249,7 +292,6 @@
                 order_type='sample'></zh-img-list>
             </div>
             <div class="col">{{itemOrder.number}}</div>
-            <!-- <div class="col">{{itemOrder.group_name}}</div> -->
             <div class="col">
               <div class="stateCtn"
                 :class="{'green':itemOrder.material_push_progress.yl.push>0}">
@@ -294,24 +336,9 @@
             <div class="col middle">
               <span class="opr"
                 @click="$router.push('/sample/sampleOrderDetail/' + (itemOrder.pid || itemOrder.id))">详情</span>
-              <!-- <span class="opr">
-                <el-dropdown @command="handleCommand($event,itemOrder.id)">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-arrow-down el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'>
-                      <span class="updated">修改</span>
-                    </el-dropdown-item>
-                    <el-dropdown-item command='delete'>
-                      <span class="delete">删除</span>
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </span> -->
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

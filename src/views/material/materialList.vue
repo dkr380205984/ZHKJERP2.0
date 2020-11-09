@@ -76,18 +76,27 @@
         <order-list :list="list"
           :orderType="orderType?1:2"
           oprWidth="140">
+          <template slot="codeCheck"
+            slot-scope="scope">
+            <el-checkbox style="margin-right:8px"
+              v-model="scope.itemOrder.checked"
+              :disabled="scope.itemOrder.has_plan === 0"
+              @change="checkedChange(scope.itemOrder,$event)"></el-checkbox>
+          </template>
           <template slot="state"
             slot-scope="scope">
             <div class="stateCtn rowFlex"
               v-if="material_type==='1'"
               :class="scope.itemOrder.material_order_progress.yl>0?'green':'orange'">
-              <div class="state"></div>
+              <div class="state"
+                style="margin-left:0"></div>
               <span class="name">{{scope.itemOrder.material_order_progress.yl>0?'已采购':'未采购'}}</span>
             </div>
             <div class="stateCtn rowFlex"
               v-if="material_type==='2'"
               :class="scope.itemOrder.material_order_progress.fl>0?'green':'orange'">
-              <div class="state"></div>
+              <div class="state"
+                style="margin-left:0"></div>
               <span class="name">{{scope.itemOrder.material_order_progress.fl>0?'已采购':'未采购'}}</span>
             </div>
           </template>
