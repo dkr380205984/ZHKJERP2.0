@@ -71,29 +71,45 @@
               <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
-            <!-- <div class="filter_line"
-              :class="openHiddleFilter ? false : 'hiddle'">
-              <el-select v-model="group_id"
-                class="filter_item"
-                @change="changeRouter(1)"
-                clearable
-                placeholder="筛选小组">
-                <el-option v-for="(item,index) in groupArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div> -->
           </div>
-          <!-- <div class="rightCtn"
-            @click="openHiddleFilter = !openHiddleFilter">
-            {{openHiddleFilter ? '收起' : '展开'}}
-            <span class="el-icon-arrow-down openIcon"
-              :class="openHiddleFilter ? 'active' : false"></span>
-          </div> -->
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div class="stateCtn rowFlex"
+              v-if="material_type==='1'"
+              :class="scope.itemOrder.material_order_progress.yl>0?'green':'orange'">
+              <div class="state"></div>
+              <span class="name">{{scope.itemOrder.material_order_progress.yl>0?'已采购':'未采购'}}</span>
+            </div>
+            <div class="stateCtn rowFlex"
+              v-if="material_type==='2'"
+              :class="scope.itemOrder.material_order_progress.fl>0?'green':'orange'">
+              <div class="state"></div>
+              <span class="name">{{scope.itemOrder.material_order_progress.fl>0?'已采购':'未采购'}}</span>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                style="padding-right:0"
+                v-if="material_type==='1'"
+                @click="$router.push('/material/materialDetail/'+scope.itemOrder.id+'/1'+ '/' + (orderType ? '1' : '2') + '/normal')">
+                原料采购
+              </span>
+              <span class="opr"
+                style="padding-right:0"
+                v-if="material_type==='2'"
+                @click="$router.push('/material/materialDetail/'+scope.itemOrder.id+'/2'+ '/' + (orderType ? '1' : '2') + '/normal')">
+                辅料采购
+              </span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex04">
               <span class="text"></span>
@@ -113,9 +129,6 @@
             <div class="col flex12">
               <span class="text">采购状态</span>
             </div>
-            <!-- <div class="col flex12">
-              <span class="text">采购进度(辅)</span>
-            </div> -->
             <div class="col">
               <span class="text">下单时间</span>
             </div>
@@ -139,20 +152,6 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <!-- <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.y_percent<100?'orange':'green'">
-                <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.y_percent}}%</span>
-              </div>
-            </div>
-            <div class="col flex12">
-              <div class="stateCtn rowFlex"
-                :class="itemOrder.material_order_progress.f_percent<100?'orange':'green'">
-                <div class="state"></div>
-                <span class="name">{{itemOrder.material_order_progress.f_percent}}%</span>
-              </div>
-            </div> -->
             <div class="col flex12">
               <div class="stateCtn rowFlex"
                 v-if="material_type==='1'"
@@ -183,12 +182,9 @@
                 @click="$router.push('/material/materialDetail/'+itemOrder.id+'/2'+ '/' + (orderType ? '1' : '2') + '/normal')">
                 辅料采购
               </span>
-              <!-- <span class="opr"
-                style="color:rgba(0,0,0,0.25);cursor:not-allowed"
-                v-if="itemOrder.has_plan===0">暂无物料计划</span> -->
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

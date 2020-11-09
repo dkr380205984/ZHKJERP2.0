@@ -57,29 +57,54 @@
               <div class="resetBtn"
                 @click="reset">重置</div>
             </div>
-            <!-- <div class="filter_line"
-              :class="openHiddleFilter ? false : 'hiddle'">
-              <el-select v-model="group_id"
-                class="filter_item"
-                @change="changeRouter(1)"
-                clearable
-                placeholder="小组">
-                <el-option v-for="(item,index) in groupArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-            </div> -->
           </div>
-          <!-- <div class="rightCtn"
-            @click="openHiddleFilter = !openHiddleFilter">
-            {{openHiddleFilter ? '收起' : '展开'}}
-            <span class="el-icon-arrow-down openIcon"
-              :class="openHiddleFilter ? 'active' : false"></span>
-          </div> -->
         </div>
-        <div class="list">
+        <order-list :list="list"
+          :orderType="orderType?1:2"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div style="display:flex">
+              <div class="stateCtn"
+                v-if="processType!=='织片'"
+                :class="{'orange':fuckState(scope.itemOrder,'入库')>0,'green':fuckState(scope.itemOrder,'入库')>=1}">
+                <div class="state"></div>
+                <span class="name">入</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':fuckState(scope.itemOrder,'分配')>0,'green':fuckState(scope.itemOrder,'分配')>=1}">
+                <div class="state"></div>
+                <span class="name">分</span>
+              </div>
+              <div class="stateCtn"
+                :class="{'orange':fuckState(scope.itemOrder,'检验')>0,'green':fuckState(scope.itemOrder,'检验')>=1}">
+                <div class="state"></div>
+                <span class="name">检</span>
+              </div>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                v-if="$route.params.processType==='1'"
+                @click="$router.push('/process/processCommon/' + scope.itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType + '?whichModule=allocation&processType=织片')">
+                {{processType}}详情
+              </span>
+              <span class="opr"
+                v-if="$route.params.processType==='3'"
+                @click="$router.push('/process/processForColor/' + scope.itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=stockIn&processType=工序')">
+                {{processType}}详情
+              </span>
+              <span class="opr"
+                v-if="$route.params.processType==='2'"
+                @click="$router.push('/process/processForColor/' + scope.itemOrder.id + '/' + (orderType ? '1' : '2')+ '/' + $route.params.processType+ '?whichModule=stockIn&processType=套口')">
+                {{processType}}详情
+              </span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -93,9 +118,6 @@
             <div class="col flex08">
               <span class="text">订单数量(件)</span>
             </div>
-            <!-- <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div> -->
             <div class="col flex12">
               <span class="text">状态</span>
             </div>
@@ -119,9 +141,6 @@
             <div class="col flex08">
               {{itemOrder.number}}
             </div>
-            <!-- <div class="col flex08">
-              {{itemOrder.group_name}}
-            </div> -->
             <div class="col flex12">
               <div class="stateCtn"
                 v-if="processType!=='织片'"
@@ -161,7 +180,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

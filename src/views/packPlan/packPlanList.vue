@@ -34,17 +34,6 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <!-- <el-select v-model="group_id"
-                class="filter_item"
-                @change="changeRouter(1)"
-                clearable
-                placeholder="筛选小组">
-                <el-option v-for="(item,index) in groupArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id">
-                </el-option>
-              </el-select> -->
               <el-date-picker v-model="date"
                 style="width:290px"
                 class="filter_item"
@@ -62,7 +51,26 @@
             </div>
           </div>
         </div>
-        <div class="list">
+        <order-list :list="list"
+          oprWidth="140">
+          <template slot="state"
+            slot-scope="scope">
+            <div class="stateCtn rowFlex"
+              :class="scope.itemOrder.pack_order_progress>0?'green':'orange'">
+              <div class="state"
+                style="margin-left:0"></div>
+              <span class="name">{{scope.itemOrder.pack_order_progress>0?'已采购':'未采购'}}</span>
+            </div>
+          </template>
+          <template slot="opr"
+            slot-scope="scope">
+            <div class="col">
+              <span class="opr"
+                @click="$router.push('/packPlan/packOrderDetail/' + scope.itemOrder.id)">详情</span>
+            </div>
+          </template>
+        </order-list>
+        <!-- <div class="list">
           <div class="title">
             <div class="col flex12">
               <span class="text">订单号</span>
@@ -104,21 +112,6 @@
                 <div class="state"></div>
                 <span class="name">{{itemOrder.pack_order_progress>0?'已采购':'未采购'}}</span>
               </div>
-              <!-- <div class="stateCtn"
-                :class="{'green':itemOrder.has_pack_plan>0}">
-                <div class="state"></div>
-                <span class="name">计</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_order_progress>0,'green':itemOrder.pack_order_progress>=100}">
-                <div class="state"></div>
-                <span class="name">订</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
-                <div class="state"></div>
-                <span class="name">库</span>
-              </div> -->
             </div>
             <div class="col">
               {{itemOrder.order_time}}
@@ -128,7 +121,7 @@
                 @click="$router.push('/packPlan/packOrderDetail/' + itemOrder.id)">详情</span>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="pageCtn">
           <el-pagination background
             :page-size="10"

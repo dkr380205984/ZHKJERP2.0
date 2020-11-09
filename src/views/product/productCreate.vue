@@ -22,16 +22,45 @@
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
-          <div class="colCtn">
+          <div class="colCtn flex3">
             <div class="label">
-              <span class="text">名称/款号</span>
+              <span class="text">产品编号
+                <el-tooltip class="item"
+                  effect="dark"
+                  content="选填：未填写则使用系统默认生成编号"
+                  placement="top-start">
+                  <span class="el-icon-question"></span>
+                </el-tooltip>
+              </span>
             </div>
             <div class="content">
-              <zh-input placeholder="请输入产品名称或款号"
+              <zh-input :placeholder="`${productCode}(默认)`"
+                v-model="product_code_user">
+              </zh-input>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">产品名称</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入产品名称"
                 v-model="name">
               </zh-input>
             </div>
           </div>
+          <div class="colCtn flex3">
+            <div class="label">
+              <span class="text">客户款号</span>
+            </div>
+            <div class="content">
+              <zh-input placeholder="请输入客户款号"
+                v-model="model_code">
+              </zh-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
               <span class="text">产品品类</span>
@@ -61,8 +90,6 @@
               </el-select>
             </div>
           </div>
-        </div>
-        <div class="rowCtn">
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">针型名称</span>
@@ -95,18 +122,6 @@
               :class="{'addBtn':index===0,'deleteBtn':index>0}"
               @click="index===0?addIngredient():deleteIngredient(index)">{{index===0?'添加':'删除'}}</div>
           </div>
-          <!-- <div class="colCtn flex3">
-            <div class="label"
-              v-show="index===0">
-            </div>
-            <div class="content">
-              <zh-input type="number"
-                placeholder="请输入比例"
-                v-model="item.ingredient_value">
-                <template slot="append">%</template>
-              </zh-input>
-            </div>
-          </div> -->
         </div>
         <div class="rowCtn">
           <div class="colCtn">
@@ -299,7 +314,6 @@ export default {
       msgContent: '',
       product_code: ['C', '00', 'X', 'X', 'X', '00'],
       chinaNum: chinaNum,
-      name: '',
       type: [],
       typeArr: [],
       flower: '',
@@ -328,7 +342,10 @@ export default {
         size: [{ number: '' }]
       }],
       partArr: [],
-      part: ''
+      part: '',
+      product_code_user: '',
+      name: '',
+      model_code: ''
     }
   },
   methods: {
@@ -504,7 +521,9 @@ export default {
         return
       }
       let formData = {
-        product_code: this.product_code.join(''),
+        product_code: this.product_code_user || this.product_code.join(''),
+        is_user_input: this.product_code_user ? 1 : 0,
+        style_code: this.model_code,
         name: this.name,
         category_id: this.type[0],
         type_id: this.type[1],
