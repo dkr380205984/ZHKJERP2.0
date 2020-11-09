@@ -2303,12 +2303,21 @@
       v-if="isDownLoading">
       <div class="centerMain">
         <div class="item">
-          <el-date-picker v-model="year"
+          <!-- <el-date-picker v-model="year"
             style="width:100%"
             value-format="yyyy"
             type="year"
-            placeholder="选择导出年份"
-            :disabled="isDownLoading > 1">
+            placeholder="选择导出年份">
+          </el-date-picker> -->
+          <el-date-picker :disabled="isDownLoading > 1"
+            v-model="year"
+            style="width:100%"
+            type="monthrange"
+            value-format="yyyy-MM-dd"
+            range-separator="至"
+            start-placeholder="开始月份"
+            end-placeholder="结束月份"
+            @change="year[1] = $getTime(new Date(new Date(year[1]).getFullYear(),new Date(year[1]).getMonth()+1,0))">
           </el-date-picker>
         </div>
         <div class="item"
@@ -2481,8 +2490,8 @@ export default {
       this.oprFlag = true
     },
     downloadAllInfo () {
-      if (!this.year) {
-        this.$message.warning('请选择导出数据年份')
+      if (!(this.year && this.year[0] && this.year[1])) {
+        this.$message.warning(`请选择导出月份区间`)
         return
       }
       this.isDownLoading = 2
@@ -2493,7 +2502,8 @@ export default {
       })
     },
     openDownLoadAllProp () {
-      this.year = new Date().getFullYear().toString()
+      let year = new Date().getFullYear()
+      this.year = [this.$getTime(new Date(year, 0, 1)), this.$getTime(new Date(year + 1, 0, 0))]
       this.downLoadInfoArr = []
       if (this.clientInfo.type.some(itemS => (itemS >= 1 && itemS <= 2))) {
         this.downLoadInfoArr.push({
@@ -2598,8 +2608,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2641,8 +2651,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2679,8 +2689,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2727,8 +2737,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2769,8 +2779,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2816,8 +2826,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2864,8 +2874,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2913,8 +2923,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -2978,8 +2988,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -3025,8 +3035,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -3070,8 +3080,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -3111,8 +3121,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5
@@ -3152,8 +3162,8 @@ export default {
           limit: limit,
           page: page,
           client_id: this.$route.params.id,
-          start_time: `${this.year}-01-01`,
-          end_time: `${this.year}-12-31`
+          start_time: (this.year && this.year[0]) || '',
+          end_time: (this.year && this.year[1]) || ''
         }).then((res) => {
           if (res.data.data && res.data.data.length === 0) {
             item.isGetting = 5

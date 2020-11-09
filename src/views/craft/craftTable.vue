@@ -210,33 +210,35 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">穿综法</span>
-              <span class="row_item col">
+              <span class="row_item col"
+                v-if="craftDetail.draft_method.GLFlag === 'normal' && 6 > craftDetail.draft_method.GL[0].length ">
                 <span class="print_row noBorder h40">
                   <span class="row_item w130 center noBorder">穿综法循环：</span>
                   <span class="row_item left">{{craftDetail.draft_method|filterThroughMethod}}</span>
                 </span>
                 <span class="print_row maxHeight">
-                  <template v-if="craftDetail.draft_method.GLFlag === 'normal' && 6 > craftDetail.draft_method.GL[0].length ">
-                    <span class="row_item noBorder center"
-                      v-for="(item,index) in craftDetail.draft_method.GL[0]"
-                      :key="index">
-                      <span class="index">{{index+1}}</span>
-                      <span class="detail">
-                        <span class="item">{{item[0]}}</span>
-                        <span class="item">{{item[1]}}</span>
-                        <span class="item">{{item[2]}}</span>
-                      </span>
+                  <!-- <template v-if="craftDetail.draft_method.GLFlag === 'normal' && 6 > craftDetail.draft_method.GL[0].length "> -->
+                  <span class="row_item noBorder center"
+                    v-for="(item,index) in craftDetail.draft_method.GL[0]"
+                    :key="index">
+                    <span class="index">{{index+1}}</span>
+                    <span class="detail">
+                      <span class="item">{{item[0]}}</span>
+                      <span class="item">{{item[1]}}</span>
+                      <span class="item">{{item[2]}}</span>
                     </span>
-                  </template>
-                  <template v-else>
-                    <span class="row_item center">见附件</span>
-                  </template>
+                  </span>
+                  <!-- </template> -->
+                  <!-- <template v-else> -->
+                  <!-- </template> -->
                 </span>
                 <span class="print_row h40">
                   <span class="row_item w100 center noBorder">穿综备注：</span>
                   <span class="row_item left">{{craftDetail.draft_method.desc}}</span>
                 </span>
               </span>
+              <span class="row_item center"
+                v-else>见附件</span>
             </span>
           </span>
         </div>
@@ -1143,6 +1145,11 @@
           <span style="margin:0 20px;color:#666">{{itemChild.start}}到{{itemChild.end}}<span style="margin:0 5px"></span>✖{{itemChild.repeat}}遍</span>
           <span style="margin:0 20px;color:#666"></span>
         </div>
+      </div>
+      <div class="outItem"
+        style="word-break: break-all;">
+        <span class="label">穿综备注：</span>
+        {{craftDetail.draft_method.desc}}
       </div>
     </div>
     <div class="setting_sign_style"
