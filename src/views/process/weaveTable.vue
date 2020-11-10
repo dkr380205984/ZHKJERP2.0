@@ -39,7 +39,7 @@
           <div class="row_item center w180">{{$route.params.orderType === '1' ? '订' : '样'}}单号</div>
           <div class="row_item left">{{orderInfo.order_code || orderInfo.title}}</div>
           <div class="row_item center w180">订单公司</div>
-          <div class="row_item left">{{orderInfo.client_name}}</div>
+          <div class="row_item left">{{isHideClient !== 1 ? orderInfo.client_name : ''}}</div>
           <div class="row_item center w180">下单日期</div>
           <div class="row_item left">{{orderInfo.order_time}}</div>
         </div>
@@ -192,7 +192,8 @@ export default {
       weaveInfo: [],
       materialInfo: [],
       clientList: [],
-      showFlag: false
+      showFlag: false,
+      isHideClient: false
     }
   },
   methods: {
@@ -215,7 +216,8 @@ export default {
               order_type: this.$route.params.orderType
             })
           ]).then(res => {
-            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.title = res[0].data.data ? res[0].data.data.title : ((window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '生产加工通知单')
+            this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[1].data.data
@@ -335,7 +337,8 @@ export default {
               order_type: this.$route.params.orderType
             })
           ]).then(res => {
-            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.title = res[0].data.data ? res[0].data.data.title : ((window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '生产加工通知单')
+            this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[1].data.data
@@ -460,7 +463,8 @@ export default {
               order_type: this.$route.params.orderType
             })
           ]).then(res => {
-            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.title = res[0].data.data ? res[0].data.data.title : ((window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '生产加工通知单')
+            this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[1].data.data
@@ -580,7 +584,8 @@ export default {
               order_type: this.$route.params.orderType
             })
           ]).then(res => {
-            this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('company_name') + '生产加工通知单')
+            this.title = res[0].data.data ? res[0].data.data.title : ((window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '生产加工通知单')
+            this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             // 处理订单信息
             this.orderInfo = res[1].data.data

@@ -501,6 +501,10 @@ const routes = [
     path: '/orderStatTable',
     name: '订单发货信息单',
     component: () => import('../views/order/orderStatTable.vue')
+  }, {
+    path: '/materialStockTable/:orderId/:orderType/:materialType/:handleType',
+    name: '物料出入库打印单',
+    component: () => import('../views/materialStock/materialStockTable.vue')
   }
 ]
 

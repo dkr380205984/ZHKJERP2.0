@@ -29,7 +29,8 @@
           <div class="print_row has_marginBottom"
             :key="indexOrder + 'client'">
             <span class="row_item center w180">订单公司</span>
-            <span class="row_item left">{{itemOrder.client_name}}</span>
+            <span class="row_item left">{{ isHideClient !== 1 ? itemOrder.client_name : ''}}</span>
+            <!-- <span class="row_item left">{{itemOrder.client_name}}</span> -->
             <!-- <span class="row_item center w180">负责小组</span>
             <span class="row_item left flex08">{{itemOrder.group_name}}</span> -->
           </div>
@@ -76,7 +77,7 @@ import { order, materialManage, print, sampleOrder } from '@/assets/js/api.js'
 export default {
   data () {
     return {
-      companyName: window.sessionStorage.getItem('company_name'),
+      companyName: window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name'),
       user_name: window.sessionStorage.getItem('user_name'),
       user_tel: window.localStorage.getItem('zhUsername'),
       qrCodeUrl: '',
@@ -84,7 +85,8 @@ export default {
       materialInfo: [],
       total_price: '',
       title: '',
-      remark: ''
+      remark: '',
+      isHideClient: false
     }
   },
   methods: {
@@ -116,6 +118,7 @@ export default {
           this.total_price = this.materialInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
           this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + (this.$route.query.type === '1' ? '调取' : '订购') + '单')
           this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
           setTimeout(() => {
             window.print()
           }, 1000)
@@ -146,6 +149,7 @@ export default {
           this.total_price = this.materialInfo.map(item => (item.total_price || 0)).reduce((a, b) => a + b)
           this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + (this.$route.params.type === '1' ? '原料' : '辅料') + (this.$route.query.type === '1' ? '调取' : '订购') + '单')
           this.remark = res[2].data.data ? res[2].data.data.desc : ''
+          this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
           setTimeout(() => {
             window.print()
           }, 1000)

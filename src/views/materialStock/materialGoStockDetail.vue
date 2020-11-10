@@ -379,6 +379,8 @@
             <div class="btn btnWhiteRed"
               @click="deleteLog(materialStockLog,'all')">批量删除</div>
             <div class="btn btnWhiteBlue"
+              @click="printInTable">打印入库单</div>
+            <div class="btn btnWhiteBlue"
               @click="download">导出Excel</div>
           </div>
           <div class="tableCtnLv2">
@@ -455,6 +457,15 @@ export default {
     }
   },
   methods: {
+    // 打印入库单
+    printInTable () {
+      let checkedId = this.materialStockLog.filter(itemF => itemF.checked).map(itemM => itemM.id)
+      if (!checkedId || checkedId.length === 0) {
+        this.$message.warning('请选择最少一项')
+        return
+      }
+      this.$openUrl(`/materialStockTable/${this.$route.params.id}/${this.$route.params.orderType}/${this.$route.params.type}/1?logId=${checkedId}`)
+    },
     saveAll () {
       if (this.$submitLock()) return
       let flag = {

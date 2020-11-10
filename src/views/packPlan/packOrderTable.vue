@@ -30,7 +30,7 @@
           <span class="row_item center w180">订单号</span>
           <span class="row_item left">{{orderInfo.order_code}}</span>
           <span class="row_item center w180">订单公司</span>
-          <span class="row_item left">{{orderInfo.client_name}}</span>
+          <span class="row_item left">{{isHideClient !== 1 ? orderInfo.client_name : ''}}</span>
         </div>
         <div class="print_row">
           <span class="row_item center w180">订购单位</span>
@@ -86,7 +86,8 @@ export default {
       printInfo: {},
       user_name: window.sessionStorage.getItem('user_name'),
       title: '',
-      remark: ''
+      remark: '',
+      isHideClient: false
     }
   },
   methods: {
@@ -112,6 +113,7 @@ export default {
       this.total_price = (this.packOrderInfo.map(item => Number(item.total_price)).length > 0) ? (this.packOrderInfo.map(item => Number(item.total_price)).reduce((a, b) => a + b)) : 0
       this.title = res[2].data.data ? res[2].data.data.title : (window.sessionStorage.getItem('company_name') + '包装辅料订购单')
       this.remark = res[2].data.data ? res[2].data.data.desc : ''
+      this.isHideClient = res[2].data.data && res[2].data.data.hide_order_client
       setTimeout(() => {
         window.print()
       }, 1000)

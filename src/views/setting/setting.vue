@@ -884,6 +884,7 @@
                   <div class="trow">
                     <div class="tcolumn padding40">打印页面</div>
                     <div class="tcolumn padding40">页面标题</div>
+                    <div class="tcolumn padding40 middle">订单公司</div>
                     <div class="tcolumn middle padding40">操作</div>
                   </div>
                 </div>
@@ -893,6 +894,8 @@
                     :key="index">
                     <div class="tcolumn padding40">{{item.name}}</div>
                     <div class="tcolumn padding40">{{item.title}}</div>
+                    <div class="tcolumn padding40 middle"
+                      :class="item.isHideClient ? 'red' : 'green'">{{item.isHideClient ? '隐藏' : '显示'}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
                         <span class="blue"
@@ -1754,14 +1757,17 @@
               </div>
             </div>
             <div class="row">
+              <div class="label">订单公司：</div>
+              <div class="info">
+                <el-switch v-model="printEditInfo.isHideClient"
+                  active-text="隐藏"
+                  inactive-text="展示" />
+              </div>
+            </div>
+            <div class="row">
               <div class="label">备注内容：</div>
               <div class="info">
                 <div ref="editorPrint"></div>
-                <!-- <el-input type="textarea"
-                  :autosize="{ minRows: 8, maxRows: 16}"
-                  placeholder="请编辑备注内容"
-                  v-model="printEditInfo.remark">
-                </el-input> -->
               </div>
             </div>
           </div>
@@ -2296,57 +2302,67 @@ export default {
         {
           type: 1,
           name: '织造分配',
-          title: window.sessionStorage.getItem('company_name') + '织造分配',
+          title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '织造分配',
+          isHideClient: false,
           remark: ''
-        }, {
-          type: 2,
-          name: '加工分配',
-          title: window.sessionStorage.getItem('company_name') + '加工分配',
-          remark: ''
-        }, {
-          type: 3,
-          name: '原料调拨',
-          title: window.sessionStorage.getItem('company_name') + '原料调拨',
-          remark: ''
-        }, {
-          type: 4,
-          name: '辅料调拨',
-          title: window.sessionStorage.getItem('company_name') + '辅料调拨',
-          remark: ''
+          // }, {
+          //   type: 2,
+          //   name: '加工分配',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '加工分配',
+          //   isHideClient: false,
+          //   remark: ''
+          // }, {
+          //   type: 3,
+          //   name: '原料调拨',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '原料调拨',
+          //   isHideClient: false,
+          //   remark: ''
+          // }, {
+          //   type: 4,
+          //   name: '辅料调拨',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '辅料调拨',
+          //   isHideClient: false,
+          //   remark: ''
         }, {
           type: 5,
           name: '原料订购',
-          title: window.sessionStorage.getItem('company_name') + '原料订购',
+          title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '原料订购',
+          isHideClient: false,
           remark: ''
         }, {
           type: 6,
           name: '辅料订购',
-          title: window.sessionStorage.getItem('company_name') + '辅料订购',
+          title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '辅料订购',
+          isHideClient: false,
           remark: ''
-        }, {
-          type: 7,
-          name: '原料加工',
-          title: window.sessionStorage.getItem('company_name') + '原料加工',
-          remark: ''
-        }, {
-          type: 8,
-          name: '辅料加工',
-          title: window.sessionStorage.getItem('company_name') + '辅料加工',
-          remark: ''
+          // }, {
+          //   type: 7,
+          //   name: '原料加工',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '原料加工',
+          //   isHideClient: false,
+          //   remark: ''
+          // }, {
+          //   type: 8,
+          //   name: '辅料加工',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '辅料加工',
+          //   isHideClient: false,
+          //   remark: ''
         }, {
           type: 9,
           name: '包装辅料订购',
-          title: window.sessionStorage.getItem('company_name') + '包装辅料订购',
+          title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '包装辅料订购',
+          isHideClient: false,
           remark: ''
-        }, {
-          type: 9,
-          name: '运输分配',
-          title: window.sessionStorage.getItem('company_name') + '运输分配',
-          remark: ''
+          // }, {
+          //   type: 10,
+          //   name: '运输分配',
+          //   title: (window.sessionStorage.getItem('full_name') || window.sessionStorage.getItem('company_name')) + '运输分配',
+          //   isHideClient: false,
+          //   remark: ''
         }
       ],
       printEditPages: 1,
-      printEditTotal: 9,
+      printEditTotal: 4,
       printEditInfo: {},
       printEditor: '',
       // 批量添加纱线
@@ -2757,6 +2773,7 @@ export default {
         id: this.printEditInfo.id,
         type: this.printEditInfo.type,
         title: this.printEditInfo.title,
+        hide_order_client: this.printEditInfo.isHideClient ? 1 : 0, // 1隐藏0显示
         desc: remark
       }).then(res => {
         if (res.data.status !== false) {
@@ -2775,6 +2792,7 @@ export default {
             if (flag) {
               flag.title = item.title
               flag.remark = item.desc.replace(/<br\/>/g, '\n')
+              flag.isHideClient = item.hide_order_client === 1
               flag.id = item.id
             }
           })
@@ -4335,8 +4353,10 @@ export default {
     }
   },
   created () {
-    this.pName = '产品设置'
-    this.cName = '成衣类型'
+    // this.pName = '产品设置'
+    // this.cName = '成衣类型'
+    this.pName = '打印设置'
+    this.cName = '打印设置'
   }
 }
 </script>
