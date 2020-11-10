@@ -2716,7 +2716,18 @@ export default {
       }
       this.formData.inspectionForm.product_id = father.product_id
       this.getInspectionPro(father.product_id)
-      if (!this.formData.inspectionForm.detail[0].client_auth && !this.formData.inspectionForm.detail[0].colorSize[0].colorSize && !this.formData.inspectionForm.detail[0].colorSize[0].number && !this.formData.inspectionForm.detail[0].colorSize[0].substandard && (!this.formData.inspectionForm.detail[0].colorSize[0].reason || this.formData.inspectionForm.detail[0].colorSize[0].reason.length === 0)) {
+      if (!this.formData.inspectionForm.detail[0]) {
+        this.formData.inspectionForm.detail.push({
+          client_auth: '',
+          colorSize: [{
+            showCheck: false,
+            colorSize: son.color_id,
+            number: '',
+            substandard: '',
+            reason: []
+          }]
+        })
+      } else if (!this.formData.inspectionForm.detail[0].client_auth && !this.formData.inspectionForm.detail[0].colorSize[0].colorSize && !this.formData.inspectionForm.detail[0].colorSize[0].number && !this.formData.inspectionForm.detail[0].colorSize[0].substandard && (!this.formData.inspectionForm.detail[0].colorSize[0].reason || this.formData.inspectionForm.detail[0].colorSize[0].reason.length === 0)) {
         this.formData.inspectionForm.detail[0].colorSize[0].colorSize = son.size_id
       } else {
         this.formData.inspectionForm.detail.push({
