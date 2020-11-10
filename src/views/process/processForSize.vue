@@ -2703,6 +2703,8 @@ export default {
       this.formData.inspectionForm.colorSizeArr.forEach((item) => {
         item.checked = false
       })
+      this.formData.inspectionForm.checkedAllOption = false
+      this.$forceUpdate()
     },
     spliceInspection (item, index) {
       item.colorSize.splice(index, 1)
