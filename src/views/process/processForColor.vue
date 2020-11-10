@@ -471,7 +471,7 @@
         <div class="editCtn hasBorderTop">
           <div class="rowCtn">
             <div class="colCtn"
-              style="margin-right:0">
+              style="width:100%;margin-right:0;overflow-x:auto">
               <div class="zh_batch_item"
                 v-for="(item,index) in renderData.allocationDetail"
                 :key="index">
@@ -1227,7 +1227,7 @@
                                 <el-checkbox v-for="(itemCheck,indexCheck) in formData.inspectionForm.colorSizeArr"
                                   :key="indexCheck"
                                   v-model="itemCheck.checked"
-                                  @change="$forceUpdate">
+                                  @change="()=>{$forceUpdate()}">
                                   <span>{{itemCheck.color_name}}</span>
                                 </el-checkbox>
                               </div>

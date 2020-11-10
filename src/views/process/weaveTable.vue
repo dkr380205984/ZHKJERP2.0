@@ -145,17 +145,20 @@
           :key="indexMa">
           <template v-for="(itemMaI,indexMaI) in itemMa">
             <div class="row_item left"
-              :key="indexMaI + 'name'">{{itemMaI.material_name}}</div>
+              :key="indexMaI + 'name'"
+              :style="`flex:1.5;font-size:${returnSize(itemMaI.material_name)}px;${indexMaI % 2 !== 0 ? 'margin-left:8px;border-left:1px solid rgba(0,0,0,0.25)' : ''}`">{{itemMaI.material_name}}</div>
             <div class="row_item left"
               :key="indexMaI + 'attr'">{{itemMaI.material_attribute}}</div>
             <div class="row_item left"
+              style="flex:0.5"
               :key="indexMaI + 'weight'">{{itemMaI.weight || 0}}{{itemMaI.unit}}</div>
           </template>
           <template v-if="itemMa.length === 1">
+            <div class="row_item left"
+              style="flex:1.5;margin-left:8px;border-left:1px solid rgba(0,0,0,0.25)"></div>
             <div class="row_item left"></div>
-            <div class="row_item left"></div>
-            <div class="row_item left"></div>
-
+            <div class="row_item left"
+              style="flex:0.5"></div>
           </template>
         </div>
         <div class="print_row"
@@ -712,10 +715,14 @@ export default {
           num++
         }
       }
-      if (num < 23) {
+      if (num < 30) {
+        return 22
+      } else if (num >= 30 && num < 51) {
         return 20
-      } else if (num > 23 && num < 50) {
+      } else if (num >= 51 && num < 70) {
         return 18
+      } else if (num >= 70 && num < 120) {
+        return 16
       } else {
         return 14
       }

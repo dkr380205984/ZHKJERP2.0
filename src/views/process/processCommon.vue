@@ -471,7 +471,7 @@
         <div class="editCtn hasBorderTop">
           <div class="rowCtn">
             <div class="colCtn"
-              style="margin-right:0">
+              style="width:100%;margin-right:0;overflow-x:auto">
               <div class="zh_batch_item"
                 v-for="(item,index) in renderData.allocationDetail"
                 :key="index">
@@ -1217,7 +1217,7 @@
                                 <el-checkbox v-for="(itemCheck,indexCheck) in formData.inspectionForm.colorSizeArr"
                                   :key="indexCheck"
                                   v-model="itemCheck.checked"
-                                  @change="$forceUpdate">
+                                  @change="()=>{$forceUpdate()}">
                                   <span>{{itemCheck.color_name + '/' + itemCheck.size_name}}</span>
                                 </el-checkbox>
                               </div>
@@ -2245,7 +2245,7 @@ export default {
         if (this.otherData.processType === '织片') {
           item.mixedData.forEach((itemChild) => {
             itemChild.loss = this.formData.batchAllocation_common.commonLoss[index]
-            itemChild.lossNum = parseInt(itemChild.number * itemChild.loss / 100)
+            itemChild.lossNum = Math.ceil(itemChild.number * itemChild.loss / 100)
           })
         }
         item.complete_time = this.formData.batchAllocation_common.commonDate[index]
@@ -2265,7 +2265,7 @@ export default {
           colorSize: id ? color + '/' + size : '',
           number: number || '',
           loss: this.otherData.processType === '织片' ? 3 : 0,
-          lossNum: this.otherData.processType === '织片' ? parseInt(number * 0.03) : 0
+          lossNum: this.otherData.processType === '织片' ? Math.ceil(number * 0.03) : 0
         }],
         order_time: this.$getTime(),
         complete_time: '',
