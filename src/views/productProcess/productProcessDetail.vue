@@ -151,6 +151,75 @@
       </div>
     </div>
     <div class="module"
+      v-if="inspectionList.length>0">
+      <div class="titleCtn">
+        <span class="title">加工检验信息</span>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">来源单位/人员</div>
+                  <div class="tcolumn noPad"
+                    style="flex:4">
+                    <div class="trow">
+                      <div class="tcolumn">产品名称</div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow">
+                          <div class="tcolumn">配色尺码</div>
+                          <div class="tcolumn">加工检验数量</div>
+                          <div class="tcolumn">次品数量</div>
+                          <div class="tcolumn">操作</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="item in inspectionList"
+                  :key="item.from">
+                  <div class="tcolumn">{{item.from}}</div>
+                  <div class="tcolumn noPad"
+                    style="flex:4">
+                    <div class="trow"
+                      v-for="itemChild in item.childrenMergeInfo"
+                      :key="itemChild.product_id">
+                      <div class="tcolumn">
+                        <span>{{itemChild.product_info.product_code}}</span>
+                        <span>{{itemChild.product_info.category_name + '/' + itemChild.product_info.type_name + '/' + itemChild.product_info.style_name }}</span>
+                      </div>
+                      <div class="tcolumn noPad"
+                        style="flex:3">
+                        <div class="trow"
+                          v-for="(itemSon,indexSon) in itemChild.childrenMergeInfo"
+                          :key="indexSon">
+                          <div class="tcolumn">{{itemSon.color_name + '/' + itemSon.size_name}}</div>
+                          <div class="tcolumn"
+                            style="color:#e6a23c">{{itemSon.number}}</div>
+                          <div class="tcolumn"
+                            :style="{'color':itemSon.count?'#F5222D':'#01b48c'}">{{itemSon.count || 0}}</div>
+                          <div class="tcolumn">
+                            <span class="blue"
+                              @click="normalProcessAgain(item,itemChild,itemSon)">继续加工检验</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module"
       id="processEditCtn">
       <div class="titleCtn">
         <span class="title">{{processType}}加工</span>
@@ -177,7 +246,8 @@
                   :label="item.product_code + '(' + item.category_name +'/' + item.type_name + '/' + item.style_name +')'"></el-option>
               </el-select>
             </div>
-            <div class="filterCtn">
+            <!-- 选择人员模块重做 -->
+            <!-- <div class="filterCtn">
               <div class="label">选择单位：</div>
               <el-cascader @change="getClientAuth"
                 v-model="inspectionForm.clientAuth"
@@ -224,14 +294,22 @@
                   </div>
                 </div>
               </span>
-            </div>
+            </div> -->
             <div class="filterCtn">
               <div class="label">结算单价：</div>
-              <el-input class="inputs"
+              <zh-input class="inputs"
+                :keyBoard="keyBoard"
                 v-model="inspectionForm.price"
                 placeholder="请输入人员结算单价">
                 <template slot="append">元</template>
-              </el-input>
+              </zh-input>
+            </div>
+            <div class="filterCtn"
+              style="float:right">
+              <div class="btnCtn">
+                <div class="btn btnBlue"
+                  @click="addChoose">批量新增单位/人员</div>
+              </div>
             </div>
           </div>
         </div>
@@ -294,8 +372,9 @@
                       </div>
                       <div class="tcolumn">
                         <div style="height:32px">
-                          <el-input v-model="itemChild.substandard"
-                            placeholder="次品数"></el-input>
+                          <zh-input :keyBoard="keyBoard"
+                            v-model="itemChild.substandard"
+                            placeholder="次品数"></zh-input>
                         </div>
                       </div>
                       <div class="tcolumn"
@@ -372,76 +451,6 @@
                 <span class="once ok"
                   v-if="inspectionForm.detail.length > 0"
                   @click="saveInspection">确认加工</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="module"
-      v-if="inspectionList.length>0">
-      <div class="titleCtn">
-        <span class="title">加工检验信息</span>
-      </div>
-      <div class="editCtn hasBorderTop">
-        <div class="rowCtn">
-          <div class="colCtn"
-            style="margin-right:0">
-            <div class="flexTb">
-              <div class="thead">
-                <div class="trow">
-                  <div class="tcolumn">来源单位/人员</div>
-                  <div class="tcolumn noPad"
-                    style="flex:4">
-                    <div class="trow">
-                      <div class="tcolumn">产品名称</div>
-                      <div class="tcolumn noPad"
-                        style="flex:3">
-                        <div class="trow">
-                          <div class="tcolumn">配色尺码</div>
-                          <div class="tcolumn">加工检验数量</div>
-                          <div class="tcolumn">次品数量</div>
-                          <div class="tcolumn">操作</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="tbody">
-                <div class="trow"
-                  v-for="item in inspectionList"
-                  :key="item.from">
-                  <div class="tcolumn">{{item.from}}</div>
-                  <div class="tcolumn noPad"
-                    style="flex:4">
-                    <div class="trow"
-                      v-for="itemChild in item.childrenMergeInfo"
-                      :key="itemChild.product_id">
-                      <div class="tcolumn">
-                        <span>{{itemChild.product_info.product_code}}</span>
-                        <span>{{itemChild.product_info.category_name + '/' + itemChild.product_info.type_name + '/' + itemChild.product_info.style_name }}</span>
-                      </div>
-                      <div class="tcolumn noPad"
-                        style="flex:3">
-                        <div class="trow"
-                          v-for="(itemSon,indexSon) in itemChild.childrenMergeInfo"
-                          :key="indexSon">
-                          <div class="tcolumn">{{itemSon.color_name + '/' + itemSon.size_name}}</div>
-                          <div class="tcolumn"
-                            style="color:#e6a23c">{{itemSon.number}}</div>
-                          <div class="tcolumn"
-                            :style="{'color':itemSon.count?'#F5222D':'#01b48c'}">{{itemSon.count || 0}}</div>
-                          <div class="tcolumn">
-                            <span class="blue"
-                              @click="normalProcessAgain(item,itemChild,itemSon)">继续加工检验</span>
-
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -763,6 +772,81 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-show="showChoose">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <div class="text">选择单位/人员</div>
+          <i class="el-icon-close"
+            @click="cancleChoose"></i>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">人员分类：</span>
+            <span class="info tagCtn">
+              <span class="tag"
+                :class="{'active':peopleType==='所有人员'}"
+                @click="peopleType='所有人员'">所有人员</span>
+              <span class="tag"
+                :class="{'active':peopleType==='工序负责人员'}"
+                @click="peopleType='工序负责人员'">工序负责人员</span>
+              <span class="tag"
+                :class="{'active':peopleType==='已检验人员'}"
+                @click="peopleType='已检验人员'">已检验人员</span>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">包含人员：</span>
+            <span class="info hasBack">
+              <el-checkbox style="margin:12px 12px 12px 0"
+                v-for="item in peopleChooseArr"
+                :key="item.value + peopleType"
+                :value="item.checked"
+                @change="getClientAuth($event,item,peopleType)">{{item.label}}</el-checkbox>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">单位分类：</span>
+            <span class="info tagCtn">
+              <span class="tag"
+                :class="{'active':clientType==='所有单位'}"
+                @click="clientType='所有单位'">所有单位</span>
+              <span class="tag"
+                :class="{'active':clientType===item.value}"
+                v-for="item in companyType"
+                :key="item.value"
+                @click="clientType=item.value">{{item.label}}</span>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">包含单位：</span>
+            <span class="info hasBack">
+              <el-checkbox @change="getClientAuth($event,item,clientType.toString())"
+                style="margin:12px 12px 12px 0"
+                v-for="item in clientChooseArr"
+                :key="item.value + clientType"
+                :value="item.checked">{{item.label}}</el-checkbox>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">已选信息：</span>
+            <span class="info tagCtn">
+              <span class="tag"
+                v-for="item in inspectionFormSon.detail"
+                :key="item.client_auth[1]"
+                :value="item.checked">{{filterClientAuth(item.client_auth)}}</span>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="cancleChoose">取消</div>
+          <div class="btn btnBlue"
+            @click="okChoose">确定</div>
+        </div>
+      </div>
+    </div>
     <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
   </div>
 </template>
@@ -774,6 +858,10 @@ import { order, materialPlan, client, inspection, chargebacks, staff, course, st
 export default {
   data () {
     return {
+      showChoose: false,
+      clientType: '所有单位',
+      peopleType: '工序负责人员',
+      companyType: companyType.filter((item) => item.value >= 29 && item.value <= 34),
       keyBoard: true,
       loading: true,
       msgSwitch: false,
@@ -861,6 +949,9 @@ export default {
           }]
         }]
       },
+      inspectionFormSon: {
+        detail: []
+      },
       inspectionSetting: {
         flag: false,
         authArr: []
@@ -918,7 +1009,80 @@ export default {
       this.init(true)
     }
   },
+  computed: {
+    clientChooseArr () {
+      if (this.clientAuthArr.length === 0) {
+        return []
+      }
+      let returnArr = this.clientAuthArr.find((item) => item.value === this.clientType || Number(item.value) === this.clientType).children
+      returnArr.forEach((item) => {
+        if (this.inspectionFormSon.detail.find((itemFind) => { return itemFind.client_auth[1] === item.value })) {
+          item.checked = true
+        } else {
+          item.checked = false
+        }
+      })
+      return returnArr
+    },
+    peopleChooseArr () {
+      // 初始化没数据做的单独处理
+      if (this.clientAuthArr.length === 0) {
+        return []
+      }
+      let returnArr = []
+      if (this.peopleType === '所有人员') {
+        returnArr = this.clientAuthArr.find((item) => item.value === '所有人员').children
+      } else if (this.peopleType === '工序负责人员') {
+        returnArr = this.clientAuthArr.find((item) => item.value === '工序负责人员').children
+      } else {
+        returnArr = this.clientAuthArr.find((item) => item.value === '已检验人员').children
+      }
+      returnArr.forEach((item) => {
+        if (this.inspectionFormSon.detail.find((itemFind) => { return itemFind.client_auth[1] === item.value })) {
+          item.checked = true
+        } else {
+          item.checked = false
+        }
+      })
+      return returnArr
+    }
+  },
   methods: {
+    filterClientAuth (clientAuth) {
+      if (clientAuth[0] === '所有人员' || clientAuth[0] === '工序负责人员' || clientAuth[0] === '已检验人员') {
+        return this.clientAuthArr[2].children.find((itemFind) => Number(itemFind.value) === Number(clientAuth[1])).label
+      } else {
+        return this.clientAuthArr[3].children.find((itemFind) => Number(itemFind.value) === Number(clientAuth[1])).label
+      }
+    },
+    addChoose () {
+      if (this.inspectionForm.detail.length > 1) {
+        this.$confirm('检测到已有来源单位和人员信息，继续添加会覆盖原有信息，请确认是否继续添加?', '提示', {
+          confirmButtonText: '继续添加',
+          cancelButtonText: '提交已有数据再添加',
+          type: 'warning'
+        }).then(() => {
+          this.showChoose = true
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      } else {
+        this.showChoose = true
+      }
+    },
+    okChoose () {
+      this.inspectionForm.detail = this.inspectionFormSon.detail
+      this.showChoose = false
+    },
+    cancleChoose () {
+      this.showChoose = false
+      this.inspectionFormSon = {
+        detail: []
+      }
+    },
     getConfirmDetail () {
       this.loading = true
       compare.detail({
@@ -1059,7 +1223,6 @@ export default {
           label: item.color_name + '/' + item.size_name
         }
       })
-      console.log(this.inspectionForm.colorSizeArr)
       // if (this.nativeData.inspectionLog.filter((itemUser) => itemUser.inspection_user_id && itemUser.product_id === ev).length > 0) {
       //   this.formData.inspectionForm.detail = Array.from(new Set(this.nativeData.inspectionLog.filter((item) => item.inspection_user_id && item.product_id === ev).map((item) => item.inspection_user_id))).map((item) => {
       //     return {
@@ -1084,29 +1247,49 @@ export default {
       //   })
       // }
     },
-    getClientAuth (ev) {
-      let detail = []
-      detail = ev.map((item) => {
-        let colorSize = [{
-          showCheck: false,
-          colorSize: '',
-          number: '',
-          price: '',
-          substandard: '',
-          reason: []
-        }]
-        let finded = this.inspectionForm.detail.find((itemFind) => {
-          return itemFind.client_auth[0] === item[0] && itemFind.client_auth[1] === item[1]
+    getClientAuth (ev, info, which) {
+      if (ev) {
+        let finded = this.inspectionFormSon.detail.find((itemFind) => {
+          return itemFind.client_auth[1] === info.value
         })
-        if (finded) {
-          colorSize = finded.colorSize
+        if (!finded) {
+          if (this.inspectionFormSon.detail.length === 1 && !this.inspectionFormSon.detail[0].client_auth[0]) {
+            this.inspectionFormSon.detail = [{
+              checked: true,
+              client_auth: [which, info.value],
+              colorSize: [{
+                showCheck: false,
+                colorSize: '',
+                number: '',
+                price: '',
+                substandard: '',
+                reason: []
+              }]
+            }]
+          } else {
+            this.inspectionFormSon.detail.push({
+              checked: true,
+              client_auth: [which, info.value],
+              colorSize: [{
+                showCheck: false,
+                colorSize: '',
+                number: '',
+                price: '',
+                substandard: '',
+                reason: []
+              }]
+            })
+          }
         }
-        return {
-          client_auth: item,
-          colorSize: colorSize
+      } else {
+        let finded = this.inspectionFormSon.detail.findIndex((itemFind) => {
+          return itemFind.client_auth[1] === info.value
+        })
+        if (finded !== -1) {
+          this.inspectionFormSon.detail.splice(finded, 1)
         }
-      })
-      this.inspectionForm.detail = detail
+      }
+      this.$forceUpdate()
     },
     createProcess (ev) {
       this.processChoose.push(ev)
@@ -1504,6 +1687,17 @@ export default {
           item.from_id = item.inspection_user_id || item.client_id
           item.count = Number(JSON.parse(item.rejects_info).number) || 0
         })
+        let clientArr = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [29, 34] })
+        let arr = []
+        clientArr.forEach((item) => {
+          arr = arr.concat(item.children)
+        })
+        let noReapeatArr = []
+        arr.forEach((item) => {
+          if (!noReapeatArr.find((itemFind) => itemFind.value === item.value)) {
+            noReapeatArr.push(item)
+          }
+        })
         this.clientAuthArr = [{
           value: '已检验人员',
           label: '已检验人员',
@@ -1513,16 +1707,18 @@ export default {
               label: item.inspection_user
             }
           })
-        }, {
-          value: '常用人员',
-          label: '常用人员',
-          children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
-            return {
-              value: String(item.id),
-              label: item.name
-            }
-          }) : []
-        }, {
+        },
+        // , {
+        //   value: '常用人员',
+        //   label: '常用人员',
+        //   children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
+        //     return {
+        //       value: String(item.id),
+        //       label: item.name
+        //     }
+        //   }) : []
+        // }
+        {
           value: '工序负责人员',
           label: '工序负责人员',
           children: res[4].data.data.filter((item) => {
@@ -1542,7 +1738,11 @@ export default {
               label: item.name
             }
           })
-        }].concat(this.$getClientOptions(res[2].data.data, companyType, { typeScope: [29, 34] }))
+        }, {
+          value: '所有单位',
+          label: '所有单位',
+          children: noReapeatArr
+        }].concat(clientArr)
         this.inspection_detail.forEach((item) => {
           item.childrenMergeInfo.forEach((itemChild) => {
             let findArr = this.inspection_log.filter((itemFilter) => {
@@ -1556,7 +1756,6 @@ export default {
             }, 0)
           })
         })
-        console.log(this.inspection_detail)
         let inspectionList = []
         this.$clone(this.inspection_log).forEach((item) => {
           this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from', 'from_id'], ['number', 'count'])
@@ -1610,6 +1809,27 @@ export default {
     }
     .collapseBox {
       margin: 12px;
+    }
+    .tagCtn {
+      line-height: 32px;
+      .tag {
+        font-size: 14px;
+        margin-right: 14px;
+        cursor: pointer;
+        &:hover {
+          color: #1a95ff;
+          border-bottom: 1px solid #1a95ff;
+        }
+        &.active {
+          color: #1a95ff;
+          border-bottom: 1px solid #1a95ff;
+          font-weight: bold;
+        }
+      }
+    }
+    .hasBack {
+      background: #fafafa;
+      padding: 12px;
     }
   }
   .cut_item {
