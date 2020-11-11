@@ -471,7 +471,7 @@
         <div class="editCtn hasBorderTop">
           <div class="rowCtn">
             <div class="colCtn"
-              style="margin-right:0">
+              style="width:100%;margin-right:0;overflow-x:auto">
               <div class="zh_batch_item"
                 v-for="(item,index) in renderData.allocationDetail"
                 :key="index">
@@ -1217,7 +1217,7 @@
                                 <el-checkbox v-for="(itemCheck,indexCheck) in formData.inspectionForm.colorSizeArr"
                                   :key="indexCheck"
                                   v-model="itemCheck.checked"
-                                  @change="$forceUpdate">
+                                  @change="()=>{$forceUpdate()}">
                                   <span>{{itemCheck.color_name + '/' + itemCheck.size_name}}</span>
                                 </el-checkbox>
                               </div>
@@ -2245,7 +2245,7 @@ export default {
         if (this.otherData.processType === '织片') {
           item.mixedData.forEach((itemChild) => {
             itemChild.loss = this.formData.batchAllocation_common.commonLoss[index]
-            itemChild.lossNum = parseInt(itemChild.number * itemChild.loss / 100)
+            itemChild.lossNum = Math.ceil(itemChild.number * itemChild.loss / 100)
           })
         }
         item.complete_time = this.formData.batchAllocation_common.commonDate[index]
@@ -2265,7 +2265,7 @@ export default {
           colorSize: id ? color + '/' + size : '',
           number: number || '',
           loss: this.otherData.processType === '织片' ? 3 : 0,
-          lossNum: this.otherData.processType === '织片' ? parseInt(number * 0.03) : 0
+          lossNum: this.otherData.processType === '织片' ? Math.ceil(number * 0.03) : 0
         }],
         order_time: this.$getTime(),
         complete_time: '',
@@ -2838,6 +2838,8 @@ export default {
       this.formData.inspectionForm.colorSizeArr.forEach((item) => {
         item.checked = false
       })
+      this.formData.inspectionForm.checkedAllOption = false
+      this.$forceUpdate()
     },
     spliceInspection (item, index) {
       item.colorSize.splice(index, 1)
@@ -2851,7 +2853,18 @@ export default {
       }
       this.formData.inspectionForm.product_id = father.product_id
       this.getInspectionPro(father.product_id)
-      if (!this.formData.inspectionForm.detail[0].client_auth && !this.formData.inspectionForm.detail[0].colorSize[0].colorSize && !this.formData.inspectionForm.detail[0].colorSize[0].number && !this.formData.inspectionForm.detail[0].colorSize[0].substandard && (!this.formData.inspectionForm.detail[0].colorSize[0].reason || this.formData.inspectionForm.detail[0].colorSize[0].reason.length === 0)) {
+      if (!this.formData.inspectionForm.detail[0]) {
+        this.formData.inspectionForm.detail.push({
+          client_auth: '',
+          colorSize: [{
+            showCheck: false,
+            colorSize: son.color_id,
+            number: '',
+            substandard: '',
+            reason: []
+          }]
+        })
+      } else if (!this.formData.inspectionForm.detail[0].client_auth && !this.formData.inspectionForm.detail[0].colorSize[0].colorSize && !this.formData.inspectionForm.detail[0].colorSize[0].number && !this.formData.inspectionForm.detail[0].colorSize[0].substandard && (!this.formData.inspectionForm.detail[0].colorSize[0].reason || this.formData.inspectionForm.detail[0].colorSize[0].reason.length === 0)) {
         this.formData.inspectionForm.detail[0].colorSize[0].colorSize = son.color_id + '/' + son.size_id
       } else {
         this.formData.inspectionForm.detail.push({

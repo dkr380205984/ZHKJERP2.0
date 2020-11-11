@@ -362,6 +362,8 @@
             <div class="btn btnWhiteRed"
               @click="deleteLog(materialOutStockLog,'all')">批量删除</div>
             <div class="btn btnWhiteBlue"
+              @click="printOutTable">打印出库单</div>
+            <div class="btn btnWhiteBlue"
               @click="download">导出Excel</div>
           </div>
           <div class="tableCtnLv2">
@@ -610,6 +612,15 @@ export default {
     }
   },
   methods: {
+    // 打印出库单
+    printOutTable () {
+      let checkedId = this.materialOutStockLog.filter(itemF => itemF.checked).map(itemM => itemM.id)
+      if (!checkedId || checkedId.length === 0) {
+        this.$message.warning('请选择最少一项')
+        return
+      }
+      this.$openUrl(`/materialStockTable/${this.$route.params.id}/${this.$route.params.orderType}/${this.$route.params.type}/2?logId=${checkedId}`)
+    },
     // 改变出库单位判断为分配单位时自动填充分配物料
     getDistributionMaterial (e, item) {
       if (e[0] === '0') { // 判断是否选择分配单位

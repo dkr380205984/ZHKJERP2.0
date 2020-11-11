@@ -78,7 +78,7 @@ export default {
             name: '芯片出入库',
             id: 8,
             path: '/xpManage/xpOutIn',
-            icon: 'icon-gongxuguanli'
+            icon: 'icon-xinpianguanli'
           },
           // {
           //   name: '产品收发',

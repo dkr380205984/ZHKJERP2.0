@@ -1,0 +1,28 @@
+@import '../common.less';
+#materialStockTable{
+  .crosswise{
+    max-width: 1140px!important;
+    min-width: 1140px!important;
+    max-height: 620px!important;
+    min-height: 620px!important;
+    page-break-after: always;
+    .left{
+      width: 100%;
+      .item_span{
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+    }
+    .print_bottom{
+      margin-top: 10px;
+      font-size: 18px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      .item_span{
+        flex: 1;
+      }
+    }
+  }
+}
