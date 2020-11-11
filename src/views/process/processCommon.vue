@@ -3281,7 +3281,7 @@ export default {
       // 织片的分配信息单独处理,其他工序的分配信息全部根据织片分配得来
       if (this.otherData.processType === '织片') {
         let allocationList = []
-        this.renderData.orderInfo.batch_info.forEach((itemBatch) => {
+        this.$clone(this.renderData.orderInfo.batch_info).forEach((itemBatch) => {
           itemBatch.product_info.forEach((itemPro) => {
             this.commonFind(allocationList, itemPro, ['color_id', 'size_id', 'product_id'], ['numbers'])
           })
@@ -3309,7 +3309,7 @@ export default {
       }
       this.getProcessChoose(resArr[0].data.data.map((item) => item.process))
       this.nativeData.allocationLog = resArr[0].data.data.filter((item) => item.process === this.otherData.processType)
-
+      console.log(this.renderData.allocationList)
       // 统计下已分配数量
       this.renderData.allocationList.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
