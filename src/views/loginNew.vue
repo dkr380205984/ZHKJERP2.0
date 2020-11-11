@@ -88,6 +88,7 @@ export default {
             window.sessionStorage.setItem('has_check', res.data.data.has_check)
             window.sessionStorage.setItem('user_id', res.data.data.user_id)
             window.sessionStorage.setItem('group_name', res.data.data.group_name)
+            window.sessionStorage.setItem('telephone', res.data.data.telephone)
             if (res.data.data.full_name) {
               window.sessionStorage.setItem('full_name', res.data.data.full_name)
             }

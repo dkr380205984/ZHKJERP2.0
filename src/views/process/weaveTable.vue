@@ -10,15 +10,15 @@
           <!-- <span class="content"> -->
           <span class="item">
             <span class="label">联系人：</span>
-            {{user_name}}
-          </span>
-          <span class="item">
-            <span class="label">联系人电话：</span>
-            {{user_tel}}
+            {{`${user_name}，${user_tel || '/'}`}}
           </span>
           <span class="item">
             <span class="label">创建日期：</span>
             {{$getTime()}}
+          </span>
+          <span class="item">
+            <span class="label">下机时间：</span>
+            {{itemWeave.complete_time || ''}}
           </span>
           <!-- </span> -->
         </div>
@@ -60,8 +60,8 @@
           <div class="row_item left">{{itemWeave.product_code}}<br />{{itemWeave|filterType}}</div>
           <div class="row_item center w180">产品名称</div>
           <div class="row_item left">{{itemWeave.name || ''}}</div>
-          <div class="row_item center w180">下机时间</div>
-          <div class="row_item left">{{itemWeave.complete_time || ''}}</div>
+          <div class="row_item center w180">客户款号</div>
+          <div class="row_item left">{{itemWeave.style_code || ''}}</div>
         </div>
         <template v-for="(itemOrder,indexOrder) in itemWeave.orderInfo.sizeArr">
           <div class="print_row bgGray"
@@ -78,13 +78,15 @@
                 <span class="row_item center">{{itemSize.size_name}}</span>
               </span>
               <span class="print_row">
-                <span class="row_item center">分配数</span>
                 <span class="row_item center"
-                  v-if="$route.query.type === '1'">机动数</span>
+                  style="font-size:18px">分配数</span>
+                <span class="row_item center"
+                  v-if="$route.query.type === '1'"
+                  style="font-size:18px">机动数</span>
               </span>
             </div>
             <div class="row_item col"
-              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              v-for="(itemB,indexB) in 8 - itemOrder.length"
               :key="'buchong' + indexB">
               <span class="print_row noBorder">
                 <span class="row_item center"></span>
@@ -112,7 +114,7 @@
               </div>
             </div>
             <div class="row_item col"
-              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              v-for="(itemB,indexB) in 8 - itemOrder.length"
               :key="'buchong' + indexB">
               <span class="print_row noBorder">
                 <span class="row_item center"></span>
@@ -130,7 +132,7 @@
               v-for="(itemSize,indexSize) in itemOrder"
               :key="indexSize">{{itemSize.totalNumber_size}}</div>
             <div class="row_item"
-              v-for="(itemB,indexB) in 6 - itemOrder.length"
+              v-for="(itemB,indexB) in 8 - itemOrder.length"
               :key="'buchong' + indexB">
             </div>
             <div class="row_item center w180"
@@ -187,7 +189,7 @@ export default {
       titles: '',
       remarks: '',
       user_name: window.sessionStorage.getItem('user_name'),
-      user_tel: window.localStorage.getItem('zhUsername'),
+      user_tel: window.sessionStorage.getItem('telephone') || window.localStorage.getItem('zhUsername'),
       errorImg: require('@/assets/image/index/noPic.jpg'),
       qrCodeUrl: '',
       qrCodeUrl2: '',
@@ -259,7 +261,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }, { name: 'style_code' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -379,7 +381,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }, { name: 'style_code' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -506,7 +508,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }, { name: 'style_code' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
@@ -626,7 +628,7 @@ export default {
             }).sort((a, b) => {
               return a.material_name.localeCompare(b.material_name)
             }), 2)
-            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }], childrenName: 'data_info' })
+            this.weaveInfo = this.$mergeData(this.$clone(weaveInfo), { mainRule: 'product_code', otherRule: [{ name: 'client_name' }, { name: 'product_title/name' }, { name: 'category_name' }, { name: 'style_name' }, { name: 'type_name' }, { name: 'image' }, { name: 'unit' }, { name: 'is_part' }, { name: 'process_type' }, { name: 'compiled_time/complete_time' }, { name: 'style_code' }], childrenName: 'data_info' })
             this.weaveInfo.forEach(itemPro => {
               let sizeArr = []
               let colorArr = []
