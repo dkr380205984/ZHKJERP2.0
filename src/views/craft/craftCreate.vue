@@ -4410,8 +4410,6 @@ export default {
       return array
     },
     submit (ifCaogao) {
-      console.log(this.xiajidate)
-      return
       // 获取合并单元格信息
       let errorInput = false
       if (ifCaogao === '草稿' && !this.chooseId && this.$router.params.id === 'noProId') {
