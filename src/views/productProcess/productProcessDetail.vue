@@ -321,10 +321,20 @@
                 <div class="trow">
                   <div class="tcolumn">来源单位/人员</div>
                   <div class="tcolumn noPad"
-                    style="flex:5">
+                    style="flex:6">
                     <div class="trow">
                       <div class="tcolumn">配色/尺码</div>
                       <div class="tcolumn">加工检验数</div>
+                      <div class="tcolumn">
+                        <span>结算单价
+                          <el-tooltip class="item"
+                            effect="dark"
+                            content="未填写以上面的总体结算单价为准"
+                            placement="top">
+                            <i class="el-icon-question"></i>
+                          </el-tooltip>
+                        </span>
+                      </div>
                       <div class="tcolumn">次品数</div>
                       <div class="tcolumn"
                         style="flex:1.2">次品原因</div>
@@ -346,7 +356,7 @@
                     </div>
                   </div>
                   <div class="tcolumn noPad"
-                    style="flex:5">
+                    style="flex:6">
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.colorSize"
                       :key="indexChild">
@@ -368,6 +378,15 @@
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.number"
                             placeholder="加工检验数"></zh-input>
+                        </div>
+                      </div>
+                      <div class="tcolumn">
+                        <div style="height:32px">
+                          <zh-input :keyBoard="keyBoard"
+                            v-model="itemChild.singlePrice"
+                            placeholder="结算单价">
+                            <template slot="append">元</template>
+                          </zh-input>
                         </div>
                       </div>
                       <div class="tcolumn">
@@ -425,7 +444,7 @@
                               showCheck:false,
                               colorSize: '',
                               number: '',
-                              price: '',
+                              singlePrice:inspectionForm.price,
                               substandard: '',
                               reason: []
                             })"
@@ -773,7 +792,7 @@
       </div>
     </div>
     <div class="popup"
-      v-show="showChoose">
+      v-if="showChoose">
       <div class="main"
         style="width:800px">
         <div class="title">
@@ -941,6 +960,7 @@ export default {
         detail: [{
           client_auth: '',
           colorSize: [{
+            singlePrice: '',
             showCheck: false,
             colorSize: '',
             number: '',
@@ -1134,6 +1154,7 @@ export default {
       this.inspectionForm.detail.push({
         client_auth: '',
         colorSize: [{
+          singlePrice: this.inspectionForm.price,
           showCheck: false,
           colorSize: '',
           number: '',
@@ -1176,6 +1197,7 @@ export default {
       this.inspectionForm.detail.push({
         client_auth: '',
         colorSize: [{
+          singlePrice: this.inspectionForm.price,
           showCheck: false,
           colorSize: objChild.color_id + '/' + objChild.size_id,
           number: '',
@@ -1197,6 +1219,7 @@ export default {
       this.inspectionForm.detail.push({
         client_auth: (flag ? [flag.value, String(item.from_id)] : ''),
         colorSize: [{
+          singlePrice: this.inspectionForm.price,
           showCheck: false,
           colorSize: itemSon.color_id + '/' + itemSon.size_id,
           number: '',
@@ -1259,6 +1282,7 @@ export default {
               client_auth: [which, info.value],
               colorSize: [{
                 showCheck: false,
+                singlePrice: this.inspectionForm.price,
                 colorSize: '',
                 number: '',
                 price: '',
@@ -1271,6 +1295,7 @@ export default {
               checked: true,
               client_auth: [which, info.value],
               colorSize: [{
+                singlePrice: this.inspectionForm.price,
                 showCheck: false,
                 colorSize: '',
                 number: '',
@@ -1332,7 +1357,7 @@ export default {
             number: itemChild.number,
             rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
             complete_time: this.$getTime(new Date()),
-            price: this.inspectionForm.price,
+            price: itemChild.singlePrice || this.inspectionForm.price,
             desc: ''
           })
         })

@@ -462,7 +462,7 @@ export default {
         }
         // 找一下有没有配件的工艺单
         let craft = res[4].data.data
-        let findPart = this.$route.params.type === '1' ? craft.part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name)) : ((craft.length === 1 ? craft[0] : craft.find((itemFind) => itemFind.is_default === 1)).part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name)))
+        let findPart = craft.length === 0 ? null : ((craft.length === 1 ? craft[0] : craft.find((itemFind) => itemFind.is_default === 1)).part_craft_data.find((itemFind) => itemFind.name === (itemPart.part_title || itemPart.name)))
         if (findPart) {
           json.chooseMaterial = 1
         }

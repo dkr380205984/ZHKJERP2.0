@@ -2,6 +2,36 @@ import axios from 'axios'
 import Message from 'element-ui'
 import router from '../../router'
 let qs = require('qs')
+
+// 设置提示消息不重复
+const showMessage = Symbol('showMessage')
+class DonMessage {
+  success (options, single = true) {
+    this[showMessage]('success', options, single)
+  }
+  warning (options, single = true) {
+    this[showMessage]('warning', options, single)
+  }
+  info (options, single = true) {
+    this[showMessage]('info', options, single)
+  }
+  error (options, single = true) {
+    this[showMessage]('error', options, single)
+  }
+
+  [showMessage] (type, options, single) {
+    if (single) {
+      // 判断是否已存在Message
+      if (document.getElementsByClassName('el-message').length === 0) {
+        Message.Message[type](options)
+      }
+    } else {
+      Message.Message[type](options)
+    }
+  }
+}
+
+const donMessage = new DonMessage()
 // 设置请求头
 axios.defaults.headers.get['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -25,21 +55,22 @@ axios.interceptors.response.use(
     if (res.data.code === 200) {
 
     } else if (res.data.code === 1001) {
-      Message.Message.error(res.data.message)
+      donMessage.error(res.data.message)
     } else if (res.data.code === 1002) {
-      Message.Message.error(res.data.message)
+      donMessage.error(res.data.message)
     } else if (res.data.code === 1003) {
-      Message.Message.error('登录信息过期，请重新登录')
+      donMessage.error('登录信息过期，请重新登录')
       router.push({ path: '/login' })
     } else if (res.data.code === 1004) {
-      Message.Message.error(res.data.message)
+      donMessage.error(res.data.message)
     } else if (res.data.code === 1005) {
-      Message.Message.error(res.data.message)
+      donMessage.error(res.data.message)
     }
     return res
   },
   // 请求失败回调
   error => {
+    console.log(error)
     router.push({ path: '/index/error/' + error.response.status })
     return Promise.reject(error)
   }
