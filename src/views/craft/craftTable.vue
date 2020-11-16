@@ -1276,7 +1276,6 @@ export default {
               val.noJianTou = true
             }
           }
-          // console.log(JSON.stringify(val))
         })
       }
     },
@@ -1290,7 +1289,6 @@ export default {
         let val = isMergeData[ind]
         let mergeItem = mergeMethod.find(mergeItem => ind >= (mergeItem.col - (keys || 0) * 16) && ((mergeItem.col - (keys || 0) * 16) + mergeItem.colspan - 1) >= ind)
         if (mergeItem) {
-          // console.log(JSON.stringify(mergeItem))
           mergeData.push({ value: mergeItem.value, colspan: mergeItem.colspan, isSplit: mergeItem.split, noLeftJianTou: mergeItem.noLeftJianTou, noRightJianTou: mergeItem.noRightJianTou, noJianTou: mergeItem.noJianTou })
           ind += (mergeItem.colspan - 1)
         } else {
@@ -1326,7 +1324,6 @@ export default {
     getFlatTable (table, mergeData) {
       let tableArr = table
       let mergeTable = mergeData || []
-      console.log(mergeTable)
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
       // 处理合并项的合并信息
@@ -1470,7 +1467,7 @@ export default {
           warp_merge: this.$clone(JSON.parse(data.warp_data.merge_data)),
           warp_merge_back: this.$clone(JSON.parse(data.warp_data.merge_data_back)),
           weft_merge: this.$clone(JSON.parse(data.weft_data.merge_data)),
-          werf_merge_back: this.$clone(JSON.parse(data.weft_data.merge_data_back))
+          weft_merge_back: this.$clone(JSON.parse(data.weft_data.merge_data_back))
         }
         data.warp_data.merge_data = JSON.parse(data.warp_data.merge_data)
         data.warp_data.merge_data_back = JSON.parse(data.warp_data.merge_data_back)
@@ -1622,13 +1619,13 @@ export default {
           }
           return item
         })
-        let weftTable = this.getFlatTable(this.weft_data.weft_rank, mergeNative.warp_merge_back).map((item) => {
+        let weftTable = this.getFlatTable(this.weft_data.weft_rank, mergeNative.weft_merge).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'A'
           }
           return item
         })
-        let warpTableBack = this.getFlatTable(this.warp_data.warp_rank_back, mergeNative.weft_merge).map((item) => {
+        let warpTableBack = this.getFlatTable(this.warp_data.warp_rank_back, mergeNative.warp_merge_back).map((item) => {
           if (!item.GLorPM) {
             item.GLorPM = 'Ⅰ'
           }
@@ -1640,7 +1637,7 @@ export default {
           }
           return item
         })
-        console.log(warpTable)
+        console.log(weftTable, weftTableBack)
         // 将展平的数据用于克重计算
         warpTable.forEach((item) => {
           colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
