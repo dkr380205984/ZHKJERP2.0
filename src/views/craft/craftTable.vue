@@ -95,7 +95,8 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">经向排列</span>
-              <span class="row_item col">
+              <span class="row_item col"
+                @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -118,9 +119,24 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item.value}}
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
@@ -131,9 +147,24 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item.value}}
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
@@ -313,7 +344,8 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">纬向排列</span>
-              <span class="row_item col">
+              <span class="row_item col"
+                @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -336,9 +368,24 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item.value}}
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
@@ -349,9 +396,24 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item.value}}
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
@@ -1249,8 +1311,50 @@ export default {
       let valueArr = item[key] // value来源数组
       item[index].forEach(val => {
         val.value = this.$clone(valueArr[val.row]).splice(val.col, val.colspan).filter(num => num)[0]
+        if (val.row === 3) {
+          val.totalNumber = this.getValue(val, valueArr[2])
+        } else if (val.row === 4) {
+          let data = this.getFlatTable(valueArr, item[index])
+          console.log(data, item[index], valueArr)
+        }
       })
       this.changeMergeMethod(item[index], Math.ceil(item[key][0].length / 16)) // 处理合并规则
+    },
+    // 计算梭数
+    getValue (valueData, dataArr) {
+      if (Number(valueData.value)) {
+        return dataArr.slice(valueData.col, valueData.col + valueData.colspan).map(itemN => Number(itemN) || 1).reduce((total, current) => {
+          return Number(total) + Number(current)
+        }) * Number(valueData.value)
+      } else {
+        try {
+          let arr = []
+          let valueR = valueData.value.split(']')[0].split('[')[1]
+          let start = valueData.value.split(']')[1].split('[')[1]
+          let end = valueData.value.split(']')[2].split('[')[1]
+          if (+start <= +end && +start > valueData.col && +end <= (valueData.col + valueData.colspan)) {
+            // 此处循环一下
+            for (let i = 1; i <= +valueR; i++) {
+              if (i !== +valueR) {
+                arr.push(...dataArr.slice(valueData.col, valueData.col + valueData.colspan))
+              } else {
+                arr.push(...dataArr.slice(valueData.col, +start - 1))
+                if (+end !== valueData.col + valueData.colspan) {
+                  arr.push(...dataArr.slice(+end - 1, valueData.col + valueData.colspan))
+                }
+              }
+            }
+            return arr.map(itemN => Number(itemN) || 1).reduce((total, current) => {
+              return total + current
+            })
+          } else { // start不小于end、start不大于起始列、end不小于结束列直接视为参数错误返回null
+            return null
+          }
+        } catch (e) {
+          console.log(e)
+          return null
+        }
+      }
     },
     // 对合并规则进行处理
     changeMergeMethod (item, key) {
@@ -1276,7 +1380,6 @@ export default {
               val.noJianTou = true
             }
           }
-          // console.log(JSON.stringify(val))
         })
       }
     },
@@ -1290,8 +1393,14 @@ export default {
         let val = isMergeData[ind]
         let mergeItem = mergeMethod.find(mergeItem => ind >= (mergeItem.col - (keys || 0) * 16) && ((mergeItem.col - (keys || 0) * 16) + mergeItem.colspan - 1) >= ind)
         if (mergeItem) {
-          // console.log(JSON.stringify(mergeItem))
-          mergeData.push({ value: mergeItem.value, colspan: mergeItem.colspan, isSplit: mergeItem.split, noLeftJianTou: mergeItem.noLeftJianTou, noRightJianTou: mergeItem.noRightJianTou, noJianTou: mergeItem.noJianTou })
+          mergeData.push({
+            value: mergeItem.value,
+            colspan: mergeItem.colspan,
+            isSplit: mergeItem.split,
+            noLeftJianTou: mergeItem.noLeftJianTou,
+            noRightJianTou: mergeItem.noRightJianTou,
+            noJianTou: mergeItem.noJianTou
+          })
           ind += (mergeItem.colspan - 1)
         } else {
           mergeData.push({ value: val, colspan: 1 })
@@ -1326,7 +1435,6 @@ export default {
     getFlatTable (table, mergeData) {
       let tableArr = table
       let mergeTable = mergeData || []
-      console.log(mergeTable)
       let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
       let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
       // 处理合并项的合并信息
@@ -1472,6 +1580,7 @@ export default {
           weft_merge: this.$clone(JSON.parse(data.weft_data.merge_data)),
           werf_merge_back: this.$clone(JSON.parse(data.weft_data.merge_data_back))
         }
+        console.log(mergeNative)
         data.warp_data.merge_data = JSON.parse(data.warp_data.merge_data)
         data.warp_data.merge_data_back = JSON.parse(data.warp_data.merge_data_back)
         data.warp_data.warp_rank = JSON.parse(data.warp_data.warp_rank)
@@ -1640,7 +1749,6 @@ export default {
           }
           return item
         })
-        console.log(warpTable)
         // 将展平的数据用于克重计算
         warpTable.forEach((item) => {
           colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
@@ -1658,7 +1766,6 @@ export default {
           colorNumber.weft[item.color] = colorNumber.weft[item.color] ? colorNumber.weft[item.color] : 0
           colorNumber.weft[item.color] += Number(item.number)
         })
-
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.warp[itemChild] = {
