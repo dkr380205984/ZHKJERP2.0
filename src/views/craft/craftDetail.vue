@@ -435,6 +435,13 @@
               style="word-break: break-word;"> {{remarkPM?remarkPM:'无'}}</div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">纹版备注：</div>
+            <div class="text"
+              style="word-break: break-word;"> {{remarkGL?remarkGL:'无'}}</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="module">
@@ -1087,6 +1094,7 @@ export default {
         }]
       }],
       remarkPM: '',
+      remarkGL: '',
       // GL:graphic layout 纹版图缩写
       GL: [[['', '', '']]],
       GLFlag: 'normal',
@@ -1728,6 +1736,7 @@ export default {
       this.PM = data.draft_method.PM
       this.PMFlag = data.draft_method.PMFlag
       this.remarkPM = data.draft_method.desc
+      this.remarkGL = data.weft_data.contract_ratio
       this.GLRepeat = this.$clone(data.draft_method.GLRepeat) || []
       this.GLRepeat.forEach((item) => {
         let addNum = 0

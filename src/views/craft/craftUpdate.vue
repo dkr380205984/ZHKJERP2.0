@@ -712,6 +712,17 @@
             </div>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
+              <span class="text">纹版图备注</span>
+            </div>
+            <div class="content">
+              <el-input v-model="remarkGL"
+                placeholder="请输入备注信息(注意：纹版图备注信息不会计入绘图和计算！)"></el-input>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="module">
@@ -1865,7 +1876,8 @@ export default {
           }]
         }]
       }],
-      remarkPM: '',
+      remarkPM: '',//穿综备注
+      remarkGL: '',//纹版备注
       GLRepeat: [[{
         start: '',
         end: '',
@@ -3263,7 +3275,7 @@ export default {
           neichang: this.weftInfo.neichang,
           rangwei: this.weftInfo.rangwei,
           total: this.weftInfo.total,
-          contract_ratio: 100 // 缩率工艺单用不到，默认100
+          contract_ratio: this.remarkGL // 纬向缩率已废弃，转为纬向说明字段
         },
         draft_method: {
           PM: this.repeatPM.map((item, index) => {
@@ -3475,6 +3487,7 @@ export default {
         repeat: ''
       }]]
       this.remarkPM = data.draft_method.desc
+      this.remarkGL = data.weft_data.contract_ratio
       this.desc = data.desc
       this.weight = data.weight
       this.coefficient = data.yarn_coefficient.map((item) => item.value)
