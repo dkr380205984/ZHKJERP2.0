@@ -95,7 +95,8 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">经向排列</span>
-              <span class="row_item col">
+              <span class="row_item col"
+                @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -118,9 +119,28 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item|filterValue}}
+                        <span style="font-size:16px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                          {{item.totalNumber || ''}}梭
+                        </span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
@@ -131,9 +151,28 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item|filterValue}}
+                        <span style="font-size:16px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                          {{item.totalNumber || ''}}梭
+                        </span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
@@ -211,13 +250,13 @@
             <span class="print_row maxHeight">
               <span class="col_title">穿综法</span>
               <span class="row_item col"
-                v-if="craftDetail.draft_method.GLFlag === 'normal' && 6 > craftDetail.draft_method.GL[0].length ">
+                v-if="craftDetail.draft_method.GLFlag === 'normal' && (WBL || 5) >= craftDetail.draft_method.GL[0].length ">
                 <span class="print_row noBorder h40">
                   <span class="row_item w130 center noBorder">穿综法循环：</span>
                   <span class="row_item left">{{craftDetail.draft_method|filterThroughMethod}}</span>
                 </span>
-                <span class="print_row maxHeight">
-                  <!-- <template v-if="craftDetail.draft_method.GLFlag === 'normal' && 6 > craftDetail.draft_method.GL[0].length "> -->
+                <span class="print_row maxHeight"
+                  @click.right="handleClickRight($event,2)">
                   <span class="row_item noBorder center"
                     v-for="(item,index) in craftDetail.draft_method.GL[0]"
                     :key="index">
@@ -228,9 +267,6 @@
                       <span class="item">{{item[2]}}</span>
                     </span>
                   </span>
-                  <!-- </template> -->
-                  <!-- <template v-else> -->
-                  <!-- </template> -->
                 </span>
                 <span class="print_row h40">
                   <span class="row_item w100 center noBorder">穿综备注：</span>
@@ -238,7 +274,8 @@
                 </span>
               </span>
               <span class="row_item center"
-                v-else>见附件</span>
+                v-else
+                @click.right="handleClickRight($event,2)">见附件</span>
             </span>
           </span>
         </div>
@@ -313,7 +350,8 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">纬向排列</span>
-              <span class="row_item col">
+              <span class="row_item col"
+                @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -336,9 +374,28 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item|filterValue}}
+                        <span style="font-size:16px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                          {{item.totalNumber || ''}}梭
+                        </span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
@@ -349,9 +406,28 @@
                       :class="{'row_item_span':true,'isMerge':item.colspan && item.colspan > 1}"
                       :key="index"
                       :style="{'min-width':item.colspan * (100 / 16) + '%'}">
-                      {{item.value}}
-                      <span style="font-size:12px;color:rgba(0,0,0,1)"
-                        v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                      <span class="value_span">
+                        {{item|filterValue}}
+                        <span style="font-size:16px;color:rgba(0,0,0,1)"
+                          v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                        <span style="font-size:12px;color:rgba(0,0,0,1)"
+                          v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                          {{item.totalNumber || ''}}梭
+                        </span>
+                      </span>
+                      <!-- 标记 -->
+                      <span class="sign left"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow left_to_right"
+                          v-if="signType === '3'"></span>
+                      </span>
+                      <span class="sign right"
+                        :class="[`style${signType || 1}`,(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hidden' : '']"
+                        v-if="item.isSplit || (item.colspan && item.colspan > 1)">
+                        <span class="auto_long_arrow right_to_left"
+                          v-if="signType === '3'"></span>
+                      </span>
                     </span>
                     <span class="row_item_span"
                       v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
@@ -377,7 +453,9 @@
           </span>
         </div>
         <!-- 配色 -->
-        <div class="print_row h261">
+        <div class="print_row h261"
+          v-if="colourInfoType === '1'"
+          @click.right="handleClickRight($event,3)">
           <span class="col_title">配色工艺</span>
           <span class="row_item col"
             v-if="zhujia_info.length < 6 && color_data.length < 4">
@@ -464,6 +542,182 @@
           <span class="row_item col"
             v-else>见附件</span>
         </div>
+        <div class="print_row h261"
+          v-else-if="colourInfoType === '2'"
+          @click.right="handleClickRight($event,3)">
+          <span class="col_title">配色工艺</span>
+          <span class="row_item col"
+            v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) <= 10 && color_data.length < 4">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="indexWarp">{{itemWarp.key === 0 ? '主' : `夹${itemWarp.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="indexWeft">{{itemWeft.key === 0 ? '主' : `夹${itemWeft.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center"></span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemB in 10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)"
+                    :key="itemB"></span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(itemWarp.number)}">{{itemWarp.number || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(itemWeft.number)}">
+                    {{itemWeft.number || ''}}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(itemWarp.weight && `${itemWarp.weight}g` || '')}">{{itemWarp.weight && `${itemWarp.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(itemWeft.weight && `${itemWeft.weight}g` || '')}">{{itemWeft.weight && `${itemWeft.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || '')}">{{item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || '')}">{{item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                      :key="`weft-${indexWeft}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                      :key="`buchong-${itemB}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </span>
+          <span class="row_item col"
+            v-else>见附件</span>
+        </div>
         <div class="print_row">
           <span class="row_item w140 center">工序与备注</span>
           <span class="row_item left noBorder">后道工序：{{warp_data.additional_data}}</span>
@@ -514,9 +768,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -547,9 +805,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -646,9 +908,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -679,9 +945,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -777,9 +1047,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -810,9 +1084,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -909,9 +1187,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -942,9 +1224,13 @@
               :key="index"
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
-                {{item.value}}
-                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                {{item|filterValue}}
+                <span style="font-size:16px;color:rgba(0,0,0,1)"
                   v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span>
+                <span style="font-size:12px;color:rgba(0,0,0,1)"
+                  v-if="item.totalNumber && (item.isSplit || item.colspan > 1)">
+                  {{item.totalNumber || ''}}梭
+                </span>
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -1006,107 +1292,406 @@
       </div>
     </div>
     <!-- 配色超出时 -->
-    <div class="printTable outTable"
-      v-if="zhujia_info.length >= 6 || color_data.length >= 4">
-      <div class="outItem">
-        <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
-        {{craftDetail.product_info.product_code}}
-      </div>
-      <div class="outItem">
-        <span class="label">配色方案：</span>
-        <div class="print_body"
-          v-for="(items,indexs) in Math.ceil(zhujia_info.length / 6)"
-          :key="indexs">
-          <span class="print_row h60 noBorder bgGray">
-            <span class="row_item w140 special_title">
-              <span class="top_right">具体配色</span>
-              <span class="bottom_left">颜色组</span>
-            </span>
-            <span class="row_item col"
-              v-for="item in 6"
-              :key="item">
-              <span class="print_row h31 noBorder">
-                <span class="row_item center">{{(item + (indexs * 6)) === 1 ? '主' : ('夹' + (item - 1 + (indexs * 6)))}}</span>
+    <template v-if="colourInfoType === '1'">
+      <div class="printTable outTable"
+        v-if="zhujia_info.length >= 6 || color_data.length >= 4">
+        <div class="outItem">
+          <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+          {{craftDetail.product_info.product_code}}
+        </div>
+        <div class="outItem">
+          <span class="label">配色方案：</span>
+          <div class="print_body"
+            v-for="(items,indexs) in Math.ceil(zhujia_info.length / 6)"
+            :key="indexs">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
               </span>
-              <span class="print_row h31">
-                <span class="row_item center">经</span>
-                <span class="row_item center">纬</span>
+              <span class="row_item col"
+                v-for="item in 6"
+                :key="item">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">{{(item + (indexs * 6)) === 1 ? '主' : ('夹' + (item - 1 + (indexs * 6)))}}</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center">经</span>
+                  <span class="row_item center">纬</span>
+                </span>
               </span>
+              <span class="row_item col"
+                v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">下机时间</span>
             </span>
-            <span class="row_item col"
-              v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">下机时间</span>
-          </span>
-          <span class="print_row h40">
-            <span class="row_item bgGray w140 center">根数</span>
-            <span class="row_item center"
-              v-for="item in 6"
-              :key="item">
-              <div class="print_row h40 noBorder">
-                <span class="row_item center"
-                  :style="{'font-size':returnSize(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].number)}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].number) ? colorWeight.warp[item - 1 + (indexs * 6)].number : ''}}</span>
-                <span class="row_item center"
-                  :style="{'font-size':returnSize(colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].number)}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].number) ? colorWeight.weft[item - 1 + (indexs * 6)].number : ''}}</span>
-              </div>
-            </span>
-            <span class="row_item center"
-              v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
-          </span>
-          <span class="print_row h40">
-            <span class="row_item bgGray w140 center">克重</span>
-            <span class="row_item center"
-              v-for="item in 6"
-              :key="item">
-              <div class="print_row h40 noBorder">
-                <span class="row_item center"
-                  :style="{'font-size':returnSize((colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].weight) + 'g')}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].weight) ? colorWeight.warp[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
-                <span class="row_item center"
-                  :style="{'font-size':returnSize((colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].weight) + 'g')}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].weight) ? colorWeight.weft[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
-              </div>
-            </span>
-            <span class="row_item center"
-              v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">织造数量</span>
-          </span>
-          <span class="print_row h40"
-            v-for="(item,index) in color_data"
-            :key="index">
-            <span class="row_item bgGray w140 center">{{item.product_color}}</span>
-            <span class="row_item center"
-              v-for="key in 6"
-              :key="key">
-              <span class="print_row h40 noBorder">
-                <span class="row_item center"
-                  :style="{'font-size':returnSize(item.color_scheme.warp[key - 1 + (indexs * 6)] ? item.color_scheme.warp[key - 1 + (indexs * 6)].name : '')}">{{item.color_scheme.warp[key - 1 + (indexs * 6)] ? item.color_scheme.warp[key - 1 + (indexs * 6)].name : ''}}</span>
-                <span class="row_item center"
-                  :style="{'font-size':returnSize(item.color_scheme.weft[key - 1 + (indexs * 6)] ? item.color_scheme.weft[key - 1 + (indexs * 6)].name : '')}"
-                  v-if="!(item.color_scheme.warp[key - 1 + (indexs * 6)] && item.color_scheme.weft[key - 1 + (indexs * 6)] && (item.color_scheme.warp[key - 1 + (indexs * 6)].name === item.color_scheme.weft[key - 1 + (indexs * 6)].name))">{{item.color_scheme.weft[key - 1 + (indexs * 6)] ? item.color_scheme.weft[key - 1 + (indexs * 6)].name : ''}}</span>
-              </span>
-            </span>
-            <span class="row_item center"
-              v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">{{item.number || ''}}</span>
-          </span>
-          <template v-if="color_data.length < 4">
-            <span class="print_row h40"
-              v-for="item in 3-color_data.length"
-              :key="item+'false'">
-              <span class="row_item bgGray w140 center"></span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
               <span class="row_item center"
                 v-for="item in 6"
                 :key="item">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].number)}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].number) ? colorWeight.warp[item - 1 + (indexs * 6)].number : ''}}</span>
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].number)}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].number) ? colorWeight.weft[item - 1 + (indexs * 6)].number : ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                v-for="item in 6"
+                :key="item">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize((colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1+ (indexs * 6)].weight) + 'g')}">{{(colorWeight.warp[item - 1 + (indexs * 6)] && colorWeight.warp[item - 1 + (indexs * 6)].weight) ? colorWeight.warp[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize((colorWeight.weft[item - 1+ (indexs * 6)] && colorWeight.weft[item - 1 + (indexs * 6)].weight) + 'g')}">{{(colorWeight.weft[item - 1 + (indexs * 6)]&& colorWeight.weft[item - 1 + (indexs * 6)].weight) ? colorWeight.weft[item - 1 + (indexs * 6)].weight + 'g' : ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                v-for="key in 6"
+                :key="key">
                 <span class="print_row h40 noBorder">
-                  <span class="row_item"></span>
-                  <span class="row_item"></span>
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(item.color_scheme.warp[key - 1 + (indexs * 6)] ? item.color_scheme.warp[key - 1 + (indexs * 6)].name : '')}">{{item.color_scheme.warp[key - 1 + (indexs * 6)] ? item.color_scheme.warp[key - 1 + (indexs * 6)].name : ''}}</span>
+                  <span class="row_item center"
+                    :style="{'font-size':returnSize(item.color_scheme.weft[key - 1 + (indexs * 6)] ? item.color_scheme.weft[key - 1 + (indexs * 6)].name : '')}"
+                    v-if="!(item.color_scheme.warp[key - 1 + (indexs * 6)] && item.color_scheme.weft[key - 1 + (indexs * 6)] && (item.color_scheme.warp[key - 1 + (indexs * 6)].name === item.color_scheme.weft[key - 1 + (indexs * 6)].name))">{{item.color_scheme.weft[key - 1 + (indexs * 6)] ? item.color_scheme.weft[key - 1 + (indexs * 6)].name : ''}}</span>
                 </span>
               </span>
               <span class="row_item center"
-                v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)"></span>
+                v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)">{{item.number || ''}}</span>
             </span>
-          </template>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  v-for="item in 6"
+                  :key="item">
+                  <span class="print_row h40 noBorder">
+                    <span class="row_item"></span>
+                    <span class="row_item"></span>
+                  </span>
+                </span>
+                <span class="row_item center"
+                  v-if="indexs === (Math.ceil(zhujia_info.length / 6) - 1)"></span>
+              </span>
+            </template>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
+    <template v-else-if="colourInfoType === '2'">
+      <div class="printTable outTable"
+        v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4">
+        <div class="outItem">
+          <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+          {{craftDetail.product_info.product_code}}
+        </div>
+        <div class="outItem">
+          <span class="label">配色方案：</span>
+          <div class="print_body"
+            v-for="(items,indexs) in Math.ceil(zhujiaInfoCom.warp.length / 10)"
+            :key="`warp-${indexs}`">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="itemWarp">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0)
+                  &&
+                  (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key}`)
+                  ||
+                  '' }}
+                  </span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`warp-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].number
+                    ||
+                    ''
+                  )}">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].number
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`warp-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
+                    &&
+                    `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
+                    ||
+                    ''
+                  )}">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
+                  &&
+                  `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`warp-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    item.color_scheme.warp[
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                    ]
+                    &&
+                    item.color_scheme.warp[
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                    ].name
+                    ||
+                    '' )}">
+                    {{ item.color_scheme.warp[
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                    ]
+                  &&
+                  item.color_scheme.warp[
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                  ].name
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in 10"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+          <div class="print_body"
+            v-for="(items,indexs) in Math.ceil(zhujiaInfoCom.weft.length / 10)"
+            :key="`weft-${indexs}`">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="itemWarp">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0)
+                  &&
+                  (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key}`)
+                  ||
+                  '' }}
+                  </span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`weft-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
+                    ||
+                    ''
+                  )}">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`weft-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
+                    &&
+                    `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
+                    ||
+                    ''
+                  )}">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                  &&
+                  zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
+                  &&
+                  `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 10"
+                    :key="`weft-${itemWarp}`"
+                    :style="{'font-size':returnSize(
+                    item.color_scheme.weft[
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                    ]
+                    &&
+                    item.color_scheme.weft[
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                    ].name
+                    ||
+                    '' )}">
+                    {{ item.color_scheme.weft[
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                    ]
+                  &&
+                  item.color_scheme.weft[
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                    &&
+                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                  ].name
+                  ||
+                  '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in 10"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
     <!-- 穿综法超出时 -->
     <div class="printTable outTable"
-      v-if="craftDetail.draft_method.GLFlag !== 'normal' || 5 < craftDetail.draft_method.GL[0].length">
+      @click.right="handleClickRight($event,2)"
+      v-if="craftDetail.draft_method.GLFlag !== 'normal' || (WBL || 5) < craftDetail.draft_method.GL[0].length">
       <div class="outItem">
         <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
         {{craftDetail.product_info.product_code}}
@@ -1122,7 +1707,7 @@
         <div class="print_body noBorder">
           <span class="print_row maxHeight noBorder canWarp">
             <span class="row_item noBorder"
-              style="flex:auto"
+              :style="`flex:auto;min-width:${(100 / WBL) || 20}%`"
               v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
               <span class="index">{{craftDetail.draft_method.GLXuhao[indexs] ? craftDetail.draft_method.GLXuhao[indexs][index] : ''}}</span>
@@ -1157,14 +1742,39 @@
       :style="`left:${X_position || 0}px;top:${Y_position}px`"
       @click="noCloseRMeau">
       <div class="setting_item"
-        :class="{'checked':signType === '1'}"
-        @click.stop="changeSignStyle('1')">模式一</div>
+        @click="windowMethod(1)">刷新</div>
       <div class="setting_item"
-        :class="{'checked':signType === '2'}"
-        @click.stop="changeSignStyle('2')">模式二</div>
-      <div class="setting_item"
-        :class="{'checked':signType === '3'}"
-        @click.stop="changeSignStyle('3')">模式三</div>
+        @click="windowMethod(2)">打印</div>
+      <template v-if="showRMeau === 1">
+        <div class="setting_item"
+          :class="{'checked':signType === '1'}"
+          @click.stop="changeModeType('sign_type_craft_table_setting','signType','1')">模式一</div>
+        <div class="setting_item"
+          :class="{'checked':signType === '2'}"
+          @click.stop="changeModeType('sign_type_craft_table_setting','signType','2')">模式二</div>
+        <div class="setting_item"
+          :class="{'checked':signType === '3'}"
+          @click.stop="changeModeType('sign_type_craft_table_setting','signType','3')">模式三</div>
+      </template>
+      <template v-else-if="showRMeau === 2">
+        <div class="setting_item">
+          {{`设置列数(×${WBL})`}}
+          <el-input-number v-model="WBL"
+            size='small'
+            :step="1"
+            :min='1'
+            :max="6"
+            @change="changeWBL"></el-input-number>
+        </div>
+      </template>
+      <template v-else-if="showRMeau === 3">
+        <div class="setting_item"
+          :class="{'checked':colourInfoType === '1'}"
+          @click.stop="changeModeType('colour_info_craft_table_setting','colourInfoType','1')">模式一</div>
+        <div class="setting_item"
+          :class="{'checked':colourInfoType === '2'}"
+          @click.stop="changeModeType('colour_info_craft_table_setting','colourInfoType','2')">模式二</div>
+      </template>
     </div>
   </div>
 </template>
@@ -1225,12 +1835,28 @@ export default {
       showRMeau: false,
       X_position: 0,
       Y_position: 0,
-      signType: window.localStorage.getItem('sign_type_craft_table_setting') || '1'
+      signType: window.localStorage.getItem('sign_type_craft_table_setting') || '1',
+      WBL: window.localStorage.getItem('WBL_craft_table_setting') || 5,
+      colourInfoType: window.localStorage.getItem('colour_info_craft_table_setting') || '1',
+      zhujiaInfoCom: {
+        warp: [],
+        weft: []
+      }
     }
   },
   methods: {
-    handleClickRight (e) {
-      this.showRMeau = true
+    windowMethod (type) {
+      this.showRMeau = false
+      window.requestAnimationFrame(() => {
+        if (type === 1) {
+          window.location.reload()
+        } else if (type === 2) {
+          window.print()
+        }
+      })
+    },
+    handleClickRight (e, type = 1) {
+      this.showRMeau = type
       this.X_position = e.clientX
       this.Y_position = e.clientY
       e.preventDefault()
@@ -1239,18 +1865,65 @@ export default {
     noCloseRMeau (e) {
       e.stopPropagation()
     },
-    changeSignStyle (e) {
-      window.localStorage.setItem('sign_type_craft_table_setting', e)
-      this.signType = window.localStorage.getItem('sign_type_craft_table_setting') || '1'
+    changeModeType (key, index, e) {
+      window.localStorage.setItem(key, e)
+      this[index] = window.localStorage.getItem(key) || '1'
       this.showRMeau = false
+    },
+    changeWBL (e) {
+      window.localStorage.setItem('WBL_craft_table_setting', e)
     },
     // 给合并规则里添加value
     pushValue (item, key, index) {
       let valueArr = item[key] // value来源数组
       item[index].forEach(val => {
         val.value = this.$clone(valueArr[val.row]).splice(val.col, val.colspan).filter(num => num)[0]
+        if (val.row === 3) {
+          val.totalNumber = this.getValue(val, valueArr[2])
+        } else if (val.row === 4) {
+          let data = this.getFlatTable(valueArr, item[index])
+          val.totalNumber = data.map(itemM => (+itemM.number || 1)).reduce((total, current) => {
+            return total + current
+          }, 0)
+        }
       })
       this.changeMergeMethod(item[index], Math.ceil(item[key][0].length / 16)) // 处理合并规则
+    },
+    // 计算梭数
+    getValue (valueData, dataArr) {
+      if (Number(valueData.value)) {
+        return dataArr.slice(valueData.col, valueData.col + valueData.colspan).map(itemN => Number(itemN) || 1).reduce((total, current) => {
+          return Number(total) + Number(current)
+        }) * Number(valueData.value)
+      } else {
+        try {
+          let arr = []
+          let valueR = valueData.value.split(']')[0].split('[')[1]
+          let start = valueData.value.split(']')[1].split('[')[1]
+          let end = valueData.value.split(']')[2].split('[')[1]
+          if (+start <= +end && +start > valueData.col && +end <= (valueData.col + valueData.colspan)) {
+            // 此处循环一下
+            for (let i = 1; i <= +valueR; i++) {
+              if (i !== +valueR) {
+                arr.push(...dataArr.slice(valueData.col, valueData.col + valueData.colspan))
+              } else {
+                arr.push(...dataArr.slice(valueData.col, +start - 1))
+                if (+end !== valueData.col + valueData.colspan) {
+                  arr.push(...dataArr.slice(+end - 1, valueData.col + valueData.colspan))
+                }
+              }
+            }
+            return arr.map(itemN => Number(itemN) || 1).reduce((total, current) => {
+              return total + current
+            })
+          } else { // start不小于end、start不大于起始列、end不小于结束列直接视为参数错误返回null
+            return null
+          }
+        } catch (e) {
+          console.log(e)
+          return null
+        }
+      }
     },
     // 对合并规则进行处理
     changeMergeMethod (item, key) {
@@ -1265,7 +1938,8 @@ export default {
               rowspan: val.rowspan,
               split: true,
               noLeftJianTou: true,
-              value: val.value
+              value: val.value,
+              totalNumber: val.totalNumber
             })
             val.colspan = i * 16 - val.col
             val.split = true
@@ -1289,7 +1963,15 @@ export default {
         let val = isMergeData[ind]
         let mergeItem = mergeMethod.find(mergeItem => ind >= (mergeItem.col - (keys || 0) * 16) && ((mergeItem.col - (keys || 0) * 16) + mergeItem.colspan - 1) >= ind)
         if (mergeItem) {
-          mergeData.push({ value: mergeItem.value, colspan: mergeItem.colspan, isSplit: mergeItem.split, noLeftJianTou: mergeItem.noLeftJianTou, noRightJianTou: mergeItem.noRightJianTou, noJianTou: mergeItem.noJianTou })
+          mergeData.push({
+            value: mergeItem.value,
+            colspan: mergeItem.colspan,
+            isSplit: mergeItem.split,
+            noLeftJianTou: mergeItem.noLeftJianTou,
+            noRightJianTou: mergeItem.noRightJianTou,
+            noJianTou: mergeItem.noJianTou,
+            totalNumber: mergeItem.totalNumber
+          })
           ind += (mergeItem.colspan - 1)
         } else {
           mergeData.push({ value: val, colspan: 1 })
@@ -1637,7 +2319,6 @@ export default {
           }
           return item
         })
-        console.log(weftTable, weftTableBack)
         // 将展平的数据用于克重计算
         warpTable.forEach((item) => {
           colorNumber.warp[item.color] = colorNumber.warp[item.color] ? colorNumber.warp[item.color] : 0
@@ -1655,10 +2336,10 @@ export default {
           colorNumber.weft[item.color] = colorNumber.weft[item.color] ? colorNumber.weft[item.color] : 0
           colorNumber.weft[item.color] += Number(item.number)
         })
-
         this.warp_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.warp[itemChild] = {
+              key: itemChild,
               number: colorNumber.warp[itemChild],
               weight: this.$toFixed(colorNumber.warp[itemChild] * (this.weft_data.neichang + this.weft_data.rangwei) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
             }
@@ -1667,12 +2348,17 @@ export default {
         this.weft_data.material_data.forEach((item) => {
           item.apply.forEach((itemChild) => {
             this.colorWeight.weft[itemChild] = {
+              key: itemChild,
               number: colorNumber.weft[itemChild],
               weight: this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
             }
           })
         })
         this.yarn_coefficient = data.yarn_coefficient
+        this.zhujiaInfoCom = {
+          warp: this.colorWeight.warp.filter(itemF => itemF.number),
+          weft: this.colorWeight.weft.filter(itemF => itemF.number)
+        }
         setTimeout(() => {
           window.print()
         }, 1000)
@@ -1725,6 +2411,16 @@ export default {
         })
       }
       return str
+    },
+    filterValue (item) {
+      if (item.value && item.value.indexOf('[') !== -1 && item.colspan < 6) {
+        let valueR = item.value.split(']')[0].split('[')[1]
+        let start = item.value.split(']')[1].split('[')[1]
+        let end = item.value.split(']')[2].split('[')[1]
+        return `x${valueR}-[${start}-${end}]`
+      } else {
+        return item.value
+      }
     }
   }
 }
