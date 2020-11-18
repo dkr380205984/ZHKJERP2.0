@@ -238,19 +238,32 @@ const plugin = {
    *type:Number|String
    *return:Number
    ***********************************/
-  toFixedAuto: (number) => {
+  toFixedAuto: (number, precision = 2) => {
     if (isNaN(Number(number))) {
       return NaN
     }
-    if (!Number(number) && Number(number) !== 0) {
-      throw new TypeError('Expect to get a number')
-    }
-    if (number % 1 === 0) {
-      return parseInt(number)
-    } else if (number % 0.1 === 0) {
-      return Number(Number(number).toFixed(1))
-    } else if (number % 0.01 === 0 || number % 0.01 !== 0) {
-      return Number(Number(number).toFixed(2))
+    /**
+     * 2020/11/17 改写前代码 下方代码注释备用
+     */
+    // if (!Number(number) && Number(number) !== 0) {
+    //   throw new TypeError('Expect to get a number')
+    // }
+    // if (number % 1 === 0) {
+    //   return parseInt(number)
+    // } else if (number % 0.1 === 0) {
+    //   return Number(Number(number).toFixed(1))
+    // } else if (number % 0.01 === 0 || number % 0.01 !== 0) {
+    //   return Number(Number(number).toFixed(2))
+    // }
+    /**
+     * 2020/11/17 改写后代码
+     */
+    if (precision === 0) {
+      return Math.round(number)
+    } else if (precision) {
+      return Math.round(number * Math.pow(10, precision)) / Math.pow(10, precision)
+    } else {
+      return number
     }
   },
   /************************************
@@ -494,8 +507,32 @@ const saveHistoryOrder = (orderInfo) => {
     window.localStorage.setItem('orderHistory', JSON.stringify(local))
   }
 }
+/**
+ * 织慧科技处理精度的算法
+ * 0.90-0.99向上取整 0.01-0.10向下取整
+ * @param {Number} number 处理的数字
+ * @param {integer} precision 处理精度位数
+ * @param {float} up 向上取整基数
+ * @param {float} down 向下取整基数
+ * @returns {NaN,Number}
+ */
+const disposeFZHNumber = (number, precision = 2, ...[up = 0.9, down = 0.1]) => {
+  let newNum = plugin.toFixedAuto(number, precision)
+  if (isNaN(newNum)) {
+    return newNum
+  } else {
+    let decimal = newNum % 1
+    if (decimal && Number(decimal) >= up) {
+      return Math.ceil(newNum)
+    } else if (decimal && Number(decimal <= down)) {
+      return Math.floor(newNum)
+    }
+    return newNum
+  }
+}
 export default {
   install (Vue) {
+    Vue.prototype.$disposeFZHNumber = disposeFZHNumber
     Vue.prototype.$saveHistoryOrder = saveHistoryOrder
     Vue.prototype.$getDataType = plugin.getDataType
     Vue.prototype.$winReload = plugin.winReload

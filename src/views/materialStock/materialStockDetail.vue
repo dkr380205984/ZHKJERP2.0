@@ -413,12 +413,12 @@
                             :key="indexColor">
                             <span class="tcolumn">{{itemColor.attr}}</span>
                             <span class="tcolumn">
-                              <span class="distribution">{{itemColor.unit === 'g' ? $toFixed(itemColor.weight/1000 || 0) : $toFixed(itemColor.weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                              <span class="distribution">{{itemColor.unit === 'g' ? $disposeFZHNumber(itemColor.weight/1000 || 0) : $toFixed(itemColor.weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                               <span class="replenish"
                                 v-if="+itemColor.replenish_weight > 0">{{itemColor.unit === 'g' ? $toFixed(itemColor.replenish_weight/1000 || 0) : $toFixed(itemColor.replenish_weight || 0)}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                             </span>
                             <span class="tcolumn green">{{itemColor.unit === 'g' ? $toFixed((itemColor.outStockNum || 0)) : $toFixed((itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
-                            <span class="tcolumn orange">{{itemColor.unit === 'g' ? $toFixed((+itemColor.weight + (+itemColor.replenish_weight || 0))/1000 - (+itemColor.outStockNum || 0)) : $toFixed((+itemColor.weight + (+itemColor.replenish_weight || 0)) - (+itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
+                            <span class="tcolumn orange">{{itemColor.unit === 'g' ? $toFixed(($disposeFZHNumber(+itemColor.weight/1000) + ((+itemColor.replenish_weight || 0)/1000)) - (+itemColor.outStockNum || 0)) : $toFixed((+itemColor.weight + (+itemColor.replenish_weight || 0)) - (+itemColor.outStockNum || 0))}}{{itemColor.unit === 'g' ? 'kg' : itemColor.unit}}</span>
                             <span class="tcolumn center">
                               <span class="btn noBorder noMargin"
                                 @click="handleClickProcess(item,itemMa,itemColor)">出库</span>
@@ -1731,7 +1731,7 @@ export default {
     },
     // 织造加工module点击表格内操作时
     handleClickProcess (item, itemMa, itemColor) {
-      let num = this.$toFixed((itemColor.type === 1 ? (+itemColor.weight + +itemColor.replenish_weight) / 1000 : (+itemColor.weight + +itemColor.replenish_weight)) - (+itemColor.outStockNum || 0))
+      let num = this.$toFixed((itemColor.type === 1 ? (this.$disposeFZHNumber(+itemColor.weight / 1000) + (+itemColor.replenish_weight / 1000)) : (+itemColor.weight + +itemColor.replenish_weight)) - (+itemColor.outStockNum || 0))
       let materialInfo = {
         material_name: itemMa.material_name,
         material_attribute: itemColor.attr,

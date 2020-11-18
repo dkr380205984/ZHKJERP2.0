@@ -269,8 +269,12 @@
                   </span>
                 </span>
                 <span class="print_row h40">
-                  <span class="row_item w100 center noBorder">穿综备注：</span>
+                  <span class="row_item w130 center noBorder">穿综备注：</span>
                   <span class="row_item left">{{craftDetail.draft_method.desc}}</span>
+                </span>
+                <span class="print_row h40">
+                  <span class="row_item w130 center noBorder">纹版备注：</span>
+                  <span class="row_item left">{{weft_data.contract_ratio}}</span>
                 </span>
               </span>
               <span class="row_item center"
@@ -1294,7 +1298,8 @@
     <!-- 配色超出时 -->
     <template v-if="colourInfoType === '1'">
       <div class="printTable outTable"
-        v-if="zhujia_info.length >= 6 || color_data.length >= 4">
+        v-if="zhujia_info.length >= 6 || color_data.length >= 4"
+        @click.right="handleClickRight($event,3)">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}
@@ -1394,7 +1399,8 @@
     </template>
     <template v-else-if="colourInfoType === '2'">
       <div class="printTable outTable"
-        v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4">
+        v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4"
+        @click.right="handleClickRight($event,3)">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}

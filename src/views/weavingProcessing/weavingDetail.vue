@@ -515,7 +515,7 @@
                           :key="indexMat">
                           <div class="tcolumn">{{itemMat.material_name}}</div>
                           <div class="tcolumn">{{itemMat.material_attribute}}</div>
-                          <div class="tcolumn">{{itemMat.material_type===1?$toFixed(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
+                          <div class="tcolumn">{{itemMat.material_type===1?$disposeFZHNumber(itemMat.material_weight/1000):itemMat.material_weight}}{{itemMat.material_type===1?'kg':itemMat.material_unit}}</div>
                         </div>
                         <div class="trow"
                           v-if="itemChild.material_assign.length===0">
