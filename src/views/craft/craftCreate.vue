@@ -4272,7 +4272,9 @@ export default {
         peise_yarn_weight[colour_name] = {}
         itemColour.colorWarp.forEach((itemColor, indexColor) => {
           peise_yarn_weight[colour_name][itemColor.name] = peise_yarn_weight[colour_name][itemColor.name] || {}
-          peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.warp[indexColor])
+          peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] ?
+            peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] += Number(this.colorWeight.warp[indexColor]) :
+            peise_yarn_weight[colour_name][itemColor.name][this.warpInfo.material_data.find((itemFind) => itemFind.apply.indexOf(indexColor) !== -1).material_name] = Number(this.colorWeight.warp[indexColor])
         })
         itemColour.colorWeft.forEach((itemColor, indexColor) => {
           peise_yarn_weight[colour_name][itemColor.name] = peise_yarn_weight[colour_name][itemColor.name] || {}
