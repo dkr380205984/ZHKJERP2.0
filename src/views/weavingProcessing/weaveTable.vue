@@ -43,7 +43,7 @@
           <div class="row_item center w180">生产单位</div>
           <div class="row_item left">{{filterClientTel(weaveInfo[0] ? weaveInfo[0].client_name : '')}}</div>
           <div class="row_item center w180">总价</div>
-          <div class="row_item left flex08">{{weaveInfo|filterialTotal}}元</div>
+          <div class="row_item left flex08">{{weaveInfoCom}}元</div>
         </div>
         <div class="print_row bgGray">
           <div class="row_item center w180">产品信息</div>
@@ -85,7 +85,7 @@
               :key="indexColor"
               :class="['print_row', indexColor === 0 ? 'noBorder':'']">
               <span class="row_item w180 center">{{itemColor.material_attribute}}</span>
-              <span class="row_item center">{{itemMa.material_type === 1 ? ($toFixed(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
+              <span class="row_item center">{{itemMa.material_type === 1 ? ($disposeFZHNumber(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
             </span>
           </div>
         </div>
@@ -166,7 +166,7 @@
               :key="indexColor"
               :class="['print_row', indexColor === 0 ? 'noBorder':'']">
               <span class="row_item w180 center">{{itemColor.material_attribute}}</span>
-              <span class="row_item center">{{itemMa.material_type === 1 ? ($toFixed(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
+              <span class="row_item center">{{itemMa.material_type === 1 ? ($disposeFZHNumber(itemColor.material_weight/1000) + 'kg') : (itemColor.material_weight + (itemColor.unit || '个'))}}</span>
             </span>
           </div>
         </div>
@@ -604,7 +604,7 @@ export default {
           price += (Number(itemColor.number) || 0) * (Number(itemColor.price) || 0)
         })
       })
-      return price
+      return price.toFixed(2)
     },
     filterialWeight (item) {
       let weight = 0
@@ -619,6 +619,17 @@ export default {
       return [...new Set(data.map(item => {
         return item.color_info.map(itemC => itemC.desc)
       }).flat())].join(';')
+    }
+  },
+  computed: {
+    weaveInfoCom () {
+      let price = 0
+      this.weaveInfo.forEach(item => {
+        item.color_info.forEach(itemColor => {
+          price += (Number(itemColor.number) || 0) * (Number(itemColor.price) || 0)
+        })
+      })
+      return this.$toFixed(price)
     }
   }
 }
