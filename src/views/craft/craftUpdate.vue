@@ -2685,23 +2685,20 @@ export default {
         })
       })
       this.material.materialWarp.forEach((item) => {
-        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
-          if (index) {
-            return {
-              number: index,
-              weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
-                return {
-                  name: item.name,
-                  value: this.coefficient[index]
-                }
-              }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
-            }
+        item.apply = item.array.filter((itemChild) => (itemChild && itemChild !== '') || itemChild === 0).map((index) => {
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+              return {
+                name: item.name,
+                value: this.coefficient[index]
+              }
+            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
           }
-
         })
       })
       this.material.materialWeft.forEach((item) => {
-        item.apply = item.array.filter((itemChild) => itemChild && itemChild !== '').map((index) => {
+        item.apply = item.array.filter((itemChild) => (itemChild && itemChild !== '') || itemChild === 0).map((index) => {
           return {
             number: index,
             weight: item.number * (this.colorNumber.weft[index] * (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * this.allMaterial.map((item, index) => {
@@ -2738,7 +2735,6 @@ export default {
             peise_yarn_weight[colour_name][itemColour.colorWeft[itemChild.number].name][item.value] += Number(itemChild.weight)
           })
         })
-
       })
       return {
         yarn_color_weight: yarn_color_weight,
