@@ -1298,6 +1298,7 @@
     <!-- 配色超出时 -->
     <template v-if="colourInfoType === '1'">
       <div class="printTable outTable"
+        style="break-inside: avoid;"
         v-if="zhujia_info.length >= 6 || color_data.length >= 4"
         @click.right="handleClickRight($event,3)">
         <div class="outItem">
@@ -1399,6 +1400,7 @@
     </template>
     <template v-else-if="colourInfoType === '2'">
       <div class="printTable outTable"
+        style="break-inside: avoid;"
         v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4"
         @click.right="handleClickRight($event,3)">
         <div class="outItem">
@@ -1696,6 +1698,7 @@
     </template>
     <!-- 穿综法超出时 -->
     <div class="printTable outTable"
+      style="break-inside: avoid;"
       @click.right="handleClickRight($event,2)"
       v-if="craftDetail.draft_method.GLFlag !== 'normal' || (WBL || 5) < craftDetail.draft_method.GL[0].length">
       <div class="outItem">
@@ -1741,6 +1744,11 @@
         style="word-break: break-all;">
         <span class="label">穿综备注：</span>
         {{craftDetail.draft_method.desc}}
+      </div>
+      <div class="outItem"
+        style="word-break: break-all;">
+        <span class="label">纹版备注：</span>
+        {{weft_data.contract_ratio}}
       </div>
     </div>
     <div class="setting_sign_style"
@@ -1887,7 +1895,7 @@ export default {
         if (val.row === 3) {
           val.totalNumber = this.getValue(val, valueArr[2])
         } else if (val.row === 4) {
-          let data = this.getFlatTable(valueArr, item[index])
+          let data = this.getFlatTable(valueArr, item[index]).filter(itemF => (itemF.order > val.col) && (itemF.order <= (val.col + val.colspan)))
           val.totalNumber = data.map(itemM => (+itemM.number || 1)).reduce((total, current) => {
             return total + current
           }, 0)
