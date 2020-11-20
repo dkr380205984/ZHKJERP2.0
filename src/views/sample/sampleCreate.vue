@@ -978,7 +978,7 @@ export default {
           size_info: sizeInfo
         }
       ]
-      this.orderInfo.title = info.name
+      this.orderInfo.title = info.style_code || info.name
       this.sizeInfo = info.size
       this.colorInfo = info.color
       this.activeId = info.id

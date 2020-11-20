@@ -3254,6 +3254,7 @@ export default {
               has_craft: item.has_craft,
               has_plan: item.has_plan,
               has_quotation: item.has_quotation,
+              style_code: item.style_code,
               style_name: item.style_name,
               type_name: item.type_name,
               category_info: {

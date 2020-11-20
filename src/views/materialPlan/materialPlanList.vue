@@ -174,8 +174,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
-            @current-change="getOrderList">
+            :current-page.sync="pages">
           </el-pagination>
         </div>
       </div>
@@ -249,7 +248,7 @@ export default {
     },
     getFilters () {
       let params = getHash(this.$route.params.params)
-      this.page = Number(params.page)
+      this.pages = Number(params.page)
       this.searchOrderOrProduct = params.searchOrderOrProduct || 'order'
       this.keyword = params.keyword
       if (params.date !== 'null' && params.date !== '') {
