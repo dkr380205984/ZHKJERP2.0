@@ -1299,7 +1299,7 @@
     <template v-if="colourInfoType === '1'">
       <div class="printTable outTable"
         style="break-inside: avoid;"
-        v-if="zhujia_info.length >= 6 || color_data.length >= 4"
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || zhujia_info.length >= 6 || color_data.length >= 4"
         @click.right="handleClickRight($event,3)">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -1401,13 +1401,14 @@
     <template v-else-if="colourInfoType === '2'">
       <div class="printTable outTable"
         style="break-inside: avoid;"
-        v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4"
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4"
         @click.right="handleClickRight($event,3)">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}
         </div>
-        <div class="outItem">
+        <div class="outItem"
+          v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10">
           <span class="label">配色方案：</span>
           <div class="print_body"
             v-for="(items,indexs) in Math.ceil(zhujiaInfoCom.warp.length / 10)"
@@ -1427,12 +1428,12 @@
                     v-for="itemWarp in 10"
                     :key="itemWarp">
                     {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0)
-                  &&
-                  (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key}`)
-                  ||
-                  '' }}
+                      &&
+                      (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0)
+                      &&
+                      (zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key}`)
+                      ||
+                      '' }}
                   </span>
                 </span>
               </span>
@@ -1452,12 +1453,12 @@
                     zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].number
                     ||
                     ''
-                  )}">
+                    )}">
                     {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].number
-                  ||
-                  '' }}
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].number
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1472,21 +1473,21 @@
                     v-for="itemWarp in 10"
                     :key="`warp-${itemWarp}`"
                     :style="{'font-size':returnSize(
-                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                    &&
-                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
-                    &&
-                    `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
-                    ||
-                    ''
-                  )}">
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
+                      ||
+                      ''
+                    )}">
                     {{ zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
-                  &&
-                  `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
-                  ||
-                  '' }}
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].weight}g`
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1503,32 +1504,32 @@
                     v-for="itemWarp in 10"
                     :key="`warp-${itemWarp}`"
                     :style="{'font-size':returnSize(
-                    item.color_scheme.warp[
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                      item.color_scheme.warp[
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                      ]
                       &&
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
-                    ]
-                    &&
-                    item.color_scheme.warp[
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                      &&
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
-                    ].name
-                    ||
-                    '' )}">
+                      item.color_scheme.warp[
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' )}">
                     {{ item.color_scheme.warp[
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                      ]
                       &&
-                      zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
-                    ]
-                  &&
-                  item.color_scheme.warp[
-                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
-                    &&
-                    zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
-                  ].name
-                  ||
-                  '' }}
+                      item.color_scheme.warp[
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 10 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1569,12 +1570,12 @@
                     v-for="itemWarp in 10"
                     :key="itemWarp">
                     {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0)
-                  &&
-                  (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key}`)
-                  ||
-                  '' }}
+                      &&
+                      (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key || zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0)
+                      &&
+                      (zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key}`)
+                      ||
+                      '' }}
                   </span>
                 </span>
               </span>
@@ -1589,17 +1590,17 @@
                     v-for="itemWarp in 10"
                     :key="`weft-${itemWarp}`"
                     :style="{'font-size':returnSize(
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                    &&
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
-                    ||
-                    ''
-                  )}">
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
+                      ||
+                      ''
+                    )}">
                     {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
-                  ||
-                  '' }}
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].number
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1614,21 +1615,21 @@
                     v-for="itemWarp in 10"
                     :key="`weft-${itemWarp}`"
                     :style="{'font-size':returnSize(
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                    &&
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
-                    &&
-                    `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
-                    ||
-                    ''
-                  )}">
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
+                      ||
+                      ''
+                    )}">
                     {{ zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                  &&
-                  zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
-                  &&
-                  `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
-                  ||
-                  '' }}
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].weight}g`
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1645,32 +1646,32 @@
                     v-for="itemWarp in 10"
                     :key="`weft-${itemWarp}`"
                     :style="{'font-size':returnSize(
-                    item.color_scheme.weft[
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                      item.color_scheme.weft[
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                      ]
                       &&
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
-                    ]
-                    &&
-                    item.color_scheme.weft[
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                      &&
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
-                    ].name
-                    ||
-                    '' )}">
+                      item.color_scheme.weft[
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' )}">
                     {{ item.color_scheme.weft[
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                      ]
                       &&
-                      zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
-                    ]
-                  &&
-                  item.color_scheme.weft[
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
-                    &&
-                    zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
-                  ].name
-                  ||
-                  '' }}
+                      item.color_scheme.weft[
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 10 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' }}
                   </span>
                 </div>
               </span>
@@ -1687,6 +1688,178 @@
                     <span class="row_item center"
                       v-for="(itemWarp,indexWarp) in 10"
                       :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+        <div class="outItem"
+          v-else>
+          <span class="label">配色方案：</span>
+          <div class="print_body">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="indexWarp">{{itemWarp.key === 0 ? '主' : `夹${itemWarp.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="indexWeft">{{itemWeft.key === 0 ? '主' : `夹${itemWeft.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center"></span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemB in 10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)"
+                    :key="itemB"></span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(itemWarp.number)}">{{itemWarp.number || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(itemWeft.number)}">
+                    {{itemWeft.number || ''}}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(itemWarp.weight && `${itemWarp.weight}g` || '')}">{{itemWarp.weight && `${itemWarp.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(itemWeft.weight && `${itemWeft.weight}g` || '')}">{{itemWeft.weight && `${itemWeft.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || '')}">{{item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || '')}">{{item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                      :key="`weft-${indexWeft}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="itemB in (10 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                      :key="`buchong-${itemB}`"></span>
                   </div>
                 </span>
                 <span class="row_item w140 center"></span>
