@@ -2190,7 +2190,6 @@ export default {
                 sum += Number(item.number)
               })
               this.warpInfo.weft = sum
-              console.log(warpTable)
             }
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
@@ -3052,7 +3051,6 @@ export default {
   },
   watch: {
     flower_id (newVal) {
-      console.log(newVal)
       this.pages = 1
       this.getList()
     },
@@ -4241,18 +4239,15 @@ export default {
       })
       this.material.materialWarp.forEach((item) => {
         item.apply = item.array.filter((itemChild) => (itemChild && itemChild !== '') || itemChild === 0).map((index) => {
-          if (index) {
-            return {
-              number: index,
-              weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
-                return {
-                  name: item.name,
-                  value: this.coefficient[index]
-                }
-              }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
-            }
+          return {
+            number: index,
+            weight: item.number * (this.colorNumber.warp[index] * (this.weftInfo.neichang + this.weftInfo.rangwei) * this.allMaterial.map((item, index) => {
+              return {
+                name: item.name,
+                value: this.coefficient[index]
+              }
+            }).find((itemFind) => itemFind.name === item.value).value / 100).toFixed(1)
           }
-
         })
       })
       this.material.materialWeft.forEach((item) => {
@@ -4297,7 +4292,6 @@ export default {
         })
 
       })
-      console.log(peise_yarn_weight)
       return {
         yarn_color_weight: yarn_color_weight,
         peise_yarn_weight: peise_yarn_weight,
@@ -4356,7 +4350,6 @@ export default {
         let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
         for (let i = 0; i < forNum.number; i++) {
           let realStorage = temporaryStorage
-          console.log(temporaryStorage)
           if (forNum.start && i === (forNum.number - 1)) {
             realStorage = temporaryStorage.filter((item) => {
               let flag = true
