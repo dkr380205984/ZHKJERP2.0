@@ -274,7 +274,7 @@ export default {
         age: '',
         sex: '',
         telephone: '',
-        station: '',
+        station: [],
         IDcard: '',
         bankName: '',
         bankCard: '',

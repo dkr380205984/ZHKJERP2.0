@@ -232,10 +232,10 @@
             @click="deleteMaterialPlan($route.params.id,$route.params.type)">删除</div>
           <div class="btn btnBlue"
             @click="$router.push('/materialPlan/materialPlanUpdate/' + $route.params.id + '/' + $route.params.type)">修改</div>
-          <div class="btn btnBlue"
+          <!-- <div class="btn btnBlue"
             @click="$openUrl('/material/materialDetail/' + $route.params.id + '/1' + '/' + $route.params.type + '/easy')">去订原料</div>
           <div class="btn btnBlue"
-            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type + '/easy')">去订辅料</div>
+            @click="$openUrl('/material/materialDetail/' + $route.params.id  +'/2'+ '/' + $route.params.type + '/easy')">去订辅料</div> -->
         </div>
       </div>
     </div>

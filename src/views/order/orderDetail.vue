@@ -328,7 +328,7 @@
                         </span>
                       </span>
                     </span>
-                    <span class="extra">
+                    <!-- <span class="extra">
                       <div class="label">相关页面：</div>
                       <div class="link"
                         style="margin-left:4px">
@@ -356,7 +356,7 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/materialStock/materialStockDetail/'+ $route.params.id +'/2/1')">辅料出入库</span>
                       </div>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </template>
@@ -407,7 +407,7 @@
                         </div>
                       </div>
                     </span>
-                    <span class="extra">
+                    <!-- <span class="extra">
                       <div class="label">相关页面：</div>
                       <div class="link"
                         style="margin-left:4px">
@@ -430,7 +430,7 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push(`/productProcess/productProcessDetail/${$route.params.id}`)">成品加工</span>
                       </div>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </template>
@@ -465,7 +465,7 @@
                         </span>
                       </span>
                     </span>
-                    <span class="extra">
+                    <!-- <span class="extra">
                       <div class="label">相关页面：</div>
                       <div class="link"
                         style="margin-left:4px">
@@ -483,7 +483,7 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/packPlan/packStock/'+ $route.params.id)">装箱出库</span>
                       </div>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </template>

@@ -65,6 +65,12 @@
             <span class="text">{{orderInfo.group_name}}</span>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">备注信息：</span>
+            <span class="text blue">{{orderInfo.desc}}</span>
+          </div>
+        </div>
       </div>
     </div>
     <zh-file-module :orderId='$route.params.id'

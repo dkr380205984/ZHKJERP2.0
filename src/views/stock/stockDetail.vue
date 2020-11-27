@@ -60,6 +60,8 @@
             <div class="tb_header">
               <span class="tb_row">原料名称</span>
               <span class="tb_row">原料属性</span>
+              <span class="tb_row">总入库（kg）</span>
+              <span class="tb_row">总出库（kg）</span>
               <span class="tb_row">库存数量（kg）</span>
               <span class="tb_row middle">操作</span>
             </div>
@@ -68,6 +70,8 @@
               :key="indexMa">
               <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.material_color}}</span>
+              <span class="tb_row">{{itemMa.total_push || 0}}</span>
+              <span class="tb_row">{{itemMa.total_pop || 0}}</span>
               <span class="tb_row">{{itemMa.total_weight}}</span>
               <span class="tb_row middle">
                 <span class="tb_handle_btn blue"
@@ -81,7 +85,7 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="5"
+              :page-size="10"
               layout="prev, pager, next"
               :total="yarnTotal"
               :current-page.sync="yarnPages"
@@ -90,7 +94,8 @@
           </div>
           <div class="editCtn bgGary_page"
             v-for="(itemYarn,indexYarn) in yarnEditInfo"
-            :key="indexYarn">
+            :key="indexYarn"
+            :id="indexYarn === 0 && 'editer'">
             <span class="closeIcon_page el-icon-circle-close"
               @click="deleteItem(yarnEditInfo,indexYarn,true)"></span>
             <div class="rowCtn">
@@ -291,7 +296,7 @@
               <span class="tb_row"></span>
               <span class="tb_row"></span>
               <span class="tb_row right">合计：</span>
-              <span class="tb_row flex04">{{this.yarnTotalNumber || 0}}kg</span>
+              <span class="tb_row flex04">{{$toFixed(yarnTotalNumber) || 0}}kg</span>
             </div>
           </div>
           <div class="pageCtn">
@@ -330,6 +335,8 @@
             <div class="tb_header">
               <span class="tb_row">辅料名称</span>
               <span class="tb_row">辅料属性</span>
+              <span class="tb_row">总入库</span>
+              <span class="tb_row">总出库</span>
               <span class="tb_row">库存数量</span>
               <span class="tb_row middle">操作</span>
             </div>
@@ -338,6 +345,8 @@
               :key="indexMa">
               <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.material_color}}</span>
+              <span class="tb_row">{{itemMa.total_push || 0}}</span>
+              <span class="tb_row">{{itemMa.total_pop || 0}}</span>
               <span class="tb_row">{{itemMa.total_weight}}</span>
               <span class="tb_row middle">
                 <span class="tb_handle_btn blue"
@@ -351,7 +360,7 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="5"
+              :page-size="10"
               layout="prev, pager, next"
               :total="materialTotal"
               :current-page.sync="materialPages"
@@ -360,7 +369,8 @@
           </div>
           <div class="editCtn bgGary_page"
             v-for="(itemMa,indexMa) in materialEditInfo"
-            :key="indexMa">
+            :key="indexMa"
+            :id="indexMa === 0 && 'editer'">
             <span class="closeIcon_page el-icon-circle-close"
               @click="deleteItem(materialEditInfo,indexMa,true)"></span>
             <div class="rowCtn">
@@ -540,7 +550,7 @@
               <span class="tb_row flex08">
                 <template v-if="!itemLog.desc">无</template>
                 <template v-else-if="itemLog.desc.length <= 10">{{itemLog.desc}}</template>
-                <template v-if="itemLog.desc.length > 10">
+                <template v-else-if="itemLog.desc.length > 10">
                   {{itemLog.desc.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
@@ -590,6 +600,8 @@
               <span class="tb_row">包装名称</span>
               <span class="tb_row">包装尺寸</span>
               <span class="tb_row">包装属性</span>
+              <span class="tb_row">总入库</span>
+              <span class="tb_row">总出库</span>
               <span class="tb_row">库存数量</span>
               <span class="tb_row middle">操作</span>
             </div>
@@ -599,6 +611,8 @@
               <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.size}}</span>
               <span class="tb_row">{{itemMa.attribute}}</span>
+              <span class="tb_row">{{itemMa.total_push || 0}}</span>
+              <span class="tb_row">{{itemMa.total_pop || 0}}</span>
               <span class="tb_row">{{itemMa.total_number}}</span>
               <span class="tb_row middle">
                 <span class="tb_handle_btn blue"
@@ -612,7 +626,7 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="5"
+              :page-size="10"
               layout="prev, pager, next"
               :total="packTotal"
               :current-page.sync="packPages"
@@ -621,7 +635,8 @@
           </div>
           <div class="editCtn bgGary_page"
             v-for="(itemMa,indexMa) in packEditInfo"
-            :key="indexMa">
+            :key="indexMa"
+            :id="indexMa === 0 && 'editer'">
             <span class="closeIcon_page el-icon-circle-close"
               @click="deleteItem(packEditInfo,indexMa,true)"></span>
             <div class="rowCtn">
@@ -631,17 +646,6 @@
                   <span class="explanation">（必填）</span>
                 </div>
                 <div class="content">
-                  <!-- <el-select v-model="itemMa.packName"
-                    filterable
-                    default-first-option
-                    clearable
-                    placeholder="请选择需要操作的包装辅料">
-                    <el-option v-for="item in packNameList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.name">
-                    </el-option>
-                  </el-select> -->
                   <el-autocomplete v-model="itemMa.packName"
                     clearable
                     :fetch-suggestions="querySearchPack"
@@ -760,8 +764,6 @@
           </div>
           <div class="btnCtn_page"
             id='pack'>
-            <!-- <div class="btn noBorder noMargin"
-              @click="deleteLog(packLog,'packLog')">批量删除</div> -->
             <div class="btn noBorder noMargin"
               @click="downloadPack">批量导出excel</div>
           </div>
@@ -794,7 +796,7 @@
               <span class="tb_row flex08">
                 <template v-if="!itemLog.desc">无</template>
                 <template v-else-if="itemLog.desc.length <= 10">{{itemLog.desc}}</template>
-                <template v-if="itemLog.desc.length > 10">
+                <template v-else-if="itemLog.desc.length > 10">
                   {{itemLog.desc.slice(0,6)}}
                   <el-popover placement="top"
                     width="200"
@@ -844,6 +846,8 @@
               <span class="tb_row">产品编号</span>
               <span class="tb_row">产品图片</span>
               <span class="tb_row">尺码颜色</span>
+              <span class="tb_row">已入库</span>
+              <span class="tb_row">已出库</span>
               <span class="tb_row">库存数量</span>
               <span class="tb_row">更新时间</span>
               <span class="tb_row middle">操作</span>
@@ -858,6 +862,8 @@
                 <zh-img-list :list="itemMa.category_info.image"></zh-img-list>
               </span>
               <span class="tb_row">{{itemMa.size_name + '/' + itemMa.color_name}}</span>
+              <span class="tb_row">{{(itemMa.total_push || 0) + itemMa.category_info.unit}}</span>
+              <span class="tb_row">{{(itemMa.total_pop || 0) + itemMa.category_info.unit}}</span>
               <span class="tb_row">{{itemMa.total_number + itemMa.category_info.unit}}</span>
               <span class="tb_row">{{itemMa.update_time}}</span>
               <span class="tb_row middle">
@@ -872,7 +878,7 @@
           </div>
           <div class="pageCtn">
             <el-pagination background
-              :page-size="5"
+              :page-size="10"
               layout="prev, pager, next"
               :total="productTotal"
               :current-page.sync="productPages"
@@ -881,7 +887,8 @@
           </div>
           <div class="editCtn bgGary_page"
             v-for="(itemMa,indexMa) in productEditInfo"
-            :key="indexMa">
+            :key="indexMa"
+            :id="indexMa === 0 && 'editer'">
             <span class="closeIcon_page el-icon-circle-close"
               @click="deleteItem(productEditInfo,indexMa,true)"></span>
             <div class="rowCtn">
@@ -1121,6 +1128,7 @@ export default {
       yarnLogPages: 1,
       yarnColorList: [],
       yarnNameList: [],
+      yarnTotalNumber: 0,
       searchYarn: '',
       searchYarnLog: '',
       searchYarnLogCode: '',
@@ -1328,7 +1336,7 @@ export default {
       this.loading = true
       this.yarnPages = page || this.yarnPages
       yarnStock.list({
-        limit: 5,
+        limit: 10,
         stock_id: this.$route.params.id,
         type: 1,
         material_name: this.searchYarn,
@@ -1420,7 +1428,7 @@ export default {
       this.loading = true
       this.materialPages = page || this.materialPages
       yarnStock.list({
-        limit: 5,
+        limit: 10,
         page: this.materialPages,
         stock_id: this.$route.params.id,
         type: 2,
@@ -1496,7 +1504,7 @@ export default {
       this.loading = true
       this.packPages = page || this.packPages
       packStock.list({
-        limit: 5,
+        limit: 10,
         page: this.packPages,
         stock_id: this.$route.params.id,
         material_name: this.searchPack
@@ -1569,7 +1577,7 @@ export default {
       this.productPages = page || this.productPages
       productStock.list({
         stock_id: this.$route.params.id,
-        limit: 5,
+        limit: 10,
         page: this.productPages,
         product_code: this.searchProduct
       }).then(res => {
@@ -2212,6 +2220,9 @@ export default {
           productNameList: [cloneItem]
         })
       }
+      setTimeout(() => {
+        this.$goElView('editer')
+      })
     },
     goLog (item, type) {
       if (type === 'yarn') {

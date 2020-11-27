@@ -281,7 +281,7 @@
                         </span>
                       </span>
                     </span>
-                    <span class="extra">
+                    <!-- <span class="extra">
                       <div class="label">相关页面：</div>
                       <div class="link"
                         style="margin-left:4px">
@@ -309,7 +309,7 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/materialStock/materialStockDetail/'+ activeSampleOrderId +'/2/2')">辅料出入库</span>
                       </div>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </template>
@@ -349,7 +349,7 @@
                         </span>
                       </span>
                     </span>
-                    <span class="extra">
+                    <!-- <span class="extra">
                       <div class="label">相关页面：</div>
                       <div class="link"
                         style="margin-left:4px">
@@ -362,7 +362,7 @@
                           style="color:#1a95ff"></i>
                         <span @click="$router.push('/weavingProcessing/processingDetail/'+ activeSampleOrderId +'/2')">半成品加工</span>
                       </div>
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </template>

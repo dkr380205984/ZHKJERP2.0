@@ -11,10 +11,10 @@
               <div class="cutBox">
                 <div class="item"
                   :class="{'active':orderType}"
-                  @click="orderType = true">订单</div>
+                  @click="orderType = true;changeRouter(1)">订单</div>
                 <div class="item"
                   :class="{'active':!orderType}"
-                  @click="orderType = false">样单</div>
+                  @click="orderType = false;changeRouter(1)">样单</div>
               </div>
               <el-select style="width:140px;margin-right:12px"
                 class="filter_item"
@@ -223,10 +223,10 @@ export default {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
       this.getOrderList()
-    },
-    orderType (newVal) {
-      this.changeRouter(1)
     }
+    // orderType (newVal) {
+    //   this.changeRouter(1)
+    // }
   },
   methods: {
     searchClient (node, query) {

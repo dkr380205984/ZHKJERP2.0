@@ -79,6 +79,11 @@ const routes = [
     }, {
       path: '/sample/sampleOrderDetail/:id',
       name: '样品订单详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        defaultType: 2
+      },
       component: () => import('../views/sample/sampleOrderDetail.vue')
     }, {
       path: '/product/productCreate',
@@ -143,6 +148,11 @@ const routes = [
     }, {
       path: '/order/orderDetail/:id',
       name: '订单详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        defaultType: 1
+      },
       component: () => import('../views/order/orderDetail.vue')
     }, {
       path: '/order/orderCreate',
@@ -175,6 +185,11 @@ const routes = [
     }, {
       path: '/materialPlan/materialPlanDetail/:id/:type',
       name: '物料计划单详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        orderType: 'type'
+      },
       component: () => import('../views/materialPlan/materialPlanDetail.vue')
     }, {
       path: '/materialPlan/materialPlanList/:params/:type',
@@ -199,6 +214,11 @@ const routes = [
     }, {
       path: '/material/materialDetail/:id/:type/:orderType/:easyOrder',
       name: '物料订购',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        orderType: 'orderType'
+      },
       component: () => import('../views/material/materialDetail.vue')
     }, {
       path: '/material/materialBatchDetail/:id/:orderType/:type',
@@ -219,6 +239,11 @@ const routes = [
     }, {
       path: '/materialStock/materialStockDetail/:id/:type/:orderType',
       name: '物料出入库详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        orderType: 'orderType'
+      },
       component: () => import('../views/materialStock/materialStockDetail.vue')
     }, {
       path: '/materialStock/materialStockDetail/:id/:type',
@@ -231,6 +256,11 @@ const routes = [
     }, {
       path: '/weavingProcessing/weavingDetail/:id/:orderType',
       name: '织造分配详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        orderType: 'orderType'
+      },
       component: () => import('../views/weavingProcessing/weavingDetail.vue')
     }, {
       path: '/weavingProcessing/weavingList/:params/:type',
@@ -239,6 +269,11 @@ const routes = [
     }, {
       path: '/weavingProcessing/processingDetail/:id/:orderType',
       name: '半成品加工分配详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id',
+        orderType: 'orderType'
+      },
       component: () => import('../views/weavingProcessing/processingDetail.vue')
     }, {
       path: '/weavingProcessing/processingList/:params/:type',
@@ -267,6 +302,10 @@ const routes = [
     }, {
       path: '/packPlan/packPlanCreate/:id',
       name: '装箱计划单详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
       component: () => import('../views/packPlan/packPlanDetailNew.vue')
     }, {
       path: '/packPlan/packStockList/:params',
@@ -275,6 +314,10 @@ const routes = [
     }, {
       path: '/packPlan/packStock/:id',
       name: '装箱出库详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
       component: () => import('../views/packPlan/packStock.vue')
     }, {
       path: '/packPlan/packOrderList/:params',
@@ -283,6 +326,10 @@ const routes = [
     }, {
       path: '/packPlan/packOrderDetail/:id',
       name: '包装订购详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
       component: () => import('../views/packPlan/packOrderDetail.vue')
     }, {
       path: '/receiveDispatch/receiveDispatchList/:params',
@@ -295,6 +342,10 @@ const routes = [
     }, {
       path: '/receiveDispatch/jysf/:id',
       name: '检验收发详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
       component: () => import('../views/receiveDispatch/jysf.vue')
     }, {
       path: '/receiveDispatch/batchXpList/:params',
@@ -323,6 +374,10 @@ const routes = [
     }, {
       path: '/productProcess/productProcessDetail/:id',
       name: '成品加工详情',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
       component: () => import('../views/productProcess/productProcessDetail.vue')
     }, {
       path: '/equipment',

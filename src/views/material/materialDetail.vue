@@ -2709,6 +2709,147 @@ export default {
           this.showComRealityGoStockPopup = true
         })
       }
+    },
+    initPage () {
+      this.loading = true
+      let api = this.$route.params.orderType === '1' ? order : sampleOrder
+      Promise.all([
+        api.detail({
+          id: this.$route.params.id
+        }),
+        materialPlan.detail({
+          order_id: this.$route.params.id,
+          order_type: this.$route.params.orderType, // 区分订单和样单
+          material_type: this.$route.params.type
+        }),
+        client.list(),
+        yarnColor.list(),
+        yarn.list(),
+        materialManage.detail({
+          order_type: this.$route.params.orderType,
+          order_id: this.$route.params.id
+        }),
+        materialManage.init({
+          order_type: this.$route.params.orderType,
+          order_id: this.$route.params.id
+        }),
+        process.list(), materialProcess.detail({
+          order_type: this.$route.params.orderType,
+          order_id: this.$route.params.id
+        }),
+        replenish.list({
+          order_id: this.$route.params.id
+        }),
+        yarnStock.list({
+          type: this.$route.params.type,
+          page: 1,
+          limit: 5
+        }),
+        material.list()
+      ]).then((res) => {
+        this.orderInfo = res[0].data.data
+        this.materialArr = res[1].data.data.total_data.filter((item) => {
+          return item.material_type === Number(this.$route.params.type) && item.reality_weight
+        })
+        this.statistic_data = this.$mergeData(this.materialArr, { mainRule: 'material_name/material_name' })
+        if (this.$route.params.type === '1') {
+          this.statistic_data.forEach((item) => {
+            item.childrenMergeInfo.forEach((itemChild) => {
+              itemChild.reality_weight = itemChild.reality_weight / 1000
+            })
+          })
+        }
+        if (this.type === '1') {
+          this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [3, 4] })
+        } else if (this.type === '2') {
+          this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [5, 6] })
+        }
+        this.processCompany = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [9, 12] })
+        this.colorList = res[3].data.data.map((item) => {
+          return {
+            value: item.name
+          }
+        })
+        if (this.$route.params.type === '1') {
+          this.yarnList = res[4].data.data.map((item) => {
+            return {
+              value: item.name
+            }
+          })
+        } else {
+          this.yarnList = res[11].data.data.map((item) => {
+            return {
+              value: item.name
+            }
+          })
+        }
+        // 初始化扣款单位数据
+        this.clientArr = this.$unique(res[5].data.data.filter(itemF => itemF.client_name && itemF.type === Number(this.type)).map(itemM => {
+          return {
+            client_name: itemM.client_name,
+            client_id: itemM.client_id,
+            type: 1
+          }
+        }), 'client_id').concat(this.$unique(res[8].data.data.filter(item => item.type === Number(this.type)).map(itemM => {
+          return {
+            client_name: itemM.client_name,
+            client_id: itemM.client_id,
+            type: 3
+          }
+        }), 'client_id'))
+        // 如果没有公司名称，说明是调取，把调取仓库赋值给client_name
+        this.order_stock_log = res[5].data.data.map((item) => {
+          if (!item.client_name) {
+            item.client_name = item.stock_name
+          }
+          return item
+        }).filter(item => item.type === Number(this.type))
+        this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
+        this.order_stock_info.forEach((item) => {
+          item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
+            return total + current.price * current.weight
+          }, 0))
+        })
+        this.stock_list = this.$mergeData(res[6].data.data.stock_info.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
+        if (this.stock_list.length === 0) {
+          this.otherYarnFlag = true
+          this.getOtherYarn()
+        }
+        this.processList = res[7].data.data.filter(item => Number(item.type) === 1)
+        this.process_log = res[8].data.data.filter(item => item.type === Number(this.type))
+        this.process_info = this.$mergeData(this.process_log, { mainRule: 'client_name/client_name' })
+        this.process_info.forEach((item) => {
+          item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
+            return total + current.price * current.weight
+          }, 0))
+        })
+        this.replenishList = this.$mergeData(res[9].data.data.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
+        // 改造补纱数据跟订购数据一样
+        this.replenishList.forEach((item) => {
+          item.childrenMergeInfo.forEach((itemChild) => {
+            itemChild.material_attribute = itemChild.material_color
+            itemChild.reality_weight = itemChild.need_weight
+            item.replenishFlag = true
+          })
+        })
+        this.otherYarnStock = res[10].data.data
+        this.total = res[10].data.meta.total
+        // 新增快捷操作，从物料计划单直接进订购页面可以快捷批量订购白胚/辅料
+        if (this.$route.params.easyOrder === 'easy') {
+          this.statistic_data.forEach((item) => {
+            item.checked = true
+          })
+          if (this.$route.params.type === '1') {
+            this.easyOrder(1)
+          } else {
+            this.easyOrder(2)
+          }
+        }
+        this.loading = false
+      })
+      if (this.$route.query.showRouterPopup === 'true') {
+        this.showRouterPopup = true
+      }
     }
   },
   computed: {
@@ -2754,137 +2895,16 @@ export default {
         })
       },
       deep: true
+    },
+    $route: { //关联页面跳转刷新页面
+      deep: true,
+      handler () {
+        this.initPage()
+      }
     }
   },
   created () {
-    let api = this.$route.params.orderType === '1' ? order : sampleOrder
-    Promise.all([api.detail({
-      id: this.$route.params.id
-    }), materialPlan.detail({
-      order_id: this.$route.params.id,
-      order_type: this.$route.params.orderType, // 区分订单和样单
-      material_type: this.$route.params.type
-    }), client.list(),
-    yarnColor.list(), yarn.list(),
-    materialManage.detail({
-      order_type: this.$route.params.orderType,
-      order_id: this.$route.params.id
-    }), materialManage.init({
-      order_type: this.$route.params.orderType,
-      order_id: this.$route.params.id
-    }), process.list(), materialProcess.detail({
-      order_type: this.$route.params.orderType,
-      order_id: this.$route.params.id
-    }), replenish.list({
-      order_id: this.$route.params.id
-    }), yarnStock.list({
-      type: this.$route.params.type,
-      page: 1,
-      limit: 5
-    }), material.list()]).then((res) => {
-      this.orderInfo = res[0].data.data
-      this.materialArr = res[1].data.data.total_data.filter((item) => {
-        return item.material_type === Number(this.$route.params.type) && item.reality_weight
-      })
-      this.statistic_data = this.$mergeData(this.materialArr, { mainRule: 'material_name/material_name' })
-      if (this.$route.params.type === '1') {
-        this.statistic_data.forEach((item) => {
-          item.childrenMergeInfo.forEach((itemChild) => {
-            itemChild.reality_weight = itemChild.reality_weight / 1000
-          })
-        })
-      }
-      if (this.type === '1') {
-        this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [3, 4] })
-      } else if (this.type === '2') {
-        this.orderCompany = this.$getClientOptions(res[2].data.data, companyType, { type: [5, 6] })
-      }
-      this.processCompany = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [9, 12] })
-      this.colorList = res[3].data.data.map((item) => {
-        return {
-          value: item.name
-        }
-      })
-      if (this.$route.params.type === '1') {
-        this.yarnList = res[4].data.data.map((item) => {
-          return {
-            value: item.name
-          }
-        })
-      } else {
-        this.yarnList = res[11].data.data.map((item) => {
-          return {
-            value: item.name
-          }
-        })
-      }
-      // 初始化扣款单位数据
-      this.clientArr = this.$unique(res[5].data.data.filter(itemF => itemF.client_name && itemF.type === Number(this.type)).map(itemM => {
-        return {
-          client_name: itemM.client_name,
-          client_id: itemM.client_id,
-          type: 1
-        }
-      }), 'client_id').concat(this.$unique(res[8].data.data.filter(item => item.type === Number(this.type)).map(itemM => {
-        return {
-          client_name: itemM.client_name,
-          client_id: itemM.client_id,
-          type: 3
-        }
-      }), 'client_id'))
-      // 如果没有公司名称，说明是调取，把调取仓库赋值给client_name
-      this.order_stock_log = res[5].data.data.map((item) => {
-        if (!item.client_name) {
-          item.client_name = item.stock_name
-        }
-        return item
-      }).filter(item => item.type === Number(this.type))
-      this.order_stock_info = this.$mergeData(this.order_stock_log, { mainRule: 'client_name/client_name', otherRule: [{ name: 'type_source' }] })
-      this.order_stock_info.forEach((item) => {
-        item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
-          return total + current.price * current.weight
-        }, 0))
-      })
-      this.stock_list = this.$mergeData(res[6].data.data.stock_info.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
-      if (this.stock_list.length === 0) {
-        this.otherYarnFlag = true
-        this.getOtherYarn()
-      }
-      this.processList = res[7].data.data.filter(item => Number(item.type) === 1)
-      this.process_log = res[8].data.data.filter(item => item.type === Number(this.type))
-      this.process_info = this.$mergeData(this.process_log, { mainRule: 'client_name/client_name' })
-      this.process_info.forEach((item) => {
-        item.total_price = parseInt(item.childrenMergeInfo.reduce((total, current) => {
-          return total + current.price * current.weight
-        }, 0))
-      })
-      this.replenishList = this.$mergeData(res[9].data.data.filter(item => item.type === Number(this.type)), { mainRule: 'material_name/material_name' })
-      // 改造补纱数据跟订购数据一样
-      this.replenishList.forEach((item) => {
-        item.childrenMergeInfo.forEach((itemChild) => {
-          itemChild.material_attribute = itemChild.material_color
-          itemChild.reality_weight = itemChild.need_weight
-          item.replenishFlag = true
-        })
-      })
-      this.otherYarnStock = res[10].data.data
-      this.total = res[10].data.meta.total
-      // 新增快捷操作，从物料计划单直接进订购页面可以快捷批量订购白胚/辅料
-      if (this.$route.params.easyOrder === 'easy') {
-        this.statistic_data.forEach((item) => {
-          item.checked = true
-        })
-        if (this.$route.params.type === '1') {
-          this.easyOrder(1)
-        } else {
-          this.easyOrder(2)
-        }
-      }
-      this.loading = false
-    })
-    if (this.$route.query.showRouterPopup === 'true') {
-      this.showRouterPopup = true
-    }
+    this.initPage()
   }
 }
 </script>

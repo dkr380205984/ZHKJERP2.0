@@ -1202,6 +1202,22 @@ export default {
       this.$nextTick(() => {
         this.$fuckSelect()
       })
+    },
+    $route: {
+      deep: true,
+      handler () {
+        this.loading = true
+        this.initData(this.$route.params.type)
+        if (this.$route.params.orderType === '2') {
+          sampleOrder.detail({
+            id: this.$route.params.id
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.confirmInfo = res.data.data
+            }
+          })
+        }
+      }
     }
   },
   methods: {

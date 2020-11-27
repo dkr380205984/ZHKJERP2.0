@@ -101,6 +101,9 @@
       <div class="main">
         <!-- keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存  -->
         <router-view />
+        <order-about :orderId="$route.params[$route.meta.orderId]"
+          :orderType="$route.params[$route.meta.orderType] || $route.meta.defaultType"
+          v-show="$route.meta.showAboutCom" />
       </div>
     </div>
     <div class="popup"
