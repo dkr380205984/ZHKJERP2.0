@@ -11,7 +11,7 @@
             <div class="filter_line">
               <el-select class="filter_item"
                 v-model="type"
-                @change="changeRouter(1)"
+                @change="getList(1)"
                 placeholder="请选择搜索方式">
                 <el-option label="按产品编号搜索"
                   value="product_code"></el-option>

@@ -451,7 +451,7 @@
                           v-if="indexChild===0">新增</span>
                         <span class="btn noBorder"
                           style="padding:0;margin:0 5px;color:#F5222D"
-                          @click="spliceInspection(item,indexChild)">删除</span>
+                          @click="spliceInspection(item,index,indexChild)">删除</span>
                       </div>
                     </div>
                   </div>
@@ -1094,7 +1094,7 @@ export default {
       }
     },
     okChoose () {
-      this.inspectionForm.detail = this.inspectionFormSon.detail
+      this.inspectionForm.detail = this.$clone(this.inspectionFormSon.detail)
       this.showChoose = false
     },
     cancleChoose () {
@@ -1590,8 +1590,12 @@ export default {
         item.checked = false
       })
     },
-    spliceInspection (item, index) {
-      item.colorSize.splice(index, 1)
+    spliceInspection (item, index, indexChild) {
+      if (index === 0 && indexChild === 0) {
+        this.$message.warning('最少保留一项')
+        return
+      }
+      item.colorSize.splice(indexChild, 1)
       this.inspectionForm.detail = this.inspectionForm.detail.filter((item) => item.colorSize.length > 0)
     },
     // 批量选择加工尺码信息

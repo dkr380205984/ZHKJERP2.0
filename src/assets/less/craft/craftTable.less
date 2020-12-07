@@ -328,9 +328,9 @@
       page-break-after: auto;
       position: relative;
       padding: 16px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      display: block;
+      // flex-direction: column;
+      // align-items: flex-start;
       .label{
         position: absolute;
         left: 0;
@@ -342,6 +342,8 @@
         margin-top: 0!important;
         margin-bottom: 8px;
         overflow: auto;
+        display: block;
+        page-break-inside: avoid;
         &.noBorder{
           border: none;
         }

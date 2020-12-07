@@ -1171,6 +1171,16 @@
                   </zh-input>
                 </div>
               </div>
+              <div class="row">
+                <div class="label">物料价格：</div>
+                <div class="info">
+                  <zh-input style="margin-bottom:12px;width:160px"
+                    placeholder="输入数量"
+                    v-model="item.price">
+                    <template slot="append">元/kg</template>
+                  </zh-input>
+                </div>
+              </div>
             </div>
             <div class="row">
               <div class="label">备注信息：</div>
@@ -1250,7 +1260,8 @@
     <!-- 批量调取白胚选择优先仓库 -->
     <div class="popup"
       v-show="showStockSelect">
-      <div class="main">
+      <div class="main"
+        style="width:900px">
         <div class="title">
           <span class="tex">选择仓库</span>
           <i class="el-icon-close"
@@ -1344,6 +1355,7 @@
               <div class="li">
                 <span class="once">计划物料</span>
                 <span class="once">调取数量</span>
+                <span class="once">物料价格</span>
               </div>
               <div class="li"
                 v-for="(item,index) in stock_data"
@@ -1355,6 +1367,12 @@
                     <template slot="append">kg</template>
                   </el-input>
                 </span>
+                <span class="once">
+                  <el-input placeholder="请输入价格"
+                    v-model="item.stock[0].price">
+                    <template slot="append">元/kg</template>
+                  </el-input>
+                </span>
               </div>
             </div>
             <div class="list"
@@ -1362,6 +1380,7 @@
               <div class="li">
                 <span class="once">计划物料</span>
                 <span class="once">调取数量</span>
+                <span class="once">物料价格</span>
               </div>
               <div class="li"
                 v-for="(item,index) in stock_data"
@@ -1369,6 +1388,9 @@
                 <span class="once">{{item.material_name}}</span>
                 <span class="once">
                   {{item.stock[0].weight}}
+                </span>
+                <span class="once">
+                  {{item.stock[0].price}}
                 </span>
               </div>
             </div>
@@ -2082,7 +2104,8 @@ export default {
               stock_name: whiteYarn.stock_name,
               weight: stockWeight,
               color: whiteYarn.material_color,
-              name: this.checkWhichYarn[0].material_name
+              name: this.checkWhichYarn[0].material_name,
+              price: '',
             }]
           })
         }
@@ -2137,7 +2160,8 @@ export default {
           stock_name: stock,
           weight: '',
           color: color,
-          name: materialName || this.stock_list[this.stockDefault].material_name
+          name: materialName || this.stock_list[this.stockDefault].material_name,
+          price: ''
         }]
       }]
       this.stockYarnInfo = {
@@ -2173,15 +2197,17 @@ export default {
             order_id: this.$route.params.id,
             stock_id: itemChild.stock_id,
             attribute: '',
-            desc: item.desc
+            desc: item.desc,
+            price: itemChild.price || 0
           })
           orderData.push({
             order_type: this.$route.params.orderType,
             desc: item.desc,
             complete_time: this.$getTime(),
-            total_price: 0,
-            price: 0,
+            total_price: this.$toFixed(itemChild.weight * (itemChild.price || 0)),
+            price: itemChild.price || 0,
             total_weight: itemChild.weight,
+            reality_push_weight: itemChild.weight, // 后加的 默认实际值等于计划订购值
             color_code: this.stockYarnInfo.material_color,
             material_name: this.stockYarnInfo.material_name,
             plan_id: item.replenishFlag ? null : item.material_id,
@@ -2341,7 +2367,7 @@ export default {
           stock_data: []
         }
       }).then((res) => {
-        if (res.data.status) {
+        if (res.data.status !== false) {
           this.cancleOrder()
           this.$message.success('订购成功，请刷新页面后查看采购数量')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {

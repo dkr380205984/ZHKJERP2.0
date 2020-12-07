@@ -10,10 +10,7 @@
     </ul>
     <div class="right_btn"
       @click="isShow = !isShow">
-      {{isShow ? '收' : '关联'}}
-      <span :class="{'el-icon-arrow-left':isShow,'el-icon-arrow-right':!isShow}"
-        style="font-size:20px;font-weight:bold"></span>
-      {{isShow ? '起':'页面'}}
+      {{isShow ? '收起列表' : '关联页面'}}
     </div>
   </div>
 </template>

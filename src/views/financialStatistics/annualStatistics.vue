@@ -148,12 +148,12 @@
                 <span class="tb_col_item">
                   <span class="tb_row">合计</span>
                   <span class="tb_row"
-                    style="color:#01B48C">+ {{ $formatNum(parseInt(incomeTotal/10000))}}万元</span>
+                    style="color:#01B48C">+ {{ $formatNum($toFixed(incomeTotal))}}元</span>
                   <span class="tb_row"
-                    style="color:#F5222D">- {{ $formatNum(parseInt(expendTotal/10000))}}万元</span>
-                  <span class="tb_row flex04 middle">
-                    <span class="tb_handle_btn blue"></span>
-                    <span class="tb_handle_btn blue"></span>
+                    style="color:#F5222D">- {{ $formatNum($toFixed(expendTotal))}}元</span>
+                  <span class="tb_row flex04 middle"
+                    style="color:#01B48C">
+                    {{$formatNum($toFixed(incomeTotal - expendTotal))}}元
                   </span>
                 </span>
               </span>
@@ -192,7 +192,7 @@ export default {
       item.name = event.name
       item.income = event.income
       item.expend = event.expend
-      item.url = event.url
+      // item.url = event.url
     },
     getData () {
       this.loading = true
@@ -223,8 +223,11 @@ export default {
             name: '订单',
             info: [
               {
-                name: '下单总值',
-                income: data.order.order_price,
+                // name: '下单总值',
+                // income: data.order.order_price,
+                // expend: 0,
+                name: '实际出库总值',
+                income: data.order.real_price,
                 expend: 0,
                 show: true,
                 url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=' + this.start_time + ',' + this.end_time + '&&group_id=&&company_id='

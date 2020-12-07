@@ -423,6 +423,12 @@ export default {
         icon: 'icon-chanpin',
         url: '/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&has_plan=&&has_craft=&&has_quotation='
       }, {
+        id: 3,
+        isChecked: false,
+        opr: '工艺单列表',
+        icon: 'icon-gongyidan',
+        url: '/craft/craftList/page=1&&keyword=&&date='
+      }, {
         id: 2,
         isChecked: false,
         opr: '添加报价单',

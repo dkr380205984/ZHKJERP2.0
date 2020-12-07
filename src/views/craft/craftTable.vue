@@ -88,8 +88,9 @@
               <span class="row_item w180 center">次要辅料(经)</span>
               <span class="row_item left">
                 <template v-for="item in warp_data.assist_material">
-                  {{item.apply|filterMaterialClass}}
+                  {{item.apply.map(itemM=>itemM.value)|filterMaterialClass}}
                   {{':' + item.material_name }}
+                  ({{item.apply.map(itemM=>+itemM.weight).reduce((total,current)=>total+current,0)}}g)
                 </template>
               </span>
             </span>
@@ -250,23 +251,26 @@
             <span class="print_row maxHeight">
               <span class="col_title">穿综法</span>
               <span class="row_item col"
-                v-if="craftDetail.draft_method.GLFlag === 'normal' && (WBL || 5) >= craftDetail.draft_method.GL[0].length ">
+                v-if="(WBL || 5) >= craftDetail.draft_method.GLShow.map(itemG=>itemG.length).reduce((total,current)=>total+current,0)">
                 <span class="print_row noBorder h40">
                   <span class="row_item w130 center noBorder">穿综法循环：</span>
                   <span class="row_item left">{{craftDetail.draft_method|filterThroughMethod}}</span>
                 </span>
                 <span class="print_row maxHeight"
                   @click.right="handleClickRight($event,2)">
-                  <span class="row_item noBorder center"
-                    v-for="(item,index) in craftDetail.draft_method.GL[0]"
-                    :key="index">
-                    <span class="index">{{index+1}}</span>
-                    <span class="detail">
-                      <span class="item">{{item[0]}}</span>
-                      <span class="item">{{item[1]}}</span>
-                      <span class="item">{{item[2]}}</span>
+                  <template v-for="(itemOut,indexOut) in craftDetail.draft_method.GLShow">
+                    <span class="row_item noBorder center"
+                      v-for="(item,index) in itemOut"
+                      :key="`${indexOut}-${index}`">
+                      <span class="index">{{`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`}}</span>
+                      <span class="detail">
+                        <span class="item">{{item[0]}}</span>
+                        <span class="item">{{item[1]}}</span>
+                        <span class="item">{{item[2]}}</span>
+                      </span>
                     </span>
-                  </span>
+
+                  </template>
                 </span>
                 <span class="print_row h40">
                   <span class="row_item w130 center noBorder">穿综备注：</span>
@@ -347,8 +351,9 @@
               <span class="row_item w180 center">次要辅料(纬)</span>
               <span class="row_item left">
                 <template v-for="item in weft_data.assist_material">
-                  {{item.apply|filterMaterialClass}}
+                  {{item.apply.map(itemM=>itemM.value)|filterMaterialClass}}
                   {{':' + item.material_name }}
+                  ({{item.apply.map(itemM=>+itemM.weight).reduce((total,current)=>total+current,0)}}g)
                 </template>
               </span>
             </span>
@@ -1873,7 +1878,7 @@
     <div class="printTable outTable"
       style="break-inside: avoid;"
       @click.right="handleClickRight($event,2)"
-      v-if="craftDetail.draft_method.GLFlag !== 'normal' || (WBL || 5) < craftDetail.draft_method.GL[0].length">
+      v-if="(WBL || 5) < craftDetail.draft_method.GLShow.map(itemG=>itemG.length).reduce((total,current)=>total+current,0)">
       <div class="outItem">
         <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
         {{craftDetail.product_info.product_code}}
@@ -1892,7 +1897,7 @@
               :style="`flex:auto;min-width:${(100 / WBL) || 20}%`"
               v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
-              <span class="index">{{craftDetail.draft_method.GLXuhao[indexs] ? craftDetail.draft_method.GLXuhao[indexs][index] : ''}}</span>
+              <span class="index">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>
@@ -2541,6 +2546,23 @@ export default {
             }
           })
         })
+        // 计算辅料
+        this.warp_data.assist_material.forEach(item => {
+          item.apply = item.apply.map(itemA => {
+            return {
+              value: itemA,
+              weight: this.$toFixed(item.number * (colorNumber.warp[itemA] * (this.weft_data.neichang + this.weft_data.rangwei) * data.yarn_coefficient.find(itemF => itemF.name === item.material_name).value / 100))
+            }
+          })
+        })
+        this.weft_data.assist_material.forEach(item => {
+          item.apply = item.apply.map(itemA => {
+            return {
+              value: itemA,
+              weight: this.$toFixed(item.number * (colorNumber.weft[itemA] * (Number(this.warp_data.weight_calculate_formula) === 1 ? this.warp_data.reed_width : this.weft_data.peifu) * data.yarn_coefficient.find(itemF => itemF.name === item.material_name).value / 100))
+            }
+          })
+        })
         this.yarn_coefficient = data.yarn_coefficient
         this.zhujiaInfoCom = {
           warp: this.colorWeight.warp.filter(itemF => itemF.number),
@@ -2583,11 +2605,11 @@ export default {
       let romanNum = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ']
       if (items.PMFlag === 'normal') {
         items.PM.forEach((item, key) => {
-          str += romanNum[key] + '【' + item.number + '根（' + item.value + '）' + '】' + (item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : '') + (key !== items.PM.length - 1 ? '。' : '')
+          str += (romanNum[key] || (key + 1)) + '【' + item.number + '根（' + item.value + '）' + '】' + (item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : '') + (key !== items.PM.length - 1 ? '。' : '')
         })
       } else if (items.PMFlag === 'complex') {
         items.PM.forEach((item, key) => {
-          str += romanNum[key]
+          str += (romanNum[key] || (key + 1))
           item.children.forEach((value, index) => {
             str += ('【' + value.number + '根')
             value.children.forEach((val, ind) => {
@@ -2604,7 +2626,12 @@ export default {
         let valueR = item.value.split(']')[0].split('[')[1]
         let start = item.value.split(']')[1].split('[')[1]
         let end = item.value.split(']')[2].split('[')[1]
-        return `x${valueR}-[${start}-${end}]`
+        return `x${valueR}去${start}-${end}列`
+      } else if (item.value && item.value.indexOf('[') !== -1 && item.colspan >= 6) {
+        let valueR = item.value.split(']')[0].split('[')[1]
+        let start = item.value.split(']')[1].split('[')[1]
+        let end = item.value.split(']')[2].split('[')[1]
+        return `x[${valueR}]遍，最后去掉[${start}]-[${end}]列`
       } else {
         return item.value
       }
