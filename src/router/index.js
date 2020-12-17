@@ -82,6 +82,7 @@ const routes = [
       meta: {
         showAboutCom: true,
         orderId: 'id',
+        idInHash: true,
         defaultType: 2
       },
       component: () => import('../views/sample/sampleOrderDetail.vue')

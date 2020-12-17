@@ -1473,8 +1473,8 @@ export default {
       }
     },
     computedPrice (item, flag) {
-      if (item.weight && item.prop && item.price) {
-        item.total_price = ((item.weight / (flag ? 1000 : 1)) * (item.prop / 100 + 1) * item.price).toFixed(2)
+      if (item.weight && item.price) {
+        item.total_price = ((item.weight / (flag ? 1000 : 1)) * ((item.prop || 0) / 100 + 1) * item.price).toFixed(2)
       }
       this.computedCost()
     },
@@ -1669,7 +1669,7 @@ export default {
         return {
           name: val.name,
           number: '',
-          total_price: ''
+          total_price: val.price || ''
         }
       })
       if (!this.priceInfo.weave || this.priceInfo.weave.length === 0) {
@@ -1679,7 +1679,7 @@ export default {
         return {
           name: val.name,
           number: '',
-          total_price: ''
+          total_price: val.price || ''
         }
       })
       if (!this.priceInfo.semi_process || this.priceInfo.semi_process.length === 0) {
@@ -1688,7 +1688,7 @@ export default {
       this.priceInfo.finished_process = JSON.parse(findedItem.product_info || '[]').map(val => {
         return {
           name: val.name,
-          total_price: ''
+          total_price: val.price || ''
         }
       })
       if (!this.priceInfo.finished_process || this.priceInfo.finished_process.length === 0) {
@@ -1697,7 +1697,7 @@ export default {
       this.priceInfo.packag = JSON.parse(findedItem.pack_material_info || '[]').map(val => {
         return {
           name: val.name,
-          total_price: ''
+          total_price: val.price || ''
         }
       })
       if (!this.priceInfo.packag || this.priceInfo.packag.length === 0) {
@@ -1706,7 +1706,7 @@ export default {
       this.priceInfo.other_fee = JSON.parse(findedItem.others_info || '[]').map(val => {
         return {
           name: val.name,
-          total_price: ''
+          total_price: val.price || ''
         }
       })
       if (!this.priceInfo.other_fee || this.priceInfo.other_fee.length === 0) {

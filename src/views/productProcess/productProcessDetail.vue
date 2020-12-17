@@ -54,7 +54,7 @@
         </div>
       </div>
     </div>
-    <div class="module processCtn">
+    <!-- <div class="module processCtn">
       <div class="process hover"
         v-for="(item,index) in processChoose"
         :key="index"
@@ -91,7 +91,7 @@
       <div class="line3">
         完成度：<span style="color:#01B48C">{{(rate.insNum/rate.allNum*100).toFixed(2)}}%</span>
       </div>
-    </div>
+    </div> -->
     <div class="module">
       <div class="titleCtn rightBtn">
         <span class="title">下单信息</span>
@@ -182,9 +182,12 @@
               </div>
               <div class="tbody">
                 <div class="trow"
-                  v-for="item in inspectionList"
-                  :key="item.from">
-                  <div class="tcolumn">{{item.from}}</div>
+                  v-for="(item,index) in inspectionList"
+                  :key="index">
+                  <div class="tcolumn">
+                    <span style="color:#01b48c">{{item.product_flow}}</span>
+                    {{item.from}}
+                  </div>
                   <div class="tcolumn noPad"
                     style="flex:4">
                     <div class="trow"
@@ -222,7 +225,17 @@
     <div class="module"
       id="processEditCtn">
       <div class="titleCtn">
-        <span class="title">{{processType}}加工</span>
+        <span class="title">
+          成品加工
+          <el-tooltip class="item"
+            effect="dark"
+            content="设置订单成品加工工序"
+            placement="top-start">
+            <span class="el-icon-s-tools"
+              style="cursor: pointer;"
+              @click="initSettingFlow"></span>
+          </el-tooltip>
+        </span>
         <el-switch style="float:right;margin-top:20px;margin-right:32px"
           v-model="keyBoard"
           active-text="打开键盘"
@@ -237,6 +250,7 @@
               <div class="label">选择产品：</div>
               <!-- 切换产品需要询问是否切换，并初始化尺码颜色 -->
               <el-select class="inputs"
+                style="width:200px"
                 v-model="inspectionForm.product_id"
                 placeholder="请选择产品"
                 @change="getInspectionPro">
@@ -246,58 +260,26 @@
                   :label="item.product_code + '(' + item.category_name +'/' + item.type_name + '/' + item.style_name +')'"></el-option>
               </el-select>
             </div>
-            <!-- 选择人员模块重做 -->
-            <!-- <div class="filterCtn">
-              <div class="label">选择单位：</div>
-              <el-cascader @change="getClientAuth"
-                v-model="inspectionForm.clientAuth"
-                :options="clientAuthArr"
-                :props="{multiple: true}"
+            <div class="filterCtn">
+              <div class="label">成品工序：</div>
+              <el-select class="inputs"
+                multiple
                 collapse-tags
-                clearable></el-cascader>
-              <span>
-                <el-tooltip class="item"
-                  effect="dark"
-                  content="常用人员设置"
-                  placement="top">
-                  <i class="el-icon-setting"
-                    @click="inspectionSetting.flag=true"></i>
-                </el-tooltip>
-                <div class="selfSelect"
-                  style="transform: translate(calc(8px - 50%), calc(-100% - 32px));"
-                  v-show="inspectionSetting.flag">
-                  <div class="checkBoxCtn"
-                    style="height:auto">
-                    <el-checkbox @change="filterSettingAuthArr($event,item.name)"
-                      v-model="item.checked"
-                      v-for="item in departmentArr"
-                      :key="item.id"
-                      :value="item.name"
-                      :label="item.name">
-                      <span>{{item.name}}</span>
-                    </el-checkbox>
-                  </div>
-                  <div class="checkBoxCtn">
-                    <el-checkbox v-model="item.checked"
-                      v-for="item in settingAuthArr"
-                      :key="item.id"
-                      :value="item.id"
-                      :label="item.name">
-                      <span>{{item.name}}</span>
-                    </el-checkbox>
-                  </div>
-                  <div class="oprCtn">
-                    <div class="btnCancle"
-                      @click="inspectionSetting.flag=false">取消</div>
-                    <div class="btnConfirm"
-                      @click="saveInspectionSetting">保存常用人员</div>
-                  </div>
-                </div>
-              </span>
-            </div> -->
+                style="width:200px"
+                v-model="inspectionForm.product_flow"
+                @change="changeClientAuthArr($event)"
+                placeholder="请选择工序">
+                <el-option v-for="item in processArrCom"
+                  :key="item.value"
+                  :value="item.value"
+                  :label="item.value"></el-option>
+              </el-select>
+            </div>
+            <!-- 选择人员模块重做 -->
             <div class="filterCtn">
               <div class="label">结算单价：</div>
               <zh-input class="inputs"
+                style="width:200px"
                 :keyBoard="keyBoard"
                 v-model="inspectionForm.price"
                 placeholder="请输入人员结算单价">
@@ -320,13 +302,15 @@
               <div class="thead">
                 <div class="trow">
                   <div class="tcolumn">来源单位/人员</div>
+                  <div class="tcolumn">选择工序</div>
                   <div class="tcolumn noPad"
                     style="flex:6">
                     <div class="trow">
                       <div class="tcolumn">配色/尺码</div>
-                      <div class="tcolumn">加工检验数</div>
+                      <div class="tcolumn"
+                        style="flex:0.8">加工数</div>
                       <div class="tcolumn">
-                        <span>结算单价
+                        <span>单价
                           <el-tooltip class="item"
                             effect="dark"
                             content="未填写以上面的总体结算单价为准"
@@ -335,10 +319,12 @@
                           </el-tooltip>
                         </span>
                       </div>
-                      <div class="tcolumn">次品数</div>
+                      <div class="tcolumn"
+                        style="flex:0.6">次品数</div>
                       <div class="tcolumn"
                         style="flex:1.2">次品原因</div>
-                      <div class="tcolumn">操作</div>
+                      <div class="tcolumn"
+                        style="min-width:150px">操作</div>
                     </div>
                   </div>
                 </div>
@@ -350,10 +336,25 @@
                   <div class="tcolumn">
                     <div style="height:32px">
                       <el-cascader v-model="item.client_auth"
-                        :options="clientAuthArr"
+                        :show-all-levels="false"
+                        :options="item.clientAuthArr"
+                        @focus="changeClientAuthArr(item.product_flow || inspectionForm.product_flow,item)"
                         collapse-tags
                         clearable></el-cascader>
                     </div>
+                  </div>
+                  <div class="tcolumn">
+                    <el-select multiple
+                      style="height:32px!important"
+                      v-model="item.product_flow"
+                      collapse-tags
+                      placeholder="请选择工序"
+                      clearable>
+                      <el-option v-for="item in processArrCom"
+                        :key="item.value"
+                        :label="item.value"
+                        :value="item.value"></el-option>
+                    </el-select>
                   </div>
                   <div class="tcolumn noPad"
                     style="flex:6">
@@ -373,23 +374,25 @@
                           </el-select>
                         </div>
                       </div>
-                      <div class="tcolumn">
+                      <div class="tcolumn"
+                        style="flex:0.8">
                         <div style="height:32px">
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.number"
-                            placeholder="加工检验数"></zh-input>
+                            placeholder="加工数"></zh-input>
                         </div>
                       </div>
                       <div class="tcolumn">
                         <div style="height:32px">
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.singlePrice"
-                            placeholder="结算单价">
+                            placeholder="单价">
                             <template slot="append">元</template>
                           </zh-input>
                         </div>
                       </div>
-                      <div class="tcolumn">
+                      <div class="tcolumn"
+                        style="flex:0.6">
                         <div style="height:32px">
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.substandard"
@@ -400,6 +403,7 @@
                         style="flex:1.2">
                         <div style="height:32px">
                           <el-select multiple
+                            collapse-tags
                             v-model="itemChild.reason"
                             placeholder="请选择次品原因"
                             clearable>
@@ -411,7 +415,7 @@
                         </div>
                       </div>
                       <div class="tcolumn"
-                        style="flex-direction:row;align-items:center;justify-content:flex-start">
+                        style="flex-direction:row;align-items:center;justify-content:flex-start;min-width:150px">
                         <span class="btn noBorder"
                           style="padding:0;margin:0 5px 0 0">
                           <span @click.stop="inspectionForm.colorSizeArr.length>0?itemChild.showCheck=true:$message.warning('请先选择产品')">批量选择</span>
@@ -533,7 +537,10 @@
                   <div class="tcolumn">{{item.color_name + '/' + item.size_name}}</div>
                   <div class="tcolumn">{{item.price || '0'}}</div>
                   <div class="tcolumn"
-                    style="flex:1.2">{{item.inspection_user || item.client_name}}</div>
+                    style="flex:1.2">
+                    <span style="color:#01B48C">{{item.product_flow}}</span>
+                    {{item.inspection_user || item.client_name}}
+                  </div>
                   <div class="tcolumn">{{item.number}}</div>
                   <div class="tcolumn"
                     style="color:#F5222D;font-weight:bold;flex-direction:row;align-items:center;justify-content: flex-start;line-height:32px">{{JSON.parse(item.rejects_info).number}}
@@ -866,6 +873,29 @@
         </div>
       </div>
     </div>
+    <!-- 2020-12-07页面修改新增 -->
+    <div class="popup"
+      v-if="bindFlowPopup">
+      <div class="main">
+        <div class="title">
+          <span class="text">绑定订单成品加工工序</span>
+          <i class="el-icon-close"
+            @click="bindFlowPopup = false;init(false)"></i>
+        </div>
+        <div class="content">
+          <template v-for="(item,index) in processArr">
+            <el-checkbox v-model="item.checked"
+              style="width:25%"
+              @change="$forceUpdate()"
+              :key="index">{{item.label}}</el-checkbox>
+          </template>
+        </div>
+        <div class="opr">
+          <div class="btn btnBlue"
+            @click="saveBindFlow">提交</div>
+        </div>
+      </div>
+    </div>
     <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
   </div>
 </template>
@@ -1021,12 +1051,9 @@ export default {
       ],
       compareOptions: {
         productList: []
-      }
-    }
-  },
-  watch: {
-    processType (newval) {
-      this.init(true)
+      },
+      // 2020-12-07页面修改新增
+      bindFlowPopup: false
     }
   },
   computed: {
@@ -1065,6 +1092,13 @@ export default {
         }
       })
       return returnArr
+    },
+    processArrCom () {
+      if (this.processArr.some(itemS => itemS.checked)) {
+        return this.processArr.filter(itemF => itemF.checked)
+      } else {
+        return this.processArr
+      }
     }
   },
   methods: {
@@ -1153,6 +1187,7 @@ export default {
     addProcess () {
       this.inspectionForm.detail.push({
         client_auth: '',
+        product_flow: this.$clone(this.inspectionForm.product_flow),
         colorSize: [{
           singlePrice: this.inspectionForm.price,
           showCheck: false,
@@ -1196,6 +1231,7 @@ export default {
       }
       this.inspectionForm.detail.push({
         client_auth: '',
+        product_flow: this.$clone(this.inspectionForm.product_flow),
         colorSize: [{
           singlePrice: this.inspectionForm.price,
           showCheck: false,
@@ -1205,6 +1241,7 @@ export default {
           reason: []
         }]
       })
+      this.$goElView('processEditCtn')
     },
     normalProcessAgain (item, itemChild, itemSon) {
       if (this.inspectionForm.product_id && this.inspectionForm.product_id !== itemChild.product_id) {
@@ -1216,8 +1253,9 @@ export default {
       if (this.inspectionForm.detail.length === 1 && !this.inspectionForm.detail[0].colorSize[0].colorSize && itemSon) {
         this.inspectionForm.detail.splice(0, 1)
       }
-      this.inspectionForm.detail.push({
+      let obj = {
         client_auth: (flag ? [flag.value, String(item.from_id)] : ''),
+        product_flow: item.product_flow ? item.product_flow.split('/') : this.$clone(this.inspectionForm.product_flow),
         colorSize: [{
           singlePrice: this.inspectionForm.price,
           showCheck: false,
@@ -1226,7 +1264,9 @@ export default {
           substandard: '',
           reason: []
         }]
-      })
+      }
+      this.changeClientAuthArr(obj.product_flow || this.inspectionForm.product_flow, obj)
+      this.inspectionForm.detail.push(obj)
       this.$goElView('processEditCtn')
       this.$forceUpdate()
     },
@@ -1277,9 +1317,10 @@ export default {
         })
         if (!finded) {
           if (this.inspectionFormSon.detail.length === 1 && !this.inspectionFormSon.detail[0].client_auth[0]) {
-            this.inspectionFormSon.detail = [{
+            let obj = {
               checked: true,
               client_auth: [which, info.value],
+              product_flow: this.$clone(this.inspectionForm.product_flow),
               colorSize: [{
                 showCheck: false,
                 singlePrice: this.inspectionForm.price,
@@ -1289,11 +1330,14 @@ export default {
                 substandard: '',
                 reason: []
               }]
-            }]
+            }
+            this.changeClientAuthArr(this.inspectionForm.product_flow, obj)
+            this.inspectionFormSon.detail = [obj]
           } else {
-            this.inspectionFormSon.detail.push({
+            let obj = {
               checked: true,
               client_auth: [which, info.value],
+              product_flow: this.$clone(this.inspectionForm.product_flow),
               colorSize: [{
                 singlePrice: this.inspectionForm.price,
                 showCheck: false,
@@ -1303,7 +1347,9 @@ export default {
                 substandard: '',
                 reason: []
               }]
-            })
+            }
+            this.changeClientAuthArr(this.inspectionForm.product_flow, obj)
+            this.inspectionFormSon.detail.push(obj)
           }
         }
       } else {
@@ -1327,6 +1373,9 @@ export default {
         if (item.client_auth.length === 0) {
           error = '请选择来源工序人员/单位'
         }
+        if (!item.product_flow) {
+          error = '请选择加工工序'
+        }
         item.colorSize.forEach((itemChild) => {
           if (!itemChild.colorSize) {
             error = '请选择尺码颜色'
@@ -1347,7 +1396,7 @@ export default {
         item.colorSize.forEach((itemChild) => {
           formData.push({
             order_type: this.$route.params.orderType,
-            product_flow: this.processType,
+            product_flow: item.product_flow.join('/'),
             order_id: this.$route.params.id,
             product_id: this.inspectionForm.product_id,
             size_id: itemChild.colorSize.split('/')[1],
@@ -1591,7 +1640,7 @@ export default {
       })
     },
     spliceInspection (item, index, indexChild) {
-      if (index === 0 && indexChild === 0) {
+      if (index === 0 && this.inspectionForm.detail.length === 1 && indexChild === 0) {
         this.$message.warning('最少保留一项')
         return
       }
@@ -1654,12 +1703,9 @@ export default {
         console.error('第三个参数必须为字符串或数组格式')
       }
     },
-    init (ifFirst) {
+    init () {
       this.loading = true
       Promise.all([
-        order.detail({
-          id: this.$route.params.id
-        }),
         materialPlan.init({
           order_id: this.$route.params.id,
           order_type: 1
@@ -1670,53 +1716,33 @@ export default {
           order_type: 1
         }),
         staff.list(),
-        course.list({
-          type: 3
-        }),
         station.list({
           type: 2
+        }),
+        order.detail({
+          id: this.$route.params.id
         })
       ]).then((res) => {
-        this.orderInfo = res[0].data.data
-        this.processArr = res[5].data.data.filter(item => item.type === 3).map((item) => {
-          return {
-            value: item.name,
-            label: item.name
-          }
-        })
-        if (this.processArr.length === 0) {
-          this.$alert('未在设置页面添加任何结算工序，请先添加结算工序！', '提示', {
-            confirmButtonText: '确定',
-            callback: action => {
-              this.$router.go(-1)
-            }
+        this.orderInfo = res[5].data.data
+        // 初始化加工工序设置了
+        if (this.orderInfo.product_flow && JSON.parse(this.orderInfo.product_flow) && JSON.parse(this.orderInfo.product_flow).length > 0) {
+          let arr = JSON.parse(this.orderInfo.product_flow)
+          this.processArr.forEach(itemF => {
+            itemF.checked = arr.includes(itemF.value)
           })
-          return
         }
-        this.processArr = this.processArr.slice(3, this.processArr.length)
-        // 工序字段初始化一次就够了
-        if (!ifFirst) {
-          this.processChoose = res[5].data.data.slice(0, 3).map((item) => item.name)
-        }
-        if (!this.processType) {
-          this.processType = this.processChoose[0]
-        }
-        this.inspection_detail = this.$mergeData(res[1].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
-        this.companyArr = res[2].data.data.filter((item) => {
+        this.inspection_detail = this.$mergeData(res[0].data.data.product_info, { mainRule: 'product_id', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }, { name: 'product_code' }] })
+        this.companyArr = res[1].data.data.filter((item) => {
           return item.type.indexOf(27) !== -1
         })
-        this.settingAuthArr = this.$clone(res[4].data.data)
-        res[3].data.data.forEach((item) => {
-          this.processChoose.push(item.product_flow)
-        })
-        this.processChoose = Array.from(new Set(this.processChoose))
-        this.inspection_log = res[3].data.data.filter((item) => item.product_flow === this.processType)
+        this.settingAuthArr = this.$clone(res[3].data.data)
+        this.inspection_log = res[2].data.data
         this.inspection_log.forEach((item) => {
           item.from = item.inspection_user || item.client_name
           item.from_id = item.inspection_user_id || item.client_id
           item.count = Number(JSON.parse(item.rejects_info).number) || 0
         })
-        let clientArr = this.$getClientOptions(res[2].data.data, companyType, { typeScope: [29, 34] })
+        let clientArr = this.$getClientOptions(res[1].data.data, companyType, { typeScope: [29, 34] })
         let arr = []
         clientArr.forEach((item) => {
           arr = arr.concat(item.children)
@@ -1730,27 +1756,17 @@ export default {
         this.clientAuthArr = [{
           value: '已检验人员',
           label: '已检验人员',
-          children: this.inspection_log.filter((item) => item.inspection_user_id).map((item) => {
+          children: this.$unique(this.inspection_log.filter((item) => item.inspection_user_id).map((item) => {
             return {
               value: String(item.inspection_user_id),
               label: item.inspection_user
             }
-          })
+          }), 'value')
         },
-        // , {
-        //   value: '常用人员',
-        //   label: '常用人员',
-        //   children: window.localStorage.getItem('inspectionUser') ? JSON.parse(window.localStorage.getItem('inspectionUser')).map((item) => {
-        //     return {
-        //       value: String(item.id),
-        //       label: item.name
-        //     }
-        //   }) : []
-        // }
         {
           value: '工序负责人员',
           label: '工序负责人员',
-          children: res[4].data.data.filter((item) => {
+          children: res[3].data.data.filter((item) => {
             return item.station_id && item.station_id.map((item) => item.name).indexOf(this.processType) !== -1
           }).map((item) => {
             return {
@@ -1761,10 +1777,11 @@ export default {
         }, {
           value: '所有人员',
           label: '所有人员',
-          children: res[4].data.data.map((item) => {
+          children: res[3].data.data.map((item) => {
             return {
               value: String(item.id),
-              label: item.name
+              label: item.name,
+              station_id: item.station_id
             }
           })
         }, {
@@ -1789,7 +1806,7 @@ export default {
         this.$clone(this.inspection_log).forEach((item) => {
           this.commonFind(inspectionList, item, ['product_flow', 'product_id', 'color_id', 'size_id', 'from', 'from_id'], ['number', 'count'])
         })
-        this.inspectionList = this.$mergeData(inspectionList, { mainRule: 'from_id', otherRule: [{ name: 'from' }], childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
+        this.inspectionList = this.$mergeData(inspectionList, { mainRule: ['from_id', 'product_flow'], otherRule: [{ name: 'from' }], childrenRule: { mainRule: 'product_id', otherRule: [{ name: 'product_info' }] } })
         this.rate.allNum = this.inspection_detail.reduce((total, current) => {
           return total + current.childrenMergeInfo.reduce((total2, current2) => {
             return total2 + Number(current2.production_number)
@@ -1800,14 +1817,101 @@ export default {
             return total2 + Number(current2.inspectionNum)
           }, 0)
         }, 0)
-        this.departmentArr = res[6].data.data
+        this.departmentArr = res[4].data.data
         this.loading = false
       })
+    },
+    // 设置订单成品加工工序
+    saveBindFlow () {
+      const selectFlowArr = this.processArr.filter(itemF => itemF.checked).map(itemM => itemM.value)
+      if (selectFlowArr.length === 0) {
+        this.$message.warning('请选择最少一项')
+        return
+      }
+      order.bindFlow({
+        order_id: this.$route.params.id,
+        product_flow: JSON.stringify(selectFlowArr)
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.bindFlowPopup = false
+          this.init()
+          this.$message.success('设置成功')
+        }
+      })
+    },
+    // 初始化设置工序
+    initSettingFlow () {
+      if (this.orderInfo.product_flow) {
+        let arr = JSON.parse(this.orderInfo.product_flow)
+        this.processArr.forEach(itemF => {
+          itemF.checked = arr.includes(itemF.value)
+        })
+      }
+      this.bindFlowPopup = true
+    },
+    changeClientAuthArr (productFlow, item) {
+      console.log(item)
+      let index = this.clientAuthArr.findIndex(itemF => itemF.label === '工序负责人员')
+      let allAuth = this.clientAuthArr.find(itemF => itemF.label === '所有人员')
+      if (index !== -1) {
+        if (item) {
+          item.clientAuthArr = this.$clone(this.clientAuthArr)
+          item.clientAuthArr[index].children = allAuth.children.filter(itemF => {
+            return itemF.station_id.some(itemS => {
+              return productFlow.includes(itemS.name)
+            })
+          })
+          this.$forceUpdate()
+        } else {
+          this.clientAuthArr[index].children = allAuth.children.filter(itemF => {
+            return itemF.station_id.some(itemS => {
+              return productFlow.includes(itemS.name)
+            })
+          })
+        }
+      }
     }
   },
   mounted () {
     this.getDeductLog()
-    this.init()
+    // this.init()
+    // 加载工序及订单详情
+    Promise.all([
+      order.detail({
+        id: this.$route.params.id
+      }),
+      course.list()
+    ]).then(res => {
+      // 初始化订单信息
+      this.orderInfo = res[0].data.data
+      // 初始化工序
+      this.processArr = res[1].data.data.filter(itemF => itemF.type === 3).map((item) => {
+        return {
+          checked: false,
+          value: item.name,
+          label: item.name
+        }
+      })
+      // 订单加工工序设置了
+      if (this.orderInfo.product_flow && JSON.parse(this.orderInfo.product_flow) && JSON.parse(this.orderInfo.product_flow).length > 0) {
+        let arr = JSON.parse(this.orderInfo.product_flow)
+        this.processArr.forEach(itemF => {
+          itemF.checked = arr.includes(itemF.value)
+        })
+        this.init()
+      } else { // 订单加工工序未设置
+        this.loading = false
+        this.bindFlowPopup = true
+        if (this.processArr.length === 0) {
+          this.$alert('未在设置页面添加任何结算工序，请先添加结算工序！', '提示', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$router.go(-1)
+            }
+          })
+        }
+      }
+    })
     window.addEventListener('click', this.cancleSelect)
   },
   destroyed () {

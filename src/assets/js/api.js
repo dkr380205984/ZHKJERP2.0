@@ -247,7 +247,8 @@ const order = {
   changeStatus: (params) => http.post(`${baseUrl}/order/status/check`, params, 'application/json'),
   getOrderBatch: (params) => http.get(`${baseUrl}/order/batch/info`, params),
   changeBatchStatus: (params) => http.post(`${baseUrl}/order/batch/complete`, params, 'application/json'),
-  bindQuotation: (params) => http.post(`${baseUrl}/order/bind/quotation`, params, 'application/json')
+  bindQuotation: (params) => http.post(`${baseUrl}/order/bind/quotation`, params, 'application/json'),
+  bindFlow: (params) => http.post(`${baseUrl}/order/bind/flow`, params, 'application/json')
 }
 // 样品订单
 const sampleOrder = {

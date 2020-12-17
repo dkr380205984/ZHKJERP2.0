@@ -286,6 +286,7 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnOrange"
+            v-if="status !== 2"
             @click="$router.push('/price/priceUpdate/' + activePriceId)">修改</div>
           <div class="btn btnOrange"
             @click="$router.push('/price/priceGiveAgain/' + activePriceId)">再次报价</div>

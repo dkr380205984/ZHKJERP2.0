@@ -578,9 +578,9 @@
                     <br />
                     {{itemLog.product_info.product_code}}
                   </span>
-                  <span class="tb_row middle">{{itemLog.price || 0}}</span>
-                  <span class="tb_row middle">{{itemLog.number}}</span>
-                  <span class="tb_row middle">{{(itemLog.price * itemLog.number) || 0}}</span>
+                  <span class="tb_row middle">{{$toFixed(itemLog.price) || 0}}</span>
+                  <span class="tb_row middle">{{$toFixed(itemLog.number)}}</span>
+                  <span class="tb_row middle">{{$toFixed(itemLog.price * itemLog.number) || 0}}</span>
                 </div>
               </div>
             </div>

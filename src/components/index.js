@@ -17,6 +17,7 @@ import scannerWatcher from './scannerWatcher/scannerWatcher.vue'
 import lookPrice from './lookPrice/lookPrice.vue'
 import orderList from './orderList/orderList.vue'
 import orderAbout from './orderAbout/orderAbout.vue'
+import zhSort from './zhSort/zhSort.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -38,5 +39,6 @@ export default {
     vue.component('lookPrice', lookPrice)
     vue.component('orderList', orderList)
     vue.component('orderAbout', orderAbout)
+    vue.component('zhSort', zhSort)
   }
 }

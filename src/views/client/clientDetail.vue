@@ -3020,7 +3020,7 @@ export default {
               item.isGetting = 4
             } else {
               setTimeout(() => {
-                this.getAllLog(data, total, page + 1, limit)
+                this.getAllLog(item, data, total, page + 1, limit)
               }, 1000)
             }
           } else {

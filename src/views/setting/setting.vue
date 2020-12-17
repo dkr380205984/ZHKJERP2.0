@@ -1878,7 +1878,8 @@
               v-for="(item,index) in priceEditInfo.weave"
               :key="index + 'weave'">
               <div class="label">{{index === 0 ? '织造明细：' : ''}}</div>
-              <div class="info">
+              <div class="info"
+                style="display:flex;align-items:center">
                 <el-select v-model="item.name"
                   clearable
                   filterable
@@ -1891,6 +1892,12 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+                <zh-input type='number'
+                  style="width:300px;margin-left:24px"
+                  v-model="item.price"
+                  placeholder='请输入单价'>
+                  <template slot="append">元</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
                 v-if="index === 0"
@@ -1903,7 +1910,8 @@
               v-for="(item,index) in priceEditInfo.semi"
               :key="index + 'semi'">
               <div class="label">{{index === 0 ? '半成品工序：' : ''}}</div>
-              <div class="info">
+              <div class="info"
+                style="display:flex;align-items:center">
                 <el-select v-model="item.name"
                   clearable
                   filterable
@@ -1917,6 +1925,12 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+                <zh-input type='number'
+                  style="width:300px;margin-left:24px"
+                  v-model="item.price"
+                  placeholder='请输入单价'>
+                  <template slot="append">元</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
                 v-if="index === 0"
@@ -1929,7 +1943,8 @@
               v-for="(item,index) in priceEditInfo.finished"
               :key="index + 'finished'">
               <div class="label">{{index === 0 ? '成品工序：' : ''}}</div>
-              <div class="info">
+              <div class="info"
+                style="display:flex;align-items:center">
                 <el-select v-model="item.name"
                   clearable
                   filterable
@@ -1943,6 +1958,12 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+                <zh-input type='number'
+                  style="width:300px;margin-left:24px"
+                  v-model="item.price"
+                  placeholder='请输入单价'>
+                  <template slot="append">元</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
                 v-if="index === 0"
@@ -1955,7 +1976,8 @@
               v-for="(item,index) in priceEditInfo.pack"
               :key="index + 'pack'">
               <div class="label">{{index === 0 ? '包装辅料：' : ''}}</div>
-              <div class="info">
+              <div class="info"
+                style="display:flex;align-items:center">
                 <el-select v-model="item.name"
                   clearable
                   filterable
@@ -1968,6 +1990,12 @@
                     :value="item.value">
                   </el-option>
                 </el-select>
+                <zh-input type='number'
+                  style="width:300px;margin-left:24px"
+                  v-model="item.price"
+                  placeholder='请输入单价'>
+                  <template slot="append">元</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
                 v-if="index === 0"
@@ -1980,9 +2008,16 @@
               v-for="(item,index) in priceEditInfo.other"
               :key="index + 'other'">
               <div class="label">{{index === 0 ? '其他费用：' : ''}}</div>
-              <div class="info">
+              <div class="info"
+                style="display:flex;align-items:center">
                 <el-input v-model="item.name"
                   placeholder="请输入其他费用"></el-input>
+                <zh-input type='number'
+                  style="width:300px;margin-left:24px"
+                  v-model="item.price"
+                  placeholder='请输入单价'>
+                  <template slot="append">元</template>
+                </zh-input>
               </div>
               <div class="editBtn blue"
                 v-if="index === 0"
@@ -2736,7 +2771,7 @@ export default {
         }
       ],
       printEditPages: 1,
-      printEditTotal: 9,
+      printEditTotal: 12,
       printEditInfo: {},
       printEditor: '',
       // 报价单设置
@@ -2747,27 +2782,32 @@ export default {
         title: '',
         weave: [
           {
-            name: ''
+            name: '',
+            price: ''
           }
         ],
         semi: [
           {
-            name: ''
+            name: '',
+            price: ''
           }
         ],
         finished: [
           {
-            name: ''
+            name: '',
+            price: ''
           }
         ],
         pack: [
           {
-            name: ''
+            name: '',
+            price: ''
           }
         ],
         other: [
           {
-            name: ''
+            name: '',
+            price: ''
           }
         ]
       },
@@ -3019,6 +3059,10 @@ export default {
     },
     // 保存结算工序
     saveStaffProcess () {
+      if (this.staffProcess.indexOf('/') !== -1) {
+        this.$message.warning('工序名称内不允许存在“/”字符,请调整')
+        return
+      }
       if (this.staffProcess) {
         process.create({
           type: 3,
@@ -3256,6 +3300,7 @@ export default {
         if (res.data.status !== false) {
           this.$message.success('添加成功')
           this.showPopup = false
+          this.getPriceLoading()
         }
       })
     },
@@ -3277,23 +3322,23 @@ export default {
       this.priceEditInfo.title = item.title
       this.priceEditInfo.weave = JSON.parse(item.weave_info)
       if (!this.priceEditInfo.weave || this.priceEditInfo.weave.length === 0) {
-        this.priceEditInfo.weave = [{ name: '' }]
+        this.priceEditInfo.weave = [{ name: '', price: '' }]
       }
       this.priceEditInfo.semi = JSON.parse(item.semi_product_info)
       if (!this.priceEditInfo.semi || this.priceEditInfo.semi.length === 0) {
-        this.priceEditInfo.semi = [{ name: '' }]
+        this.priceEditInfo.semi = [{ name: '', price: '' }]
       }
       this.priceEditInfo.finished = JSON.parse(item.product_info)
       if (!this.priceEditInfo.finished || this.priceEditInfo.finished.length === 0) {
-        this.priceEditInfo.finished = [{ name: '' }]
+        this.priceEditInfo.finished = [{ name: '', price: '' }]
       }
       this.priceEditInfo.pack = JSON.parse(item.pack_material_info)
       if (!this.priceEditInfo.pack || this.priceEditInfo.pack.length === 0) {
-        this.priceEditInfo.pack = [{ name: '' }]
+        this.priceEditInfo.pack = [{ name: '', price: '' }]
       }
       this.priceEditInfo.other = JSON.parse(item.others_info)
       if (!this.priceEditInfo.other || this.priceEditInfo.other.length === 0) {
-        this.priceEditInfo.other = [{ name: '' }]
+        this.priceEditInfo.other = [{ name: '', price: '' }]
       }
       this.showPopup = true
     },
@@ -4808,9 +4853,10 @@ export default {
       })
     },
     addItem (data, type) {
-      if (type === 'weave' || type === 'semi' || type === 'finished' || type === 'pack') {
+      if (type === 'weave' || type === 'semi' || type === 'finished' || type === 'pack' || type === 'other') {
         data.push({
-          name: ''
+          name: '',
+          price: ''
         })
       } else if (type === 'yarn') {
         data.push({ name: '' })

@@ -1,4 +1,5 @@
 <template>
+  <!-- 该页面路由的hash用于orderAbout组件中 请谨慎使用 -->
   <div id='orderDetail'
     class='indexMain'
     v-loading='loading'>
@@ -1450,6 +1451,7 @@ export default {
       // 处理数据
       this.sampleOrderInfo = item
       this.activeSampleOrderId = item.id
+      this.$router.push(`${this.$route.path}#${this.activeSampleOrderId}`)
       let productList = []
       let numArr = this.$flatten(item.product_info.map(item => {
         return item.size_info.map(itemNum => Number(itemNum.numbers))

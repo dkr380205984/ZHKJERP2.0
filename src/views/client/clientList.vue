@@ -76,6 +76,13 @@
         </div>
       </div>
     </div> -->
+    <div class="typeCtn">
+      <div class="typeCtn_item"
+        :class="{'active':clientBigType === itemType.value}"
+        v-for="(itemType,indexType) in companyType"
+        :key="indexType"
+        @click="changeCompanyType(itemType)">{{itemType.value}}</div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -86,13 +93,24 @@
               @change="changeRouter(1)"
               placeholder="输入单位名称按回车查询">
             </el-input>
-            <el-cascader class="inputs"
+            <!-- <el-cascader class="inputs"
               v-model="client_type"
               :options="companyType"
               @change="changeRouter(1)"
               collapse-tags
               placeholder="请选择客户类型"
-              clearable></el-cascader>
+              clearable></el-cascader> -->
+            <el-select v-model="client_type"
+              clearable
+              placeholder="请选择客户类型"
+              class="inputs"
+              @change="changeRouter(1)">
+              <el-option v-for="item in clientTypeCom"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
             <el-select v-model="clientStatus"
               placeholder="筛选状态"
               class="inputs">
@@ -109,6 +127,8 @@
           <div class="rightCtn">
             <div class="btn btnWhiteBlue"
               @click="$router.push('/client/clientCreate')">新增客户</div>
+            <div class="btn btnBlue"
+              @click="downLoadData()">导出数据</div>
           </div>
         </div>
         <div class="list">
@@ -122,55 +142,38 @@
             <div class="col flex12">
               <span class="text">客户类型</span>
             </div>
-            <div class="col flex08">
+            <!-- <div class="col flex08">
               <span class="text">联系电话</span>
+            </div> -->
+            <div class="col flex08">
+              <span class="text">订单下单产值</span>
+              <zh-sort v-model="DDXDCZ"
+                specialKey='plan_price'
+                @change="sortFn($event,'DDXDCZ')" />
             </div>
             <div class="col flex08">
-              <span class="text">合计</span>
+              <span class="text">实际发货产值</span>
+              <zh-sort v-model="SJFHCZ"
+                specialKey='total_price'
+                @change="sortFn($event,'SJFHCZ')" />
             </div>
             <div class="col flex08">
-              <span class="text">已结算(已开票)
-                <!-- <span class="iconCtn"
-                  @click="sortFn('YJSYKP')">
-                  <i class="el-icon-caret-top"
-                    :class="{'green':YJSYKP === '1'}"></i>
-                  <i class="el-icon-caret-bottom"
-                    :class="{'green':YJSYKP === '2'}"></i>
-                </span> -->
-              </span>
+              <span class="text">已开票金额</span>
+              <zh-sort v-model="YKPJE"
+                specialKey='settle_price_invoice'
+                @change="sortFn($event,'YKPJE')" />
             </div>
             <div class="col flex08">
-              <span class="text">已结算(未开票)
-                <!-- <span class="iconCtn"
-                  @click="sortFn('YJSWKP')">
-                  <i class="el-icon-caret-top"
-                    :class="{'green':YJSWKP === '1'}"></i>
-                  <i class="el-icon-caret-bottom"
-                    :class="{'green':YJSWKP === '2'}"></i>
-                </span> -->
-              </span>
+              <span class="text">已收款金额</span>
+              <zh-sort v-model="YSKJE"
+                specialKey='transfer_count'
+                @change="sortFn($event,'YSKJE')" />
             </div>
             <div class="col flex08">
-              <span class="text">待结算
-                <!-- <span class="iconCtn"
-                  @click="sortFn('DJS')">
-                  <i class="el-icon-caret-top"
-                    :class="{'green':DJS === '1'}"></i>
-                  <i class="el-icon-caret-bottom"
-                    :class="{'green':DJS === '2'}"></i>
-                </span> -->
-              </span>
-            </div>
-            <div class="col flex08">
-              <span class="text">已扣款
-                <!-- <span class="iconCtn"
-                  @click="sortFn('YKK')">
-                  <i class="el-icon-caret-top"
-                    :class="{'green':YKK === '1'}"></i>
-                  <i class="el-icon-caret-bottom"
-                    :class="{'green':YKK === '2'}"></i>
-                </span> -->
-              </span>
+              <span class="text">已扣款金额</span>
+              <zh-sort v-model="YKKJE"
+                specialKey='deduct_price'
+                @change="sortFn($event,'YKKJE')" />
             </div>
             <div class="col middle flex12">
               <span class="text">操作</span>
@@ -188,13 +191,13 @@
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     display: -webkit-box;">{{computedType(itemClient.type)}}</div>
-            <div class="col flex08">{{itemClient.phone}}</div>
+            <!-- <div class="col flex08">{{itemClient.phone}}</div> -->
+            <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.plan_price || 0))}}</div>
             <div class="col flex08"
-              style="font-weight:bold">{{$formatNum(itemClient.financial_data.total_price)}}元</div>
-            <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price_invoice)}}元</div>
-            <div class="col flex08">{{$formatNum(itemClient.financial_data.settle_price)}}元</div>
-            <div class="col flex08">{{$formatNum(itemClient.financial_data.wait_settle_price)}}元</div>
-            <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.deduct_price))}}元</div>
+              style="font-weight:bold">{{$formatNum($toFixed(itemClient.financial_data.total_price || 0))}}元</div>
+            <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.settle_price_invoice || 0))}}元</div>
+            <div class="col flex08">{{$formatNum($toFixed((itemClient.financial_data.transfer_count || 0)))}}元</div>
+            <div class="col flex08">{{$formatNum($toFixed((itemClient.financial_data.deduct_price || 0)))}}元</div>
             <div class="col middle flex12">
               <span class="opr"
                 @click="$router.push('/client/clientDetail/' + itemClient.id)">详情</span>
@@ -204,6 +207,19 @@
                 :class="{'red':itemClient.status > 0}"
                 @click="disableClient(itemClient.id)">{{itemClient.status > 0 ? '禁用' : '启用'}}</span>
             </div>
+          </div>
+          <div class="row positonBottom">
+            <div class="col flex12">合计</div>
+            <div class="col"></div>
+            <div class="col flex12"></div>
+            <!-- <div class="col flex08"></div> -->
+            <div class="col flex08">{{$formatNum($toFixed(count.plan_price/10000 || 0))}}万元</div>
+            <div class="col flex08"
+              style="font-weight:bold">{{$formatNum($toFixed(count.total_price/10000 || 0))}}万元</div>
+            <div class="col flex08">{{$formatNum($toFixed(count.settle_price_invoice/10000 || 0))}}万元</div>
+            <div class="col flex08">{{$formatNum($toFixed($toFixed(count.transfer_count/10000 || 0)))}}万元</div>
+            <div class="col flex08">{{$formatNum($toFixed($toFixed(count.deduct_price/10000 || 0)))}}万元</div>
+            <div class="col middle flex12"></div>
           </div>
         </div>
         <div class="pageCtn">
@@ -217,11 +233,19 @@
         </div>
       </div>
     </div>
+    <!-- 导所有数据蒙层 -->
+    <div class="popup"
+      v-if="downloading"
+      style="display:flex;flex-direction:column;align-items:center;justify-content: center;color:#1A95FF;font-size:40px">
+      <span>当前进度：{{propgress || 0}}%
+        <span class="el-icon-loading"></span></span>
+      <span>正在下载，请勿刷新页面或关闭页面</span>
+    </div>
   </div>
 </template>
 
 <script>
-import { getHash } from '@/assets/js/common.js'
+import { downloadExcel, getHash } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
 import { client } from '@/assets/js/api.js'
 export default {
@@ -230,7 +254,8 @@ export default {
       loading: true,
       list: [],
       keyword: '',
-      client_type: [],
+      clientBigType: '订单公司',
+      client_type: '',
       searchTypeFlag: false,
       pages: 1,
       total: 0,
@@ -325,21 +350,28 @@ export default {
           }
         ]
       },
-      YJSYKP: '',
-      YJSWKP: '',
-      DJS: '',
-      YKK: ''
+      DDXDCZ: 0,
+      SJFHCZ: 0,
+      YKPJE: 0,
+      YSKJE: 0,
+      YKKJE: 0,
+      sortType: '',
+      sortValue: '',
+      sortKey: '',
+      count: {},
+      downloading: false,
+      propgress: 0
     }
   },
   methods: {
-    sortFn (item) {
-      ['YJSYKP', 'YJSWKP', 'DJS', 'YKK'].forEach(itemF => {
-        if (itemF !== item) {
-          this[itemF] = ''
-        } else {
-          this[itemF] = !this[itemF] ? '1' : this[itemF] === '1' ? '2' : '1'
-        }
+    sortFn (event, key) {
+      ['DDXDCZ', 'SJFHCZ', 'YKPJE', 'YSKJE', 'YKKJE'].forEach(itemF => {
+        if (key === itemF) return
+        this[itemF] = 0
       })
+      this.sortType = key
+      this.sortValue = event.value
+      this.sortKey = event.specialKey
       this.changeRouter(1)
     },
     disableClient (id) {
@@ -367,17 +399,14 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
-      if (params.clientType) {
-        this.client_type = params.clientType.split(',')
-      }
-      this.YJSYKP = params.YJSYKP
-      this.YJSWKP = params.YJSWKP
-      this.DJS = params.DJS
-      this.YKK = params.YKK
+      this.clientBigType = params.clientBigType || '订单公司'
+      this.client_type = +params.clientType || ''
+      this[params.sortType] = +params.sortValue || 0
+      this.sortKey = params.sortKey
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/client/clientList/page=' + pages + '&&keyword=' + this.keyword + '&&clientType=' + this.client_type + '&&YJSYKP=' + this.YJSYKP + '&&YJSWKP=' + this.YJSWKP + '&&DJS=' + this.DJS + '&&YKK=' + this.YKK)
+      this.$router.push(`/client/clientList/page=${pages}&&keyword=${this.keyword}&&clientBigType=${this.clientBigType}&&clientType=${this.client_type}&&sortType=${this.sortType}&&sortKey=${this.sortKey}&&sortValue=${this.sortValue}`)
     },
     getClientList () {
       this.loading = true
@@ -385,12 +414,21 @@ export default {
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
-        type: this.client_type.length > 1 ? this.client_type[1] : this.client_type[0],
-        status: this.clientStatus
+        type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
+        status: this.clientStatus,
+        order: (this.sortValue && this.sortKey) || '',
+        order_way: this.sortValue === 1 ? '' : 'desc'
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data
           this.total = res.data.meta.total
+          this.count = {
+            deduct_price: res.data.deduct_price,
+            plan_price: res.data.plan_price,
+            settle_price_invoice: res.data.settle_price_invoice,
+            total_price: res.data.total_price,
+            transfer_count: res.data.transfer_count
+          }
           this.loading = false
         }
       })
@@ -403,11 +441,55 @@ export default {
     },
     reset () {
       this.$router.push('/client/clientList/page=1&&keyword=&&clientType=')
+    },
+    changeCompanyType (item) {
+      this.clientBigType = item.value
+      this.changeRouter(1)
+    },
+    downLoadData (data = [], pages = 1, total, limit = 50) {
+      this.downloading = true
+      this.propgress = total ? this.$toFixed((pages / Math.ceil(total / limit) * 100)) : 0
+      client.list({
+        limit: limit,
+        page: pages,
+        keyword: this.keyword,
+        type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
+        status: this.clientStatus,
+        order: (this.sortValue && this.sortKey) || '',
+        order_way: this.sortValue === 1 ? '' : 'desc'
+      }).then((res) => {
+        if (res.data.status !== false) {
+          data.push(...res.data.data.map(itemM => {
+            return {
+              ...itemM,
+              client_type: this.computedType(itemM.type),
+              ...itemM.financial_data
+            }
+          }))
+          total = res.data.meta.total
+          if (pages >= Math.ceil(total / limit)) { // 当页数到最后一页时
+            downloadExcel(data, [
+              { title: '客户名称', key: 'name' },
+              { title: '客户简称', key: 'abbreviation' },
+              { title: '客户类型', key: 'client_type' },
+              { title: '订单下单产值', key: 'plan_price' },
+              { title: '实际发货产值', key: 'total_price' },
+              { title: '已开票金额', key: 'settle_price_invoice' },
+              { title: '已收款金额', key: 'transfer_count' },
+              { title: '已扣款金额', key: 'deduct_price' }
+            ], false)
+            this.downloading = false
+          } else {
+            setTimeout(() => {
+              this.downLoadData(data, pages + 1, total, limit)
+            }, 1000)
+          }
+        }
+      })
     }
   },
   created () {
     this.getFilters()
-    this.getClientList()
     this.companyType = this.$mergeData(companyType, { mainRule: 'type', childrenName: 'children' }).map(itemM => {
       return {
         value: itemM.type,
@@ -415,6 +497,7 @@ export default {
         children: itemM.children
       }
     })
+    this.getClientList()
   },
   watch: {
     pages (newVal) {
@@ -426,6 +509,12 @@ export default {
     },
     clientStatus (newVal) {
       this.getClientList()
+    }
+  },
+  computed: {
+    clientTypeCom () {
+      const typeArr = this.companyType.find(itemF => itemF.value === this.clientBigType)
+      return (typeArr && typeArr.children) || []
     }
   }
 }

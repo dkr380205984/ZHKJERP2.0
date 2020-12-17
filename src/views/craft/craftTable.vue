@@ -2542,7 +2542,7 @@ export default {
             this.colorWeight.weft[itemChild] = {
               key: itemChild,
               number: colorNumber.weft[itemChild],
-              weight: this.$toFixed(colorNumber.weft[itemChild] * this.warp_data.reed_width * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
+              weight: this.$toFixed(colorNumber.weft[itemChild] * (Number(this.warp_data.weight_calculate_formula) === 1 ? this.warp_data.reed_width : this.weft_data.peifu) * data.yarn_coefficient.find((itemFind) => itemFind.name === item.material_name).value / 100)
             }
           })
         })

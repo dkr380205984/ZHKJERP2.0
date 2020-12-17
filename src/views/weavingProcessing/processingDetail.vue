@@ -555,7 +555,7 @@
                       <div class="tcolumn">{{itemMat.material_name}}</div>
                       <div class="tcolumn">{{itemMat.material_attribute}}</div>
                       <div class="tcolumn"
-                        style="color:#01B48C">{{itemMat.weight}}{{itemMat.material_type===1?'kg':itemMat.unit}}</div>
+                        style="color:#01B48C">{{$toFixed(itemMat.material_type===1 ? itemMat.weight/1000 : itemMat.weight)}}{{itemMat.material_type===1?'kg':itemMat.unit}}</div>
                     </div>
                   </div>
                 </div>

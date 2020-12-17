@@ -161,7 +161,8 @@
                     操作<i class="el-icon-arrow-down el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command='change'>
+                    <el-dropdown-item command='change'
+                      v-if="item.status !== 2">
                       <span class="updated">修改</span>
                     </el-dropdown-item>
                     <el-dropdown-item command='delete'>

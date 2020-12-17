@@ -148,12 +148,12 @@
                 <span class="tb_col_item">
                   <span class="tb_row">合计</span>
                   <span class="tb_row"
-                    style="color:#01B48C">+ {{ $formatNum($toFixed(incomeTotal))}}元</span>
+                    style="color:#01B48C">+ {{ $formatNum($toFixed(incomeTotal/10000))}}万元</span>
                   <span class="tb_row"
-                    style="color:#F5222D">- {{ $formatNum($toFixed(expendTotal))}}元</span>
+                    style="color:#F5222D">- {{ $formatNum($toFixed(expendTotal/10000))}}万元</span>
                   <span class="tb_row flex04 middle"
                     style="color:#01B48C">
-                    {{$formatNum($toFixed(incomeTotal - expendTotal))}}元
+                    {{$formatNum($toFixed((incomeTotal - expendTotal)/10000))}}万元
                   </span>
                 </span>
               </span>

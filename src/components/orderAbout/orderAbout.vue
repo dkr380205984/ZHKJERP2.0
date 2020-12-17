@@ -31,12 +31,12 @@ export default {
       isShow: false,
       list: [
         {
-          name: '物料计划单', //名称
+          name: '物料计划单', // 名称
           url (orderId, orderType) {
             return `/materialPlan/materialPlanDetail/${orderId}/${orderType}`
-          },  //地址
-          type: 6, //权限类型
-          sampleNotHave: false //样单是否有该项
+          }, // 地址
+          type: 6, // 权限类型
+          sampleNotHave: false // 样单是否有该项
         }, {
           name: '原料订购加工详情',
           url (orderId, orderType) {
@@ -152,4 +152,3 @@ export default {
 <style scoped lang='less'>
 @import "./orderAbout.less";
 </style>
- 

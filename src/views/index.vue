@@ -101,7 +101,8 @@
       <div class="main">
         <!-- keep-alive是Vue提供的一个抽象组件，用来对组件进行缓存  -->
         <router-view />
-        <order-about :orderId="$route.params[$route.meta.orderId]"
+        <!-- 注意样单详情里路由中的hash被用来做跳转id 如发现样单详情里hash用于其它地方 此处会出问题 -->
+        <order-about :orderId="$route.meta.idInHash ? $route.hash.replace('#','') : $route.params[$route.meta.orderId]"
           :orderType="$route.params[$route.meta.orderType] || $route.meta.defaultType"
           v-show="$route.meta.showAboutCom" />
       </div>
