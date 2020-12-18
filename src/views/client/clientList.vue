@@ -146,13 +146,13 @@
               <span class="text">联系电话</span>
             </div> -->
             <div class="col flex08">
-              <span class="text">订单下单产值</span>
+              <span class="text">{{DDXDCZCOM}}</span>
               <zh-sort v-model="DDXDCZ"
                 specialKey='plan_price'
                 @change="sortFn($event,'DDXDCZ')" />
             </div>
             <div class="col flex08">
-              <span class="text">实际发货产值</span>
+              <span class="text">{{SJFHCZCOM}}</span>
               <zh-sort v-model="SJFHCZ"
                 specialKey='total_price'
                 @change="sortFn($event,'SJFHCZ')" />
@@ -164,7 +164,7 @@
                 @change="sortFn($event,'YKPJE')" />
             </div>
             <div class="col flex08">
-              <span class="text">已收款金额</span>
+              <span class="text">{{YSKJECOM}}</span>
               <zh-sort v-model="YSKJE"
                 specialKey='transfer_count'
                 @change="sortFn($event,'YSKJE')" />
@@ -515,6 +515,50 @@ export default {
     clientTypeCom () {
       const typeArr = this.companyType.find(itemF => itemF.value === this.clientBigType)
       return (typeArr && typeArr.children) || []
+    },
+    DDXDCZCOM () {
+      switch (this.clientBigType) {
+        case '订单公司':
+          return '订单下单产值'
+        case '原料纱线单位':
+        case '装饰辅料单位':
+        case '包装辅料单位':
+          return '计划采购总值'
+        case '生产织造单位':
+          return '计划生产总值'
+        case '物料加工单位':
+        case '半成品加工单位':
+        case '成品加工单位':
+          return '计划加工总值'
+        default:
+          return '计划总值'
+      }
+    },
+    SJFHCZCOM () {
+      switch (this.clientBigType) {
+        case '订单公司':
+          return '实际发货产值'
+        case '原料纱线单位':
+        case '装饰辅料单位':
+        case '包装辅料单位':
+          return '实际采购总值'
+        case '生产织造单位':
+          return '实际生产总值'
+        case '物料加工单位':
+        case '半成品加工单位':
+        case '成品加工单位':
+          return '实际加工总值'
+        default:
+          return '实际总值'
+      }
+    },
+    YSKJECOM () {
+      switch (this.clientBigType) {
+        case '订单公司':
+          return '已收款金额'
+        default:
+          return '已付款金额'
+      }
     }
   }
 }

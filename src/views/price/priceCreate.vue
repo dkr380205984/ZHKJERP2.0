@@ -336,8 +336,7 @@
               </el-select>
               <div class="editBtn">
                 <zh-card-position :data="setCardData(item)">
-                  <span @click="showProductCard(item)"
-                    class="blue">预览</span>
+                  <span class="blue">预览</span>
                 </zh-card-position>
                 <span class="red"
                   @click="cancleChecked(item)">删除</span>

@@ -836,8 +836,11 @@
                 </div>
                 <div class="col"
                   style="flex:1.5">
-                  <span>{{item.product_info.product_code}}</span>
-                  <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                  <zh-card-position :data="setCardData(item.product_info)">
+                    <span>{{item.product_info.product_code}}</span>
+                    <br />
+                    <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                  </zh-card-position>
                 </div>
                 <div class="col flex07">
                   <span>{{item.size_name}}</span>
@@ -1226,8 +1229,11 @@
                 </div>
                 <div class="col"
                   style="flex:1.5">
-                  <span>{{item.product_info.product_code}}</span>
-                  <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                  <zh-card-position :data="setCardData(item.product_info)">
+                    <span>{{item.product_info.product_code}}</span>
+                    <br />
+                    <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                  </zh-card-position>
                 </div>
                 <div class="col flex07">
                   {{item.size}}
@@ -1676,9 +1682,11 @@
                     v-html="item.semi_client_info.map(itemM=>itemM.client_name).join('<br/>')"></span>
                 </div>
                 <div class="col flex12">
-                  {{item.product_info.product_code}}
-                  <br />
-                  {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                  <zh-card-position :data="setCardData(item.product_info)">
+                    {{item.product_info.product_code}}
+                    <br />
+                    {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                  </zh-card-position>
                 </div>
                 <div class="col">
                   {{item.size_name}}
@@ -1862,9 +1870,11 @@
                 </div>
                 <div class="col"
                   style="flex:1.5">
-                  {{item.product_info.product_code}}
-                  <br />
-                  {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                  <zh-card-position :data="setCardData(item.product_info)">
+                    {{item.product_info.product_code}}
+                    <br />
+                    {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                  </zh-card-position>
                 </div>
                 <div class="col">
                   <div class="text">
@@ -2865,6 +2875,20 @@ export default {
     }
   },
   methods: {
+    setCardData (item) {
+      return {
+        product_id: item.product_id,
+        product_type: item.product_type,
+        product_code: item.product_code,
+        img: item.image.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
+        category_name: item.category_name,
+        type_name: item.type_name,
+        style_name: item.style_name,
+        color: item.color ? item.color.map(val => val.color_name) : [],
+        size: item.size,
+        description: item.description
+      }
+    },
     // 更新筛选条件
     getFilters () {
       let params = getHash(this.$route.params.params)
@@ -3305,8 +3329,11 @@ export default {
         ])
       } else if (this.type === '织造分配') {
         let data = this.checkList.map((item) => {
-          item.product_code = item.product_info.code
+          item.product_code = item.product_info.product_code
           item.sizeColor = item.size_name + '/' + item.color_name
+          let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+          item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+          item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
           return item
         })
@@ -3316,6 +3343,8 @@ export default {
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
           { title: '尺码颜色', key: 'sizeColor' },
+          { title: '尺码信息', key: 'size_info' },
+          { title: '克重', key: 'size_weight' },
           { title: '单价(元)', key: 'price' },
           { title: '分配数量', key: 'number' },
           { title: '实际数量', key: 'reality_number' },
@@ -3340,9 +3369,12 @@ export default {
       } else if (this.type === '半成品加工') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
-          item.sizeColor = item.size_name + '/' + item.color_name
+          item.sizeColor = item.size + '/' + item.color
+          let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => itemF.size_name === item.size)) || false
+          item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+          item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
-          item.part = item.part_assign.map((item) => item.name).join('/')
+          item.part = ((item.part_assign && item.part_assign.map((item) => item.name).join('/')) || '')
           return item
         })
         downloadExcel(data, [
@@ -3351,6 +3383,8 @@ export default {
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
           { title: '尺码颜色', key: 'sizeColor' },
+          { title: '尺码信息', key: 'size_info' },
+          { title: '克重', key: 'size_weight' },
           { title: '所需辅料', key: 'part' },
           { title: '单价(元)', key: 'price' },
           { title: '分配数量', key: 'number' },
@@ -3398,6 +3432,9 @@ export default {
         let data = this.checkList.map(item => {
           item.process_client_name = item.semi_client_info.map(itemM => itemM.client_name).join('<br />')
           item.product_code = item.product_info.product_code
+          let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+          item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+          item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           return item
         })
         downloadExcel(data, [
@@ -3407,6 +3444,8 @@ export default {
           { title: '加工单位', key: 'process_client_name' },
           { title: '产品名称', key: 'product_code' },
           { title: '尺码', key: 'size_name' },
+          { title: '尺码信息', key: 'size_info' },
+          { title: '克重', key: 'size_weight' },
           { title: '颜色', key: 'color_name' },
           { title: '数量', key: 'number' },
           { title: '捆数', key: 'count' },
@@ -3418,6 +3457,9 @@ export default {
         let data = this.checkList.map(item => {
           item.client_or_user_name = item.client_name || item.inspection_user
           item.product_code = item.product_info.product_code
+          let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+          item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+          item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
           if (item.rejects_info !== 0) {
             item.rejects_number = item.rejects_info.number
@@ -3436,6 +3478,8 @@ export default {
           { title: '产品编号', key: 'product_code' },
           { title: '产品品类', key: 'product_types' },
           { title: '尺码', key: 'size_name' },
+          { title: '尺码信息', key: 'size_info' },
+          { title: '克重', key: 'size_weight' },
           { title: '颜色', key: 'color_name' },
           { title: '数量', key: 'number' },
           { title: '次品数量', key: 'rejects_number' },
@@ -3465,9 +3509,11 @@ export default {
         ])
       } else if (this.type === '实际装箱') {
         let data = this.checkList.map(item => {
-          // item.product_type = item.type.join('/')
           item.product_code = item.product_info.product_code
           item.product_type = item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name
+          // let flag = (item.product_info && item.product_info.size_measurement && item.product_info.size_measurement.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+          // item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+          // item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           return item
         })
         downloadExcel(data, [
@@ -3476,6 +3522,8 @@ export default {
           { title: '产品编号', key: 'product_code' },
           { title: '产品品类', key: 'product_type' },
           { title: '尺码', key: 'size_name' },
+          // { title: '尺码信息', key: 'size_info' },
+          // { title: '克重', key: 'size_weight' },
           { title: '颜色', key: 'color_name' },
           { title: '实际装箱数', key: 'number' },
           { title: '箱数', key: 'total_box' },
@@ -3680,6 +3728,9 @@ export default {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
             item.sizeColor = item.size_name + '/' + item.color_name
+            let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+            item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+            item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
             item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
             return item
           }))
@@ -3691,6 +3742,8 @@ export default {
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
               { title: '尺码颜色', key: 'sizeColor' },
+              { title: '尺码信息', key: 'size_info' },
+              { title: '克重', key: 'size_weight' },
               { title: '单价(元)', key: 'price' },
               { title: '分配数量', key: 'number' },
               { title: '实际数量', key: 'reality_number' },
@@ -3757,9 +3810,12 @@ export default {
         }).then((res) => {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
-            item.sizeColor = item.size_name + '/' + item.color_name
+            item.sizeColor = item.size + '/' + item.color
+            let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => itemF.size_name === item.size)) || false
+            item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+            item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
             item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
-            item.part = item.part_assign.map((item) => item.name).join('/')
+            item.part = (item.part_assign && item.part_assign.map((item) => item.name).join('/')) || ''
             return item
           }))
           total = res.data.meta.total
@@ -3770,6 +3826,8 @@ export default {
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
               { title: '尺码颜色', key: 'sizeColor' },
+              { title: '尺码信息', key: 'size_info' },
+              { title: '克重', key: 'size_weight' },
               { title: '所需辅料', key: 'part' },
               { title: '单价(元)', key: 'price' },
               { title: '分配数量', key: 'number' },
@@ -3804,6 +3862,9 @@ export default {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_code.code
             item.sizeColor = item.size_name + '/' + item.color_name
+            let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+            item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+            item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
             return item
           }))
           total = res.data.meta.total
@@ -3814,6 +3875,8 @@ export default {
               { title: '单位名称', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
               { title: '尺码颜色', key: 'sizeColor' },
+              { title: '尺码信息', key: 'size_info' },
+              { title: '克重', key: 'size_weight' },
               { title: '入库类型', key: 'production_type' },
               { title: '数量', key: 'number' },
               { title: '备注', key: 'desc' },
@@ -3883,6 +3946,9 @@ export default {
           data.push(...res.data.data.map(item => {
             item.process_client_name = item.semi_client_info.map(itemM => itemM.client_name).join('<br />')
             item.product_code = item.product_info.product_code
+            let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+            item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+            item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
             // item.count = item.count ? item.count.split('/').join('-') : ''
             return item
           }))
@@ -3896,6 +3962,8 @@ export default {
               { title: '加工单位', key: 'process_client_name' },
               { title: '产品名称', key: 'product_code' },
               { title: '尺码', key: 'size_name' },
+              { title: '尺码信息', key: 'size_info' },
+              { title: '克重', key: 'size_weight' },
               { title: '颜色', key: 'color_name' },
               { title: '数量', key: 'number' },
               { title: '捆数', key: 'count' },
@@ -3935,6 +4003,9 @@ export default {
             item.client_or_user_name = item.client_name || item.inspection_user
             item.product_code = item.product_info.product_code
             item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+            let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+            item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+            item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
             if (item.rejects_info !== 0) {
               item.rejects_number = item.rejects_info.number
               item.rejects_infos = item.rejects_info.reason ? item.rejects_info.reason.join(',') : ''
@@ -3954,6 +4025,8 @@ export default {
               { title: '产品编号', key: 'product_code' },
               { title: '产品品类', key: 'product_types' },
               { title: '尺码', key: 'size_name' },
+              { title: '尺码信息', key: 'size_info' },
+              { title: '克重', key: 'size_weight' },
               { title: '颜色', key: 'color_name' },
               { title: '数量', key: 'number' },
               { title: '单价(元)', key: 'price' },
@@ -4217,6 +4290,9 @@ export default {
 </style>
 <style lang="less">
 #logStatistics {
+  .el-tabs__content {
+    overflow: visible;
+  }
   .el-tabs__item {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.65);

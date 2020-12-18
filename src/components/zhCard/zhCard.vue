@@ -11,21 +11,21 @@
       </div>
       <ul class="zh_card_right">
         <li>
-          <span class="title">产品编号:</span>
-          <span class="info blue"
+          <span class="zh_card_right_title">产品编号:</span>
+          <span class="zh_card_right_info blue"
             @click="openUrl(data.product_type,data.product_id)">{{data.product_code}}</span>
         </li>
         <li>
-          <span class="title">产品品类:</span>
-          <span class="info">{{data|filterType}}</span>
+          <span class="zh_card_right_title">产品品类:</span>
+          <span class="zh_card_right_info">{{data|filterType}}</span>
         </li>
         <li>
-          <span class="title">颜色色组:</span>
-          <span class="info">{{data.color.join('/')}}</span>
+          <span class="zh_card_right_title">颜色色组:</span>
+          <span class="zh_card_right_info">{{data.color.join('/')}}</span>
         </li>
         <li>
-          <span class="title">尺码规格:</span>
-          <span class="info">
+          <span class="zh_card_right_title">尺码规格:</span>
+          <span class="zh_card_right_info">
             <div class="sizeCtn"
               v-for="(value,index) in data.size"
               :key="index">
@@ -38,8 +38,8 @@
           </span>
         </li>
         <li>
-          <span class="title">产品描述:</span>
-          <span class="info">{{data.description ? data.description : '暂无描述信息'}}</span>
+          <span class="zh_card_right_title">产品描述:</span>
+          <span class="zh_card_right_info">{{data.description ? data.description : '暂无描述信息'}}</span>
         </li>
       </ul>
     </div>

@@ -82,42 +82,42 @@
         <div class="box">
           <div class="boxTop blue">合计</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.total_price || 0}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.total_price || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop green">已结算(已开票)</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.settle_price_invoice}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.settle_price_invoice || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop green">已结算(未开票)</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.settle_price}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.settle_price || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop red">已扣款</div>
           <div class="boxBottom">
-            <span class="num">{{$toFixed(clientInfo.financial_data.deduct_price)}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.deduct_price || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop orange">待结算</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.wait_settle_price}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.wait_settle_price || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
         <div class="box">
           <div class="boxTop green">已收款</div>
           <div class="boxBottom">
-            <span class="num">{{clientInfo.financial_data.transfer_count}}</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.transfer_count || 0))}}</span>
             <span class="em">元</span>
           </div>
         </div>
@@ -1058,8 +1058,11 @@
               </div>
               <div class="col"
                 style="flex:1.5">
-                <span>{{item.product_info.product_code}}</span>
-                <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                <zh-card-position :data="setCardData(item.product_info)">
+                  {{item.product_info.product_code}}
+                  <br />
+                  {{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}
+                </zh-card-position>
               </div>
               <div class="col flex07">
                 <span>{{item.size_name}}</span>
@@ -1255,8 +1258,11 @@
               </div>
               <div class="col"
                 style="flex:1.5">
-                <span>{{item.product_info.product_code}}</span>
-                <span>{{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}</span>
+                <zh-card-position :data="setCardData(item.product_info)">
+                  {{item.product_info.product_code}}
+                  <br />
+                  {{item.product_info.category_name?item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name:item.product_info.product_title}}
+                </zh-card-position>
               </div>
               <div class="col flex07">
                 {{item.size}}
@@ -1417,9 +1423,11 @@
               </div>
               <div class="col"
                 style="flex:1.5">
-                {{item.product_info.product_code}}
-                <br />
-                {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                <zh-card-position :data="setCardData(item.product_info)">
+                  {{item.product_info.product_code}}
+                  <br />
+                  {{item.product_info.category_name+'/'+ item.product_info.type_name+'/'+ item.product_info.style_name}}
+                </zh-card-position>
               </div>
               <div class="col">
                 <div class="text">
@@ -2484,6 +2492,20 @@ export default {
     }
   },
   methods: {
+    setCardData (item) {
+      return {
+        product_id: item.product_id,
+        product_type: item.product_type,
+        product_code: item.product_code,
+        img: item.image.map(val => { return { image_url: val.image_url, thumb: val.thumb } }),
+        category_name: item.category_name,
+        type_name: item.type_name,
+        style_name: item.style_name,
+        color: item.color ? item.color.map(val => val.color_name) : [],
+        size: item.size,
+        description: item.description
+      }
+    },
     showLog (type, item) {
       this.log_type = type
       this.log_order_code = item.order_code
@@ -2837,6 +2859,9 @@ export default {
             data.push(...res.data.data.map((item) => {
               item.product_code = item.product_info.product_code
               item.sizeColor = item.size_name + '/' + item.color_name
+              let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+              item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+              item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
               item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
               return item
             }))
@@ -2848,6 +2873,8 @@ export default {
                 { title: '出入库单位', key: 'client_name' },
                 { title: '产品编号', key: 'product_code' },
                 { title: '尺码颜色', key: 'sizeColor' },
+                { title: '尺码', key: 'size_name' },
+                { title: '尺码信息', key: 'size_info' },
                 { title: '单价(元)', key: 'price' },
                 { title: '分配数量', key: 'number' },
                 { title: '实际数量', key: 'reality_number' },
@@ -2885,6 +2912,9 @@ export default {
             data.push(...res.data.data.map((item) => {
               item.product_code = item.product_info.product_code
               item.sizeColor = item.size + '/' + item.color
+              let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => itemF.size_name === item.size)) || false
+              item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+              item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
               item.total_price = this.$toFixed(item.price * (Number(item.reality_number) || item.number))
               return item
             }))
@@ -2897,6 +2927,8 @@ export default {
                 { title: '加工类型', key: 'type' },
                 { title: '产品编号', key: 'product_code' },
                 { title: '尺码颜色', key: 'sizeColor' },
+                { title: '尺码', key: 'size_name' },
+                { title: '尺码信息', key: 'size_info' },
                 { title: '单价(元)', key: 'price' },
                 { title: '分配数量', key: 'number' },
                 { title: '实际数量', key: 'reality_number' },
@@ -2940,6 +2972,9 @@ export default {
               }
               item.client_or_user_name = item.client_name || item.inspection_user
               item.product_code = item.product_info.product_code
+              let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
+              item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
+              item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
               item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
               if (item.rejects_info !== 0) {
                 item.rejects_number = item.rejects_info.number
@@ -2961,6 +2996,8 @@ export default {
                 { title: '产品编号', key: 'product_code' },
                 { title: '产品品类', key: 'product_types' },
                 { title: '尺码', key: 'size_name' },
+                { title: '尺码', key: 'size_name' },
+                { title: '尺码信息', key: 'size_info' },
                 { title: '颜色', key: 'color_name' },
                 { title: '数量', key: 'number' },
                 { title: '单价(元)', key: 'price' },
