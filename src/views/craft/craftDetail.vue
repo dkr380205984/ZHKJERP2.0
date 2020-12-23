@@ -1483,8 +1483,8 @@ export default {
           temporaryStorage.push({
             order: tableArr[0][i],
             color: tableArr[1][i],
-            number: tableArr[2][i]
-            // GLorPM: tableArr[5][i]
+            number: tableArr[2][i],
+            GLorPM: tableArr[5][i]
           })
         }
         let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)

@@ -1,31 +1,33 @@
 import Message from 'element-ui'
 const plugin = {
-  /************************************
-   *str:url地址
-   ***********************************/
+  /**
+   * @param {string} str 跳转的url地址
+   * @returns {void}
+   */
   openUrl: (str) => {
     window.open(str)
   },
-  /************************************
-   *data:需要处理的时间戳数据
-   *type:type=>Date
-   *return:yyyy-MM-dd
-   ***********************************/
-  getTime: (date) => {
+  /**
+   * @param {any} data 需要处理的时间戳数据
+   * @param {string} connector 连接符(默认‘-’连接)
+   * @returns {string} yyyy-MM-dd
+   */
+  getTime: (date, connector = '-') => {
     if (date && !new Date(date)) {
       throw new TypeError('The correct format was not obtained for function "getTime"')
     }
-    let nowDate = date ? new Date(date) : new Date()
-    const year = nowDate.getFullYear()
-    const month = nowDate.getMonth() + 1
-    const data = nowDate.getDate()
-    return [year, month.toString()[1] ? month : '0' + month, data.toString()[1] ? data : '0' + data].join('-')
+    let nowDate = (date ? new Date(date) : new Date()).toLocaleDateString()
+    return nowDate.replace(/\//g, connector)
+    // let nowDate = date ? new Date(date) : new Date()
+    // const year = nowDate.getFullYear()
+    // const month = nowDate.getMonth() + 1
+    // const data = nowDate.getDate()
+    // return [year, month.toString()[1] ? month : '0' + month, data.toString()[1] ? data : '0' + data].join('-')
   },
-  /************************************
-   *data:需要深度克隆的数据
-   *type:all
-   *return:data
-   ***********************************/
+  /**
+   * @param {any} data 需要深度克隆的数据
+   * @returns {any} cloneData=>data
+   */
   cloneData: (data) => {
     let _this = plugin
     let type = _this.getDataType(data)
@@ -46,11 +48,10 @@ const plugin = {
     }
     return newData
   },
-  /************************************
-   *data:需要判断类型的数据
-   *type:all
-   *return:String|Number|Null|Undefined|Object|Array|Function
-   ***********************************/
+  /**
+   * @param {any} data 需要判断类型的数据
+   * @returns {string} String|Number|Null|Undefined|Object|Array|Function
+   */
   getDataType: (data) => {
     if (data === null) {
       return 'Null'
@@ -59,11 +60,10 @@ const plugin = {
     }
     return Object.prototype.toString.call(data).split(' ')[1].split(']')[0]
   },
-  /************************************
-   *data:需要扁平化的数据
-   *type:Object|Array
-   *return:Array|Object
-   ***********************************/
+  /**
+   * @param { {} | Array} data 需要扁平化的数据
+   * @returns { Array | {} }
+   */
   flatten: (data) => {
     let _this = plugin
     let oldData = _this.cloneData(data)
@@ -116,14 +116,10 @@ const plugin = {
     }
   },
 
-  /************************************
-   *data:需要合并的数据
-   *rule:合并规则
-   *type:Array
-   *return:Array
-   ***********************************/
-
-  /************************************
+  /**
+   * @param {Array} data 需要合并的数据
+   * @param { {} } rule 合并规则
+   * @returns {Array}
    *rule示例
    *{mainRule:'product_id/id',otherRule:[{name:'image/img'},{name:'product_code'},{name:'number',type:'add'}],childrenName:'other_info',childrenRule:{mainRule:['size/size_name','color']}}
    *输出：[
@@ -144,7 +140,7 @@ const plugin = {
    *otherRule:其他处理项，name为处理项的key值,type为特殊处理，当前取值仅可为'add'，是在合并时累加该项，当type不存在时  name项会保留在mainRule同一个数据层级，“/”用法参考mainRule
    *childrenName:命名子合并项key值，默认值childrenMergeInfo，
    *childrenRule:多层级合并时传入，具体规则参考上方
-   ***********************************/
+   **/
   mergeData: (datas, rule) => {
     let _this = plugin
     let data = _this.cloneData(datas)
@@ -233,11 +229,11 @@ const plugin = {
     }
     return newData
   },
-  /************************************
-   *data:需要处理的数据
-   *type:Number|String
-   *return:Number
-   ***********************************/
+  /**
+   * @param { number | string[number]} number:需要处理的数据
+   * @param {number} precision 精度
+   * @returns {number}
+   */
   toFixedAuto: (number, precision = 2) => {
     if (isNaN(Number(number))) {
       return NaN
@@ -266,14 +262,13 @@ const plugin = {
       return number
     }
   },
-  /************************************
-   *data:需要处理的数据
-   *index:切割数值
-   *arr:处理好的数据保留在这个参数
-   *type:Array|----|Number|----|Array
-   *return:Array
-   ***********************************/
-  newSplice: (data, index, arr) => {
+  /**
+   * @param {Array} data 需要处理的数据
+   * @param {number} index 切割数值(默认5)
+   * @param {Array} arr 存储地址最后会返回这个数组
+   * @returns {Array}
+   */
+  newSplice: (data, index = 5, arr) => {
     if (data.length === 0 || !data) {
       return []
     }
@@ -281,17 +276,16 @@ const plugin = {
     if (!arr) {
       arr = []
     }
-    index = index || 5
     arr.push(data.splice(0, index))
     if (data.length > 0) {
       _this.newSplice(data, index, arr)
     }
     return arr
   },
-  /************************************
-   *el:到达其视图的id
-   *type:String
-   ***********************************/
+  /**
+   * @param {string} el 到达其视图的id
+   * @returns {void|boolean}
+   */
   goElView: (el) => {
     if (!el) {
       throw new TypeError('请传入element的"id"')
@@ -355,6 +349,11 @@ const plugin = {
       }
     })
   },
+  /**
+   * @param {Array} arr 需要去重的数组
+   * @param {string} key 指定去重的唯一key
+   * @returns {Array}
+   */
   // 数组去重(仅用数组内子项为数字或字符串的数据结构)
   unique (arr, key) {
     if (key) {
@@ -514,7 +513,7 @@ const saveHistoryOrder = (orderInfo) => {
  * @param {integer} precision 处理精度位数
  * @param {float} up 向上取整基数
  * @param {float} down 向下取整基数
- * @returns {NaN,Number}
+ * @returns {Number}
  */
 const disposeFZHNumber = (number, precision = 2, ...[up = 0.9, down = 0.1]) => {
   let newNum = plugin.toFixedAuto(number, precision)
