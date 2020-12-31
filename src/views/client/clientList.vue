@@ -128,7 +128,7 @@
             <div class="btn btnWhiteBlue"
               @click="$router.push('/client/clientCreate')">新增客户</div>
             <div class="btn btnBlue"
-              @click="downLoadData()">导出数据</div>
+              @click="downloading = true">导出数据</div>
           </div>
         </div>
         <div class="list">
@@ -223,6 +223,11 @@
           </div>
         </div>
         <div class="pageCtn">
+          <!-- <div class="timeCtn">
+            <span class="label">统计时间：</span>
+            <span class="text">{{selectTime.join('~')}}</span>
+            <span class="btn noBorder">修改</span>
+          </div> -->
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -234,18 +239,45 @@
       </div>
     </div>
     <!-- 导所有数据蒙层 -->
-    <div class="popup"
+    <!-- <div class="popup"
       v-if="downloading"
       style="display:flex;flex-direction:column;align-items:center;justify-content: center;color:#1A95FF;font-size:40px">
       <span>当前进度：{{propgress || 0}}%
         <span class="el-icon-loading"></span></span>
       <span>正在下载，请勿刷新页面或关闭页面</span>
+    </div> -->
+    <div class="popup"
+      v-if="downloading">
+      <div class="main"
+        style="width:400px">
+        <div class="title">
+          选择时间
+          <i class="el-icon-close"
+            @click="downloading = false" />
+        </div>
+        <div class="content">
+          <el-date-picker v-model="exportTime"
+            style="width:300px"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="downloading = false">取消</div>
+          <div class="btn btnBlue"
+            @click="downLoadData(exportTime && exportTime[0],exportTime && exportTime[1])">导出{{isDownLoad ? '中...' : ''}}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { downloadExcel, getHash } from '@/assets/js/common.js'
+import { getHash } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
 import { client } from '@/assets/js/api.js'
 export default {
@@ -360,7 +392,10 @@ export default {
       sortKey: '',
       count: {},
       downloading: false,
-      propgress: 0
+      isDownLoad: false,
+      exportTime: '',
+      propgress: 0,
+      selectTime: []
     }
   },
   methods: {
@@ -446,50 +481,73 @@ export default {
       this.clientBigType = item.value
       this.changeRouter(1)
     },
-    downLoadData (data = [], pages = 1, total, limit = 50) {
-      this.downloading = true
-      this.propgress = total ? this.$toFixed((pages / Math.ceil(total / limit) * 100)) : 0
-      client.list({
-        limit: limit,
-        page: pages,
-        keyword: this.keyword,
+    downLoadData (startTime, endTime) { // data = [], pages = 1, total, limit = 50
+      if (this.isDownLoad) return
+      if (!startTime || !endTime) {
+        this.$message.warning('请选择起始日期与结束日期')
+        return
+      }
+      this.isDownLoad = true
+      client.exportFile({
         type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
-        status: this.clientStatus,
-        order: (this.sortValue && this.sortKey) || '',
-        order_way: this.sortValue === 1 ? '' : 'desc'
-      }).then((res) => {
+        export_type: this.clientBigType === '订单公司' ? '收款' : '付款',
+        start_time: startTime,
+        end_time: endTime
+      }).then(res => {
         if (res.data.status !== false) {
-          data.push(...res.data.data.map(itemM => {
-            return {
-              ...itemM,
-              client_type: this.computedType(itemM.type),
-              ...itemM.financial_data
-            }
-          }))
-          total = res.data.meta.total
-          if (pages >= Math.ceil(total / limit)) { // 当页数到最后一页时
-            downloadExcel(data, [
-              { title: '客户名称', key: 'name' },
-              { title: '客户简称', key: 'abbreviation' },
-              { title: '客户类型', key: 'client_type' },
-              { title: '订单下单产值', key: 'plan_price' },
-              { title: '实际发货产值', key: 'total_price' },
-              { title: '已开票金额', key: 'settle_price_invoice' },
-              { title: '已收款金额', key: 'transfer_count' },
-              { title: '已扣款金额', key: 'deduct_price' }
-            ], false)
-            this.downloading = false
-          } else {
-            setTimeout(() => {
-              this.downLoadData(data, pages + 1, total, limit)
-            }, 1000)
-          }
+          let aLink = document.createElement('a')
+          let url = res.data.data
+          aLink.href = url
+          aLink.download = new Date().getTime() + '.xls'
+          aLink.click()
+          this.downloading = false
+          this.isDownLoad = false
         }
       })
+      // this.downloading = true
+      // this.propgress = total ? this.$toFixed((pages / Math.ceil(total / limit) * 100)) : 0
+      // client.list({
+      //   limit: limit,
+      //   page: pages,
+      //   keyword: this.keyword,
+      //   type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
+      //   status: this.clientStatus,
+      //   order: (this.sortValue && this.sortKey) || '',
+      //   order_way: this.sortValue === 1 ? '' : 'desc'
+      // }).then((res) => {
+      //   if (res.data.status !== false) {
+      //     data.push(...res.data.data.map(itemM => {
+      //       return {
+      //         ...itemM,
+      //         client_type: this.computedType(itemM.type),
+      //         ...itemM.financial_data
+      //       }
+      //     }))
+      //     total = res.data.meta.total
+      //     if (pages >= Math.ceil(total / limit)) { // 当页数到最后一页时
+      //       downloadExcel(data, [
+      //         { title: '客户名称', key: 'name' },
+      //         { title: '客户简称', key: 'abbreviation' },
+      //         { title: '客户类型', key: 'client_type' },
+      //         { title: '订单下单产值', key: 'plan_price' },
+      //         { title: '实际发货产值', key: 'total_price' },
+      //         { title: '已开票金额', key: 'settle_price_invoice' },
+      //         { title: '已收款金额', key: 'transfer_count' },
+      //         { title: '已扣款金额', key: 'deduct_price' }
+      //       ], false)
+      //       this.downloading = false
+      //     } else {
+      //       setTimeout(() => {
+      //         this.downLoadData(data, pages + 1, total, limit)
+      //       }, 1000)
+      //     }
+      //   }
+      // })
     }
   },
   created () {
     this.getFilters()
+    this.selectTime = [`${new Date().getFullYear()}/01/01`, this.$getTime(null, '/')]
     this.companyType = this.$mergeData(companyType, { mainRule: 'type', childrenName: 'children' }).map(itemM => {
       return {
         value: itemM.type,

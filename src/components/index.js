@@ -18,6 +18,7 @@ import lookPrice from './lookPrice/lookPrice.vue'
 import orderList from './orderList/orderList.vue'
 import orderAbout from './orderAbout/orderAbout.vue'
 import zhSort from './zhSort/zhSort.vue'
+import printTime from './printTime/printTime.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -40,5 +41,6 @@ export default {
     vue.component('orderList', orderList)
     vue.component('orderAbout', orderAbout)
     vue.component('zhSort', zhSort)
+    vue.component('printTime', printTime)
   }
 }

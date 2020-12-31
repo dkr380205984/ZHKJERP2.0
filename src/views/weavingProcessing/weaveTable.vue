@@ -15,7 +15,7 @@
           </span>
           <span class="item">
             <span class="label">创建日期：</span>
-            {{$getTime()}}
+            <printTime :data-time='$getTime()' />
           </span>
         </div>
         <div class="right">

@@ -14,10 +14,10 @@
           <div class="otherInfo">
             <div class="block">
               <span class="label">{{$route.params.oprType}}金额</span>
-              <span class="text">￥{{$formatNum(($route.params.oprType === '结算' && info.settle_price) || ($route.params.oprType === '扣款' && info.deduct_price) || ($route.params.oprType === '收款' && info.price))}}</span>
+              <span class="text">￥{{$formatNum(($route.params.oprType === '开票' && info.settle_price) || ($route.params.oprType === '扣款' && info.deduct_price) || (($route.params.oprType === '收款' || $route.params.oprType === '付款') && info.price))}}</span>
             </div>
             <div class="block"
-              v-if="$route.params.oprType !== '收款'">
+              v-if="$route.params.oprType !== '收款' && $route.params.oprType !== '付款'">
               <span class="label">状态</span>
               <span class="text">{{info.status === 1 ? '待审核' : info.status === 2 ? '已通过' : '已驳回' }}</span>
             </div>
@@ -25,7 +25,7 @@
         </div>
         <div :class="['statuIcon',info.status === 1 ? 'reasoning' : false,info.status === 3 ? 'pass' : false,info.status === 2 ? 'tongguo' : false]"></div>
         <div class="rowCtn"
-          v-if="$route.params.oprType !== '收款'">
+          v-if="$route.params.oprType !== '收款' && $route.params.oprType !== '付款'">
           <div class="colCtn flex3">
             <span class="label">{{$route.params.oprType}}编号：</span>
             <span class="text">{{info.settle_code || info.deduct_code}}</span>
@@ -63,13 +63,13 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3"
-            v-if="$route.params.oprType !== '收款'">
+            v-if="$route.params.oprType !== '收款' && $route.params.oprType !== '付款'">
             <span class="label">是否开票：</span>
             <span class="text">{{info.is_invoice===1?'已开票':'未开票'}}</span>
           </div>
           <div class="colCtn flex3"
-            v-if="$route.params.oprType === '收款'">
-            <span class="label">收款方式：</span>
+            v-if="$route.params.oprType === '收款' || $route.params.oprType === '付款'">
+            <span class="label">{{$route.params.oprType}}方式：</span>
             <span class="text">{{info.type}}</span>
           </div>
           <div class="colCtn">
@@ -202,7 +202,7 @@
             </div>
           </div>
           <div class="row"
-            v-if="$route.params.oprType==='结算'">
+            v-if="$route.params.oprType==='开票'">
             <div class="label">{{$route.params.oprType}}金额：</div>
             <div class="info">
               <zh-input placeholder="请输入金额"
@@ -224,8 +224,8 @@
             </div>
           </div>
           <div class="row"
-            v-if="$route.params.oprType==='收款'">
-            <div class="label">收款金额：</div>
+            v-if="$route.params.oprType==='收款' ||   $route.params.oprType === '付款'">
+            <div class="label">{{$route.params.oprType}}金额：</div>
             <div class="info">
               <zh-input placeholder="请输入金额"
                 type="number"
@@ -235,7 +235,7 @@
             </div>
           </div>
           <div class="row"
-            v-if="$route.params.oprType==='结算'">
+            v-if="$route.params.oprType==='开票'">
             <div class="label">是否开票：</div>
             <div class="info">
               <el-radio v-model="updateInfo.is_invoice"
@@ -269,13 +269,13 @@
             </div>
           </div>
           <div class="row"
-            v-if="$route.params.oprType === '收款'">
-            <div class="label">收款方式：</div>
+            v-if="$route.params.oprType === '收款' ||  $route.params.oprType === '付款'">
+            <div class="label">{{$route.params.oprType}}方式：</div>
             <div class="info">
               <el-autocomplete v-model="updateInfo.type"
                 clearable
                 :fetch-suggestions="querySearchCollection"
-                placeholder="请选择收款方式"></el-autocomplete>
+                :placeholder="`请选择${$route.params.oprType}方式`"></el-autocomplete>
             </div>
           </div>
           <div class="row">
@@ -368,7 +368,7 @@ export default {
       cb(list)
     },
     checkFn () {
-      let api = this.$route.params.oprType === '结算' ? settle : chargebacks
+      let api = this.$route.params.oprType === '开票' ? settle : chargebacks
       if (this.ifPass) {
         api.check({
           id: this.$route.params.oprId
@@ -428,7 +428,7 @@ export default {
     updateFn () {
       if (this.lock) {
         let data = null
-        if (this.$route.params.oprType === '结算') {
+        if (this.$route.params.oprType === '开票') {
           data = {
             id: this.updateInfo.id,
             client_id: this.$route.params.clentId,
@@ -452,7 +452,7 @@ export default {
             complete_time: this.updateInfo.complete_time,
             deduct_price: this.updateInfo.deduct_price
           }
-        } else if (this.$route.params.oprType === '收款') {
+        } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
           data = {
             id: this.updateInfo.id,
             client_id: this.$route.params.clentId,
@@ -465,7 +465,7 @@ export default {
           }
         }
         this.lock = false
-        const api = (this.$route.params.oprType === '结算' && settle) || (this.$route.params.oprType === '收款' && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
+        const api = (this.$route.params.oprType === '开票' && settle) || ((this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
         api.create(data).then(res => {
           if (res.data.status !== false) {
             this.$message.success('修改成功')
@@ -502,7 +502,7 @@ export default {
           this.loading = false
           this.lock = true
         })
-      } else if (this.$route.params.oprType === '结算') {
+      } else if (this.$route.params.oprType === '开票') {
         settle.log({
           client_id: this.$route.params.clentId,
           type: [this.$route.params.type],
@@ -514,7 +514,7 @@ export default {
           this.loading = false
           this.lock = true
         })
-      } else if (this.$route.params.oprType === '收款') {
+      } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
         collection.log({
           client_id: this.$route.params.clentId,
           order_id: this.$route.query.orderId || ''
@@ -530,7 +530,7 @@ export default {
     getChangeLog (id) {
       settle.changeLog({
         pid: id,
-        type: this.$route.params.oprType === '结算' ? 1 : 2,
+        type: this.$route.params.oprType === '开票' ? 1 : 2,
         operate_user: ''
       }).then(res => {
         if (res.data.status !== false) {
@@ -552,7 +552,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const api = (this.$route.params.oprType === '结算' && settle) || (this.$route.params.oprType === '收款' && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
+        const api = (this.$route.params.oprType === '开票' && settle) || (this.$route.params.oprType === '收款' && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
         api.deleteLog({
           id: this.$route.params.oprId
         }).then(res => {
@@ -579,10 +579,10 @@ export default {
     filterChangeStr (item) {
       let str = ''
       if (item.data_column === 'settle_price') {
-        str += item.user_name + '修改了结算金额,'
+        str += item.user_name + '修改了开票金额,'
         str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
       } else if (item.data_column === 'complete_time') {
-        str += item.user_name + '修改了结算日期,'
+        str += item.user_name + '修改了开票日期,'
         str += '由原“' + item.history_data + '”修改为“' + item.new_data + '”'
       } else if (item.data_column === 'invoice_info') {
         str += item.user_name + '修改了开票信息,'

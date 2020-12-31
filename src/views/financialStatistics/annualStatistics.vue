@@ -415,10 +415,23 @@ export default {
       } else {
         this.year = year
       }
-      this.start_time = this.year - 1 + '-01-01'
-      this.end_time = this.year + '-12-31'
-      this.getData()
+      // this.start_time = this.year - 1 + '-01-01'
+      // this.end_time = this.year + '-12-31'
+      this.$router.push(`/financialStatistics/annualStatistics?year=${this.year}`)
+      // this.getData()
       return false
+    }
+  },
+  watch: {
+    $route: {
+      deep: true,
+      handler () {
+        this.year = this.$route.query.year || new Date().getFullYear()
+        this.start_time = this.year + '-01-01'
+        this.end_time = this.year + '-12-31'
+        this.yearArr = Math.floor(this.year / 10) - 1
+        this.getData()
+      }
     }
   },
   computed: {

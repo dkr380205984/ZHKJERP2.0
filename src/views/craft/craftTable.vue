@@ -17,7 +17,8 @@
           </span>
           <span class="item">
             <span class="label">创建信息</span>
-            {{`${craftDetail.user_name}，${craftDetail.user_phone}，${$getTime(craftDetail.create_time)}`}}
+            {{`${craftDetail.user_name}，${craftDetail.user_phone}，`}}
+            <printTime :data-time='$getTime(craftDetail.create_time)' />
           </span>
         </div>
         <div class="right">

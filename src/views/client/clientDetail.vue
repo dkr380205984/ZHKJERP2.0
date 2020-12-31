@@ -75,50 +75,65 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn">
+      <div class="titleCtn rightBtn">
         <span class="title">财务信息统计</span>
+        <div class="cut_type"
+          v-if="typeNum === 9">
+          <el-dropdown @command="(e)=>{
+            countType = e
+            }">
+            <span class="el-dropdown-link blue">
+              {{countType === 'financial_data' ? "默认" : countType === 'financial_data_RMB' ? '人民币' : '美元'}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="financial_data">默认</el-dropdown-item>
+              <el-dropdown-item command="financial_data_RMB">只统计人民币</el-dropdown-item>
+              <el-dropdown-item command="financial_data_USD">只统计美元</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
       </div>
       <div class="listHead">
         <div class="box">
-          <div class="boxTop blue">合计</div>
+          <div class="boxTop blue">{{DDXDCZCOM}}</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.total_price || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].plan_price || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop green">已结算(已开票)</div>
+          <div class="boxTop green">{{SJFHCZCOM}}</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.settle_price_invoice || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].total_price || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop green">已结算(未开票)</div>
+          <div class="boxTop green">已开票金额</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.settle_price || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].settle_price || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop red">已扣款</div>
+          <div class="boxTop red">{{YSKJECOM}}</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.deduct_price || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].settle_price_invoice || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop orange">待结算</div>
+          <div class="boxTop orange">已扣款金额</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.wait_settle_price || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].deduct_price || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
         <div class="box">
-          <div class="boxTop green">已收款</div>
+          <div class="boxTop green">待开票</div>
           <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo.financial_data.transfer_count || 0))}}</span>
-            <span class="em">元</span>
+            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].wait_settle_price || 0))}}</span>
+            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
       </div>
@@ -220,7 +235,7 @@
         <span class="title">相关财务明细</span>
         <span class="btnCtn">
           <span class="btn noBorder"
-            @click="oprFlag=true;log_date=log_order_code=log_type=''">查看所有结算、扣款、收款记录</span>
+            @click="oprFlag=true;log_date=log_order_code=log_type=''">查看所有开票、扣款、{{typeNum === 9 ? '收款' : '付款'}}记录</span>
         </span>
       </div>
       <div class="listCtn hasBorderTop"
@@ -316,7 +331,7 @@
                 <span class="text">实际总值</span>
               </div>
               <div class="col middle flex07">
-                <span class="text">结算记录</span>
+                <span class="text">开票记录</span>
               </div>
               <div class="col middle flex07">
                 <span class="text">扣款记录</span>
@@ -344,7 +359,7 @@
               <div class="col flex07">{{item.reality_number}}</div>
               <div class="col middle blue flex07"
                 style="cursor:pointer"
-                @click="showLog('结算',item)">{{item.settle_number || 0}}</div>
+                @click="showLog('开票',item)">{{item.settle_number || 0}}</div>
               <div class="col middle orange flex07"
                 style="cursor:pointer"
                 @click="showLog('扣款',item)">{{item.deduct_number || 0}}</div>
@@ -1920,12 +1935,12 @@
         </div>
       </div>
     </div>
-    <!-- 结算 -->
+    <!-- 开票 -->
     <div class="popup"
       v-show="settleFlag">
       <div class="main">
         <div class="title">
-          <div class="text">单位结算</div>
+          <div class="text">单位开票</div>
           <i class="el-icon-close"
             @click="settleFlag=false"></i>
         </div>
@@ -1941,11 +1956,11 @@
           </div>
           <div class="row"
             v-if="type === '所有订单' && order_type === 1">
-            <div class="label">结算合计：</div>
+            <div class="label">开票合计：</div>
             <div class="info">{{checkOrderTotalPrice}}元</div>
           </div>
           <div class="row">
-            <div class="label">结算日期：</div>
+            <div class="label">开票日期：</div>
             <div class="info">
               <el-date-picker style="width:100%"
                 v-model="settle.date"
@@ -1956,26 +1971,16 @@
             </div>
           </div>
           <div class="row">
-            <div class="label">结算金额：</div>
+            <div class="label">开票金额：</div>
             <div class="info">
-              <zh-input placeholder="请输入结算金额"
+              <zh-input placeholder="请输入开票金额"
                 type="number"
                 v-model="settle.price">
                 <template slot="append">元</template>
               </zh-input>
             </div>
           </div>
-          <div class="row">
-            <div class="label">是否开票：</div>
-            <div class="info">
-              <el-radio v-model="settle.ifInvoice"
-                :label="1">已开票</el-radio>
-              <el-radio v-model="settle.ifInvoice"
-                :label="2">未开票</el-radio>
-            </div>
-          </div>
-          <div v-show="settle.ifInvoice === 1"
-            v-for="(item,index) in settle.invoiceDetail"
+          <div v-for="(item,index) in settle.invoiceDetail"
             :key="index">
             <div class="row">
               <div class="label">开票号码：</div>
@@ -2048,7 +2053,7 @@
           <div class="row">
             <div class="label">扣款金额：</div>
             <div class="info">
-              <zh-input placeholder="请输入结算金额"
+              <zh-input placeholder="请输入开票金额"
                 type="number"
                 v-model="chargebacks.price">
                 <template slot="append">元</template>
@@ -2077,7 +2082,7 @@
       v-if="collectionFlag">
       <div class="main">
         <div class="title">
-          <div class="text">单位收款</div>
+          <div class="text">单位{{typeNum === 9 ? '收款' : '付款'}}</div>
           <i class="el-icon-close"
             @click="collectionFlag=false"></i>
         </div>
@@ -2093,7 +2098,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="label">收款日期：</div>
+            <div class="label">{{typeNum === 9 ? '收款' : '付款'}}日期：</div>
             <div class="info">
               <el-date-picker style="width:100%"
                 v-model="collection.date"
@@ -2104,9 +2109,9 @@
             </div>
           </div>
           <div class="row">
-            <div class="label">收款金额：</div>
+            <div class="label">{{typeNum === 9 ? '收款' : '付款'}}金额：</div>
             <div class="info">
-              <zh-input placeholder="请输入收款金额"
+              <zh-input :placeholder='`请输入${typeNum === 9 ? "收款" : "付款"}金额`'
                 type="number"
                 v-model="collection.price">
                 <template slot="append">元</template>
@@ -2114,12 +2119,12 @@
             </div>
           </div>
           <div class="row">
-            <div class="label">收款方式：</div>
+            <div class="label">{{typeNum === 9 ? '收款' : '付款'}}方式：</div>
             <div class="info">
               <el-autocomplete v-model="collection.type"
                 clearable
                 :fetch-suggestions="querySearchCollection"
-                placeholder="请选择收款方式"></el-autocomplete>
+                :placeholder='`请选择${typeNum === 9 ? "收款" : "付款"}方式`'></el-autocomplete>
             </div>
           </div>
           <div class="row">
@@ -2163,7 +2168,7 @@
                 clearable
                 style="margin-left:16px;width:150px;"
                 placeholder="请选择类型">
-                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'结算'},{id:3,name:'收款'}]"
+                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'开票'},{id:3,name:'收款'}]"
                   :key="item.id"
                   :label="item.name"
                   :value="item.name">
@@ -2191,7 +2196,7 @@
                         style="width:100%;display:flex;justify-content: space-between;align-items:center">
                         <div>
                           <span style="color:rgba(0,0,0,0.65);">{{item.complete_time?$getTime(item.complete_time):'有问题'}}</span>
-                          <span :style="`color:${(item.methods==='结算'&&'#1A95FF') || (item.methods==='扣款'&&'#F2637B') || (item.methods==='收款'&&'#00A539')}`"
+                          <span :style="`color:${(item.methods==='开票'&&'#1A95FF') || (item.methods==='扣款'&&'#F2637B') || ((item.methods==='收款' || item.methods==='付款')&&'#00A539')}`"
                             style="margin-left:20px">{{item.methods}}</span>
                           <span style="margin-left:20px">金额：
                             <span style="font-size:14px">{{$formatNum(item.deduct_price  || item.settle_price || item.price || 0)}}元</span>
@@ -2202,15 +2207,10 @@
                           @click.stop="goSettleDeductDetail(item)">查看详情</div>
                       </span>
                     </template>
-                    <template v-if="item.methods==='结算'">
-                      <div class="collapseBox">
-                        <span class="label">是否开票：</span>
-                        <span class="info">{{item.is_invoice===1?'已开票':'未开票'}}</span>
-                      </div>
+                    <template v-if="item.methods==='开票'">
                       <div class="collapseBox"
                         v-for="(itemChild,indexChild) in item.invoice_info"
-                        :key="indexChild"
-                        v-show="item.is_invoice===1">
+                        :key="indexChild">
                         <span class="label">发票信息：</span>
                         <span class="info">{{itemChild.invoiceNum}} - {{itemChild.invoicePrice}}元</span>
                       </div>
@@ -2239,7 +2239,7 @@
                         <span class="info">{{item.desc}}</span>
                       </div>
                     </template>
-                    <template v-if="item.methods==='收款'">
+                    <template v-if="item.methods==='收款' || item.methods === '付款'">
                       <div class="collapseBox">
                         <span class="label">包含订单：</span>
                         <span class="info">
@@ -2248,15 +2248,15 @@
                         </span>
                       </div>
                       <div class="collapseBox">
-                        <span class="label">收款金额：</span>
+                        <span class="label">{{item.methods}}金额：</span>
                         <span class="info">{{item.price || 0}}元</span>
                       </div>
                       <div class="collapseBox">
-                        <span class="label">收款方式：</span>
+                        <span class="label">{{item.methods}}方式：</span>
                         <span class="info">{{item.type || ''}}</span>
                       </div>
                       <div class="collapseBox">
-                        <span class="label">收款备注：</span>
+                        <span class="label">{{item.methods}}备注：</span>
                         <span class="info">{{item.desc}}</span>
                       </div>
                     </template>
@@ -2266,11 +2266,11 @@
             </el-timeline>
           </div>
           <div class="row">
-            <span class="label">合计结算：</span>
+            <span class="label">合计开票：</span>
             <span class="info blue">{{$toFixed(oprListCom.settle)}}元</span>
             <span class="label">合计扣款：</span>
             <span class="info red">{{$toFixed(oprListCom.chargebacks)}}元</span>
-            <span class="label">合计收款：</span>
+            <span class="label">合计收/付款：</span>
             <span class="info green">{{$toFixed(oprListCom.collection)}}元</span>
           </div>
         </div>
@@ -2287,14 +2287,13 @@
         <div class="leftCtn">
           <div class="btn btnWhiteBlue"
             :class="{'btnWhiteGray':order_type === 0}"
-            @click="goSettle">结算</div>
+            @click="goSettle">开票</div>
           <div class="btn btnWhiteRed"
             :class="{'btnWhiteGray':order_type === 0}"
             @click="goChargebacks">扣款</div>
           <div class="btn btnWhiteGreen"
-            v-if="type === '所有订单'"
             :class="{'btnWhiteGray':order_type === 0}"
-            @click="goCollection">收款</div>
+            @click="goCollection">{{typeNum === 9 ? '收款' : '付款'}}</div>
         </div>
         <div class="btnCtn">
           <div class="btn btnGray"
@@ -2449,7 +2448,7 @@ export default {
           total_price: 0
         }
       },
-      // 扣款结算数据
+      // 扣款开票数据
       settleFlag: false,
       settle: {
         date: this.$getTime(),
@@ -2488,7 +2487,8 @@ export default {
       // 导出所有数据
       year: '',
       isDownLoading: 0, // 导出状态 0窗口关闭1窗口打开2正在导出3导出完毕
-      downLoadInfoArr: []
+      downLoadInfoArr: [],
+      countType: 'financial_data'
     }
   },
   methods: {
@@ -2611,7 +2611,7 @@ export default {
         propgress: 0 // 进度
       }, {
         checked: true,
-        name: '结算',
+        name: '开票',
         isGetting: 1, // 当前状态 1等待2获取中3获取失败4获取完成5没有日志
         propgress: 0 // 进度
       }, {
@@ -2651,7 +2651,7 @@ export default {
                 { title: '出库数量', key: 'pack_number' },
                 { title: '实际总值', key: 'reality_number' },
                 { title: '工厂成本', key: 'company_cost' },
-                { title: '结算记录', key: 'settle_number' },
+                { title: '开票记录', key: 'settle_number' },
                 { title: '扣款记录', key: 'deduct_number' },
                 { title: '创建人', key: 'user_name' }
               ], false, `订单-${this.year}年度-${new Date().getTime()}`)
@@ -3153,7 +3153,7 @@ export default {
           console.log(error)
           item.isGetting = 3
         })
-      } else if (item.name === '结算') {
+      } else if (item.name === '开票') {
         settle.log({
           limit: limit,
           page: page,
@@ -3173,14 +3173,14 @@ export default {
             total = res.data.meta.total
             if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
               downloadExcel(data, [
-                { title: '结算日期', key: 'complete_time' },
-                { title: '结算编号', key: 'settle_code' },
-                { title: '结算单位', key: 'client_name' },
+                { title: '开票日期', key: 'complete_time' },
+                { title: '开票编号', key: 'settle_code' },
+                { title: '开票单位', key: 'client_name' },
                 { title: '包含订单', key: 'order_code_str' },
-                { title: '结算金额', key: 'settle_price' },
+                { title: '开票金额', key: 'settle_price' },
                 { title: '备注信息', key: 'desc' },
                 { title: '操作人', key: 'user_name' }
-              ], false, `结算-${this.year}年度-${new Date().getTime()}`)
+              ], false, `开票-${this.year}年度-${new Date().getTime()}`)
               item.isGetting = 4
             } else {
               setTimeout(() => {
@@ -3215,7 +3215,7 @@ export default {
             if (page >= Math.ceil(total / limit)) { // 当页数到最后一页时
               downloadExcel(data, [
                 { title: '收款日期', key: 'complete_time' },
-                // { title: '结算单位', key: 'client_name' },
+                // { title: '开票单位', key: 'client_name' },
                 { title: '包含订单', key: 'order_code_str' },
                 { title: '收款金额', key: 'price' },
                 { title: '收款方式', key: 'type' },
@@ -3615,7 +3615,7 @@ export default {
     },
     goSettle () {
       if (this.order_type === 0) {
-        this.$message.warning('该功能仅在筛选订单类型为订单或者样单时可用')
+        this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
         return
       }
       this.settleFlag = true
@@ -3634,7 +3634,7 @@ export default {
         type: this.typeNum
       }).then((res) => {
         if (res.data.status) {
-          this.$message.success('结算成功')
+          this.$message.success('开票成功')
           this.settleFlag = false
           this.settle = {
             date: this.$getTime(),
@@ -3653,7 +3653,7 @@ export default {
     },
     goChargebacks () {
       if (this.order_type === 0) {
-        this.$message.warning('该功能仅在筛选订单类型为订单或者样单时可用')
+        this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
         return
       }
       this.chargebacksFlag = true
@@ -3684,8 +3684,8 @@ export default {
     },
     // 收款
     goCollection () {
-      if (this.order_type === 0 && this.type === '所有订单') {
-        this.$message.warning('该功能仅在订单列表，并且筛选订单类型为订单或者样单时可用')
+      if (this.order_type === 0) {
+        this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
         return
       }
       this.collectionFlag = true
@@ -3699,10 +3699,12 @@ export default {
         price: this.collection.price,
         desc: this.collection.desc,
         type: this.collection.type,
-        order_type: this.order_type
+        order_type: this.order_type,
+        // 加一个字段区分收款(1)付款(0)
+        transfer_type: this.typeNum === 9 ? 1 : 0
       }).then((res) => {
         if (res.data.status !== false) {
-          this.$message.success('收款成功')
+          this.$message.success(`${this.typeNum === 9 ? '收款' : '付款'}成功`)
           if (this.collection.type) {
             let list = window.localStorage.getItem('zh_collection_type')
             list = list ? JSON.parse(list) : []
@@ -3744,10 +3746,10 @@ export default {
           item.methods = '扣款'
           return item
         }).concat(res[1].data.data.map((item) => {
-          item.methods = '结算'
+          item.methods = '开票'
           return item
         }), res[2].data.data.map(item => {
-          item.methods = '收款'
+          item.methods = +item.transfer_type ? '收款' : '付款'
           return item
         })).sort((a, b) => {
           return new Date(a.complete_time) - new Date(b.complete_time)
@@ -3843,7 +3845,7 @@ export default {
       if (this.log_date && this.log_date.length === 2) {
         list = list.filter(itemF => (new Date(this.$getTime(itemF.complete_time)).getTime() >= new Date(this.log_date[0]).getTime()) && (new Date(this.log_date[1]).getTime() >= new Date(this.$getTime(itemF.complete_time)).getTime()))
       }
-      let settle = list.filter(itemF => itemF.methods === '结算').map(itemM => (+itemM.settle_price || 0)).reduce((a, b) => {
+      let settle = list.filter(itemF => itemF.methods === '开票').map(itemM => (+itemM.settle_price || 0)).reduce((a, b) => {
         return a + b
       }, 0)
       let chargebacks = list.filter(itemF => itemF.methods === '扣款').map(itemM => (+itemM.deduct_price || 0)).reduce((a, b) => {
@@ -3857,6 +3859,50 @@ export default {
         settle,
         chargebacks,
         collection
+      }
+    },
+    DDXDCZCOM () {
+      switch (this.type) {
+        case '所有订单':
+          return '订单下单产值'
+        case '物料订购调取':
+        case '物料预订购':
+        case '包装订购':
+          return '计划采购总值'
+        case '织造分配':
+          return '计划生产总值'
+        case '物料加工':
+        case '半成品加工':
+        case '成品加工':
+          return '计划加工总值'
+        default:
+          return '计划总值'
+      }
+    },
+    SJFHCZCOM () {
+      switch (this.type) {
+        case '所有订单':
+          return '实际发货产值'
+        case '物料订购调取':
+        case '物料预订购':
+        case '包装订购':
+          return '实际采购总值'
+        case '织造分配':
+          return '实际生产总值'
+        case '物料加工':
+        case '半成品加工':
+        case '成品加工':
+          return '实际加工总值'
+        default:
+          return '实际总值'
+      }
+    },
+    YSKJECOM () {
+      switch (this.type) {
+        case '所有订单':
+          return '已收款金额'
+        default:
+          return '已付款金额'
       }
     }
   },

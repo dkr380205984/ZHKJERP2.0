@@ -1373,7 +1373,7 @@ export default {
         if (item.client_auth.length === 0) {
           error = '请选择来源工序人员/单位'
         }
-        if (!item.product_flow) {
+        if (!item.product_flow || item.product_flow.length === 0) {
           error = '请选择加工工序'
         }
         item.colorSize.forEach((itemChild) => {
