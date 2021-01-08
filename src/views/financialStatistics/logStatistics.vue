@@ -600,6 +600,12 @@
                   <span class="text">属性</span>
                 </div>
                 <div class="col flex07">
+                  <span class="text">色号</span>
+                </div>
+                <div class="col flex07">
+                  <span class="text">批/缸号</span>
+                </div>
+                <div class="col flex07">
                   <span class="text">价格</span>
                 </div>
                 <div class="col flex07">
@@ -641,6 +647,12 @@
                 </div>
                 <div class="col flex07">
                   <span class="text">{{item.material_color}}</span>
+                </div>
+                <div class="col flex07">
+                  <span class="text">{{item.color_number}}</span>
+                </div>
+                <div class="col flex07">
+                  <span class="text">{{item.vat_code}}</span>
                 </div>
                 <div class="col flex07">
                   <span class="text">{{item.price}}元</span>

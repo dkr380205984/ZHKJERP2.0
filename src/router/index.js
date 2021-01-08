@@ -1,6 +1,8 @@
 import Vue from 'vue'
+import Message from 'element-ui'
 import VueRouter from 'vue-router'
 import store from '@/store/index.js'
+import { isHasPermissions } from '@/assets/js/dictionary.js'
 Vue.use(VueRouter)
 // 解决ele组件点击当前页路由时出错
 const originalPush = VueRouter.prototype.push
@@ -9,10 +11,6 @@ VueRouter.prototype.push = function (location) {
 }
 
 const routes = [
-  {
-    path: '/test',
-    component: () => import('../views/test.vue')
-  },
   {
     path: '/',
     redirect: '/login'
@@ -109,22 +107,37 @@ const routes = [
     }, {
       path: '/price/priceCreate',
       name: '报价单添加',
+      meta: {
+        permissions_id: '02-01'
+      },
       component: () => import('../views/price/priceCreate.vue')
     }, {
       path: '/price/priceUpdate/:id',
       name: '报价单修改',
+      meta: {
+        permissions_id: '02-02'
+      },
       component: () => import('../views/price/priceUpdate.vue')
     }, {
       path: '/price/priceGiveAgain/:id',
       name: '再次报价',
+      meta: {
+        permissions_id: '02-01'
+      },
       component: () => import('../views/price/priceGiveAgain.vue')
     }, {
       path: '/price/priceList/:params',
       name: '报价单列表',
+      meta: {
+        permissions_id: '02-05'
+      },
       component: () => import('../views/price/priceList.vue')
     }, {
       path: '/price/priceDetail/:id',
       name: '报价单详情',
+      meta: {
+        permissions_id: '02-06'
+      },
       component: () => import('../views/price/priceDetail.vue')
     }, {
       path: '/craft/craftCreate/:id/:type',
@@ -289,7 +302,7 @@ const routes = [
       name: '系统设置',
       component: () => import('../views/setting/setting.vue')
     }, {
-      path: '/stock/stockList/:params',
+      path: '/stock/stockList',
       name: '仓库列表',
       component: () => import('../views/stock/stockList.vue')
     }, {
@@ -628,6 +641,14 @@ let router = new VueRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
+  // 权限判断
+  if (to.meta && to.meta.permissions_id) {
+    if (!isHasPermissions(to.meta.permissions_id)) {
+      next(false)
+      Message.Message.warning('抱歉，您没有相应的权限')
+      return
+    }
+  }
   // 获取标题
   store.commit('getTitle', to.name ? to.name : from.name)
   const routerTable = {

@@ -120,6 +120,18 @@
                 :value="item.value">
               </el-option>
             </el-select>
+            <el-date-picker v-model="year"
+              class="inputs"
+              :picker-options="{
+                disabledDate(e){
+                  if (new Date(e).getFullYear() > new Date().getFullYear()) return true
+                }
+              }"
+              value-format="yyyy"
+              type="year"
+              @change='changeRouter(1)'
+              placeholder="筛选年">
+            </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0"
               @click="reset">重置</div>
@@ -284,6 +296,7 @@ export default {
   data () {
     return {
       loading: true,
+      year: '',
       list: [],
       keyword: '',
       clientBigType: '订单公司',
@@ -438,21 +451,24 @@ export default {
       this.client_type = +params.clientType || ''
       this[params.sortType] = +params.sortValue || 0
       this.sortKey = params.sortKey
+      this.year = params.year || new Date().getFullYear().toString()
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push(`/client/clientList/page=${pages}&&keyword=${this.keyword}&&clientBigType=${this.clientBigType}&&clientType=${this.client_type}&&sortType=${this.sortType}&&sortKey=${this.sortKey}&&sortValue=${this.sortValue}`)
+      this.$router.push(`/client/clientList/page=${pages}&&keyword=${this.keyword}&&clientBigType=${this.clientBigType}&&clientType=${this.client_type}&&sortType=${this.sortType}&&sortKey=${this.sortKey}&&sortValue=${this.sortValue}&&year=${this.year}`)
     },
     getClientList () {
       this.loading = true
-      client.list({
+      const api = (this.year >= new Date().getFullYear()) ? client.list : client.listCount
+      api({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
         type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
         status: this.clientStatus,
         order: (this.sortValue && this.sortKey) || '',
-        order_way: this.sortValue === 1 ? '' : 'desc'
+        order_way: this.sortValue === 1 ? '' : 'desc',
+        year: this.year
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data

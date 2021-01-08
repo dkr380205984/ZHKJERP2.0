@@ -1764,12 +1764,12 @@
               </div>
             </div>
             <div class="row">
-              <div class="label">管理权限：</div>
+              <div class="label">管理账号：</div>
               <div class="info">
                 <el-radio v-model="authInfo.has_check"
-                  :label="1">有审核权限</el-radio>
+                  :label="1">有管理权限</el-radio>
                 <el-radio v-model="authInfo.has_check"
-                  :label="0">没有审核权限</el-radio>
+                  :label="0">没有管理权限</el-radio>
               </div>
             </div>
             <div class="row">
@@ -1781,6 +1781,20 @@
                     :label="item.id"
                     :value="item.id">
                     {{item.module}}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </div>
+            <div class="row"
+              v-if="permissionsDetailArr.length > 0">
+              <div class="label">模块细分：</div>
+              <div class="info">
+                <el-checkbox-group v-model="authInfo.module_id_detail">
+                  <el-checkbox v-for="item in permissionsDetailArr"
+                    :key="item.id"
+                    :label='item.id'
+                    :value='item.id'>
+                    {{item.name}}
                   </el-checkbox>
                 </el-checkbox-group>
               </div>
@@ -2681,7 +2695,8 @@ export default {
         name: '',
         mobile: '',
         has_check: 0,
-        module_id: []// 权限字段
+        module_id: [], // 权限字段
+        module_id_detail: []
       },
       permissions: permissions,
       authPage: 1,
@@ -3019,9 +3034,16 @@ export default {
     },
     stationArr () {
       return this.stationList.slice((this.stationPage - 1) * 5, this.stationPage * 5)
+    },
+    permissionsDetailArr () {
+      let arr = this.permissions.filter(itemF => this.authInfo.module_id.includes(itemF.id))
+      return this.$flatten(arr.map(itemM => itemM.detail || []))
     }
   },
   methods: {
+    permissionsDetailChange (e) {
+      console.log(e)
+    },
     // 批量修改
     updatedBatchSubmit () {
       if (this.updatedBatchFlag) {
@@ -3435,6 +3457,9 @@ export default {
       this.authInfo = authInfo
       if (typeof (this.authInfo.module_id) !== 'object' || this.authInfo.module_id === null) {
         this.authInfo.module_id = []
+      }
+      if (typeof (this.authInfo.module_id_detail) !== 'object' || this.authInfo.module_id_detail === null) {
+        this.authInfo.module_id_detail = []
       }
     },
     banAuth (item) {
@@ -4724,7 +4749,8 @@ export default {
         name: '',
         mobile: '',
         has_check: 0,
-        module_id: []
+        module_id: [],
+        module_id_detail: []
       }
       this.showPopup = true
     },
@@ -4780,7 +4806,8 @@ export default {
               name: '',
               mobile: '',
               has_check: 0,
-              module_id: []
+              module_id: [],
+              module_id_detail: []
             }
           }
         })

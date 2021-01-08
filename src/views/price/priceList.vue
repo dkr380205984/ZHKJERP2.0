@@ -385,6 +385,11 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          const { isHasPermissions } = require('@/assets/js/dictionary.js')
+          if (!isHasPermissions('02-03')) {
+            this.$message.warning('抱歉，您没有删除权限')
+            return
+          }
           price.delete({
             id: id
           }).then(res => {

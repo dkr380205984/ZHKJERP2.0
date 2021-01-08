@@ -728,6 +728,178 @@
           <span class="row_item col"
             v-else>见附件</span>
         </div>
+        <div class="print_row h261"
+          v-else-if="colourInfoType === '3'"
+          @click.right="handleClickRight($event,3)">
+          <span class="col_title">配色工艺</span>
+          <span class="row_item col"
+            v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) <= 3 && color_data.length < 4">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="indexWarp">{{itemWarp.key === 0 ? '主' : `夹${itemWarp.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="indexWeft">{{itemWeft.key === 0 ? '主' : `夹${itemWeft.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center"></span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemB in 3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)"
+                    :key="itemB"></span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`"
+                    :style="{'font-size':returnSize(itemWarp.number)}">{{itemWarp.number || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`"
+                    :style="{'font-size':returnSize(itemWeft.number)}">
+                    {{itemWeft.number || ''}}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`">{{itemWarp.weight && `${itemWarp.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`">{{itemWeft.weight && `${itemWeft.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`">{{item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`">{{item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                      :key="`weft-${indexWeft}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                      :key="`buchong-${itemB}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </span>
+          <span class="row_item col"
+            v-else>见附件</span>
+        </div>
         <div class="print_row">
           <span class="row_item w140 center">工序与备注</span>
           <span class="row_item left noBorder">后道工序：{{warp_data.additional_data}}</span>
@@ -1875,6 +2047,411 @@
         </div>
       </div>
     </template>
+    <template v-else-if="colourInfoType === '3'">
+      <div class="printTable outTable"
+        style="break-inside: avoid;"
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 3 || color_data.length >= 4"
+        @click.right="handleClickRight($event,3)">
+        <div class="outItem">
+          <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
+          {{craftDetail.product_info.product_code}}
+        </div>
+        <div class="outItem"
+          v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 3">
+          <span class="label">配色方案：</span>
+          <div class="print_body"
+            v-for="(items,indexs) in Math.ceil(zhujiaInfoCom.warp.length / 3)"
+            :key="`warp-${indexs}`">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="itemWarp">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      (zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key || zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key === 0)
+                      &&
+                      (zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key}`)
+                      ||
+                      '' }}
+                  </span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`warp-${itemWarp}`">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].number
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`warp-${itemWarp}`">
+                    {{ zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].weight}g`
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`warp-${itemWarp}`">
+                    {{ item.color_scheme.warp[
+                        zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key
+                      ]
+                      &&
+                      item.color_scheme.warp[
+                        zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.warp[(items - 1) * 3 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in 3"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+          <div class="print_body"
+            v-for="(items,indexs) in Math.ceil(zhujiaInfoCom.weft.length / 3)"
+            :key="`weft-${indexs}`">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="itemWarp">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      (zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key || zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key === 0)
+                      &&
+                      (zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key === 0 ? '主' : `夹${zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key}`)
+                      ||
+                      '' }}
+                  </span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`weft-${itemWarp}`">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].number
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`weft-${itemWarp}`">
+                    {{ zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1]
+                      &&
+                      zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].weight
+                      &&
+                      `${zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].weight}g`
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemWarp in 3"
+                    :key="`weft-${itemWarp}`">
+                    {{ item.color_scheme.weft[
+                        zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key
+                      ]
+                      &&
+                      item.color_scheme.weft[
+                        zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1]
+                        &&
+                        zhujiaInfoCom.weft[(items - 1) * 3 + itemWarp - 1].key
+                      ].name
+                      ||
+                      '' }}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in 3"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+        <div class="outItem"
+          v-else>
+          <span class="label">配色方案：</span>
+          <div class="print_body">
+            <span class="print_row h60 noBorder bgGray">
+              <span class="row_item w140 special_title">
+                <span class="top_right">具体配色</span>
+                <span class="bottom_left">颜色组</span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">经向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="indexWarp">{{itemWarp.key === 0 ? '主' : `夹${itemWarp.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center">纬向</span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="indexWeft">{{itemWeft.key === 0 ? '主' : `夹${itemWeft.key}`}}</span>
+                </span>
+              </span>
+              <span class="row_item col"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <span class="print_row h31 noBorder">
+                  <span class="row_item center"></span>
+                </span>
+                <span class="print_row h31">
+                  <span class="row_item center"
+                    v-for="itemB in 3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)"
+                    :key="itemB"></span>
+                </span>
+              </span>
+              <span class="row_item col w140">下机时间</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">根数</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`">{{itemWarp.number || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`">
+                    {{itemWeft.number || ''}}
+                  </span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{warp_data.contract_ratio === '100' ? '' : warp_data.contract_ratio}}</span>
+            </span>
+            <span class="print_row h40">
+              <span class="row_item bgGray w140 center">克重</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`">{{itemWarp.weight && `${itemWarp.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`">{{itemWeft.weight && `${itemWeft.weight}g` || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">织造数量</span>
+            </span>
+            <span class="print_row h40"
+              v-for="(item,index) in color_data"
+              :key="index">
+              <span class="row_item bgGray w140 center">{{item.product_color}}</span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                    :key="`warp-${indexWarp}`">{{item.color_scheme.warp[itemWarp.key] && item.color_scheme.warp[itemWarp.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                    :key="`weft-${indexWeft}`">{{item.color_scheme.weft[itemWeft.key] && item.color_scheme.weft[itemWeft.key].name || ''}}</span>
+                </div>
+              </span>
+              <span class="row_item center"
+                :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                <div class="print_row h40 noBorder">
+                  <span class="row_item center"
+                    v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                    :key="`buchong-${itemB}`"></span>
+                </div>
+              </span>
+              <span class="row_item center w140">{{item.number || ''}}</span>
+            </span>
+            <template v-if="color_data.length < 4">
+              <span class="print_row h40"
+                v-for="item in 3-color_data.length"
+                :key="item+'false'">
+                <span class="row_item bgGray w140 center"></span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.warp.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWarp,indexWarp) in zhujiaInfoCom.warp"
+                      :key="`warp-${indexWarp}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${zhujiaInfoCom.weft.length || 1}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="(itemWeft,indexWeft) in zhujiaInfoCom.weft"
+                      :key="`weft-${indexWeft}`"></span>
+                  </div>
+                </span>
+                <span class="row_item center"
+                  :style="`flex:${3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length)}`">
+                  <div class="print_row h40 noBorder">
+                    <span class="row_item center"
+                      v-for="itemB in (3 - (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length))"
+                      :key="`buchong-${itemB}`"></span>
+                  </div>
+                </span>
+                <span class="row_item w140 center"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
     <!-- 穿综法超出时 -->
     <div class="printTable outTable"
       style="break-inside: avoid;"
@@ -1967,6 +2544,9 @@
         <div class="setting_item"
           :class="{'checked':colourInfoType === '2'}"
           @click.stop="changeModeType('colour_info_craft_table_setting','colourInfoType','2')">模式二</div>
+        <div class="setting_item"
+          :class="{'checked':colourInfoType === '3'}"
+          @click.stop="changeModeType('colour_info_craft_table_setting','colourInfoType','3')">模式三</div>
       </template>
     </div>
   </div>

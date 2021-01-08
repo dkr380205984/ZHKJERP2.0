@@ -81,11 +81,12 @@ export default {
               message: '登录成功',
               duration: 1000
             })
+            const moduleId = (res.data.data.module_id ? JSON.parse(res.data.data.module_id) : []).concat(res.data.data.module_id_detail ? JSON.parse(res.data.data.module_id_detail) : [])
             window.sessionStorage.setItem('user_name', res.data.data.user_name)
             window.sessionStorage.setItem('company_id', res.data.data.company_id)
             window.sessionStorage.setItem('company_name', res.data.data.company_name)
             window.sessionStorage.setItem('full_name', res.data.data.full_name)
-            window.sessionStorage.setItem('module_id', res.data.data.module_id)
+            window.sessionStorage.setItem('module_id', JSON.stringify(moduleId))
             window.sessionStorage.setItem('logo', res.data.data.company_logo)
             window.sessionStorage.setItem('has_check', res.data.data.has_check)
             window.sessionStorage.setItem('user_id', res.data.data.user_id)

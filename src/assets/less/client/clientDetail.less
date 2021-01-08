@@ -210,4 +210,27 @@
     border-color: @font25;
     color: @font25;
   }
+  .countInfo{
+    border: 1px solid #E8E8E8;
+    .tb_content,
+    .tb_row{
+      min-height: 48px;
+      line-height: 48px;
+      &:first-of-type{
+        border-top: none;
+      }
+      &.tb_row{
+        border-right: 1px solid #E8E8E8;
+        &:last-of-type{
+          border-right: none;
+        }
+      }
+    }
+  }
+  .tableTopSelec{
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

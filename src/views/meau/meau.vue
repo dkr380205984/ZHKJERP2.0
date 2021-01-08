@@ -127,7 +127,7 @@ export default {
           {
             name: '仓库管理',
             id: 12,
-            path: '/stock/stockList/page=1&&keyword=&&type=',
+            path: '/stock/stockList',
             icon: 'icon-kucunguanli'
           },
           {

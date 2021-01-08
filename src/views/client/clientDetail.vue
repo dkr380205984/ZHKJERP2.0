@@ -75,7 +75,76 @@
       </div>
     </div>
     <div class="module">
-      <div class="titleCtn rightBtn">
+      <div class="titleCtn">财务统计信息</div>
+      <div class="detailCtn">
+        <div class="rowCtn"
+          style="flex-direction:column">
+          <div class="tableTopSelec">
+            <div class="left">
+              <el-date-picker v-model="countYear"
+                :picker-options="{
+                  disabledDate
+                }"
+                @change="getCountDetail"
+                value-format="yyyy"
+                type="year"
+                placeholder="选择年">
+              </el-date-picker>
+            </div>
+            <div class="right"
+              v-if="typeNum === 9">
+              <el-dropdown @command="(e)=>{
+                    if(e === 'NULL'){
+                      countType = null
+                    }else{
+                      countType = e
+                    }
+                      getCountDetail()
+                  }">
+                <span class="el-dropdown-link blue">
+                  {{!countType ? "默认" : countType === 'RMB' ? '人民币' : '美元'}}<i class="el-icon-arrow-down el-icon--right"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="NULL">默认</el-dropdown-item>
+                  <el-dropdown-item command="RMB">只统计人民币</el-dropdown-item>
+                  <el-dropdown-item command="USD">只统计美元</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </div>
+          <div class="tableCtnLv2 countInfo">
+            <div class="tb_content">
+              <div class="tb_row middle">订单下单产值</div>
+              <div class="tb_row middle">实际发货产值</div>
+              <div class="tb_row middle">已开票金额</div>
+              <div class="tb_row middle">已收款金额</div>
+              <div class="tb_row middle">已扣款金额</div>
+            </div>
+            <div class="tb_content">
+              <div class="tb_row middle">{{detailCount && detailCount.plan_price || 0}}</div>
+              <div class="tb_row middle">{{detailCount && detailCount.total_price || 0}}</div>
+              <div class="tb_row middle">{{detailCount && detailCount.settle_price_invoice || 0}}</div>
+              <div class="tb_row middle">{{detailCount && detailCount.transfer_count || 0}}</div>
+              <div class="tb_row middle">{{detailCount && detailCount.deduct_price || 0}}</div>
+            </div>
+            <!-- <div class="tb_content">
+              <div class="tb_row middle">上一年：{{}}万元</div>
+              <div class="tb_row middle">实际发货产值</div>
+              <div class="tb_row middle">已开票金额</div>
+              <div class="tb_row middle">已收款金额</div>
+              <div class="tb_row middle">已扣款金额</div>
+            </div>
+            <div class="tb_content">
+              <div class="tb_row middle">订单下单产值</div>
+              <div class="tb_row middle">实际发货产值</div>
+              <div class="tb_row middle">已开票金额</div>
+              <div class="tb_row middle">已收款金额</div>
+              <div class="tb_row middle">已扣款金额</div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <!-- <div class="titleCtn rightBtn">
         <span class="title">财务信息统计</span>
         <div class="cut_type"
           v-if="typeNum === 9">
@@ -136,7 +205,7 @@
             <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="listCutCtn">
       <div class="cut_item"
@@ -2053,7 +2122,7 @@
           <div class="row">
             <div class="label">扣款金额：</div>
             <div class="info">
-              <zh-input placeholder="请输入开票金额"
+              <zh-input placeholder="请输入扣款金额"
                 type="number"
                 v-model="chargebacks.price">
                 <template slot="append">元</template>
@@ -2168,7 +2237,7 @@
                 clearable
                 style="margin-left:16px;width:150px;"
                 placeholder="请选择类型">
-                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'开票'},{id:3,name:'收款'}]"
+                <el-option v-for="item in [{id:1,name:'扣款'},{id:2,name:'开票'},{id:3,name:'收款'},{id:4,name:'付款'}]"
                   :key="item.id"
                   :label="item.name"
                   :value="item.name">
@@ -2270,8 +2339,10 @@
             <span class="info blue">{{$toFixed(oprListCom.settle)}}元</span>
             <span class="label">合计扣款：</span>
             <span class="info red">{{$toFixed(oprListCom.chargebacks)}}元</span>
-            <span class="label">合计收/付款：</span>
+            <span class="label">合计收款：</span>
             <span class="info green">{{$toFixed(oprListCom.collection)}}元</span>
+            <span class="label">合计付款：</span>
+            <span class="info green">{{$toFixed(oprListCom.pay)}}元</span>
           </div>
         </div>
         <div class="opr">
@@ -2488,10 +2559,15 @@ export default {
       year: '',
       isDownLoading: 0, // 导出状态 0窗口关闭1窗口打开2正在导出3导出完毕
       downLoadInfoArr: [],
-      countType: 'financial_data'
+      detailCount: null,
+      countType: '',
+      countYear: ''
     }
   },
   methods: {
+    disabledDate (e) {
+      if (new Date(e).getFullYear() > (new Date().getFullYear() - 1)) return true
+    },
     setCardData (item) {
       return {
         product_id: item.product_id,
@@ -3289,6 +3365,18 @@ export default {
         this.loading = false
       })
     },
+    getCountDetail () {
+      this.loading = true
+      client.detailCount({
+        client_id: this.$route.params.id,
+        year: this.countYear < new Date().getFullYear() ? this.countYear : null,
+        type: this.countType || null
+      }).then(res => {
+        this.loading = false
+        if (res.data.status === false) return
+        this.detailCount = res.data.data
+      })
+    },
     getList (page) {
       if (page) {
         this.pages = page
@@ -3854,11 +3942,15 @@ export default {
       let collection = list.filter(itemF => itemF.methods === '收款').map(itemM => (+itemM.price || 0)).reduce((a, b) => {
         return a + b
       }, 0)
+      let pay = list.filter(itemF => itemF.methods === '付款').map(itemM => (+itemM.price || 0)).reduce((a, b) => {
+        return a + b
+      }, 0)
       return {
         list,
         settle,
         chargebacks,
-        collection
+        collection,
+        pay
       }
     },
     DDXDCZCOM () {
@@ -3908,6 +4000,7 @@ export default {
   },
   created () {
     this.init()
+    this.getCountDetail()
   }
 }
 </script>

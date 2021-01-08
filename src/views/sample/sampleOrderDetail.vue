@@ -372,7 +372,8 @@
         </div>
       </div>
     </div>
-    <div class="module">
+    <div class="module"
+      v-if="isHasPermissions('05-01')">
       <div class="titleCtn">
         <span class="title hasBorder">财务概览</span>
       </div>
@@ -1028,6 +1029,12 @@
                 <zh-input v-model="itemMa.color"
                   placeholder="属性"
                   class="elInput" />
+                <zh-input v-model="itemMa.color_number"
+                  placeholder="色号"
+                  class="elInput" />
+                <zh-input v-model="itemMa.vat_code"
+                  placeholder="批/缸号"
+                  class="elInput" />
                 <zh-input v-model="itemMa.weight"
                   placeholder="数量"
                   type='number'
@@ -1237,7 +1244,7 @@
 </template>
 
 <script>
-import { chinaNum } from '@/assets/js/dictionary.js'
+import { chinaNum, isHasPermissions } from '@/assets/js/dictionary.js'
 import { sampleOrder, materialPlan, materialStock, weave, processing, finance, materialManage, materialProcess, yarn, material, stock, orderType } from '@/assets/js/api.js'
 export default {
   data () {
@@ -1344,6 +1351,7 @@ export default {
     }
   },
   methods: {
+    isHasPermissions,
     // 取消样单时跳过结余操作
     jumpGoStock () {
       this.showCanclePopup = 3
@@ -1891,6 +1899,7 @@ export default {
       } else if (type === 'showCanclePopup') {
         this.getMaterialOrderAndProduct()
       } else if (type === 'cancle') {
+        const { VATCODE_COLORCODE_DEFAULT } = require('@/assets/js/dictionary.js')
         let flag = {
           name: true,
           color: true,
@@ -1914,12 +1923,12 @@ export default {
           return {
             material_name: item.material_name,
             color_code: item.color,
+            color_number: item.color_number || VATCODE_COLORCODE_DEFAULT,
             stock_id: this.yarnStockId,
             type: 1,
-            vat_code: '',
+            vat_code: item.vat_code || VATCODE_COLORCODE_DEFAULT,
             attribute: '',
             weight: item.weight,
-            company_id: window.sessionStorage.getItem('company_id'),
             desc: '订单结余入库'
           }
         })
@@ -1957,10 +1966,10 @@ export default {
             color_code: item.color,
             stock_id: this.materialStockId,
             type: 2,
-            vat_code: '',
+            color_number: item.color_code || VATCODE_COLORCODE_DEFAULT,
+            vat_code: item.vat_code || VATCODE_COLORCODE_DEFAULT,
             attribute: '',
             weight: item.weight,
-            company_id: window.sessionStorage.getItem('company_id'),
             desc: '订单结余入库'
           }
         })
