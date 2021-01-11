@@ -16,7 +16,7 @@
           <div class="btnCtn">
             <div class="btn btnBlue"
               v-if="has_check==='1'"
-              @click="checkFlag = true">审核</div>
+              @click="isHasPermissions('02-04') ? checkFlag = true : $message.warning('抱歉，您没有审核权限')">审核</div>
           </div>
           <div class="otherInfo">
             <div class="block">
@@ -310,6 +310,7 @@
 </template>
 
 <script>
+import { isHasPermissions } from '@/assets/js/dictionary.js'
 import { price, notify } from '@/assets/js/api.js'
 export default {
   data () {
@@ -350,6 +351,7 @@ export default {
     }
   },
   methods: {
+    isHasPermissions,
     changePrice (e) {
       this.getPriceDetail(e.id)
     },

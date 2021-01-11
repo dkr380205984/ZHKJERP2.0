@@ -60,6 +60,8 @@
             <div class="tb_header">
               <span class="tb_row">原料名称</span>
               <span class="tb_row">原料属性</span>
+              <span class="tb_row">色号</span>
+              <span class="tb_row">批/缸号</span>
               <span class="tb_row">总入库（kg）</span>
               <span class="tb_row">总出库（kg）</span>
               <span class="tb_row">库存数量（kg）</span>
@@ -70,6 +72,8 @@
               :key="indexMa">
               <span class="tb_row">{{itemMa.material_name}}</span>
               <span class="tb_row">{{itemMa.material_color}}</span>
+              <span class="tb_row">{{itemMa.color_number}}</span>
+              <span class="tb_row">{{itemMa.vat_code}}</span>
               <span class="tb_row">{{itemMa.total_push || 0}}</span>
               <span class="tb_row">{{itemMa.total_pop || 0}}</span>
               <span class="tb_row">{{itemMa.total_weight}}</span>
@@ -144,25 +148,53 @@
             </div>
             <div class="rowCtn">
               <div class="colCtn flex3">
-                <div class="label">
-                  <span class="text">原料属性</span>
-                  <span class="explanation">（必填）</span>
-                </div>
-                <div class="content">
-                  <el-autocomplete v-model="itemYarn.attr"
-                    :fetch-suggestions="handleSelect"
-                    placeholder="请输入原料属性"></el-autocomplete>
+                <div class="content colCtnInnerContent">
+                  <div class="colCtn">
+                    <div class="label">
+                      <span class="text">原料属性</span>
+                      <span class="explanation">（必填）</span>
+                    </div>
+                    <div class="content">
+                      <el-autocomplete v-model="itemYarn.attr"
+                        :fetch-suggestions="handleSelect"
+                        placeholder="请输入原料属性"></el-autocomplete>
+                    </div>
+                  </div>
+                  <div class="colCtn">
+                    <div class="label">
+                      <span class="text">原料色号</span>
+                      <!-- <span class="explanation">（必填）</span> -->
+                    </div>
+                    <div class="content">
+                      <el-input v-model="itemYarn.color_number"
+                        placeholder="请输入原料色号"></el-input>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="colCtn flex3">
-                <div class="label">
-                  <span class="text">操作数量</span>
-                  <span class="explanation">（必填）</span>
-                </div>
-                <div class="content">
-                  <zh-input placeholder="请输入操作数量"
-                    v-model="itemYarn.number"
-                    type='number'></zh-input>
+                <div class="content colCtnInnerContent">
+                  <div class="colCtn">
+                    <div class="label">
+                      <span class="text">批/缸号</span>
+                      <!-- <span class="explanation">（必填）</span> -->
+                    </div>
+                    <div class="content">
+                      <zh-input placeholder="请输入批/缸号"
+                        v-model="itemYarn.vat_code"></zh-input>
+                    </div>
+                  </div>
+                  <div class="colCtn">
+                    <div class="label">
+                      <span class="text">操作数量</span>
+                      <span class="explanation">（必填）</span>
+                    </div>
+                    <div class="content">
+                      <zh-input placeholder="请输入操作数量"
+                        v-model="itemYarn.number"
+                        type='number'></zh-input>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="colCtn flex3">
@@ -257,6 +289,8 @@
               <span class="tb_row">操作时间</span>
               <span class="tb_row">原料名称</span>
               <span class="tb_row flex08">原料属性</span>
+              <span class="tb_row flex08">色号</span>
+              <span class="tb_row flex08">批/缸号</span>
               <span class="tb_row">关联订单号</span>
               <span class="tb_row">操作类型</span>
               <span class="tb_row flex08">数量（kg）</span>
@@ -273,6 +307,8 @@
               <span class="tb_row">{{itemLog.create_time}}</span>
               <span class="tb_row">{{itemLog.material_name}}</span>
               <span class="tb_row flex08">{{itemLog.color_code}}</span>
+              <span class="tb_row flex08">{{itemLog.color_number}}</span>
+              <span class="tb_row flex08">{{itemLog.vat_code}}</span>
               <span class="tb_row">{{itemLog.order_code || '无'}}</span>
               <span class="tb_row">{{itemLog.action|filterAction}}</span>
               <span class="tb_row flex08">{{itemLog.weight}}</span>
@@ -1107,6 +1143,7 @@
 </template>
 
 <script>
+import { VATCODE_COLORCODE_DEFAULT } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { stock, yarnStock, yarn, yarnColor, material, packStock, packag, productStock, product } from '@/assets/js/api.js'
 export default {
@@ -1678,7 +1715,9 @@ export default {
           yarnName: '',
           editType: 'go',
           number: '',
-          remark: ''
+          remark: '',
+          vat_code: '',
+          color_number: ''
         })
       } else if (type === 'material') {
         item.push({
@@ -1894,13 +1933,12 @@ export default {
           material_name: item.yarnName,
           type: 1,
           color_code: item.attr,
-          vat_code: '',
+          color_number: item.color_number || VATCODE_COLORCODE_DEFAULT,
+          vat_code: item.vat_code || VATCODE_COLORCODE_DEFAULT,
           attribute: '',
           stock_id: this.$route.params.id,
           weight: (item.editType === 'go' ? Number(item.number) : -Number(item.number)),
-          desc: item.remark,
-          company_id: window.sessionStorage.getItem('company_id'),
-          user_id: window.sessionStorage.getItem('user_id')
+          desc: item.remark
         }
       })
       stock.yarnStock({

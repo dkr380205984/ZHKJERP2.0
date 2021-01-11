@@ -2,6 +2,33 @@
   <div id='stockList'
     class='indexMain'
     v-loading='loading'>
+    <div class="listCutCtn">
+      <div :class="['cut_item',{'active':!stockTypeFilter}]"
+        @click="changeType(false)">
+        <span class="icon all_icon"></span>
+        <span class="name">所有仓库</span>
+      </div>
+      <div :class="['cut_item',{'active':+stockTypeFilter === 1}]"
+        @click="changeType(1)">
+        <span class="icon raw_icon"></span>
+        <span class="name">原料仓库</span>
+      </div>
+      <div :class="['cut_item',{'active':+stockTypeFilter === 2}]"
+        @click="changeType(2)">
+        <span class="icon material_icon"></span>
+        <span class="name">辅料仓库</span>
+      </div>
+      <div :class="['cut_item',{'active':+stockTypeFilter === 3}]"
+        @click="changeType(3)">
+        <span class="icon pack_icon"></span>
+        <span class="name">包装辅料仓库</span>
+      </div>
+      <div :class="['cut_item',{'active':+stockTypeFilter === 4}]"
+        @click="changeType(4)">
+        <span class="icon product_icon"></span>
+        <span class="name">产品仓库</span>
+      </div>
+    </div>
     <div class="module">
       <div class="listCtn">
         <div class="filterCtn">
@@ -10,8 +37,8 @@
             <el-input class="inputs"
               v-model="keyword"
               placeholder="请输入仓库名称查询"
-              @change="getStockList"></el-input>
-            <el-select v-model="stockTypeFilter"
+              @change="changeRouter(1)"></el-input>
+            <!-- <el-select v-model="stockTypeFilter"
               clearable
               placeholder="筛选仓库类型"
               class="inputs"
@@ -21,7 +48,7 @@
                 :label="item.name"
                 :value="item.id">
               </el-option>
-            </el-select>
+            </el-select> -->
             <div class="btn btnGray"
               style="margin-left:0">重置</div>
           </div>
@@ -92,7 +119,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getStockList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -205,6 +232,11 @@ export default {
     }
   },
   methods: {
+    changeType (e) {
+      if (e === +this.stockTypeFilter) return
+      this.stockTypeFilter = e
+      this.changeRouter(1)
+    },
     addStock () {
       if (!this.popupInfo.stockName) {
         this.$message.error('请输入仓库名称')
@@ -238,7 +270,7 @@ export default {
       this.loading = true
       stock.list({
         keyword: this.keyword,
-        type: this.stockTypeFilter
+        type: this.stockTypeFilter || ''
       }).then(res => {
         if (res.data.status !== false) {
           this.stockList = res.data.data
@@ -266,15 +298,29 @@ export default {
         admin: [],
         remark: ''
       }
+    },
+    changeRouter (page = 1) {
+      this.$router.replace(`/stock/stockList?page=${this.pages}&keyword=${this.keyword || ''}&type=${this.stockTypeFilter || ''}`)
     }
   },
   created () {
+    this.keyword = this.$route.query.keyword || null
+    this.stockTypeFilter = this.$route.query.type || null
+    this.page = this.$route.query.page || 1
     this.getStockList()
     auth.list().then(res => {
       if (res.data.status !== false) {
         this.userList = res.data.data
       }
     })
+  },
+  watch: {
+    $route () {
+      this.keyword = this.$route.query.keyword || null
+      this.stockTypeFilter = this.$route.query.type || null
+      this.page = this.$route.query.page || 1
+      this.getStockList()
+    }
   }
 }
 </script>

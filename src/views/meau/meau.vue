@@ -51,7 +51,7 @@ export default {
             icon: 'icon-wuliaojihua'
           },
           {
-            name: '物料订购',
+            name: '物料订购加工',
             id: 7,
             path: '/material/materialList/page=1&&keyword=&&has_materialPlan=1&&date==&&group_id=&&company_id=&&searchOrderOrProduct=/1',
             icon: 'icon-wuliaodinggou'
@@ -127,7 +127,7 @@ export default {
           {
             name: '仓库管理',
             id: 12,
-            path: '/stock/stockList/page=1&&keyword=&&type=',
+            path: '/stock/stockList',
             icon: 'icon-kucunguanli'
           },
           {

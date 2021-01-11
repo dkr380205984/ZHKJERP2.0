@@ -1,4 +1,13 @@
 @import '../common.less';
+@font-face {
+  font-family: 'iconfont_stock_list';  /* project id 2313542 */
+  src: url('//at.alicdn.com/t/font_2313542_h5pmx898yv.eot');
+  src: url('//at.alicdn.com/t/font_2313542_h5pmx898yv.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_2313542_h5pmx898yv.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_2313542_h5pmx898yv.woff') format('woff'),
+  url('//at.alicdn.com/t/font_2313542_h5pmx898yv.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_2313542_h5pmx898yv.svg#iconfont') format('svg');
+}
 #stockList{
   .flex12{
     flex: 1.2;
@@ -23,6 +32,31 @@
     &.active{
       color: #FFF;
       background-color: @green;
+    }
+  }
+  .all_icon,
+  .raw_icon,
+  .material_icon,
+  .pack_icon,
+  .product_icon{
+    font-family: 'iconfont_stock_list';
+    &::after{
+      font-size: 48px;
+    }
+    &.all_icon::after{
+      content: '\e603';
+    }
+    &.raw_icon::after{
+      content: '\e602';
+    }
+    &.material_icon::after{
+      content: '\e604';
+    }
+    &.pack_icon::after{
+      content: '\e601';
+    }
+    &.product_icon::after{
+      content: '\e605';
     }
   }
 }

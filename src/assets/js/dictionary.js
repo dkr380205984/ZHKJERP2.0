@@ -5,7 +5,33 @@ const permissions = [{
   id: 1
 }, {
   module: '报价单管理',
-  id: 2
+  id: 2,
+  detail: [
+    {
+      id: '02-01',
+      name: '添加报价单'
+    },
+    {
+      id: '02-02',
+      name: '修改报价单'
+    },
+    {
+      id: '02-03',
+      name: '删除报价单'
+    },
+    {
+      id: '02-04',
+      name: '审核报价单'
+    },
+    {
+      id: '02-05',
+      name: '报价单列表'
+    },
+    {
+      id: '02-06',
+      name: '报价单详情'
+    }
+  ]
 }, {
   module: '产品管理',
   id: 3
@@ -14,7 +40,13 @@ const permissions = [{
   id: 4
 }, {
   module: '订单管理',
-  id: 5
+  id: 5,
+  detail: [
+    {
+      id: '05-01',
+      name: '订单详情财务模块'
+    }
+  ]
 }, {
   module: '物料计划管理',
   id: 6
@@ -234,109 +266,25 @@ const companyType = [
   }
 ]
 /**
- *
-  {
-    value: 1,
-    name: '订单公司'
-  },
-   {
-    value: 2,
-    name: '原料纱线单位'
-  },
-   {
-    value: 3,
-    name: '物料加工单位'
-  },
-   {
-    value: 4,
-    name: '生产织造单位'
-  },
-   {
-    value: 5,
-    name: '半成品加工单位'
-  },
-   {
-    value: 7,
-    name: '包装辅料单位'
-  },
-   {
-    value: 8,
-    name: '运输单位'
-  },
-   {
-    value: 10,
-    name: '装饰辅料单位'
-  },
-   {
-    value: 11,
-    name: '销售客户'
-  },
-   {
-    value: 12,
-    name: '拉毛、刺毛、轧光单位'
-  },
-   {
-    value: 13,
-    name: '水洗、纱洗、烘干单位'
-  },
-   {
-    value: 14,
-    name: '抽顶、剪球、吊球单位'
-  },
-   {
-    value: 15,
-    name: '捻须、穿线、打结单位'
-  },
-   {
-    value: 16,
-    name: '压皱、整烫单位'
-  },
-   {
-    value: 17,
-    name: '车缝、开片单位'
-  },
-   {
-    value: 18,
-    name: '绣花、印花单位'
-  },
-   {
-    value: 20,
-    name: '钉扣、烫钻单位'
-  },
-   {
-    value: 21,
-    name: '接指、麻缝单位'
-  },
-   {
-    value: 22,
-    name: '套口、套缝单位'
-  },
-   {
-    value: 23,
-    name: '成品染色单位'
-  },
-   {
-    value: 24,
-    name: '毛料切割单位'
-  },
-   {
-    value: 25,
-    name: '手工单位'
-  },
-   {
-    value: 26,
-    name: '其它单位'
-  },
-  {
-    value: 27,
-    name: '成品加工单位'
-  }
+ *  专用于判断权限
+ * @param {string|number} id 需要判断权限的id
+ * @returns {boolean}
  */
+const isHasPermissions = (id) => {
+  if (!window.sessionStorage.getItem('module_id')) return
+  const moduleId = JSON.parse(window.sessionStorage.getItem('module_id'))
+  if (!moduleId.includes(id)) return
+  return true
+}
+// 物料的批缸号及色号的默认值
+const VATCODE_COLORCODE_DEFAULT = 'NOT_SET'
 export {
   companyType,
   moneyArr,
   permissions,
+  isHasPermissions,
   chinaNum,
   letterArr,
-  countries
+  countries,
+  VATCODE_COLORCODE_DEFAULT
 }

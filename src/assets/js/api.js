@@ -132,7 +132,10 @@ const client = {
   delete: (params) => http.post(`${baseUrl}/client/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
   list: (params) => http.get(`${baseUrl}/client/list`, params),
-  disable: (params) => http.post(`${baseUrl}/client/status/check`, params, 'application/json')
+  disable: (params) => http.post(`${baseUrl}/client/status/check`, params, 'application/json'),
+  exportFile: (params) => http.get(`${baseUrl}/client/export`, params),
+  detailCount: (params) => http.get(`${baseUrl}/client/detail/year`, params),
+  listCount: (params) => http.get(`${baseUrl}/client/list/year`, params)
 }
 // 人员管理
 const auth = {

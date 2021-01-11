@@ -1,0 +1,20 @@
+
+@import '../common.less';
+.printTime{
+  // display: inline-block;
+  position: relative;
+  padding-right: 40px;
+  cursor: pointer;
+  &:hover>.changeBtn{
+    display: inherit;
+  }
+  .changeBtn{
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    transform: translate(0,-50%);
+    color: @blue;
+    font-size: 14px;
+  }
+}

@@ -492,7 +492,7 @@ const getZHTimeFormat = (time = false) => {
     throw new TypeError(`the arguments for "time" is must be an 'Date'`)
   }
   const day = (new Date(plugin.getTime(time)).getTime() - new Date(plugin.getTime()).getTime()) / 1000 / 60 / 60 / 24
-  return `${plugin.getTime(time)}<br />剩余${day >= 0 ? day : 0}天`
+  return `${plugin.getTime(time)}<br />剩余${day >= 0 ? plugin.toFixedAuto(day) : 0}天`
 }
 const saveHistoryOrder = (orderInfo) => {
   let curTime = new Date()

@@ -17,7 +17,9 @@
           </span>
           <span class="item">
             <span class="label">创建时间：</span>
-            <span>{{$getTime()}}</span>
+            <span>
+              <printTime :data-time='$getTime()' />
+            </span>
           </span>
         </div>
         <div class="right">

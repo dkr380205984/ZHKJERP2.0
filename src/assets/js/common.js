@@ -36,7 +36,6 @@ const downloadExcel = (data, titles, orderInfo, excelName) => {
               </table>`
     }).join('')
   }
-  let aLink = document.createElement('a')
   let excelHeader = '<tr>' + titles.map(item => '<td style="text-align:left">' + item.title + '</td>').join('') + '</tr>'
   let excelContent = data.map(itemData => {
     return '<tr>' + titles.map(itemTitle => '<td style="text-align:left">' + ((itemData[itemTitle.key] !== 0 && !itemData[itemTitle.key]) ? '' : itemData[itemTitle.key]) + '</td>').join('') + '</tr>'
@@ -66,6 +65,7 @@ const downloadExcel = (data, titles, orderInfo, excelName) => {
                 <table>${excelHeader}${excelContent.join('')}</table>
               </body>
             </html>`
+  let aLink = document.createElement('a')
   let url = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html)
   aLink.href = url
   aLink.download = (excelName ? excelName + '-' : '') + new Date().getTime() + '.xls'

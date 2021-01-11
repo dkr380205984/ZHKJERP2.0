@@ -7,7 +7,10 @@
           <span class="title">{{title}}{{inside_order_code_com}}</span>
           <span class="item"><span class="label">联系人：</span>{{user_name}}</span>
           <span class="item"><span class="label">联系电话：</span>{{user_tel}}</span>
-          <span class="item"><span class="label">创建时间：</span>{{$getTime()}}</span>
+          <span class="item">
+            <span class="label">创建时间：</span>
+            <printTime :data-time='$getTime()' />
+          </span>
         </div>
         <div class="right">
           <span class="text">扫一扫<br />查看电子文档</span>

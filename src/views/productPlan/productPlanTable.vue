@@ -15,7 +15,8 @@
           </span>
           <span class="item">
             <span class="label">创建时间：</span>
-            {{update_time}}
+            <!-- {{update_time}} -->
+            <printTime :data-time='update_time' />
           </span>
         </div>
         <div class="right">

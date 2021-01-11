@@ -243,45 +243,76 @@
                       </div>
                     </div>
                     <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexMa === 0">
-                        <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
-                        <span class="explanation">（必填）</span>
-                      </div>
-                      <div class="content middle_page col">
-                        <template v-if="itemStock.isCustomerSupplied">
-                          <el-autocomplete class="elInput"
-                            v-model="itemMa.material_attribute"
-                            :fetch-suggestions="querySearchColor"
-                            :placeholder="`请选择需要操作的${$route.params.type === '1' ? '原' : '辅'}料颜色`"></el-autocomplete>
-                        </template>
-                        <template v-else>
-                          <el-select v-model="itemMa.material_attribute"
-                            filterable
-                            default-first-option
-                            clearable
-                            class="elInput"
-                            :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
-                            <el-option v-for="item in itemMa.color_info"
-                              :key="item.name"
-                              :label="item.name"
-                              :value="item.name">
-                            </el-option>
-                          </el-select>
-                        </template>
+                      <div class="content colCtnInnerContent">
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
+                            <span class="explanation">（必填）</span>
+                          </div>
+                          <div class="content middle_page col">
+                            <template v-if="itemStock.isCustomerSupplied">
+                              <el-autocomplete class="elInput"
+                                v-model="itemMa.material_attribute"
+                                :fetch-suggestions="querySearchColor"
+                                :placeholder="`请选择${$route.params.type === '1' ? '原' : '辅'}料颜色`"></el-autocomplete>
+                            </template>
+                            <template v-else>
+                              <el-select v-model="itemMa.material_attribute"
+                                filterable
+                                default-first-option
+                                clearable
+                                class="elInput"
+                                :placeholder="'请选择'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
+                                <el-option v-for="item in itemMa.color_info"
+                                  :key="item.name"
+                                  :label="item.name"
+                                  :value="item.name">
+                                </el-option>
+                              </el-select>
+                            </template>
+                          </div>
+                        </div>
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">色号</span>
+                          </div>
+                          <div class="content middle_page col">
+                            <el-input placeholder="请输入色号"
+                              class="elInput"
+                              v-model="itemMa.color_code"></el-input>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexMa === 0">
-                        <span class="text">出入库重量</span>
-                        <span class="explanation">（必填）</span>
-                      </div>
-                      <div class="content">
-                        <zh-input placeholder="请输入入库数量"
-                          class="elInput"
-                          v-model="itemMa.number"
-                          type='number'></zh-input>
+                      <div class="content colCtnInnerContent">
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">批号</span>
+                            <!-- <span class="explanation">（必填）</span> -->
+                          </div>
+                          <div class="content">
+                            <el-input placeholder="请输入批号"
+                              class="elInput"
+                              v-model="itemMa.vat_code"></el-input>
+                          </div>
+                        </div>
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">出入库重量</span>
+                            <span class="explanation">（必填）</span>
+                          </div>
+                          <div class="content">
+                            <zh-input placeholder="请输入入库数量"
+                              class="elInput"
+                              v-model="itemMa.number"
+                              type='number'></zh-input>
+                          </div>
+                        </div>
                       </div>
                       <div class="editBtn addBtn"
                         @click="addItem(itemStock.material_info,'material')"
@@ -484,37 +515,68 @@
                       </div>
                     </div>
                     <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexMa === 0">
-                        <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
-                        <span class="explanation">（必填）</span>
-                      </div>
-                      <div class="content middle_page col">
-                        <el-select v-model="itemMa.material_attribute"
-                          filterable
-                          default-first-option
-                          clearable
-                          class="elInput"
-                          :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
-                          <el-option v-for="item in itemMa.color_info"
-                            :key="item.name"
-                            :label="item.name"
-                            :value="item.name">
-                          </el-option>
-                        </el-select>
+                      <div class="content colCtnInnerContent">
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">{{$route.params.type === '1' ? '原' : '辅'}}料颜色</span>
+                            <span class="explanation">（必填）</span>
+                          </div>
+                          <div class="content middle_page col">
+                            <el-select v-model="itemMa.material_attribute"
+                              filterable
+                              default-first-option
+                              clearable
+                              class="elInput"
+                              :placeholder="'请选择需要操作的'+($route.params.type === '1' ? '原' : '辅') + '料颜色'">
+                              <el-option v-for="item in itemMa.color_info"
+                                :key="item.name"
+                                :label="item.name"
+                                :value="item.name">
+                              </el-option>
+                            </el-select>
+                          </div>
+                        </div>
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">色号</span>
+                          </div>
+                          <div class="content middle_page col">
+                            <el-input placeholder="请输入色号"
+                              class="elInput"
+                              v-model="itemMa.color_code"></el-input>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div class="colCtn flex3">
-                      <div class="label"
-                        v-if="indexMa === 0">
-                        <span class="text">出入库重量</span>
-                        <span class="explanation">（必填）</span>
-                      </div>
-                      <div class="content">
-                        <zh-input placeholder="请输入入库数量"
-                          class="elInput"
-                          v-model="itemMa.number"
-                          type='number'></zh-input>
+                      <div class="content colCtnInnerContent">
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">批号</span>
+                            <!-- <span class="explanation">（必填）</span> -->
+                          </div>
+                          <div class="content">
+                            <el-input placeholder="请输入批号"
+                              class="elInput"
+                              v-model="itemMa.vat_code"></el-input>
+                          </div>
+                        </div>
+                        <div class="colCtn">
+                          <div class="label"
+                            v-if="indexMa === 0">
+                            <span class="text">出入库重量</span>
+                            <span class="explanation">（必填）</span>
+                          </div>
+                          <div class="content">
+                            <zh-input placeholder="请输入入库数量"
+                              class="elInput"
+                              v-model="itemMa.number"
+                              type='number'></zh-input>
+                          </div>
+                        </div>
                       </div>
                       <div class="editBtn addBtn"
                         @click="addItem(itemWeave.material_info,'material')"
@@ -614,6 +676,8 @@
             </span>
             <span class="tb_row">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
             <span class="tb_row flex08">颜色</span>
+            <span class="tb_row flex08">色号</span>
+            <span class="tb_row flex08">批/缸号</span>
             <span class="tb_row flex08">数量</span>
             <span class="tb_row flex08">
               <template v-if="!showFilterTypeBox">
@@ -647,6 +711,10 @@
             <span class="tb_row">{{itemLog.client_name}}</span>
             <span class="tb_row">{{itemLog.material_name}}</span>
             <span class="tb_row flex08">{{itemLog.material_color}}</span>
+            <span class="tb_row flex08">{{itemLog.vat_code}}</span>
+            <span class="tb_row flex08">{{itemLog.color_number}}</span>
+            <!-- <span class="tb_row flex08">{{(itemLog.vat_code !== VATCODE_COLORCODE_DEFAULT && itemLog.vat_code) || ''}}</span>
+            <span class="tb_row flex08">{{(itemLog.color_number !== VATCODE_COLORCODE_DEFAULT && itemLog.color_number) || ''}}</span> -->
             <span class="tb_row flex08">{{itemLog.total_weight}}</span>
             <span class="tb_row flex08"
               :class="itemLog.type === 1 ? 'blue' : itemLog.type === 2 ? 'green' : itemLog.type === 3 ? 'green' : 'orange'">{{itemLog.type === 1 ? '出库' : itemLog.type === 2 ? '入库' : itemLog.type === 3 ? '最终入库' : ($route.params.type === '2' ? '加工出库' : '织造出库')}}</span>
@@ -1023,6 +1091,7 @@
 </template>
 
 <script>
+import { VATCODE_COLORCODE_DEFAULT } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
 import { materialStock, weave, processing, replenish, materialManage, materialProcess, stock, material, yarnColor, sampleOrder, compare } from '@/assets/js/api.js'
 export default {
@@ -1124,7 +1193,8 @@ export default {
       compareOptions: {
         materialNameList: [],
         materialColorList: []
-      }
+      },
+      VATCODE_COLORCODE_DEFAULT
     }
   },
   watch: {
@@ -1454,6 +1524,8 @@ export default {
         { title: '出入库单位', key: 'client_name' },
         { title: this.$route.params.type === '1' ? '原料名称' : '辅料名称', key: 'material_name' },
         { title: '颜色', key: 'material_color' },
+        { title: '色号', key: 'color_number' },
+        { title: '批/缸号', key: 'vat_code' },
         { title: '数量', key: 'total_weight' },
         { title: '操作类型', key: 'type_name' },
         { title: '操作人', key: 'user_name' }
@@ -1525,9 +1597,10 @@ export default {
                 order_id: this.$route.params.id,
                 type: this.$route.params.type,
                 weight: itemMa.number,
-                company_id: window.sessionStorage.getItem('company_id'),
                 stock_id: item.stockId,
                 color_code: itemMa.material_attribute,
+                vat_code: itemMa.vat_code || this.VATCODE_COLORCODE_DEFAULT,
+                color_number: itemMa.color_code || this.VATCODE_COLORCODE_DEFAULT,
                 material_name: itemMa.material_name,
                 desc: item.remark
               })
@@ -1541,6 +1614,8 @@ export default {
                 material_name: itemMa.material_name,
                 order_type: this.$route.params.orderType,
                 material_color: itemMa.material_attribute,
+                vat_code: itemMa.vat_code || this.VATCODE_COLORCODE_DEFAULT,
+                color_number: itemMa.color_code || this.VATCODE_COLORCODE_DEFAULT,
                 total_weight: itemMa.number,
                 complete_time: item.time,
                 desc: item.remark,
@@ -1574,6 +1649,8 @@ export default {
               material_name: itemMa.material_name,
               order_type: this.$route.params.orderType,
               material_color: itemMa.material_attribute,
+              vat_code: itemMa.vat_code || this.VATCODE_COLORCODE_DEFAULT,
+              color_number: itemMa.color_code || this.VATCODE_COLORCODE_DEFAULT,
               total_weight: itemMa.number,
               complete_time: item.time,
               desc: item.remark,
@@ -1671,7 +1748,6 @@ export default {
       }
       // 订单结余入库
       if (surplusData.length > 0) {
-        console.log(surplusData)
         materialStock.surplusCreate({ data: surplusData }).then(res => {
           if (res.data.status !== false) {
             this.$message.success('保存成功')
@@ -1693,7 +1769,9 @@ export default {
             {
               material_name: '',
               material_attribute: '',
-              number: ''
+              number: '',
+              vat_code: '',
+              color_code: ''
             }
           ],
           time: this.$getTime(),
@@ -1708,7 +1786,9 @@ export default {
             {
               material_name: '',
               material_attribute: '',
-              number: ''
+              number: '',
+              vat_code: '',
+              color_code: ''
             }
           ],
           time: this.$getTime(),
@@ -1719,7 +1799,9 @@ export default {
         item.push({
           material_name: '',
           material_attribute: '',
-          number: ''
+          number: '',
+          vat_code: '',
+          color_code: ''
         })
       }
     },
@@ -1871,9 +1953,9 @@ export default {
           this.materialStockInfo = this.$mergeData(materialPlan, { mainRule: ['material_name'], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/attr', otherRule: [{ name: 'order_weight', type: 'add' }, { name: 'replenish_order_weight', type: 'add' }, { name: 'unit' }, { name: 'updated_at' }, { name: 'material_type/type' }] } })
           this.materialClient = this.$mergeData(res[0].data.data.material_order_client.concat(res[0].data.data.material_process_client), { mainRule: ['client_name', 'client_id'] })
           // 初始化织造出入库数据
-          console.log(res[5].data.data, res[2].data.data)
+          // console.log(res[5].data.data, res[2].data.data)
           this.weaveInfo = this.$mergeData(res[2].data.data, { mainRule: 'client_name', otherRule: [{ name: 'material_assign/material_info', type: 'concat' }, { name: 'client_id' }] }).map(items => {
-            console.log(items.material_info)
+            // console.log(items.material_info)
             return {
               checked: false,
               client_name: items.client_name,
