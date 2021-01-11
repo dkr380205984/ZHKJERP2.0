@@ -260,7 +260,7 @@
                 ref="warp"></hot-table> -->
               <div ref="warp"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"倒一遍"功能，注意不要在第一个合并项里使用</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -1041,7 +1041,7 @@
                 ref="weft"></hot-table> -->
               <div ref="weft"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"倒一遍"功能，注意不要在第一个合并项里使用</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -2741,6 +2741,11 @@ export default {
           number: Number(info)
         }
       }
+      if (info === '倒一遍') {
+        return {
+          number: 2
+        }
+      }
       // 只解析上列字符串，别的不管
       let arr = info.split(']')
       return {
@@ -3273,12 +3278,12 @@ export default {
         draft_method: {
           PM: this.repeatPM.map((item, index) => {
             if (this.PMFlag === 'normal') {
-              item.value = item.value ? item.value.replace(/，|./g, ',') : ''
+              item.value = item.value ? item.value.replace(/，|\./g, ',') : ''
               item.repeat = Number(item.repeat) > 0 ? Number(item.repeat) : 1
             } else {
               item.children = item.children.map((item2) => {
                 item2.children = item2.children.map((item3) => {
-                  item3.value = item3.value.replace(/，|./g, ',')
+                  item3.value = item3.value.replace(/，|\./g, ',')
                   item3.repeat = Number(item3.repeat) > 0 ? Number(item3.repeat) : 1
                   return item3
                 })
@@ -3292,7 +3297,7 @@ export default {
             return item.map((item2) => {
               return item2.map((item3) => {
                 if (item3) {
-                  return item3.replace(/，|./g, ',')
+                  return item3.replace(/，|\./g, ',')
                 } else {
                   return item3
                 }

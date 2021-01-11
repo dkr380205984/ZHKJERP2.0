@@ -401,6 +401,9 @@ export default {
             })
           }
           secondArr.push(realStorage)
+          if (forNum.state === 'special') {
+            secondArr.push(this.$clone(realStorage).reverse()) // 注意reverse会改变原数组
+          }
         }
       })
       // 多维数组展平
@@ -463,6 +466,12 @@ export default {
       if (Number(info)) {
         return {
           number: Number(info)
+        }
+      }
+      if (info === '倒一遍') {
+        return {
+          number: 1,
+          state: 'special'
         }
       }
       // 只解析上列字符串，别的不管
