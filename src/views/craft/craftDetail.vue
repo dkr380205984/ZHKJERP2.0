@@ -1461,7 +1461,7 @@ export default {
           number: Number(info)
         }
       }
-      if (info === '倒一遍') {
+      if (info === '顺一遍倒一遍') {
         return {
           number: 1,
           state: 'special'
