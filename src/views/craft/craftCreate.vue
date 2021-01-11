@@ -621,7 +621,7 @@
             <div class="hotTable">
               <div ref="warp"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"倒一遍"功能，注意不要在第一个合并项里使用</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -1420,7 +1420,7 @@
                 ref="weft"></hot-table> -->
               <div ref="weft"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列</div>
+            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"倒一遍"功能，注意不要在第一个合并项里使用</div>
           </div>
         </div>
         <div class="rowCtn"
@@ -2149,48 +2149,46 @@ export default {
           },
           afterChange: (changes, opt) => {
             // 计算整经头文
-            if (opt === 'edit') {
-              let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+            let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.warp.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.warp.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.warp.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.warp.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'warp')
-              let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+              }
+            }), 'warp')
+            let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.warpBack.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.warpBack.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.warpBack.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'warpBack')
-              let sum = 0
-              warpTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              warpTableBack.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              this.warpInfo.weft = sum
-            }
+              }
+            }), 'warpBack')
+            let sum = 0
+            warpTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            warpTableBack.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            this.warpInfo.weft = sum
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -2272,48 +2270,46 @@ export default {
           },
           afterChange: (changes, opt) => {
             // 计算整经头文
-            if (opt === 'edit') {
-              let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+            let warpTable = this.getFlatTable(this.tableData.warp.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.warp.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.warp.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.warp.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.warp.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'warp')
-              let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+              }
+            }), 'warp')
+            let warpTableBack = this.getFlatTable(this.tableData.warpBack.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.warpJia.find((itemFind) => itemFind.label === itemJia) ? this.warpJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.warpBack.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.warpBack.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.warpBack.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.warpBack.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'warpBack')
-              let sum = 0
-              warpTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              warpTableBack.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              this.warpInfo.weft = sum
-            }
+              }
+            }), 'warpBack')
+            let sum = 0
+            warpTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            warpTableBack.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            this.warpInfo.weft = sum
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -2395,48 +2391,46 @@ export default {
           },
           afterChange: (changes, opt) => {
             // 计算纬向总计
-            if (opt === 'edit') {
-              let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+            let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.weft.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.weft.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.weft.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.weft.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'weft')
-              let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+              }
+            }), 'weft')
+            let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.weftBack.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.weftBack.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.weftBack.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'weftBack')
-              let sum = 0
-              weftTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              weftBackTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              this.weftInfo.total = sum
-            }
+              }
+            }), 'weftBack')
+            let sum = 0
+            weftTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            weftBackTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            this.weftInfo.total = sum
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -2518,48 +2512,46 @@ export default {
           },
           afterChange: (changes, opt) => {
             // 计算纬向总计
-            if (opt === 'edit') {
-              let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+            let weftTable = this.getFlatTable(this.tableData.weft.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.weft.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.weft.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.weft.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.weft.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'weft')
-              let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
-                if (index === 1) {
-                  return item.map((itemJia) => {
-                    return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
-                  })
+              }
+            }), 'weft')
+            let weftBackTable = this.getFlatTable(this.tableData.weftBack.data.map((item, index) => {
+              if (index === 1) {
+                return item.map((itemJia) => {
+                  return this.weftJia.find((itemFind) => itemFind.label === itemJia) ? this.weftJia.find((itemFind) => itemFind.label === itemJia).value : ''
+                })
+              } else {
+                if (item.length === this.tableData.weftBack.number) {
+                  return item
                 } else {
-                  if (item.length === this.tableData.weftBack.number) {
-                    return item
-                  } else {
-                    for (let i = 0; i < this.tableData.weftBack.number; i++) {
-                      item[i] = item[i] || null
-                    }
-                    return item
+                  for (let i = 0; i < this.tableData.weftBack.number; i++) {
+                    item[i] = item[i] || null
                   }
+                  return item
                 }
-              }), 'weftBack')
-              let sum = 0
-              weftTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              weftBackTable.forEach((item, index) => {
-                sum += Number(item.number)
-              })
-              this.weftInfo.total = sum
-            }
+              }
+            }), 'weftBack')
+            let sum = 0
+            weftTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            weftBackTable.forEach((item, index) => {
+              sum += Number(item.number)
+            })
+            this.weftInfo.total = sum
           },
           licenseKey: 'non-commercial-and-evaluation', // 申明非商业用途
           mergeCells: true,
@@ -4304,7 +4296,13 @@ export default {
           number: Number(info)
         }
       }
-      // 只解析上列字符串，别的不管
+      // 要么就是"倒一遍"，要么就是特殊情况
+      // 倒一遍数量直接翻倍就行，这里单纯算个根数直接循环2遍就行，画图的时候复杂一点
+      if (info === '倒一遍') {
+        return {
+          number: 2
+        }
+      }
       let arr = info.split(']')
       return {
         number: arr[0].split('[')[1],
@@ -4315,58 +4313,62 @@ export default {
     // 展平合并信息
     getFlatTable (table, type) {
       let tableArr = table
-      let mergeTable = this.tableHot[type].getPlugin('MergeCells').mergedCellsCollection.mergedCells
-      // 获取完整的合并项信息
-      let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
-      let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
-      // 处理合并项的合并信息
-      let firstArr = []
-      firstMerge.forEach((item) => {
-        let temporaryStorage = [] // 临时存储合并项
-        for (let i = item.col; i < (item.col + item.colspan); i++) {
-          temporaryStorage.push({
-            order: tableArr[0][i],
-            color: tableArr[1][i],
-            number: tableArr[2][i],
-            // GLorPM: tableArr[5][i]
-          })
-        }
-        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
-        for (let i = 0; i < forNum.number; i++) {
-          let realStorage = temporaryStorage
-          if (forNum.start && i === (forNum.number - 1)) {
-            realStorage = temporaryStorage.filter((item) => {
-              return item.order < forNum.start || item.order > forNum.end
+      if (this.tableHot[type]) {
+        let mergeTable = this.tableHot[type].getPlugin('MergeCells').mergedCellsCollection.mergedCells
+        // 获取完整的合并项信息
+        let firstMerge = this.getMergeInfo(mergeTable, 3, tableArr[0].length)
+        let secondMerge = this.getMergeInfo(mergeTable, 4, tableArr[0].length)
+        // 处理合并项的合并信息
+        let firstArr = []
+        firstMerge.forEach((item) => {
+          let temporaryStorage = [] // 临时存储合并项
+          for (let i = item.col; i < (item.col + item.colspan); i++) {
+            temporaryStorage.push({
+              order: tableArr[0][i],
+              color: tableArr[1][i],
+              number: tableArr[2][i],
+              // GLorPM: tableArr[5][i]
             })
           }
-          firstArr.push(realStorage)
-        }
-      })
-      let secondArr = []
-      secondMerge.forEach((item) => {
-        let temporaryStorage = firstArr.filter((itemFilter) => {
-          return itemFilter[0].order > item.col && itemFilter[0].order <= (item.col + item.colspan)
-        })
-        let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
-        for (let i = 0; i < forNum.number; i++) {
-          let realStorage = temporaryStorage
-          if (forNum.start && i === (forNum.number - 1)) {
-            realStorage = temporaryStorage.filter((item) => {
-              let flag = true
-              item.forEach((itemChild) => {
-                if (itemChild.order >= forNum.start && itemChild.order <= forNum.end) {
-                  flag = false
-                }
+          let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+          for (let i = 0; i < forNum.number; i++) {
+            let realStorage = temporaryStorage
+            if (forNum.start && i === (forNum.number - 1)) {
+              realStorage = temporaryStorage.filter((item) => {
+                return item.order < forNum.start || item.order > forNum.end
               })
-              return flag
-            })
+            }
+            firstArr.push(realStorage)
           }
-          secondArr.push(realStorage)
-        }
-      })
-      // 多维数组展平
-      let flattenArr = this.mergeArray(secondArr)
-      return flattenArr
+        })
+        let secondArr = []
+        secondMerge.forEach((item) => {
+          let temporaryStorage = firstArr.filter((itemFilter) => {
+            return itemFilter[0].order > item.col && itemFilter[0].order <= (item.col + item.colspan)
+          })
+          let forNum = this.getSpecial(tableArr[item.row][item.col] || 1)
+          for (let i = 0; i < forNum.number; i++) {
+            let realStorage = temporaryStorage
+            if (forNum.start && i === (forNum.number - 1)) {
+              realStorage = temporaryStorage.filter((item) => {
+                let flag = true
+                item.forEach((itemChild) => {
+                  if (itemChild.order >= forNum.start && itemChild.order <= forNum.end) {
+                    flag = false
+                  }
+                })
+                return flag
+              })
+            }
+            secondArr.push(realStorage)
+          }
+        })
+        // 多维数组展平
+        let flattenArr = this.mergeArray(secondArr)
+        return flattenArr
+      } else {
+        return []
+      }
     },
     // 合并项信息处理
     getMergeInfo (mergeTable, row, length) {
@@ -4839,12 +4841,12 @@ export default {
         draft_method: {
           PM: this.repeatPM.map((item, index) => {
             if (this.PMFlag === 'normal') {
-              item.value = item.value.replace(/，/g, ',')
+              item.value = item.value.replace(/，|\./g, ',')
               item.repeat = Number(item.repeat) > 0 ? Number(item.repeat) : 1
             } else {
               item.children = item.children.map((item2) => {
                 item2.children = item2.children.map((item3) => {
-                  item3.value = item3.value.replace(/，/g, ',')
+                  item3.value = item3.value.replace(/，|\./g, ',')
                   item3.repeat = Number(item3.repeat) > 0 ? Number(item3.repeat) : 1
                   return item3
                 })
@@ -4858,7 +4860,7 @@ export default {
             return item.map((item2) => {
               return item2.map((item3) => {
                 if (item3) {
-                  return item3.replace(/，/g, ',')
+                  return item3.replace(/，|\./g, ',')
                 } else {
                   return item3
                 }
@@ -5014,6 +5016,22 @@ export default {
       height: 32px !important;
       margin-top: 3px;
     }
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 12px;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  /*定义滚动条轨道 内阴影+圆角*/
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background-color: transparent;
+  }
+  /*定义滑块 内阴影+圆角*/
+  ::-webkit-scrollbar-thumb {
+    height: 14px;
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 }
 </style>

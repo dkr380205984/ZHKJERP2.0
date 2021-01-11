@@ -1461,6 +1461,12 @@ export default {
           number: Number(info)
         }
       }
+      if (info === '倒一遍') {
+        return {
+          number: 1,
+          state: 'special'
+        }
+      }
       // 只解析上列字符串，别的不管
       let arr = info.split(']')
       return {
@@ -1518,6 +1524,10 @@ export default {
             })
           }
           secondArr.push(realStorage)
+          // 在这里倒一遍，根据py暗号state = special
+          if (forNum.state === 'special') {
+            secondArr.push(this.$clone(realStorage).reverse()) // 注意reverse会改变原数组
+          }
         }
       })
       // 多维数组展平
@@ -1820,6 +1830,7 @@ export default {
         }
         return item
       })
+      console.log(weftTable)
       let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
         if (!item.GLorPM) {
           item.GLorPM = 'Ⅰ'
