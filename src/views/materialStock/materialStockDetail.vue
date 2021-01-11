@@ -273,7 +273,8 @@
                             </template>
                           </div>
                         </div>
-                        <div class="colCtn">
+                        <div class="colCtn"
+                          v-if="+$route.params.type === 1">
                           <div class="label"
                             v-if="indexMa === 0">
                             <span class="text">色号</span>
@@ -288,11 +289,11 @@
                     </div>
                     <div class="colCtn flex3">
                       <div class="content colCtnInnerContent">
-                        <div class="colCtn">
+                        <div class="colCtn"
+                          v-if="+$route.params.type === 1">
                           <div class="label"
                             v-if="indexMa === 0">
                             <span class="text">批号</span>
-                            <!-- <span class="explanation">（必填）</span> -->
                           </div>
                           <div class="content">
                             <el-input placeholder="请输入批号"
@@ -537,7 +538,8 @@
                             </el-select>
                           </div>
                         </div>
-                        <div class="colCtn">
+                        <div class="colCtn"
+                          v-if="+$route.params.type === 1">
                           <div class="label"
                             v-if="indexMa === 0">
                             <span class="text">色号</span>
@@ -552,11 +554,11 @@
                     </div>
                     <div class="colCtn flex3">
                       <div class="content colCtnInnerContent">
-                        <div class="colCtn">
+                        <div class="colCtn"
+                          v-if="+$route.params.type === 1">
                           <div class="label"
                             v-if="indexMa === 0">
                             <span class="text">批号</span>
-                            <!-- <span class="explanation">（必填）</span> -->
                           </div>
                           <div class="content">
                             <el-input placeholder="请输入批号"

@@ -46,17 +46,11 @@
           <span class="row_item left">{{craftDetail.product_info.style_code || ''}}</span>
           <span class="row_item w100 center">其它信息</span>
           <span class="row_item left"></span>
-          <!-- <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品品类</span>
-          <span class="row_item left">{{craftDetail.product_info|filterType}}</span>
-          <span class="row_item w100 center">{{$route.params.type==='1'?'产':'样'}}品编号</span>
-          <span class="row_item left">{{craftDetail.product_info.product_code||'/'}}</span> -->
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
-          <!-- <span class="row_item left"></span> -->
           <span class="row_item left">{{craftDetail.title || ''}}</span>
           <span class="row_item w100 center">大身规格</span>
-          <!-- <span class="row_item left"></span> -->
           <span class="row_item left">{{craftDetail.size ? craftDetail.size + 'cm' : ''}}</span>
           <span class="row_item w100 center">大身克重</span>
           <span class="row_item left">{{craftDetail.weight ? craftDetail.weight + 'g' : ''}}</span>
@@ -971,11 +965,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank[3],indexs).length"
@@ -1008,11 +997,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank[2],indexs).length"
@@ -1025,8 +1009,6 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
                 {{item.value}}
-                <!-- <span style="font-size:12px;color:rgba(0,0,0,1)"
-                  v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span> -->
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -1041,11 +1023,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank[2],indexs).length"
@@ -1111,11 +1088,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank_back[3],indexs).length"
@@ -1148,11 +1120,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank_back[2],indexs).length"
@@ -1165,8 +1132,6 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
                 {{item.value}}
-                <!-- <span style="font-size:12px;color:rgba(0,0,0,1)"
-                  v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span> -->
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -1181,11 +1146,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(warp_data.warp_rank_back[2],indexs).length"
@@ -1250,11 +1210,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank[3],indexs).length"
@@ -1287,11 +1242,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank[2],indexs).length"
@@ -1304,8 +1254,6 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
                 {{item.value}}
-                <!-- <span style="font-size:12px;color:rgba(0,0,0,1)"
-                  v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span> -->
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -1320,11 +1268,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou)) ? 'hiddle' : '']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank[2],indexs).length"
@@ -1390,11 +1333,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank_back[3],indexs).length"
@@ -1427,11 +1365,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank_back[2],indexs).length"
@@ -1444,8 +1377,6 @@
               :style="{'min-width':item.colspan * (100 / 16) + '%'}">
               <span class="value_span">
                 {{item.value}}
-                <!-- <span style="font-size:12px;color:rgba(0,0,0,1)"
-                  v-if="item.value && (item.isSplit || item.colspan > 1) && (item.value.indexOf('[') === -1)">遍</span> -->
               </span>
               <!-- 标记 -->
               <span class="sign left"
@@ -1460,11 +1391,6 @@
                 <span class="auto_long_arrow right_to_left"
                   v-if="signType === '3'"></span>
               </span>
-              <!-- 箭头标识 -->
-              <!-- <span :class="['jiantou','left',(item.isSplit && (item.noLeftJianTou || item.noJianTou)) ?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">→</span>
-              <span :class="['jiantou','right',(item.isSplit && (item.noRightJianTou || item.noJianTou))?'hiddle':'']"
-                v-if="item.isSplit || (item.colspan && item.colspan > 1)">←</span> -->
             </span>
             <span class="row_item_span"
               v-for="item in 16 - splitData(weft_data.weft_rank_back[2],indexs).length"

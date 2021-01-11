@@ -698,8 +698,8 @@
           </template>
           <template v-if="cName==='系统账户管理'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="resetAuth">添加员工</div>
+              <div class=" btn addBtn btnBlue"
+                @click="resetAuth">添加系统账号</div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -1716,7 +1716,7 @@
       <template v-if="cName==='系统账户管理'">
         <div class="main">
           <div class="title">
-            <div class="text">添加员工</div>
+            <div class="text">添加系统账号</div>
             <i class="el-icon-close"
               @click="showPopup=false"></i>
           </div>

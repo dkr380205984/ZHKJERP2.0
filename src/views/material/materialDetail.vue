@@ -896,6 +896,10 @@
               <div class="trow">
                 <div class="tcolumn">仓库名称</div>
                 <div class="tcolumn">{{type==='1'?'原料颜色':'辅料属性'}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">色号</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">批/缸号</div>
                 <div class="tcolumn">库存数量</div>
                 <div class="tcolumn">操作</div>
               </div>
@@ -907,10 +911,14 @@
                 :key="index">
                 <div class="tcolumn">{{item.stock_name}}</div>
                 <div class="tcolumn">{{item.material_color}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">{{item.color_number}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">{{item.vat_code}}</div>
                 <div class="tcolumn">{{item.total_weight}}</div>
                 <div class="tcolumn">
                   <span class="blue"
-                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id)">调取</span>
+                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id,'',item.color_number,item.vat_code)">调取</span>
                 </div>
               </div>
             </div>
@@ -936,6 +944,10 @@
                 <div class="tcolumn">仓库名称</div>
                 <div class="tcolumn">物料名称</div>
                 <div class="tcolumn">{{type==='1'?'原料颜色':'辅料属性'}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">色号</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">批/缸号</div>
                 <div class="tcolumn">库存数量</div>
                 <div class="tcolumn">操作</div>
               </div>
@@ -948,10 +960,14 @@
                 <div class="tcolumn">{{item.stock_name}}</div>
                 <div class="tcolumn">{{item.material_name}}</div>
                 <div class="tcolumn">{{item.material_color}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">{{item.color_number}}</div>
+                <div class="tcolumn"
+                  v-if="type==='1'">{{item.vat_code}}</div>
                 <div class="tcolumn">{{item.total_weight}}</div>
                 <div class="tcolumn">
                   <span class="blue"
-                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id,item.material_name)">调取</span>
+                    @click="normalStock(item.stock_name,item.material_color,item.total_weight,item.stock_id,item.material_name,item.color_number,item.vat_code)">调取</span>
                 </div>
               </div>
             </div>
@@ -1159,6 +1175,8 @@
                 <div class="info">
                   <span class="text">{{item.name}}</span>
                   <span class="text blue">{{item.color}}</span>
+                  <span class="text blue">{{item.color_number}}</span>
+                  <span class="text blue">{{item.vat_code}}</span>
                 </div>
               </div>
               <div class="row">
@@ -1334,6 +1352,8 @@
               <div class="li">
                 <span class="once">仓库名称</span>
                 <span class="once">纱线颜色</span>
+                <span class="once">色号</span>
+                <span class="once">批/缸号</span>
                 <span class="once">库存数量</span>
                 <span class="once right">操作</span>
               </div>
@@ -1342,6 +1362,8 @@
                 :key="index">
                 <span class="once">{{item.stock_name}}</span>
                 <span class="once">{{item.material_color}}</span>
+                <span class="once">{{item.color_number}}</span>
+                <span class="once">{{item.vat_code}}</span>
                 <span class="once">{{item.total_weight}}</span>
                 <span class="once right blue"
                   v-if="item.total_weight>=stockMatTotalNum"
@@ -2105,7 +2127,7 @@ export default {
               weight: stockWeight,
               color: whiteYarn.material_color,
               name: this.checkWhichYarn[0].material_name,
-              price: '',
+              price: ''
             }]
           })
         }
@@ -2113,7 +2135,9 @@ export default {
       this.stockYarnInfo = {
         from: whiteYarn.stock_name,
         material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
-        material_color: whiteYarn.material_color
+        material_color: whiteYarn.material_color,
+        color_number: whiteYarn.color_number,
+        vat_code: whiteYarn.vat_code
       }
       this.step = 2
     },
@@ -2150,7 +2174,7 @@ export default {
       this.showStockSelect = false
       this.stock_data = []
     },
-    normalStock (stock, color, number, stockId, materialName) {
+    normalStock (stock, color, number, stockId, materialName, colorNumber, vatCode) {
       this.stock_data = [{
         material_id: '',
         material_name: '',
@@ -2161,13 +2185,17 @@ export default {
           weight: '',
           color: color,
           name: materialName || this.stock_list[this.stockDefault].material_name,
-          price: ''
+          price: '',
+          color_number: colorNumber,
+          vat_code: vatCode
         }]
       }]
       this.stockYarnInfo = {
         from: stock,
         material_name: materialName || this.stock_list[this.stockDefault].material_name,
-        material_color: color
+        material_color: color,
+        color_number: colorNumber,
+        vat_code: vatCode
       }
       this.easyStockFlag = true
     },
@@ -2190,8 +2218,9 @@ export default {
             order_type: this.$route.params.orderType,
             material_name: this.stockYarnInfo.material_name,
             color_code: this.stockYarnInfo.material_color,
+            color_number: this.stockYarnInfo.color_number,
+            vat_code: this.stockYarnInfo.vat_code,
             weight: itemChild.weight,
-            vat_code: null,
             plan_id: item.replenishFlag ? null : item.material_id,
             replenish_id: item.replenishFlag ? item.material_id : null,
             order_id: this.$route.params.id,
@@ -2204,6 +2233,7 @@ export default {
             order_type: this.$route.params.orderType,
             desc: item.desc,
             complete_time: this.$getTime(),
+            deliver_time: this.$getTime(),
             total_price: this.$toFixed(itemChild.weight * (itemChild.price || 0)),
             price: itemChild.price || 0,
             total_weight: itemChild.weight,
@@ -2922,7 +2952,7 @@ export default {
       },
       deep: true
     },
-    $route: { //关联页面跳转刷新页面
+    $route: { // 关联页面跳转刷新页面
       deep: true,
       handler () {
         this.initPage()
