@@ -89,6 +89,35 @@
           line-height: 22px;
           text-align: center;
           margin: 50px 0;
+          &.⚫{
+            background: #111;
+            color:#fff;
+            border-color:#111;
+          }
+          &.⬛{
+            background: #111;
+            border-radius: 0;
+            color:#fff;
+            border-color:#111;
+          }
+          &.🔷{
+            background: #111;
+            border-radius: 0;
+            color:#111;
+            transform:rotate(45deg);
+            border-color:#111;
+            &::after{
+              content: attr(content);
+              color: #fff;
+              position: absolute;
+              left: 0;
+              top: 0;
+              line-height: 22px;
+              bottom: 0;
+              right: 0;
+              transform:rotate(-45deg);
+            }
+          }
         }
       }
       .rightCtn {

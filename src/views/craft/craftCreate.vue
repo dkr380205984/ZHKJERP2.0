@@ -621,7 +621,14 @@
             <div class="hotTable">
               <div ref="warp"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"顺一遍倒一遍"功能，注意不要在第一个合并项里使用</div>
+            <div style="color:rgba(0,0,0,0.45)">
+              <br />
+              提示1：可使用乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；
+              <br />
+              提示2：可以在第二个合并项里使用"顺一遍倒一遍"功能，注意不要在第一个合并项里使用！不要修改"顺一遍倒一遍"文字信息
+              <br />
+              提示3：停撬功能可以点击纹版图序号单独标记
+            </div>
           </div>
         </div>
         <div class="rowCtn"
@@ -885,7 +892,9 @@
                 :key="index2"
                 class="deltaCtn">
                 <div class="leftCtn">
-                  <span>{{index2+1}}</span>
+                  <span :class="GLMapArr[index1][index2]"
+                    :content="index2+1"
+                    @click="changeState(GLMapArr[index1][index2],index1,index2)">{{index2+1}}</span>
                   <div class="copyBtn"
                     @click="copyGL(index1,index2)">复制</div>
                   <div class="copyBtn"
@@ -1420,7 +1429,14 @@
                 ref="weft"></hot-table> -->
               <div ref="weft"></div>
             </div>
-            <div style="color:rgba(0,0,0,0.45)">提示：乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；可以在第二个合并项里使用"顺一遍倒一遍"功能，注意不要在第一个合并项里使用</div>
+            <div style="color:rgba(0,0,0,0.45)">
+              <br />
+              提示1：可使用乘以[ ]遍，最后一遍去掉[ ]列到[ ]列。例如：乘以[4]遍，最后一遍去掉[17]列到[19]列；
+              <br />
+              提示2：可以在第二个合并项里使用"顺一遍倒一遍"功能，注意不要在第一个合并项里使用！不要修改"顺一遍倒一遍"文字信息
+              <br />
+              提示3：停撬功能可以点击纹版图序号单独标记
+            </div>
           </div>
         </div>
         <div class="rowCtn"
@@ -2093,7 +2109,8 @@ export default {
           cells: (row, col, prop) => {
             var cellProperties = {}
             if (row === 0) {
-              cellProperties.readOnly = true
+              cellProperties.type = 'dropdown'
+              cellProperties.source = this.markArr.map(item => (col + 1) + ' ' + item)
             }
             if (row === 1) {
               cellProperties.type = 'dropdown'
@@ -2214,7 +2231,8 @@ export default {
           cells: (row, col, prop) => {
             var cellProperties = {}
             if (row === 0) {
-              cellProperties.readOnly = true
+              cellProperties.type = 'dropdown'
+              cellProperties.source = this.markArr.map(item => (col + 1) + ' ' + item)
             }
             if (row === 1) {
               cellProperties.type = 'dropdown'
@@ -2335,7 +2353,8 @@ export default {
           cells: (row, col, prop) => {
             var cellProperties = {}
             if (row === 0) {
-              cellProperties.readOnly = true
+              cellProperties.type = 'dropdown'
+              cellProperties.source = this.markArr.map(item => (col + 1) + ' ' + item)
             }
             if (row === 1) {
               cellProperties.type = 'dropdown'
@@ -2456,7 +2475,8 @@ export default {
           cells: (row, col, prop) => {
             var cellProperties = {}
             if (row === 0) {
-              cellProperties.readOnly = true
+              cellProperties.type = 'dropdown'
+              cellProperties.source = this.markArr.map(item => (col + 1) + ' ' + item)
             }
             if (row === 1) {
               cellProperties.type = 'dropdown'
@@ -2583,6 +2603,8 @@ export default {
         rangwei: null, // 让位
         total: null // 总计
       },
+      markArr: ['', '⚫', '⬛', '🔷'],
+      GLMapArr: [['']],
       // PM:penetration method 穿综法缩写
       commonPMArr: [],
       commonPM: '',
@@ -3084,6 +3106,13 @@ export default {
         }
       },
       deep: true
+    },
+    GL (newVal) {
+      this.GLMapArr = newVal.map((item, index) => {
+        return item.map((itemChild, indexChild) => {
+          return this.GLMapArr[index] ? (this.GLMapArr[index][indexChild] || '') : ''
+        })
+      })
     }
   },
   filters: {
@@ -3164,6 +3193,16 @@ export default {
     }
   },
   methods: {
+    // 修改停撬的状态
+    changeState (state, index1, index2) {
+      const index = this.markArr.indexOf(state)
+      if (index < this.markArr.length - 1) {
+        this.GLMapArr[index1][index2] = this.markArr[index + 1]
+      } else {
+        this.GLMapArr[index1][index2] = ''
+      }
+      this.$forceUpdate()
+    },
     getApi () {
       return new Promise((resolove, reject) => {
         if (this.product_type) {
@@ -4645,6 +4684,7 @@ export default {
       }
       let formData = {
         id: null,
+        reserve_column: JSON.stringify(this.GLMapArr),
         is_draft: ifCaogao === '草稿' ? 2 : 1, //设计单字段，现改为是否为草稿
         title: this.ZDYMC,
         product_type: this.chooseType || this.$route.params.type,

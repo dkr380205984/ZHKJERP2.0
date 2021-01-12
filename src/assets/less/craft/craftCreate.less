@@ -353,9 +353,40 @@
           height: 22px;
           border: 1px solid #ddd;
           border-radius: 50%;
-          line-height: 22px;
+          line-height: 23px;
           text-align: center;
           margin: 50px 0;
+          position: relative;
+          cursor: pointer;
+          &.⚫{
+            background: #111;
+            color:#fff;
+            border-color:#111;
+          }
+          &.⬛{
+            background: #111;
+            border-radius: 0;
+            color:#fff;
+            border-color:#111;
+          }
+          &.🔷{
+            background: #111;
+            border-radius: 0;
+            color:#111;
+            transform:rotate(45deg);
+            border-color:#111;
+            &::after{
+              content: attr(content);
+              color: #fff;
+              position: absolute;
+              left: 0;
+              top: 0;
+              line-height: 22px;
+              bottom: 0;
+              right: 0;
+              transform:rotate(-45deg);
+            }
+          }
         }
         .copyBtn{
           position: absolute;
