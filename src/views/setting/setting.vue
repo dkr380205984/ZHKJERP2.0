@@ -698,8 +698,8 @@
           </template>
           <template v-if="cName==='系统账户管理'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="resetAuth">添加员工</div>
+              <div class=" btn addBtn btnBlue"
+                @click="resetAuth">添加系统账号</div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -1044,6 +1044,39 @@
                   layout="prev, pager, next"
                   :total="priceTotal"
                   :current-page.sync="pricePages">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='报价说明'">
+            <div class="flowerCtn">
+              <div class="normalTb">
+                <div class="thead">
+                  <div class="trow">
+                    <div class="tcolumn padding40">说明类型</div>
+                    <div class="tcolumn middle padding40">操作</div>
+                  </div>
+                </div>
+                <div class="tbody">
+                  <div class="trow"
+                    v-for="(item,index) in $clone(priceRemark).splice((priceRemarkPages-1)*5,5)"
+                    :key="index">
+                    <div class="tcolumn padding40">{{item.name}}</div>
+                    <div class="tcolumn padding40">
+                      <span class="trow middle handleBtnCtn">
+                        <span class="blue"
+                          @click="updatedPriceRemark(item)">修改</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="priceRemarkTotal"
+                  :current-page.sync="priceRemarkPages">
                 </el-pagination>
               </div>
             </div>
@@ -1716,7 +1749,7 @@
       <template v-if="cName==='系统账户管理'">
         <div class="main">
           <div class="title">
-            <div class="text">添加员工</div>
+            <div class="text">添加系统账号</div>
             <i class="el-icon-close"
               @click="showPopup=false"></i>
           </div>
@@ -2049,13 +2082,38 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='报价说明'">
+        <div class="main"
+          style="width:600px;">
+          <div class="title">
+            <div class="text">报价说明-{{priceRemarkEditInfo.name}}</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content"
+            style="min-height:430px">
+            <div class="row">
+              <div class="label">备注内容：</div>
+              <div class="info">
+                <div ref="editorPriceRemark"></div>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="savePriceRemark">确定</div>
+          </div>
+        </div>
+      </template>
       <template v-if="cName==='订单预警'">
         <div class="main"
           style="min-width:600px">
           <div class="title">
             <div class="text">添加订单预警设置</div>
             <i class="el-icon-close"
-              @click="closeProup"></i>
+              @click="closePopup"></i>
           </div>
           <div class="content">
             <div class="row">
@@ -2208,7 +2266,7 @@
           </div>
           <div class="opr">
             <div class="btn btnGray"
-              @click="closeProup">取消</div>
+              @click="closePopup">取消</div>
             <div class="btn btnBlue"
               @click="saveOrderWarn">确定</div>
           </div>
@@ -2220,7 +2278,7 @@
           <div class="title">
             <div class="text">添加样单预警设置</div>
             <i class="el-icon-close"
-              @click="closeProup"></i>
+              @click="closePopup"></i>
           </div>
           <div class="content">
             <div class="row">
@@ -2345,7 +2403,7 @@
           </div>
           <div class="opr">
             <div class="btn btnGray"
-              @click="closeProup">取消</div>
+              @click="closePopup">取消</div>
             <div class="btn btnBlue"
               @click="saveSampleWarn">确定</div>
           </div>
@@ -2545,7 +2603,7 @@ export default {
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理', '员工标签管理'],
         '系统账户管理': ['系统账户管理'],
         '打印设置': ['打印设置'],
-        '报价单设置': ['报价预加载'],
+        '报价单设置': ['报价预加载', '报价说明'],
         '预警设置': ['订单预警', '样单预警']
       },
       pName: '',
@@ -2907,7 +2965,64 @@ export default {
       orderTypeList: [],
       orderTypePage: 1,
       orderTypeTotal: 1,
-      updatedBatchFlag: false
+      updatedBatchFlag: false,
+      // 报价说明
+      priceRemark: [
+        {
+          name: '产品原料',
+          id: 1,
+          remark: ''
+        },
+        {
+          name: '产品辅料',
+          id: 2,
+          remark: ''
+        },
+        {
+          name: '织造明细',
+          id: 3,
+          remark: ''
+        },
+        {
+          name: '半成品加工',
+          id: 4,
+          remark: ''
+        },
+        {
+          name: '成品加工',
+          id: 5,
+          remark: ''
+        },
+        {
+          name: '包装辅料',
+          id: 6,
+          remark: ''
+        },
+        {
+          name: '其它费用',
+          id: 7,
+          remark: ''
+        },
+        {
+          name: '非生产费用',
+          id: 8,
+          remark: ''
+        },
+        {
+          name: '运输费用',
+          id: 9,
+          remark: ''
+        }
+      ],
+      priceRemarkPages: 1,
+      priceRemarkTotal: 9,
+      priceRemarkEditInfo: {
+        name: '',
+        id: '',
+        remark: ''
+      },
+      priceRemarkEditor: null
+
     }
   },
   watch: {
@@ -2962,6 +3077,8 @@ export default {
         this.getPrintList()
       } else if (val === '报价预加载') {
         this.getPriceLoading()
+      } else if (val === '报价说明') {
+        this.getPriceRemarkList()
       } else if (val === '订单预警') {
         this.getOrderSampleWarn()
       } else if (val === '样单预警') {
@@ -3387,6 +3504,61 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    // 报价说明
+    getPriceRemarkList () {
+      const { priceRemark } = require('@/assets/js/api.js')
+      priceRemark.list().then(res => {
+        if (res.data.status !== false) {
+          res.data.data.forEach(itemF => {
+            let finded = this.priceRemark.find(itemFind => +itemFind.id === +itemF.title)
+            if (finded) {
+              finded.remark = itemF.content
+              finded.changeId = itemF.id
+            }
+          })
+        }
+      })
+    },
+    savePriceRemark () {
+      const { priceRemark } = require('@/assets/js/api.js')
+      let remark = this.priceRemarkEditor.txt.html()
+      priceRemark.create({
+        title: this.priceRemarkEditInfo.id,
+        id: this.priceRemarkEditInfo.changeId,
+        content: remark
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.showPopup = false
+          this.getPriceRemarkList()
+          this.$message.success('修改成功')
+        }
+      })
+    },
+    updatedPriceRemark (item) {
+      if (this.cName === '报价说明' && !this.priceRemarkEditor) {
+        this.priceRemarkEditor = new E(this.$refs.editorPriceRemark)
+        this.priceRemarkEditor.customConfig.menus = [
+          'head', // 标题
+          'bold', // 粗体
+          'fontSize', // 字号
+          'fontName', // 字体
+          'italic', // 斜体
+          'underline', // 下划线
+          'foreColor', // 文字颜色
+          'backColor', // 背景颜色
+          'list', // 列表
+          'justify', // 对齐方式
+          'fullscreen' // 全屏
+        ]
+        this.priceRemarkEditor.customConfig.onchange = (html) => {
+          this.content = html // 绑定当前逐渐地值
+        }
+        this.priceRemarkEditor.create()
+      }
+      this.priceRemarkEditInfo = this.$clone(item)
+      this.priceRemarkEditor.txt.html(this.priceRemarkEditInfo.remark)
+      this.showPopup = true
     },
     // 修改打印设置
     updatePrint (item) {
@@ -4964,7 +5136,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('添加成功')
-          this.closeProup()
+          this.closePopup()
           this.getOrderSampleWarn()
         }
       })
@@ -5027,12 +5199,12 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('添加成功')
-          this.closeProup()
+          this.closePopup()
           this.getOrderSampleWarn()
         }
       })
     },
-    closeProup () {
+    closePopup () {
       this.orderWarningEditInfo = {
         id: '',
         name: '',
@@ -5054,8 +5226,8 @@ export default {
     }
   },
   created () {
-    this.pName = '产品设置'
-    this.cName = '产品花型'
+    this.pName = '报价单设置'
+    this.cName = '报价说明'
   }
 }
 </script>

@@ -1035,7 +1035,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading, process } from '@/assets/js/api'
+import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading, process, priceRemark } from '@/assets/js/api'
 import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1120,7 +1120,8 @@ export default {
       priceList: [],
       fileArr: [],
       priceLoadingList: [],
-      price_loading_value: ''
+      price_loading_value: '',
+      priceRemarkList: []
     }
   },
   methods: {
@@ -1731,8 +1732,11 @@ export default {
       }),
       process.list({
         type: 3
-      })
+      }),
+      priceRemark.list()
     ]).then((res) => {
+      // 报价说明
+
       this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
       this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
       this.typeArr = res[1].data.data.map((item) => {

@@ -310,6 +310,10 @@ const routes = [
       name: '仓库详情',
       component: () => import('../views/stock/stockDetail.vue')
     }, {
+      path: '/stock/stockTypeDetail/:type',
+      name: '仓库库存详情',
+      component: () => import('../views/stock/stockTypeDetail.vue')
+    }, {
       path: '/packPlan/packIn/:id',
       name: '包装入库',
       component: () => import('../views/packPlan/packIn.vue')
