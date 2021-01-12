@@ -307,7 +307,7 @@
                 class="deltaCtn">
                 <div class="leftCtn">
                   <span :class="GLMapArr[index1][index2]"
-                    :content="index2+1">{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
+                    :content="GLXuhao[index1] ? GLXuhao[index1][index2] : index2+1">{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"

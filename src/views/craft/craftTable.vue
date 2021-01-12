@@ -257,7 +257,9 @@
                       v-for="(item,index) in itemOut"
                       :key="`${indexOut}-${index}`">
                       <div :class="['WBXHSIGN__left',{'hidden':!findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).left}]"></div>
-                      <span class="index">{{`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`}}</span>
+                      <span class="index"
+                        :class="GLMapArr[indexOut][index]"
+                        :content="`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`">{{`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`}}</span>
                       <span class="detail">
                         <span class="item">{{item[0]}}</span>
                         <span class="item">{{item[1]}}</span>
@@ -2403,7 +2405,9 @@
               v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
               <div :class="['WBXHSIGN__left',{'hidden':!findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).left}]"></div>
-              <span class="index">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
+              <span class="index"
+                :class="GLMapArr[indexOut][index]"
+                :content="`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>
@@ -2491,6 +2495,7 @@ export default {
   data () {
     return {
       loading: true,
+      GLMapArr: [['']],
       companyName: window.sessionStorage.getItem('full_name'),
       qrCodeUrl: '',
       craftDetail: {
@@ -2950,7 +2955,11 @@ export default {
         //     }
         //   })
         // })
-
+        this.GLMapArr = data.reserve_column ? JSON.parse(data.reserve_column) : this.craftDetail.draft_method.GLXuhao.map((item, index) => {
+          return item.map((itemChild, indexChild) => {
+            return this.craftDetail.draft_method.GLXuhao[index] ? (this.craftDetail.draft_method.GLXuhao[index][indexChild] || '') : ''
+          })
+        })
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
         this.warp_data.length_back = this.warp_data.warp_rank_back[0].length
