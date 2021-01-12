@@ -450,6 +450,12 @@ const priceLoading = {
   list: (params) => http.get(`${baseUrl}/product/quotation/demo/list`, params),
   delete: (params) => http.post(`${baseUrl}/product/quotation/demo/delete`, params, 'application/json')
 }
+// 报价单说明
+const priceRemark = {
+  create: (params) => http.post(`${baseUrl}/product/quotation/process/text/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/product/quotation/process/text/detail`, params),
+  list: (params) => http.get(`${baseUrl}/product/quotation/process/text/list`, params)
+}
 // 员工管理
 const staff = {
   create: (params) => http.post(`${baseUrl}/company/staff/save`, params, 'application/json'),
@@ -551,6 +557,7 @@ const compare = {
   detail: (params) => http.get(`${baseUrl}/order/detail`, params)
 }
 export {
+  priceRemark,
   compare,
   productProcess,
   orderFile,

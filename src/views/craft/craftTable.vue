@@ -59,29 +59,19 @@
         <div class="print_row h261">
           <span class="w50 col_title">原料经向</span>
           <span class="row_item col">
-            <span class="print_row h35 noBorder">
-              <span class="row_item w180 center">主要原料(经)</span>
+            <span class="print_row h70 noBorder">
+              <span class="row_item w180 center">经向原料</span>
               <span class="row_item left">
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
                   ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name)?yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou: warp_data.reed_method}}根/筘)
                 </template>
-              </span>
-            </span>
-            <span class="print_row h35">
-              <span class="row_item w180 center">次要原料(经)</span>
-              <span class="row_item left">
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 2)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
                   ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name)?yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou: warp_data.reed_method}}根/筘)
                 </template>
-              </span>
-            </span>
-            <span class="print_row h35">
-              <span class="row_item w180 center">次要辅料(经)</span>
-              <span class="row_item left">
                 <template v-for="item in warp_data.assist_material">
                   {{item.apply.map(itemM=>itemM.value)|filterMaterialClass}}
                   {{':' + item.material_name }}
@@ -95,6 +85,14 @@
                 @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
+                    <span class="row_item_span"
+                      v-for="(item,index) in warp_data.warp_rank[0]"
+                      :key="index">{{item}}</span>
+                    <span class="row_item_span"
+                      v-for="item in (16 - warp_data.length_is > 0 ? 16 - warp_data.length_is : 0)"
+                      :key="item + 'false'"></span>
+                  </span>
+                  <span class="print_row h31">
                     <span class="row_item_span"
                       v-for="(item,index) in warp_data.warp_rank[1]"
                       :key="index">{{item === 0 ? '主' : '夹' + item}}</span>
@@ -244,7 +242,8 @@
               </span>
             </span>
             <span class="print_row maxHeight">
-              <span class="col_title">穿综法</span>
+              <span class="col_title"
+                style="height:auto">穿综法</span>
               <span class="row_item col"
                 v-if="(WBL || 5) >= craftDetail.draft_method.GLShow.map(itemG=>itemG.length).reduce((total,current)=>total+current,0)">
                 <span class="print_row noBorder h40">
@@ -254,17 +253,21 @@
                 <span class="print_row maxHeight"
                   @click.right="handleClickRight($event,2)">
                   <template v-for="(itemOut,indexOut) in craftDetail.draft_method.GLShow">
-                    <span class="row_item noBorder center"
+                    <span class="row_item noBorder center WBXHSIGN"
                       v-for="(item,index) in itemOut"
                       :key="`${indexOut}-${index}`">
+                      <div :class="['WBXHSIGN__left',{'hidden':!findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).left}]"></div>
                       <span class="index">{{`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`}}</span>
                       <span class="detail">
                         <span class="item">{{item[0]}}</span>
                         <span class="item">{{item[1]}}</span>
                         <span class="item">{{item[2]}}</span>
+                        <div class="WBXHSIGN__right"
+                          v-if="findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).right">
+                          <span class="repeat">X{{findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).value}}遍</span>
+                        </div>
                       </span>
                     </span>
-
                   </template>
                 </span>
                 <span class="print_row h40">
@@ -324,27 +327,17 @@
                 <span class="text">梭</span>
               </span>
             </span>
-            <span class="print_row h35">
+            <span class="print_row h70">
               <span class="row_item w180 center">主要原料(纬)</span>
               <span class="row_item left">
                 <template v-for="item in weft_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
                 </template>
-              </span>
-            </span>
-            <span class="print_row h35">
-              <span class="row_item w180 center">次要原料(纬)</span>
-              <span class="row_item left">
                 <template v-for="item in weft_data.material_data.filter(vals=>vals.type_material === 2)">
                   {{item.apply|filterMaterialClass}}
                   {{':' + item.material_name }}
                 </template>
-              </span>
-            </span>
-            <span class="print_row h35">
-              <span class="row_item w180 center">次要辅料(纬)</span>
-              <span class="row_item left">
                 <template v-for="item in weft_data.assist_material">
                   {{item.apply.map(itemM=>itemM.value)|filterMaterialClass}}
                   {{':' + item.material_name }}
@@ -358,6 +351,14 @@
                 @click.right="handleClickRight">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
+                    <span class="row_item_span"
+                      v-for="(item,index) in weft_data.weft_rank[0]"
+                      :key="index">{{item}}</span>
+                    <span class="row_item_span"
+                      v-for="item in (16 - weft_data.length_is > 0 ? 16 - weft_data.length_is : 0)"
+                      :key="item + 'false'"></span>
+                  </span>
+                  <span class="print_row h31">
                     <span class="row_item_span"
                       v-for="(item,index) in weft_data.weft_rank[1]"
                       :key="index">{{item === 0 ? '主' : '夹' + item}}</span>
@@ -2397,21 +2398,26 @@
         <span class="label">纹版图{{letterArr[indexs]}}：</span>
         <div class="print_body noBorder">
           <span class="print_row maxHeight noBorder canWarp">
-            <span class="row_item noBorder"
+            <span class="row_item noBorder WBXHSIGN"
               :style="`flex:auto;min-width:${(100 / WBL) || 20}%`"
               v-for="(item,index) in craftDetail.draft_method.GLShow[indexs]"
               :key="index">
+              <div :class="['WBXHSIGN__left',{'hidden':!findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).left}]"></div>
               <span class="index">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>
                 <span class="item">{{item[2]}}</span>
+                <div class="WBXHSIGN__right"
+                  v-if="findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).right">
+                  <span class="repeat">X{{findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).value}}遍</span>
+                </div>
               </span>
             </span>
           </span>
         </div>
       </div>
-      <div class="outItem"
+      <!-- <div class="outItem"
         v-for="(item,index) in craftDetail.draft_method.GLRepeat"
         :key="'xunhuan-' + index">
         <span class="label">纹版图{{letterArr[index]}}：</span>
@@ -2421,7 +2427,7 @@
           <span style="margin:0 20px;color:#666">{{itemChild.start}}到{{itemChild.end}}<span style="margin:0 5px"></span>✖{{itemChild.repeat}}遍</span>
           <span style="margin:0 20px;color:#666"></span>
         </div>
-      </div>
+      </div> -->
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">穿综备注：</span>
@@ -2544,6 +2550,16 @@ export default {
     }
   },
   methods: {
+    findWBXHItem (indexs, xuhao) {
+      if (!this.craftDetail.draft_method.GLRepeat[indexs]) return {}
+      const finded = this.craftDetail.draft_method.GLRepeat[indexs].find(itemF => +itemF.start === +xuhao || +itemF.end === +xuhao)
+      if (!finded) return {}
+      return {
+        left: +finded.start === +xuhao,
+        right: +finded.end === +xuhao,
+        value: finded.repeat
+      }
+    },
     windowMethod (type) {
       this.showRMeau = false
       window.requestAnimationFrame(() => {
@@ -2924,16 +2940,16 @@ export default {
             addNum += (itemChild.end - itemChild.start + 1) * (itemChild.repeat - 1)
           })
         })
-        GLRepeatComplete.forEach((item, index) => {
-          this.craftDetail.draft_method.GL[index] = []
-          item.forEach((itemChild) => {
-            for (let j = 0; j < itemChild.repeat; j++) {
-              for (let i = itemChild.start; i <= itemChild.end; i++) {
-                this.craftDetail.draft_method.GL[index].push(this.craftDetail.draft_method.GLShow[index][i - 1])
-              }
-            }
-          })
-        })
+        // GLRepeatComplete.forEach((item, index) => {
+        //   this.craftDetail.draft_method.GL[index] = []
+        //   item.forEach((itemChild) => {
+        //     for (let j = 0; j < itemChild.repeat; j++) {
+        //       for (let i = itemChild.start; i <= itemChild.end; i++) {
+        //         this.craftDetail.draft_method.GL[index].push(this.craftDetail.draft_method.GLShow[index][i - 1])
+        //       }
+        //     }
+        //   })
+        // })
 
         this.warp_data = this.$clone(data.warp_data)
         this.warp_data.length_is = this.warp_data.warp_rank[0].length
