@@ -306,7 +306,8 @@
                 :key="index2"
                 class="deltaCtn">
                 <div class="leftCtn">
-                  <span>{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
+                  <span :class="GLMapArr[index1][index2]"
+                    :content="GLXuhao[index1] ? GLXuhao[index1][index2] : index2+1">{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
                 </div>
                 <div class="rightCtn">
                   <el-input placeholder="数字间用逗号分隔"
@@ -1078,6 +1079,7 @@ export default {
           mergeCells: []
         }
       },
+
       PMFlag: 'normal',
       PM: [{
         value: '', // 循环的值，用逗号分割
@@ -1103,6 +1105,7 @@ export default {
         end: '',
         repeat: ''
       }]],
+      GLMapArr: [['']],
       GLShow: [], // 原先的纹版图复制到这里了，原先的纹版图被结合GLRepeat改造掉了
       GLXuhao: [],
       alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
@@ -1815,6 +1818,12 @@ export default {
           }
         })
       })
+      this.GLMapArr = data.reserve_column ? JSON.parse(data.reserve_column) : this.GLXuhao.map((item, index) => {
+        return item.map((itemChild, indexChild) => {
+          return this.GLMapArr[index] ? (this.GLMapArr[index][indexChild] || '') : ''
+        })
+      })
+      console.log(this.GLMapArr)
       // 计算克重信息
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
