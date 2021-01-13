@@ -4363,7 +4363,7 @@ export default {
           let temporaryStorage = [] // 临时存储合并项
           for (let i = item.col; i < (item.col + item.colspan); i++) {
             temporaryStorage.push({
-              order: tableArr[0][i],
+              order: parseInt(tableArr[0][i]),
               color: tableArr[1][i],
               number: tableArr[2][i],
               // GLorPM: tableArr[5][i]

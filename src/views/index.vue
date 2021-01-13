@@ -16,8 +16,8 @@
           <i v-show="false"
             class="el-icon-data-line elIcon"
             @click="$router.push('/other/chartIndex')"></i>
-          <!-- <i class="el-icon-cpu elIcon"
-            @click="$router.push('/equipment')"></i> -->
+          <i class="el-icon-cpu elIcon"
+            @click="$router.push('/equipment')"></i>
           <div class="msgCtn">
             <el-badge :is-dot="total>0">
               <i class="el-icon-bell elIcon"
