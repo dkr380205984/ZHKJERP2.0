@@ -427,9 +427,23 @@
           v-for="(item,index) in priceInfo.raw_material"
           :key="index + 'raw_material'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">产品原料</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[1]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[1]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[1]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -527,9 +541,23 @@
           v-for="(item,index) in priceInfo.other_material"
           :key="index + 'other_material'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">产品辅料</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[2]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[2]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[2]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -630,9 +658,23 @@
           v-for="(item,index) in priceInfo.weave"
           :key="index + 'weave'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">织造明细</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[3]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[3]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[3]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -685,9 +727,23 @@
           v-for="(item,index) in priceInfo.semi_process"
           :key="index + 'semi_process'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">半成品加工</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[4]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[4]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[4]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -732,9 +788,23 @@
           v-for="(item,index) in priceInfo.finished_process"
           :key="index + 'finished_process'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">成品加工</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[5]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[5]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[5]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -779,9 +849,23 @@
           v-for="(item,index) in priceInfo.packag"
           :key="index + 'packag'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">包装辅料</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[6]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[6]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[6]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <el-select v-model="item.name"
@@ -825,9 +909,23 @@
           v-for="(item,index) in priceInfo.other_fee"
           :key="index + 'other_fee'">
           <div class="colCtn flex3">
-            <span class="label"
+            <span class="label priceRemarkLabel"
               v-if="index === 0">
               <span class="text">其他费用</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[7]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[7]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[7]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <zh-input placeholder="请输入其他费用说明"
@@ -860,8 +958,22 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">
+            <span class="label priceRemarkLabel">
               <span class="text">非生产费用</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[8]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[8]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[8]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <zh-input type="number"
@@ -877,8 +989,22 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">
+            <span class="label priceRemarkLabel">
               <span class="text">运输费用</span>
+              <el-popover class="priceRemark"
+                :disabled='!priceRemarkList[9]'
+                placement="top-start"
+                title="报价说明"
+                width="300"
+                trigger="hover">
+                <div v-html="priceRemarkList[9]"></div>
+                <span style="color:#1A95FF;cursor:pointer"
+                  v-if="priceRemarkList[9]"
+                  slot="reference">查看报价说明</span>
+                <span style="color:#B8B8B8;cursor:not-allowed"
+                  v-else
+                  slot="reference">暂无报价说明</span>
+              </el-popover>
             </span>
             <span class="content">
               <zh-input type="number"
@@ -1023,7 +1149,7 @@
 </template>
 
 <script>
-import { getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
+import { priceRemark, getToken, product, client, productType, flower, group, yarn, material, course, price, sample, priceLoading } from '@/assets/js/api'
 import { moneyArr, companyType } from '@/assets/js/dictionary.js'
 export default {
   data () {
@@ -1109,7 +1235,8 @@ export default {
       fileArr: [],
       pid: '',
       priceLoadingList: [],
-      price_loading_value: ''
+      price_loading_value: '',
+      priceRemarkList: {}
     }
   },
   methods: {
@@ -1724,8 +1851,13 @@ export default {
       priceLoading.list({
         page: 1,
         limit: 9999
-      })
+      }),
+      priceRemark.list()
     ]).then((res) => {
+      // 报价说明
+      (res[9].data.data || []).forEach(itemF => {
+        this.priceRemarkList[itemF.title] = itemF.content
+      })
       this.clientArr = res[0].data.data.filter(item => (item.type.some(value => (value >= 1 && value <= 2))))
       this.clientArrReal = this.$getClientOptions(this.clientArr, companyType, { type: [1, 2] })
       this.typeArr = res[1].data.data.map((item) => {

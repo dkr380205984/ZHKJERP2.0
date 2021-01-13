@@ -5226,8 +5226,8 @@ export default {
     }
   },
   created () {
-    this.pName = '报价单设置'
-    this.cName = '报价说明'
+    this.pName = '产品设置'
+    this.cName = '产品花型'
   }
 }
 </script>

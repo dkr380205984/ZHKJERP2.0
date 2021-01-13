@@ -328,7 +328,7 @@
               </span>
             </span>
             <span class="print_row h70">
-              <span class="row_item w180 center">主要原料(纬)</span>
+              <span class="row_item w180 center">纬向原料</span>
               <span class="row_item left">
                 <template v-for="item in weft_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
