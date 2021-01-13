@@ -20,14 +20,14 @@
               </div>
             </div>
             <div class="line">
-              <span class="label">产品：</span>
+              <span class="label">当前产品：</span>
               <span class="content">{{item.product.code}}</span>
             </div>
             <div class="line">
-              <span class="label">产量：</span>
+              <span class="label">产品产量：</span>
               <span class="content">
                 <span class="big">{{item.product.production_number}}</span>
-                <span class="unit">条</span>
+                <span class="unit">{{item.unit||'条'}}</span>
               </span>
             </div>
           </div>
@@ -52,7 +52,7 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">设备编号：</span>
+            <span class="label">设备类型：</span>
             <span class="text">{{machine[active].code}}</span>
           </div>
           <div class="colCtn flex3">
@@ -62,7 +62,7 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">管理员：</span>
+            <span class="label">所属车间：</span>
             <span class="text">{{machine[active].user_name}}</span>
           </div>
           <div class="colCtn flex3">
@@ -80,71 +80,6 @@
             </div>
           </div>
         </div>
-        <!-- <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">关联订单：</span>
-            <div class="rectCtn">
-              <div class="rect">
-                <div class="main">
-                  <div class="icon yellow">
-                    <img src="../../assets/image/sample/plan_icon.png" />
-                  </div>
-                  <div class="content">
-                    <div class="text title">ABC001</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
-                  </div>
-                </div>
-                <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
-                </div>
-              </div>
-            </div>
-            <div class="rectCtn">
-              <div class="rect">
-                <div class="main">
-                  <div class="icon yellow">
-                    <img src="../../assets/image/sample/plan_icon.png" />
-                  </div>
-                  <div class="content">
-                    <div class="text title">ABC002</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
-                  </div>
-                </div>
-                <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
-                </div>
-              </div>
-            </div>
-            <div class="rectCtn">
-              <div class="rect">
-                <div class="main">
-                  <div class="icon yellow">
-                    <img src="../../assets/image/sample/plan_icon.png" />
-                  </div>
-                  <div class="content">
-                    <div class="text title">ABC003</div>
-                    <div class="text">隔壁老王</div>
-                    <div class="text">2019-08-23</div>
-                  </div>
-                </div>
-                <div class="menu">
-                  <span class="opration">预览</span>
-                  <span class="opration">打印</span>
-                  <span class="opration">详情</span>
-                  <span class="opration">...</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
         <div class="boxBlock">
           <div class="block">
             <span class="label">运行状态</span>
@@ -153,7 +88,7 @@
           </div>
           <div class="block">
             <span class="label">生产总量</span>
-            <span class="text green">{{machine[active].production}}条</span>
+            <span class="text green">{{machine[active].production}}{{machine[active].unit||'条'}}</span>
           </div>
           <div class="block">
             <span class="label">运行总时长</span>
@@ -241,11 +176,11 @@
         <div class="boxBlock">
           <div class="block">
             <span class="label">计划生产</span>
-            <span class="text green">{{machine[active].product.plan_number}}条</span>
+            <span class="text green">{{machine[active].product.plan_number}}{{machine[active].unit||'条'}}</span>
           </div>
           <div class="block">
             <span class="label">已生产</span>
-            <span class="text green">{{machine[active].product.production_number}}条</span>
+            <span class="text green">{{machine[active].product.production_number}}{{machine[active].unit||'条'}}</span>
           </div>
           <div class="block">
             <span class="label">生产时长</span>
@@ -303,191 +238,120 @@ export default {
       translate: 0,
       style: 'front',
       machine: [{
-        name: '电脑横机-001',
-        code: 'S19A001',
-        state: 1,
-        production: 213294,
-        allTime: 1284.6,
-        user_name: '章宏',
-        create_time: '2019-11-05',
+        name: '智能围巾连续整理机',
+        code: '加工设备/整理',
+        state: 0,
+        production: 183244,
+        allTime: 923,
+        user_name: '后道车间',
+        create_time: '2020-09-12',
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: [require('../../assets/image/equipment/电脑横机.jpg')],
+        imgs: ['https://zhihui.tlkrzf.com/1610505453000.png'],
         product: {
-          name: '蝴蝶结弹力纱帽子',
-          code: '19ABD022319',
-          user_name: '钟向成',
+          name: '人棉夹圈圈纱梭织围脖',
+          code: 'HS21-1-5',
+          user_name: '吴中权',
           create_time: '2019-12-20',
-          plan_number: 3750,
-          production_number: 1124,
-          time: 56.2,
-          imgs: ['https://zhihui.tlkrzf.com/1577843475000.png'],
-          url: 'https://www.zwyknit.com/index/sampleDetail/2399',
+          plan_number: 10,
+          production_number: 10,
+          time: 5.2,
+          imgs: ['https://zhihui.tlkrzf.com/1609892148000.jpg'],
+          url: 'https://www.zwyknit.com/sample/sampleDetail/4034',
           order_data: [{
-            code: 'KR2019-10',
-            client: '嵊州力欧进出口有限公司',
-            number: 3750,
-            user_name: '张春霞',
-            time: '2019-11-20',
-            url: 'https://www.zwyknit.com/index/orderDetailNew/1034'
+            code: 'FA-FAS-213-040',
+            client: '上海逸韵服饰有限公司',
+            number: 10,
+            user_name: '吴中权',
+            time: '2021-01-06',
+            url: 'https://www.zwyknit.com/sample/sampleOrderDetail/2453#2453'
           }]
         }
       }, {
-        name: '电脑横机-002',
-        code: 'S19C002',
+        name: '智能围巾压光机',
+        code: '加工设备/压光',
         state: 0,
-        production: 120000,
-        allTime: 100.2,
+        production: 121500,
+        allTime: 624,
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: [require('../../assets/image/equipment/电脑横机.jpg')],
-        user_name: '章宏',
-        create_time: '2019-11-05',
+        imgs: ['https://zhihui.tlkrzf.com/1610505456000.jpg'],
+        user_name: '后道车间',
+        create_time: '2020-09-12',
         product: {
-          name: '无',
-          code: '无',
-          user_name: '无',
-          create_time: '无',
-          plan_number: 0,
-          production_number: 0,
-          time: 0,
+          name: '条纹围巾',
+          code: 'HS20-7-490',
+          user_name: '吴中权',
+          create_time: '2020-12-15',
+          plan_number: 1020,
+          production_number: 1020,
+          time: 60.2,
           imgs: [require('../../assets/image/index/noPic.jpg')],
           url: '',
           order_data: [{
-            code: '无',
-            client: '无',
-            number: 0,
-            time: '无',
-            user_name: '无',
-            url: ''
+            code: 'EY20-214',
+            client: '上海逸韵服饰有限公司',
+            number: 1020,
+            time: '2020-12-15',
+            user_name: '小张',
+            url: 'https://www.zwyknit.com/order/orderDetail/1936'
           }]
         }
       }, {
-        name: '电脑横机-003',
-        code: 'S19C003',
+        name: '智能围巾针刺机',
+        code: '加工设备/刺毛',
         state: 1,
-        production: 1900,
-        allTime: 12.6,
+        production: 190085,
+        allTime: 1021,
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: [require('../../assets/image/equipment/电脑横机.jpg')],
-        user_name: '章宏',
-        create_time: '2019-11-05',
+        imgs: ['https://zhihui.tlkrzf.com/1610505459000.png', 'https://zhihui.tlkrzf.com/1610505462000.png'],
+        user_name: '后道车间',
+        create_time: '2020-09-13',
         product: {
-          name: '弹力马海毛翻边帽',
-          code: '19YCAA012396',
-          user_name: '王忠伟',
-          create_time: '2019-10-22',
-          plan_number: 29500,
-          production_number: 1900,
+          name: '腈纶格子斗篷',
+          code: 'HS20-11-667/668/669',
+          user_name: '王珊',
+          create_time: '2020-11-06',
+          plan_number: 1050,
+          production_number: 280,
           time: 12.6,
-          imgs: ['https://zhihui.tlkrzf.com/1577775853000.png', 'https://zhihui.tlkrzf.com/1577775532000.png'],
-          url: 'https://www.zwyknit.com/index/sampleDetail/2397',
+          imgs: ['https://zhihui.tlkrzf.com/1604622922000.jpg'],
+          url: 'https://www.zwyknit.com/product/productDetail/3520',
           order_data: [{
-            code: '23663-WPRE',
-            client: '杭州杭诺服饰有限公司',
-            number: 23000,
-            time: '2019-10-21',
-            user_name: '谢卫平',
-            url: ''
-          }, {
-            code: '24902-WPRE',
-            client: '杭州杭诺服饰有限公司',
-            number: 7000,
+            code: '222-CESM136',
+            client: '星朋商贸（上海）有限公司',
+            number: 1050,
             time: '2019-10-25',
-            user_name: '谢卫平',
-            url: ''
-          }, {
-            code: '27278-WPRE',
-            client: '杭州杭诺服饰有限公司',
-            number: 4500,
-            time: '2019-10-29',
-            user_name: '谢卫平',
-            url: ''
+            user_name: '张愉',
+            url: 'https://www.zwyknit.com/order/orderDetail/1880'
           }]
         }
       }, {
-        name: '电脑横机-004',
-        code: 'S19C004',
-        state: 1,
-        production: 11896,
-        allTime: 204.4,
-        typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: [require('../../assets/image/equipment/电脑横机.jpg')],
-        user_name: '章宏',
-        create_time: '2019-11-05',
-        product: {
-          name: '阿尔泰卷毛连帽围巾',
-          code: '19YACC012372',
-          user_name: '王忠伟',
-          create_time: '2019-11-28',
-          plan_number: 1800,
-          production_number: 813,
-          time: 14.3,
-          imgs: ['https://zhihui.tlkrzf.com/1577432446000.jpg'],
-          url: 'https://www.zwyknit.com/index/sampleDetail/2372',
-          order_data: [{
-            code: 'NC0022712',
-            client: '杭州新世纪进出口有限公司',
-            number: 1200,
-            time: '2019-12-06',
-            user_name: '杜亚梅',
-            url: 'https://www.zwyknit.com/index/orderDetailNew/756'
-          }]
-        }
-      }, {
-        name: '智能围巾剪裁机-001',
-        code: 'S19C001',
-        state: 1,
-        production: 10202,
-        allTime: 186.6,
+        name: '智能围巾超声波分切机',
+        code: '面料加工设备/切割',
+        state: 0,
+        production: 53200,
+        allTime: 429,
         typeImg: require('../../assets/image/equipment/设备图2.png'),
-        imgs: [require('../../assets/image/equipment/智能围巾剪裁机.jpg')],
-        user_name: '殷金美',
-        create_time: '2019-11-28',
+        imgs: ['https://zhihui.tlkrzf.com/1610505439000.png', 'https://zhihui.tlkrzf.com/1610505451000.png'],
+        user_name: '后道车间',
+        create_time: '2020-10-12',
+        unit: '米',
         product: {
-          name: '腈纶格子围巾',
-          code: '19ABD021680',
+          name: '无',
+          code: 'HS20-9-596',
           user_name: '陈春燕',
           create_time: '2019-12-20',
           plan_number: 1924,
           production_number: 1223,
           time: 16.6,
-          imgs: ['https://zhihui.tlkrzf.com/1573268066000.jpg'],
-          url: 'https://www.zwyknit.com/index/productDetail/1680',
+          imgs: ['https://zhihui.tlkrzf.com/1603161372000.jpg', 'https://zhihui.tlkrzf.com/1603161378000.jpg'],
+          url: 'https://www.zwyknit.com/product/productDetail/3484',
           order_data: [{
-            code: 'KR2019-10',
-            client: '杭州飞泰服饰有限公司',
-            number: 1924,
-            time: '2019-12-20',
-            user_name: '张春霞',
-            url: 'https://www.zwyknit.com/index/orderDetailNew/757'
-          }]
-        }
-      }, {
-        name: '智能围巾面料开剪机-001',
-        code: 'S19B001',
-        state: 1,
-        production: 168798,
-        allTime: 202.6,
-        typeImg: require('../../assets/image/equipment/设备图2.png'),
-        imgs: [require('../../assets/image/equipment/智能围巾面料开剪机.jpg')],
-        user_name: '殷金美',
-        create_time: '2019-11-16',
-        product: {
-          name: '力欧2019-10',
-          code: '19ABD022318',
-          user_name: '江仙红',
-          create_time: '2019-12-20',
-          plan_number: 3750,
-          production_number: 204,
-          time: 18.6,
-          imgs: ['https://zhihui.tlkrzf.com/1576815993000.png', 'https://zhihui.tlkrzf.com/1576816000000.png', 'https://zhihui.tlkrzf.com/1576816006000.png'],
-          url: 'https://www.zwyknit.com/index/productDetail/2318',
-          order_data: [{
-            code: 'KR2019-10',
-            client: '嵊州力欧进出口有限公司',
-            number: 3750,
-            time: '2019-12-20',
-            user_name: '张春霞',
-            url: 'https://www.zwyknit.com/index/orderDetailNew/1034'
+            code: '200298',
+            client: '美季',
+            number: 3900,
+            time: '2020-10-20',
+            user_name: '吴迎星',
+            url: 'https://www.zwyknit.com/order/orderDetail/1852'
           }]
         }
       }],
@@ -739,7 +603,7 @@ export default {
           this.direction = 'leftToRight'
         }
       }
-    }, 6000)
+    }, 600000)
   }
 }
 </script>
