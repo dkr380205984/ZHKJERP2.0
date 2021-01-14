@@ -64,6 +64,7 @@
               <span class="row_item left">
                 <template v-for="item in warp_data.material_data.filter(vals=>vals.type_material === 1)">
                   {{item.apply|filterMaterialClass}}
+                  <!-- <span class="apply_item">{{item.apply|filterMaterialClass}}</span> -->
                   {{':' + item.material_name }}
                   ({{yarn_coefficient.find(itemFind=>itemFind.name===item.material_name)?yarn_coefficient.find(itemFind=>itemFind.name===item.material_name).chuankou: warp_data.reed_method}}根/筘)
                 </template>
@@ -2406,8 +2407,8 @@
               :key="index">
               <div :class="['WBXHSIGN__left',{'hidden':!findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).left}]"></div>
               <span class="index"
-                :class="GLMapArr[indexOut][index]"
-                :content="`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
+                :class="GLMapArr[indexs][index]"
+                :content="`${letterArr[indexs]}${craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}`">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
               <span class="detail">
                 <span class="item">{{item[0]}}</span>
                 <span class="item">{{item[1]}}</span>

@@ -3,6 +3,7 @@
     @click.stop="selectThis"
     :ref="`${selfId}`">
     <div class="zh_editor_text_content_input"
+      :ref="`${selfId}_value`"
       contenteditable
       :style="{
         'text-align':textAlign,
@@ -139,6 +140,22 @@ export default {
   },
   mounted () {
     this.updatedSelfNodeInfo()
+    this.$refs[this.selfId].$getEditorNodeInfo = () => {
+      return {
+        type: '1',
+        value: this.$refs[`${this.selfId}_value`].innerText,
+        style: {
+          textAlign: this.textAlign,
+          fontStyleItalic: this.fontStyleItalic,
+          fontWeightBold: this.fontWeightBold,
+          fontColor: this.fontColor,
+          left: this.$refs[this.selfId].offsetLeft,
+          top: this.$refs[this.selfId].offsetTop,
+          width: this.$refs[this.selfId].offsetWidth,
+          height: this.$refs[this.selfId].offsetHeight
+        }
+      }
+    }
   },
   computed: {
     selfId () {
