@@ -54,6 +54,9 @@
           </div>
           <div class="leftCtn">
             <div class="btn btnBlue"
+              v-if="+stockTypeFilter"
+              @click="$router.push(`/stock/stockTypeDetail/${+stockTypeFilter}`)">查看所有库存</div>
+            <div class="btn btnBlue"
               @click="showPopup=true">添加仓库</div>
           </div>
         </div>

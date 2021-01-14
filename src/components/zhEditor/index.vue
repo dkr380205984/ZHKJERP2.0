@@ -1,7 +1,8 @@
 <template>
   <div class='zh_editor_content'
     :ref="refId"
-    @click.right="showMeau">
+    @click="getImage"
+    @click.right="showMeauEvent">
     <zh-editor-text @select='selectComponent'
       :isSelect="selectId"
       :pId="refId" />
@@ -13,6 +14,7 @@
 
 <script>
 import ZhEditorText from './zhEditorText/index.vue'
+// import html2canvas from 'html2canvas'
 import { getNodeOutset } from './index.js'
 export default {
   name: 'zhkjEditor',
@@ -23,12 +25,31 @@ export default {
       offsetTop: 0,
       offsetWidth: 0,
       offsetHeight: 0,
-      selectId: ''
+      selectId: '',
+      showMeau: false,
+      meauTop: 0,
+      meauLeft: 0
     }
   },
   methods: {
-    showMeau (e) {
+    getImage () {
+      return new Promise((resolve, reject) => {
+        const html2canvas = require('html2canvas')
+        const $EC = this.$refs[this.refId]
+        html2canvas($EC, { allowTaint: true, useCORS: true }).then(res => {
+          const base64Url = res.toDataURL('image/png')
+          const info = Array.from($EC.childNodes).map(itemN => {
+            return itemN.$getEditorNodeInfo()
+          })
+          resolve({ base64Url, info })
+        })
+      })
+    },
+    showMeauEvent (e) {
       e.preventDefault()
+      this.meauTop = e.clientY
+      this.meauLeft = e.clientX
+      this.showMeau = true
     },
     // 改变画布大小
     changeSize (e) {
@@ -73,6 +94,7 @@ export default {
     window.addEventListener('mousemove', this.changeSize)
     window.addEventListener('click', () => {
       this.selectId = ''
+      this.showMeau = false
     })
   },
   computed: {
