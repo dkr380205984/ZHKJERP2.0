@@ -37,9 +37,9 @@
     <div class="module">
       <div class="titleCtn">
         <span class="title hasBorder">设备详情
-          <span class="titleBtn blue">添加设备</span>
+          <!-- <span class="titleBtn blue">添加设备</span>
           <span class="titleBtn orange">修改信息</span>
-          <span class="titleBtn red">删除设备</span>
+          <span class="titleBtn red">删除设备</span> -->
         </span>
       </div>
       <div class="detailCtn">
@@ -102,8 +102,8 @@
         <span class="title hasBorder">当前生产
           <span class="titleBtn blue"
             @click="changePro">更换产品</span>
-          <span class="titleBtn orange">修改数量</span>
-          <span class="titleBtn red">取消生产</span>
+          <!-- <span class="titleBtn orange">修改数量</span>
+          <span class="titleBtn red">取消生产</span> -->
         </span>
       </div>
       <div class="detailCtn">
@@ -298,8 +298,8 @@ export default {
       }, {
         name: '智能围巾针刺机',
         code: '加工设备/刺毛',
-        state: 1,
-        production: 190085,
+        state: 0,
+        production: 19008,
         allTime: 1021,
         typeImg: require('../../assets/image/equipment/设备图1.png'),
         imgs: ['https://zhihui.tlkrzf.com/1610505459000.png', 'https://zhihui.tlkrzf.com/1610505462000.png'],
@@ -338,7 +338,7 @@ export default {
         product: {
           name: '无',
           code: 'HS20-9-596',
-          user_name: '陈春燕',
+          user_name: '郑春',
           create_time: '2019-12-20',
           plan_number: 1924,
           production_number: 1223,
