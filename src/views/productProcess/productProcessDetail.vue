@@ -150,6 +150,69 @@
         </div>
       </div>
     </div>
+    <div class="module">
+      <div class="titleCtn rightBtn">
+        <span class="title">收发检验统计</span>
+        <div class="btn btnBlue"
+          @click="$router.push('/receiveDispatch/jysf/'+$route.params.id)">查看详情</div>
+      </div>
+      <div class="editCtn hasBorderTop">
+        <div class="rowCtn">
+          <div class="colCtn"
+            style="margin-right:0">
+            <div class="flexTb">
+              <div class="thead">
+                <div class="trow">
+                  <div class="tcolumn">产品信息</div>
+                  <div class="tcolumn noPad"
+                    style="flex:7">
+                    <div class="trow">
+                      <div class="tcolumn">尺码颜色</div>
+                      <div class="tcolumn">下单数量</div>
+                      <div class="tcolumn">入库数量</div>
+                      <div class="tcolumn">次品数量</div>
+                      <div class="tcolumn">出库数量</div>
+                      <div class="tcolumn">回库数量</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tbody">
+                <div class="trow"
+                  v-for="itemPro in statistics"
+                  :key="itemPro.product_id">
+                  <div class="tcolumn">
+                    <div style="display:flex;flex-direction:column">
+                      <span style="color:#01B48C">{{itemPro.product_code}}</span>
+                      <span>({{itemPro.category_name+'/'+ itemPro.type_name+'/'+ itemPro.style_name}})</span>
+                    </div>
+                  </div>
+                  <div class="tcolumn noPad"
+                    style="flex:7">
+                    <div class="trow"
+                      v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
+                      :key="indexChild">
+                      <div class="tcolumn">
+                        {{itemChild.size_name}}/{{itemChild.color_name}}
+                      </div>
+                      <div class="tcolumn">{{itemChild.numbers}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.inNum===0?'#ccc':'#01B48C'}">{{itemChild.inNum}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.cpNum===0?'#ccc':'#F5222D'}">{{itemChild.cpNum}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.outNum===0?'#ccc':'#01B48C'}">{{itemChild.outNum}}</div>
+                      <div class="tcolumn"
+                        :style="{'color':itemChild.backNum===0?'#ccc':'#01B48C'}">{{itemChild.backNum}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="module"
       v-if="inspectionList.length>0">
       <div class="titleCtn">
@@ -903,7 +966,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { downloadExcel } from '@/assets/js/common.js'
-import { order, materialPlan, client, inspection, chargebacks, staff, course, station, compare } from '@/assets/js/api.js'
+import { order, materialPlan, client, inspection, chargebacks, staff, course, station, compare, receiveDispatch } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1010,6 +1073,7 @@ export default {
       departmentArr: [],
       settingAuthArr: [],
       inspectionList: [],
+      statistics: [],
       // 产前信息确认
       showCompare: false, // false不展示弹窗 1为详情 2为修改
       compareInfo: [
@@ -1703,6 +1767,65 @@ export default {
         console.error('第三个参数必须为字符串或数组格式')
       }
     },
+    getReceiveDispatch () {
+      receiveDispatch.allDetail({
+        order_id: this.$route.params.id,
+        order_type: 1
+      }).then((res) => {
+        const log = res.data.data.map((item) => {
+          return {
+            isEdit: false,
+            id: item.id,
+            product_id: item.product_id,
+            size_id: item.size_id,
+            color_id: item.color_id,
+            product_code: item.product_info.product_code,
+            category_info: item.product_info.category_name + '/' + item.product_info.type_name + '/' + item.product_info.style_name,
+            colorSize: item.size_name + '/' + item.color_name,
+            weave_client_id: [],
+            weave_client_name: item.weave_client_name,
+            weave_client_old_id: item.weave_client_id,
+            semi_client_id: [],
+            semi_client_info: item.semi_client_info,
+            back_client_id: [],
+            number: item.number,
+            cpNum: item.shoddy_number, // 这个是编辑框的次品数量
+            shoddy_number: item.shoddy_number, // 这个是老的次品数量
+            count: item.count,
+            is_weave_push: item.is_weave_push,
+            is_chip: item.is_chip,
+            is_inspection: item.is_inspection,
+            is_semi_pop: item.is_semi_pop,
+            is_semi_push: item.is_semi_push,
+            reason: item.shoddy_reason ? item.shoddy_reason.split(',') : [],
+            semi_pop_time: item.semi_pop_time,
+            semi_push_time: item.semi_push_time,
+            chip_time: item.chip_time,
+            inspection_time: item.inspection_time,
+            weave_time: item.weave_time,
+            desc: item.desc
+          }
+        })
+        this.statistics = this.$clone(this.inspection_detail)
+        this.statistics.forEach((itemPro) => {
+          itemPro.childrenMergeInfo.forEach((itemChild) => {
+            itemChild.inNum = log.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_weave_push === 1).reduce((total, current) => {
+              return total + current.number
+            }, 0)
+            itemChild.outNum = log.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_pop === 1).reduce((total, current) => {
+              return total + current.number
+            }, 0)
+            itemChild.cpNum = log.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id).reduce((total, current) => {
+              return total + current.shoddy_number
+            }, 0)
+            itemChild.backNum = log.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_push === 1).reduce((total, current) => {
+              return total + current.number
+            }, 0)
+          })
+        })
+        console.log(this.statistics)
+      })
+    },
     init () {
       this.loading = true
       Promise.all([
@@ -1817,6 +1940,8 @@ export default {
             return total2 + Number(current2.inspectionNum)
           }, 0)
         }, 0)
+
+        this.getReceiveDispatch()
         this.departmentArr = res[4].data.data
         this.loading = false
       })

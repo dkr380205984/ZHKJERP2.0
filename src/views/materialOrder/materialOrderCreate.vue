@@ -300,6 +300,15 @@ export default {
       if (!this.order_time) {
         errorMsg = '请选择订购日期'
       }
+      this.material_info.forEach((item, index) => {
+        this.material_info.forEach((itemChild, indexChild) => {
+          if (indexChild !== index) {
+            if (itemChild.material_name === item.material_name && itemChild.color_code === item.color_code && itemChild.price !== item.price) {
+              errorMsg = '请不要填写重复的原料信息'
+            }
+          }
+        })
+      })
       if (errorMsg) {
         this.$message.error(errorMsg)
         return
