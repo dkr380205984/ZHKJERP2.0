@@ -401,6 +401,20 @@ const plugin = {
     } else {
       console.error('第三个参数必须为字符串或数组格式')
     }
+  },
+  // 把带有斜杠，问号之类的特殊字符串转成路由不会报错的，type:true正转，false反转
+  changeSpecialWord (str, type) {
+    let newStr = str
+    if (type) {
+      newStr = newStr.replace(/\//g, '斜杠')
+      newStr = newStr.replace(/\?/g, '问号')
+      newStr = newStr.replace(/,/g, '逗号')
+    } else {
+      newStr = newStr.replace(/斜杠/g, '/')
+      newStr = newStr.replace(/问号/g, '?')
+      newStr = newStr.replace(/逗号/g, ',')
+    }
+    return newStr
   }
 }
 const submitLock = () => {
@@ -551,5 +565,6 @@ export default {
     Vue.prototype.$getClientOptions = getClientOptions
     Vue.prototype.$getZHTimeFormat = getZHTimeFormat
     Vue.prototype.$commonFind = plugin.commonFind
+    Vue.prototype.$changeSpecialWord = plugin.changeSpecialWord
   }
 }

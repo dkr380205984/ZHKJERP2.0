@@ -338,6 +338,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.page = Number(params.page)
       this.keyword = params.keyword
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
@@ -371,7 +372,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/product/productList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&flower_id=' + this.flower + '&&user_id=' + this.user_id + '&&has_plan=' + this.has_plan + '&&has_craft=' + this.has_craft + '&&has_quotation=' + this.has_quotation)
+      this.$router.push('/product/productList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&category_id=' + this.category_id + '&&type_id=' + this.type_id + '&&style_id=' + this.style_id + '&&flower_id=' + this.flower + '&&user_id=' + this.user_id + '&&has_plan=' + this.has_plan + '&&has_craft=' + this.has_craft + '&&has_quotation=' + this.has_quotation)
     },
     reset () {
       this.$router.push('/product/productList/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&flower_id=&&user_id=&&has_plan=&&has_craft=&&has_quotation=')

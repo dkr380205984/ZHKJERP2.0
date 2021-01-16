@@ -351,6 +351,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       this.searchOrderOrProduct = params.searchOrderOrProduct || 'order'
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
@@ -364,7 +365,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/material/materialList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
+      this.$router.push('/material/materialList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct + '/' + (this.orderType ? '1' : '2'))
     },
     reset () {
       this.$router.push('/material/materialList/page=1&&keyword=&&date==&&has_materialPlan=1&&group_id=&&company_id=&&searchOrderOrProduct=/1')

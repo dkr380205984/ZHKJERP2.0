@@ -426,6 +426,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       this.keyword_name = params.keyword_name || ''
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
@@ -440,7 +441,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.keyword + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id + '&&min=' + this.min + '&&max=' + this.max)
+      this.$router.push('/price/priceList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&keyword_name=' + this.keyword_name + '&&date=' + this.date + '&&status=' + this.status + '&&client_id=' + this.client_id + '&&user_id=' + this.user_id + '&&min=' + this.min + '&&max=' + this.max)
     }
   },
   created () {

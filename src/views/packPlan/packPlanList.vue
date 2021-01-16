@@ -230,6 +230,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       this.searchOrderOrProduct = params.searchOrderOrProduct || 'order'
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
@@ -249,7 +250,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/packPlan/packPlanList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/packPlan/packPlanList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
       this.$router.push('/packPlan/packPlanList/page=1&&keyword=&&date=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')

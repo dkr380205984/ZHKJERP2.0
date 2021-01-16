@@ -238,6 +238,8 @@ export default {
         material_name: this.type === 'material_name' ? this.keyword : '',
         title: this.type === 'title' ? this.keyword : '',
         limit: 10,
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
         page: this.page
       }).then((res) => {
         this.list = res.data.data
@@ -251,6 +253,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.page = Number(params.page) || 1
       this.keyword = params.keyword || ''
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       this.material_name = params.material_name || ''
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
@@ -262,7 +265,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/craft/craftList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&user_id=' + this.user_id + '&&material_name=' + this.material_name + '&&product_code=' + this.product_code)
+      this.$router.push('/craft/craftList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&user_id=' + this.user_id + '&&material_name=' + this.material_name + '&&product_code=' + this.product_code)
     },
     reset () {
       this.$router.push('/craft/craftList/page=1&&keyword=&&date=&&user_id=&&material_name=&&product_code=')

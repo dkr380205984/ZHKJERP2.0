@@ -194,6 +194,7 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
+      this.keyword = this.$changeSpecialWord(this.keyword, false)
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
@@ -204,7 +205,7 @@ export default {
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/productProcess/productProcessList/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/productProcess/productProcessList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
       this.$router.push('/productProcess/productProcessList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=')
