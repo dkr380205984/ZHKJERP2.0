@@ -743,13 +743,13 @@
                 <span class="text">入库仓库</span>
               </div>
               <div class="col">
-                <span class="text">备注</span>
-              </div>
-              <div class="col">
                 <span class="text">创建人</span>
               </div>
               <div class="col">
                 <span class="text">操作日期</span>
+              </div>
+              <div class="col">
+                <span class="text">操作</span>
               </div>
             </div>
             <div class="row"
@@ -784,13 +784,15 @@
                 <span class="text">{{item.stock_name}}</span>
               </div>
               <div class="col">
-                <span class="text">{{item.desc?item.desc:'暂无'}}</span>
-              </div>
-              <div class="col">
                 <span class="text">{{item.user_name}}</span>
               </div>
               <div class="col">
                 <span class="text">{{$getTime(item.create_time)}}</span>
+              </div>
+              <div class="col">
+                <span class="text blue"
+                  style="cursor:pointer"
+                  @click="$router.push('/materialOrder/materialOrderDetail/' + item.pid)">详情</span>
               </div>
             </div>
           </div>

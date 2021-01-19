@@ -271,7 +271,8 @@ const materialOrder = {
   detail: (params) => http.get(`${baseUrl}/material/reserve/detail`, params),
   stockIn: (params) => http.post(`${baseUrl}/material/stock/reserve/push`, params, 'application/json'),
   log: (params) => http.get(`${baseUrl}/stock/material/detail`, params),
-  logDelete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json'),
+  logDelete: (params) => http.post(`${baseUrl}/material/reserve/log/delete`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/material/reserve/delete`, params, 'application/json'),
   allLog: (params) => http.get(`${baseUrl}/stock/reserve/material/log`, params)
 }
 // 物料计划单

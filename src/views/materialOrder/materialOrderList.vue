@@ -99,10 +99,13 @@
             <div class="col">
               <span class="opr"
                 @click="$router.push('/materialOrder/materialOrderDetail/'+item.id)">入库</span>
-              <span class="opr"
+              <span class="opr orange"
                 @click="$router.push('/materialOrder/materialOrderUpdate/'+item.id)">修改</span>
               <span class="opr"
+                style="color:#01B48C"
                 @click="$openUrl('/materialOrderTable/'+item.id)">打印</span>
+              <span class="opr red"
+                @click="deleteLog(item.id)">删除</span>
             </div>
           </div>
         </div>
@@ -186,9 +189,10 @@
                 <span class="tb_row">物料价格</span>
                 <span class="tb_row">入库数量</span>
                 <span class="tb_row">入库仓库</span>
-                <span class="tb_row middle">备注</span>
+                <span class="tb_row">备注</span>
                 <span class="tb_row">操作人</span>
                 <span class="tb_row">操作时间</span>
+                <span class="tb_row">操作</span>
               </div>
               <div class="tb_content"
                 v-for="(itemLog,indexLog) in logList"
@@ -215,6 +219,11 @@
                 </span>
                 <span class="tb_row">{{itemLog.user_name}}</span>
                 <span class="tb_row">{{$getTime(itemLog.create_time)}}</span>
+                <span class="tb_row">
+                  <span class="text"
+                    style="cursor:pointer;color:#1a95ff"
+                    @click="$router.push('/materialOrder/materialOrderDetail/' + itemLog.pid)">详情</span>
+                </span>
               </div>
               <div class="tb_content">
                 <span class="tb_row"></span>
@@ -290,6 +299,27 @@ export default {
     }
   },
   methods: {
+    deleteLog (id) {
+      this.$confirm('是否删除该信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        materialOrder.delete({
+          id: id
+        }).then((res) => {
+          if (res.data.status) {
+            this.$message.success('删除成功')
+            this.getList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {

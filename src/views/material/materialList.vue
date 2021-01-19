@@ -381,7 +381,8 @@ export default {
           start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
           end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
           client_id: this.company_id && this.company_id[1],
-          status_material_plan: this.has_materialPlan,
+          status_material_plan: this.has_materialPlan === '0' ? 0 : 1,
+          status_material_order: this.has_materialPlan === '2' ? 2 : 0,
           group_id: this.group_id,
           status: this.state
         }).then(res => {
