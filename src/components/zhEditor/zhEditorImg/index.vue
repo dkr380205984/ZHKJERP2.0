@@ -1,5 +1,5 @@
 <template>
-  <div :class='`zh_editor_text_content ${isSelfSelect ? "select" : "" }`'
+  <div :class='`zh_editor_image_content ${isSelfSelect ? "select" : "" }`'
     @click.stop="selectThis"
     :ref="`${selfId}`"
     :style="{
@@ -9,40 +9,11 @@
       width:`${style.width||200}px`,
       height:`${style.height || 40}px`
     }">
-    <div class="zh_editor_text_content_input"
-      :ref="`${selfId}_value`"
-      contenteditable
-      @change="triggerInput()"
-      :style="{
-        'text-align':style.textAlign,
-        'font-style':style.fontStyleItalic ? 'italic' : 'normal',
-        'font-weight':style.fontWeightBold ? 'bold' : '400',
-        'color':style.fontColor || '#000000'
-      }"></div>
+    <div class="zh_editor_image_content__ctn"
+      :style="`backgroundImage: url(${value.imgUrl})`"></div>
     <span class="changeSize"
       v-show="isSelfSelect"
       @mousedown.stop="changeSizeDown"></span>
-    <div class="tools"
-      @mousedown.stop="stopPropagationFun"
-      v-show="isSelfSelect && !isChangeSize">
-      <span :class="`iconFont left ${style.textAlign === 'left' ? 'active' : ''}`"
-        @click.stop="changeStyle('textAlign','left')"></span>
-      <span :class="`iconFont center ${style.textAlign === 'center' ? 'active' : ''}`"
-        @click.stop="changeStyle('textAlign','center')"></span>
-      <span :class="`iconFont right ${style.textAlign === 'right' ? 'active' : ''}`"
-        @click.stop="changeStyle('textAlign','right')"></span>
-      <span :class="`iconFont italic ${style.fontStyleItalic ? 'active' : ''}`"
-        @click.stop="changeStyle('fontStyleItalic',!style.fontStyleItalic)"></span>
-      <span class="iconFont color"
-        :style="`color:${style.fontColor}`">
-        <el-color-picker class="color-picker"
-          v-model="style.fontColor"
-          @change="triggerInput()"
-          size="mini">111</el-color-picker>
-      </span>
-      <span :class="`iconFont strong ${style.fontWeightBold ? 'active' : ''}`"
-        @click.stop="changeStyle('fontWeightBold',!style.fontWeightBold)"></span>
-    </div>
     <div class="subline"
       @mousedown.stop="stopPropagationFun"
       v-show="isSelfSelect">
@@ -91,11 +62,7 @@ export default {
         top: 10,
         left: 10,
         width: 200,
-        height: 40,
-        textAlign: null,
-        fontStyleItalic: false,
-        fontWeightBold: false,
-        fontColor: '#000000'
+        height: 40
       },
       isChangeSize: false, // 是否在改动size
       selfNodeInfo: null,
@@ -174,10 +141,6 @@ export default {
       this.style.left = this.value.left || 10
       this.style.width = this.value.width || 200
       this.style.height = this.value.height || 40
-      this.style.textAlign = this.value.textAlign || null
-      this.style.fontStyleItalic = this.value.fontStyleItalic || false
-      this.style.fontWeightBold = this.value.fontWeightBold || false
-      this.style.fontColor = this.value.fontColor || '#000000'
       this.triggerInput()
       this.$emit('select', this.selfId)
     },
@@ -187,21 +150,9 @@ export default {
         top: this.selfNode.offsetTop,
         width: this.selfNode.offsetWidth,
         height: this.selfNode.offsetHeight,
-        txt: this.$refs[`${this.selfId}_value`].innerText,
-        refId: this.selfId,
-        textAlign: this.textAlign,
-        fontStyleItalic: this.fontStyleItalic,
-        fontWeightBold: this.fontWeightBold,
-        fontColor: this.fontColor
+        imgUrl: this.value.imgUrl,
+        refId: this.selfId
       })
-    },
-    changeStyle (key, value) {
-      if (this.style[key] === value) {
-        this.style[key] = key === 'textAlign' ? null : false
-        return
-      }
-      this.style[key] = value
-      this.triggerInput()
     },
     stopPropagationFun () {
       return false
@@ -212,18 +163,14 @@ export default {
     this.updatedSelfNodeInfo()
     this.selfNode.$getEditorNodeInfo = () => {
       return {
-        type: '1',
+        type: '2',
         zIndex: this.zIndex,
         style: {
-          textAlign: this.textAlign,
-          fontStyleItalic: this.fontStyleItalic,
-          fontWeightBold: this.fontWeightBold,
-          fontColor: this.fontColor,
           left: this.selfNode.offsetLeft,
           top: this.selfNode.offsetTop,
           width: this.selfNode.offsetWidth,
           height: this.selfNode.offsetHeight,
-          txt: this.$refs[`${this.selfId}_value`].innerText
+          imgUrl: this.value.imgUrl
         }
       }
     }

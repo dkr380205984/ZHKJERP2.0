@@ -587,6 +587,10 @@ const routes = [
     name: '物料出入库日志单',
     component: () => import('../views/materialOrder/materialStockLogTable.vue')
   }, {
+    path: '/materialStockTable/:id/:orderType/:type',
+    name: '物料出入库日志单',
+    component: () => import('../views/materialStock/materialStockTable.vue')
+  }, {
     path: '/packOrderTable/:id',
     name: '包装订购单',
     component: () => import('../views/packPlan/packOrderTable.vue')
@@ -638,6 +642,10 @@ const routes = [
     path: '/screenShipmentsList',
     name: '大屏发货列表',
     component: () => import('../views/order/screenShipmentsList.vue')
+  }, {
+    path: '/orderBatchTable',
+    name: '订单批次打印',
+    component: () => import('../views/order/orderBatchTable.vue')
   }
 ]
 
