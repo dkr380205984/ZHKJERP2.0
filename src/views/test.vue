@@ -1,6 +1,7 @@
 <template>
   <div class='indexMain'>
-    <zh-editor class='zheditor' />
+    <zh-editor class='zheditor'
+      :canChangeSize='false' />
   </div>
 </template>
 

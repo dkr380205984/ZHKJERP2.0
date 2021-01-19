@@ -153,13 +153,24 @@
               :class="openHiddleFilter ? 'active' : false"></span>
           </div>
         </div>
-        <div class="addCtn">
+        <div class="addCtn"
+          style="justify-content:space-between">
+          <span class="btn noBorder listCutBtn"
+            style="padding:0;margin:0"
+            @click="$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')">订单发货列表</span>
           <div class="btn btnBlue"
             @click="$router.push('/order/orderCreate')">新建订单</div>
         </div>
         <div class="list">
           <el-table :data="list"
             style="width: 100%">
+            <el-table-column fixed
+              width="55">
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row.checked"
+                  @change="checkedChange($event,scope.row)"></el-checkbox>
+              </template>
+            </el-table-column>
             <el-table-column fixed
               prop="order_code"
               label="订单号"
@@ -458,6 +469,29 @@
         </div>
       </div>
     </div>
+    <div class="bottomFixBar"
+      v-if="checkedList.length > 0">
+      <div class="main">
+        <div class="checkedInfo"
+          style="float:left">
+          已选择
+          <span class="blue">{{checkedList.length}}</span>
+          个订单：
+          <template v-for="(item,index) in checkedList">
+            <span class="blue"
+              :key="index">{{item.order_code}}</span>;
+          </template>
+        </div>
+        <div class="btnCtn">
+          <div class="btn btnGray"
+            @click="cancelChecked">取消</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl(`/orderBatchTable?isB=${Math.random().toString(36).substr(2)}&id=${checkedList.map(itemM=>itemM.id)}`)">合并打印</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl(`/orderBatchTable?id=${checkedList.map(itemM=>itemM.id)}`)">批量打印</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -640,7 +674,8 @@ export default {
           name: '已延期',
           id: '2005'
         }
-      ]
+      ],
+      checkedList: []
     }
   },
   watch: {
@@ -654,6 +689,24 @@ export default {
     }
   },
   methods: {
+    cancelChecked () {
+      this.list.forEach(itemF => {
+        itemF.checked = false
+      })
+      this.checkedList = []
+    },
+    checkedChange (e, item) {
+      let finded = this.checkedList.findIndex(itemF => itemF.id === item.id)
+      if (e && finded < 0) {
+        this.checkedList.push({
+          id: item.id,
+          order_code: item.order_code
+        })
+      } else if (!e && finded >= 0) {
+        item.checked = false
+        this.checkedList.splice(finded, 1)
+      }
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -720,6 +773,8 @@ export default {
         status_stock_out: this.has_boxing
       }).then(res => {
         this.list = res.data.data.map(item => {
+          const finded = this.checkedList.find(itemF => itemF.id === item.id)
+          item.checked = !!finded
           item.nowIndex = 0
           item.timeIndex = 0
           item.product_info = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] })
@@ -730,7 +785,6 @@ export default {
           this.checkTime(item, 'init')
           return item
         })
-        console.log(this.list)
         this.total = res.data.meta.total
         this.loading = false
       })

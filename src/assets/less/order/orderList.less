@@ -1,4 +1,13 @@
 @import '../common.less';
+@font-face {
+  font-family: 'iconfont_order';  /* project id 2313542 */
+  src: url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.eot');
+  src: url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.woff') format('woff'),
+  url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_2313542_qzq1gdi9v2e.svg#iconfont') format('svg');
+}
 #orderList{
   .flex08{
     flex: 0.8;
@@ -120,6 +129,25 @@
     }
     .el-dropdown{
       color: @blue!important;
+    }
+  }
+  .main{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .blue{
+      color: @blue;
+    }
+  }
+  .listCutBtn{
+    font-family: 'iconfont_order';
+    color: @blue;
+    display: flex;
+    align-items: center;
+    &::before{
+      content: '\e606';
+      font-size: 22px;
+      margin-right: 8px;
     }
   }
 }
