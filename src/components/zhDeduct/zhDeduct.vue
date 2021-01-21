@@ -26,9 +26,14 @@
                           <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price || 0)}}元</span>
                         </span>
                       </div>
-                      <div class="blue"
-                        style="margin-right:20px"
-                        @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                      <div style="display:flex;align-items:center">
+                        <div class="blue"
+                          style="margin-right:20px"
+                          @click.stop="$openUrl(`/deductTable/${item.client_id}/${item.type}/${item.id}/扣款`)">打印</div>
+                        <div class="blue"
+                          style="margin-right:20px"
+                          @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                      </div>
                     </span>
                   </template>
                   <div class="collapseBox">

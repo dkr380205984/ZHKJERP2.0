@@ -66,7 +66,7 @@
             <div class="row_item center flex12">
               <zh-img-list :list="itemBatch.images"></zh-img-list>
             </div>
-            <div class="row_item center">{{itemBatch.batch_desc}}</div>
+            <div class="row_item center red">{{itemBatch.batch_desc}}</div>
           </div>
           <div class="print_row maxH68">
             <div class="row_item center">订单备注</div>
@@ -122,7 +122,7 @@
             <div class="row_item center flex12">
               <zh-img-list :list="itemBatch.images"></zh-img-list>
             </div>
-            <div class="row_item center">{{itemBatch.batch_desc}}</div>
+            <div class="row_item center red">{{itemBatch.batch_desc}}</div>
           </div>
         </div>
       </template>
@@ -143,7 +143,6 @@ export default {
   },
   created () {
     const id = (this.$route.query.id && this.$route.query.id.split(',')) || []
-    const QRCode = require('qrcode')
     Promise.all(
       id.map(itemM => {
         return order.detailInfo({
@@ -184,6 +183,7 @@ export default {
           return new Date(a.delivery_time).getTime() - new Date(b.delivery_time).getTime()
         })
       } else {
+        const QRCode = require('qrcode')
         this.orderBatchInfo = res.map(itemM => {
           const orderDataItem = itemM.data.data
           let obj = {

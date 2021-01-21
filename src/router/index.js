@@ -470,7 +470,7 @@ const routes = [
       name: '合作公司财务详情',
       component: () => import('../views/financialStatistics/clientDetail.vue')
     }, {
-      path: '/financialStatistics/oprDetail/:clentId/:type/:oprId/:oprType',
+      path: '/financialStatistics/oprDetail/:clientId/:type/:oprId/:oprType',
       name: '合作公司财务操作记录',
       component: () => import('../views/financialStatistics/oprDetail.vue')
     }, {
@@ -646,6 +646,10 @@ const routes = [
     path: '/orderBatchTable',
     name: '订单批次打印',
     component: () => import('../views/order/orderBatchTable.vue')
+  }, {
+    path: '/deductTable/:clientId/:type/:oprId/扣款',
+    name: '扣款单',
+    component: () => import('../views/financialStatistics/deductTable.vue')
   }
 ]
 

@@ -486,9 +486,11 @@
           <div class="btn btnGray"
             @click="cancelChecked">取消</div>
           <div class="btn btnWhiteBlue"
-            @click="$openUrl(`/orderBatchTable?isB=${Math.random().toString(36).substr(2)}&id=${checkedList.map(itemM=>itemM.id)}`)">合并打印</div>
+            @click="$openUrl(`/orderBatchTable?isB=${Math.random().toString(36).substr(2)}&id=${checkedList.map(itemM=>itemM.id)}`)">按批次打印</div>
           <div class="btn btnWhiteBlue"
-            @click="$openUrl(`/orderBatchTable?id=${checkedList.map(itemM=>itemM.id)}`)">批量打印</div>
+            @click="downLoadExcel">导出Excel</div>
+          <div class="btn btnWhiteBlue"
+            @click="$openUrl(`/orderBatchTable?id=${checkedList.map(itemM=>itemM.id)}`)">按订单打印</div>
         </div>
       </div>
     </div>
@@ -707,6 +709,60 @@ export default {
         this.checkedList.splice(finded, 1)
       }
     },
+    downLoadExcel () {
+      const { downloadOrderProductionExcel } = require('@/assets/js/common.js')
+      Promise.all(
+        this.checkedList.map(itemM => {
+          return order.detailInfo({
+            id: itemM.id
+          })
+        })
+      ).then(res => {
+        const downLoadData = res.map(itemM => {
+          const orderDataItem = itemM.data.data
+          return {
+            orderInfo: {
+              order_time: orderDataItem.order_time,
+              order_code: orderDataItem.order_code,
+              client_name: orderDataItem.client_name,
+              contacts: orderDataItem.contacts,
+              create_user: orderDataItem.user_name,
+              group_name: orderDataItem.group_name,
+              desc: orderDataItem.desc
+            },
+            dataInfo: orderDataItem.batch_info.map(itemMB => {
+              return itemMB.product_info.map(itemMP => {
+                return {
+                  delivery_time: itemMB.delivery_time,
+                  batch_title: itemMB.batch_title || `第${itemMB.batch_id}批`,
+                  batch_type: itemMB.order_type,
+                  product_code: itemMP.product_code,
+                  name: itemMP.name,
+                  size: itemMP.size_name,
+                  color: itemMP.color_name,
+                  size_info: itemMP.all_size.find(itemF => itemF.size_id === itemMP.size_id) || {},
+                  images: itemMP.image,
+                  price: itemMP.unit_price,
+                  number: itemMP.numbers,
+                  total_price: this.$toFixed(itemMP.numbers * itemMP.unit_price),
+                  batch_desc: itemMB.desc
+                }
+              })
+            }).flat(2).sort((a, b) => {
+              return new Date(a.delivery_time).getTime() - new Date(b.delivery_time).getTime()
+            })
+          }
+        })
+        downloadOrderProductionExcel({
+          data: downLoadData,
+          titleInfo: {
+            title: `${window.sessionStorage.getItem('full_name')}生产布置单`,
+            created_user: window.sessionStorage.getItem('user_name'),
+            created_time: this.$getTime()
+          }
+        }, `${window.sessionStorage.getItem('full_name')}生产布置单`)
+      })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -904,6 +960,7 @@ export default {
     }
   },
   created () {
+    window.aaa = require('@/assets/js/common.js')
     this.getFilters()
     this.getOrderList()
     Promise.all([group.list(), client.list()]).then((res) => {
