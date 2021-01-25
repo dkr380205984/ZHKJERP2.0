@@ -323,7 +323,6 @@ export default {
   data () {
     return {
       loading: true,
-      lock: true,
       has_check: window.sessionStorage.getItem('has_check'),
       msgSwitch: false,
       msgUrl: '',
@@ -430,58 +429,52 @@ export default {
       }
     },
     updateFn () {
-      if (this.lock) {
-        let data = null
-        if (this.$route.params.oprType === '开票') {
-          data = {
-            id: this.updateInfo.id,
-            client_id: this.$route.params.clientId,
-            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
-            order_type: this.$route.query.orderType || '',
-            type: this.$route.params.type,
-            desc: this.updateInfo.desc,
-            complete_time: this.updateInfo.complete_time,
-            is_invoice: this.updateInfo.is_invoice,
-            settle_price: this.updateInfo.settle_price,
-            invoice_info: JSON.stringify(this.updateInfo.invoice_info)
-          }
-        } else if (this.$route.params.oprType === '扣款') {
-          data = {
-            id: this.updateInfo.id,
-            client_id: this.$route.params.clientId,
-            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
-            order_type: this.$route.query.orderType || '',
-            type: this.$route.params.type,
-            desc: this.updateInfo.desc,
-            complete_time: this.updateInfo.complete_time,
-            deduct_price: this.updateInfo.deduct_price
-          }
-        } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
-          data = {
-            id: this.updateInfo.id,
-            client_id: this.$route.params.clientId,
-            order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
-            order_type: this.$route.query.orderType || '',
-            type: this.updateInfo.type,
-            desc: this.updateInfo.desc,
-            complete_time: this.updateInfo.complete_time,
-            price: this.updateInfo.price
-          }
+      if (this.$submitLock()) return
+      let data = null
+      if (this.$route.params.oprType === '开票') {
+        data = {
+          id: this.updateInfo.id,
+          client_id: this.$route.params.clientId,
+          order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+          order_type: this.$route.query.orderType || '',
+          type: this.$route.params.type,
+          desc: this.updateInfo.desc,
+          complete_time: this.updateInfo.complete_time,
+          is_invoice: this.updateInfo.is_invoice,
+          settle_price: this.updateInfo.settle_price,
+          invoice_info: JSON.stringify(this.updateInfo.invoice_info)
         }
-        this.lock = false
-        const api = (this.$route.params.oprType === '开票' && settle) || ((this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
-        api.create(data).then(res => {
-          if (res.data.status !== false) {
-            this.$message.success('修改成功')
-            this.init()
-            this.updateFlag = false
-          } else {
-            this.lock = true
-          }
-        })
-      } else {
-        this.$message.warning('请勿频繁点击')
+      } else if (this.$route.params.oprType === '扣款') {
+        data = {
+          id: this.updateInfo.id,
+          client_id: this.$route.params.clientId,
+          order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+          order_type: this.$route.query.orderType || '',
+          type: this.$route.params.type,
+          desc: this.updateInfo.desc,
+          complete_time: this.updateInfo.complete_time,
+          deduct_price: this.updateInfo.deduct_price
+        }
+      } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
+        data = {
+          id: this.updateInfo.id,
+          client_id: this.$route.params.clientId,
+          order_id: JSON.stringify(this.updateInfo.order_code.map(item => item.order_id)),
+          order_type: this.$route.query.orderType || '',
+          type: this.updateInfo.type,
+          desc: this.updateInfo.desc,
+          complete_time: this.updateInfo.complete_time,
+          price: this.updateInfo.price
+        }
       }
+      const api = (this.$route.params.oprType === '开票' && settle) || ((this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') && collection) || (this.$route.params.oprType === '扣款' && chargebacks)
+      api.create(data).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('修改成功')
+          this.init()
+          this.updateFlag = false
+        }
+      })
     },
     addInvoice () {
       this.updateInfo.invoice_info.push({
@@ -504,7 +497,6 @@ export default {
           this.updateInfo = this.$clone(this.info)
           this.getChangeLog(this.info.id)
           this.loading = false
-          this.lock = true
         })
       } else if (this.$route.params.oprType === '开票') {
         settle.log({
@@ -516,7 +508,6 @@ export default {
           this.updateInfo = this.$clone(this.info)
           this.getChangeLog(this.info.id)
           this.loading = false
-          this.lock = true
         })
       } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
         collection.log({
@@ -527,7 +518,6 @@ export default {
           this.updateInfo = this.$clone(this.info)
           // this.getChangeLog(this.info.id)
           this.loading = false
-          this.lock = true
         })
       }
     },

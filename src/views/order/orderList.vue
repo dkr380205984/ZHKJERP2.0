@@ -728,7 +728,8 @@ export default {
               contacts: orderDataItem.contacts,
               create_user: orderDataItem.user_name,
               group_name: orderDataItem.group_name,
-              desc: orderDataItem.desc
+              desc: orderDataItem.desc,
+              unit: orderDataItem.account_unit
             },
             dataInfo: orderDataItem.batch_info.map(itemMB => {
               return itemMB.product_info.map(itemMP => {
@@ -738,6 +739,8 @@ export default {
                   batch_type: itemMB.order_type,
                   product_code: itemMP.product_code,
                   name: itemMP.name,
+                  product_ingredient: itemMP.component.map(itemMC => `${itemMC.number}%${itemMC.component_name}`).join(';'),
+                  product_unit: itemMP.category_info.unit,
                   size: itemMP.size_name,
                   color: itemMP.color_name,
                   size_info: itemMP.all_size.find(itemF => itemF.size_id === itemMP.size_id) || {},

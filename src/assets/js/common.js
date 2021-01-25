@@ -75,12 +75,11 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
   let titleElement = `<table>
                         <tr>
                           <td style="text-align:left;font-size:24px" colspan="9" rowspan='3'>${titleInfo.title}</td>
+                        </tr>
+                        <tr></tr>
+                        <tr>
                           <td style="text-align:left" colspan="2">创建人：${titleInfo.created_user}</td>
                           <td style="text-align:left" colspan="2">创建时间：${titleInfo.created_time}</td>
-                        </tr>
-                        <tr>
-                          <td></td>
-                          <td></td>
                         </tr>
                       </table>`
   let tables = data.map(({ orderInfo, dataInfo }, indexD) => {
@@ -88,21 +87,21 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
       return `<tr>
                 <td style="text-align:left;background:orange">${itemData.delivery_time}</td>
                 <td style="text-align:left;">${itemData.batch_title}</td>
-                <td style="text-align:left;">${itemData.batch_type || ''}</td>
                 <td style="text-align:left;">${itemData.product_code}</td>
                 <td style="text-align:left;">${itemData.name}</td>
+                <td style="text-align:left;">${itemData.product_ingredient || ''}</td>
                 <td style="text-align:left;">${itemData.size}</td>
                 <td style="text-align:left;">${itemData.color}</td>
                 <td style="text-align:left;">${itemData.size_info.size_info}</td>
                 <td style="text-align:left;">${itemData.size_info.weight}</td>
-                <td style="text-align:left;">${itemData.price}</td>
-                <td style="text-align:left;">${itemData.number}</td>
-                <td style="text-align:left;">${itemData.total_price}</td>
+                <td style="text-align:left;">${itemData.price}${orderInfo.unit || '元'}/${itemData.product_unit || '件'}</td>
+                <td style="text-align:left;">${itemData.number}${itemData.product_unit}</td>
+                <td style="text-align:left;">${itemData.total_price}${orderInfo.unit || '元'}</td>
                 <td style="text-align:left;">${itemData.batch_desc || ''}</td>
               </tr>`
     })
     const dataTotalNumber = dataInfo.map(itemM => +itemM.number || 0).reduce((total, current) => total + current, 0)
-    const dataTotalPrice = dataInfo.map(itemM => +itemM.price || 0).reduce((total, current) => total + current, 0)
+    const dataTotalPrice = dataInfo.map(itemM => +itemM.total_price || 0).reduce((total, current) => total + current, 0)
     return `<table>
               <tr>
                 <td style="text-align:left;">序号</td>
@@ -125,9 +124,9 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
               <tr>
                 <td style="text-align:left;">交货日期</td>
                 <td style="text-align:left;">批次名称</td>
-                <td style="text-align:left;">批次类型</td>
                 <td style="text-align:left;">产品编号</td>
                 <td style="text-align:left;">产品名称</td>
+                <td style="text-align:left;">产品成分</td>
                 <td style="text-align:left;">尺码</td>
                 <td style="text-align:left;">颜色</td>
                 <td style="text-align:left;">产品尺寸</td>
@@ -140,10 +139,10 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
               ${dataEle.join('')}
               <tr>
                 <td style="text-align:left;">订单备注</td>
-                <td style="text-align:left;" colspan="8">${orderInfo.desc || ''}</td>
+                <td style="text-align:left;" colspan="9">${orderInfo.desc || ''}</td>
                 <td style="text-align:left;">${dataTotalNumber}</td>
                 <td style="text-align:left;">${dataTotalPrice}</td>
-                <td style="text-align:left;" colspan="2"></td>
+                <td style="text-align:left;"></td>
               </tr>
               <tr>
               </tr>
