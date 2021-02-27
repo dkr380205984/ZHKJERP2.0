@@ -169,7 +169,7 @@ export default {
         return
       }
       let invoiceFile = this.$refs.reimbursementFile.uploadFiles.map(item => {
-        return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key))
+        return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key))
       })
       reimbursement.create({
         reimburse_user: this.user_id,
@@ -242,7 +242,7 @@ export default {
       this.remark = initData.apply_text
       this.fileArr = initData.invoice_file.map(itemM => {
         return {
-          name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+          name: itemM.replace('https://file.zwyknit.com/', ''),
           url: itemM
         }
       })

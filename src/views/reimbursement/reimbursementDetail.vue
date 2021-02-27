@@ -345,7 +345,7 @@ export default {
           this.reimbursemenInfo = res.data.data
           this.reimbursemenInfo.invoice_file = this.reimbursemenInfo.invoice_file.map(itemM => {
             return {
-              name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+              name: itemM.replace('https://file.zwyknit.com/', ''),
               url: itemM
             }
           })

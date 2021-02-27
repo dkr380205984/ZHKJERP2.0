@@ -607,7 +607,7 @@ export default {
       }
     },
     successFile (response, file, fileList) {
-      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
+      this.addArr.push('https://file.zwyknit.com/' + response.key)
     },
     beforeRemove (file, fileList) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -617,7 +617,7 @@ export default {
       }).then(() => {
         this.deleteArr.push({
           id: file.id ? file.id : null,
-          file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+          file_name: file.response ? file.response.key : file.url.split('https://file.zwyknit.com/')[1]
         })
         let deleteIndex = 0
         fileList.forEach((item, index) => {
@@ -640,7 +640,7 @@ export default {
         })
         // deleteFile({
         //   id: file.id ? file.id : null,
-        //   file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+        //   file_name: file.response ? file.response.key : file.url.split('https://file.zwyknit.com/')[1]
         // }).then((res) => {
         //   if (res.data.status) {
         //     this.$message({
@@ -767,7 +767,7 @@ export default {
           unit: item.unit
         }
       })
-      // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
+      // const imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
       let formData = {
         product_code: this.product_code_user || this.product_code.join(''),
         is_user_input: this.product_code_user ? 1 : 0,

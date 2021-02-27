@@ -1210,7 +1210,7 @@ export default {
       _this.loading = true
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-          uploadData.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhr.responseText).key
+          uploadData.file_url = 'https://file.zwyknit.com/' + JSON.parse(xhr.responseText).key
           _this.$message.success('上传成功')
           craft.uploadImg(uploadData).then((res) => {
             _this.imgSrc.push(uploadData)
@@ -1229,7 +1229,7 @@ export default {
               xhrBack.send(formData)
               xhrBack.onreadystatechange = function () {
                 if (xhrBack.readyState === 4) {
-                  uploadDataBack.file_url = 'https://zhihui.tlkrzf.com/' + JSON.parse(xhrBack.responseText).key
+                  uploadDataBack.file_url = 'https://file.zwyknit.com/' + JSON.parse(xhrBack.responseText).key
                   uploadDataBack.is_back = 2
                   _this.$message.success('上传背面成功')
                   craft.uploadImg(uploadDataBack).then((res) => {
@@ -1320,12 +1320,12 @@ export default {
     },
     getMaterial (color) {
       return new THREE.MeshBasicMaterial({
-        // alphaMap: new THREE.TextureLoader().load('https://zhihui.tlkrzf.com/1589175992000.png', function (texture) {
+        // alphaMap: new THREE.TextureLoader().load('https://file.zwyknit.com/1589175992000.png', function (texture) {
         //   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
         //   texture.repeat.y = 2
         //   texture.repeat.x = 8
         // }),
-        // map: new THREE.TextureLoader().load('https://zhihui.tlkrzf.com/1589333949000.jpg', function (texture) {
+        // map: new THREE.TextureLoader().load('https://file.zwyknit.com/1589333949000.jpg', function (texture) {
         //   texture.wrapS = texture.wrapT = THREE.RepeatWrapping
         //   texture.repeat.y = 1
         //   texture.repeat.x = 8
@@ -1527,8 +1527,11 @@ export default {
           }
           secondArr.push(realStorage)
           // 在这里倒一遍，根据py暗号state = special
+          console.log(forNum, realStorage)
           if (forNum.state === 'special') {
-            secondArr.push(this.$clone(realStorage).reverse()) // 注意reverse会改变原数组
+            secondArr.push(this.$clone(realStorage).map((item) => {
+              return item.reverse()
+            }).reverse()) // 注意reverse会改变原数组
           }
         }
       })
@@ -1838,7 +1841,6 @@ export default {
         }
         return item
       })
-      console.log(weftTable)
       let warpTableBack = this.getFlatTable(this.warpInfo.warp_rank_back, 'warpInfo', 'merge_data_back').map((item) => {
         if (!item.GLorPM) {
           item.GLorPM = 'Ⅰ'

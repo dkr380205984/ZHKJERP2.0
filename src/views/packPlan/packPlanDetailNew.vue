@@ -1132,7 +1132,7 @@ export default {
         })
         return
       }
-      let fileArr = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let fileArr = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       packPlan.create({
         id: this.activePlanId === 'null' ? null : this.activePlanId,
         name: this.activePlanInfo.title,
@@ -1202,7 +1202,7 @@ export default {
             file_url: itemM.file_url,
             file_arr: itemM.file_url.map(itemM => {
               return {
-                name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+                name: itemM.replace('https://file.zwyknit.com/', ''),
                 url: itemM
               }
             }),
@@ -1359,7 +1359,7 @@ export default {
         this.$message.error('请输入总体积')
         return
       }
-      let fileUrl = this.$refs.popupUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let fileUrl = this.$refs.popupUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       warehouse.create({
         order_id: this.popupData.order_id,
         complete_time: this.popupData.out_time,

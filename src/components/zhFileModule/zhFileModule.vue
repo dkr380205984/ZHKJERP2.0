@@ -179,7 +179,7 @@ export default {
               create_time: itemM.create_time,
               fileArr: itemM.file_url.map(itemF => {
                 return {
-                  name: itemF.replace('https://zhihui.tlkrzf.com/', ''),
+                  name: itemF.replace('https://file.zwyknit.com/', ''),
                   url: itemF
                 }
               }),
@@ -196,7 +196,7 @@ export default {
         this.$message.error('请输入标题')
         return
       }
-      let fileArr = this.$refs.fileRef.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let fileArr = this.$refs.fileRef.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       // if (fileArr.length === 0) {
       //   this.$message.error('检测到未上传文件')
       //   return

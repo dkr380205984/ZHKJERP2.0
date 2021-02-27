@@ -19,7 +19,7 @@
           <span style="float:left">
             <a class="btn noBorder"
               style="text-decoration:none; "
-              href="https://zhihui.tlkrzf.com/1582167733000.xlsx"
+              href="https://file.zwyknit.com/1582167733000.xlsx"
               download>下载标准模板</a>
           </span>
           <el-upload :auto-upload="false"

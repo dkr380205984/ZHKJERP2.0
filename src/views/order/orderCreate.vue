@@ -1190,10 +1190,10 @@ export default {
         this.$message.error('请输入总价')
         return
       }
-      const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      // const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      // const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
-      // const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      const orderContract = this.$refs.orderUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
+      // const packMeans = this.$refs.packagUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
+      // const storeMeans = this.$refs.boxUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
+      // const otherInfo = this.$refs.otherUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       let materialPlanFlag = this.timeData.find(item => item.name === '物料计划')
       let productPackFlag = this.timeData.find(item => item.name === '成品装箱')
       let productPushFlag = this.timeData.find(item => item.name === '半成品回库')
@@ -1391,25 +1391,25 @@ export default {
         })
         this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
           return {
-            name: items.replace('https://zhihui.tlkrzf.com/', ''),
+            name: items.replace('https://file.zwyknit.com/', ''),
             url: items
           }
         }) : []
         // this.packag_file_arr = orderInfo.pack_means ? JSON.parse(orderInfo.pack_means).map(items => {
         //   return {
-        //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+        //     name: items.replace('https://file.zwyknit.com/', ''),
         //     url: items
         //   }
         // }) : []
         // this.box_file_arr = orderInfo.store_means ? JSON.parse(orderInfo.store_means).map(items => {
         //   return {
-        //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+        //     name: items.replace('https://file.zwyknit.com/', ''),
         //     url: items
         //   }
         // }) : []
         // this.other_file_arr = orderInfo.others_info ? JSON.parse(orderInfo.others_info).map(items => {
         //   return {
-        //     name: items.replace('https://zhihui.tlkrzf.com/', ''),
+        //     name: items.replace('https://file.zwyknit.com/', ''),
         //     url: items
         //   }
         // }) : []

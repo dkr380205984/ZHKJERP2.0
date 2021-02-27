@@ -332,7 +332,7 @@ export default {
       this.confirmInfo = (orderInfo && orderInfo.confirm_info) || {}
       this.confirmInfo.file_url = this.confirmInfo.file_url && JSON.parse(this.confirmInfo.file_url).map(itemF => {
         return {
-          name: itemF.replace('https://zhihui.tlkrzf.com/', ''),
+          name: itemF.replace('https://file.zwyknit.com/', ''),
           url: itemF
         }
       })
@@ -369,7 +369,7 @@ export default {
     // 保存修改意见
     saveConfirmChange () {
       if (this.$submitLock()) return
-      let fileArr = this.$refs.fileRef.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let fileArr = this.$refs.fileRef.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       sampleOrder.saveConfirmInfo({
         order_id: this.orderId,
         id: this.confirmEditInfo.id || null,

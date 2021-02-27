@@ -1717,7 +1717,7 @@ export default {
       this.checkedProList.forEach((item) => {
         quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
-      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
+      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://file.zwyknit.com/' + vals.response.key : vals.url) })
       price.create({
         id: null,
         name: this.price_name,

@@ -729,7 +729,7 @@ export default {
       cb(result)
     },
     successFile (response, file, fileList) {
-      this.addArr.push('https://zhihui.tlkrzf.com/' + response.key)
+      this.addArr.push('https://file.zwyknit.com/' + response.key)
     },
     beforeAvatarUpload (file) {
       let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
@@ -756,7 +756,7 @@ export default {
       }).then(() => {
         this.deleteArr.push({
           id: file.id ? file.id : null,
-          file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+          file_name: file.response ? file.response.key : file.url.split('https://file.zwyknit.com/')[1]
         })
         let deleteIndex = 0
         fileList.forEach((item, index) => {
@@ -778,7 +778,7 @@ export default {
         })
         // deleteFile({
         //   id: file.id ? file.id : null,
-        //   file_name: file.response ? file.response.key : file.url.split('https://zhihui.tlkrzf.com/')[1]
+        //   file_name: file.response ? file.response.key : file.url.split('https://file.zwyknit.com/')[1]
         // }).then((res) => {
         //   if (res.data.status) {
         //     this.$message({
@@ -904,7 +904,7 @@ export default {
           data_component: item.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } })
         }
       })
-      // let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://zhihui.tlkrzf.com/' + item.response.key : item.url) })
+      // let imgArr = this.$refs.uploada.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
       let formData = {
         sample_product_code: this.product_code || this.sample_code.join(''),
         is_user_input: this.product_code ? 1 : 0,

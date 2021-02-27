@@ -258,7 +258,7 @@ export default {
           this.detail.address = this.detail.address ? JSON.parse(this.detail.address) : []
           this.detail.file_url = JSON.parse(this.detail.file_url).map(itemM => {
             return {
-              name: itemM.replace('https://zhihui.tlkrzf.com/', ''),
+              name: itemM.replace('https://file.zwyknit.com/', ''),
               url: itemM
             }
           })
@@ -319,7 +319,7 @@ export default {
         this.$message.error('请输入总体积')
         return
       }
-      let fileUrl = this.$refs.popupUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://zhihui.tlkrzf.com/' + item.response.key)) })
+      let fileUrl = this.$refs.popupUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       warehouse.create({
         id: this.$route.params.id,
         order_id: this.popupData.order_id,

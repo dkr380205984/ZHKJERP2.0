@@ -1711,7 +1711,7 @@ export default {
         quotationCode = quotationCode + item.product_code.slice(3, 6) + '-'
       })
       quotationCode += this.$route.params.id
-      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://zhihui.tlkrzf.com/' + vals.response.key : vals.url) })
+      let img = this.$refs.imgUpload.uploadFiles.map(vals => { return (vals.response ? 'https://file.zwyknit.com/' + vals.response.key : vals.url) })
       price.create({
         id: this.$route.params.id,
         pid: this.pid,

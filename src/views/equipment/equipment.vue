@@ -246,7 +246,7 @@ export default {
         user_name: '后道车间',
         create_time: '2020-09-12',
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: ['https://zhihui.tlkrzf.com/1610505453000.png'],
+        imgs: ['https://file.zwyknit.com/1610505453000.png'],
         product: {
           name: '人棉夹圈圈纱梭织围脖',
           code: 'HS21-1-5',
@@ -255,7 +255,7 @@ export default {
           plan_number: 10,
           production_number: 10,
           time: 5.2,
-          imgs: ['https://zhihui.tlkrzf.com/1609892148000.jpg'],
+          imgs: ['https://file.zwyknit.com/1609892148000.jpg'],
           url: 'https://www.zwyknit.com/sample/sampleDetail/4034',
           order_data: [{
             code: 'FA-FAS-213-040',
@@ -273,7 +273,7 @@ export default {
         production: 121500,
         allTime: 624,
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: ['https://zhihui.tlkrzf.com/1610505456000.jpg'],
+        imgs: ['https://file.zwyknit.com/1610505456000.jpg'],
         user_name: '后道车间',
         create_time: '2020-09-12',
         product: {
@@ -302,7 +302,7 @@ export default {
         production: 19008,
         allTime: 1021,
         typeImg: require('../../assets/image/equipment/设备图1.png'),
-        imgs: ['https://zhihui.tlkrzf.com/1610505459000.png', 'https://zhihui.tlkrzf.com/1610505462000.png'],
+        imgs: ['https://file.zwyknit.com/1610505459000.png', 'https://file.zwyknit.com/1610505462000.png'],
         user_name: '后道车间',
         create_time: '2020-09-13',
         product: {
@@ -313,7 +313,7 @@ export default {
           plan_number: 1050,
           production_number: 280,
           time: 12.6,
-          imgs: ['https://zhihui.tlkrzf.com/1604622922000.jpg'],
+          imgs: ['https://file.zwyknit.com/1604622922000.jpg'],
           url: 'https://www.zwyknit.com/product/productDetail/3520',
           order_data: [{
             code: '222-CESM136',
@@ -331,7 +331,7 @@ export default {
         production: 53200,
         allTime: 429,
         typeImg: require('../../assets/image/equipment/设备图2.png'),
-        imgs: ['https://zhihui.tlkrzf.com/1610505439000.png', 'https://zhihui.tlkrzf.com/1610505451000.png'],
+        imgs: ['https://file.zwyknit.com/1610505439000.png', 'https://file.zwyknit.com/1610505451000.png'],
         user_name: '后道车间',
         create_time: '2020-10-12',
         unit: '米',
@@ -343,7 +343,7 @@ export default {
           plan_number: 1924,
           production_number: 1223,
           time: 16.6,
-          imgs: ['https://zhihui.tlkrzf.com/1603161372000.jpg', 'https://zhihui.tlkrzf.com/1603161378000.jpg'],
+          imgs: ['https://file.zwyknit.com/1603161372000.jpg', 'https://file.zwyknit.com/1603161378000.jpg'],
           url: 'https://www.zwyknit.com/product/productDetail/3484',
           order_data: [{
             code: '200298',

@@ -4862,8 +4862,8 @@ export default {
       }
     },
     saveCompany () {
-      const logoUrl = this.$refs.uploada_logo.uploadFiles.map((items) => { return (items.response ? ('https://zhihui.tlkrzf.com/' + items.response.key) : items.url) })
-      const imageUrl = this.$refs.uploada_image.uploadFiles.map((items) => { return (items.response ? ('https://zhihui.tlkrzf.com/' + items.response.key) : items.url) })
+      const logoUrl = this.$refs.uploada_logo.uploadFiles.map((items) => { return (items.response ? ('https://file.zwyknit.com/' + items.response.key) : items.url) })
+      const imageUrl = this.$refs.uploada_image.uploadFiles.map((items) => { return (items.response ? ('https://file.zwyknit.com/' + items.response.key) : items.url) })
       if (logoUrl.length === 0 || !logoUrl) {
         this.$message.error('请上传公司LOGO')
         return
