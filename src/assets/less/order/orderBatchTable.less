@@ -1,0 +1,51 @@
+@import '../common.less';
+#orderBatchTable{
+  .printTable{
+    display: block;
+    .print_row{
+      font-size: 18px;
+      page-break-before: auto;
+      page-break-after: auto;
+      page-break-inside: avoid;
+    }
+    .print_body{
+      display: block!important;
+      overflow: auto;
+      height: auto;
+      flex: 0;
+      border-bottom: none;
+      page-break-before: auto;
+      page-break-after: auto;
+    }
+  }
+  .maxH32{
+    max-height: 32px;
+    min-height: 32px;
+  }
+  .maxH40{
+    max-height: 40px;
+    min-height: 40px;
+  }
+  .maxH68{
+    max-height: 68px;
+    min-height: 68px;
+  }
+  .flex04{
+    flex: 0.4;
+  }
+  .flex22{
+    flex: 2.2;
+  }
+  .flex12{
+    flex: 1.2;
+  }
+  .flex80{
+    flex: 8;
+  }
+  .borderTran{
+    border-color: transparent;
+  }
+  .bgOrange{
+    background-color: @orange;
+  }
+}

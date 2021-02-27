@@ -638,7 +638,7 @@
       </template>
     </div>
     <div class="module"
-      v-if="stockLog.length>0">
+      v-if="cloneStockLog.length>0">
       <div class="titleCtn">
         <div class="title">出入库日志</div>
       </div>
@@ -649,13 +649,23 @@
             <div class="btn btnWhiteBlue"
               @click="deleteLog('all')">批量删除</div>
             <div class="btn btnWhiteBlue"
+              @click="printLog">打印日志</div>
+            <div class="btn btnWhiteBlue"
               @click="download">批量导出excel</div>
           </div>
         </div>
         <div style="margin:18px 32px;width:auto"
           class="tableCtnLv2">
           <div class="tb_header">
-            <span class="tb_row flex04"></span>
+            <span class="tb_row flex04">
+              <el-checkbox v-model="checkedAllLog"
+                @change="(e)=>{
+                  stockLog.forEach(itemF=>{
+                    itemF.checked = e
+                  })
+                  $forcusUpdated()
+                }"></el-checkbox>
+            </span>
             <span class="tb_row">出入库时间</span>
             <span class="tb_row">
               <template v-if="!showFilterClientBox">
@@ -678,9 +688,13 @@
             </span>
             <span class="tb_row">{{$route.params.type === '1' ? '原' : '辅'}}料名称</span>
             <span class="tb_row flex08">颜色</span>
-            <span class="tb_row flex08">色号</span>
-            <span class="tb_row flex08">批/缸号</span>
-            <span class="tb_row flex08">数量</span>
+            <span class="tb_row flex08"
+              v-if="$route.params.type === '1'">色号</span>
+            <span class="tb_row flex08"
+              v-if="$route.params.type === '1'">批/缸号</span>
+            <span class="
+              tb_row
+              flex08">数量</span>
             <span class="tb_row flex08">
               <template v-if="!showFilterTypeBox">
                 操作类型
@@ -713,8 +727,10 @@
             <span class="tb_row">{{itemLog.client_name}}</span>
             <span class="tb_row">{{itemLog.material_name}}</span>
             <span class="tb_row flex08">{{itemLog.material_color}}</span>
-            <span class="tb_row flex08">{{itemLog.vat_code}}</span>
-            <span class="tb_row flex08">{{itemLog.color_number}}</span>
+            <span class="tb_row flex08"
+              v-if="$route.params.type === '1'">{{itemLog.vat_code}}</span>
+            <span class="tb_row flex08"
+              v-if="$route.params.type === '1'">{{itemLog.color_number}}</span>
             <!-- <span class="tb_row flex08">{{(itemLog.vat_code !== VATCODE_COLORCODE_DEFAULT && itemLog.vat_code) || ''}}</span>
             <span class="tb_row flex08">{{(itemLog.color_number !== VATCODE_COLORCODE_DEFAULT && itemLog.color_number) || ''}}</span> -->
             <span class="tb_row flex08">{{itemLog.total_weight}}</span>
@@ -1293,6 +1309,9 @@ export default {
     }
   },
   methods: {
+    printLog () {
+      this.$openUrl(`/materialStockTable/${this.$route.params.id}/${this.$route.params.orderType}/${this.$route.params.type}?logId=${this.stockLog.filter(itemF => itemF.checked).map(itemM => itemM.id)}`)
+    },
     getConfirmDetail () {
       this.loading = true
       compare.detail({

@@ -1,6 +1,6 @@
 @blue:#1A95FF;
 @bg:rgba(255,255,255,0.85);
-@borderColor:rgba(0,0,0,.55);
+@borderColor:rgba(0,0,0,0.55);
 @font-face {
   font-family: 'iconfont';  /* project id 2297222 */
   src: url('//at.alicdn.com/t/font_2297222_8sl8fkiunag.eot');
@@ -10,7 +10,7 @@
   url('//at.alicdn.com/t/font_2297222_8sl8fkiunag.ttf') format('truetype'),
   url('//at.alicdn.com/t/font_2297222_8sl8fkiunag.svg#iconfont') format('svg');
 }
-.zh_editor_text_content{
+.zh_editor_image_content{
   display: inline-block;
   min-width: 10rem;
   min-height: 1.5rem;
@@ -24,38 +24,11 @@
     border: 1px solid blue;
     background-color: @bg;
   }
-  .zh_editor_text_content_input{
+  .zh_editor_image_content__ctn{
     width: 100%;
     height: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-    overflow: hidden;
-    outline: none;
-    word-break: break-all;
-    user-select: none;
-  }
-  .tools{
-    position: absolute;
-    bottom: -2px;
-    right: 0;
-    display: flex;
-    align-items: center;
-    transform: translateY(100%);
-    background-color: @bg;
-    .color{
-      position: relative;
-      .color-picker{
-        // display: none;
-        opacity: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        right: 0;
-        transition: opacity 0.1s linear;
-        z-index: 1;
-      }
-    }   
+    background-size: cover;
+    background-repeat: no-repeat;
   }
   .changeSize{
     font-family: 'iconfont';
@@ -121,38 +94,6 @@
         left: 50%;
         transform: translate(-50%,-50%);
       }
-    }
-  }
-  .iconFont{
-    padding: 4px;
-    font-size: 14px;
-    display: inline-block;
-    font-family: 'iconfont';
-    margin: 0;
-    cursor: pointer;
-    font-weight: bold;
-    &:hover,
-    &.active{
-      background-color: @blue;
-      color: #FFF;
-    }
-    &.left::after{
-      content: '\e655';
-    }
-    &.center::after{
-      content: '\e65b';
-    }
-    &.right::after{
-      content: '\e656';
-    }
-    &.strong::after{
-      content: '\e658';
-    }
-    &.italic::after{
-      content: '\e659';
-    }
-    &.color::after{
-      content: '\e65a';
     }
   }
   .zIndexCtn{

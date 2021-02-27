@@ -1680,6 +1680,8 @@
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
           <div class="btn btnBlue"
+            @click="$openUrl('/orderBatchTable?id=' + $route.params.id)">打印</div>
+          <div class="btn btnBlue"
             @click="$router.push('/order/orderCreate?orderId=' + $route.params.id)">复制此订单</div>
         </div>
       </div>

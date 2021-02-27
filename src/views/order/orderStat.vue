@@ -122,12 +122,145 @@
             </div>
           </div>
         </div>
-        <div class="addCtn">
+        <div class="addCtn"
+          style="justify-content:space-between">
+          <span class="btn noBorder listCutBtn"
+            style="padding:0;margin:0"
+            @click="$router.push('/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrPro')">订单列表</span>
           <div class="btn btnBlue"
             @click="$router.push('/screenShipmentsList?keyword=' + keyword + '&start_time=' + (date[0] || '') + '&end_time=' + (date[1] || '') + '&group_id=' + group_id + '&company_id=' + company_id)">大屏模式</div>
         </div>
         <div class="list">
-          <div class="title">
+          <el-table :data="list"
+            style="width: 100%">
+            <!-- <el-table-column fixed
+              width="55">
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row.checked"
+                  @change="checkedChange($event,scope.row)"></el-checkbox>
+              </template>
+            </el-table-column> -->
+            <el-table-column fixed
+              prop="delivery_time"
+              label="发货日期"
+              width="150">
+            </el-table-column>
+            <el-table-column fixed
+              prop="client_name"
+              label="订单号"
+              width="150">
+            </el-table-column>
+            <el-table-column fixed
+              prop="order_code"
+              label="外贸公司"
+              width="150">
+            </el-table-column>
+            <el-table-column fixed
+              prop="order_code"
+              label="发货批次"
+              width="150">
+              <template slot-scope="scope">
+                {{`第${scope.row.batch_id}批`}}
+              </template>
+            </el-table-column>
+            <el-table-column label="产品图片"
+              width="150"
+              align="center">
+              <template slot-scope="scope">
+                <zh-img-list :list="scope.row.image"
+                  type='open'></zh-img-list>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column prop="product_code"
+              label="产品编号"
+              width="150">
+              <template slot-scope="scope">
+                {{scope.row.product_info.}}
+              </template>
+            </el-table-column> -->
+            <el-table-column prop="numbers"
+              label="下单数量"
+              width="120">
+            </el-table-column>
+            <el-table-column prop="order_time"
+              label="流程进度"
+              width="183">
+              <template slot-scope="scope">
+                <div style="display:flex">
+                  <div class="stateCtn"
+                    title="物料计划状态"
+                    :class="{'green':scope.row.has_plan===1}">
+                    <div class="state"></div>
+                    <span class="name">计</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="原料入库状态"
+                    :class="{'orange':scope.row.material_push_progress.r_push>0,'green':scope.row.material_push_progress.r_push>=100}">
+                    <div class="state"></div>
+                    <span class="name">入</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="原料出库状态"
+                    :class="{'orange':scope.row.material_push_progress.r_pop>0,'green':scope.row.material_push_progress.r_pop>=100}">
+                    <div class="state"></div>
+                    <span class="name">出</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="半成品检验状态"
+                    :class="{'orange':scope.row.product_push_progress>0,'green':scope.row.product_push_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">检</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="半成品回库状态"
+                    :class="{'orange':scope.row.semi_push_progress>0,'green':scope.row.semi_push_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">回</span>
+                  </div>
+                  <div class="stateCtn"
+                    title="成品装箱状态"
+                    :class="{'orange':scope.row.pack_real_progress>0,'green':scope.row.pack_real_progress>=100}">
+                    <div class="state"></div>
+                    <span class="name">箱</span>
+                  </div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="订单状态"
+              width="120">
+              <template slot-scope="scope">
+                <div class="stateCtn rowFlex"
+                  :class="{'red':scope.row.status === 2003 || scope.row.status === 2005,'green':scope.row.status === 2004,'blue':scope.row.status === 2002,'orange':scope.row.status === 2001}">
+                  <div class="state"
+                    style="margin-left:0"></div>
+                  <span class="name">{{scope.row.status|filterStatus}}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="order_time"
+              label="下单日期"
+              width="120">
+            </el-table-column>
+            <el-table-column label="已用工时"
+              width="120">
+              <template slot-scope="scope">
+                {{scope.row.order_time|filterTime}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="group_name"
+              label="负责小组"
+              width="120">
+            </el-table-column>
+            <el-table-column label="操作"
+              fixed="right"
+              width="150">
+              <template slot-scope="scope">
+                <span class="tOpr"
+                  @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <!-- <div class="title">
             <div class="col">
               <span class="text">发货日期</span>
             </div>
@@ -218,7 +351,7 @@
               <span class="opr"
                 @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -622,6 +755,19 @@ export default {
         return Math.ceil((nowTime.getTime() - orderTime.getTime()) / 1000 / 60 / 60 / 24) + '天'
       } else {
         return 'null'
+      }
+    },
+    filterStatus (status) {
+      if (status === 2001) {
+        return '已创建'
+      } else if (status === 2002) {
+        return '进行中'
+      } else if (status === 2003) {
+        return '已取消'
+      } else if (status === 2004) {
+        return '已完成'
+      } else if (status === 2005) {
+        return '已延期'
       }
     }
   }

@@ -114,10 +114,10 @@
           </div>
           <div class="tableCtnLv2 countInfo">
             <div class="tb_content">
-              <div class="tb_row middle">订单下单产值</div>
-              <div class="tb_row middle">实际发货产值</div>
+              <div class="tb_row middle">{{DDXDCZCOM}}</div>
+              <div class="tb_row middle">{{SJFHCZCOM}}</div>
               <div class="tb_row middle">已开票金额</div>
-              <div class="tb_row middle">已收款金额</div>
+              <div class="tb_row middle">{{YSKJECOM}}</div>
               <div class="tb_row middle">已扣款金额</div>
             </div>
             <div class="tb_content">
@@ -2289,7 +2289,8 @@
                         <span class="label">包含订单：</span>
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
-                            :key="order.order_id">{{order.order_code}}</el-tag>
+                            :key="order.order_id"
+                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}}</el-tag>
                         </span>
                       </div>
                       <div class="collapseBox">
@@ -2302,6 +2303,7 @@
                         <span class="label">包含订单：</span>
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
+                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
                             :key="order.order_id">{{order.order_code}}</el-tag>
                         </span>
                       </div>
@@ -2315,6 +2317,7 @@
                         <span class="label">包含订单：</span>
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
+                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
                             :key="order.order_id">{{order.order_code}}</el-tag>
                         </span>
                       </div>
