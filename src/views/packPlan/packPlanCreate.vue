@@ -437,8 +437,7 @@ export default {
       planTb: [],
       activePlanId: '',
       planPackInfo: [],
-      showHiddle: false,
-      lock: true
+      showHiddle: false
     }
   },
   methods: {
@@ -730,67 +729,62 @@ export default {
       }
     },
     saveAll () {
-      if (this.lock) {
-        let flag = {
-          pack: true,
-          pack_info: true,
-          number: true
-        }
-        this.packPlanInfo.forEach(item => {
-          item.forEach(itemInner => {
-            if (!itemInner.pack_name) {
-              flag.pack = false
+      if (this.$submitLock()) return
+      let flag = {
+        pack: true,
+        pack_info: true,
+        number: true
+      }
+      this.packPlanInfo.forEach(item => {
+        item.forEach(itemInner => {
+          if (!itemInner.pack_name) {
+            flag.pack = false
+          }
+          itemInner.pack_info.forEach(itemPack => {
+            if (!itemPack.name || !itemPack.number) {
+              flag.pack_info = false
             }
-            itemInner.pack_info.forEach(itemPack => {
-              if (!itemPack.name || !itemPack.number) {
-                flag.pack_info = false
-              }
-            })
           })
         })
-        if (!flag.pack) {
-          this.$message.error('检测到未选择包装，请选择')
-          return
-        }
-        if (!flag.pack_info) {
-          this.$message.error('检测到包装内信息未选择包装产品或未填写包装数量，请填写完整')
-          return
-        }
-        this.packPlanTotal.forEach(item => {
-          if (!item.number) {
-            flag.number = false
-          }
-        })
-        if (!flag.number) {
-          this.$message.error('检测到包装辅料信息模块内，有未填写的所需数量，请填写完整')
-          return
-        }
-        let data = {
-          id: this.activePlanId,
-          order_id: this.$route.params.id,
-          // order_type: 1,
-          pack_info: JSON.stringify(this.packPlanInfo),
-          material_info: JSON.stringify(this.packPlanTotal),
-          desc: ''
-        }
-        this.lock = false
-        packPlan.create(data).then(res => {
-          if (res.data.status !== false) {
-            this.$message.success((this.activePlanId ? '修改' : '添加') + '成功')
-            this.getInitPlanInfo()
-            if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
-              this.msgUrl = '/packPlan/packPlanCreate/' + this.$route.params.id
-              this.msgContent = '<span style="color:#1A95FF">' + (this.activePlanId ? '修改' : '添加') + '</span>了一张新装箱计划单,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
-              this.msgSwitch = true
-            } else {
-              this.$router.push('/packPlan/packPlanCreate/' + this.$route.params.id)
-            }
-          }
-          this.lock = true
-        })
-      } else {
-        this.$message.warning('请勿频繁操作')
+      })
+      if (!flag.pack) {
+        this.$message.error('检测到未选择包装，请选择')
+        return
       }
+      if (!flag.pack_info) {
+        this.$message.error('检测到包装内信息未选择包装产品或未填写包装数量，请填写完整')
+        return
+      }
+      this.packPlanTotal.forEach(item => {
+        if (!item.number) {
+          flag.number = false
+        }
+      })
+      if (!flag.number) {
+        this.$message.error('检测到包装辅料信息模块内，有未填写的所需数量，请填写完整')
+        return
+      }
+      let data = {
+        id: this.activePlanId,
+        order_id: this.$route.params.id,
+        // order_type: 1,
+        pack_info: JSON.stringify(this.packPlanInfo),
+        material_info: JSON.stringify(this.packPlanTotal),
+        desc: ''
+      }
+      packPlan.create(data).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success((this.activePlanId ? '修改' : '添加') + '成功')
+          this.getInitPlanInfo()
+          if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {
+            this.msgUrl = '/packPlan/packPlanCreate/' + this.$route.params.id
+            this.msgContent = '<span style="color:#1A95FF">' + (this.activePlanId ? '修改' : '添加') + '</span>了一张新装箱计划单,订单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
+            this.msgSwitch = true
+          } else {
+            this.$router.push('/packPlan/packPlanCreate/' + this.$route.params.id)
+          }
+        }
+      })
       // console.log(data)
     },
     getInitPlanInfo (id) {

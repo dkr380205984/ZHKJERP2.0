@@ -735,7 +735,6 @@ export default {
         time_progress: warnData
       }
       sampleOrder.create(data).then(res => {
-        this.lock = true
         if (res.data.status) {
           this.$message.success('修改成功')
           if (window.localStorage.getItem(this.$route.name) && JSON.parse(window.localStorage.getItem(this.$route.name)).msgFlag) {

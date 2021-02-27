@@ -1665,7 +1665,6 @@ export default {
       stockSelectList: [],
       stockSelect: '',
       stockChildren: [],
-      lock: true,
       step: 0,
       stockMatTotalNum: 0,
       supplyMatName: '',
@@ -1807,52 +1806,47 @@ export default {
     },
     // 保存结余
     saveGoStock () {
-      if (this.lock) {
-        let data = []
-        let flag = true
-        this.goStockInfo.forEach(itemMa => {
-          itemMa.stock_info.forEach(itemSt => {
-            if (itemSt.goStock_number && !itemSt.stock_name) {
-              flag = false
-            }
-            if (itemSt.goStock_number && itemSt.stock_name) {
-              data.push({
-                material_name: itemMa.material_name,
-                type: this.$route.params.type,
-                color_code: itemMa.material_color,
-                order_id: this.$route.params.id,
-                action_type: 3,
-                attribute: '',
-                stock_id: itemSt.stock_name,
-                weight: itemSt.goStock_number,
-                desc: '',
-                company_id: window.sessionStorage.getItem('company_id'),
-                user_id: window.sessionStorage.getItem('user_id')
-              })
-            }
-          })
-        })
-        if (data.length === 0) {
-          this.$message.error('检查到没有可提交的数据')
-          return
-        }
-        if (!flag) {
-          this.$message.error('检查到存在填写入库数量但未选择入库仓库')
-          return
-        }
-        this.lock = false
-        stock.yarnStock({ data: data }).then(res => { // 原料辅料接口都一样
-          this.lock = true
-          if (res.data.status !== false) {
-            this.$message.success('保存成功')
-            this.showGoStockPopup = false
-            this.goStockInfo = []
-            this.$winReload()
+      if (this.$submitLock()) return
+      let data = []
+      let flag = true
+      this.goStockInfo.forEach(itemMa => {
+        itemMa.stock_info.forEach(itemSt => {
+          if (itemSt.goStock_number && !itemSt.stock_name) {
+            flag = false
+          }
+          if (itemSt.goStock_number && itemSt.stock_name) {
+            data.push({
+              material_name: itemMa.material_name,
+              type: this.$route.params.type,
+              color_code: itemMa.material_color,
+              order_id: this.$route.params.id,
+              action_type: 3,
+              attribute: '',
+              stock_id: itemSt.stock_name,
+              weight: itemSt.goStock_number,
+              desc: '',
+              company_id: window.sessionStorage.getItem('company_id'),
+              user_id: window.sessionStorage.getItem('user_id')
+            })
           }
         })
-      } else {
-        this.$message.warning('请勿频繁点击')
+      })
+      if (data.length === 0) {
+        this.$message.error('检查到没有可提交的数据')
+        return
       }
+      if (!flag) {
+        this.$message.error('检查到存在填写入库数量但未选择入库仓库')
+        return
+      }
+      stock.yarnStock({ data: data }).then(res => { // 原料辅料接口都一样
+        if (res.data.status !== false) {
+          this.$message.success('保存成功')
+          this.showGoStockPopup = false
+          this.goStockInfo = []
+          this.$winReload()
+        }
+      })
     },
     addItem (data, type) {
       if (type === 'goStock') {

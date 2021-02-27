@@ -37,9 +37,9 @@
           <div class="print_row maxH40">
             <div class="row_item center">交货日期</div>
             <div class="row_item center">批次名称</div>
-            <div class="row_item center">批次类型</div>
             <div class="row_item center">产品编号</div>
             <div class="row_item center">产品名称</div>
+            <div class="row_item center">产品成分</div>
             <div class="row_item center">尺码颜色</div>
             <div class="row_item center">产品尺寸</div>
             <div class="row_item center">产品克重</div>
@@ -54,19 +54,19 @@
             :key="indexBatch">
             <div class="row_item center bgOrange">{{itemBatch.delivery_time}}</div>
             <div class="row_item center">{{itemBatch.batch_title || `第${itemBatch.batch_id}批`}}</div>
-            <div class="row_item center">{{itemBatch.batch_type || '无'}}</div>
             <div class="row_item center">{{itemBatch.product_code}}</div>
             <div class="row_item center">{{itemBatch.name}}</div>
+            <div class="row_item center">{{itemBatch.product_ingredient || '无'}}</div>
             <div class="row_item center">{{`${itemBatch.size}/${itemBatch.color}`}}</div>
             <div class="row_item center">{{itemBatch.size_info && itemBatch.size_info.size_info || '/'}}</div>
             <div class="row_item center">{{itemBatch.size_info && itemBatch.size_info.weight || '/'}}</div>
-            <div class="row_item center">{{itemBatch.price || '/'}}</div>
-            <div class="row_item center">{{itemBatch.number || '/'}}</div>
-            <div class="row_item center">{{itemBatch.total_price}}</div>
+            <div class="row_item center">{{itemBatch.price && `${itemBatch.price}${itemOrder.unit}/${itemBatch.product_unit||'件'}` || '/'}}</div>
+            <div class="row_item center">{{itemBatch.number && `${itemBatch.number}${itemBatch.product_unit || '件'}` || '/'}}</div>
+            <div class="row_item center">{{`${itemBatch.total_price}${itemOrder.unit}`}}</div>
             <div class="row_item center flex12">
               <zh-img-list :list="itemBatch.images"></zh-img-list>
             </div>
-            <div class="row_item center">{{itemBatch.batch_desc}}</div>
+            <div class="row_item center red">{{itemBatch.batch_desc}}</div>
           </div>
           <div class="print_row maxH68">
             <div class="row_item center">订单备注</div>
@@ -95,9 +95,9 @@
             <div class="row_item center">订单号</div>
             <div class="row_item center">订单公司</div>
             <div class="row_item center">批次名称</div>
-            <div class="row_item center">批次类型</div>
             <div class="row_item center">产品编号</div>
             <div class="row_item center">产品名称</div>
+            <div class="row_item center">产品成分</div>
             <div class="row_item center">尺码颜色</div>
             <div class="row_item center">单价</div>
             <div class="row_item center">数量</div>
@@ -112,17 +112,17 @@
             <div class="row_item center">{{itemBatch.order_code}}</div>
             <div class="row_item center">{{itemBatch.client_name}}</div>
             <div class="row_item center">{{itemBatch.batch_title || `第${itemBatch.batch_id}批`}}</div>
-            <div class="row_item center">{{itemBatch.batch_type || '无'}}</div>
             <div class="row_item center">{{itemBatch.product_code}}</div>
             <div class="row_item center">{{itemBatch.name}}</div>
+            <div class="row_item center">{{itemBatch.product_ingredient || '无'}}</div>
             <div class="row_item center">{{`${itemBatch.size}/${itemBatch.color}`}}</div>
-            <div class="row_item center">{{itemBatch.price || '/'}}</div>
-            <div class="row_item center">{{itemBatch.number || '/'}}</div>
-            <div class="row_item center">{{itemBatch.total_price}}</div>
+            <div class="row_item center">{{itemBatch.price && `${itemBatch.price}${itemBatch.unit}/${itemBatch.product_unit||'件'}` || '/'}}</div>
+            <div class="row_item center">{{itemBatch.number && `${itemBatch.number}${itemBatch.product_unit || '件'}` || '/'}}</div>
+            <div class="row_item center">{{`${itemBatch.total_price}${itemBatch.unit}`}}</div>
             <div class="row_item center flex12">
               <zh-img-list :list="itemBatch.images"></zh-img-list>
             </div>
-            <div class="row_item center">{{itemBatch.batch_desc}}</div>
+            <div class="row_item center red">{{itemBatch.batch_desc}}</div>
           </div>
         </div>
       </template>
@@ -143,7 +143,6 @@ export default {
   },
   created () {
     const id = (this.$route.query.id && this.$route.query.id.split(',')) || []
-    const QRCode = require('qrcode')
     Promise.all(
       id.map(itemM => {
         return order.detailInfo({
@@ -164,12 +163,15 @@ export default {
                 contacts: orderDataItem.contacts,
                 create_user: orderDataItem.user_name,
                 group_name: orderDataItem.group_name,
+                unit: orderDataItem.account_unit,
                 batch_id: itemMB.batch_id,
                 delivery_time: itemMB.delivery_time,
                 batch_title: itemMB.batch_title,
                 batch_type: itemMB.order_type,
                 product_code: itemMP.product_code,
                 name: itemMP.name,
+                product_ingredient: itemMP.component.map(itemMC => `${itemMC.number}%${itemMC.component_name}`).join(';'),
+                product_unit: itemMP.category_info.unit,
                 size: itemMP.size_name,
                 color: itemMP.color_name,
                 images: itemMP.image,
@@ -184,6 +186,7 @@ export default {
           return new Date(a.delivery_time).getTime() - new Date(b.delivery_time).getTime()
         })
       } else {
+        const QRCode = require('qrcode')
         this.orderBatchInfo = res.map(itemM => {
           const orderDataItem = itemM.data.data
           let obj = {
@@ -194,6 +197,7 @@ export default {
             contacts: orderDataItem.contacts,
             create_user: orderDataItem.user_name,
             group_name: orderDataItem.group_name,
+            unit: orderDataItem.account_unit,
             batch_info: orderDataItem.batch_info.map(itemMB => {
               return itemMB.product_info.map(itemMP => {
                 return {
@@ -203,6 +207,8 @@ export default {
                   batch_type: itemMB.order_type,
                   product_code: itemMP.product_code,
                   name: itemMP.name,
+                  product_ingredient: itemMP.component.map(itemMC => `${itemMC.number}%${itemMC.component_name}`).join(';'),
+                  product_unit: itemMP.category_info.unit,
                   size: itemMP.size_name,
                   color: itemMP.color_name,
                   size_info: itemMP.all_size.find(itemF => itemF.size_id === itemMP.size_id),

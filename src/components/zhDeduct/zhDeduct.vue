@@ -26,9 +26,14 @@
                           <span style="font-size:14px">{{$formatNum(item.deduct_price || item.settle_price || 0)}}元</span>
                         </span>
                       </div>
-                      <div class="blue"
-                        style="margin-right:20px"
-                        @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                      <div style="display:flex;align-items:center">
+                        <div class="blue"
+                          style="margin-right:20px"
+                          @click.stop="$openUrl(`/deductTable/${item.client_id}/${item.type}/${item.id}/扣款`)">打印</div>
+                        <div class="blue"
+                          style="margin-right:20px"
+                          @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                      </div>
                     </span>
                   </template>
                   <div class="collapseBox">
@@ -101,9 +106,12 @@
           <div class="row">
             <span class="label">扣款原因：</span>
             <span class="info">
-              <zh-input v-model="deductEditInfo.remark"
+              <!-- <zh-input v-model="deductEditInfo.remark"
                 placeholder="请输入扣款原因">
-              </zh-input>
+              </zh-input> -->
+              <el-autocomplete v-model="deductEditInfo.remark"
+                :fetch-suggestions="querySearchRemark"
+                placeholder="请输入扣款原因"></el-autocomplete>
             </span>
           </div>
         </div>
@@ -165,7 +173,18 @@ export default {
         price: '',
         time: this.$getTime(),
         remark: ''
-      }
+      },
+      deductRemarkArr: [
+        {
+          value: '补纱扣款'
+        }, {
+          value: '染色色差问题扣款'
+        }, {
+          value: '纱线质量问题扣款'
+        }, {
+          value: '订单公司折扣扣款'
+        }
+      ]
     }
   },
   methods: {
@@ -221,6 +240,10 @@ export default {
     },
     goSettleDeductDetail (item) {
       this.$router.push(`/financialStatistics/oprDetail/${item.client_id}/${item.type}/${item.id}/扣款?orderId=${item.order_code.map(itemM => itemM.order_id).join(',')}&orderType=${item.order_type}`)
+    },
+    querySearchRemark (queryString, cb) {
+      const returnData = queryString ? this.deductRemarkArr.filter(itemF => itemF.value.indexOf(queryString) !== -1) : this.deductRemarkArr
+      cb(returnData)
     }
   },
   created () {

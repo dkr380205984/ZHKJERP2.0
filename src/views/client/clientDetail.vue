@@ -2273,9 +2273,15 @@
                             <span style="font-size:14px">{{$formatNum(item.deduct_price  || item.settle_price || item.price || 0)}}元</span>
                           </span>
                         </div>
-                        <div class="blue"
-                          style="margin-right:20px"
-                          @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                        <div style="display:flex;align-items:center">
+                          <div class="blue"
+                            v-if="item.methods === '扣款'"
+                            style="margin-right:20px"
+                            @click.stop="$openUrl(`/deductTable/${item.client_id}/${item.type}/${item.id}/扣款`)">打印</div>
+                          <div class="blue"
+                            style="margin-right:20px"
+                            @click.stop="goSettleDeductDetail(item)">查看详情</div>
+                        </div>
                       </span>
                     </template>
                     <template v-if="item.methods==='开票'">
@@ -2290,7 +2296,7 @@
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
                             :key="order.order_id"
-                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}}</el-tag>
+                            @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}}</el-tag>
                         </span>
                       </div>
                       <div class="collapseBox">
@@ -2303,7 +2309,7 @@
                         <span class="label">包含订单：</span>
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
-                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
+                            @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
                             :key="order.order_id">{{order.order_code}}</el-tag>
                         </span>
                       </div>
@@ -2317,7 +2323,7 @@
                         <span class="label">包含订单：</span>
                         <span class="info">
                           <el-tag v-for="order in item.order_code"
-                            @click="$router.push(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
+                            @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)"
                             :key="order.order_id">{{order.order_code}}</el-tag>
                         </span>
                       </div>

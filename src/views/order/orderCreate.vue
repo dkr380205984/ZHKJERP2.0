@@ -525,9 +525,12 @@
         <div class="rowCtn"
           v-if="indexBatch === batchDate.length -1">
           <div class="colCtn">
-            <span class="content">
+            <span class="content"
+              style="display:flex;align-items:center">
               <div class="btn btnWhiteBlue add_batch_btn"
                 @click="addItem(batchDate,'batch')">添加批次</div>
+              <div class="btn btnWhiteBlue add_batch_btn"
+                @click="batchDate.push($clone(itemBatch))">复制批次</div>
             </span>
           </div>
         </div>
