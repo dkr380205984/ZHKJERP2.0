@@ -812,6 +812,8 @@
                           v-if="!item.updateFlag">修改</span>
                         <span class="red"
                           @click="deleteGroup(item.id)">删除</span>
+                        <span :class="item.status === 1 ? 'orange' : 'green'"
+                          @click="banGroup(item)">{{item.status === 1 ? '禁用' : '启用'}}</span>
                       </span>
                     </div>
                   </div>
@@ -4710,7 +4712,9 @@ export default {
       })
     },
     getGroup () {
-      group.list().then((res) => {
+      group.list({
+        is_check: 0
+      }).then((res) => {
         this.groupList = res.data.data
         this.groupTotal = this.groupList.length
       })
@@ -4757,6 +4761,36 @@ export default {
             this.$message({
               type: 'success',
               message: '删除成功!'
+            })
+            this.getGroup()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    banGroup (item) {
+      let msg = ''
+      if (item.status === 1) {
+        msg = '是否禁用该小组，请确认'
+      } else {
+        msg = '是否启用该小组'
+      }
+      this.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        group.ban({
+          id: item.id
+        }).then((res) => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
             })
             this.getGroup()
           }
@@ -4932,7 +4966,8 @@ export default {
       }
       auth.list({
         page: this.authPage,
-        limit: 5
+        limit: 5,
+        is_check: 0
       }).then((res) => {
         this.authList = res.data.data
         this.authTotal = res.data.meta.total

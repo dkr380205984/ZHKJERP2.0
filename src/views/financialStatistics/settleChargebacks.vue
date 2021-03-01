@@ -263,7 +263,7 @@ export default {
           this.list = res.data.data.map(itemM => {
             return {
               ...itemM,
-              methods: '付款',
+              methods: '开票',
               order_code_str: itemM.order_code.map(itemM => itemM.order_code).join(';')
             }
           })
