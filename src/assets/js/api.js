@@ -149,7 +149,8 @@ const group = {
   create: (params) => http.post(`${baseUrl}/user/group/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/user/group/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
-  list: (params) => http.get(`${baseUrl}/user/group/list`, params)
+  list: (params) => http.get(`${baseUrl}/user/group/list`, params),
+  ban: (params) => http.post(`${baseUrl}/user/group/status/check`, params, 'application/json')
 }
 // 部门 和小组公用的表和接口，type=2 ,前端做一下区分
 const station = {

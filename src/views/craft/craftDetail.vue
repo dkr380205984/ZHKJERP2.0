@@ -102,10 +102,24 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
+            <span class="label">工艺单编号：</span>
+            <span class="text">{{productInfo.craft_code}}</span>
+          </div>
+          <div class="colCtn">
             <span class="label">配件名称：</span>
             <span class="text">{{productInfo.title}}</span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{productInfo.user_name}}</span>
+          </div>
         </div>
+        <!-- <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">创建时间：</span>
+            <span class="text">{{$getTIme(productInfo.create_time)}}</span>
+          </div>
+        </div> -->
       </div>
     </div>
     <div class="module"
