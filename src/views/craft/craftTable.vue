@@ -2393,7 +2393,7 @@
       </div>
       <div class="outItem">
         <span class="label">穿综法循环：</span>
-        {{craftDetail.draft_method|filterThroughMethod}}
+        <span :style="`font-size:${FONTSIZE}px`">{{craftDetail.draft_method|filterThroughMethod}}</span>
       </div>
       <div class="outItem"
         v-for="(items,indexs) in craftDetail.draft_method.GLShow"
@@ -2436,12 +2436,12 @@
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">穿综备注：</span>
-        {{craftDetail.draft_method.desc}}
+        <span :style="`font-size:${FONTSIZE}px`">{{craftDetail.draft_method.desc}}</span>
       </div>
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">纹版备注：</span>
-        {{weft_data.contract_ratio}}
+        <span :style="`font-size:${FONTSIZE}px`">{{weft_data.contract_ratio}}</span>
       </div>
     </div>
     <div class="setting_sign_style"
@@ -2472,6 +2472,15 @@
             :min='1'
             :max="6"
             @change="changeWBL"></el-input-number>
+        </div>
+        <div class="setting_item">
+          {{`字体大小(×${FONTSIZE})`}}
+          <el-input-number v-model="FONTSIZE"
+            size='small'
+            :step="2"
+            :min='18'
+            :max="36"
+            @change="changeFONTSIZE"></el-input-number>
         </div>
       </template>
       <template v-else-if="showRMeau === 3">
@@ -2548,6 +2557,7 @@ export default {
       Y_position: 0,
       signType: window.localStorage.getItem('sign_type_craft_table_setting') || '1',
       WBL: window.localStorage.getItem('WBL_craft_table_setting') || 5,
+      FONTSIZE: window.localStorage.getItem('FONTSIZE_craft_table_setting') || 18,
       colourInfoType: window.localStorage.getItem('colour_info_craft_table_setting') || '1',
       zhujiaInfoCom: {
         warp: [],
@@ -2593,6 +2603,9 @@ export default {
     },
     changeWBL (e) {
       window.localStorage.setItem('WBL_craft_table_setting', e)
+    },
+    changeFONTSIZE (e) {
+      window.localStorage.setItem('FONTSIZE_craft_table_setting', e)
     },
     // 给合并规则里添加value
     pushValue (item, key, index) {

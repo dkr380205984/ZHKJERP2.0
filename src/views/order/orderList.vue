@@ -198,11 +198,6 @@
               label="订单公司"
               width="150">
             </el-table-column>
-            <el-table-column prop="contact_name"
-              fixed
-              label="联系人"
-              width="150">
-            </el-table-column>
             <el-table-column label="产品图片"
               width="150"
               align="center">
@@ -312,6 +307,10 @@
                   </div>
                 </div>
               </template>
+            </el-table-column>
+            <el-table-column prop="client_contacts"
+              label="联系人"
+              width="120">
             </el-table-column>
             <el-table-column label="操作"
               fixed="right"

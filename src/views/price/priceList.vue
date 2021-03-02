@@ -43,6 +43,11 @@
                   :value="item.id">
                 </el-option>
               </el-select>
+              <div class="resetBtn"
+                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=&&min=&&max=')">重置</div>
+            </div>
+            <div class="filter_line"
+              :class="openHiddleFilter ? false : 'hiddle'">
               <el-select v-model="user_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -55,11 +60,6 @@
                   :value="item.id">
                 </el-option>
               </el-select>
-              <div class="resetBtn"
-                @click="$router.push('/price/priceList/page=1&&keyword=&&date=null&&status=&&client_id=&&user_id=&&min=&&max=')">重置</div>
-            </div>
-            <div class="filter_line"
-              :class="openHiddleFilter ? false : 'hiddle'">
               <el-select v-model="status"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -110,7 +110,7 @@
                 :indeterminate="indeterminate"
                 @change="changeCheckedAll"></el-checkbox>
             </div>
-            <div class="col">
+            <div class="col flex08">
               <span class="text">编号</span>
             </div>
             <div class="col">
@@ -119,7 +119,7 @@
             <div class="col flex15">
               <span class="text">订单公司</span>
             </div>
-            <div class="col">
+            <div class="col flex08">
               <span class="text">联系人</span>
             </div>
             <div class="col middle">
@@ -129,14 +129,14 @@
               <span class="text">产品报价</span>
             </div>
             <div class="col flex01"></div>
-            <div class="col">
+            <div class="col flex08">
               <span class="text">创建人</span>
             </div>
             <div class="col flex08">
               <span class="text">创建时间
               </span>
             </div>
-            <div class="col">
+            <div class="col flex08">
               <span class="text">审核状态</span>
             </div>
             <div class="col middle">
@@ -150,18 +150,18 @@
               <el-checkbox v-model="item.checked"
                 @change="changeCheckedItem($event,item)"></el-checkbox>
             </div>
-            <div class="col">{{item.code}}</div>
+            <div class="col flex08">{{item.code}}</div>
             <div class="col">{{item.name}}</div>
             <div class="col flex15">{{item.client_name}}</div>
-            <div class="col">{{item.contact_name}}</div>
+            <div class="col flex08">{{item.contact_name}}</div>
             <div class="col middle">
               <zh-img-list :list="item.img"></zh-img-list>
             </div>
             <div class="col flex08"><span class="price">{{$toFixed(item.price / item.exchange_rate * 100)}}</span>{{item.account_unit}}</div>
             <div class="col flex01"></div>
-            <div class="col">{{item.user_name}}</div>
+            <div class="col flex08">{{item.user_name}}</div>
             <div class="col flex08">{{item.create_time}}</div>
-            <div class="col">
+            <div class="col flex08">
               <div :class="['stateCtn', 'rowFlex', item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue']">
                 <div class="state"></div>
                 <span class="name">{{item.status|filterStatus}}</span>
