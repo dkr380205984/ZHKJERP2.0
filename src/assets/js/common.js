@@ -183,8 +183,46 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
   aLink.download = (excelName ? excelName + '-' : '') + new Date().getTime() + '.xls'
   aLink.click()
 }
+class VerificationCode {
+  // 下一行有一个报错constructor前需要有个空格 但自动调整代码格式会去除 故关闭下一行eslint验证
+  // eslint-disable-next-line
+  constructor({ W, H }) {
+    this.canvas = ''
+    this.W = W
+    this.H = H
+    this.createdCanvas(W, H)
+  }
+  static code = Math.floor(Math.random() * 1679615).toString(36)
+  updatedCode () {
+    VerificationCode.code = Math.floor(Math.random() * 1679615).toString(36)
+    this.createdCanvas(this.W, this.H)
+  }
+  createdCanvas (W, H) {
+    const codeCanvas = document.createElement('canvas')
+    codeCanvas.width = W
+    codeCanvas.height = H
+    const ctx = codeCanvas.getContext('2d')
+    ctx.fillStyle = '#ccc'
+    ctx.fillRect(0, 0, W, H)
+    ctx.fillStyle = '#F40'
+    ctx.textAlign = 'center'
+    ctx.font = '46px Roboto Slab'
+    VerificationCode.code.split('').forEach((item, index) => {
+      ctx.setTransform(1, -0.12, 0.2, 1, 0, 12)
+      ctx.fillText(item, W / 4 * index + W / 8, H / 2 + 20)
+    })
+    this.canvas = codeCanvas.toDataURL()
+  }
+  checkCode (code) {
+    if (code.toLocaleLowerCase() === VerificationCode.code.toLocaleLowerCase()) {
+      return true
+    }
+    return false
+  }
+}
 export {
   getHash,
   downloadExcel,
-  downloadOrderProductionExcel
+  downloadOrderProductionExcel,
+  VerificationCode
 }

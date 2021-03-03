@@ -1,3 +1,9 @@
+@blue:#1A95FF;
+@red:#F5222D;
+@font85:rgba(0,0,0,0.85);
+@font65:rgba(0,0,0,0.65);
+@fontBig:16px;
+@fontMiddle:14px;
 #login{
   width: 100%;
   height: 100%;
@@ -21,7 +27,7 @@
     bottom: 0;
     margin: auto 0;
   }
-  .main{
+  &>.main{
     position: absolute;
     left: 0;
     right: 0;
@@ -132,6 +138,125 @@
         }
         &:hover{
           color: #1A95FF;
+        }
+      }
+    }
+  }  
+  // 弹出框
+  .popup{
+    z-index: 199;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(64,64,64,0.6);
+    .popupMain{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      margin:auto;
+      width: 520px;
+      background: #fff;
+      border-radius: 4px;
+      .popupTitle{
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        font-weight: bold;
+        .text{
+          font-size: @fontBig;
+          color: @font85;
+        }
+        .el-icon-close{
+          color: #999999;
+          font-size: 18px;
+          cursor: pointer;
+        }
+      }
+      .popupContent{
+        padding: 16px 50px;
+        border-top: 1px solid #E9E9E9;
+        border-bottom: 1px solid #E9E9E9;
+        max-height: 300px;
+        overflow-y: auto;
+        .row{
+          min-height: 32px;
+          display: flex;
+          margin: 16px 0;
+          position: relative;
+          .label{
+            width: 6em;
+            text-align: right;
+            line-height: 32px;
+            color: @font85;
+            font-size: @fontMiddle;
+            &.isMust::before{
+              content: '*';
+              color: red;
+              margin-right: 4px;
+            }
+          }
+          .info{
+            flex: 1;
+            &.colCenter{
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+            }
+            &.blue{
+              color: @blue;
+            }
+            &.text{
+              color: @font65;
+              line-height: 32px;
+              font-size: @fontMiddle;
+            }
+            &.radioCtn{
+              display: flex;
+              align-items: center;
+            }
+          }
+          .editBtn{
+            position: absolute;
+            line-height: 32px;
+            right: calc(-2em - 8px);
+            font-size: @fontMiddle;
+            cursor: pointer;
+            &.blue{
+              color: @blue;
+            }
+            &.red{
+              color: @red;
+            }
+          }
+        }
+      }
+      .opr{
+        height: 50px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 0 16px;
+        .oprBtn{
+          padding: 0 24px;
+          line-height: 32px;
+          border-radius: 4px;
+          margin-left: 8px;
+          cursor: pointer;
+          &:first-child{
+            margin-left: 0;
+          }
+          &.blue{
+            background-color: @blue;
+            color: #FFF;
+          }
+          &.gray{
+            border: 1px solid rgba(0,0,0,.25);
+          }
         }
       }
     }

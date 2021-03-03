@@ -445,6 +445,11 @@ const changeUserPasd = {
   updated: (params) => http.post(`${baseUrl}/user/password/change`, params, 'application/json'),
   sendVerificationCode: (params) => http.post(`${baseUrl}/user/password/change/send/code`, params, 'application/json')
 }
+// 忘记密码
+const forgetPasd = {
+  updated: (params) => http.post(`${baseUrl}/user/password/forget`, params, 'application/json'),
+  sendVerificationCode: (params) => http.post(`${baseUrl}/user/password/forget/send/code`, params, 'application/json')
+}
 // 报价单预加载
 const priceLoading = {
   create: (params) => http.post(`${baseUrl}/product/quotation/demo/save`, params, 'application/json'),
@@ -585,6 +590,7 @@ export {
   collection,
   statistics,
   changeUserPasd,
+  forgetPasd,
   indexCount,
   globleSearch,
   print,

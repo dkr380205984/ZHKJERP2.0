@@ -1254,7 +1254,14 @@
       </div>
     </div>
     <div class="bottomFixBar">
-      <div class="main">
+      <div class="main"
+        style="display:flex;align-items:center;justify-content:space-between">
+        <div class="leftCtn">
+          <craft-course>
+            <div class="btn btnBlue"
+              slot="show">使用教程</div>
+          </craft-course>
+        </div>
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
