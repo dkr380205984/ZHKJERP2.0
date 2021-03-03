@@ -221,6 +221,12 @@ export default {
         this.$message.warning('请输入正确的手机号')
         return
       }
+      if (!this.verificationCode.checkCode(this.forgetEdit.safety_VC)) {
+        this.$message.warning('请先输入安全验证码')
+        this.verificationCode.updatedCode()
+        this.forgetEdit.safety_VC = ''
+        return
+      }
       if (!this.waitTime) {
         this.waitTime = time
         forgetPasd.sendVerificationCode({
