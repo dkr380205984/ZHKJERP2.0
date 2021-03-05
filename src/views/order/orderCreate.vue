@@ -147,7 +147,8 @@
                 v-model="tax_prop"
                 type="number"
                 errorPosition='bottom'
-                errorMsg="请输入数字">
+                errorMsg="请输入数字"
+                @change="changeTaxProp">
                 <template slot="append">%</template>
               </zh-input>
             </span>
@@ -751,7 +752,7 @@ export default {
       unit: '元',
       unitArr: moneyArr,
       exchange_rate: 100,
-      tax_prop: 12,
+      tax_prop: window.localStorage.getItem('order_tax_prop_default') || 12,
       order_time: this.$getTime(),
       searchCode: '',
       date: '',
@@ -808,6 +809,9 @@ export default {
     }
   },
   methods: {
+    changeTaxProp (value) {
+      window.localStorage.setItem('order_tax_prop_default', value)
+    },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
     },

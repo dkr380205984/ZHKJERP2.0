@@ -10,6 +10,10 @@
       <div class="detailCtn">
         <div class="floatRight">
           <div class="btnCtn">
+            <div class="btn btnRed"
+              style="line-height:38px;height:38px"
+              @click="changeOrderStatus('delete')"
+              v-if="sampleOrderInfo.status === 3001">删除样单</div>
             <div class="btn btnGray"
               style="line-height:36px;"
               @click="changeOrderStatus('showCanclePopup')"
@@ -2144,6 +2148,23 @@ export default {
         })
       } else if (type === 'isNoHandle') {
         this.$message.warning('已完成或已取消的样单无法操作')
+      } else if (type === 'delete') {
+        this.$confirm('此操作将永久删除该样单，是否继续?', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          sampleOrder.delete({
+            id: this.activeSampleOrderId
+          }).then(res => {
+            if (res.data.status !== false) {
+              this.$router.push('/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
+              this.$message.success('删除成功')
+            }
+          })
+        }).catch(() => {
+          this.$message.info('已取消')
+        })
       } else {
         this.$message.warning('未知操作')
       }

@@ -257,7 +257,7 @@ const order = {
 // 样品订单
 const sampleOrder = {
   create: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
-  // delete: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/sample/order/delete`, params, 'application/json'),
   editDetail: (params) => http.get(`${baseUrl}/sample/orders/edit`, params),
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params),

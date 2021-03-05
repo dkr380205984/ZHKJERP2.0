@@ -325,7 +325,7 @@
                 v-model="itemCheck.sample_product_code">
               </zh-input>
               <div class="editBtn deleteBtn"
-                :style="indexCheck === 0 ? 'top:38px' : 'top:0'"
+                style="top:0"
                 @click="cancleChecked(itemCheck)">删除</div>
             </span>
           </div>

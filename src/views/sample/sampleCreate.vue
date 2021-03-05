@@ -473,6 +473,19 @@
             </span>
           </div>
           <div class="row">
+            <span class="label">负责小组：</span>
+            <span class="info">
+              <el-select v-model="orderInfo.group_id"
+                placeholder="请选择负责小组">
+                <el-option v-for="item in groupArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
             <span class="label">打样类型：</span>
             <span class="info">
               <el-select v-model="orderInfo.type"
@@ -561,7 +574,7 @@
 
 <script>
 import { letterArr, chinaNum, companyType } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, client, auth, sampleOrder, orderType } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, sample, client, auth, sampleOrder, orderType, group } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -979,7 +992,8 @@ export default {
       this.activeId = info.id
       Promise.all([
         client.list(),
-        auth.list()
+        auth.list(),
+        group.list()
       ]).then(res => {
         this.clientList = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
         let flagC = this.clientList.find(itemF => itemF.children.find(itemC => itemC.value === this.$route.query.clientId))
@@ -994,6 +1008,7 @@ export default {
         if (flag) {
           this.orderInfo.group_id = flag.group_id
         }
+        this.groupArr = res[2].data.data
         this.loading = false
       })
     },
