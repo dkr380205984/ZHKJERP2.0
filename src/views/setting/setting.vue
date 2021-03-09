@@ -38,8 +38,14 @@
           </template> -->
           <template v-if="cName==='产品花型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加花型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('flower')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('flower')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加花型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -71,8 +77,14 @@
           </template>
           <template v-if="cName==='产品成分'">
             <div class="ingredientCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加成分</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('ingredient')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('ingredient')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加成分</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -104,8 +116,14 @@
           </template>
           <template v-if="cName==='产品配色'">
             <div class="ingredientCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加配色</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('colour')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('colour')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加配色</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -170,8 +188,8 @@
               <el-pagination background
                 :page-size="5"
                 layout="prev, pager, next"
-                :total="colourTotal"
-                :current-page.sync="colourPage">
+                :total="sizeTotal"
+                :current-page.sync="sizePage">
               </el-pagination>
             </div>
           </template>
@@ -283,8 +301,14 @@
           </template> -->
           <template v-if="cName==='边型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加边型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('side')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('side')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加边型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -316,8 +340,14 @@
           </template>
           <template v-if="cName==='机型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加机型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('machine')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('machine')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加机型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -349,9 +379,15 @@
           </template>
           <template v-if="cName==='组织法'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true"
-                style="width:6em">添加组织法</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('methods')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('methods')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true"
+                  style="width:6em">添加组织法</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -398,9 +434,14 @@
                   <div class="btn btnGreen"
                     v-if="updatedBatchFlag"
                     @click="updatedBatchSubmit">提交修改</div>
-                  <div class="btn btnBlue"
-                    v-if="!updatedBatchFlag"
-                    @click="updataYarns">批量添加纱线</div>
+                  <template v-if="!updatedBatchFlag">
+                    <div class="btn btnBlue"
+                      @click="downLoadTemplete('yarn')">下载模板</div>
+                    <div class="btn btnBlue"
+                      @click="importExcelData('yarn')">导入数据</div>
+                    <div class="btn btnBlue"
+                      @click="updataYarns">批量添加纱线</div>
+                  </template>
                 </div>
                 <!-- <div class="addBtn"
                   @click="updataYarn('add')"
@@ -469,9 +510,15 @@
           </template>
           <template v-if="cName==='纱线颜色'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true"
-                style="width:7em">添加纱线颜色</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('yarnColor')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('yarnColor')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true"
+                  style="width:7em">添加纱线颜色</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -508,9 +555,15 @@
           </template>
           <template v-if="cName==='装饰辅料'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="updataMaterial('add')"
-                style="width:6em">添加辅料</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('material')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('material')">导入数据</div>
+                <div class="addBtn"
+                  @click="updataMaterial('add')"
+                  style="width:6em">添加辅料</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -555,9 +608,15 @@
           </template>
           <template v-if="cName==='包装辅料'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="updataPack('add')"
-                style="width:6em">添加包装</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('pack')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('pack')">导入数据</div>
+                <div class="addBtn"
+                  @click="updataPack('add')"
+                  style="width:6em">添加包装</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -599,8 +658,14 @@
           </template>
           <template v-if="cName==='原料工序'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('yarnProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('yarnProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -632,8 +697,14 @@
           </template>
           <template v-if="cName==='半成品加工'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('semiProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('semiProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -665,8 +736,14 @@
           </template>
           <template v-if="cName==='结算工序'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('staffProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('staffProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -3160,8 +3237,262 @@ export default {
     }
   },
   methods: {
-    permissionsDetailChange (e) {
-      console.log(e)
+    downLoadTemplete (type) {
+      const { downloadExcel } = require('@/assets/js/common.js')
+      switch (type) {
+        case 'flower':
+          downloadExcel([], [
+            { title: '花型名称', key: 'name' }
+          ], null, '产品花型模板')
+          break
+        case 'ingredient':
+          downloadExcel([], [
+            { title: '成分名称', key: 'name' }
+          ], null, '产品成分模板')
+          break
+        case 'colour':
+          downloadExcel([], [
+            { title: '配色名称', key: 'name' }
+          ], null, '产品配色模板')
+          break
+        case 'side':
+          downloadExcel([], [
+            { title: '边型名称', key: 'name' }
+          ], null, '边型模板')
+          break
+        case 'machine':
+          downloadExcel([], [
+            { title: '机型名称', key: 'name' }
+          ], null, '机型模板')
+          break
+        case 'methods':
+          downloadExcel([], [
+            { title: '组织法名称', key: 'name' }
+          ], null, '组织法模板')
+          break
+        case 'yarn':
+          downloadExcel([], [
+            { title: '纱线原料名称', key: 'name' }
+          ], null, '纱线原料模板')
+          break
+        case 'yarnColor':
+          downloadExcel([], [
+            { title: '纱线颜色名称', key: 'name' }
+          ], null, '纱线颜色模板')
+          break
+        case 'material':
+          downloadExcel([], [
+            { title: '装饰辅料名称', key: 'name' },
+            { title: '计量单位', key: 'unit' },
+            { title: `是否需要织造(注:'是'填'1','否'填'0',默认为'0')`, key: 'need_weave' }
+          ], null, '装饰辅料模板')
+          break
+        case 'pack':
+          downloadExcel([], [
+            { title: '包装辅料名称', key: 'name' },
+            { title: '计量单位', key: 'unit' },
+            { title: `计价方式(注:'面积'填'1','其它'填'2',默认为'2')`, key: 'type' }
+          ], null, '包装辅料模板')
+          break
+        case 'yarnProcess':
+          downloadExcel([], [
+            { title: '原料工序名称', key: 'name' }
+          ], null, '原料工序模板')
+          break
+        case 'semiProcess':
+          downloadExcel([], [
+            { title: '半成品加工工序名称', key: 'name' }
+          ], null, '半成品加工工序模板')
+          break
+        case 'staffProcess':
+          downloadExcel([], [
+            { title: '结算工序名称', key: 'name' }
+          ], null, '结算工序模板')
+          break
+        default:
+          this.$message.error('未知模板类型，下载失败！！！')
+          break
+      }
+    },
+    importExcelData (type) {
+      const inputFile = document.createElement('input')
+      inputFile.type = 'file'
+      inputFile.accept = '.xlsx,.xls'
+      inputFile.addEventListener('change', (e) => {
+        this.getExcelData(e, this.saveImportData, type)
+      })
+      let click = document.createEvent('MouseEvents')
+      click.initEvent('click', true, true)
+      inputFile.dispatchEvent(click)
+    },
+    getExcelData (file, callBack, type) {
+      const XLSX = require('xlsx')
+      const files = file.target.files
+      const fileReader = new FileReader()
+      fileReader.onload = function (e) {
+        try {
+          const data = e.target.result
+          const bytes = new Uint8Array(data) // 无符号整型数组
+          const len = bytes.byteLength
+          const binarys = new Array(len) // 创建定长数组，存储文本
+          for (let i = 0; i < len; i++) { binarys[i] = String.fromCharCode(bytes[i]) }
+          const workbook = XLSX.read(binarys.join(''), { type: 'binary' })
+          if (!workbook) { return null }
+          const r = {}
+          workbook.SheetNames.forEach(name => { // 遍历每张纸数据
+            r[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name])
+          })
+          callBack && callBack(r, type)
+        } catch (e) {
+          console.log('文件类型不正确')
+        }
+      }
+      fileReader.readAsArrayBuffer(files[0])
+    },
+    saveImportData (data, type) {
+      console.log(data, type)
+      let typeObj = null
+      let api = null
+      switch (type) {
+        case 'flower':
+          typeObj = {
+            id: [false, null],
+            name: ['花型名称']
+          }
+          api = flower.create
+          break
+        case 'ingredient':
+          typeObj = {
+            id: [false, null],
+            name: ['成分名称']
+          }
+          api = ingredient.create
+          break
+        case 'colour':
+          typeObj = {
+            id: [false, null],
+            name: ['配色名称'],
+            color_code: [false, null]
+          }
+          api = colour.create
+          break
+        case 'side':
+          typeObj = {
+            id: [false, null],
+            name: ['边型名称']
+          }
+          api = craftSetting.createSide
+          break
+        case 'machine':
+          typeObj = {
+            id: [false, null],
+            name: ['机型名称']
+          }
+          api = craftSetting.createMachine
+          break
+        case 'methods':
+          typeObj = {
+            id: [false, null],
+            name: ['组织法名称']
+          }
+          api = craftSetting.createMethods
+          break
+        case 'yarn':
+          typeObj = {
+            id: [false, null],
+            name: ['纱线原料名称'],
+            price_data: [false, []]
+          }
+          api = yarn.create
+          break
+        case 'yarnColor':
+          typeObj = {
+            id: [false, null],
+            name: ['纱线颜色名称'],
+            color_code: [false, null]
+          }
+          api = yarnColor.create
+          break
+        case 'material':
+          typeObj = {
+            id: [false, null],
+            name: ['装饰辅料名称'],
+            unit: ['计量单位'],
+            need_weave: [`是否需要织造(注:'是'填'1','否'填'0',默认为'0')`, 0],
+            price_data: [false, []]
+          }
+          api = material.create
+          break
+        case 'pack':
+          typeObj = {
+            id: [false, null],
+            name: ['包装辅料名称'],
+            unit: ['计量单位'],
+            type: [`计价方式(注:'面积'填'1','其它'填'2',默认为'2')`, 2],
+            price_data: [false, []]
+          }
+          api = packag.create
+          break
+        case 'yarnProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['原料工序名称'],
+            type: [false, 1]
+          }
+          api = process.create
+          break
+        case 'semiProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['半成品加工工序名称'],
+            type: [false, 2]
+          }
+          api = process.create
+          break
+        case 'staffProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['结算工序名称'],
+            type: [false, 3]
+          }
+          api = process.create
+          break
+        default:
+          this.$message.error('未知模板类型，导入失败！！！')
+          return
+      }
+      let submitData = []
+      for (const prop in data) {
+        for (const key in data[prop]) {
+          let obj = {}
+          for (const indexType in typeObj) {
+            if (typeObj[indexType][0]) {
+              obj[indexType] = data[prop][key][typeObj[indexType][0]] || data[prop][key][typeObj[indexType][1]]
+              if (obj[indexType] === undefined) {
+                this.$message.error('解析失败，请使用标准模板或检测必填数据是否存在空的情况！！！')
+                return
+              }
+            } else {
+              obj[indexType] = typeObj[indexType][1]
+            }
+          }
+          submitData.push(obj)
+        }
+      }
+      if (submitData.length === 0) {
+        this.$message.warning('未读取到可用参数')
+        return
+      }
+      api({
+        data: submitData
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('导入成功,即将刷新数据')
+          setTimeout(() => {
+            this.$winReload()
+          }, 1000)
+        }
+      })
     },
     // 批量修改
     updatedBatchSubmit () {
@@ -3206,6 +3537,7 @@ export default {
       }
       if (this.staffProcess) {
         process.create({
+          id: null,
           type: 3,
           name: this.staffProcess
         }).then((res) => {
@@ -3894,7 +4226,10 @@ export default {
     saveFlower () {
       if (this.flower) {
         flower.create({
-          name: this.flower
+          data: [{
+            id: null,
+            name: this.flower
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -3945,7 +4280,10 @@ export default {
     saveIngredient () {
       if (this.ingredient) {
         ingredient.create({
-          name: this.ingredient
+          data: [{
+            id: null,
+            name: this.ingredient
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -3996,8 +4334,11 @@ export default {
     saveColour () {
       if (this.colour && this.colour.indexOf('/') === -1) {
         colour.create({
-          name: this.colour,
-          color_code: ''
+          data: [{
+            id: null,
+            name: this.colour,
+            color_code: ''
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -4134,7 +4475,10 @@ export default {
     saveSide () {
       if (this.side) {
         craftSetting.createSide({
-          name: this.side
+          data: [{
+            id: null,
+            name: this.side
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4179,7 +4523,10 @@ export default {
     saveMachine () {
       if (this.machine) {
         craftSetting.createMachine({
-          name: this.machine
+          data: [{
+            id: null,
+            name: this.machine
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4224,7 +4571,10 @@ export default {
     saveMethods () {
       if (this.methods) {
         craftSetting.createMethods({
-          name: this.methods
+          data: [{
+            id: null,
+            name: this.methods
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4381,8 +4731,11 @@ export default {
     saveYarnColor () {
       if (this.yarnColor && this.yarnColorCode) {
         yarnColor.create({
-          name: this.yarnColor,
-          color_code: this.yarnColorCode
+          data: [{
+            id: null,
+            name: this.yarnColor,
+            color_code: this.yarnColorCode
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4455,16 +4808,18 @@ export default {
     saveMaterial () {
       if (this.changeMaterialInfo.materialName && this.changeMaterialInfo.unit) {
         material.create({
-          id: this.changeMaterialInfo.id,
-          unit: this.changeMaterialInfo.unit,
-          name: this.changeMaterialInfo.materialName,
-          need_weave: this.changeMaterialInfo.need_weave,
-          price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
-            return {
-              client_id: itemPrice.company,
-              price: itemPrice.price
-            }
-          })
+          data: [{
+            id: this.changeMaterialInfo.id,
+            unit: this.changeMaterialInfo.unit,
+            name: this.changeMaterialInfo.materialName,
+            need_weave: this.changeMaterialInfo.need_weave,
+            price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+              return {
+                client_id: itemPrice.company,
+                price: itemPrice.price
+              }
+            })
+          }]
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success(this.changeMaterialInfo.id ? '修改成功' : '添加成功')
@@ -4568,17 +4923,19 @@ export default {
     savePack () {
       if (this.changePackMaterialInfo.packName && this.changePackMaterialInfo.unit) {
         packag.create({
-          id: this.changePackMaterialInfo.id,
-          unit: this.changePackMaterialInfo.unit,
-          name: this.changePackMaterialInfo.packName,
-          type: this.changePackMaterialInfo.type === 'area' ? 1 : 2,
-          price_data: this.changePackMaterialInfo.packMaterialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
-            return {
-              client_id: itemPrice.company,
-              price: itemPrice.price,
-              unit: this.changePackMaterialInfo.type === 'area' ? '元/㎡' : '元/' + this.changePackMaterialInfo.unit
-            }
-          })
+          data: [{
+            id: this.changePackMaterialInfo.id,
+            unit: this.changePackMaterialInfo.unit,
+            name: this.changePackMaterialInfo.packName,
+            type: this.changePackMaterialInfo.type === 'area' ? 1 : 2,
+            price_data: this.changePackMaterialInfo.packMaterialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+              return {
+                client_id: itemPrice.company,
+                price: itemPrice.price,
+                unit: this.changePackMaterialInfo.type === 'area' ? '元/㎡' : '元/' + this.changePackMaterialInfo.unit
+              }
+            })
+          }]
         }).then(res => {
           if (res.data.status === false) {
             this.$message.error('添加失败，' + res.data.message)
@@ -4626,8 +4983,11 @@ export default {
     saveMaterialProcess () {
       if (this.materialProcess) {
         process.create({
-          type: 1,
-          name: this.materialProcess
+          data: [{
+            id: null,
+            type: 1,
+            name: this.materialProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4674,8 +5034,11 @@ export default {
     saveHalfProcess () {
       if (this.halfProcess) {
         process.create({
-          type: 2,
-          name: this.halfProcess
+          data: [{
+            id: null,
+            type: 2,
+            name: this.halfProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')

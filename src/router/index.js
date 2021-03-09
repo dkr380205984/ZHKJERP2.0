@@ -650,6 +650,18 @@ const routes = [
     path: '/deductTable/:clientId/:type/:oprId/扣款',
     name: '扣款单',
     component: () => import('../views/financialStatistics/deductTable.vue')
+  }, {
+    path: '/document',
+    redirect: '/homePage/homePage',
+    name: '单据',
+    component: () => import('@/views/documents/index.vue'),
+    children: [
+      {
+        path: 'GDFE',
+        name: '出口货物报关单',
+        component: () => import('@/views/documents/GDFE/GDFE.vue')
+      }
+    ]
   }
 ]
 

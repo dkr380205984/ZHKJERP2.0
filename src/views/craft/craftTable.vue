@@ -45,7 +45,7 @@
           <span class="row_item w100 center">客户款号</span>
           <span class="row_item left">{{craftDetail.product_info.style_code || ''}}</span>
           <span class="row_item w100 center">其它信息</span>
-          <span class="row_item left"></span>
+          <span class="row_item left">{{craftDetail.other_info}}</span>
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
@@ -2393,7 +2393,7 @@
       </div>
       <div class="outItem">
         <span class="label">穿综法循环：</span>
-        <span :style="`font-size:${FONTSIZE}px`">{{craftDetail.draft_method|filterThroughMethod}}</span>
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{craftDetail.draft_method|filterThroughMethod}}</span>
       </div>
       <div class="outItem"
         v-for="(items,indexs) in craftDetail.draft_method.GLShow"
@@ -2436,12 +2436,12 @@
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">穿综备注：</span>
-        <span :style="`font-size:${FONTSIZE}px`">{{craftDetail.draft_method.desc}}</span>
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{craftDetail.draft_method.desc}}</span>
       </div>
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">纹版备注：</span>
-        <span :style="`font-size:${FONTSIZE}px`">{{weft_data.contract_ratio}}</span>
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{weft_data.contract_ratio}}</span>
       </div>
     </div>
     <div class="setting_sign_style"

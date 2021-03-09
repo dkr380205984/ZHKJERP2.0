@@ -1743,7 +1743,7 @@ export default {
           part_data: mixedData
         })
       })
-      this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14] })
+      this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14, 39] })
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false
         return item

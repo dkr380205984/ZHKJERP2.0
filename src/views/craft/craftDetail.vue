@@ -672,6 +672,12 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">其它信息：</div>
+            <div class="text">{{others_info?others_info:'无'}}</div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <div class="label">备注信息：</div>
             <div class="text"
               :class="{'blue':desc}">{{desc?desc:'无'}}</div>
@@ -1144,7 +1150,8 @@ export default {
       desc: '',
       ZDYMC: '',
       DSGG: '',
-      DSKZ: ''
+      DSKZ: '',
+      others_info: ''
     }
   },
   filters: {
@@ -1721,6 +1728,7 @@ export default {
       this.ZDYMC = data.title
       this.DSGG = data.size
       this.DSKZ = data.weight
+      this.others_info = data.other_info
       this.productInfo = data.product_info
       this.productInfo.craft_code = data.craft_code
       this.productInfo.user_name = data.user_name

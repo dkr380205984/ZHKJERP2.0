@@ -4275,7 +4275,7 @@ export default {
         matOrder: this.$getClientOptions(this.clientList, companyType, { typeScope: [3, 4] }),
         matProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [9, 12] }),
         matStock: this.$getClientOptions(this.clientList, companyType, { hasFirstType: true, typeScope: [9, 28] }),
-        proWeave: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14] }),
+        proWeave: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14, 39] }),
         proProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [15, 28] }),
         matOther: this.$getClientOptions(this.clientList, companyType, { typeScope: [7, 8] }),
         finishedProcess: [{

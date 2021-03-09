@@ -86,6 +86,16 @@
                   @click="goLog(itemMa,'yarn')">日志</span>
               </span>
             </div>
+            <!-- <div class="tb_content">
+              <span class="tb_row"></span>
+              <span class="tb_row"></span>
+              <span class="tb_row"></span>
+              <span class="tb_row"></span>
+              <span class="tb_row">合计总入库：{{yarnTotalInfo.total_push || 0}}</span>
+              <span class="tb_row">合计总出库：{{yarnTotalInfo.total_pop || 0}}</span>
+              <span class="tb_row">合计总库存：{{yarnTotalInfo.total_weight || 0}}</span>
+              <span class="tb_row middle"></span>
+            </div> -->
           </div>
           <div class="pageCtn">
             <el-pagination background
@@ -249,9 +259,11 @@
                 @change="getYarnLog(1)">
               </el-input>
               <el-select v-model="yarnAction"
+                collapse-tags
                 class="inputs"
                 filterable
                 clearable
+                multiple
                 placeholder="请选择需要筛选的类型"
                 @change="getYarnLog(1)">
                 <el-option v-for="(item,index) in actionArr"
@@ -1157,6 +1169,11 @@ export default {
       },
       nowTime: this.$getTime(),
       yarnList: [],
+      // yarnTotalInfo: {
+      //   total_push: 0,
+      //   total_pop: 0,
+      //   total_weight: 0
+      // },
       yarnTotal: 1,
       yarnPages: 1,
       yarnLog: [],
@@ -1384,6 +1401,11 @@ export default {
         } else {
           this.yarnList = res.data.data
           this.yarnTotal = res.data.meta.total
+          // this.yarnTotalInfo = {
+          //   total_push: res.data.total_push,
+          //   total_pop: res.data.total_pop,
+          //   total_weight: res.data.total_weight
+          // }
         }
         this.loading = false
       })

@@ -168,6 +168,10 @@ const companyType = [
     label: '针织织造单位',
     type: '生产织造单位'
   }, {
+    value: 39,
+    label: '精编织造单位',
+    type: '生产织造单位'
+  }, {
     value: 15,
     label: '拉毛、刺毛、轧光单位',
     type: '半成品加工单位'
