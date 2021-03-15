@@ -15,10 +15,43 @@ const routes = [
     path: '/',
     redirect: '/login'
   }, {
-    //   path: '/test',
-    //   name: 'test',
-    //   component: () => import('../views/test.vue')
-    // }, {
+    path: '/document',
+    redirect: '/homePage/homePage',
+    name: '单据',
+    component: () => import('@/views/documents/index.vue'),
+    children: [
+      {
+        path: 'print',
+        name: 'print',
+        redirect: '/homePage/homePage',
+        component: () => import('@/views/documents/index.vue'),
+        children: [
+          {
+            path: 'GDFE',
+            name: '出口货物报关单',
+            component: () => import('@/views/documents/GDFE/GDFE.vue')
+          }
+        ]
+      }, {
+        path: 'index',
+        name: 'index',
+        redirect: '/homePage/homePage',
+        component: () => import('@/views/index.vue'),
+        children: [
+          {
+            path: 'create',
+            name: '添加单证',
+            component: () => import('../views/documents/create.vue')
+
+          }
+        ]
+      }
+    ]
+  }, {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/test.vue')
+  }, {
     path: '/loginOld',
     name: 'loginOld',
     component: () => import('../views/login.vue')
@@ -650,18 +683,6 @@ const routes = [
     path: '/deductTable/:clientId/:type/:oprId/扣款',
     name: '扣款单',
     component: () => import('../views/financialStatistics/deductTable.vue')
-  }, {
-    path: '/document',
-    redirect: '/homePage/homePage',
-    name: '单据',
-    component: () => import('@/views/documents/index.vue'),
-    children: [
-      {
-        path: 'GDFE',
-        name: '出口货物报关单',
-        component: () => import('@/views/documents/GDFE/GDFE.vue')
-      }
-    ]
   }
 ]
 

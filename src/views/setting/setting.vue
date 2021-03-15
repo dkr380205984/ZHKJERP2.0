@@ -3277,7 +3277,8 @@ export default {
           break
         case 'yarnColor':
           downloadExcel([], [
-            { title: '纱线颜色名称', key: 'name' }
+            { title: '纱线颜色名称', key: 'name' },
+            { title: '色块', key: 'color_code' }
           ], null, '纱线颜色模板')
           break
         case 'material':
@@ -3409,7 +3410,7 @@ export default {
           typeObj = {
             id: [false, null],
             name: ['纱线颜色名称'],
-            color_code: [false, null]
+            color_code: ['色块', null]
           }
           api = yarnColor.create
           break

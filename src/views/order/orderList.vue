@@ -1013,7 +1013,7 @@ export default {
     }
   },
   created () {
-    window.aaa = require('@/assets/js/common.js')
+    // window.aaa = require('@/assets/js/common.js')
     this.getFilters()
     this.getOrderList()
     Promise.all([

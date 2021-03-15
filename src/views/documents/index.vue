@@ -1,7 +1,7 @@
 <template>
-  <div class='documentsOut'>
-    <router-view />
-  </div>
+  <!-- <div class='documents'> -->
+  <router-view />
+  <!-- </div> -->
 </template>
 
 <script>
