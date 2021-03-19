@@ -107,6 +107,12 @@ export default {
             icon: 'icon-wuliaoyudinggou'
           },
           {
+            name: '单证管理',
+            id: 21,
+            path: '/document/index/list',
+            icon: 'icon-danzheng'
+          },
+          {
             name: '报销单管理',
             id: 18,
             path: '/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=',

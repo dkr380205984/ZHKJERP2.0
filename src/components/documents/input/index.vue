@@ -1,9 +1,11 @@
 <template>
   <div :class='`document_input_container ${rowModle && "rowModle" || ""}`'
+    :style="`justify-content:${alignType === 'right' ? 'flex-end' : 'flex-start'}`"
     @click.stop="handleClickEvent">
     <span class="document_input_label"
       v-if="!noLabel">{{label}}</span>
     <textarea class="document_input_self"
+      :style="`text-align:${innerAlign}` + (width ? `width:${width}!important;flex:none` : '')"
       :placeholder="placeholder"
       :readonly='readonly'
       v-model="innerValue"
@@ -16,11 +18,11 @@
 <script>
 export default {
   props: {
-    value: String,
+    value: [String, Number],
     label: String,
     placeholder: String,
     rows: {
-      type: Number,
+      type: [Number, String],
       default: 1
     },
     type: {
@@ -28,6 +30,21 @@ export default {
       default: 'text',
       validator: (value) => {
         return value === 'text' || value === 'number' || value === 'float' || value === 'int' || value === 'telephone' || value === 'mobile'
+      }
+    },
+    width: String,
+    alignType: {
+      type: String,
+      default: 'left',
+      validator: (value) => {
+        return value === 'left' || value === 'right'
+      }
+    },
+    innerAlign: {
+      type: String,
+      default: 'left',
+      validator: (value) => {
+        return value === 'left' || value === 'center' || value === 'right'
       }
     },
     rowModle: Boolean,
@@ -76,6 +93,9 @@ export default {
           return /\S?\s?/
       }
     }
+  },
+  created () {
+    this.innerValue = this.value
   }
 }
 </script>

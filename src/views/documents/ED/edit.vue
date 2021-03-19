@@ -1,6 +1,7 @@
 <template>
-  <div class="document GDFE">
-    <!-- 出口货物报关单 ==>  goods declaration for exportation -->
+  <div id='ED'
+    class="document edit">
+    <!-- 出口货物报关单 ==>  export declaration -->
     <div class="tableCtn crossWise">
       <div class="headerCtn">
         <div class="top">
@@ -25,8 +26,8 @@
       <div class="bodyCtn">
         <div class="rowCtn">
           <div class="rowItem">
-            <document-input label="境内发货人"
-              :rows="2"></document-input>
+            <document-select label="境内发货人"
+              :rows="2"></document-select>
           </div>
           <div class="rowItem">
             <document-input label="出镜关别"
@@ -261,6 +262,7 @@
 
 <script>
 import documentInput from '@/components/documents/input/index.vue'
+import documentSelect from '@/components/documents/select/index.vue'
 export default {
   data () {
     return {
@@ -273,11 +275,12 @@ export default {
     }
   },
   components: {
-    documentInput
+    documentInput,
+    documentSelect
   }
 }
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/documents/GDFE.less";
+@import "~@/assets/less/documents/ED.less";
 </style>

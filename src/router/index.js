@@ -23,13 +23,25 @@ const routes = [
       {
         path: 'print',
         name: 'print',
-        redirect: '/homePage/homePage',
+        redirect: '/document/index/list',
         component: () => import('@/views/documents/index.vue'),
         children: [
           {
-            path: 'GDFE',
+            path: 'CI/:id',
+            name: '形式发票',
+            component: () => import('@/views/documents/CI/print.vue')
+          }, {
+            path: 'PL/:id',
+            name: '装箱单',
+            component: () => import('@/views/documents/PL/print.vue')
+          }, {
+            path: 'ED/:id',
             name: '出口货物报关单',
-            component: () => import('@/views/documents/GDFE/GDFE.vue')
+            component: () => import('@/views/documents/ED/print.vue')
+          }, {
+            path: 'ET/:id',
+            name: '货运委托书',
+            component: () => import('@/views/documents/ET/print.vue')
           }
         ]
       }, {
@@ -39,19 +51,57 @@ const routes = [
         component: () => import('@/views/index.vue'),
         children: [
           {
+            path: 'list',
+            name: '单证列表',
+            component: () => import('@/views/documents/list.vue')
+          },
+          {
             path: 'create',
             name: '添加单证',
-            component: () => import('../views/documents/create.vue')
-
+            component: () => import('@/views/documents/create.vue')
+          },
+          {
+            path: 'update/:id',
+            name: '修改单证',
+            component: () => import('@/views/documents/update.vue')
+          },
+          {
+            path: 'detail/:id',
+            name: '单证详情',
+            component: () => import('@/views/documents/detail.vue')
+          }
+        ]
+      }, {
+        path: 'edit',
+        name: 'edit',
+        component: () => import('@/views/index.vue'),
+        redirect: '/document/index/list',
+        children: [
+          {
+            path: 'CI/:id',
+            name: '编辑形式发票',
+            component: () => import('@/views/documents/CI/edit.vue')
+          }, {
+            path: 'PL/:id',
+            name: '装箱单',
+            component: () => import('@/views/documents/PL/edit.vue')
+          }, {
+            path: 'ED/:id',
+            name: '编辑出口货物报关单',
+            component: () => import('@/views/documents/ED/edit.vue')
+          }, {
+            path: 'ET/:id',
+            name: '货运委托书',
+            component: () => import('@/views/documents/ET/edit.vue')
           }
         ]
       }
     ]
   }, {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/test.vue')
-  }, {
+    //   path: '/test',
+    //   name: 'test',
+    //   component: () => import('../views/test.vue')
+    // }, {
     path: '/loginOld',
     name: 'loginOld',
     component: () => import('../views/login.vue')

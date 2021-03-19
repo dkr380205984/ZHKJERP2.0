@@ -236,7 +236,10 @@ export default {
             // 处理订单信息
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[3].data.data.filter(item =>
+              (Number(item.client_id) === Number(this.$route.query.clientId)) &&
+              (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
+            ).map(item => {
               let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
@@ -316,7 +319,10 @@ export default {
             // 处理订单信息
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[3].data.data.filter(item =>
+              (Number(item.client_id) === Number(this.$route.query.clientId)) &&
+              (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
+            ).map(item => {
               let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
@@ -403,7 +409,10 @@ export default {
             // 处理订单信息
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[3].data.data.filter(item =>
+              (Number(item.client_id) === Number(this.$route.query.clientId)) &&
+              (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
+            ).map(item => {
               let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {
@@ -483,7 +492,10 @@ export default {
             // 处理订单信息
             this.orderInfo = res[2].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)).map(item => {
+            let weaveInfo = res[3].data.data.filter(item =>
+              (Number(item.client_id) === Number(this.$route.query.clientId)) &&
+              (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
+            ).map(item => {
               let flag = item.product_info.size.find(itemPro => itemPro.size_id === item.size_id)
               let sizeInfo = flag || {}
               return {

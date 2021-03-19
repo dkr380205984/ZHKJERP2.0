@@ -563,7 +563,35 @@ const compare = {
   create: (params) => http.post(`${baseUrl}/order/module/confirm`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/detail`, params)
 }
+// 单证设置
+const documentSetting = {
+  companyDetail: (params) => http.get(`${baseUrl}/document/company/detail`, params),
+  companySave: (params) => http.post(`${baseUrl}/document/company/save`, params, 'application/json'),
+  bankDetail: (params) => http.get(`${baseUrl}/document/bank/detail`, params),
+  bankSave: (params) => http.post(`${baseUrl}/document/bank/save`, params, 'application/json'),
+  portList: (params) => http.get(`${baseUrl}/document/port/list`, params),
+  portDetail: (params) => http.get(`${baseUrl}/document/port/detail`, params),
+  portSave: (params) => http.post(`${baseUrl}/document/port/save`, params, 'application/json'),
+  portDelete: (params) => http.post(`${baseUrl}/document/port/delete`, params, 'application/json'),
+  typeList: (params) => http.get(`${baseUrl}/document/product/list`, params),
+  // typeDetail: (params) => http.get(`${baseUrl}/document/product/detail`, params),
+  typeSave: (params) => http.post(`${baseUrl}/document/product/save`, params, 'application/json'),
+  typeDelete: (params) => http.post(`${baseUrl}/document/product/delete`, params, 'application/json'),
+  payTypeList: (params) => http.get(`${baseUrl}/document/payment/list`, params),
+  // payTypeDetail: (params) => http.get(`${baseUrl}/document/payment/detail`, params),
+  payTypeSave: (params) => http.post(`${baseUrl}/document/payment/save`, params, 'application/json'),
+  payTypeDelete: (params) => http.post(`${baseUrl}/document/payment/delete`, params, 'application/json')
+}
+// 单证管理
+const documents = {
+  create: (params) => http.post(`${baseUrl}/document/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/document/detail`, params),
+  list: (params) => http.get(`${baseUrl}/document/list`, params),
+  delete: (params) => http.post(`${baseUrl}/document/delete`, params, 'application/json')
+}
 export {
+  documents,
+  documentSetting,
   priceRemark,
   compare,
   productProcess,

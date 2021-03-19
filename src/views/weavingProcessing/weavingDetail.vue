@@ -1590,6 +1590,7 @@ export default {
         return
       }
       let formData = {
+        order_type: this.$route.params.orderType,
         type: 1,
         id: null,
         order_id: this.$route.params.id,

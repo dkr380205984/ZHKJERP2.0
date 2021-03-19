@@ -92,6 +92,9 @@ const permissions = [{
 }, {
   module: '成品加工',
   id: 20
+}, {
+  module: '单证管理',
+  id: 21
 }]
 const moneyArr = [{
   name: '元',

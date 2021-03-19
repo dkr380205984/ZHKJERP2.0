@@ -585,8 +585,6 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0 && item.unit) ? '元/' + item.unit : ''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <!-- <span class="blue"
-                          @click="getDetailInfo('material',item)">详情</span> -->
                         <span class="blue"
                           @click="updataMaterial('updata',item)">更新</span>
                         <span class="red"
@@ -635,8 +633,6 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? (item.type === 1 ? '元/㎡' : (item.unit ? '元/' + item.unit : '')):''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <!-- <span class="blue"
-                          @click="getDetailInfo('pack',item)">详情</span> -->
                         <span class="blue"
                           @click="updataPack('updata',item)">更新</span>
                         <span class="red"
@@ -1234,6 +1230,363 @@
               </div>
             </div>
           </template>
+          <template v-if="cName==='英文工厂信息'">
+            <div class="documentSetting"
+              v-loading='documentClientInfo.loading'>
+              <div class="row">
+                <div class="label">公司英文名称（Company Name)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入公司英文名称（Company Name)"
+                    class="input-item"
+                    v-model="documentClientInfo.name"
+                    :disabled='!documentClientInfo.is_updated'>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">公司统一社会信用代码（Company Social Credit Code)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入公司统一社会信用代码（Company Social Credit Code)"
+                    :disabled='!documentClientInfo.is_updated'
+                    class="input-item"
+                    v-model="documentClientInfo.code">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司英文地址（Company Address)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentClientInfo.is_updated'
+                    placeholder="请输入公司英文地址（Company Address)"
+                    v-model="documentClientInfo.address">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司签章（Company Signature)：</span>
+                <div class="content">
+                  <!-- <el-upload :before-upload="beforeUpload"
+                    :disabled='!documentClientInfo.is_updated'
+                    :data="postData"
+                    :file-list="documentClientInfo.signature_img"
+                    drag
+                    action="https://upload.qiniup.com/"
+                    ref="companySignatureUpload">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">
+                      将文件拖到此处，或
+                      <em>点击上传</em>
+                      <br />
+                      只能上传jpg/png文件，且不超过6MB
+                    </div>
+                  </el-upload> -->
+                  <el-upload :before-upload="beforeUpload"
+                    :disabled='!documentClientInfo.is_updated'
+                    class="companySignatureUpload"
+                    ref="companySignatureUpload"
+                    action="https://upload.qiniup.com/"
+                    drag
+                    :data="postData"
+                    :file-list="documentClientInfo.signature ? [{url:documentClientInfo.signature}] : []"
+                    :show-file-list="false"
+                    :on-success="uploadSignatureSuccess">
+                    <el-image class="showImg"
+                      v-if="documentClientInfo.signature"
+                      :src="documentClientInfo.signature"
+                      fit="fill"></el-image>
+                    <i v-else
+                      class="el-icon-plus addIcon"></i>
+                  </el-upload>
+                  <div class="prompt">点击或拖拽至上传框,只能上传jpg/png文件，且不超过6MB</div>
+                </div>
+              </div>
+              <div class="btnCtn">
+                <div class="btn btnOrange"
+                  v-if="!documentClientInfo.is_updated"
+                  @click="documentClientInfo.is_updated = true">修改</div>
+                <template v-else>
+                  <div class="btn btnGray"
+                    @click="documentClientInfo.is_updated = false">取消</div>
+                  <div class="btn btnBlue"
+                    @click="saveDocumentClientInfo">提交</div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='英文银行信息'">
+            <div class="documentSetting"
+              v-loading='documentBankInfo.loading'>
+              <div class="row">
+                <div class="label">开户银行（Bank Name)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入开户银行（Bank Name)"
+                    class="input-item"
+                    v-model="documentBankInfo.name"
+                    :disabled='!documentBankInfo.is_updated'>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">开户地址（Bank Address)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入开户地址（Bank Address)"
+                    :disabled='!documentBankInfo.is_updated'
+                    class="input-item"
+                    v-model="documentBankInfo.address"
+                    clearable>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">银行SWIFT码（SWIFT Code)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入银行SWIFT码（SWIFT Code)"
+                    v-model="documentBankInfo.code">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">收款人（Beneficiary)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入收款人（Beneficiary)"
+                    v-model="documentBankInfo.beneficiary">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">开户账号（Account No)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入开户账号（Account No)"
+                    v-model="documentBankInfo.account_no">
+                  </el-input>
+                </div>
+              </div>
+              <div class="btnCtn">
+                <div class="btn btnOrange"
+                  v-if="!documentBankInfo.is_updated"
+                  @click="documentBankInfo.is_updated = true">修改</div>
+                <template v-else>
+                  <div class="btn btnGray"
+                    @click="documentBankInfo.is_updated = false">取消</div>
+                  <div class="btn btnBlue"
+                    @click="saveDocumentBankInfo">提交</div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='HS编码设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="HSCode"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索HS编码"
+                    @change="getDocumentHSCodeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="HSCode = '';getDocumentHSCodeInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加HS编码</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentHSCodeInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">HS编码</div>
+                  <div class="tb_row">商品名称</div>
+                  <div class="tb_row">进口优惠税</div>
+                  <div class="tb_row">出口税率</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentHSCodeList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">商品名称</div>
+                  <div class="tb_row">进口优惠税</div>
+                  <div class="tb_row">出口税率</div>
+                  <div class="tb_row middle">
+                    <!-- <span class="tb_handle_btn blue"
+                      @click="updataYarn('updata',item)">更新</span> -->
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentHSCode(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentHSCodeTotal"
+                  :current-page.sync="documentHSCodePages"
+                  @current-change="getDocumentHSCodeInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用港口设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="portName"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索港口名称"
+                    @change="getDocumentPortInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="portName = '';getDocumentPortInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加港口</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentPortInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">常用国家（Country)</div>
+                  <div class="tb_row">常用港口 (Port Name)</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentPortList"
+                  :key="index">
+                  <div class="tb_row">{{item.country}})</div>
+                  <div class="tb_row">{{item.port_name}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span>
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentPort(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentPortTotal"
+                  :current-page.sync="documentPortPages"
+                  @current-change="getDocumentPortInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用品名设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="documentType"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索品名名称"
+                    @change="getDocumentTypeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="documentType = '';getDocumentTypeInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加品名</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentTypeInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">中文品类</div>
+                  <div class="tb_row">英文品名</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentTypeList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">{{item.english}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <!-- <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span> -->
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentType(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentTypeTotal"
+                  :current-page.sync="documentTypePages"
+                  @current-change="getDocumentTypeInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用付款方式'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="documentPayType"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索付款方式名称"
+                    @change="getDocumentPayTypeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="documentPayType = '';getDocumentPayTypeInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加付款方式</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentPayTypeInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">中文名称</div>
+                  <div class="tb_row">英文代号</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentPayTypeList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">{{item.english}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <!-- <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span> -->
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentPayType(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentPayTypeTotal"
+                  :current-page.sync="documentPayTypePages"
+                  @current-change="getDocumentPayTypeInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -1668,14 +2021,15 @@
               </div>
             </div>
             <div class="row"
-              v-for="(item,index) in changePackMaterialInfo.packPriceArr"
+              v-for="(item,index) in changePackMaterialInfo.packMaterialPriceArr"
               :key="index">
               <div class="label">报价信息：</div>
               <div class="info flex">
                 <el-select v-model="item.company"
                   style="margin-right:16px"
                   filterable
-                  placeholder="请选择公司">
+                  placeholder="请选择公司"
+                  @change='$forceUpdate()'>
                   <el-option v-for="item in clientList"
                     :key="item.id"
                     :label="item.name"
@@ -2488,6 +2842,148 @@
           </div>
         </div>
       </template>
+      <template v-if="cName==='HS编码设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加HS编码</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">HS编码：</div>
+              <div class="info">
+                <el-input placeholder="请输入HS编码"
+                  v-model="documentHSCodeInfo.HSCode"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">商品名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入商品名称"
+                  v-model="documentHSCodeInfo.name"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">进口优惠税：</div>
+              <div class="info">
+                <el-input placeholder="请输入进口优惠税"
+                  v-model="documentHSCodeInfo.importTax">
+                  <template slot="append">%</template>
+                </el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">出口税率：</div>
+              <div class="info">
+                <el-input placeholder="请输入出口税率"
+                  v-model="documentHSCodeInfo.exportTax">
+                  <template slot="append">%</template>
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentHSCodeInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用港口设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加常用港口</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">常用国家：</div>
+              <div class="info">
+                <el-input placeholder="请输入常用国家 (Country)"
+                  v-model="documentPortInfo.country"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">常用港口：</div>
+              <div class="info">
+                <el-input placeholder="请输入常用港口 (Port Name)"
+                  v-model="documentPortInfo.port"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentPortInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用品名设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加常用品名</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">中文品类：</div>
+              <div class="info">
+                <el-input placeholder="请输入中文品类"
+                  v-model="documentTypeInfo.CNName"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">英文品名：</div>
+              <div class="info">
+                <el-input placeholder="请输入英文品名"
+                  v-model="documentTypeInfo.USName"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentTypeInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用付款方式'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加付款方式</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">中文名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入中文名称"
+                  v-model="documentPayTypeInfo.CNName"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">英文代号：</div>
+              <div class="info">
+                <el-input placeholder="请输入英文代号"
+                  v-model="documentPayTypeInfo.USName"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentPayTypeInfo">确定</div>
+          </div>
+        </div>
+      </template>
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -2683,7 +3179,8 @@ export default {
         '系统账户管理': ['系统账户管理'],
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载', '报价说明'],
-        '预警设置': ['订单预警', '样单预警']
+        '预警设置': ['订单预警', '样单预警'],
+        '单证设置': ['英文工厂信息', '英文银行信息', 'HS编码设置', '常用港口设置', '常用品名设置', '常用付款方式']
       },
       pName: '',
       cName: '',
@@ -3100,8 +3597,68 @@ export default {
         id: '',
         remark: ''
       },
-      priceRemarkEditor: null
-
+      priceRemarkEditor: null,
+      // 单证设置
+      documentLoading: false,
+      documentClientInfo: {
+        is_updated: false,
+        loading: true,
+        name: '',
+        code: '',
+        address: '',
+        signature: ''
+      },
+      documentBankInfo: {
+        is_updated: false,
+        loading: true,
+        name: '',
+        address: '',
+        code: '',
+        beneficiary: '',
+        account_no: ''
+      },
+      HSCode: '',
+      documentHSCodeList: [],
+      documentHSCodeInfo: {
+        loading: true,
+        id: null,
+        HSCode: '',
+        name: '',
+        importTax: '',
+        exportTax: ''
+      },
+      documentHSCodePages: 1,
+      documentHSCodeTotal: 1,
+      portName: '',
+      documentPortList: [],
+      documentPortInfo: {
+        loading: true,
+        id: null,
+        country: '',
+        port: ''
+      },
+      documentPortPages: 1,
+      documentPortTotal: 1,
+      documentType: '',
+      documentTypeList: [],
+      documentTypeInfo: {
+        loading: true,
+        id: null,
+        CNName: '',
+        USName: ''
+      },
+      documentTypePages: 1,
+      documentTypeTotal: 1,
+      documentPayType: '',
+      documentPayTypeList: [],
+      documentPayTypeInfo: {
+        loading: true,
+        id: null,
+        CNName: '',
+        USName: ''
+      },
+      documentPayTypePages: 1,
+      documentPayTypeTotal: 1
     }
   },
   watch: {
@@ -3162,6 +3719,18 @@ export default {
         this.getOrderSampleWarn()
       } else if (val === '样单预警') {
         this.getOrderSampleWarn()
+      } else if (val === '英文工厂信息') {
+        this.getDocumentClientInfo()
+      } else if (val === '英文银行信息') {
+        this.getDocumentBankInfo()
+      } else if (val === 'HS编码设置') {
+        this.getDocumentHSCodeInfo()
+      } else if (val === '常用港口设置') {
+        this.getDocumentPortInfo()
+      } else if (val === '常用品名设置') {
+        this.getDocumentTypeInfo()
+      } else if (val === '常用付款方式') {
+        this.getDocumentPayTypeInfo()
       }
     },
     filterYarnKeyword (val) {
@@ -3237,6 +3806,392 @@ export default {
     }
   },
   methods: {
+    // 单证模块
+    uploadSignatureSuccess () {
+      this.documentClientInfo.signature = this.$refs.companySignatureUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })[1]
+    },
+    getDocumentClientInfo () { // 获取英文工厂信息
+      this.documentClientInfo.loading = true
+      if (!this.postData.token) {
+        getToken().then(res => {
+          if (res.data.status !== false) {
+            this.postData.token = res.data.data
+          }
+        })
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.companyDetail().then(res => {
+        if (res.data.status !== false) {
+          console.log(res.data.data)
+          this.documentClientInfo = {
+            is_updated: false,
+            ...res.data.data
+          }
+        }
+        this.documentClientInfo.loading = false
+      })
+    },
+    saveDocumentClientInfo () {
+      if (!this.documentClientInfo.is_updated) return
+      if (this.$submitLock()) return
+      const { documentSetting } = require('@/assets/js/api.js')
+      if (!this.documentClientInfo.name) {
+        this.$message.warning('请输入公司英文名称（Company Name)')
+        return
+      }
+      if (!this.documentClientInfo.code) {
+        this.$message.warning('请输入公司统一社会信用代码（Company Social Credit Code)')
+        return
+      }
+      if (!this.documentClientInfo.address) {
+        this.$message.warning('请输入公司英文地址（Company Address)')
+        return
+      }
+      if (!this.documentClientInfo.signature) {
+        this.$message.warning('检测到未上传公司签章，请先上传')
+        return
+      }
+      const data = {
+        name: this.documentClientInfo.name,
+        code: this.documentClientInfo.code,
+        address: this.documentClientInfo.address,
+        signature: this.documentClientInfo.signature
+      }
+      documentSetting.companySave(data).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('提交成功')
+          this.getDocumentClientInfo()
+        }
+      })
+    },
+    getDocumentBankInfo () { // 获取英文银行信息
+      this.documentBankInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.bankDetail().then(res => {
+        if (res.data.status !== false) {
+          this.documentBankInfo = {
+            is_updated: false,
+            ...res.data.data
+          }
+        }
+        this.documentBankInfo.loading = false
+      })
+    },
+    saveDocumentBankInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentBankInfo.name) {
+        this.$message.warning('请输入开户银行（Bank Name）')
+        return
+      }
+      if (!this.documentBankInfo.address) {
+        this.$message.warning('请输入开户地址（Bank Address)')
+        return
+      }
+      if (!this.documentBankInfo.code) {
+        this.$message.warning('请输入银行SWIFT码（SWIFT Code)')
+        return
+      }
+      if (!this.documentBankInfo.beneficiary) {
+        this.$message.warning('请输入收款人（Beneficiary)')
+        return
+      }
+      if (!this.documentBankInfo.account_no) {
+        this.$message.warning('请输入开户账号（Account No)')
+        return
+      }
+
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.bankSave({
+        name: this.documentBankInfo.name,
+        address: this.documentBankInfo.address,
+        code: this.documentBankInfo.code,
+        beneficiary: this.documentBankInfo.beneficiary,
+        account_no: this.documentBankInfo.account_no
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('提交成功')
+          this.getDocumentBankInfo()
+        }
+      })
+    },
+    getDocumentHSCodeInfo (pages = 1) {
+
+    },
+    deleteDocumentHSCode (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该HS编码, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentHSCodeInfo () {
+      this.$message.success('添加成功')
+      this.getDocumentHSCodeInfo(1)
+      this.showPopup = false
+    },
+    getDocumentPortInfo (pages = 1, limit = 5) {
+      this.documentPortInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.portList({
+        page: pages,
+        limit: limit,
+        country: this.portName || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentPortList = res.data.data
+          this.documentPortTotal = res.data.total
+          if (this.documentPortPages !== pages) { // 更新页码
+            this.documentPortPages = pages
+          }
+        }
+        this.documentPortInfo.loading = false
+      })
+    },
+    deleteDocumentPort (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该港口, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.portDelete({
+          id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentPortInfo()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentPortInfo () {
+      if (!this.documentPortInfo.country) {
+        this.$message.warning('请输入常用国家名称')
+        return
+      }
+      if (!this.documentPortInfo.port) {
+        this.$message.warning('请输入常用港口名称')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.portSave({
+        id: this.documentPortInfo.id || null,
+        country: this.documentPortInfo.country,
+        port_name: this.documentPortInfo.port
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.showPopup = false
+          this.getDocumentPortInfo(1)
+        }
+      })
+    },
+    getDocumentTypeInfo (pages = 1, limit = 5) {
+      this.documentTypeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.typeList({
+        page: pages,
+        limit: limit,
+        name: this.documentType || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentTypeList = res.data.data
+          this.documentTypeTotal = res.data.total
+          if (this.documentTypePages !== pages) { // 更新页码
+            this.documentTypePages = pages
+          }
+        }
+        this.documentTypeInfo.loading = false
+      })
+    },
+    deleteDocumentType (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该品名, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.typeDelete({
+          id
+        }).then(res => {
+          if (res.data.statu !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentTypeInfo()
+            this.showPopup = false
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentTypeInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentTypeInfo.CNName) {
+        this.$messag.warning('请输入中文品类')
+        return
+      }
+      if (!this.documentTypeInfo.USName) {
+        this.$messag.warning('请输入英文品名')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.typeSave({
+        id: this.documentTypeInfo.id || null,
+        name: this.documentTypeInfo.CNName,
+        english: this.documentTypeInfo.USName
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.getDocumentTypeInfo(1)
+          this.showPopup = false
+        }
+      })
+    },
+    getDocumentPayTypeInfo (pages = 1, limit = 5) {
+      this.documentPayTypeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.payTypeList({
+        page: pages,
+        limit,
+        name: this.documentPayType || ''
+      }).then(res => {
+        if (res.data.statu !== false) {
+          this.documentPayTypeList = res.data.data
+          this.documentPayTypeTotal = res.data.total
+          if (this.documentPayTypePages !== pages) { // 更新页码
+            this.documentPayTypePages = pages
+          }
+        }
+        this.documentPayTypeInfo.loading = false
+      })
+    },
+    deleteDocumentPayType (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该付款方式, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.payTypeDelete({
+          id
+        }).then(res => {
+          if (res.data.statu !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentPayTypeInfo()
+            this.showPopup = false
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentPayTypeInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentPayTypeInfo.CNName) {
+        this.$messag.warning('请输入中文名称')
+        return
+      }
+      if (!this.documentPayTypeInfo.USName) {
+        this.$messag.warning('请输入英文代号')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.payTypeSave({
+        id: this.documentPayTypeInfo.id || null,
+        name: this.documentPayTypeInfo.CNName,
+        english: this.documentPayTypeInfo.USName
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.getDocumentPayTypeInfo(1)
+          this.showPopup = false
+        }
+      })
+    },
+    addDocument (item) {
+      switch (this.cName) {
+        case 'HS编码设置':
+          this.documentHSCodeInfo = {
+            id: (item && item.id) || null,
+            HSCode: (item && item.HSCode) || '',
+            name: (item && item.name) || '',
+            importTax: (item && item.importTax) || '',
+            exportTax: (item && item.exportTax) || ''
+          }
+          break
+        case '常用港口设置':
+          this.documentPortInfo = {
+            id: (item && item.id) || null,
+            country: (item && item.country) || '',
+            port: (item && item.port_name) || ''
+          }
+          break
+        case '常用品名设置':
+          this.documentTypeInfo = {
+            id: (item && item.id) || null,
+            CNName: (item && item.CNName) || '',
+            USName: (item && item.USName) || ''
+          }
+          break
+        case '常用付款方式':
+          this.documentPayTypeInfo = {
+            id: (item && item.id) || null,
+            CNName: (item && item.CNName) || '',
+            USName: (item && item.USName) || ''
+          }
+          break
+        default:
+          break
+      }
+      this.showPopup = true
+    },
+    // 单证模块结束
     downLoadTemplete (type) {
       const { downloadExcel } = require('@/assets/js/common.js')
       switch (type) {
@@ -4873,14 +5828,15 @@ export default {
         this.changePackMaterialInfo.packName = item.name
         this.changePackMaterialInfo.id = item.id
         this.changePackMaterialInfo.unit = item.unit
-        this.changePackMaterialInfo.packPriceArr = item.price.map(itemPrice => {
+        this.changePackMaterialInfo.type = item.type === 1 ? 'area' : 'other'
+        this.changePackMaterialInfo.packMaterialPriceArr = item.price.map(itemPrice => {
           return {
             company: itemPrice.client_id.toString(),
             price: itemPrice.price
           }
         })
-        if (this.changePackMaterialInfo.packPriceArr.length === 0) {
-          this.changePackMaterialInfo.packPriceArr = [{
+        if (this.changePackMaterialInfo.packMaterialPriceArr.length === 0) {
+          this.changePackMaterialInfo.packMaterialPriceArr = [{
             company: '',
             price: ''
           }]
@@ -5400,47 +6356,6 @@ export default {
       } else {
         return ''
       }
-    },
-    getDetailInfo (type, item) {
-      // console.log(type, item)
-      // if (type === 'yarn') {
-      //   yarn.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-      //     }
-      //   })
-      // } else if (type === 'material') {
-      //   material.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-
-      //     }
-      //   })
-      // } else if (type === 'pack') {
-      //   packag.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-
-      //     }
-      //   })
-      // } else {
-      //   this.$message.error('未知错误，请尝试刷新页面')
-      //   return
-      // }
-      // this.detailType = type
-      // this.detailInfo.name = item.name
-      // this.detailInfo.unit = item.unit
-      // this.detailInfo.price = item.price
-      // this.showDetailPopup = true
     },
     getSemiList () {
       course.list({

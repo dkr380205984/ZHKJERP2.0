@@ -292,60 +292,8 @@ export default {
   methods: {
     saveAll () {
       if (this.$submitLock()) return
-      if (this.checkedList.length === 0) {
-        this.$message.warning('请勾选订单')
-        return
-      }
-      if (!this.po_number) {
-        this.$message.warning('请输入PO号')
-        return
-      }
-      if (!this.invoice_number) {
-        this.$message.warning('请输入发票号码')
-        return
-      }
-      if (!this.payment_term) {
-        this.$message.warning('请输入付款方式')
-        return
-      }
-      if (!this.to_company_name) {
-        this.$message.warning('请输入公司名称')
-        return
-      }
-      if (!this.to_company_address) {
-        this.$message.warning('请输入公司地址')
-        return
-      }
-      if (!this.order_date) {
-        this.$message.warning('请选择下单日期')
-        return
-      }
-      if (!this.ex_factory_date) {
-        this.$message.warning('请选择离厂日期')
-        return
-      }
-      if (!this.shipment_date) {
-        this.$message.warning('请选择发货日期')
-        return
-      }
-      if (!this.from) {
-        this.$message.warning('请输入生产地')
-        return
-      }
-      if (!this.to) {
-        this.$message.warning('请输入发货地')
-        return
-      }
-      if (!this.loading_port) {
-        this.$message.warning('请输入发货港口')
-        return
-      }
-      if (!this.destination_port) {
-        this.$message.warning('请输入到达港口')
-        return
-      }
       documents.create({
-        id: null,
+        id: this.$route.params.id,
         document_orders: this.checkedList.map(itemM => itemM.id),
         po: this.po_number,
         invoice: this.invoice_number,
@@ -361,7 +309,7 @@ export default {
         destination_port: this.destination_port
       }).then(res => {
         if (res.data.status !== false) {
-          this.$message.success('添加成功')
+          this.$message.success('修改成功')
           this.$router.replace(`/document/index/detail/${res.data.data}`)
         }
       })
@@ -399,8 +347,8 @@ export default {
         if (res.data.data.status === false) return
         this.orderList = res.data.data.map(itemM => {
           return {
-            checked: !!this.checkedList.find(itemF => itemF.id === itemM.id),
-            id: itemM.id,
+            checked: !!this.checkedList.find(itemF => Number(itemF.id) === Number(itemM.id)),
+            id: Number(itemM.id),
             order_code: itemM.order_code,
             client_name: itemM.client_name,
             images: this.$unique(itemM.product_info.map(itemMPI => itemMPI.image).flat(1), 'id'),
@@ -442,11 +390,14 @@ export default {
     }
   },
   mounted () {
-    this.getOrderList()
+    this.loading = true
     Promise.all([
       client.list(),
       documentSetting.payTypeList(),
-      documentSetting.portList()
+      documentSetting.portList(),
+      documents.detail({
+        id: this.$route.params.id
+      })
     ]).then(res => {
       this.companyArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
       this.paymentList = res[1].data.data.map(itemM => {
@@ -461,6 +412,26 @@ export default {
           label: `${itemM.port_name},${itemM.country}`.toUpperCase()
         }
       })
+      const documentsData = res[3].data.data
+      this.checkedList = documentsData.orders.map(itemMO => {
+        return {
+          id: Number(itemMO.id),
+          order_code: itemMO.order_code
+        }
+      })
+      this.po_number = documentsData.po
+      this.invoice_number = documentsData.invoice
+      this.payment_term = documentsData.payment
+      this.to_company_name = documentsData.to_company_name
+      this.to_company_address = documentsData.to_company_address
+      this.order_date = documentsData.order_date
+      this.ex_factory_date = documentsData.ex_factory_date
+      this.shipment_date = documentsData.shipment_date
+      this.from = documentsData.from_address
+      this.to = documentsData.to_address
+      this.loading_port = documentsData.loading_port
+      this.destination_port = documentsData.destination_port
+      this.getOrderList()
     })
   },
   filters: {

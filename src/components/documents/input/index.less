@@ -12,15 +12,16 @@
   min-height: calc(42px + 1em);
   &.rowModle{
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     min-height: 40px;
     .document_input_label{
       margin-bottom: 0;
-    }
-    .document_input_self{
-      margin-left: 16px;      
+      margin-right: 16px;  
       line-height: 32px;
     }
+    // .document_input_self{    
+    //   line-height: 32px;
+    // }
   }
   .document_input_label{
     height: 1em;
@@ -29,14 +30,17 @@
   }
   .document_input_self{
     flex: 1;
+    height: 100%;
     outline: none;
     border: none;
     min-height: 32px;
-    padding: 0;
     resize: none;
     word-break: break-all;
     overflow: hidden;
     font-size: inherit;
+    line-height: 1.2em!important;
+    padding: calc((32px - 1.2em)/2);
+    box-sizing: border-box;
     // font-size: @fontSize;
   }
 }

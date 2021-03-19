@@ -577,7 +577,7 @@ export default {
                 this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
                 this.msgSwitch = true
               } else {
-                this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+                this.$router.replace('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
               }
             }
           })
@@ -602,7 +602,7 @@ export default {
               this.msgContent = '<span style="color:#1A95FF">添加</span>了一张新物料计划单,' + (this.$route.params.type === '1' ? '订' : '样') + '单号<span style="color:#1A95FF">' + this.orderInfo.order_code + '</span>'
               this.msgSwitch = true
             } else {
-              this.$router.push('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
+              this.$router.replace('/materialPlan/materialPlanDetail/' + this.$route.params.id + '/' + this.$route.params.type)
             }
           }
         })
