@@ -580,7 +580,8 @@ const documentSetting = {
   payTypeList: (params) => http.get(`${baseUrl}/document/payment/list`, params),
   // payTypeDetail: (params) => http.get(`${baseUrl}/document/payment/detail`, params),
   payTypeSave: (params) => http.post(`${baseUrl}/document/payment/save`, params, 'application/json'),
-  payTypeDelete: (params) => http.post(`${baseUrl}/document/payment/delete`, params, 'application/json')
+  payTypeDelete: (params) => http.post(`${baseUrl}/document/payment/delete`, params, 'application/json'),
+  HSList: (params) => http.get(`${baseUrl}/document/hscode/list`, params)
 }
 // 单证管理
 const documents = {
@@ -589,7 +590,21 @@ const documents = {
   list: (params) => http.get(`${baseUrl}/document/list`, params),
   delete: (params) => http.post(`${baseUrl}/document/delete`, params, 'application/json')
 }
+// 单证单据
+const documentsTable = {
+  CISave: (params) => http.post(`${baseUrl}/document/invoice/save`, params, 'application/json'),
+  CIDetail: (params) => http.get(`${baseUrl}/document/invoice/detail`, params),
+  PLSave: (params) => http.post(`${baseUrl}/document/box/save`, params, 'application/json'),
+  PLDetail: (params) => http.get(`${baseUrl}/document/box/detail`, params),
+  ETSave: (params) => http.post(`${baseUrl}/document/freight/save`, params, 'application/json'),
+  ETDetail: (params) => http.get(`${baseUrl}/document/freight/detail`, params),
+  EDSave: (params) => http.post(`${baseUrl}/document/custom/save`, params, 'application/json'),
+  EDDetail: (params) => http.get(`${baseUrl}/document/custom/detail`, params),
+  DESave: (params) => http.post(`${baseUrl}/document/element/save`, params, 'application/json'),
+  DEDetail: (params) => http.get(`${baseUrl}/document/element/detail`, params)
+}
 export {
+  documentsTable,
   documents,
   documentSetting,
   priceRemark,

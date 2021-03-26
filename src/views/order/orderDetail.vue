@@ -1639,6 +1639,11 @@
               <div class="info text">{{priceInfo.price_name||'无'}}</div>
             </div>
             <div class="row">
+              <div class="label">报价总价：</div>
+              <div class="info text"
+                style="color:#1A95FF">{{priceInfo.price||'无'}}</div>
+            </div>
+            <div class="row">
               <div class="label">外贸公司：</div>
               <div class="info text">{{priceInfo.client_name}}</div>
             </div>
@@ -1831,6 +1836,7 @@ export default {
         price_code: '待选择',
         price_name: '待选择',
         client_name: '待选择',
+        price: '待选择',
         imgArr: []
       },
       nativePriceInfo: {}, // 报价单重新提交一份给后台
@@ -2121,6 +2127,7 @@ export default {
           price_name: data.name,
           price_code: data.quotation_code,
           client_name: data.client_name,
+          price: data.total_price,
           imgArr: data.file_url || [require('@/assets/image/index/noPic.jpg')]
         }
         // 保存一份原始报价单信息

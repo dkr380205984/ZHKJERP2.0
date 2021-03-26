@@ -220,9 +220,77 @@ class VerificationCode {
     return false
   }
 }
+const numberToEnglish = (num) => {
+  let arr1 = ['', ' thousand', ' million', ' billion']
+  let arr2 = ['zero', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+  let arr3 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+  let arr4 = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+  const englist = (num) => {
+    let strRet = ''
+    if ((num.length === 3) && (num.substr(0, 3) !== '000')) {
+      if ((num.substr(0, 1) !== '0')) {
+        strRet += arr3[num.substr(0, 1)] + ' hundred'
+        if (num.substr(1, 2) !== '00') {
+          strRet += ' and '
+        }
+      }
+      num = num.substring(1)
+    }
+    if ((num.length === 2)) {
+      if ((num.substr(0, 1) === '0')) {
+        num = num.substring(1)
+      } else if ((num.substr(0, 1) === '1')) {
+        strRet += arr4[num.substr(1, 2)]
+      } else {
+        strRet += arr2[num.substr(0, 1)]
+        if (num.substr(1, 1) !== '0') strRet += '-'
+        num = num.substring(1)
+      }
+    }
+    if ((num.length === 1) && (num.substr(0, 1) !== '0')) {
+      strRet += arr3[num.substr(0, 1)]
+    }
+    return strRet
+  }
+  const translate = (num) => {
+    let len = num.length
+    let j = 0
+    let strRet = ''
+    let cols = Math.ceil(len / 3)
+    let first = len - cols * 3
+    for (let i = first; i < len; i += 3) {
+      ++j
+      let num3 = ''
+      if (i >= 0) {
+        num3 = num.substring(i, i + 3)
+      } else {
+        num3 = num.substring(0, first + 3)
+      }
+      let strEng = englist(num3)
+      if (strEng !== '') {
+        if (strRet !== '') {
+          strRet += ','
+        }
+        strRet += englist(num3) + arr1[cols - j]
+      }
+    }
+    return strRet
+  }
+  const numArr = String(num).split('.')
+  if (numArr.length > 2) {
+    return 'NAN'
+  } else if (numArr.length === 1) {
+    return translate(numArr[0])
+  } else if (numArr.length === 2 && +numArr[0] > 0) {
+    return `${translate(numArr[0])} and cents ${translate(numArr[1])}`
+  } else if (numArr.length === 2 && +numArr[0] === 0) {
+    return `${translate(numArr[1])} cents`
+  }
+}
 export {
   getHash,
   downloadExcel,
   downloadOrderProductionExcel,
-  VerificationCode
+  VerificationCode,
+  numberToEnglish
 }

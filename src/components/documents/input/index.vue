@@ -5,7 +5,7 @@
     <span class="document_input_label"
       v-if="!noLabel">{{label}}</span>
     <textarea class="document_input_self"
-      :style="`text-align:${innerAlign}` + (width ? `width:${width}!important;flex:none` : '')"
+      :style="`text-align:${innerAlign};${(rows===1 && 'white-space: nowrap;') || ''}` + (width ? `width:${width}!important;flex:none` : '')"
       :placeholder="placeholder"
       :readonly='readonly'
       v-model="innerValue"
@@ -58,6 +58,10 @@ export default {
   },
   watch: {
     value (newVal) {
+      if (!this.typeRegExp.test(newVal)) {
+        this.$emit('input', '')
+        return
+      }
       this.innerValue = newVal
     }
   },

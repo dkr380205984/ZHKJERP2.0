@@ -1,25 +1,27 @@
 <template>
   <div id='CI'
-    class='document edit'>
+    class='document edit'
+    v-loading='loading'>
     <div class="tableCtn">
       <div class="headerCtn">
         <div class="top">
-          <div class="title">{{'HANGZHOU KANGHENG'}} KNITTING CO.,LTD.</div>
-          <div class="title2">NO 156 JINCHENG ROAD XINDENG TOWN FUYANG HANGZHOU,CHINA</div>
-          <div class="title3">Tel:086-57163257028&nbsp;&nbsp;Fax:086-57163257028</div>
+          <div class="title">{{company_name}}</div>
+          <div class="title2">{{company_address}}</div>
+          <div class="title3">Tel:{{company_tel}}&nbsp;&nbsp;Fax:{{company_fax}}</div>
           <div class="title">COMMERICAL INVOICE</div>
         </div>
       </div>
       <div class="bodyCtn">
         <div class="rowCtn">
           <div class="rowItem col noBorder"
-            style="flex:1.5">
+            style="flex:1.2">
             <div class="rowCtn noBorder">
-              <div class="rowItem left">TO:</div>
+              <div class="rowItem left grayLabel">TO:</div>
             </div>
             <div class="rowCtn noBorder">
               <div class="rowItem left">
                 <document-input rowModle
+                  v-model="companyInfo.company_name"
                   placeholder='公司名称(company name)'></document-input>
               </div>
             </div>
@@ -27,6 +29,7 @@
               <div class="rowItem left">
                 <document-input :rows='2'
                   rowModle
+                  v-model="companyInfo.company_address"
                   placeholder='公司地址(company address)'></document-input>
               </div>
             </div>
@@ -35,6 +38,7 @@
             <div class="rowCtn noBorder">
               <div class="rowItem right">
                 <document-input rowModle
+                  v-model="companyInfo.invoice_number"
                   width='150px'
                   alignType='right'
                   label='Invoice Number:'
@@ -44,6 +48,7 @@
             <div class="rowCtn noBorder">
               <div class="rowItem right">
                 <document-input rowModle
+                  v-model="companyInfo.po_no"
                   width='150px'
                   alignType='right'
                   label="PO NO.:"
@@ -53,6 +58,7 @@
             <div class="rowCtn noBorder">
               <div class="rowItem right">
                 <document-input rowModle
+                  v-model="companyInfo.date"
                   width='150px'
                   alignType='right'
                   label='Date:'
@@ -66,19 +72,23 @@
       <div class="bodyCtn marginTop borderColorDeep">
         <div class="rowCtn borderColor85">
           <div class="rowItem col noBorder"
-            style="flex:1.5">
+            style="flex:1.2">
             <div class="rowCtn noBorder">
               <div class="rowItem left">
                 <document-input rowModle
+                  v-model="otherInfo.from"
                   label='From:'
                   placeholder='生产地'></document-input>
               </div>
             </div>
             <div class="rowCtn noBorder">
               <div class="rowItem left">
-                <document-input rowModle
+                <document-select rowModle
+                  type='autocomplete'
+                  :optionData='payTypeList'
+                  v-model="otherInfo.payment_terms"
                   label='PAYMENT TERMS:'
-                  placeholder='付款方式'></document-input>
+                  placeholder='付款方式'></document-select>
               </div>
             </div>
           </div>
@@ -86,6 +96,7 @@
             <div class="rowCtn noBorder">
               <div class="rowItem left">
                 <document-input rowModle
+                  v-model="otherInfo.to"
                   label='TO:'
                   placeholder='发货地'></document-input>
               </div>
@@ -93,6 +104,7 @@
             <div class="rowCtn noBorder">
               <div class="rowItem left">
                 <document-input rowModle
+                  v-model="otherInfo.shipment_date"
                   label="SHIPMENT DATE:"
                   placeholder='发货日期'></document-input>
               </div>
@@ -128,28 +140,41 @@
             v-else
             @click="deleteItem(itemOrder.order_data,indexOD)"></div>
           <div class="rowItem center">
-            <document-select v-model="itemOD.order_no"
+            <document-select v-model="itemOrder.order_no"
               placeholder='订单号'
+              type='autocomplete'
+              :optionData='orderArr'
+              optionLabel='order_code'
+              optionValue='order_code'
               noLabel
               rowModle
+              @select="selectOrderNo($event,itemOrder)"
               innerAlign='center'></document-select>
           </div>
           <div class="rowItem center">
             <document-select v-model="itemOD.style_no"
               placeholder='款号'
+              type='autocomplete'
+              :optionData='itemOrder.styleArr || []'
+              optionLabel='style_code'
+              optionValue='style_code'
+              noLabel
+              rowModle
+              @select="selectStyleNo($event,itemOD,itemOrder)"
+              innerAlign='center'></document-select>
+          </div>
+          <div class="rowItem center">
+            <document-select v-model="itemOD.desc"
+              type='autocomplete'
+              :optionData='typeList'
+              placeholder='产品描述'
               noLabel
               rowModle
               innerAlign='center'></document-select>
           </div>
           <div class="rowItem center">
-            <document-input v-model="itemOD.desc"
-              placeholder='产品描述'
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
             <document-input v-model="itemOD.qty_pcs"
+              type='int'
               placeholder='数量'
               noLabel
               rowModle
@@ -158,6 +183,7 @@
           </div>
           <div class="rowItem center">
             <document-input v-model="itemOD.unit_price"
+              type='number'
               placeholder='单价'
               noLabel
               rowModle
@@ -166,6 +192,7 @@
           </div>
           <div class="rowItem center">
             <document-input v-model="itemOD.amount"
+              type='number'
               placeholder='总价'
               noLabel
               rowModle
@@ -199,7 +226,7 @@
           </div>
         </div>
         <div class="rowCtn">
-          <div class="rowItem left noBorder">TOTAL FOR:</div>
+          <div class="rowItem left noBorder grayLabel">TOTAL FOR:</div>
           <div class="rowItem noBorder"
             style="flex:2">
             <document-input v-model="itemOrder.pcs"
@@ -226,25 +253,51 @@
       </div>
       <div class="bodyCtn marginTop">
         <div class="rowCtn">
-          <div class="rowItem left noBorder">TOTAL VALUE:</div>
+          <div class="rowItem left noBorder grayLabel">TOTAL:</div>
+          <div class="rowItem noBorder"
+            style="flex:2">
+            <document-input v-model="totalCom.total_pcs"
+              placeholder='自动计算'
+              readonly
+              noLabel
+              rowModle
+              innerAlign='right'></document-input>
+          </div>
+          <div class="rowItem noBorder"
+            style="flex:0.6">PCS</div>
+          <div class="rowItem noBorder"
+            style="flex:1.5">
+            <document-input v-model="totalCom.total_value"
+              placeholder='自动计算'
+              readonly
+              noLabel
+              rowModle
+              innerAlign='right'></document-input>
+          </div>
+          <div class="rowItem"
+            style="flex:0.6">$</div>
+        </div>
+        <div class="rowCtn">
+          <div class="rowItem left noBorder grayLabel">TOTAL VALUE:</div>
           <div class="rowItem"
             style="flex:5">
-            <document-input readonly
-              rowModle
+            <document-input rowModle
+              v-model="total_value"
               noLabel
               placeholder='自动填充'></document-input>
           </div>
         </div>
       </div>
       <div class="rowModle marginTop">
-        <div class="bodyCtn">
+        <div class="bodyCtn"
+          style="border-bottom:2px solid rgba(0,0,0,.45)">
           <div class="rowCtn">
-            <div class="rowItem left">Bank Information:</div>
+            <div class="rowItem left grayLabel">Bank Information:</div>
           </div>
           <div class="rowCtn noBorder">
             <div class="rowItem col">
               <div class="rowCtn noBorder">
-                <div class="rowItem left noBorder"
+                <div class="rowItem left noBorder grayLabel"
                   style="flex:0.3">Bank:</div>
                 <div class="rowItem">
                   <document-input v-model="bankInfo.name"
@@ -258,7 +311,7 @@
           <div class="rowCtn noBorder">
             <div class="rowItem col">
               <div class="rowCtn noBorder">
-                <div class="rowItem left noBorder"
+                <div class="rowItem left noBorder grayLabel"
                   style="flex:0.3">Address:</div>
                 <div class="rowItem">
                   <document-input v-model="bankInfo.address"
@@ -272,7 +325,7 @@
           <div class="rowCtn noBorder">
             <div class="rowItem col">
               <div class="rowCtn noBorder">
-                <div class="rowItem left noBorder"
+                <div class="rowItem left noBorder grayLabel"
                   style="flex:0.3">SWIFT:</div>
                 <div class="rowItem">
                   <document-input v-model="bankInfo.code"
@@ -286,7 +339,7 @@
           <div class="rowCtn noBorder">
             <div class="rowItem col">
               <div class="rowCtn noBorder">
-                <div class="rowItem left noBorder"
+                <div class="rowItem left noBorder grayLabel"
                   style="flex:0.3">Beneficiary:</div>
                 <div class="rowItem">
                   <document-input v-model="bankInfo.beneficiary"
@@ -297,11 +350,10 @@
               </div>
             </div>
           </div>
-          <div class="rowCtn"
-            style="border-top:none">
+          <div class="rowCtn noBorder">
             <div class="rowItem col">
               <div class="rowCtn noBorder">
-                <div class="rowItem left noBorder"
+                <div class="rowItem left noBorder grayLabel"
                   style="flex:0.3">Account No:</div>
                 <div class="rowItem">
                   <document-input v-model="bankInfo.account_no"
@@ -316,11 +368,12 @@
         <div class="bodyCtn"
           style="border-bottom:2px solid rgba(0,0,0,.45)">
           <div class="rowCtn">
-            <div class="rowItem left">Remarks:</div>
+            <div class="rowItem left grayLabel">Remarks:</div>
           </div>
           <div class="rowCtn noBorder">
             <div class="rowItem left">
-              <document-input noLabel
+              <document-input v-model="remark"
+                noLabel
                 placeholder='备注信息'
                 :rows='9'></document-input>
             </div>
@@ -332,7 +385,8 @@
       <div class="main">
         <div class="btn btnGray"
           @click="$router.go(-1)">返回</div>
-        <div class="btn btnBlue">提交</div>
+        <div class="btn btnBlue"
+          @click="saveAll">提交</div>
       </div>
     </div>
   </div>
@@ -341,11 +395,16 @@
 <script>
 import documentInput from '@/components/documents/input/index.vue'
 import documentSelect from '@/components/documents/select/index.vue'
-import { documentSetting } from '@/assets/js/api.js'
+import { documents, documentSetting, documentsTable } from '@/assets/js/api.js'
+import { numberToEnglish } from '@/assets/js/common.js'
 export default {
   data () {
     return {
       loading: false,
+      company_name: '',
+      company_address: '',
+      company_tel: '',
+      company_fax: '',
       companyInfo: {
         comapny_name: '',
         company_address: '',
@@ -359,11 +418,14 @@ export default {
         payment_terms: '',
         shipment_date: ''
       },
+      portList: [],
+      payTypeList: [],
+      typeList: [],
+      orderArr: [],
       orderInfo: [
         {
           order_data: [
             {
-              order_no: '',
               style_no: '',
               desc: '',
               qty_pcs: '',
@@ -377,6 +439,7 @@ export default {
               price: ''
             }
           ],
+          order_no: '',
           pcs: '',
           amount: ''
         }
@@ -393,6 +456,42 @@ export default {
     }
   },
   methods: {
+    saveAll () {
+      if (this.$submitLock()) return
+      documentsTable.CISave({
+        document_id: this.$route.params.id,
+        bank: this.bankInfo.name,
+        address: this.bankInfo.address,
+        code: this.bankInfo.code,
+        beneficiary: this.bankInfo.beneficiary,
+        account_no: this.bankInfo.account_no,
+        remarks: this.remark,
+        to_company_name: this.companyInfo.company_name,
+        to_company_address: this.companyInfo.company_address,
+        invoice: this.companyInfo.invoice_number,
+        po: this.companyInfo.po_no,
+        order_date: this.companyInfo.date,
+        from_address: this.otherInfo.from,
+        to_address: this.otherInfo.to,
+        payment: this.otherInfo.payment_terms,
+        shipment_date: this.otherInfo.shipment_date,
+        total_for: this.total_value,
+        order_info: JSON.stringify(this.orderInfo)
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('编辑成功')
+          this.$router.push(`/document/index/detail/${this.$route.params.id}?type=1`)
+        }
+      })
+    },
+    selectOrderNo ({ valueObj }, itemOrder) {
+      itemOrder.styleArr = valueObj.product_info
+    },
+    selectStyleNo ({ valueObj }, itemOD, itemOrder) {
+      itemOD.qty_pcs = (valueObj.pivot && valueObj.pivot.numbers) || ''
+      itemOD.unit_price = (valueObj.pivot && valueObj.pivot.unit_price) || ''
+      this.computedRowAmount(itemOD, itemOrder)
+    },
     computedRowAmount (item, itemOrder) {
       if (item.qty_pcs && item.unit_price) {
         item.amount = this.$toFixed(item.qty_pcs * item.unit_price)
@@ -466,11 +565,103 @@ export default {
     }
   },
   created () {
+    this.loading = true
     Promise.all([
-      documentSetting.bankDetail()
+      documentSetting.companyDetail(),
+      documentSetting.bankDetail(),
+      documents.detail({
+        id: this.$route.params.id
+      }),
+      documentSetting.payTypeList(),
+      documentSetting.typeList()
+      // documentSetting.portList(),
     ]).then(res => {
-      this.bankInfo = res[0].data.data
+      this.company_name = res[0].data.data.name
+      this.company_address = res[0].data.data.address
+      this.company_tel = res[0].data.data.tel
+      this.company_fax = res[0].data.data.fax
+      this.bankInfo = res[1].data.data
+      // this.portList = res[2].data.data.map(itemM => {
+      //   return {
+      //     label: `${itemM.port_name},${itemM.country}`.toUpperCase(),
+      //     value: `${itemM.port_name},${itemM.country}`.toUpperCase()
+      //   }
+      // })
+      this.payTypeList = res[3].data.data.map(itemM => {
+        return {
+          label: `${itemM.name}(${itemM.english})`,
+          value: `${itemM.name}(${itemM.english})`
+        }
+      })
+      this.typeList = res[4].data.data.map(itemM => {
+        return {
+          label: itemM.english,
+          value: itemM.english
+        }
+      })
+      // 初始化基本信息
+      const detailInfo = res[2].data.data
+      this.orderArr = detailInfo.orders
+      if (detailInfo.status_commercial_invoice !== 2) {
+        documentsTable.CIDetail({
+          document_id: this.$route.params.id
+        }).then(res => {
+          if (res.data.status !== false) {
+            const detail = res.data.data
+            this.companyInfo = {
+              company_name: detail.to_company_name,
+              company_address: detail.to_company_address,
+              invoice_number: detail.invoice,
+              po_no: detail.po,
+              date: this.$getTime(detail.order_date, '.')
+            }
+            this.otherInfo = {
+              from: detail.from_address,
+              to: detail.to_address,
+              payment_terms: detail.payment,
+              shipment_date: this.$getTime(detail.shipment_date, '.')
+            }
+            this.orderInfo = JSON.parse(detail.order_info)
+            this.remark = detail.remarks
+            this.loading = false
+          }
+        })
+      } else {
+        this.companyInfo = {
+          company_name: detailInfo.to_company_name,
+          company_address: detailInfo.to_company_address,
+          invoice_number: detailInfo.invoice,
+          po_no: detailInfo.po,
+          date: this.$getTime(detailInfo.order_date, '.')
+        }
+        this.otherInfo = {
+          from: detailInfo.from_address,
+          to: detailInfo.to_address,
+          payment_terms: detailInfo.payment,
+          shipment_date: this.$getTime(detailInfo.shipment_date, '.')
+        }
+        this.loading = false
+      }
     })
+  },
+  computed: {
+    totalCom () {
+      return {
+        total_pcs: this.orderInfo.map(itemM => +itemM.pcs || 0).reduce((total, current) => total + current, 0),
+        total_value: this.orderInfo.map(itemM => +itemM.amount || 0).reduce((total, current) => total + current, 0)
+      }
+    }
+  },
+  watch: {
+    'totalCom.total_value' (newVal) {
+      if (newVal === 0) {
+        this.total_value = `SAY US ZERO DOLLARS ONLY.`
+      } else if (newVal > 0 && newVal < 1) {
+        this.total_value = `SAY US ${numberToEnglish(newVal)} ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
+      } else {
+        this.total_value = `SAY US ${numberToEnglish(newVal)} DOLLARS ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
+      }
+    }
   },
   components: {
     documentInput,

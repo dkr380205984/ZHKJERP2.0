@@ -929,12 +929,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        data_color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: null
-          }
-        }),
+        data_color: {
+          delete_data: null,
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: null
+            }
+          })
+        },
         data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
         data_size: this.size.map(item => {
           return {
@@ -1086,7 +1089,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let productInfo = res.data.data
-          this.sample_product_code = productInfo.product_code
+          // this.sample_product_code = productInfo.product_code //去除导入时导入产品编号 2020-03-26
           this.product_code = productInfo.product_code
           this.model_code = productInfo.style_code
           this.sampleName = productInfo.name

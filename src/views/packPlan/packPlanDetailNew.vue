@@ -711,7 +711,8 @@ export default {
         { value: '上海市' },
         { value: '杭州市' },
         { value: '宁波市' },
-        { value: '义乌市' }
+        { value: '义乌市' },
+        { value: '天津市' }
       ],
       showConFirmPackInfoPopup: false
     }

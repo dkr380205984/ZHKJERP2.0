@@ -449,6 +449,7 @@ export default {
       }],
       sizeArr: [],
       colour: [{ colour: '' }],
+      deleteColorId: null,
       colourArr: [],
       desc: '',
       postData: { token: '' },
@@ -557,7 +558,10 @@ export default {
       this.colour.push({ colour: '' })
     },
     deleteColour (index) {
-      this.colour.splice(index, 1)
+      const deleteArr = this.colour.splice(index, 1)
+      if (deleteArr[0].color_id) {
+        this.deleteColorId ? (this.deleteColorId.push(deleteArr[0].color_id)) : (this.deleteColorId = [deleteArr[0].color_id])
+      }
     },
     searchIngredient (queryString, cb) {
       let result = queryString ? this.ingredientArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.ingredientArr
@@ -763,12 +767,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        data_color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: item.color_id || null
-          }
-        }),
+        data_color: {
+          delete_data: this.deleteColorId || [],
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: item.color_id || null
+            }
+          })
+        },
         data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
         data_size: this.size.map(item => {
           return {

@@ -204,7 +204,7 @@ export default {
           url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
         },
         {
-          name: '其他管理',
+          name: '其它管理',
           id: null,
           icon: 'other',
           url: '/meau/meau'

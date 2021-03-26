@@ -166,4 +166,49 @@
   .green{
     color: @green;
   }
+  // 替换el-table组件新增的样式
+  .rowScrollTable{
+    width: 100%;
+    display: flex;
+    background-color: #FFF;
+    overflow: hidden;
+    position: relative;
+    box-sizing:border-box;
+    .tb_fixed{
+      display: flex;
+      background-color: #FFF;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+    }
+    .tb_box{
+      display: flex;
+      overflow: auto;
+    }
+    .tb_column{
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+      max-width: 200px;
+      &.w100{
+        min-width: 100px;
+        max-width: 100px;
+      }
+      .header{
+        height: 48px;
+        line-height: 48px;
+        padding: 0 8px;
+        color: #909399;
+        box-sizing: border-box;
+      }
+      .tb_row{
+        height: 48px;
+        padding: 8px;
+        overflow: hidden;
+        border-top: 1px solid #ebeef5;
+        box-sizing: border-box;
+      }
+    }
+  }
 }

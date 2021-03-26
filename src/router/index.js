@@ -39,6 +39,10 @@ const routes = [
             name: '出口货物报关单',
             component: () => import('@/views/documents/ED/print.vue')
           }, {
+            path: 'DE/:id',
+            name: '申报要素',
+            component: () => import('@/views/documents/DE/print.vue')
+          }, {
             path: 'ET/:id',
             name: '货运委托书',
             component: () => import('@/views/documents/ET/print.vue')
@@ -83,15 +87,19 @@ const routes = [
             component: () => import('@/views/documents/CI/edit.vue')
           }, {
             path: 'PL/:id',
-            name: '装箱单',
+            name: '编辑装箱单',
             component: () => import('@/views/documents/PL/edit.vue')
           }, {
             path: 'ED/:id',
             name: '编辑出口货物报关单',
             component: () => import('@/views/documents/ED/edit.vue')
           }, {
+            path: 'DE/:id',
+            name: '编辑申报要素',
+            component: () => import('@/views/documents/DE/edit.vue')
+          }, {
             path: 'ET/:id',
-            name: '货运委托书',
+            name: '编辑货运委托书',
             component: () => import('@/views/documents/ET/edit.vue')
           }
         ]

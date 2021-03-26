@@ -4,7 +4,7 @@
     <span class="document_select_label"
       v-if="!noLabel">{{label}}</span>
     <textarea class="document_select_self"
-      :style="`text-align:${innerAlign}`"
+      :style="`text-align:${innerAlign};${width?'width:'+width+'!important;flex:none':''}`"
       :placeholder="placeholder"
       :readonly='readonlyCom'
       v-model="innerValue"
@@ -23,7 +23,7 @@
         <li :class="`document_option_li ${(!multipleCom ? (itemOption[optionValue] === selectsValue && 'active') : (selectsValue && selectsValue.includes(itemOption[optionValue]) && 'active')) || ''}`"
           v-for="(itemOption,indexOption) in optionDataCom"
           :key="indexOption"
-          @click.stop="selectItem(itemOption[optionValue])">
+          @click.stop="selectItem(itemOption[optionValue],itemOption)">
           {{itemOption[optionLabel]}}
           <span class="el-icon-check checkIcon"></span>
         </li>
@@ -51,6 +51,7 @@ export default {
         return value === 'select' || value === 'autocomplete'
       }
     },
+    width: String,
     rowModle: Boolean,
     noLabel: Boolean,
     innerAlign: {
@@ -102,7 +103,7 @@ export default {
     }
   },
   methods: {
-    selectItem (item) {
+    selectItem (item, itemObj) {
       if (!this.multipleCom) {
         if (this.selectsValue === item) return
         this.selectsValue = item
@@ -120,7 +121,10 @@ export default {
         }
         this.$refs.select.focus()
       }
-      this.$emit('input', this.selectsValue)
+      this.$emit('select', {
+        value: item,
+        valueObj: itemObj
+      })
     },
     handleClickEvent () {
       this.$refs.select.focus()
@@ -156,7 +160,7 @@ export default {
       return searchWord ? this.optionData.filter(itemF => String(itemF[this.optionLabel]).indexOf(searchWord) >= 0) : this.optionData
     },
     innerValueCom () {
-      if (this.type === 'autocomplete') return this.innerValue
+      if (this.type === 'autocomplete') return this.selectsValue
       let returnValue = null
       if (this.multipleCom) {
         returnValue = this.selectsValue ? this.selectsValue.map(itemM => {

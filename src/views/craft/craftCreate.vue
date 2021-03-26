@@ -4484,7 +4484,7 @@ export default {
     submit (ifCaogao) {
       // 获取合并单元格信息
       let errorInput = false
-      if (ifCaogao === '草稿' && !this.chooseId && this.$router.params.id === 'noProId') {
+      if (ifCaogao === '草稿' && !this.chooseId && this.$route.params.id === 'noProId') {
         this.$message.error('请选择产品后保存草稿')
         return
       }

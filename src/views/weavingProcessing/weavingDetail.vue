@@ -344,9 +344,11 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">
-                        <span>{{itemChild.product_info.product_code}}</span>
-                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
+                      <div class="tcolumn"
+                        style="flex-direction:row;align-items:center;justify-content:flex-start">
+                        <el-checkbox style="margin-right:4px"
+                          v-model="itemChild.checked" />
+                        <span>{{itemChild.product_info.product_code}}<br />{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
@@ -358,10 +360,13 @@
                   </div>
                   <div class="tcolumn">
                     <span class="btn noBorder"
-                      style="padding:0;margin:0"
+                      style="padding:0;margin:0 0 8px 0;height:1em;line-height:1em"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印分配单</span>
                     <span class="btn noBorder"
-                      style="padding:0;margin:0"
+                      style="padding:0;margin:0 0 8px 0;height:1em;line-height:1em"
+                      @click="printChecked(item)">打印勾选</span>
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0;height:1em;line-height:1em"
                       @click="openPrintQrCode(item)">打印二维码</span>
                   </div>
                 </div>
@@ -1135,6 +1140,13 @@ export default {
     }
   },
   methods: {
+    printChecked (item) {
+      if (item.childrenMergeInfo.some(itemS => itemS.checked)) {
+        this.$openUrl(`/weaveTable/${this.$route.params.id}/${this.$route.params.orderType}?type=1&clientId=${item.client_id}&logId=${item.childrenMergeInfo.filter(itemF => itemF.checked).map(itemM => itemM.id)}`)
+      } else {
+        this.$message.warning('请先勾选')
+      }
+    },
     printQrCode () {
       const QRCode = require('qrcode')
       QRCode.toDataURL(`${window.location.origin}/receiveDispatch/jysf/${this.$route.params.id}?client_id=${this.qrCodePrintInfo.client_id}&product_id=${this.qrCodePrintInfo.product_id}`, { errorCorrectionLevel: 'H' }, (err, url) => {

@@ -3161,13 +3161,15 @@ export default {
       } else if (items.PMFlag === 'complex') {
         items.PM.forEach((item, key) => {
           str += (romanNum[key] || (key + 1))
+          str += `【${item.total}根`
           item.children.forEach((value, index) => {
-            str += ('【' + value.number + '根')
+            str += ('{' + value.number + '根')
             value.children.forEach((val, ind) => {
               str += '（' + val.value + '）' + (val.repeat && val.repeat !== 1 ? 'x' + val.repeat + '遍' : '') + (ind !== value.children.length - 1 ? '，' : '')
             })
-            str += ('】' + (item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : '') + (index !== item.children.length - 1 ? '。' : ''))
+            str += ('}' + (index !== item.children.length - 1 ? '+' : ''))
           })
+          str += `】${item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : ''}`
         })
       }
       return str

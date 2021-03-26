@@ -784,12 +784,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: null
-          }
-        }),
+        color: {
+          delete_data: null,
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: null
+            }
+          })
+        },
         component: this.ingredient.map((item) => {
           return {
             component_name: item.ingredient_name,
@@ -841,7 +844,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let productInfo = res.data.data
-          this.product_code_user = productInfo.product_code
+          // this.product_code_user = productInfo.product_code  // 去除导入时导入产品编号 2020-03-26
           this.model_code = productInfo.style_code
           this.name = productInfo.name
           this.fileArr = productInfo.image.map(item => {

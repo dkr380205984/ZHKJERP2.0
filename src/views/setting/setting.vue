@@ -1234,9 +1234,9 @@
             <div class="documentSetting"
               v-loading='documentClientInfo.loading'>
               <div class="row">
-                <div class="label">公司英文名称（Company Name)：</div>
+                <div class="label">公司英文名称(Company Name)：</div>
                 <div class="content">
-                  <el-input placeholder="请输入公司英文名称（Company Name)"
+                  <el-input placeholder="请输入公司英文名称(Company Name)"
                     class="input-item"
                     v-model="documentClientInfo.name"
                     :disabled='!documentClientInfo.is_updated'>
@@ -1244,9 +1244,9 @@
                 </div>
               </div>
               <div class="row">
-                <div class="label">公司统一社会信用代码（Company Social Credit Code)：</div>
+                <div class="label">公司统一社会信用代码(Company Social Credit Code)：</div>
                 <div class="content">
-                  <el-input placeholder="请输入公司统一社会信用代码（Company Social Credit Code)"
+                  <el-input placeholder="请输入公司统一社会信用代码(Company Social Credit Code)"
                     :disabled='!documentClientInfo.is_updated'
                     class="input-item"
                     v-model="documentClientInfo.code">
@@ -1254,17 +1254,37 @@
                 </div>
               </div>
               <div class="row">
-                <span class="label">公司英文地址（Company Address)：</span>
+                <span class="label">公司英文地址(Company Address)：</span>
                 <div class="content">
                   <el-input class="input-item"
                     :disabled='!documentClientInfo.is_updated'
-                    placeholder="请输入公司英文地址（Company Address)"
+                    placeholder="请输入公司英文地址(Company Address)"
                     v-model="documentClientInfo.address">
                   </el-input>
                 </div>
               </div>
               <div class="row">
-                <span class="label">公司签章（Company Signature)：</span>
+                <span class="label">公司电话(Telephone)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentClientInfo.is_updated'
+                    placeholder="请输入公司电话(Telephone)"
+                    v-model="documentClientInfo.tel">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司传真(Fax)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentClientInfo.is_updated'
+                    placeholder="请输入公司传真(Fax)"
+                    v-model="documentClientInfo.fax">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司签章(Company Signature)：</span>
                 <div class="content">
                   <!-- <el-upload :before-upload="beforeUpload"
                     :disabled='!documentClientInfo.is_updated'
@@ -1318,9 +1338,9 @@
             <div class="documentSetting"
               v-loading='documentBankInfo.loading'>
               <div class="row">
-                <div class="label">开户银行（Bank Name)：</div>
+                <div class="label">开户银行(Bank Name)：</div>
                 <div class="content">
-                  <el-input placeholder="请输入开户银行（Bank Name)"
+                  <el-input placeholder="请输入开户银行(Bank Name)"
                     class="input-item"
                     v-model="documentBankInfo.name"
                     :disabled='!documentBankInfo.is_updated'>
@@ -1328,9 +1348,9 @@
                 </div>
               </div>
               <div class="row">
-                <div class="label">开户地址（Bank Address)：</div>
+                <div class="label">开户地址(Bank Address)：</div>
                 <div class="content">
-                  <el-input placeholder="请输入开户地址（Bank Address)"
+                  <el-input placeholder="请输入开户地址(Bank Address)"
                     :disabled='!documentBankInfo.is_updated'
                     class="input-item"
                     v-model="documentBankInfo.address"
@@ -1339,31 +1359,31 @@
                 </div>
               </div>
               <div class="row">
-                <span class="label">银行SWIFT码（SWIFT Code)：</span>
+                <span class="label">银行SWIFT码(SWIFT Code)：</span>
                 <div class="content">
                   <el-input class="input-item"
                     :disabled='!documentBankInfo.is_updated'
-                    placeholder="请输入银行SWIFT码（SWIFT Code)"
+                    placeholder="请输入银行SWIFT码(SWIFT Code)"
                     v-model="documentBankInfo.code">
                   </el-input>
                 </div>
               </div>
               <div class="row">
-                <span class="label">收款人（Beneficiary)：</span>
+                <span class="label">收款人(Beneficiary)：</span>
                 <div class="content">
                   <el-input class="input-item"
                     :disabled='!documentBankInfo.is_updated'
-                    placeholder="请输入收款人（Beneficiary)"
+                    placeholder="请输入收款人(Beneficiary)"
                     v-model="documentBankInfo.beneficiary">
                   </el-input>
                 </div>
               </div>
               <div class="row">
-                <span class="label">开户账号（Account No)：</span>
+                <span class="label">开户账号(Account No)：</span>
                 <div class="content">
                   <el-input class="input-item"
                     :disabled='!documentBankInfo.is_updated'
-                    placeholder="请输入开户账号（Account No)"
+                    placeholder="请输入开户账号(Account No)"
                     v-model="documentBankInfo.account_no">
                   </el-input>
                 </div>
@@ -1395,13 +1415,91 @@
                   <div class="btn btnGray"
                     @click="HSCode = '';getDocumentHSCodeInfo(1)">重置</div>
                 </div>
-                <div class="addBtn"
+                <!-- <div class="addBtn"
                   @click="addDocument()"
-                  style="width:6em">添加HS编码</div>
+                  style="width:6em">添加HS编码</div> -->
               </div>
               <div class="tableCtnLv2 minHeight5"
                 v-loading='documentHSCodeInfo.loading'>
-                <div class="tb_header">
+                <el-table :data="documentHSCodeList"
+                  style="width: 100%"
+                  max-height='400'>
+                  <el-table-column fixed
+                    prop="hs_code"
+                    label="HS编码"
+                    width="100">
+                  </el-table-column>
+                  <el-table-column fixed
+                    prop="product_name"
+                    label="商品名称"
+                    width="200">
+                  </el-table-column>
+                  <el-table-column prop="export"
+                    width="50"
+                    label="出口税率">
+                  </el-table-column>
+                  <el-table-column prop="export_rebate"
+                    width="50"
+                    label="出口退税税率">
+                  </el-table-column>
+                  <el-table-column prop="temporary_export"
+                    width="50"
+                    label="出口暂定税率">
+                  </el-table-column>
+                  <el-table-column prop="vat_rate"
+                    width="50"
+                    label="增值税率">
+                  </el-table-column>
+                  <el-table-column prop="most_favored_nation"
+                    width="50"
+                    label="最惠国进口税率">
+                  </el-table-column>
+                  <el-table-column prop="provisional_import_tariff"
+                    width="50"
+                    label="进口暂定税率">
+                  </el-table-column>
+                  <el-table-column prop="import_general_duty"
+                    width="50"
+                    label="进口普通税率">
+                  </el-table-column>
+                  <el-table-column prop="consumption"
+                    width="50"
+                    label="消费税率">
+                  </el-table-column>
+                  <el-table-column prop="first_legal_unit"
+                    width="50"
+                    label="第一法定单位">
+                  </el-table-column>
+                  <el-table-column prop="second_statutory_unit"
+                    width="50"
+                    label="第二法定单位">
+                  </el-table-column>
+                  <el-table-column prop="first_legal_unit_code"
+                    width="50"
+                    label="第一法定单位代码">
+                  </el-table-column>
+                  <el-table-column prop="second_legal_unit_code"
+                    width="50"
+                    label="第二法定单位代码">
+                  </el-table-column>
+                  <el-table-column prop="regulatory_condition_info"
+                    width="200"
+                    label="监管条件详细信息">
+                  </el-table-column>
+                  <el-table-column prop="quarantine_category_code"
+                    width="80"
+                    label="检验检疫类别代码缩写">
+                  </el-table-column>
+                  <el-table-column prop="quarantine_category_details"
+                    width="80"
+                    label="检验检疫类别详细信息">
+                  </el-table-column>
+                  <el-table-column prop="declaration_elements"
+                    width="300"
+                    label="申报要素">
+                  </el-table-column>
+                </el-table>
+                <!-- <div class="tb_header">
                   <div class="tb_row">HS编码</div>
                   <div class="tb_row">商品名称</div>
                   <div class="tb_row">进口优惠税</div>
@@ -1411,17 +1509,15 @@
                 <div class="tb_content"
                   v-for="(item,index) in documentHSCodeList"
                   :key="index">
-                  <div class="tb_row">{{item.name}}</div>
-                  <div class="tb_row">商品名称</div>
-                  <div class="tb_row">进口优惠税</div>
+                  <div class="tb_row">{{item.hs_code}}</div>
+                  <div class="tb_row">{{item.product_name}}</div>
+                  <div class="tb_row">{{'进口优惠税'}}</div>
                   <div class="tb_row">出口税率</div>
                   <div class="tb_row middle">
-                    <!-- <span class="tb_handle_btn blue"
-                      @click="updataYarn('updata',item)">更新</span> -->
                     <span class="tb_handle_btn red"
                       @click="deleteDocumentHSCode(item.id)">删除</span>
                   </div>
-                </div>
+                </div> -->
               </div>
               <div class="pageCtn">
                 <el-pagination background
@@ -1455,7 +1551,7 @@
               <div class="tableCtnLv2 minHeight5"
                 v-loading='documentPortInfo.loading'>
                 <div class="tb_header">
-                  <div class="tb_row">常用国家（Country)</div>
+                  <div class="tb_row">常用国家(Country)</div>
                   <div class="tb_row">常用港口 (Port Name)</div>
                   <div class="tb_row">添加日期</div>
                   <div class="tb_row middle">操作</div>
@@ -1463,7 +1559,7 @@
                 <div class="tb_content"
                   v-for="(item,index) in documentPortList"
                   :key="index">
-                  <div class="tb_row">{{item.country}})</div>
+                  <div class="tb_row">{{item.country}}</div>
                   <div class="tb_row">{{item.port_name}}</div>
                   <div class="tb_row">{{$getTime(item.created_at)}}</div>
                   <div class="tb_row middle">
@@ -3606,7 +3702,9 @@ export default {
         name: '',
         code: '',
         address: '',
-        signature: ''
+        signature: '',
+        tel: '',
+        fax: ''
       },
       documentBankInfo: {
         is_updated: false,
@@ -3822,7 +3920,6 @@ export default {
       const { documentSetting } = require('@/assets/js/api.js')
       documentSetting.companyDetail().then(res => {
         if (res.data.status !== false) {
-          console.log(res.data.data)
           this.documentClientInfo = {
             is_updated: false,
             ...res.data.data
@@ -3836,15 +3933,23 @@ export default {
       if (this.$submitLock()) return
       const { documentSetting } = require('@/assets/js/api.js')
       if (!this.documentClientInfo.name) {
-        this.$message.warning('请输入公司英文名称（Company Name)')
+        this.$message.warning('请输入公司英文名称(Company Name)')
         return
       }
       if (!this.documentClientInfo.code) {
-        this.$message.warning('请输入公司统一社会信用代码（Company Social Credit Code)')
+        this.$message.warning('请输入公司统一社会信用代码(Company Social Credit Code)')
         return
       }
       if (!this.documentClientInfo.address) {
-        this.$message.warning('请输入公司英文地址（Company Address)')
+        this.$message.warning('请输入公司英文地址(Company Address)')
+        return
+      }
+      if (!this.documentClientInfo.tel) {
+        this.$message.warning('请输入电话号(Tel)')
+        return
+      }
+      if (!this.documentClientInfo.fax) {
+        this.$message.warning('请输入传真号(Fax)')
         return
       }
       if (!this.documentClientInfo.signature) {
@@ -3855,7 +3960,9 @@ export default {
         name: this.documentClientInfo.name,
         code: this.documentClientInfo.code,
         address: this.documentClientInfo.address,
-        signature: this.documentClientInfo.signature
+        signature: this.documentClientInfo.signature,
+        tel: this.documentClientInfo.tel,
+        fax: this.documentClientInfo.fax
       }
       documentSetting.companySave(data).then(res => {
         if (res.data.status !== false) {
@@ -3880,23 +3987,23 @@ export default {
     saveDocumentBankInfo () {
       if (this.$submitLock()) return
       if (!this.documentBankInfo.name) {
-        this.$message.warning('请输入开户银行（Bank Name）')
+        this.$message.warning('请输入开户银行(Bank Name)')
         return
       }
       if (!this.documentBankInfo.address) {
-        this.$message.warning('请输入开户地址（Bank Address)')
+        this.$message.warning('请输入开户地址(Bank Address)')
         return
       }
       if (!this.documentBankInfo.code) {
-        this.$message.warning('请输入银行SWIFT码（SWIFT Code)')
+        this.$message.warning('请输入银行SWIFT码(SWIFT Code)')
         return
       }
       if (!this.documentBankInfo.beneficiary) {
-        this.$message.warning('请输入收款人（Beneficiary)')
+        this.$message.warning('请输入收款人(Beneficiary)')
         return
       }
       if (!this.documentBankInfo.account_no) {
-        this.$message.warning('请输入开户账号（Account No)')
+        this.$message.warning('请输入开户账号(Account No)')
         return
       }
 
@@ -3914,8 +4021,23 @@ export default {
         }
       })
     },
-    getDocumentHSCodeInfo (pages = 1) {
-
+    getDocumentHSCodeInfo (pages = 1, limit = 5) {
+      this.documentHSCodeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.HSList({
+        page: pages,
+        limit: limit,
+        hs_code: this.HSCode || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentHSCodeList = res.data.data
+          this.documentHSCodeTotal = res.data.total
+          if (this.documentHSCodePages !== pages) { // 更新页码
+            this.documentHSCodePages = pages
+          }
+        }
+        this.documentHSCodeInfo.loading = false
+      })
     },
     deleteDocumentHSCode (id) {
       if (!id) {
@@ -4493,9 +4615,11 @@ export default {
       }
       if (this.staffProcess) {
         process.create({
-          id: null,
-          type: 3,
-          name: this.staffProcess
+          data: [{
+            id: null,
+            type: 3,
+            name: this.staffProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')

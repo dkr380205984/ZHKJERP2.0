@@ -17,7 +17,7 @@
     display: flex;
     justify-content: center;
     .tableCtn{
-      max-height:none;
+      max-height:none!important;
     }
     .editBtnCtn{
       position: relative;
@@ -38,6 +38,9 @@
         top: 50%;
         cursor: pointer;
         transform: translate(100%,-50%);
+        .red{
+          color: @red;
+        }
       }
       .addBtn{
         color: @blue;
@@ -203,6 +206,12 @@
         }
       }
     }
+    .pageBreakInside{
+      page-break-inside: avoid;
+    }
+    .grayLabel{
+      color: @fontColor45!important;
+    }
   }
   .bottomFixBar{
     position: fixed;
@@ -236,6 +245,21 @@
           color: #FFF;
         }
       }
+    }
+  }
+  .signatureBox{
+    position: relative;
+    overflow: visible!important;
+    .signature{
+      margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      z-index: 2;
+      width: 60%;
+      max-width: 200px;
+      opacity: 0.9;
     }
   }
 }

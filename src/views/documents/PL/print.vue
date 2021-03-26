@@ -1,101 +1,76 @@
 <template>
   <div id='PL'
-    class='document'>
-    <div class="tableCtn"
-      style="max-height:none">
+    class='document'
+    v-loading='loading'>
+    <div class="tableCtn">
       <div class="headerCtn">
         <div class="top">
-          <div class="title">{{'HANGZHOU KANGHENG'}} KNITTING CO.,LTD.</div>
-          <div class="title2">NO 156 JINCHENG ROAD XINDENG TOWN FUYANG HANGZHOU,CHINA</div>
-          <div class="title3">Tel:086-57163257028&nbsp;&nbsp;Fax:086-57163257028</div>
-          <div class="title">COMMERICAL INVOICE</div>
+          <div class="title">{{companyName}}</div>
+          <div class="title2">{{companyAddress}}</div>
+          <div class="title3">Tel:{{companyTel}}&nbsp;&nbsp;Fax:{{companyFax}}</div>
+          <div class="title">PACKING LIST</div>
         </div>
       </div>
-      <div class="bodyCtn">
+      <div class="bodyCtn pageBreakInside">
         <div class="rowCtn">
           <div class="rowItem col noBorder"
-            style="flex:1.5">
+            style="flex:1.2">
             <div class="rowCtn noBorder">
               <div class="rowItem left">TO:</div>
             </div>
             <div class="rowCtn noBorder">
-              <div class="rowItem left">
-                <document-input rowModle
-                  placeholder='公司名称(company name)'></document-input>
-              </div>
+              <div class="rowItem left">{{companyInfo.company_name}} </div>
             </div>
             <div class="rowCtn noBorder">
-              <div class="rowItem left">
-                <document-input :rows='2'
-                  rowModle
-                  placeholder='公司地址(company address)'></document-input>
-              </div>
+              <div class="rowItem left">{{companyInfo.company_address}} </div>
             </div>
           </div>
           <div class="rowItem col">
             <div class="rowCtn noBorder">
-              <div class="rowItem right">
-                <document-input rowModle
-                  width='150px'
-                  alignType='right'
-                  label='Invoice Number:'
-                  placeholder='发票号码'></document-input>
+              <div class="rowItem left">
+                <span style="width:9em;text-align:right;margin-right:16px">Invoice Number:</span>
+                {{companyInfo.invoice_number}}
               </div>
             </div>
             <div class="rowCtn noBorder">
-              <div class="rowItem right">
-                <document-input rowModle
-                  width='150px'
-                  alignType='right'
-                  label="PO NO.:"
-                  placeholder='订单号'></document-input>
+              <div class="rowItem left">
+                <span style="width:9em;text-align:right;margin-right:16px">PO NO.:</span>
+                {{companyInfo.po_no}}
               </div>
             </div>
             <div class="rowCtn noBorder">
-              <div class="rowItem right">
-                <document-input rowModle
-                  width='150px'
-                  alignType='right'
-                  label='Date:'
-                  :rows='2'
-                  placeholder='下单日期'></document-input>
+              <div class="rowItem left">
+                <span style="width:9em;text-align:right;margin-right:16px">Date:</span>
+                {{companyInfo.date}}
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="bodyCtn marginTop borderColorDeep">
+      <div class="bodyCtn marginTop borderColorDeep pageBreakInside">
         <div class="rowCtn borderColor85">
           <div class="rowItem col noBorder"
-            style="flex:1.5">
+            style="flex:1.2">
             <div class="rowCtn noBorder">
               <div class="rowItem left">
-                <document-input rowModle
-                  label='LOADING PORT:'
-                  placeholder='装货港口'></document-input>
+                <span style="margin-right:16px">LOADING PORT:</span>{{otherInfo.loading_port}}
               </div>
             </div>
             <div class="rowCtn noBorder">
               <div class="rowItem left">
-                <document-input rowModle
-                  label='PAYMENT TERMS:'
-                  placeholder='付款方式'></document-input>
+                <span style="margin-right:16px">PAYMENT TERMS:</span>{{otherInfo.payment_terms}}
               </div>
             </div>
           </div>
           <div class="rowItem col">
             <div class="rowCtn noBorder">
               <div class="rowItem left">
-                <document-input rowModle
-                  label='DESTINATION PORT:'
-                  placeholder='目的港口'></document-input>
+                <span style="margin-right:16px">DESTINATION PORT:</span>{{otherInfo.destination_port}}
               </div>
             </div>
             <div class="rowCtn noBorder">
               <div class="rowItem left">
-                <document-input rowModle
-                  label="SHIPMENT DATE:"
-                  placeholder='发货日期'></document-input>
+                <span style="margin-right:16px">SHIPMENT DATE:</span>{{otherInfo.shipment_date}}
               </div>
             </div>
           </div>
@@ -103,7 +78,7 @@
       </div>
       <div class="bodyCtn marginTop"
         style="overflow:visible;font-size:14px">
-        <div class="rowCtn">
+        <div class="rowCtn pageBreakInside">
           <div class="rowItem center">CTN NO./TTL.</div>
           <div class="rowItem center">Order No.</div>
           <div class="rowItem center">ItemNumber</div>
@@ -115,69 +90,19 @@
           <div class="rowItem center">G.W./KGS</div>
           <div class="rowItem center">Vol/CBM</div>
         </div>
-        <div class="rowCtn editBtnCtn"
+        <div class="rowCtn pageBreakInside"
           v-for="(itemPack,indexPack) in packList"
           :key='indexPack'>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.ctn_no_ttl"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.order_no"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.item_number"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.desc"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.size"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.quantity_pcs"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.total_ctns_no"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.n_w_kgs"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.g_w_kgs"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
-          <div class="rowItem center">
-            <document-input v-model="itemPack.vol_cbm"
-              noLabel
-              rowModle
-              innerAlign='center'></document-input>
-          </div>
+          <div class="rowItem center">{{itemPack.ctn_no_ttl}} </div>
+          <div class="rowItem center">{{itemPack.order_no}} </div>
+          <div class="rowItem center">{{itemPack.item_number}} </div>
+          <div class="rowItem center">{{itemPack.desc}} </div>
+          <div class="rowItem center">{{itemPack.size}} </div>
+          <div class="rowItem center">{{itemPack.quantity_pcs}} </div>
+          <div class="rowItem center">{{itemPack.total_ctns_no}} </div>
+          <div class="rowItem center">{{itemPack.n_w_kgs}} </div>
+          <div class="rowItem center">{{itemPack.g_w_kgs}} </div>
+          <div class="rowItem center">{{itemPack.vol_cbm}} </div>
         </div>
         <div class="rowCtn">
           <div class="rowItem center noBorder">Total</div>
@@ -185,25 +110,26 @@
           <div class="rowItem center noBorder"></div>
           <div class="rowItem center noBorder"></div>
           <div class="rowItem center noBorder"></div>
-          <div class="rowItem center noBorder"></div>
+          <div class="rowItem center noBorder">{{totalCom.quantity_pcs}}</div>
           <div class="rowItem center noBorder">{{totalCom.total_ctns_no}}</div>
           <div class="rowItem center noBorder">{{totalCom.n_w_kgs}}</div>
           <div class="rowItem center noBorder">{{totalCom.g_w_kgs}}</div>
           <div class="rowItem center noBorder">{{totalCom.vol_cbm}}</div>
         </div>
       </div>
-      <div class="bodyCtn marginTop"
-        style="border-bottom:2px solid rgba(0,0,0,.45)">
+      <div class="bodyCtn marginTop pageBreakInside signatureBox"
+        style="display:flex;flex-direction:column;border-bottom:2px solid rgba(0,0,0,.45);min-height:200px">
+        <img :src="signature"
+          style="left:auto;right:0%"
+          v-if="signature"
+          class="signature">
         <div class="rowCtn">
           <div class="rowItem left">Remarks:</div>
         </div>
-        <div class="rowCtn noBorder">
-          <div class="rowItem left">
-            <document-input v-model="remark"
-              noLabel
-              placeholder='备注信息'
-              :rows='9'></document-input>
-          </div>
+        <div class="rowCtn noBorder"
+          style="flex:1">
+          <div class="rowItem left"
+            style="align-items:flex-start">{{remark}} </div>
         </div>
       </div>
     </div>
@@ -211,12 +137,22 @@
 </template>
 
 <script>
-import documentInput from '@/components/documents/input/index.vue'
-// import { documentSetting } from '@/assets/js/api.js'
+import { documentSetting, documents, documentsTable } from '@/assets/js/api.js'
 export default {
+  props: {
+    isHasDetail: { // 判断是否为组件是否需要去获取详情数据
+      type: Boolean,
+      default: true
+    }
+  },
   data () {
     return {
-      loading: false,
+      loading: true,
+      companyName: '',
+      companyAddress: '',
+      companyTel: '',
+      companyFax: '',
+      signature: '',
       companyInfo: {
         comapny_name: '',
         company_address: '',
@@ -230,28 +166,110 @@ export default {
         payment_terms: '',
         shipment_date: ''
       },
-      packList: [],
+      packList: [{
+        ctn_no_ttl: '',
+        order_no: '',
+        item_number: '',
+        desc: '',
+        size: '',
+        quantity_pcs: '',
+        total_ctns_no: '',
+        n_w_kgs: '',
+        g_w_kgs: '',
+        vol_cbm: ''
+      }],
       remark: ''
     }
   },
   created () {
-    // 为了页面好看给定packList长度30
-    const arr = new Array(30).join().split(',')
-    this.packList = arr.map(itemM => ({}))
-    this.remark = Object.keys(Array(100).toString().split(',')).map(itemM => 'JFK大家看法积极开发间接费扩大解放咔叽发').join(',')
+    this.loading = true
+    if (this.isHasDetail) {
+      Promise.all([
+        documentSetting.companyDetail(),
+        documentsTable.PLDetail({
+          document_id: this.$route.params.id
+        })
+      ]).then(res => {
+        // 初始化标题栏
+        this.companyName = res[0].data.data.name
+        this.companyAddress = res[0].data.data.address
+        this.companyTel = res[0].data.data.tel
+        this.companyFax = res[0].data.data.fax
+        this.signature = res[0].data.data.signature
+        // 初始化内容
+        const detail = res[1].data.data
+        this.companyInfo = {
+          company_name: detail.to_company_name,
+          company_address: detail.to_company_address,
+          invoice_number: detail.invoice,
+          po_no: detail.po,
+          date: detail.order_date
+        }
+        this.otherInfo = {
+          loading_port: detail.from_address,
+          destination_port: detail.to_address,
+          payment_terms: detail.payment,
+          shipment_date: detail.shipment_date
+        }
+        this.packList = detail.box_orders.map(itemM => {
+          return {
+            ctn_no_ttl: itemM.ctn_no,
+            order_no: itemM.order_no,
+            item_number: itemM.item_number,
+            desc: itemM.description,
+            size: itemM.size,
+            quantity_pcs: itemM.number,
+            total_ctns_no: itemM.ctn_total,
+            n_w_kgs: itemM.nwkgs,
+            g_w_kgs: itemM.gwkgs,
+            vol_cbm: itemM.volume
+          }
+        })
+        this.remark = detail.remarks
+        this.loading = false
+        this.loading = false
+      })
+    } else {
+      Promise.all([
+        documentSetting.companyDetail(),
+        documents.detail({
+          id: this.$route.params.id
+        })
+      ]).then(res => {
+        // 初始化标题栏
+        this.companyName = res[0].data.data.name
+        this.companyAddress = res[0].data.data.address
+        this.companyTel = res[0].data.data.tel
+        this.companyFax = res[0].data.data.fax
+        // 初始化内容
+        const detailInfo = res[1].data.data
+        this.companyInfo = {
+          company_name: detailInfo.to_company_name,
+          company_address: detailInfo.to_company_address,
+          invoice_number: detailInfo.invoice,
+          po_no: detailInfo.po,
+          date: this.$getTime(detailInfo.order_date, '.')
+        }
+        this.otherInfo = {
+          loading_port: detailInfo.loading_port,
+          destination_port: detailInfo.destination_port,
+          payment_terms: detailInfo.payment,
+          shipment_date: this.$getTime(detailInfo.shipment_date, '.')
+        }
+        this.loading = false
+      })
+    }
   },
   computed: {
     totalCom () {
       return {
+        quantity_pcs: this.$toFixed(this.packList.map(itemM => +itemM.quantity_pcs || 0).reduce((total, current) => total + current, 0)),
         total_ctns_no: this.$toFixed(this.packList.map(itemM => +itemM.total_ctns_no || 0).reduce((total, current) => total + current, 0)),
         n_w_kgs: this.$toFixed(this.packList.map(itemM => +itemM.n_w_kgs || 0).reduce((total, current) => total + current, 0)),
         g_w_kgs: this.$toFixed(this.packList.map(itemM => +itemM.g_w_kgs || 0).reduce((total, current) => total + current, 0)),
         vol_cbm: this.$toFixed(this.packList.map(itemM => +itemM.vol_cbm || 0).reduce((total, current) => total + current, 0))
       }
     }
-  },
-  components: {
-    documentInput
   }
 }
 </script>
