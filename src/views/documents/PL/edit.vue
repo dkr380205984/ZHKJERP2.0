@@ -344,6 +344,10 @@ export default {
     computedTotal (itemPack) {
       const arr = itemPack.ctn_no_ttl.split('-')
       itemPack.total_ctns_no = arr.length > 1 ? (parseInt(arr[1]) - parseInt(arr[0]) + 1) : 1
+      console.log(arr)
+      if (arr[1].split('#').length === 2) {
+        itemPack.quantity_pcs = parseInt(arr[1].split('#')[1])
+      }
     },
     addItem (data) {
       data.push(

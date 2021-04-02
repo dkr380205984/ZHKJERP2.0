@@ -220,7 +220,13 @@ class VerificationCode {
     return false
   }
 }
-const numberToEnglish = (num) => {
+/**
+ *
+ * @param {number} num //转换英文的金额
+ * @param {boolean} moneyType // 转换金额的类型 true 为人民币 false 为美元
+ * @returns {String}
+ */
+const numberToEnglish = (num, moneyType) => {
   let arr1 = ['', ' thousand', ' million', ' billion']
   let arr2 = ['zero', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
   let arr3 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
@@ -282,9 +288,9 @@ const numberToEnglish = (num) => {
   } else if (numArr.length === 1) {
     return translate(numArr[0])
   } else if (numArr.length === 2 && +numArr[0] > 0) {
-    return `${translate(numArr[0])} and cents ${translate(numArr[1])}`
+    return `${translate(numArr[0])} and ${!moneyType ? 'cents' : ''} ${translate(numArr[1])}`
   } else if (numArr.length === 2 && +numArr[0] === 0) {
-    return `${translate(numArr[1])} cents`
+    return moneyType ? `zero point ${translate(numArr[1])}` : `${translate(numArr[1])} cents`
   }
 }
 export {

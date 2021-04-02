@@ -50,6 +50,10 @@
             <span class="label">Destination Port:</span>
             <span class="text">{{detailInfo.destination_port}}</span>
           </div>
+          <div class="colCtn">
+            <span class="label">Currency System:</span>
+            <span class="text">{{detailInfo.currency_system}}</span>
+          </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">

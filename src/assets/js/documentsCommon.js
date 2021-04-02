@@ -15,6 +15,10 @@ const craftTypeList = [
   { value: '梭织', label: '梭织' },
   { value: '精编', label: '精编' }
 ]
+const moneyType = [
+  { value: 'CNY', label: '人民币', unit: '￥' },
+  { value: 'USD', label: '美元', unit: '$' }
+]
 // 这里代理下本地缓存需要特殊处理的数据
 let proxyObj = {}
 proxyObj = new Proxy(proxyObj, {
@@ -52,5 +56,6 @@ export {
   transportMethods,
   priceTerms,
   craftTypeList,
+  moneyType as moneyTypes,
   proxyObj as localStorage
 }

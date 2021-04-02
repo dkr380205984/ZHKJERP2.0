@@ -27,11 +27,13 @@
           <div class="rowItem left w180 grayLabel">HS编码： </div>
           <div class="rowItem w500">{{item.hs_code}} </div>
         </div>
-        <div class="rowCtn">
-          <div class="rowItem left w180 grayLabel">产品品名： </div>
-          <div class="rowItem w500">{{item.product_name}} </div>
+        <div class="rowCtn"
+          v-for="(itemOther,indexOther) in item.other_info"
+          :key="indexOther">
+          <div class="rowItem left w180 grayLabel">{{itemOther[0]}}： </div>
+          <div class="rowItem w500">{{itemOther[1]}} </div>
         </div>
-        <div class="rowCtn">
+        <!-- <div class="rowCtn">
           <div class="rowItem left w180 grayLabel">制作工艺： </div>
           <div class="rowItem w500">{{item.craftsmanship}} </div>
         </div>
@@ -46,7 +48,7 @@
         <div class="rowCtn">
           <div class="rowItem left w180 grayLabel">出口优惠情况： </div>
           <div class="rowItem w500">{{item.export_preferences}} </div>
-        </div>
+        </div> -->
       </div>
       <div class="bodyCtn noBorder marginTop pageBreakInside">
         <div class="rowCtn">
@@ -91,11 +93,7 @@ export default {
         element_orders: [// 编码信息
           {
             hs_code: '', // 编码号
-            product_name: '', // 产品品名
-            craftsmanship: '', // 制作工艺
-            ingredient: '', // 成分含量
-            product_brand: '', // 产品品牌
-            export_preferences: ''// 出口优惠情况
+            other_info: []
           }
         ]
       },
@@ -117,7 +115,15 @@ export default {
           document_id: this.$route.params.id
         }).then(resI => {
           if (resI.data.status !== false) {
-            this.saveInfo = resI.data.data
+            this.saveInfo = {
+              ...resI.data.data,
+              element_orders: resI.data.data.element_orders.map(itemM => {
+                return {
+                  hs_code: itemM.hs_code,
+                  other_info: (itemM.other_info && JSON.parse(itemM.other_info)) || []
+                }
+              })
+            }
             this.loading = false
           }
         })

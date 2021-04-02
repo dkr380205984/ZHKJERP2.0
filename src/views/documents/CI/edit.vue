@@ -248,7 +248,7 @@
               innerAlign='right'></document-input>
           </div>
           <div class="rowItem"
-            style="flex:0.6">$</div>
+            style="flex:0.6">{{moneyUnitCom}}</div>
         </div>
       </div>
       <div class="bodyCtn marginTop">
@@ -275,7 +275,7 @@
               innerAlign='right'></document-input>
           </div>
           <div class="rowItem"
-            style="flex:0.6">$</div>
+            style="flex:0.6">{{moneyUnitCom}}</div>
         </div>
         <div class="rowCtn">
           <div class="rowItem left noBorder grayLabel">TOTAL VALUE:</div>
@@ -405,6 +405,7 @@ export default {
       company_address: '',
       company_tel: '',
       company_fax: '',
+      moneyType: '',
       companyInfo: {
         comapny_name: '',
         company_address: '',
@@ -601,6 +602,7 @@ export default {
       })
       // 初始化基本信息
       const detailInfo = res[2].data.data
+      this.moneyType = detailInfo.currency_system // 初始化币制
       this.orderArr = detailInfo.orders
       if (detailInfo.status_commercial_invoice !== 2) {
         documentsTable.CIDetail({
@@ -650,16 +652,21 @@ export default {
         total_pcs: this.orderInfo.map(itemM => +itemM.pcs || 0).reduce((total, current) => total + current, 0),
         total_value: this.orderInfo.map(itemM => +itemM.amount || 0).reduce((total, current) => total + current, 0)
       }
+    },
+    moneyUnitCom () {
+      const { moneyTypes } = require('@/assets/js/documentsCommon.js')
+      const finded = moneyTypes.find(itemF => itemF.value === this.moneyType)
+      return finded ? finded.unit : 'NULL'
     }
   },
   watch: {
     'totalCom.total_value' (newVal) {
       if (newVal === 0) {
-        this.total_value = `SAY US ZERO DOLLARS ONLY.`
+        this.total_value = `SAY US ZERO ${this.moneyUnitCom === '$' ? 'DOLLARS' : 'YUAN'} ONLY.`
       } else if (newVal > 0 && newVal < 1) {
-        this.total_value = `SAY US ${numberToEnglish(newVal)} ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
+        this.total_value = `SAY US ${numberToEnglish(newVal, this.moneyUnitCom !== '$')} ${this.moneyUnitCom === '$' ? '' : 'YUAN'} ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
       } else {
-        this.total_value = `SAY US ${numberToEnglish(newVal)} DOLLARS ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
+        this.total_value = `SAY US ${numberToEnglish(newVal, this.moneyUnitCom !== '$')} ${this.moneyUnitCom === '$' ? 'DOLLARS' : 'YUAN'} ONLY.`.toUpperCase().replace(/,/g, ' ').replace(/-/g, ' ')
       }
     }
   },

@@ -37,7 +37,7 @@
             <document-select type='autocomplete'
               :optionData='portArr'
               v-model="saveInfo.exit_customs"
-              label="出镜关别"
+              label="出境关别"
               :rows="2"></document-select>
           </div>
           <div class="rowItem">
@@ -224,15 +224,15 @@
             @click="addItem(saveInfo.custom_declaration_orders)"></div>
           <div class="rowItem center">项目</div>
           <div class="rowItem center flex2">商品编号</div>
-          <div class="rowItem center flex2">商品名称</div>
+          <div class="rowItem center flex18">商品名称</div>
           <div class="rowItem center flex2">规格型号</div>
-          <div class="rowItem center flex18">数量</div>
+          <div class="rowItem center">数量</div>
           <div class="rowItem center">单位</div>
           <div class="rowItem center">单价</div>
           <div class="rowItem center flex18">总价</div>
           <div class="rowItem center">币制</div>
-          <div class="rowItem center flex3">原产国(地区)</div>
-          <div class="rowItem center flex3">最终目的国(地区)</div>
+          <div class="rowItem center flex18">原产国(地区)</div>
+          <div class="rowItem center flex2">最终目的国(地区)</div>
           <div class="rowItem center flex18">境内货源地</div>
           <div class="rowItem center flex18">征免</div>
         </div>
@@ -258,13 +258,14 @@
               noLabel
               rowModle />
           </div>
-          <div class="rowItem center flex2">
+          <div class="rowItem center flex18">
             <document-select type='autocomplete'
               :optionData='typeArr'
               v-model="item.product_name"
               innerAlign='center'
               noLabel
-              rowModle />
+              rowModle
+              @select="selectTypeEvent($event,item)" />
           </div>
           <div class="rowItem center flex2">
             <document-select type='autocomplete'
@@ -277,7 +278,7 @@
               noLabel
               rowModle />
           </div>
-          <div class="rowItem center flex18">
+          <div class="rowItem center">
             <document-input v-model="item.number"
               @input="computedTotal(item)"
               type='number'
@@ -307,18 +308,20 @@
               rowModle />
           </div>
           <div class="rowItem center">
-            <document-input v-model="item.currency_system"
+            <document-select type='autocomplete'
+              :optionData='moneyTypes'
+              v-model="item.currency_system"
               innerAlign='center'
               noLabel
               rowModle />
           </div>
-          <div class="rowItem center flex3">
+          <div class="rowItem center flex18">
             <document-input v-model="item.origin_country"
               innerAlign='center'
               noLabel
               rowModle />
           </div>
-          <div class="rowItem center flex3">
+          <div class="rowItem center flex2">
             <document-select type='autocomplete'
               :optionData='countryArr'
               v-model="item.destination_country"
@@ -421,7 +424,7 @@
 import documentInput from '@/components/documents/input/index.vue'
 import documentSelect from '@/components/documents/select/index.vue'
 import { documentsTable, documents, documentSetting } from '@/assets/js/api.js'
-import { transportMethods, priceTerms, localStorage } from '@/assets/js/documentsCommon.js'
+import { transportMethods, priceTerms, localStorage, moneyTypes } from '@/assets/js/documentsCommon.js'
 export default {
   data () {
     return {
@@ -430,7 +433,7 @@ export default {
         pre_entry: '', // 预录入编号
         customs: '', // 海关编号
         sender: '', // 境内发货人
-        exit_customs: '', // 出镜关别
+        exit_customs: '', // 出境关别
         export_date: '', // 出口日期
         filing_date: '', // 申报日期
         case: '', // 备案号
@@ -440,14 +443,14 @@ export default {
         waybill: '', // 提运单号
         production_sales_unit: '', // 生产销售单位
         supervision_method: '一般贸易', // 监管方式
-        nature_exemption: '一般征免', // 免征性质
+        nature_exemption: '一般征税', // 免征性质
         license: '', // 许可证
         contract_agreement: '', // 合同协议号
         trading_country: '', // 贸易国
         arrival_country: '', // 运抵国
         refers_port: '', // 指运港
         departure_port: '', // 离境口岸
-        packaging: '', // 包装种类
+        packaging: '纸箱', // 包装种类
         pieces: '', // 件数
         gwkgs: '', // 毛重(kg)
         nwkgs: '', // 净重(kg)
@@ -457,30 +460,30 @@ export default {
         miscellaneous: '', // 杂费
         documents: '', // 随附单证及编号
         marks_remarks: '', // 标记唛码和备注
-        special_relationship: '', // 特殊关系确认
-        price_impact: '', // 价格影响确认
-        payment_concession: '', // 支付特许使用费
-        report_pay: '', // 自报自缴
+        special_relationship: '否', // 特殊关系确认
+        price_impact: '否', // 价格影响确认
+        payment_concession: '否', // 支付特许使用费
+        report_pay: '否', // 自报自缴
         customs_broker: '', // 报关人员
         customs_broker_number: '', // 报关人员证号
         phone: '', // 电话
         reporting_unit: '', // 申报单位
         custom_declaration_orders: [ // 货物信息
-          {
-            item_no: '1', // 项号
-            product_no: '', // 商品编号
-            product_name: '', // 商品名称及规格号
-            style_code: '', // 上面字段得拆成两字段(新增的)  数据库的product_name是前端product_name与style_code的连接
-            number: '', // 数量
-            unit: '', // 单位
-            unit_price: '', // 单价
-            total_price: '', // 总价
-            currency_system: '', // 币制
-            origin_country: '中国', // 原产国
-            destination_country: '', // 最终目的国
-            goods_source: '', // 货源地
-            exemption: '一般征免'// 证免
-          }
+          // {
+          //   item_no: '1', // 项号
+          //   product_no: '', // 商品编号
+          //   product_name: '', // 商品名称及规格号
+          //   style_code: '', // 上面字段得拆成两字段(新增的)  数据库的product_name是前端product_name与style_code的连接
+          //   number: '', // 数量
+          //   unit: '', // 单位
+          //   unit_price: '', // 单价
+          //   total_price: '', // 总价
+          //   currency_system: '', // 币制
+          //   origin_country: '中国', // 原产国
+          //   destination_country: '', // 最终目的国
+          //   goods_source: '', // 货源地
+          //   exemption: '照章征税'// 证免
+          // }
         ]
       },
       countryArr: [],
@@ -490,12 +493,17 @@ export default {
       HSArr: [],
       typeArr: [],
       styleArr: [],
-      supplySource: localStorage.supplySource
+      supplySource: localStorage.supplySource,
+      moneyTypes: moneyTypes.map(itemM => ({ value: itemM.value, label: itemM.value })),
+      defaultMoneyType: '' // 默认币制
     }
   },
   methods: {
+    selectTypeEvent ({ valueObj }, item) {
+      item.unit = valueObj.unit
+    },
     selectStyleCode ({ valueObj }, item) {
-      item.number = valueObj.numbers
+      // item.number = valueObj.numbers
       item.unit_price = valueObj.unit_price
       this.computedTotal(item)
     },
@@ -530,11 +538,11 @@ export default {
         unit: '',
         unit_price: '',
         total_price: '',
-        currency_system: '',
+        currency_system: this.defaultMoneyType || '',
         origin_country: '中国',
         destination_country: '',
         goods_source: '',
-        exemption: ''
+        exemption: '照章征税'
       })
     },
     deleteItem (data, index) {
@@ -569,6 +577,8 @@ export default {
       documentSetting.HSList(),
       documentSetting.typeList()
     ]).then(res => {
+      this.defaultMoneyType = res[0].data.data.currency_system
+      this.addItem(this.saveInfo.custom_declaration_orders)
       if (res[0].data.data.status_export_declaration !== 2) { // 判断是否添加过 是否去拿详情
         documentsTable.EDDetail({
           document_id: this.$route.params.id
@@ -592,9 +602,9 @@ export default {
         this.saveInfo.sender = `${res[2].data.data.code} ${window.sessionStorage.getItem('full_name')}`
         this.saveInfo.overseas_consignee = res[0].data.data.to_company_name
         this.saveInfo.production_sales_unit = `${res[2].data.data.code} ${window.sessionStorage.getItem('full_name')}`
-        this.saveInfo.customs_broker = window.sessionStorage.getItem('user_name') || ''
-        this.saveInfo.phone = window.sessionStorage.getItem('telephone') || ''
-        this.saveInfo.reporting_unit = `${res[2].data.data.code} ${window.sessionStorage.getItem('full_name')}`
+        // this.saveInfo.customs_broker = window.sessionStorage.getItem('user_name') || ''
+        // this.saveInfo.phone = window.sessionStorage.getItem('telephone') || ''
+        // this.saveInfo.reporting_unit = `${res[2].data.data.code} ${window.sessionStorage.getItem('full_name')}`
       }
       this.countryArr = this.$unique(res[1].data.data.map(itemM => itemM.country)).map(itemM => {
         return {
@@ -612,7 +622,8 @@ export default {
       this.typeArr = res[4].data.data.map(itemM => {
         return {
           label: `${itemM.name},${itemM.english}`,
-          value: `${itemM.name},${itemM.english}`
+          value: `${itemM.name},${itemM.english}`,
+          unit: itemM.unit
         }
       })
       this.styleArr = res[0].data.data.orders.map(itemM => {

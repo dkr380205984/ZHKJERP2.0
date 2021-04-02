@@ -26,7 +26,7 @@
             {{saveInfo.sender}}
           </div>
           <div class="rowItem columnModule">
-            出镜关别
+            出境关别
             <br />
             {{saveInfo.exit_customs}}
           </div>
@@ -47,7 +47,6 @@
                 <br />
                 {{saveInfo.case}}
               </div>
-
             </div>
           </div>
         </div>
@@ -141,7 +140,7 @@
             {{saveInfo.packaging}}
           </div>
           <div class="rowItem columnModule"
-            style="padding:0 8px;">
+            style="padding:0 8px;height:auto">
             <div class="rowCtn noBorder">
               <div class="rowItem columnModule">
                 件数
@@ -156,7 +155,7 @@
             </div>
           </div>
           <div class="rowItem columnModule"
-            style="padding:0 8px;">
+            style="padding:0 8px;height:auto">
             <div class="rowCtn noBorder">
               <div class="rowItem columnModule">
                 净重(千克)
@@ -212,7 +211,7 @@
           <div class="rowItem center flex18">征免</div>
         </div>
         <div class="rowCtn"
-          style="font-size:16px"
+          style="font-size:16px;max-height:40px;overflow:visible"
           v-for="(item,index) in returnArr(itemNo)"
           :key="index">
           <div class="rowItem center">{{item.item_no}} </div>
@@ -281,11 +280,10 @@
               </div>
               <div class="rowItem noBorder columnModule signatureBox">
                 申报单位(签章)
-                <br />
                 <img :src="signature"
-                  style="top:0"
+                  style="top:30%"
                   v-if="signature"
-                  class="signature">
+                  class="signature" />
               </div>
               <div class="rowItem noBorder"
                 style="font-size:14px;align-items:flex-end;">
@@ -372,7 +370,8 @@ export default {
           }
         ]
       },
-      signature: ''
+      signature: '',
+      customs: ''
     }
   },
   created () {
@@ -383,7 +382,9 @@ export default {
           document_id: this.$route.params.id
         })
       ]).then(res => {
-        this.signature = res[0].data.data.signature
+        // this.signature = res[0].data.data.signature
+        this.signature = res[0].data.data.special_seal
+        // this.customs = res[0].data.data.special_seal
         if (this.isHasDetail) {
           this.saveInfo = res[1].data.data
         }

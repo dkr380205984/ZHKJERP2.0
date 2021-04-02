@@ -114,7 +114,7 @@
           <div class="rowItem noBorder right"
             style="flex:1.5">{{itemOrder.amount}}</div>
           <div class="rowItem"
-            style="flex:0.6">$</div>
+            style="flex:0.6">{{moneyUnitCom}}</div>
         </div>
       </div>
       <div class="bodyCtn marginTop pageBreakInside">
@@ -127,7 +127,7 @@
           <div class="rowItem noBorder right"
             style="flex:1.5">{{totalCom.total_value}} </div>
           <div class="rowItem"
-            style="flex:0.6">$</div>
+            style="flex:0.6">{{moneyUnitCom}}</div>
         </div>
         <div class="rowCtn">
           <div class="rowItem left noBorder">TOTAL VALUE:</div>
@@ -205,7 +205,7 @@
 </template>
 
 <script>
-import { documentSetting } from '@/assets/js/api.js'
+import { documentSetting, documents } from '@/assets/js/api.js'
 export default {
   props: {
     isHasDetail: { // 判断是否为组件是否需要去获取详情数据
@@ -220,6 +220,7 @@ export default {
       company_address: '',
       company_tel: '',
       company_fax: '',
+      moneyType: '',
       companyInfo: {
         comapny_name: '',
         company_address: '',
@@ -275,6 +276,9 @@ export default {
         documentSetting.companyDetail(),
         documentsTable.CIDetail({
           document_id: this.$route.params.id
+        }),
+        documents.detail({
+          id: this.$route.params.id
         })
       ]).then(res => {
         this.company_name = res[0].data.data.name
@@ -282,6 +286,7 @@ export default {
         this.company_tel = res[0].data.data.tel
         this.company_fax = res[0].data.data.fax
         this.signature = res[0].data.data.signature
+        this.moneyType = res[2].data.data.currency_system // 初始化币制
         // 初始化基本信息
         const detail = res[1].data.data
         this.companyInfo = {
@@ -310,7 +315,6 @@ export default {
         this.loading = false
       })
     } else {
-      const { documents } = require('@/assets/js/api.js')
       Promise.all([
         documentSetting.companyDetail(),
         documentSetting.bankDetail(),
@@ -323,6 +327,8 @@ export default {
         this.company_tel = res[0].data.data.tel
         this.company_fax = res[0].data.data.fax
         this.bankInfo = res[1].data.data
+        this.signature = res[0].data.data.signature
+        this.moneyType = res[2].data.data.currency_system // 初始化币制
         const detailInfo = res[2].data.data
         this.companyInfo = {
           company_name: detailInfo.to_company_name,
@@ -347,6 +353,11 @@ export default {
         total_pcs: this.orderInfo.map(itemM => +itemM.pcs || 0).reduce((total, current) => total + current, 0),
         total_value: this.orderInfo.map(itemM => +itemM.amount || 0).reduce((total, current) => total + current, 0)
       }
+    },
+    moneyUnitCom () {
+      const { moneyTypes } = require('@/assets/js/documentsCommon.js')
+      const finded = moneyTypes.find(itemF => itemF.value === this.moneyType)
+      return finded ? finded.unit : 'NULL'
     }
   }
 }

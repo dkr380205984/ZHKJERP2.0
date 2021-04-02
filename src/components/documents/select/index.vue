@@ -4,7 +4,7 @@
     <span class="document_select_label"
       v-if="!noLabel">{{label}}</span>
     <textarea class="document_select_self"
-      :style="`text-align:${innerAlign};${width?'width:'+width+'!important;flex:none':''}`"
+      :style="`text-align:${innerAlign};${(rows===1 && 'white-space: nowrap;') || ''}` + (width ? `width:${width}!important;flex:none` : '')"
       :placeholder="placeholder"
       :readonly='readonlyCom'
       v-model="innerValue"

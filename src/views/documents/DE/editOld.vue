@@ -42,7 +42,6 @@
           <div class="rowItem left w180 grayLabel">HS编码： </div>
           <div class="rowItem w500">
             <document-select v-model="item.hs_code"
-              @select="selectHSCodeChange($event,item)"
               rowModle
               type='autocomplete'
               :optionData='HSList'
@@ -51,14 +50,46 @@
               noLabel></document-select>
           </div>
         </div>
-        <div class="rowCtn"
-          v-for="(itemOther,indexOther) in item.other_info || []"
-          :key="indexOther">
-          <div class="rowItem left w180 grayLabel">{{itemOther[0]}}： </div>
-          <div class="rowItem w500 editBtnCtn">
-            <div class="deleteBtn"
-              @click="deleteItem(item.other_info,indexOther)">删除</div>
-            <document-input v-model="itemOther[1]"
+        <div class="rowCtn">
+          <div class="rowItem left w180 grayLabel">产品品名： </div>
+          <div class="rowItem w500">
+            <document-select v-model="item.product_name"
+              rowModle
+              type='autocomplete'
+              :optionData='typeList'
+              noLabel></document-select>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="rowItem left w180 grayLabel">制作工艺： </div>
+          <div class="rowItem w500">
+            <document-select v-model="item.craftsmanship"
+              rowModle
+              type='autocomplete'
+              :optionData='craftTypeList'
+              noLabel></document-select>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="rowItem left w180 grayLabel">成分含量： </div>
+          <div class="rowItem w500">
+            <document-input v-model="item.ingredient"
+              rowModle
+              noLabel></document-input>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="rowItem left w180 grayLabel">产品品牌： </div>
+          <div class="rowItem w500">
+            <document-input v-model="item.product_brand"
+              rowModle
+              noLabel></document-input>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="rowItem left w180 grayLabel">出口优惠情况： </div>
+          <div class="rowItem w500">
+            <document-input v-model="item.export_preferences"
               rowModle
               noLabel></document-input>
           </div>
@@ -109,31 +140,22 @@ export default {
         element_orders: [// 编码信息
           {
             hs_code: '', // 编码号
-            other_info: []
+            product_name: '', // 产品品名
+            craftsmanship: '', // 制作工艺
+            ingredient: '', // 成分含量
+            product_brand: '', // 产品品牌
+            export_preferences: ''// 出口优惠情况
           }
         ]
       }
     }
   },
   methods: {
-    selectHSCodeChange ({ valueObj }, item) {
-      const keyArr = valueObj.declaration_elements.split('$').map(itemM => itemM.split(':')[1]).filter(itemF => itemF).map(itemM => {
-        const arr = itemM.split('[')
-        return [arr[0], ((arr[1] && arr[1].split(']')[0]) || '')]
-      })
-      item.other_info = keyArr
-    },
     saveAll () {
       if (this.$submitLock()) return
       documentsTable.DESave({
         document_id: this.$route.params.id,
-        ...this.saveInfo,
-        element_orders: this.saveInfo.element_orders.map(itemM => {
-          return {
-            hs_code: itemM.hs_code,
-            other_info: (itemM.other_info && JSON.stringify(itemM.other_info)) || []
-          }
-        })
+        ...this.saveInfo
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('编辑成功')
@@ -148,7 +170,11 @@ export default {
       }
       data.push({
         hs_code: '', // 编码号
-        other_info: []
+        product_name: '', // 产品品名
+        craftsmanship: '', // 制作工艺
+        ingredient: '', // 成分含量
+        product_brand: '', // 产品品牌
+        export_preferences: ''// 出口优惠情况
       })
     },
     deleteItem (data, index) {
@@ -158,7 +184,9 @@ export default {
         type: 'warning'
       }).then(() => {
         data.splice(index, 1)
-        this.$forceUpdate()
+        this.orderInfo.forEach(itemF => {
+          this.computedOrderPCSAmount(itemF)
+        })
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -198,15 +226,7 @@ export default {
           document_id: this.$route.params.id
         }).then(res => {
           if (res.data.status !== false) {
-            this.saveInfo = {
-              ...res.data.data,
-              element_orders: res.data.data.element_orders.length > 0 ? res.data.data.element_orders.map(itemM => {
-                return {
-                  hs_code: itemM.hs_code,
-                  other_info: itemM.other_info && JSON.parse(itemM.other_info)
-                }
-              }) : [{ hs_code: '', other_info: [] }]
-            }
+            this.saveInfo = res.data.data
             this.loading = false
           }
         })

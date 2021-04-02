@@ -157,8 +157,12 @@
           <div class="colCtn flex3">
             <span class="label">TO (Company Name)</span>
             <div class="text">
-              <el-input v-model="to_company_name"
-                placeholder="请选择公司名称"></el-input>
+              <el-autocomplete v-model="to_company_name"
+                :fetch-suggestions="querySearchCompanyName"
+                @select='selectCompanyName'
+                placeholder="请选择公司名称"></el-autocomplete>
+              <!-- <el-input v-model="to_company_name"
+                placeholder="请选择公司名称"></el-input> -->
             </div>
           </div>
           <div class="colCtn ">
@@ -208,15 +212,35 @@
           <div class="colCtn flex3">
             <span class="label">From</span>
             <div class="text">
-              <el-input v-model="from"
-                placeholder="请选择生产地"></el-input>
+              <el-autocomplete v-model="from"
+                :fetch-suggestions="querySearchPortName"
+                placeholder="请选择生产地"></el-autocomplete>
+              <!-- <el-input v-model="from"
+                placeholder="请选择生产地"></el-input> -->
             </div>
           </div>
           <div class="colCtn flex3">
             <span class="label">To</span>
             <div class="text">
-              <el-input v-model="to"
-                placeholder="请选择发货地"></el-input>
+              <el-autocomplete v-model="to"
+                :fetch-suggestions="querySearchPortName"
+                placeholder="请选择发货地"></el-autocomplete>
+              <!-- <el-input v-model="to"
+                placeholder="请选择发货地"></el-input> -->
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">Currency System</span>
+            <div class="text">
+              <el-select v-model="moneyType"
+                filterable
+                placeholder="请选择币制">
+                <el-option v-for="(item,index) in moneyTypes"
+                  :key="index"
+                  :label="`${item.label}(${item.value})`"
+                  :value="item.value">
+                </el-option>
+              </el-select>
             </div>
           </div>
         </div>
@@ -260,6 +284,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { client, order, documentSetting, documents } from '@/assets/js/api.js'
+import { moneyTypes } from '@/assets/js/documentsCommon.js'
 export default {
   data () {
     return {
@@ -286,12 +311,70 @@ export default {
       loading_port: '',
       destination_port: '',
       paymentList: [],
-      portList: []
+      portList: [],
+      moneyTypes,
+      moneyType: ''
     }
   },
   methods: {
     saveAll () {
       if (this.$submitLock()) return
+      if (this.checkedList.length === 0) {
+        this.$message.warning('请勾选订单')
+        return
+      }
+      if (!this.po_number) {
+        this.$message.warning('请输入PO号')
+        return
+      }
+      if (!this.invoice_number) {
+        this.$message.warning('请输入发票号码')
+        return
+      }
+      if (!this.payment_term) {
+        this.$message.warning('请输入付款方式')
+        return
+      }
+      if (!this.to_company_name) {
+        this.$message.warning('请输入公司名称')
+        return
+      }
+      if (!this.to_company_address) {
+        this.$message.warning('请输入公司地址')
+        return
+      }
+      if (!this.order_date) {
+        this.$message.warning('请选择下单日期')
+        return
+      }
+      if (!this.ex_factory_date) {
+        this.$message.warning('请选择离厂日期')
+        return
+      }
+      if (!this.shipment_date) {
+        this.$message.warning('请选择发货日期')
+        return
+      }
+      if (!this.from) {
+        this.$message.warning('请输入生产地')
+        return
+      }
+      if (!this.to) {
+        this.$message.warning('请输入发货地')
+        return
+      }
+      if (!this.loading_port) {
+        this.$message.warning('请输入发货港口')
+        return
+      }
+      if (!this.destination_port) {
+        this.$message.warning('请输入到达港口')
+        return
+      }
+      if (!this.moneyType) {
+        this.$message.warning('请选择币制')
+        return
+      }
       documents.create({
         id: this.$route.params.id,
         document_orders: this.checkedList.map(itemM => itemM.id),
@@ -306,7 +389,8 @@ export default {
         from_address: this.from,
         to_address: this.to,
         loading_port: this.loading_port,
-        destination_port: this.destination_port
+        destination_port: this.destination_port,
+        currency_system: this.moneyType
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('修改成功')
@@ -314,8 +398,36 @@ export default {
         }
       })
     },
+    selectCompanyName (event) {
+      this.to_company_address = event.address
+    },
+    querySearchCompanyName (queryString, callback) {
+      const returnData = this.clientList.map(itemM => {
+        return {
+          value: itemM.name,
+          label: itemM.name,
+          address: itemM.address
+        }
+      })
+      callback(queryString ? returnData.filter(itemF => itemF.value.indexOf(queryString) !== -1) : returnData)
+    },
+    querySearchPortName (queryString, callback) {
+      const returnData = this.portList.map(itemM => {
+        return {
+          value: itemM.value[0],
+          label: itemM.label[0]
+        }
+      })
+      callback(queryString ? returnData.filter(itemF => itemF.label.indexOf(queryString.toUpperCase()) !== -1) : returnData)
+    },
     querySearchPort (queryString, callback) {
-      callback(queryString ? this.portList.filter(itemF => itemF.label.indexOf(queryString.toUpperCase()) !== -1) : this.portList)
+      const returnData = this.portList.map(itemM => {
+        return {
+          value: itemM.value.join(','),
+          label: itemM.label.join(',')
+        }
+      })
+      callback(queryString ? returnData.filter(itemF => itemF.label.indexOf(queryString.toUpperCase()) !== -1) : returnData)
     },
     querySearchPayment (queryString, callback) {
       callback(queryString ? this.paymentList.filter(itemF => itemF.label.indexOf(queryString) !== -1) : this.paymentList)
@@ -397,7 +509,8 @@ export default {
       documentSetting.portList(),
       documents.detail({
         id: this.$route.params.id
-      })
+      }),
+      documentSetting.clientList()
     ]).then(res => {
       this.companyArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
       this.paymentList = res[1].data.data.map(itemM => {
@@ -408,10 +521,11 @@ export default {
       })
       this.portList = res[2].data.data.map(itemM => {
         return {
-          value: `${itemM.port_name},${itemM.country}`.toUpperCase(),
-          label: `${itemM.port_name},${itemM.country}`.toUpperCase()
+          value: [itemM.port_name.toUpperCase(), itemM.country.toUpperCase()],
+          label: [itemM.port_name.toUpperCase(), itemM.country.toUpperCase()]
         }
       })
+      this.clientList = res[4].data.data
       const documentsData = res[3].data.data
       this.checkedList = documentsData.orders.map(itemMO => {
         return {
@@ -431,6 +545,7 @@ export default {
       this.to = documentsData.to_address
       this.loading_port = documentsData.loading_port
       this.destination_port = documentsData.destination_port
+      this.moneyType = documentsData.currency_system
       this.getOrderList()
     })
   },
