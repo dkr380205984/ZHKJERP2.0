@@ -513,8 +513,8 @@ export default {
       this.companyArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
       this.paymentList = res[1].data.data.map(itemM => {
         return {
-          value: `${itemM.name}(${itemM.english.toUpperCase()})`,
-          label: `${itemM.name}(${itemM.english.toUpperCase()})`
+          value: `${itemM.english.toUpperCase()}`,
+          label: `${itemM.english.toUpperCase()}`
         }
       })
       this.portList = res[2].data.data.map(itemM => {

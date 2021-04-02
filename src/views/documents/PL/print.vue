@@ -129,7 +129,8 @@
         <div class="rowCtn noBorder"
           style="flex:1">
           <div class="rowItem left"
-            style="align-items:flex-start">{{remark}} </div>
+            style="align-items:flex-start"
+            v-html="remark"></div>
         </div>
       </div>
     </div>
@@ -225,8 +226,7 @@ export default {
             vol_cbm: itemM.volume
           }
         })
-        this.remark = detail.remarks
-        this.loading = false
+        this.remark = detail.remarks.replace(/\n/g, '<br />')
         this.loading = false
       })
     } else {

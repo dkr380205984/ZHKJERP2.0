@@ -591,7 +591,7 @@ export default {
       this.payTypeList = res[3].data.data.map(itemM => {
         return {
           label: `${itemM.name}(${itemM.english})`,
-          value: `${itemM.name}(${itemM.english})`
+          value: `${itemM.english}`
         }
       })
       this.typeList = res[4].data.data.map(itemM => {

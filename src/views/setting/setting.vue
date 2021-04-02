@@ -4033,10 +4033,12 @@ export default {
   methods: {
     // 单证模块
     uploadSignatureSuccess () {
-      this.documentCompanyInfo.signature = this.$refs.companySignatureUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })[1]
+      const fileArr = this.$refs.companySignatureUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
+      this.documentCompanyInfo.signature = fileArr[1] || fileArr[0]
     },
     uploadCustomsSuccess () {
-      this.documentCompanyInfo.special_seal = this.$refs.companyCustomsUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })[1]
+      const fileArr = this.$refs.companyCustomsUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
+      this.documentCompanyInfo.special_seal = fileArr[1] || fileArr[0]
     },
     getDocumentCompanyInfo () { // 获取英文工厂信息
       this.documentCompanyInfo.loading = true
