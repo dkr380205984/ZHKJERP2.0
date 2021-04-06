@@ -140,13 +140,13 @@ export default {
       statusArr: [
         {
           name: '待审核',
-          id: '1'
+          id: '0'
         }, {
           name: '通过',
-          id: '2'
+          id: '1'
         }, {
           name: '驳回',
-          id: '3'
+          id: '2'
         }
       ],
       list: [],
@@ -215,7 +215,12 @@ export default {
       this.loading = true
       reimbursement.list({
         limit: 10,
-        page: this.pages
+        page: this.pages,
+        code: this.keyword || '',
+        reimburse_user: this.user_name || '',
+        status: this.status || '',
+        start_time: (this.date && this.date[0]) || '',
+        end_time: (this.date && this.date[1]) || ''
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data

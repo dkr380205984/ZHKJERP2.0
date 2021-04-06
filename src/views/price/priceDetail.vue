@@ -101,13 +101,28 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">起订备注：</span>
-            <span class="text">{{set_desc ? set_desc : '暂无备注'}}</span>
+            <span class="text"
+              v-html="set_desc || '暂无备注'">
+              <!-- {{set_desc ? set_desc : '暂无备注'}} -->
+            </span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">产品需求：</span>
-            <span class="text">{{product_need ? product_need : '暂无需求'}}</span>
+            <span class="text"
+              v-html="product_need || '暂无需求'">
+              <!-- {{product_need ? product_need : '暂无需求'}} -->
+            </span>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">其它备注：</span>
+            <span class="text"
+              v-html="other_desc || '暂无备注'">
+              <!-- {{other_desc ? other_desc : '暂无备注'}} -->
+            </span>
           </div>
         </div>
         <div class="rowCtn">
@@ -337,6 +352,7 @@ export default {
       set_num: '',
       set_desc: '',
       product_need: '',
+      other_desc: '',
       product_info: [],
       file_url: [],
       price_info: [],
@@ -466,6 +482,7 @@ export default {
           this.set_num = data.number
           this.set_desc = data.product_need_desc
           this.product_need = data.product_need
+          this.other_desc = data.other_desc
           this.product_info = data.product_info.map(item => {
             return {
               show: false,

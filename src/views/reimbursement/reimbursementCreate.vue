@@ -51,7 +51,7 @@
                   placeholder="请输入报销内容"></el-autocomplete>
               </div>
               <div class="tb_row">
-                <zh-input placeholder="请输入报销内容"
+                <zh-input placeholder="请输入报销金额"
                   class='tb_row_input'
                   type='number'
                   v-model="item.price"></zh-input>
@@ -165,6 +165,13 @@ export default {
       if (list.filter(item => (!item.name || !item.price)).length > 0) {
         this.$message.error('检测到有报销明细未填写完成')
         return
+      }
+      for (let i = this.list.length - 1; i >= 0; i--) { // 不允许出现两个相同的报销内容
+        const item = this.list[i]
+        if (this.list.filter(itemF => itemF.name === item.name).length > 1) {
+          this.$message.error(`检测到存在相同的报销内容“${item.name}”，请做出合理调整`)
+          return
+        }
       }
       let invoiceFile = this.$refs.reimbursementFile.uploadFiles.map(item => {
         return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key))
