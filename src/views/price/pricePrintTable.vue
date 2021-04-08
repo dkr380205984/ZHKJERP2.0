@@ -61,9 +61,10 @@
         </div>
         <div class="print_row has_marginBottom">
           <span class="row_item w180 center">产品需求</span>
-          <span class="row_item left flex08"
-            v-html="product_need || ''">
-            <!-- {{product_need}} -->
+          <span class="row_item left flex08">
+            <!-- <span class="row_item left flex08"
+            v-html="product_need || ''"> -->
+            {{product_need}}
           </span>
         </div>
         <div class="print_row bgGray">
