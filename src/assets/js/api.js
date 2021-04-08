@@ -607,7 +607,17 @@ const documentsTable = {
   DESave: (params) => http.post(`${baseUrl}/document/element/save`, params, 'application/json'),
   DEDetail: (params) => http.get(`${baseUrl}/document/element/detail`, params)
 }
+// 财务新接口
+const newFinance = {
+  order: (params) => http.get(`${baseUrl}/statistic/order/detail`, params),
+  sample: (params) => http.get(`${baseUrl}/statistic/sample/order/detail`, params),
+  materialOrder: (params) => http.get(`${baseUrl}/statistic/material/order/detail`, params),
+  materialProcess: (params) => http.get(`${baseUrl}/statistic/material/process/detail`, params),
+  materialStock: (params) => http.get(`${baseUrl}/statistic/material/push/detail`, params),
+  weave: (params) => http.get(`${baseUrl}/statistic/production/weave/detail`, params)
+}
 export {
+  newFinance,
   documentsTable,
   documents,
   documentSetting,

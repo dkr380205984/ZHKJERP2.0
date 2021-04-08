@@ -13,7 +13,9 @@ import 'echarts-gl'
 import 'echarts/lib/chart/line'
 import 'echarts/lib/component/polar'
 // 导入icon svg
-import './assets/font/iconfont.js'
+import '@/assets/font/iconfont.js'
+// 导入自定义指令及样式
+import '@/assets/js/zhDirective.js'
 
 Vue.component('v-chart', ECharts)
 Vue.use(MyPlugin)

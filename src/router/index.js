@@ -9,11 +9,27 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function (location) {
   return originalPush.call(this, location).catch(err => err)
 }
-
+// const newFinancialStatisticsUrl = '../views/newFinancialStatistics/'
 const routes = [
   {
     path: '/',
     redirect: '/login'
+  }, {
+    path: '/newfinancialStatistics',
+    // redirect: '/homePage/homePage',
+    name: '财务统计-新版',
+    component: () => import('@/views/index.vue'),
+    children: [
+      {
+        path: 'orderStatistics',
+        name: '订单财务统计-新版',
+        component: () => import(`../views/newFinancialStatistics/orderStatistics.vue`)
+      }, {
+        path: 'sampleStatistics',
+        name: '样单财务统计-新版',
+        component: () => import(`../views/newFinancialStatistics/sampleStatistics.vue`)
+      }
+    ]
   }, {
     path: '/document',
     redirect: '/homePage/homePage',

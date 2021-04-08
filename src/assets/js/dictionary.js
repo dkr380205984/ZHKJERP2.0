@@ -285,6 +285,7 @@ const isHasPermissions = (id) => {
 }
 // 物料的批缸号及色号的默认值
 const VATCODE_COLORCODE_DEFAULT = 'NOT_SET'
+const ECHARTS_COLOR = ['#1F78B4', '#25B41F', '#A6CEE3', '#B2DF8A', '#FB9A99']
 export {
   companyType,
   moneyArr,
@@ -293,5 +294,6 @@ export {
   chinaNum,
   letterArr,
   countries,
-  VATCODE_COLORCODE_DEFAULT
+  VATCODE_COLORCODE_DEFAULT,
+  ECHARTS_COLOR
 }
