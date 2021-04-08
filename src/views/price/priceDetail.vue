@@ -101,18 +101,20 @@
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">起订备注：</span>
-            <span class="text"
-              v-html="set_desc || '暂无备注'">
-              <!-- {{set_desc ? set_desc : '暂无备注'}} -->
+            <span class="text">
+              <!-- <span class="text"
+              v-html="set_desc || '暂无备注'"> -->
+              {{set_desc ? set_desc : '暂无备注'}}
             </span>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn">
             <span class="label">产品需求：</span>
-            <span class="text"
-              v-html="product_need || '暂无需求'">
-              <!-- {{product_need ? product_need : '暂无需求'}} -->
+            <span class="text">
+              <!-- <span class="text"
+              v-html="product_need || '暂无需求'"> -->
+              {{product_need ? product_need : '暂无需求'}}
             </span>
           </div>
         </div>

@@ -388,12 +388,13 @@
             <span class="label">
               <span class="text">起订数量备注</span>
             </span>
-            <span class="content autoHeight"
-              ref="setNumRemake">
-              <!-- <el-input type="textarea"
+            <span class="content autoHeight">
+              <!-- <span class="content autoHeight"
+              ref="setNumRemake"> -->
+              <el-input type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
                 v-model="setNumRemake"
-                placeholder="请输入备注信息"></el-input> -->
+                placeholder="请输入备注信息"></el-input>
             </span>
           </div>
         </div>
@@ -402,12 +403,13 @@
             <span class="label">
               <span class="text">产品需求</span>
             </span>
-            <span class="content autoHeight"
-              ref="productDemand">
-              <!-- <el-input type="textarea"
+            <span class="content autoHeight">
+              <!-- <span class="content autoHeight"
+              ref="productDemand"> -->
+              <el-input type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
                 v-model="productDemand"
-                placeholder="请输入产品需求，如品名、尺寸、针型、克重、配色、成分等"></el-input> -->
+                placeholder="请输入产品需求，如品名、尺寸、针型、克重、配色、成分等"></el-input>
             </span>
           </div>
         </div>
@@ -1212,9 +1214,9 @@ export default {
       postData: { token: '' },
       setNum: '',
       setNumRemake: '',
-      setNumRemakeEditor: null,
+      // setNumRemakeEditor: null,
       productDemand: '',
-      productDemandEditor: null,
+      // productDemandEditor: null,
       otherRemark: '',
       otherRemarkEditor: null,
       yarn_list: [],
@@ -1397,11 +1399,11 @@ export default {
         })
         this.setNum = data.number
         this.setNumRemake = data.product_need_desc
-        this.setNumRemakeEditor.txt.html(this.setNumRemake)
+        // this.setNumRemakeEditor.txt.html(this.setNumRemake)
         this.otherRemark = data.other_desc
         this.otherRemarkEditor.txt.html(this.otherRemark)
         this.productDemand = data.product_need
-        this.productDemandEditor.txt.html(this.productDemand)
+        // this.productDemandEditor.txt.html(this.productDemand)
         this.loading = false
         setTimeout(() => {
           this.canClick = true
@@ -1900,70 +1902,70 @@ export default {
   },
   mounted () {
     const E = require('wangeditor')
-    this.setNumRemakeEditor = new E(this.$refs.setNumRemake)
-    this.productDemandEditor = new E(this.$refs.productDemand)
+    // this.setNumRemakeEditor = new E(this.$refs.setNumRemake)
+    // this.productDemandEditor = new E(this.$refs.productDemand)
     this.otherRemarkEditor = new E(this.$refs.otherRemark)
     // 起订备注富文本初始化
-    this.setNumRemakeEditor.customConfig.menus = [
-      'head', // 标题
-      'bold', // 粗体
-      'fontSize', // 字号
-      'fontName', // 字体
-      'italic', // 斜体
-      'underline', // 下划线
-      'strikeThrough', // 删除线
-      'foreColor', // 文字颜色
-      'backColor', // 背景颜色
-      'link', // 插入链接
-      'list', // 列表
-      'justify', // 对齐方式
-      'quote', // 引用
-      'emoticon', // 表情
-      // 'image', // 插入图片
-      // 'table', // 表格
-      // 'video', // 插入视频
-      // 'code', // 插入代码
-      'undo', // 撤销
-      'redo', // 重复
-      'fullscreen' // 全屏
-    ]
-    this.setNumRemakeEditor.customConfig.zIndex = 1
-    this.setNumRemakeEditor.customConfig.onchange = (html) => {
-      this.setNumRemake = html // 绑定当前逐渐地值
-      this.$forceUpdate()
-    }
-    // this.setNumRemakeEditor.customConfig.height = 100 // v3版本好像设置不了高度
-    this.setNumRemakeEditor.create()
+    // this.setNumRemakeEditor.customConfig.menus = [
+    //   'head', // 标题
+    //   'bold', // 粗体
+    //   'fontSize', // 字号
+    //   'fontName', // 字体
+    //   'italic', // 斜体
+    //   'underline', // 下划线
+    //   'strikeThrough', // 删除线
+    //   'foreColor', // 文字颜色
+    //   'backColor', // 背景颜色
+    //   'link', // 插入链接
+    //   'list', // 列表
+    //   'justify', // 对齐方式
+    //   'quote', // 引用
+    //   'emoticon', // 表情
+    //   // 'image', // 插入图片
+    //   // 'table', // 表格
+    //   // 'video', // 插入视频
+    //   // 'code', // 插入代码
+    //   'undo', // 撤销
+    //   'redo', // 重复
+    //   'fullscreen' // 全屏
+    // ]
+    // this.setNumRemakeEditor.customConfig.zIndex = 1
+    // this.setNumRemakeEditor.customConfig.onchange = (html) => {
+    //   this.setNumRemake = html // 绑定当前逐渐地值
+    //   this.$forceUpdate()
+    // }
+    // // this.setNumRemakeEditor.customConfig.height = 100 // v3版本好像设置不了高度
+    // this.setNumRemakeEditor.create()
     // 产品需求富文本初始化
-    this.productDemandEditor.customConfig.menus = [
-      'head', // 标题
-      'bold', // 粗体
-      'fontSize', // 字号
-      'fontName', // 字体
-      'italic', // 斜体
-      'underline', // 下划线
-      'strikeThrough', // 删除线
-      'foreColor', // 文字颜色
-      'backColor', // 背景颜色
-      'link', // 插入链接
-      'list', // 列表
-      'justify', // 对齐方式
-      'quote', // 引用
-      'emoticon', // 表情
-      // 'image', // 插入图片
-      // 'table', // 表格
-      // 'video', // 插入视频
-      // 'code', // 插入代码
-      'undo', // 撤销
-      'redo', // 重复
-      'fullscreen' // 全屏
-    ]
-    this.productDemandEditor.customConfig.zIndex = 1
-    this.productDemandEditor.customConfig.onchange = (html) => {
-      this.productDemand = html // 绑定当前逐渐地值
-      this.$forceUpdate()
-    }
-    this.productDemandEditor.create()
+    // this.productDemandEditor.customConfig.menus = [
+    //   'head', // 标题
+    //   'bold', // 粗体
+    //   'fontSize', // 字号
+    //   'fontName', // 字体
+    //   'italic', // 斜体
+    //   'underline', // 下划线
+    //   'strikeThrough', // 删除线
+    //   'foreColor', // 文字颜色
+    //   'backColor', // 背景颜色
+    //   'link', // 插入链接
+    //   'list', // 列表
+    //   'justify', // 对齐方式
+    //   'quote', // 引用
+    //   'emoticon', // 表情
+    //   // 'image', // 插入图片
+    //   // 'table', // 表格
+    //   // 'video', // 插入视频
+    //   // 'code', // 插入代码
+    //   'undo', // 撤销
+    //   'redo', // 重复
+    //   'fullscreen' // 全屏
+    // ]
+    // this.productDemandEditor.customConfig.zIndex = 1
+    // this.productDemandEditor.customConfig.onchange = (html) => {
+    //   this.productDemand = html // 绑定当前逐渐地值
+    //   this.$forceUpdate()
+    // }
+    // this.productDemandEditor.create()
     // 其它备注富文本初始化
     this.otherRemarkEditor.customConfig.menus = [
       'head', // 标题
