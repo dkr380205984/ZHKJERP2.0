@@ -18,7 +18,7 @@
         <span class="name">样单财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')">
+        @click="$router.push('/newfinancialStatistics/productStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-chanpinchanliangtongji"></use>
@@ -26,7 +26,7 @@
         <span class="name">产品产量统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
+        @click="$router.push('/newfinancialStatistics/settleChargebacks')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
@@ -34,7 +34,7 @@
         <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        @click="$router.push('/newfinancialStatistics/annualStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
@@ -42,7 +42,7 @@
         <span class="name">年度财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        @click="$router.push('/newfinancialStatistics/logStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
@@ -51,7 +51,7 @@
       </div>
     </div>
     <div class="module"
-      v-loading='loading'>
+      v-zhloading:[loadingInfo].imgModle>
       <div class="detailCtn">
         <div class="rowCtn">
           <span class="bgGray">当前统计默认值：订单下单时间：2021年1月1日-2021年3月30日；下单公司：所有；下单小组：所有；币种：默认。</span>
@@ -129,16 +129,17 @@
           </div>
         </div>
         <v-chart class="echarts_bar_container"
-          v-zhloading:[loadingInfo].imgModle
           :options="barOption" />
         <!-- <div
           ref="echarts_bar_container"></div> -->
         <div class="echarts_pie_treemap_container">
           <v-chart class="echarts_pie_container"
+            style="width:30%"
             :options="pieOption" />
           <!-- <div class="echarts_pie_container"
             ref="echarts_pie_container"></div> -->
           <v-chart class="echarts_treemap_container"
+            style="width:70%"
             :options="treemapOption" />
           <!-- <div class="echarts_treemap_container"
             ref="echarts_treemap_container"></div> -->
@@ -155,7 +156,7 @@ import { ECHARTS_COLOR } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
-      loading: true,
+      // loading: true,
       loadingInfo: {
         loading: true
         // type: 'error'
@@ -206,16 +207,28 @@ export default {
             }
           }
         ],
-        yAxis: {
-          type: 'value',
-          show: false,
-          name: '金额',
-          min: 0,
-          max: 0,
-          axisLabel: {
-            formatter: '{value} 万元'
+        yAxis: [
+          {
+            type: 'value',
+            name: '下单金额',
+            min: 0,
+            max: 25,
+            interval: 5,
+            axisLabel: {
+              formatter: '{value} 万元'
+            }
+          },
+          {
+            type: 'value',
+            name: '出库金额',
+            min: 0,
+            max: 500,
+            interval: 100,
+            axisLabel: {
+              formatter: '{value} 万元'
+            }
           }
-        },
+        ],
         series: [
           {
             name: '每月下单总额',
@@ -229,6 +242,7 @@ export default {
             name: '每月出库总额',
             type: 'line',
             data: [],
+            yAxisIndex: 1,
             itemStyle: {
               color: '#25B41F'
             }
@@ -271,7 +285,7 @@ export default {
       },
       // treemapEcharts: null,
       treemapOption: {
-        name: 'meau',
+        name: '还原',
         color: ECHARTS_COLOR,
         tooltip: {
           trigger: 'item',
@@ -285,7 +299,7 @@ export default {
               return [
                 `{name|${params.name}}`,
                 `{hr|}`,
-                `{CNY|￥${echarts.format.addCommas(params.value[0])}}{label|下单总额(CNY)}`
+                params.data.type === 'USD' ? `{CNY|$${echarts.format.addCommas(params.value[0])}}{label|下单总额(USD)}` : `{CNY|￥${echarts.format.addCommas(params.value[0])}}{label|下单总额(CNY)}`
                 // `{USD|$${echarts.format.addCommas(params.value[1])}}{label|USD}`
               ].join('\n')
             },
@@ -330,7 +344,9 @@ export default {
             formatter: function (params) {
               return [
                 params.name,
-                `CNY：￥${echarts.format.addCommas(params.value[0])}`
+                (params.data.type === 'USD'
+                  ? `USD：$${echarts.format.addCommas(params.value[0])}`
+                  : `CNY：￥${echarts.format.addCommas(params.value[0])}`)
                 // `USD：$${echarts.format.addCommas(params.value[1])}`
               ].join('<br />')
             }
@@ -355,12 +371,14 @@ export default {
       this.$router.push(`/newfinancialStatistics/orderStatistics?year=${this.filterInfo.year}&client=${this.filterInfo.client}&group=${this.filterInfo.group}&payment=${this.filterInfo.payment}`)
     },
     getFilters () {
-      this.filterInfo.year = this.$route.query.year
-      this.filterInfo.client = this.$route.query.client
+      this.filterInfo.year = this.$route.query.year || ''
+      this.filterInfo.client = this.$route.query.client || ''
       this.filterInfo.group = +this.$route.query.group || ''
-      this.filterInfo.payment = this.$route.query.payment
+      this.filterInfo.payment = this.$route.query.payment || ''
     },
     init () {
+      this.loadingInfo.loading = true
+      this.loadingInfo.type = null
       // if (!this.barEcharts) {
       //   this.barEcharts = echarts.init(this.$refs.echarts_bar_container)
       // }
@@ -370,7 +388,7 @@ export default {
       // if (!this.treemapEcharts) {
       //   this.treemapEcharts = echarts.init(this.$refs.echarts_treemap_container)
       // }
-      this.loading = true
+      // this.loading = true
       newFinance.order({
         year: this.filterInfo.year || '',
         client_id: this.filterInfo.client || '',
@@ -386,6 +404,32 @@ export default {
             pack_number: res.data.data.pack_number
           }
           // 初始化柱状图数
+          const orderPriceMin = Math.min(...Object.values(res.data.data.monthly_order))
+          const orderPriceMax = Math.max(...Object.values(res.data.data.monthly_order))
+          const outPriceMin = Math.min(...Object.values(res.data.data.monthly_outbound))
+          const outPriceMax = Math.max(...Object.values(res.data.data.monthly_outbound))
+          this.barOption.yAxis = [
+            {
+              type: 'value',
+              name: '下单金额',
+              min: (orderPriceMin && orderPriceMin < 0) ? orderPriceMin / 10000 : 0,
+              max: Math.ceil(Math.ceil(orderPriceMax / 10000 / 5)) * 5,
+              interval: Math.ceil(orderPriceMax / 10000 / 5),
+              axisLabel: {
+                formatter: '{value} 万元'
+              }
+            },
+            {
+              type: 'value',
+              name: '出库金额',
+              min: (outPriceMin && outPriceMin < 0) ? outPriceMin / 10000 : 0,
+              max: Math.ceil(Math.ceil(outPriceMax / 10000 / 5)) * 5,
+              interval: Math.ceil(outPriceMax / 10000 / 5),
+              axisLabel: {
+                formatter: '{value} 万元'
+              }
+            }
+          ]
           this.barOption.series = [
             {
               name: '每月下单总额',
@@ -398,15 +442,13 @@ export default {
             {
               name: '每月出库总额',
               type: 'line',
+              yAxisIndex: 1,
               data: Object.values(res.data.data.monthly_outbound).map(itemM => this.$toFixed(itemM / 10000)),
               itemStyle: {
                 color: '#25B41F'
               }
             }
           ]
-          const allNums = [...Object.values(res.data.data.monthly_order), ...Object.values(res.data.data.monthly_outbound)]
-          this.barOption.yAxis.max = this.$toFixed(Math.max(...allNums) / 10000)
-          this.barOption.yAxis.min = this.$toFixed(Math.min(...allNums) / 10000)
           // this.barEcharts.setOption(this.barOption)
           // 初始化饼图数据
           this.pieOption.series.data = res.data.data.user_groups.map(itemM => {
@@ -417,15 +459,19 @@ export default {
           this.treemapOption.series.data = res.data.data.clients.map(itemM => {
             return {
               name: itemM.name,
-              value: [itemM.total_price, 0]
+              value: [itemM.total_price, 0],
+              type: this.filterInfo.payment
             }
           })
+          this.loadingInfo.loading = false
+        } else {
+          this.loadingInfo.type = 'error'
         }
-        this.loading = false
       })
     }
   },
   mounted () {
+    this.getFilters()
     this.init()
   },
   created () {

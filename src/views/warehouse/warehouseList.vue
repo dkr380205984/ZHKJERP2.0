@@ -281,7 +281,7 @@
 <script>
 import { warehouse, client, transport } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
-import { chinaNum, companyType } from '@/assets/js/dictionary.js'
+import { chinaNum, companyType, cityArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -307,13 +307,7 @@ export default {
         total_price: '',
         remark: ''
       },
-      cityArr: [
-        { value: '上海市' },
-        { value: '杭州市' },
-        { value: '宁波市' },
-        { value: '义乌市' },
-        { value: '天津市' }
-      ]
+      cityArr
     }
   },
   watch: {

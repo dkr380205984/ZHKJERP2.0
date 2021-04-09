@@ -18,7 +18,7 @@
         <span class="name">样单财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/productStatistics/page=1&&keyword=&&date=&&category_id=&&type_id=&&style_id=&&XDZS=&&PJJG=&&HJCZ=&&CPL=&&KCSL=')">
+        @click="$router.push('/newfinancialStatistics/productStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-chanpinchanliangtongji"></use>
@@ -26,7 +26,7 @@
         <span class="name">产品产量统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/settleChargebacks/page=1&&keyword=&&clientId=&&type=1&&status=')">
+        @click="$router.push('/newfinancialStatistics/settleChargebacks')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
@@ -34,7 +34,7 @@
         <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/annualStatistics?year=')">
+        @click="$router.push('/newfinancialStatistics/annualStatistics?year=')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
@@ -42,7 +42,7 @@
         <span class="name">年度财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/financialStatistics/logStatistics/page=1&&type=物料订购调取&&date=&&client_id=&&product_code=&&order_type=1&&production_type=&&operate_user=&&material_name=')">
+        @click="$router.push('/newfinancialStatistics/logStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-caozuorizhitongji"></use>
@@ -288,10 +288,9 @@ export default {
       this.$router.push(`/newfinancialStatistics/sampleStatistics?year=${this.filterInfo.year}&client=${this.filterInfo.client}&group=${this.filterInfo.group}`)
     },
     getFilters () {
-      this.filterInfo.year = this.$route.query.year
-      this.filterInfo.client = this.$route.query.client
+      this.filterInfo.year = this.$route.query.year || ''
+      this.filterInfo.client = this.$route.query.client || ''
       this.filterInfo.group = +this.$route.query.group || ''
-      this.filterInfo.payment = this.$route.query.payment
     },
     init () {
       this.loading = true
@@ -309,12 +308,20 @@ export default {
             client_pay: res.data.data.client_pay
           }
           // 初始化柱状图数
-          this.barOption.xAxis.data = res.data.data.client_list.map(itemM => itemM.client_name)
+          const clientData = res.data.data.client_list.sort((now, next) => {
+            return next.order_total_number - now.order_total_number
+          })
+          const beforeTwentieth = clientData.splice(0, 20).concat({
+            client_name: '其它',
+            order_total_number: clientData.map(itemM => +itemM.order_total_number || 0).reduce((total, current) => total + current, 0),
+            order_total_reality: clientData.map(itemM => +itemM.order_total_reality || 0).reduce((total, current) => total + current, 0)
+          })
+          this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.client_name)
           this.barOption.series = [
             {
               name: '打样数量',
               type: 'bar',
-              data: res.data.data.client_list.map(itemM => itemM.order_total_number),
+              data: beforeTwentieth.map(itemM => itemM.order_total_number),
               itemStyle: {
                 color: '#1F78B4'
               }
@@ -322,15 +329,15 @@ export default {
             {
               name: '确认数量',
               type: 'line',
-              data: res.data.data.client_list.map(itemM => itemM.order_total_reality),
+              data: beforeTwentieth.map(itemM => itemM.order_total_reality),
               itemStyle: {
                 color: '#25B41F'
               }
             }
           ]
-          const allNums = [...res.data.data.client_list.map(itemM => itemM.order_total_number), ...res.data.data.client_list.map(itemM => itemM.order_total_reality)]
-          this.barOption.yAxis.max = allNums.length > 0 ? Math.max(...allNums) : 0
-          this.barOption.yAxis.min = allNums.length > 0 ? Math.min(...allNums) : 10000
+          const allNums = [...beforeTwentieth.map(itemM => itemM.order_total_number), ...beforeTwentieth.map(itemM => itemM.order_total_reality)]
+          this.barOption.yAxis.max = allNums.length > 0 ? Math.max(...allNums) : 1
+          // this.barOption.yAxis.min = allNums.length > 0 ? Math.min(...allNums) : 10000
           // 初始化饼图数据
           this.pieOption.series.data = res.data.data.group_list.map(itemM => {
             return { value: itemM.order_total_number, name: itemM.group_name }
@@ -345,6 +352,7 @@ export default {
     }
   },
   mounted () {
+    this.getFilters()
     this.init()
   },
   created () {

@@ -5,7 +5,7 @@
   .bgGray{
     font-size: 22px;
     width: 100%;
-    background-color: @font25;
+    background-color: rgba(0,0,0,.1);
     line-height: 40px;
     text-align: center;
   }
@@ -16,12 +16,27 @@
     font-size: 22px;
     .filterCtn{
       margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      height: auto;
+      justify-content: flex-start;
       .filter_item{
         width: 200px;
         margin-right: 16px;
+        margin-bottom: 8px;
         &:last-child{
           margin-right: 0;
         }
+      }
+      .resetBtn{
+        font-size: @fontMiddle;
+        padding: 0 16px; 
+        margin-bottom: 8px;
+        line-height: 30px;
+        border: 1px solid #DCDFE6;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
       }
     }
     .row{

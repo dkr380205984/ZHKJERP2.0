@@ -646,7 +646,7 @@
 </template>
 
 <script>
-import { chinaNum } from '@/assets/js/dictionary.js'
+import { chinaNum, cityArr } from '@/assets/js/dictionary.js'
 import { order, getToken, packPlan, warehouse } from '@/assets/js/api.js'
 export default {
   data () {
@@ -707,13 +707,7 @@ export default {
         remark: '',
         file_url: []
       },
-      cityArr: [
-        { value: '上海市' },
-        { value: '杭州市' },
-        { value: '宁波市' },
-        { value: '义乌市' },
-        { value: '天津市' }
-      ],
+      cityArr,
       showConFirmPackInfoPopup: false
     }
   },

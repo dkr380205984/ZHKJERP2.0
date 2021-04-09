@@ -28,6 +28,10 @@ const routes = [
         path: 'sampleStatistics',
         name: '样单财务统计-新版',
         component: () => import(`../views/newFinancialStatistics/sampleStatistics.vue`)
+      }, {
+        path: 'logStatistics',
+        name: '生产记录统计-新版',
+        component: () => import(`../views/newFinancialStatistics/logStatistics.vue`)
       }
     ]
   }, {

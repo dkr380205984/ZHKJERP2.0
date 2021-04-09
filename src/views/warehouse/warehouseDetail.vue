@@ -191,6 +191,7 @@
 </template>
 
 <script>
+import { cityArr } from '@/assets/js/dictionary.js'
 import { warehouse, getToken } from '@/assets/js/api.js'
 export default {
   data () {
@@ -203,13 +204,7 @@ export default {
       // 修改弹窗数据
       showPopup: false,
       postData: { token: '' },
-      cityArr: [
-        { value: '上海市' },
-        { value: '杭州市' },
-        { value: '宁波市' },
-        { value: '义乌市' },
-        { value: '天津市' }
-      ],
+      cityArr,
       popupData: {
         order_code: '',
         order_id: '',
