@@ -18,7 +18,7 @@
         <span class="name">样单财务统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/newfinancialStatistics/productStatistics')">
+        @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/productStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-chanpinchanliangtongji"></use>
@@ -26,7 +26,7 @@
         <span class="name">产品产量统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/newfinancialStatistics/settleChargebacks')">
+        @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/settleChargebacks')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-wuliaoshiyongtongji"></use>
@@ -34,7 +34,7 @@
         <span class="name">结算扣款统计</span>
       </div>
       <div class="cut_item"
-        @click="$router.push('/newfinancialStatistics/annualStatistics')">
+        @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/annualStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-hezuogongsicaiwutongji"></use>
@@ -54,7 +54,7 @@
       v-zhloading:[loadingInfo].imgModle>
       <div class="detailCtn">
         <div class="rowCtn">
-          <span class="bgGray">当前统计默认值：订单下单时间：2021年1月1日-2021年3月30日；下单公司：所有；下单小组：所有；币种：默认。</span>
+          <span class="bgGray">当前统计默认值：订单下单时间：{{dateCom}}；下单公司：{{clientCom}}；下单小组：{{groupCom}}；币种：{{paymentCom}}。</span>
         </div>
         <div class="tableCtn">
           <div class="filterCtn">
@@ -368,7 +368,7 @@ export default {
   },
   methods: {
     changeRouter () {
-      this.$router.push(`/newfinancialStatistics/orderStatistics?year=${this.filterInfo.year}&client=${this.filterInfo.client}&group=${this.filterInfo.group}&payment=${this.filterInfo.payment}`)
+      this.$router.push(`/newfinancialStatistics/orderStatistics?year=${this.filterInfo.year || ''}&client=${this.filterInfo.client || ''}&group=${this.filterInfo.group || ''}&payment=${this.filterInfo.payment || ''}`)
     },
     getFilters () {
       this.filterInfo.year = this.$route.query.year || ''
@@ -482,6 +482,39 @@ export default {
       this.filterInfo.clientArr = res[0].data.data.filter(itemF => itemF.type.indexOf(1) !== -1 || itemF.type.indexOf(2) !== -1)
       this.filterInfo.groupArr = res[1].data.data
     })
+  },
+  computed: {
+    dateCom () {
+      if (this.filterInfo.year && +this.filterInfo.year !== new Date().getFullYear()) {
+        return `${this.filterInfo.year}年1月1日-${this.filterInfo.year}年12月31日`
+      }
+      const nowDate = this.$getTime().split('-')
+      return `${nowDate[0]}年1月1日-${nowDate[0]}年${nowDate[1]}月${nowDate[2]}日`
+    },
+    clientCom () {
+      if (this.filterInfo.client) {
+        const finded = this.filterInfo.clientArr.find(itemF => itemF.id === this.filterInfo.client)
+        return (finded && finded.name) || '未知'
+      }
+      return '所有'
+    },
+    groupCom () {
+      if (this.filterInfo.group) {
+        const finded = this.filterInfo.groupArr.find(itemF => itemF.id === this.filterInfo.group)
+        return (finded && finded.name) || '未知'
+      }
+      return '所有'
+    },
+    paymentCom () {
+      switch (this.filterInfo.payment) {
+        case 'USD':
+          return '美元'
+        case 'CNY':
+          return '人民币'
+        default:
+          return '默认'
+      }
+    }
   }
 }
 </script>

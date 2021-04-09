@@ -201,7 +201,7 @@ export default {
           name: '财务统计',
           id: 16,
           icon: 'financial',
-          url: '/financialStatistics/orderStatistics/page=1&&keyword=&&date=&&group_id=&&company_id='
+          url: '/newfinancialStatistics/orderStatistics'
         },
         {
           name: '其它管理',

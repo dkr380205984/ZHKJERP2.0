@@ -614,7 +614,10 @@ const newFinance = {
   materialOrder: (params) => http.get(`${baseUrl}/statistic/material/order/detail`, params),
   materialProcess: (params) => http.get(`${baseUrl}/statistic/material/process/detail`, params),
   materialStock: (params) => http.get(`${baseUrl}/statistic/material/push/detail`, params),
-  weave: (params) => http.get(`${baseUrl}/statistic/production/weave/detail`, params)
+  weave: (params) => http.get(`${baseUrl}/statistic/production/weave/detail`, params),
+  replenish: (params) => http.get(`${baseUrl}/statistic/production/yarn/replenish/detail`, params),
+  inspection: (params) => http.get(`${baseUrl}/statistic/production/inspection/detail`, params),
+  pack: (params) => http.get(`${baseUrl}/statistic/pack/order/detail`, params)
 }
 export {
   newFinance,
