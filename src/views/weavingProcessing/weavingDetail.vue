@@ -129,7 +129,7 @@
                           <div class="tcolumn">
                             <span class="btn noBorder"
                               style="padding:0;margin:0"
-                              @click="normalWeaving(item.product_code,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
+                              @click="normalWeaving(item.product_id,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
                           </div>
                         </div>
                       </div>
@@ -173,7 +173,7 @@
                         @change="selectPart(index,$event)">
                         <el-option v-for="item in productArr"
                           :key="item.name"
-                          :value="item.code"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -1289,7 +1289,7 @@ export default {
       }
       this.$openUrl('/replenishTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '?id=' + idArr.join(','))
     },
-    normalWeaving (code, size, color, id, number) {
+    normalWeaving (proId, size, color, id, number) {
       // if (number !== 'undefined' && number <= 0) {
       //   this.$message.warning('该部件已分配完毕')
       //   return
@@ -1297,7 +1297,7 @@ export default {
       this.weaving_flag = true
       this.weaving_data.push({
         company_id: '',
-        product_name: code || '',
+        product_name: proId || '',
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           price: '',
@@ -1308,8 +1308,8 @@ export default {
         part_data: [],
         desc: ''
       })
-      if (code) {
-        this.selectPart(this.weaving_data.length - 1, code)
+      if (proId) {
+        this.selectPart(this.weaving_data.length - 1, proId)
       }
     },
     easyWeaving () {
@@ -1453,7 +1453,7 @@ export default {
       })
     },
     selectPart (index, name) {
-      this.weaving_data[index].part_data = this.productArr.find((item) => item.code === name).part_data
+      this.weaving_data[index].part_data = this.productArr.find((item) => item.id === name).part_data
     },
     addMixedData (index) {
       this.weaving_data[index].mixedData.push({
@@ -1485,11 +1485,11 @@ export default {
         if (mixedData.length > 0) {
           this.weaving_data.push({
             company_id: '',
-            product_name: item.product_code,
+            product_name: item.product_id,
             mixedData: mixedData,
             order_time: this.$getTime(),
             complete_time: '',
-            part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
+            part_data: this.productArr.find((itemFind) => itemFind.id === item.product_id).part_data,
             desc: ''
           })
         }
@@ -1751,11 +1751,13 @@ export default {
           })
         })
         this.productArr.push({
+          id: item.product_id,
           name: item.product_code + '(' + item.category_name + '/' + item.type_name + '/' + item.style_name + ')',
           code: item.product_code,
           part_data: mixedData
         })
       })
+      this.productArr = this.$mergeData(this.productArr, { mainRule: 'id', otherRule: [{ name: 'name' }, { name: 'code' }, { name: 'part_data', type: 'concat' }] })
       this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14, 39] })
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false

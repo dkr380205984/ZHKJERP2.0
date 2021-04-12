@@ -114,7 +114,7 @@
             <div class="item"
               style="font-size:14px">
               <span class="green"
-                style="font-size:28px">{{$formatNum($toFixed(totalInfo.order_number / 10000))}}</span>万元
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.order_number / 10000))}}</span>万
             </div>
             <div class="item"
               style="font-size:14px">
@@ -124,7 +124,7 @@
             <div class="item"
               style="font-size:14px">
               <span class="orange"
-                style="font-size:28px">{{$formatNum($toFixed(totalInfo.pack_number / 10000))}}</span>万元
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.pack_number / 10000))}}</span>万
             </div>
           </div>
         </div>
