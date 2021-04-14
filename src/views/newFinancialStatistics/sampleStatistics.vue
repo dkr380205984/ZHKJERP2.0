@@ -107,13 +107,41 @@
             </div>
             <div class="item"
               style="font-size:14px">
-              <span class="orange"
+              <span class="green"
                 style="font-size:28px">{{$toFixed(totalInfo.proportion * 100)}}</span>%
             </div>
             <div class="item"
               style="font-size:14px">
-              <span class="orange"
+              <span class="green"
                 style="font-size:28px">{{$formatNum($toFixed(totalInfo.client_pay / 10000))}}</span>万元
+            </div>
+          </div>
+          <div class="row">
+            <div class="item">物料采购成本</div>
+            <div class="item">物料加工成本</div>
+            <div class="item">织造成本</div>
+            <div class="item">半成品加工成本</div>
+          </div>
+          <div class="row H58">
+            <div class="item"
+              style="font-size:14px">
+              <span class="orange"
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.material_order_cost / 10000))}}</span>万元
+            </div>
+            <div class="item"
+              style="font-size:14px">
+              <span class="orange"
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.material_process_cost / 10000))}}</span>万元
+            </div>
+            <div class="item"
+              style="font-size:14px">
+              <span class="orange"
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.weave_cost / 10000))}}</span>万元
+            </div>
+            <div class="item"
+              style="font-size:14px">
+              <span class="orange"
+                style="font-size:28px">{{$formatNum($toFixed(totalInfo.semi_process_cost / 10000))}}</span>万元
             </div>
           </div>
         </div>
@@ -173,11 +201,11 @@ export default {
         },
         legend: {
           left: '10%',
-          data: ['每月下单总额', '每月出库总额']
+          data: ['打样数量', '打样成本']
         },
         xAxis: {
           type: 'category',
-          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+          data: [],
           axisPointer: {
             type: 'shadow'
           }
@@ -305,7 +333,11 @@ export default {
             order_total_number: res.data.data.order_total_number,
             order_total_reality: res.data.data.order_total_reality,
             proportion: res.data.data.proportion,
-            client_pay: res.data.data.client_pay
+            client_pay: res.data.data.client_pay,
+            material_order_cost: res.data.data.material_orders,
+            material_process_cost: res.data.data.material_process,
+            weave_cost: res.data.data.production_weave,
+            semi_process_cost: res.data.data.semi_finished_product
           }
           // 初始化柱状图数
           const clientData = res.data.data.client_list.sort((now, next) => {
@@ -314,8 +346,34 @@ export default {
           const beforeTwentieth = clientData.splice(0, 20).concat({
             client_name: '其它',
             order_total_number: clientData.map(itemM => +itemM.order_total_number || 0).reduce((total, current) => total + current, 0),
-            order_total_reality: clientData.map(itemM => +itemM.order_total_reality || 0).reduce((total, current) => total + current, 0)
+            cost: clientData.map(itemM => +itemM.cost || 0).reduce((total, current) => total + current, 0)
           })
+          const sampleNumberMax = Math.max(...beforeTwentieth.map(itemM => itemM.order_total_number))
+          const sampleNumberMin = Math.min(...beforeTwentieth.map(itemM => itemM.order_total_number))
+          const sampleCostMax = Math.max(...beforeTwentieth.map(itemM => itemM.cost))
+          const sampleCostMin = Math.min(...beforeTwentieth.map(itemM => itemM.cost))
+          this.barOption.yAxis = [
+            {
+              type: 'value',
+              name: '打样数量',
+              min: (sampleNumberMin && sampleNumberMin < 0) ? sampleNumberMin : 0,
+              max: Math.ceil(Math.ceil(sampleNumberMax / 5)) * 5,
+              interval: Math.ceil(sampleNumberMax / 5),
+              axisLabel: {
+                formatter: '{value}'
+              }
+            },
+            {
+              type: 'value',
+              name: '打样成本',
+              min: (sampleCostMin && sampleCostMin < 0) ? sampleCostMin / 1000 : 0,
+              max: Math.ceil(Math.ceil(sampleCostMax / 10000 / 5)) * 5,
+              interval: Math.ceil(sampleCostMax / 10000 / 5),
+              axisLabel: {
+                formatter: '{value} 万元'
+              }
+            }
+          ]
           this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.client_name)
           this.barOption.series = [
             {
@@ -327,17 +385,15 @@ export default {
               }
             },
             {
-              name: '确认数量',
+              name: '打样成本',
               type: 'line',
-              data: beforeTwentieth.map(itemM => itemM.order_total_reality),
+              yAxisIndex: 1,
+              data: beforeTwentieth.map(itemM => this.$toFixed(itemM.cost / 10000)),
               itemStyle: {
                 color: '#25B41F'
               }
             }
           ]
-          const allNums = [...beforeTwentieth.map(itemM => itemM.order_total_number), ...beforeTwentieth.map(itemM => itemM.order_total_reality)]
-          this.barOption.yAxis.max = allNums.length > 0 ? Math.max(...allNums) : 1
-          // this.barOption.yAxis.min = allNums.length > 0 ? Math.min(...allNums) : 10000
           // 初始化饼图数据
           this.pieOption.series.data = res.data.data.group_list.map(itemM => {
             return { value: itemM.order_total_number, name: itemM.group_name }

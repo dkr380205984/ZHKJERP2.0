@@ -482,7 +482,16 @@
           position: relative;
           display: flex;
           align-items: center;
-          word-break: break-all;      
+          word-break: break-all;
+          &.ellipsis{
+            // 2021-04-14新增样式
+            overflow : hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            // 2021-04-14新增结束
+          }
           &.middle{
             justify-content: center;
           }

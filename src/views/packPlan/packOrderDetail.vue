@@ -168,7 +168,11 @@
                     v-html="itemTime.compiled_time ? $getZHTimeFormat(itemTime.compiled_time) : '未获取到交货日期'"></span>
                   <span class="tcolumn center">
                     <div class="btn noBorder noMargin"
-                      @click="$openUrl('/packOrderTable/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">打印</div>
+                      style="line-height:1.2em;height:1.2em"
+                      @click="$openUrl('/packOrderTable/1/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">A4打印</div>
+                    <div class="btn noBorder noMargin"
+                      style="line-height:1.2em;height:1.2em"
+                      @click="$openUrl('/packOrderTable/2/' + $route.params.id + '?clientId=' + item.client_id + '&time=' + $getTime(itemTime.compiled_time))">针式打印</div>
                   </span>
                 </span>
               </span>

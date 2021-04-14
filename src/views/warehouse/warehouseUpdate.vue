@@ -117,6 +117,7 @@
             <el-input disabled
               :placeholder="itemOrder.order_code" />
             <span class="el-icon-delete deleteBtn"
+              @click="cancelChecked(indexOrder)"
               title='删除'></span>
           </div>
         </div>
@@ -124,145 +125,110 @@
     </div>
     <div class="module">
       <div class="titleCtn">
-        <span class="title">单证基本信息</span>
+        <span class="title">进仓单信息</span>
       </div>
       <div class="editCtn hasBorderTop">
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">PO Number</span>
+            <span class="label">进仓单编号：</span>
             <div class="text">
-              <el-input v-model="po_number"
-                placeholder="请输入Po号"></el-input>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">Invoice Number</span>
-            <div class="text">
-              <el-input v-model="invoice_number"
-                placeholder="请输入发票号码"></el-input>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">Payment Term</span>
-            <div class="text">
-              <el-autocomplete v-model="payment_term"
-                :fetch-suggestions="querySearchPayment"
-                placeholder="请选择付款方式"></el-autocomplete>
-              <!-- <el-input v-model="payment_term"
-                placeholder="请选择付款方式"></el-input> -->
+              <el-input v-model="code"
+                placeholder="请输入进仓单编号(未填写则由系统生成)"></el-input>
             </div>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">TO (Company Name)</span>
+            <span class="label">出货日期：</span>
             <div class="text">
-              <el-autocomplete v-model="to_company_name"
-                :fetch-suggestions="querySearchCompanyName"
-                @select='selectCompanyName'
-                placeholder="请选择公司名称"></el-autocomplete>
-              <!-- <el-input v-model="to_company_name"
-                placeholder="请选择公司名称"></el-input> -->
-            </div>
-          </div>
-          <div class="colCtn ">
-            <span class="label">TO (Address)</span>
-            <div class="text">
-              <el-input v-model="to_company_address"
-                placeholder="请输入公司地址"></el-input>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">Order Date</span>
-            <div class="text">
-              <el-date-picker style="width:100%"
-                v-model="order_date"
-                type="date"
+              <el-date-picker v-model="out_time"
                 value-format="yyyy-MM-dd"
-                placeholder="请选择下单日期">
+                style="width:100%"
+                type="date"
+                placeholder="选择出货日期">
               </el-date-picker>
             </div>
           </div>
-          <div class="colCtn flex3">
-            <span class="label">EX-factory Date</span>
-            <div class="text">
-              <el-date-picker style="width:100%"
-                v-model="ex_factory_date"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="请选择离厂日期">
-              </el-date-picker>
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">Shipment Date</span>
-            <div class="text">
-              <el-date-picker style="width:100%"
-                v-model="shipment_date"
-                type="date"
-                value-format="yyyy-MM-dd"
-                placeholder="请选择发货日期">
-              </el-date-picker>
-            </div>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn flex3">
-            <span class="label">From</span>
-            <div class="text">
-              <el-autocomplete v-model="from"
-                :fetch-suggestions="querySearchPortName"
-                placeholder="请选择生产地"></el-autocomplete>
-              <!-- <el-input v-model="from"
-                placeholder="请选择生产地"></el-input> -->
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">To</span>
-            <div class="text">
-              <el-autocomplete v-model="to"
-                :fetch-suggestions="querySearchPortName"
-                placeholder="请选择发货地"></el-autocomplete>
-              <!-- <el-input v-model="to"
-                placeholder="请选择发货地"></el-input> -->
-            </div>
-          </div>
-          <div class="colCtn flex3">
-            <span class="label">Currency System</span>
-            <div class="text">
-              <el-select v-model="moneyType"
-                filterable
-                placeholder="请选择币制">
-                <el-option v-for="(item,index) in moneyTypes"
-                  :key="index"
-                  :label="`${item.label}(${item.value})`"
+          <div class="colCtn">
+            <span class="label">运输地址：</span>
+            <div class="text"
+              style="display:flex">
+              <el-select v-model="address_city"
+                style="width:280px"
+                placeholder="请选择城市">
+                <el-option v-for="item in cityArr"
+                  :key="item.value"
+                  :label="item.value"
                   :value="item.value">
                 </el-option>
               </el-select>
+              <el-input v-model="address_sup"
+                placeholder="请输入详细地址"
+                style="margin-left:16px"></el-input>
             </div>
           </div>
         </div>
         <div class="rowCtn">
           <div class="colCtn flex3">
-            <span class="label">Loading Port</span>
+            <span class="label">总件数：</span>
             <div class="text">
-              <el-autocomplete v-model="loading_port"
-                :fetch-suggestions="querySearchPort"
-                placeholder="请选择发货港口"></el-autocomplete>
-              <!-- <el-input v-model="loading_port"
-                placeholder="请选择发货港口"></el-input> -->
+              <el-input v-model="total_number"
+                placeholder="总件数(件)">
+                <template slot="append">件</template>
+              </el-input>
             </div>
           </div>
           <div class="colCtn flex3">
-            <span class="label">Destination Port</span>
+            <span class="label">总毛重：</span>
             <div class="text">
-              <el-autocomplete v-model="destination_port"
-                :fetch-suggestions="querySearchPort"
-                placeholder="请选择到达港口"></el-autocomplete>
-              <!-- <el-input v-model="destination_port"
-                placeholder="请选择到达港口"></el-input> -->
+              <el-input v-model="total_gross_weight"
+                placeholder="总毛重(kg)">
+                <template slot="append">kg</template>
+              </el-input>
+            </div>
+          </div>
+          <div class="colCtn flex3">
+            <span class="label">总体积：</span>
+            <div class="text">
+              <el-input v-model="total_vol"
+                placeholder="总体积(m³)">
+                <template slot="append">m³</template>
+              </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <span class="label">备注信息：</span>
+            <div class="text">
+              <el-input type="textarea"
+                :rows="3"
+                placeholder="请输入内容"
+                v-model="remark">
+              </el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">相关文件：</span>
+            <div class="text">
+              <!-- :file-list="file_url" -->
+              <el-upload class="upload"
+                multiple
+                action="https://upload.qiniup.com/"
+                :before-upload="beforeAvatarUpload"
+                :data="postData"
+                :file-list="fileArr"
+                ref="fileUpload"
+                list-type="picture">
+                <div class="uploadBtn">
+                  <i class="el-icon-upload"></i>
+                  <span>上传文件</span>
+                </div>
+                <div slot="tip"
+                  class="el-upload__tip">上传的文件不可超过10M</div>
+              </el-upload>
             </div>
           </div>
         </div>
@@ -282,9 +248,8 @@
 </template>
 
 <script>
-import { companyType } from '@/assets/js/dictionary.js'
-import { client, order, documentSetting, documents } from '@/assets/js/api.js'
-import { moneyTypes } from '@/assets/js/documentsCommon.js'
+import { companyType, cityArr } from '@/assets/js/dictionary.js'
+import { getToken, client, order, warehouse } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -298,139 +263,75 @@ export default {
       limit: 5,
       total: 1,
       checkedList: [],
-      po_number: '',
-      invoice_number: '',
-      payment_term: '',
-      to_company_name: '',
-      to_company_address: '',
-      order_date: '',
-      ex_factory_date: '',
-      shipment_date: '',
-      from: '',
-      to: '',
-      loading_port: '',
-      destination_port: '',
-      paymentList: [],
-      portList: [],
-      moneyTypes,
-      moneyType: ''
+      code: '',
+      out_time: '',
+      address_city: '',
+      cityArr,
+      address_sup: '',
+      total_number: '',
+      total_gross_weight: '',
+      total_vol: '',
+      remark: '',
+      fileArr: [],
+      postData: { token: '' }
     }
   },
   methods: {
+    beforeAvatarUpload (file) {
+      // let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      // let fileNameLength = file.name.length// 取到文件名长度
+      // let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = file.name
+      const isLt2M = file.size / 1024 / 1024 < 10
+      if (!isLt2M) {
+        this.$message.error('文件大小不能超过 10MB!')
+        return false
+      }
+    },
     saveAll () {
       if (this.$submitLock()) return
       if (this.checkedList.length === 0) {
         this.$message.warning('请勾选订单')
         return
       }
-      if (!this.po_number) {
-        this.$message.warning('请输入PO号')
+      if (!this.out_time) {
+        this.$message.error('请选择出货时间')
         return
       }
-      if (!this.invoice_number) {
-        this.$message.warning('请输入发票号码')
+      if (!this.address_city) {
+        this.$message.error('请选择运输城市')
         return
       }
-      if (!this.payment_term) {
-        this.$message.warning('请输入付款方式')
+      if (!this.total_number) {
+        this.$message.error('请输入总件数')
         return
       }
-      if (!this.to_company_name) {
-        this.$message.warning('请输入公司名称')
+      if (!this.total_gross_weight) {
+        this.$message.error('请输入总毛重')
         return
       }
-      if (!this.to_company_address) {
-        this.$message.warning('请输入公司地址')
+      if (!this.total_vol) {
+        this.$message.error('请输入总体积')
         return
       }
-      if (!this.order_date) {
-        this.$message.warning('请选择下单日期')
-        return
-      }
-      if (!this.ex_factory_date) {
-        this.$message.warning('请选择离厂日期')
-        return
-      }
-      if (!this.shipment_date) {
-        this.$message.warning('请选择发货日期')
-        return
-      }
-      if (!this.from) {
-        this.$message.warning('请输入生产地')
-        return
-      }
-      if (!this.to) {
-        this.$message.warning('请输入发货地')
-        return
-      }
-      if (!this.loading_port) {
-        this.$message.warning('请输入发货港口')
-        return
-      }
-      if (!this.destination_port) {
-        this.$message.warning('请输入到达港口')
-        return
-      }
-      if (!this.moneyType) {
-        this.$message.warning('请选择币制')
-        return
-      }
-      documents.create({
+      let fileUrl = this.$refs.fileUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
+      warehouse.create({
         id: this.$route.params.id,
-        document_orders: this.checkedList.map(itemM => itemM.id),
-        po: this.po_number,
-        invoice: this.invoice_number,
-        payment: this.payment_term,
-        to_company_name: this.to_company_name,
-        to_company_address: this.to_company_address,
-        order_date: this.order_date,
-        ex_factory_date: this.ex_factory_date,
-        shipment_date: this.shipment_date,
-        from_address: this.from,
-        to_address: this.to,
-        loading_port: this.loading_port,
-        destination_port: this.destination_port,
-        currency_system: this.moneyType
+        order_ids: this.checkedList.map(itemM => itemM.id),
+        complete_time: this.out_time,
+        code: this.code,
+        address: JSON.stringify([this.address_city, this.address_sup]),
+        total_number: this.total_number,
+        total_gross_weight: this.total_gross_weight,
+        cubic_number: this.total_vol,
+        desc: this.remark || '',
+        file_url: fileUrl
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('修改成功')
-          this.$router.replace(`/document/index/detail/${res.data.data}`)
+          this.$router.replace(`/warehouse/warehouseDetail/${res.data.data}`)
         }
       })
-    },
-    selectCompanyName (event) {
-      this.to_company_address = event.address
-    },
-    querySearchCompanyName (queryString, callback) {
-      const returnData = this.clientList.map(itemM => {
-        return {
-          value: itemM.name,
-          label: itemM.name,
-          address: itemM.address
-        }
-      })
-      callback(queryString ? returnData.filter(itemF => itemF.value.indexOf(queryString) !== -1) : returnData)
-    },
-    querySearchPortName (queryString, callback) {
-      const returnData = this.portList.map(itemM => {
-        return {
-          value: itemM.value[0],
-          label: itemM.label[0]
-        }
-      })
-      callback(queryString ? returnData.filter(itemF => itemF.label.indexOf(queryString.toUpperCase()) !== -1) : returnData)
-    },
-    querySearchPort (queryString, callback) {
-      const returnData = this.portList.map(itemM => {
-        return {
-          value: itemM.value.join(','),
-          label: itemM.label.join(',')
-        }
-      })
-      callback(queryString ? returnData.filter(itemF => itemF.label.indexOf(queryString.toUpperCase()) !== -1) : returnData)
-    },
-    querySearchPayment (queryString, callback) {
-      callback(queryString ? this.paymentList.filter(itemF => itemF.label.indexOf(queryString) !== -1) : this.paymentList)
     },
     checkedOrder (type, item) {
       const findIndex = this.checkedList.findIndex(itemF => itemF.id === item.id)
@@ -439,6 +340,11 @@ export default {
       } else if (!type && findIndex >= 0) {
         this.checkedList.splice(findIndex, 1)
       }
+    },
+    cancelChecked (index) {
+      const cancelOrder = this.checkedList.splice(index, 1)[0]
+      const cancelOrderChecked = this.orderList.find(itemF => itemF.id === cancelOrder.id)
+      cancelOrderChecked && (cancelOrderChecked.checked = false)
     },
     changeNowIndex (item, number) {
       item.direction = number > 0
@@ -459,8 +365,8 @@ export default {
         if (res.data.data.status === false) return
         this.orderList = res.data.data.map(itemM => {
           return {
-            checked: !!this.checkedList.find(itemF => Number(itemF.id) === Number(itemM.id)),
-            id: Number(itemM.id),
+            checked: !!this.checkedList.find(itemF => itemF.id === itemM.id),
+            id: itemM.id,
             order_code: itemM.order_code,
             client_name: itemM.client_name,
             images: this.$unique(itemM.product_info.map(itemMPI => itemMPI.image).flat(1), 'id'),
@@ -502,50 +408,35 @@ export default {
     }
   },
   mounted () {
-    this.loading = true
     Promise.all([
+      getToken(),
       client.list(),
-      documentSetting.payTypeList(),
-      documentSetting.portList(),
-      documents.detail({
+      warehouse.detail({
         id: this.$route.params.id
-      }),
-      documentSetting.clientList()
+      })
     ]).then(res => {
-      this.companyArr = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
-      this.paymentList = res[1].data.data.map(itemM => {
+      this.postData.token = res[0].data.data
+      this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
+      this.checkedList = res[2].data.data.orders.map(itemM => {
         return {
-          value: `${itemM.english.toUpperCase()}`,
-          label: `${itemM.english.toUpperCase()}`
+          id: itemM.id.toString(),
+          order_code: itemM.order_code
         }
       })
-      this.portList = res[2].data.data.map(itemM => {
+      this.code = res[2].data.data.code
+      this.out_time = res[2].data.data.complete_time
+      this.address_city = JSON.parse(res[2].data.data.address)[0]
+      this.address_sup = JSON.parse(res[2].data.data.address)[0]
+      this.total_number = res[2].data.data.total_number
+      this.total_gross_weight = res[2].data.data.total_gross_weight
+      this.total_vol = res[2].data.data.cubic_number
+      this.remark = res[2].data.data.desc
+      this.fileArr = res[2].data.data.file_url ? JSON.parse(res[2].data.data.file_url).map(itemM => {
         return {
-          value: [itemM.port_name.toUpperCase(), itemM.country.toUpperCase()],
-          label: [itemM.port_name.toUpperCase(), itemM.country.toUpperCase()]
+          name: itemM.replace('https://file.zwyknit.com/', ''),
+          url: itemM
         }
-      })
-      this.clientList = res[4].data.data
-      const documentsData = res[3].data.data
-      this.checkedList = documentsData.orders.map(itemMO => {
-        return {
-          id: Number(itemMO.id),
-          order_code: itemMO.order_code
-        }
-      })
-      this.po_number = documentsData.po
-      this.invoice_number = documentsData.invoice
-      this.payment_term = documentsData.payment
-      this.to_company_name = documentsData.to_company_name
-      this.to_company_address = documentsData.to_company_address
-      this.order_date = documentsData.order_date
-      this.ex_factory_date = documentsData.ex_factory_date
-      this.shipment_date = documentsData.shipment_date
-      this.from = documentsData.from_address
-      this.to = documentsData.to_address
-      this.loading_port = documentsData.loading_port
-      this.destination_port = documentsData.destination_port
-      this.moneyType = documentsData.currency_system
+      }) : []
       this.getOrderList()
     })
   },
@@ -568,5 +459,5 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/documents/create.less";
+@import "~@/assets/less/warehouse/warehouseCreate.less";
 </style>

@@ -64,6 +64,12 @@
           <div class="colCtn">
             <div class="label">
               <span class="text">产品品类</span>
+              <el-tooltip class="item"
+                effect="dark"
+                content="该品类内容无法自行添加。如果您选不到您需要的品类，请联系我们工作人员进行添加。"
+                placement="top-start">
+                <span class="el-icon-question"></span>
+              </el-tooltip>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">

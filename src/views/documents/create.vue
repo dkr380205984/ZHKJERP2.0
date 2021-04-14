@@ -453,7 +453,7 @@ export default {
         page: pages,
         limit,
         keyword: this.order_code || '',
-        client_id: (this.company_id && this.company_id[1]) || '',
+        client_id: (this.client_id && this.client_id[1]) || '',
         start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
         end_time: (this.date && this.date.length > 0) ? this.date[1] : ''
       }).then(res => {

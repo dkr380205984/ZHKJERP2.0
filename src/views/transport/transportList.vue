@@ -57,6 +57,10 @@
             </div>
           </div>
         </div>
+        <div class="addCtn">
+          <div class="btn btnWhiteBlue"
+            @click="showPopup = true">+ 添加运输货款</div>
+        </div>
         <div class="list">
           <div class="title">
             <div class="col">
@@ -115,11 +119,97 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showPopup">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <span class="text">添加运输货款</span>
+          <span class="el-icon-close"
+            @click="closePopup"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">运输单位：</span>
+            <span class="info">
+              <el-cascader v-model="popupData.client_id"
+                :show-all-levels='false'
+                placeholder="请选择运输单位"
+                :options="clientList"
+                :filter-method='searchClient'
+                clearable
+                :props="{ expandTrigger: 'hover' }"
+                filterable></el-cascader>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">总件数：</span>
+            <span class="info"
+              style="display:flex">
+              <zh-input v-model="popupData.total_number"
+                placeholder="总件数(件)"
+                style="flex:1">
+                <template slot="append">件</template>
+              </zh-input>
+              <span class="label">总毛重：</span>
+              <zh-input v-model="popupData.total_gross_weight"
+                placeholder="总毛重(kg)"
+                style="flex:1">
+                <template slot="append">kg</template>
+              </zh-input>
+              <span class="label">总体积：</span>
+              <zh-input v-model="popupData.total_vol"
+                placeholder="总体积(m³)"
+                style="flex:1"
+                @input="popupData.total_price = $toFixed(popupData.total_vol * popupData.price || 0)">
+                <template slot="append">m³</template>
+              </zh-input>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">运输单价：</span>
+            <span class="info"
+              style="display:flex">
+              <zh-input v-model="popupData.price"
+                style="flex:1"
+                placeholder='运输单价'
+                type='number'
+                @input="popupData.total_price = $toFixed(popupData.total_vol * popupData.price || 0)">
+                <template slot="append">元/m³</template>
+              </zh-input>
+              <span class="label">总价：</span>
+              <zh-input v-model="popupData.total_price"
+                style="flex:1"
+                placeholder='运输总价'
+                type='number'>
+                <template slot="append">元</template>
+              </zh-input>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label">备注信息：</span>
+            <span class="info">
+              <el-input type="textarea"
+                :rows="4"
+                placeholder="请输入内容"
+                v-model="popupData.remark">
+              </el-input>
+            </span>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="closePopup">取消</div>
+          <div class="btn btnBlue"
+            @click="saveTransport">提交</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { companyType } from '@/assets/js/dictionary.js'
+import { companyType, cityArr } from '@/assets/js/dictionary.js'
 import { transport, client } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
@@ -132,7 +222,18 @@ export default {
       date: '',
       pages: 1,
       total: 0,
-      clientList: []
+      clientList: [],
+      showPopup: false,
+      popupData: {
+        client_id: '',
+        total_number: '',
+        total_gross_weight: '',
+        total_vol: '',
+        price: '',
+        total_price: '',
+        remark: ''
+      },
+      cityArr
     }
   },
   watch: {
@@ -142,10 +243,62 @@ export default {
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
-      this.getOrderList()
+      this.getList()
     }
   },
   methods: {
+    closePopup () {
+      this.popupData = {
+        client_id: '',
+        total_number: '',
+        total_gross_weight: '',
+        total_vol: '',
+        price: '',
+        total_price: '',
+        remark: ''
+      }
+      this.showPopup = false
+    },
+    saveTransport () {
+      if (!this.popupData.client_id || !this.popupData.client_id[1]) {
+        this.$message.error('请选择运输单位')
+        return
+      }
+      if (!this.popupData.total_number) {
+        this.$message.error('请输入总件数')
+        return
+      }
+      if (!this.popupData.total_gross_weight) {
+        this.$message.error('请输入总毛重')
+        return
+      }
+      if (!this.popupData.total_vol) {
+        this.$message.error('请输入总体积')
+        return
+      }
+      if (!this.popupData.total_price) {
+        this.$message.error('请输入总价')
+        return
+      }
+      let data = {
+        id: null,
+        client_id: this.popupData.client_id && this.popupData.client_id[1],
+        total_number: this.popupData.total_number,
+        total_gross_weight: this.popupData.total_gross_weight,
+        price: this.popupData.price || null,
+        total_price: this.popupData.total_price,
+        cubic_number: this.popupData.total_vol,
+        desc: this.popupData.remark,
+        stock_card_id: []
+      }
+      transport.create(data).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.getList()
+          this.closePopup()
+        }
+      })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {

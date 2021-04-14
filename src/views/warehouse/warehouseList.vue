@@ -61,6 +61,8 @@
         </div>
         <div class="addCtn">
           <div class="btn btnWhiteBlue"
+            @click="$router.push(`/warehouse/warehouseCreate`)">+ 添加进仓单</div>
+          <div class="btn btnWhiteBlue"
             @click="addTransportTable">+ 添加运输货款</div>
         </div>
         <div class="list">
@@ -108,7 +110,7 @@
             </div>
             <div class="col middle">{{itemOrder.complete_time}}</div>
             <div class="col">{{itemOrder.code}}</div>
-            <div class="col">{{itemOrder.order_code}}</div>
+            <div class="col ellipsis">{{itemOrder.orders.map(itemM=>itemM.order_code).join(';')}}</div>
             <div class="col middle">
               <zh-img-list :list='itemOrder.image'></zh-img-list>
             </div>
@@ -379,6 +381,10 @@ export default {
       })
     },
     addTransportTable () {
+      if (this.checkedList.length === 0) {
+        this.$message.warning('请先勾选进仓单')
+        return
+      }
       if (this.clientList.length === 0) {
         client.list().then(res => {
           this.clientList = this.$getClientOptions(res.data.data, companyType, { type: [35, 36] })

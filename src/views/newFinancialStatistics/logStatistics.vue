@@ -1191,91 +1191,106 @@
           </el-tab-pane>
           <el-tab-pane label="半成品加工"
             name="半成品加工">
-            <div class="filterCtn2">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <div class="filter_line">
-                  <el-select v-model="order_type"
-                    @change="changeRouter(1)"
-                    class="filter_item"
-                    style="width:120px">
-                    <el-option label="所有日志"
-                      :value="0"></el-option>
-                    <el-option label="订单"
-                      :value="1"></el-option>
-                    <el-option label="样单"
-                      :value="2"></el-option>
-                  </el-select>
-                  <el-input class="filter_item"
-                    v-model="product_code"
-                    @change="changeRouter(1)"
-                    placeholder="输入产品编号查询">
-                  </el-input>
-                  <el-input class="filter_item"
-                    v-model="order_code"
-                    :disabled="order_type === 0"
-                    @change="changeRouter(1)"
-                    placeholder="输入关联编号查询">
-                  </el-input>
-                  <el-cascader v-model="client_id"
-                    class="filter_item"
-                    :show-all-levels='false'
-                    placeholder="搜索公司名称查询"
-                    :options="clientFilter.proProcess"
-                    :filter-method='searchClient'
-                    clearable
-                    :props="{ expandTrigger: 'hover' }"
-                    @change="changeRouter(1)"
-                    filterable></el-cascader>
-                  <el-select class="filter_item"
-                    v-model="group_id"
-                    @change="changeRouter(1)"
-                    :disabled="order_type === 0"
-                    placeholder="搜索小组名称查询"
-                    clearable
-                    filterable>
-                    <el-option v-for="item in groupList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"></el-option>
-                  </el-select>
-                  <div class="resetBtn"
-                    @click="reset">重置</div>
-                </div>
-                <div class="filter_line"
-                  :class="openHiddleFilter ? false : 'hiddle'">
-                  <el-select class="filter_item"
-                    v-model="operate_user"
-                    @change="changeRouter(1)"
-                    placeholder="搜索创建人查询"
-                    clearable
-                    filterable>
-                    <el-option v-for="item in authList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"></el-option>
-                  </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
-                </div>
+            <div class="bgGray"
+              style="margin-bottom:8px">当前统计默认值：日期：{{dateCom}}；订单类型：{{orderTypeCom}}；关联单号：{{order_code || '所有'}}；产品编号：{{product_code || '所有'}}；加工单位：{{clientCom}}；下单小组：{{groupCom}}；创建人：{{userCom}}。</div>
+            <div class="tableCtn">
+              <div class="filterCtn">
+                <el-select v-model="order_type"
+                  @change="changeRouter(1)"
+                  class="filter_item"
+                  style="width:120px">
+                  <el-option label="所有日志"
+                    :value="0"></el-option>
+                  <el-option label="订单"
+                    :value="1"></el-option>
+                  <el-option label="样单"
+                    :value="2"></el-option>
+                </el-select>
+                <el-input class="filter_item"
+                  v-model="product_code"
+                  @change="changeRouter(1)"
+                  placeholder="输入产品编号查询">
+                </el-input>
+                <el-input class="filter_item"
+                  v-model="order_code"
+                  :disabled="order_type === 0"
+                  @change="changeRouter(1)"
+                  placeholder="输入关联编号查询">
+                </el-input>
+                <el-cascader v-model="client_id"
+                  class="filter_item"
+                  :show-all-levels='false'
+                  placeholder="搜索公司名称查询"
+                  :options="clientFilter.proProcess"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
+                <el-select class="filter_item"
+                  v-model="group_id"
+                  @change="changeRouter(1)"
+                  :disabled="order_type === 0"
+                  placeholder="搜索小组名称查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in groupList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-select class="filter_item"
+                  v-model="operate_user"
+                  @change="changeRouter(1)"
+                  placeholder="搜索创建人查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in authList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-date-picker v-model="date"
+                  style="width:250px"
+                  class="filter_item"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeRouter(1)">
+                </el-date-picker>
+                <div class="resetBtn"
+                  @click="reset">重置</div>
               </div>
-              <div class="rightCtn"
-                @click="openHiddleFilter = !openHiddleFilter">
-                {{openHiddleFilter ? '收起' : '展开'}}
-                <span class="el-icon-arrow-down openIcon"
-                  :class="openHiddleFilter ? 'active' : false"></span>
+              <div class="row">
+                <div class="item">加工数量</div>
+                <div class="item">加工总价</div>
+                <div class="item">加工均价</div>
+              </div>
+              <div class="row H58">
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.plan_price ? $formatNum($toFixed(totalInfo.plan_price / 10000)) : 0}}</span>万
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.real_price ? $formatNum($toFixed(totalInfo.real_price /10000)) : 0}}</span>万元
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.price || 0}}</span>元
+                </div>
               </div>
             </div>
+            <v-chart v-if="type==='半成品加工'"
+              class="echarts_bar_container"
+              :options="barOption" />
             <div class="list"
               v-if="type==='半成品加工'">
               <div class="title">
@@ -1404,78 +1419,93 @@
           </el-tab-pane>
           <el-tab-pane label="半成品检验收发"
             name="半成品检验收发">
-            <div class="filterCtn2">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <div class="filter_line">
-                  <el-input class="filter_item"
-                    v-model="product_code"
-                    @change="changeRouter(1)"
-                    placeholder="输入产品编号查询">
-                  </el-input>
-                  <el-input class="filter_item"
-                    v-model="order_code"
-                    @change="changeRouter(1)"
-                    placeholder="输入关联单号查询">
-                  </el-input>
-                  <el-select class="filter_item"
-                    v-model="group_id"
-                    @change="changeRouter(1)"
-                    placeholder="搜索小组名称查询"
-                    clearable
-                    filterable>
-                    <el-option v-for="item in groupList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"></el-option>
-                  </el-select>
-                  <el-cascader v-model="client_id"
-                    class="filter_item"
-                    :show-all-levels='false'
-                    placeholder="搜索织造单位名称查询"
-                    :options="clientFilter.proWeave"
-                    :filter-method='searchClient'
-                    clearable
-                    :props="{ expandTrigger: 'hover' }"
-                    @change="changeRouter(1)"
-                    filterable></el-cascader>
-                  <div class="resetBtn"
-                    @click="reset">重置</div>
-                </div>
-                <div class="filter_line"
-                  :class="openHiddleFilter ? false : 'hiddle'">
-                  <el-select class="filter_item"
-                    v-model="operate_user"
-                    @change="changeRouter(1)"
-                    placeholder="搜索创建人查询"
-                    clearable
-                    filterable>
-                    <el-option v-for="item in authList"
-                      :key="item.id"
-                      :label="item.name"
-                      :value="item.id"></el-option>
-                  </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
-                </div>
+            <div class="bgGray"
+              style="margin-bottom:8px">当前统计默认值：日期：{{dateCom}}；关联单号：{{order_code || '所有'}}；产品编号：{{product_code || '所有'}}；检验单位：{{clientCom}}；下单小组：{{groupCom}}；创建人：{{userCom}}。</div>
+            <div class="tableCtn">
+              <div class="filterCtn">
+                <el-input class="filter_item"
+                  v-model="product_code"
+                  @change="changeRouter(1)"
+                  placeholder="输入产品编号查询">
+                </el-input>
+                <el-input class="filter_item"
+                  v-model="order_code"
+                  @change="changeRouter(1)"
+                  placeholder="输入关联单号查询">
+                </el-input>
+                <el-select class="filter_item"
+                  v-model="group_id"
+                  @change="changeRouter(1)"
+                  placeholder="搜索小组名称查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in groupList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-cascader v-model="client_id"
+                  class="filter_item"
+                  :show-all-levels='false'
+                  placeholder="搜索织造单位名称查询"
+                  :options="clientFilter.proWeave"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
+                <el-select class="filter_item"
+                  v-model="operate_user"
+                  @change="changeRouter(1)"
+                  placeholder="搜索创建人查询"
+                  clearable
+                  filterable>
+                  <el-option v-for="item in authList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"></el-option>
+                </el-select>
+                <el-date-picker v-model="date"
+                  style="width:250px"
+                  class="filter_item"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeRouter(1)">
+                </el-date-picker>
+                <div class="resetBtn"
+                  @click="reset">重置</div>
               </div>
-              <div class="rightCtn"
-                @click="openHiddleFilter = !openHiddleFilter">
-                {{openHiddleFilter ? '收起' : '展开'}}
-                <span class="el-icon-arrow-down openIcon"
-                  :class="openHiddleFilter ? 'active' : false"></span>
+              <div class="row">
+                <div class="item">检验数量</div>
+                <div class="item">次品率</div>
+                <div class="item">次品数量</div>
+              </div>
+              <div class="row H58">
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.plan_price ? $formatNum($toFixed(totalInfo.plan_price / 10000)) : 0}}</span>万
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.real_price ? $toFixed(totalInfo.real_price * 100) : 0}}</span>%
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.real_number || 0}}</span>
+                </div>
               </div>
             </div>
+            <v-chart v-if="type==='半成品检验收发'"
+              class="echarts_bar_container"
+              :options="barOption" />
             <div class="list"
               v-if="type==='半成品检验收发'">
               <div class="title">
@@ -2719,6 +2749,12 @@ export default {
         case '包装订购':
           clientKey = 'matOther'
           break
+        case '半成品加工':
+          clientKey = 'proProcess'
+          break
+        case '半成品检验收发':
+          clientKey = 'proWeave'
+          break
         default:
           break
       }
@@ -3498,6 +3534,157 @@ export default {
                   type: 'line',
                   yAxisIndex: 1,
                   data: beforeTwentieth.map(itemM => +itemM.order_weight),
+                  itemStyle: {
+                    color: '#25B41F'
+                  }
+                }
+              ]
+            }
+          })
+          break
+        case '半成品加工':
+          newFinance.semiProcess({
+            order_type: this.order_type,
+            order_code: this.order_code,
+            product_code: this.product_code,
+            client_id: this.client_id && this.client_id[1],
+            start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+            end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+            operate_user: this.operate_user,
+            group_id: this.group_id
+          }).then(res => {
+            if (res.data.data.status !== false) {
+              this.totalInfo = {
+                plan_price: res.data.data.number, // 数量
+                real_price: res.data.data.total_price, // 总价
+                // real_number: res.data.data.shoddy_number// 次品数量
+                price: res.data.data.price // 均价
+              }
+              const clientData = res.data.data.clients.sort((now, next) => {
+                return next.number - now.number
+              })
+              const beforeTwentieth = clientData.splice(0, 20).concat({
+                name: '其它',
+                number: this.$toFixed(clientData.map(itemM => +itemM.number || 0).reduce((total, current) => total + current, 0)),
+                total_price: this.$toFixed(clientData.map(itemM => +itemM.total_price || 0).reduce((total, current) => total + current, 0))
+              })
+              this.barOption.legend.data = ['加工数量', '加工金额']
+              this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.name)
+              const priceMin = Math.min(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000) || 0))
+              const priceMax = Math.max(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000) || 0))
+              const weightMin = Math.min(...beforeTwentieth.map(itemM => +itemM.number || 0))
+              const weightMax = Math.max(...beforeTwentieth.map(itemM => +itemM.number || 0))
+              this.barOption.yAxis = [
+                {
+                  type: 'value',
+                  name: '加工数量',
+                  min: (weightMin && weightMin < 0) ? weightMin : 0,
+                  max: Math.ceil(Math.ceil(weightMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(weightMax) / 5),
+                  axisLabel: {
+                    formatter: '{value}'
+                  }
+                },
+                {
+                  type: 'value',
+                  name: '加工金额',
+                  min: (priceMin && priceMin < 0) ? priceMin : 0,
+                  max: Math.ceil(Math.ceil(priceMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(priceMax) / 5),
+                  axisLabel: {
+                    formatter: '{value} 万元'
+                  }
+                }
+              ]
+              this.barOption.series = [
+                {
+                  name: '加工数量',
+                  type: 'bar',
+                  data: beforeTwentieth.map(itemM => +itemM.number),
+                  itemStyle: {
+                    color: '#1F78B4'
+                  }
+                },
+                {
+                  name: '加工金额',
+                  type: 'line',
+                  yAxisIndex: 1,
+                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000)),
+                  itemStyle: {
+                    color: '#25B41F'
+                  }
+                }
+              ]
+            }
+          })
+          break
+        case '半成品检验收发':
+          newFinance.semiInspection({
+            order_code: this.order_code,
+            product_code: this.product_code,
+            client_id: this.client_id && this.client_id[1],
+            start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+            end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+            operate_user: this.operate_user,
+            group_id: this.group_id
+          }).then(res => {
+            if (res.data.data.status !== false) {
+              this.totalInfo = {
+                plan_price: res.data.data.number, // 检验数量
+                real_price: res.data.data.shoddy_rate, // 次品率
+                real_number: res.data.data.shoddy_number// 次品数量
+                // price: res.data.data.price
+              }
+              const clientData = res.data.data.clients.sort((now, next) => {
+                return next.number - now.number
+              })
+              const beforeTwentieth = clientData.splice(0, 20).concat({
+                name: '其它',
+                number: this.$toFixed(clientData.map(itemM => +itemM.number || 0).reduce((total, current) => total + current, 0)),
+                shoddy_number: this.$toFixed(clientData.map(itemM => +itemM.shoddy_number || 0).reduce((total, current) => total + current, 0))
+              })
+              this.barOption.legend.data = ['检验数量', '次品数量']
+              this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.name)
+              const priceMin = Math.min(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.number / 10000) || 0))
+              const priceMax = Math.max(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.number / 10000) || 0))
+              const weightMin = Math.min(...beforeTwentieth.map(itemM => +itemM.shoddy_number || 0))
+              const weightMax = Math.max(...beforeTwentieth.map(itemM => +itemM.shoddy_number || 0))
+              this.barOption.yAxis = [
+                {
+                  type: 'value',
+                  name: '检验数量',
+                  min: (priceMin && priceMin < 0) ? priceMin : 0,
+                  max: Math.ceil(Math.ceil(priceMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(priceMax) / 5),
+                  axisLabel: {
+                    formatter: '{value} 万'
+                  }
+                },
+                {
+                  type: 'value',
+                  name: '次品数量',
+                  min: (weightMin && weightMin < 0) ? weightMin : 0,
+                  max: Math.ceil(Math.ceil(weightMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(weightMax) / 5),
+                  axisLabel: {
+                    formatter: '{value} 件'
+                  }
+                }
+              ]
+              this.barOption.series = [
+                {
+                  name: '检验数量',
+                  type: 'bar',
+                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.number / 10000)),
+                  itemStyle: {
+                    color: '#1F78B4'
+                  }
+                },
+                {
+                  name: '次品数量',
+                  type: 'line',
+                  yAxisIndex: 1,
+                  data: beforeTwentieth.map(itemM => +itemM.shoddy_number),
                   itemStyle: {
                     color: '#25B41F'
                   }

@@ -533,7 +533,8 @@ const reimbursement = {
 }
 // 进仓单
 const warehouse = {
-  create: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  oldCreate: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  create: (params) => http.post(`${baseUrl}/stock/card/batch`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/stock/card/detail`, params),
   list: (params) => http.get(`${baseUrl}/stock/card/list`, params),
   delete: (params) => http.post(`${baseUrl}/stock/card/delete`, params, 'application/json')
@@ -617,7 +618,9 @@ const newFinance = {
   weave: (params) => http.get(`${baseUrl}/statistic/production/weave/detail`, params),
   replenish: (params) => http.get(`${baseUrl}/statistic/production/yarn/replenish/detail`, params),
   inspection: (params) => http.get(`${baseUrl}/statistic/production/inspection/detail`, params),
-  pack: (params) => http.get(`${baseUrl}/statistic/pack/order/detail`, params)
+  pack: (params) => http.get(`${baseUrl}/statistic/pack/order/detail`, params),
+  semiProcess: (params) => http.get(`${baseUrl}/statistic/production/semi_product/detail`, params),
+  semiInspection: (params) => http.get(`${baseUrl}/statistic/order/product/production/detail`, params)
 }
 export {
   newFinance,

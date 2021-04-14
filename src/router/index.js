@@ -657,6 +657,14 @@ const routes = [
       name: '进仓单详情',
       component: () => import('../views/warehouse/warehouseDetail.vue')
     }, {
+      path: '/warehouse/warehouseCreate',
+      name: '添加进仓单',
+      component: () => import('../views/warehouse/warehouseCreate.vue')
+    }, {
+      path: '/warehouse/warehouseUpdate/:id',
+      name: '修改进仓单',
+      component: () => import('../views/warehouse/warehouseUpdate.vue')
+    }, {
       path: '/transport/transportList/:params',
       name: '运输货款列表',
       component: () => import('../views/transport/transportList.vue')
@@ -702,7 +710,7 @@ const routes = [
     name: '物料出入库日志单',
     component: () => import('../views/materialStock/materialStockTable.vue')
   }, {
-    path: '/packOrderTable/:id',
+    path: '/packOrderTable/:type/:id',
     name: '包装订购单',
     component: () => import('../views/packPlan/packOrderTable.vue')
   }, {
