@@ -3568,23 +3568,13 @@ export default {
                 number: this.$toFixed(clientData.map(itemM => +itemM.number || 0).reduce((total, current) => total + current, 0)),
                 total_price: this.$toFixed(clientData.map(itemM => +itemM.total_price || 0).reduce((total, current) => total + current, 0))
               })
-              this.barOption.legend.data = ['加工数量', '加工金额']
+              this.barOption.legend.data = ['加工金额', '加工数量']
               this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.name)
               const priceMin = Math.min(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000) || 0))
               const priceMax = Math.max(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000) || 0))
               const weightMin = Math.min(...beforeTwentieth.map(itemM => +itemM.number || 0))
               const weightMax = Math.max(...beforeTwentieth.map(itemM => +itemM.number || 0))
               this.barOption.yAxis = [
-                {
-                  type: 'value',
-                  name: '加工数量',
-                  min: (weightMin && weightMin < 0) ? weightMin : 0,
-                  max: Math.ceil(Math.ceil(weightMax) / 5) * 5,
-                  interval: Math.ceil(Math.ceil(weightMax) / 5),
-                  axisLabel: {
-                    formatter: '{value}'
-                  }
-                },
                 {
                   type: 'value',
                   name: '加工金额',
@@ -3594,22 +3584,32 @@ export default {
                   axisLabel: {
                     formatter: '{value} 万元'
                   }
+                },
+                {
+                  type: 'value',
+                  name: '加工数量',
+                  min: (weightMin && weightMin < 0) ? weightMin : 0,
+                  max: Math.ceil(Math.ceil(weightMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(weightMax) / 5),
+                  axisLabel: {
+                    formatter: '{value}'
+                  }
                 }
               ]
               this.barOption.series = [
                 {
-                  name: '加工数量',
+                  name: '加工金额',
                   type: 'bar',
-                  data: beforeTwentieth.map(itemM => +itemM.number),
+                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000)),
                   itemStyle: {
                     color: '#1F78B4'
                   }
                 },
                 {
-                  name: '加工金额',
+                  name: '加工数量',
                   type: 'line',
                   yAxisIndex: 1,
-                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.total_price / 10000)),
+                  data: beforeTwentieth.map(itemM => +itemM.number),
                   itemStyle: {
                     color: '#25B41F'
                   }
