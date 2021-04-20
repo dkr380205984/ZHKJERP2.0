@@ -94,6 +94,10 @@
             <span class="label">负责小组：</span>
             <span class="text">{{sampleOrderInfo.group_name}}</span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{sampleOrderInfo.user_name}}</span>
+          </div>
         </div>
         <zh-transition :list='sampleOrderArr'
           showKey='showComponentsName'

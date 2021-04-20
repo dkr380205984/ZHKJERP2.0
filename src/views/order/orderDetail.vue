@@ -79,6 +79,16 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{orderInfo.user_name}}</span>
+          </div>
+          <div class="colCtn">
+            <span class="label">备注信息：</span>
+            <span class="text">{{orderInfo.remark}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <span class="label">文件信息：</span>
             <span class="text text-warp">
@@ -115,12 +125,6 @@
                   :download="item.url">{{item.name}}</a>
               </span>
             </span>
-          </div>
-        </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">备注信息：</span>
-            <span class="text">{{orderInfo.remark}}</span>
           </div>
         </div>
       </div>

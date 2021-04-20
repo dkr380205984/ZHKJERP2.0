@@ -153,6 +153,9 @@
               <el-date-picker v-model="order_time"
                 value-format="yyyy-MM-dd"
                 type="date"
+                :picker-options="{
+                  disabledDate
+                }"
                 placeholder="请选择下单日期">
               </el-date-picker>
             </span>
@@ -713,6 +716,7 @@
 </template>
 
 <script>
+import { disabledDate } from '@/assets/js/common.js'
 import { chinaNum, moneyArr, companyType } from '@/assets/js/dictionary.js'
 import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
@@ -791,6 +795,7 @@ export default {
     }
   },
   methods: {
+    disabledDate,
     searchClient (node, query) {
       let flag = true
       if (query) {

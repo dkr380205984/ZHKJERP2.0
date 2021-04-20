@@ -308,7 +308,7 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column prop="client_contacts"
+            <el-table-column prop="contacts"
               label="联系人"
               width="120">
             </el-table-column>
@@ -479,7 +479,10 @@
             </div>
           </div> -->
         </div>
-        <div class="pageCtn">
+        <div class="pageCtn"
+          :style="pages === Math.ceil(total / 10) && 'justify-content: space-between;align-items: center;'">
+          <span style="color: #1A95FF;"
+            v-if="pages === Math.ceil(total / 10)">当前已是最后一页，如需查询更多订单，请使用时间筛选功能查询更早的记录</span>
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"

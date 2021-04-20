@@ -293,10 +293,15 @@ const numberToEnglish = (num, moneyType) => {
     return moneyType ? `zero point ${translate(numArr[1])}` : `${translate(numArr[1])} cents`
   }
 }
+// element-ui date 组件设置禁用状态
+const disabledDate = (date) => {
+  return new Date().getTime() < new Date(date).getTime()
+}
 export {
   getHash,
   downloadExcel,
   downloadOrderProductionExcel,
   VerificationCode,
-  numberToEnglish
+  numberToEnglish,
+  disabledDate
 }
