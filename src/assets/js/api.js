@@ -634,7 +634,7 @@ const productionList = {
   materialPlan: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_plan/list' : '/sample/material_plan/list'}`, params),
   materialOrder: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_order/list' : '/sample/material_order/list'}`, params),
   materialStock: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_stock/list' : '/sample/material_stock/list'}`, params),
-  weaveing: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/weaveing/list' : '/sample/weaveing/list'}`, params),
+  weaveing: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/weaving/list' : '/sample/weaving/list'}`, params),
   productProcess: (params) => http.get(`${baseUrl}/order/product_process/list`, params)
 }
 export {
