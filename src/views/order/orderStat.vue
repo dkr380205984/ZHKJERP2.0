@@ -242,7 +242,7 @@
               width="150">
               <template slot-scope="scope">
                 <span class="tOpr"
-                  @click="updatedOrderInfo = scope.row">更新进度</span>
+                  @click="updatedOrderInfoEvent(scope.row)">更新进度</span>
                 <span class="tOpr"
                   @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
               </template>
@@ -255,7 +255,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="changeRouter(pages)">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -265,16 +265,65 @@
       <div class="main">
         <div class="title">
           <span class="text">添加订单最新进度</span>
-          <span class="el-icon-close"></span>
+          <span class="el-icon-close"
+            @click="updatedOrderInfo = null"></span>
         </div>
         <div class="content">
           <div class="row">
             <div class="label">当前订单批次：</div>
             <div class="info colCenter">{{`第${updatedOrderInfo.batch_id}批`}}</div>
           </div>
+          <div class="row">
+            <div class="label">最新进度描述：</div>
+            <div class="info colCenter">
+              <el-input v-model="updatedOrderInfo.desc"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">切换批次状态：</div>
+            <div class="info colCenter">
+              <el-select v-model="updatedOrderInfo.status"
+                placeholder="请选择">
+                <el-option v-for="item in [
+                  { label: '进行中', value: 1 },
+                  { label: '紧急', value: 2 },
+                  { label: '已完成', value: 3 }
+                  ]"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">通知成员：</div>
+            <div class="info colCenter">
+              <div class="groupCtn">
+                <span :class="`group_item ${checkedGroup === itemG.id ? 'active' : ''}`"
+                  v-for="itemG in groupArrCom"
+                  :key="itemG.id"
+                  @click="checkedGroup = itemG.id">{{itemG.name}}</span>
+              </div>
+              <div class="userCtn">
+                <el-checkbox v-model="checkedAll"
+                  :indeterminate="indeterminate"
+                  label='全选'
+                  @change="checkedAllChange" />
+                <el-checkbox v-for="itemU in userArrCom"
+                  :key="itemU.id"
+                  v-model="itemU.checked"
+                  :label='itemU.name' />
+              </div>
+            </div>
+          </div>
         </div>
         <div class="opr">
-          <div class="btn btnGray">取消</div>
+          <div class="btn btnGray"
+            @click="updatedOrderInfo = null">取消</div>
           <div class="btn btnBlue">确定</div>
         </div>
       </div>
@@ -284,7 +333,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { orderBatch, group, client, chartsAPI } from '@/assets/js/api.js'
+import { orderBatch, group, client, chartsAPI, auth } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -461,13 +510,13 @@ export default {
         }]
       },
       // 更新订单批次进度字段
-      updatedOrderInfo: null // null的时候关闭弹窗
+      updatedOrderInfo: null, // null的时候关闭弹窗
+      checkedGroup: '',
+      userArr: []
+
     }
   },
   watch: {
-    pages (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -475,6 +524,21 @@ export default {
     }
   },
   methods: {
+    checkedAllChange (event) {
+      this.userArrCom.forEach(itemM => { itemM.checked = event })
+    },
+    updatedOrderInfoEvent (item) {
+      this.updatedOrderInfo = {
+        id: item.id,
+        batch_id: item.batch_id,
+        desc: '',
+        status: ''
+      }
+    },
+    closeUpdatedOrderInfoPopup () {
+      this.updatedOrderInfo = null
+      this.userArr.forEach(itemM => { itemM.checked = false })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -620,14 +684,18 @@ export default {
     }
   },
   created () {
-    this.getFilters()
-    this.getOrderList()
+    this.updatedOrderInfo = {}
+    this.loading = false
+    // this.getFilters()
+    // this.getOrderList()
     Promise.all([
       group.list(),
-      client.list()
+      client.list(),
+      auth.list()
     ]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
+      this.userArr = res[2].data.data
     })
     let today = new Date()
     let todayMore14 = [this.$getTime(today)]
@@ -685,6 +753,21 @@ export default {
       } else if (status === 2005) {
         return '已延期'
       }
+    }
+  },
+  computed: {
+    userArrCom () {
+      return this.checkedGroup ? this.userArr.filter(itemF => itemF.group_id === this.checkedGroup) : this.userArr
+    },
+    groupArrCom () {
+      return [{ id: '', name: '所有' }].concat(this.$unique(this.userArr, 'group_id').map(itemM => ({ id: itemM.group_id, name: itemM.group })))
+    },
+    indeterminate () {
+      const checkedLength = this.userArrCom.filter(itemF => itemF.checked).length
+      if (checkedLength !== 0 && checkedLength !== this.userArrCom.length) {
+        return true
+      }
+      return false
     }
   }
 }

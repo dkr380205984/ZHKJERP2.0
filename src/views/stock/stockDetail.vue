@@ -2395,8 +2395,6 @@ export default {
     filterProductType (item) {
       return [item.category_name, item.type_name, item.style_name].join('/')
     }
-  },
-  watch: {
   }
 }
 </script>

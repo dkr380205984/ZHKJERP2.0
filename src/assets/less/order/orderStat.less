@@ -4,5 +4,21 @@
     .label{
       width: 8em;
     }
+    .groupCtn{
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      .group_item{
+        background-color: #E9E9E9;
+        padding: 2px 1.2em;
+        margin: 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+        &.active{
+          color: @blue;
+        }
+      }
+    }
   }
 }

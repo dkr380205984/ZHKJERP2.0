@@ -271,9 +271,6 @@ export default {
     }
   },
   watch: {
-    page (newVal) {
-      this.changeRouter(newVal)
-    },
     $route () {
       // 点击返回的时候更新下筛选条件
       this.getFilters()

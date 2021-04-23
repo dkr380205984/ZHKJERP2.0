@@ -168,7 +168,7 @@
           style="justify-content:space-between">
           <span class="btn noBorder listCutBtn"
             style="padding:0;margin:0"
-            @click="$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')">订单发货列表</span>
+            @click="$router.push('/order/orderStat')">订单发货列表</span>
           <div class="btn btnBlue"
             @click="$router.push('/order/orderCreate')">新建订单</div>
         </div>
@@ -487,8 +487,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
-            @current-change="getOrderList">
+            :current-page.sync="pages">
           </el-pagination>
         </div>
       </div>

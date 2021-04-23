@@ -818,7 +818,9 @@ export default {
       window.localStorage.setItem('order_tax_prop_default', value)
     },
     filterDate (date) {
-      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+      console.log(this.$getTime(date), ':', new Date(date).getTime() - 1)
+      console.log(this.$getTime(), ':', new Date(this.$getTime()).getTime())
+      return new Date(date).getTime() - 1 < new Date(this.$getTime()).getTime()
     },
     searchClient (node, query) {
       let flag = true

@@ -131,7 +131,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -313,9 +313,6 @@ export default {
     }
   },
   watch: {
-    pages (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
