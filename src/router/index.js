@@ -279,7 +279,7 @@ const routes = [
       name: '订单列表',
       component: () => import('../views/order/orderList.vue')
     }, {
-      path: '/order/orderStat/:params',
+      path: '/order/orderStat',
       name: '订单发货列表',
       component: () => import('../views/order/orderStat.vue')
     }, {

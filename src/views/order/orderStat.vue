@@ -133,13 +133,6 @@
         <div class="list">
           <el-table :data="list"
             style="width: 100%">
-            <!-- <el-table-column fixed
-              width="55">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.checked"
-                  @change="checkedChange($event,scope.row)"></el-checkbox>
-              </template>
-            </el-table-column> -->
             <el-table-column fixed
               prop="delivery_time"
               label="发货日期"
@@ -171,13 +164,6 @@
                   type='open'></zh-img-list>
               </template>
             </el-table-column>
-            <!-- <el-table-column prop="product_code"
-              label="产品编号"
-              width="150">
-              <template slot-scope="scope">
-                {{scope.row.product_info.}}
-              </template>
-            </el-table-column> -->
             <el-table-column prop="numbers"
               label="下单数量"
               width="120">
@@ -256,102 +242,12 @@
               width="150">
               <template slot-scope="scope">
                 <span class="tOpr"
+                  @click="updatedOrderInfo = scope.row">更新进度</span>
+                <span class="tOpr"
                   @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
               </template>
             </el-table-column>
           </el-table>
-          <!-- <div class="title">
-            <div class="col">
-              <span class="text">发货日期</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">订单号</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">外贸公司</span>
-            </div>
-            <div class="col middle flex12">
-              <span class="text">产品图片</span>
-            </div>
-            <div class="col flex08">
-              <span class="text"
-                style="line-height:1.2em">批次<br />订单数量</span>
-            </div>
-            <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div>
-            <div class="col flex16">
-              <span class="text">流程进度</span>
-            </div>
-            <div class="col">
-              <span class="text"
-                style="line-height:1.2em">已用工时<br />下单日期</span>
-            </div>
-            <div class="col">
-              <span class="text">当前状态</span>
-            </div>
-            <div class="col">
-              <span class="text">操作</span>
-            </div>
-          </div>
-          <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col"> {{itemOrder.delivery_time}} </div>
-            <div class="col flex12">{{itemOrder.order_code}}</div>
-            <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle flex12">
-              <zh-img-list :list="itemOrder.image"
-                type='open'></zh-img-list>
-            </div>
-            <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.numbers}}</div>
-            <div class="col flex08"> {{itemOrder.group_name}} </div>
-            <div class="col flex16">
-              <div class="stateCtn"
-                :class="{'green':itemOrder.has_plan===1}">
-                <div class="state"></div>
-                <span class="name">计</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
-                <div class="state"></div>
-                <span class="name">入</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
-                <div class="state"></div>
-                <span class="name">出</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
-                <div class="state"></div>
-                <span class="name">检</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.semi_push_progress>0,'green':itemOrder.semi_push_progress>=100}">
-                <div class="state"></div>
-                <span class="name">回</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
-                <div class="state"></div>
-                <span class="name">箱</span>
-              </div>
-            </div>
-            <div class="col"
-              :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
-            <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]">
-                <div class="state"></div>
-                <span class="name">{{filterStatus([itemOrder.delivery_time,itemOrder.status])[0]}}</span>
-              </div>
-            </div>
-            <div class="col">
-              <span class="opr"
-                @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
-            </div>
-          </div> -->
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -364,12 +260,30 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="updatedOrderInfo">
+      <div class="main">
+        <div class="title">
+          <span class="text">添加订单最新进度</span>
+          <span class="el-icon-close"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <div class="label">当前订单批次：</div>
+            <div class="info colCenter">{{`第${updatedOrderInfo.batch_id}批`}}</div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray">取消</div>
+          <div class="btn btnBlue">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { getHash } from '@/assets/js/common.js'
 import { orderBatch, group, client, chartsAPI } from '@/assets/js/api.js'
 export default {
   data () {
@@ -525,27 +439,29 @@ export default {
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [end, start])
           }
         }, {
           text: '最近一个月',
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [end, start])
           }
         }, {
           text: '最近三个月',
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [end, start])
           }
         }]
-      }
+      },
+      // 更新订单批次进度字段
+      updatedOrderInfo: null // null的时候关闭弹窗
     }
   },
   watch: {
@@ -577,23 +493,23 @@ export default {
       return flag
     },
     getFilters () {
-      let params = getHash(this.$route.params.params)
-      this.pages = Number(params.page)
-      this.keyword = params.keyword
-      if (params.date !== 'null' && params.date !== '') {
+      let params = this.$route.query
+      this.pages = Number(params.page) || 1
+      this.keyword = params.keyword || ''
+      if (params.date && params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
         this.date = ''
       }
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      this.company_id = params.company_id.split(',')
+      this.company_id = (params.company_id && params.company_id.split(',')) || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderStat/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
+      this.$router.push('/order/orderStat?page=' + pages + '&keyword=' + this.keyword + '&date=' + this.date + '&group_id=' + this.group_id + '&company_id=' + this.company_id)
     },
     reset () {
-      this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')
+      this.$router.push('/order/orderStat')
     },
     getOrderList () {
       this.loading = true
@@ -775,5 +691,5 @@ export default {
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/order/orderList.less";
+@import "~@/assets/less/order/orderStat.less";
 </style>
