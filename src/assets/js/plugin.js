@@ -16,13 +16,14 @@ const plugin = {
     if (date && !new Date(date)) {
       throw new TypeError('The correct format was not obtained for function "getTime"')
     }
-    let nowDate = (date ? new Date(date) : new Date()).toLocaleDateString()
-    return nowDate.replace(/\//g, connector)
-    // let nowDate = date ? new Date(date) : new Date()
-    // const year = nowDate.getFullYear()
-    // const month = nowDate.getMonth() + 1
-    // const data = nowDate.getDate()
-    // return [year, month.toString()[1] ? month : '0' + month, data.toString()[1] ? data : '0' + data].join('-')
+    // let nowDate = (date ? new Date(date) : new Date()).toLocaleDateString()
+    // return nowDate.replace(/\//g, connector)
+    // 上面代码不会补全0
+    let nowDate = date ? new Date(date) : new Date()
+    const year = nowDate.getFullYear()
+    const month = nowDate.getMonth() + 1
+    const data = nowDate.getDate()
+    return [year, month >= 10 ? month : `0${month}`, data >= 10 ? data : `0{data}`].join('-')
   },
   /**
    * @param {any} data 需要深度克隆的数据
