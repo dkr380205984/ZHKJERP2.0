@@ -32,6 +32,10 @@ const routes = [
         path: 'logStatistics',
         name: '生产记录统计-新版',
         component: () => import(`../views/newFinancialStatistics/logStatistics.vue`)
+      }, {
+        path: 'materialStatistics',
+        name: '物料使用统计-新版',
+        component: () => import(`../views/newFinancialStatistics/materialStatistics.vue`)
       }
     ]
   }, {

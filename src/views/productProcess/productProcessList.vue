@@ -148,7 +148,7 @@
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
 import { getHash } from '@/assets/js/common.js'
-import { order, group, client } from '@/assets/js/api.js'
+import { productionList, group, client } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -215,7 +215,7 @@ export default {
     },
     getOrderList () {
       this.loading = true
-      order.list({
+      productionList.productProcess({
         limit: 10,
         page: this.pages,
         product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
@@ -225,60 +225,37 @@ export default {
         client_id: this.company_id && this.company_id[1],
         group_id: this.group_id
       }).then(res => {
-        this.list = res.data.data
-        this.list.forEach(item => {
-          item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
-            return item.image.length > 0 ? item.image.map(itemImg => {
-              return {
-                ...itemImg,
-                product_id: item.product_id
-              }
-            }) : [{
-              image_url: '',
-              thumb: '',
-              product_id: item.product_id
-            }]
-          }).reduce((total, item) => {
-            return total.concat(item)
-          }, [])
-          item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
-            return Number(total) + Number(itemNum)
-          }, 0)
-        })
-        this.total = res.data.meta.total
-        this.loading = false
+        if (res.data.status !== false) {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        }
       })
-    },
-    handleCommand (type, id) {
-      if (type === 'change') {
-        this.$router.push('/order/orderUpdate/' + id)
-      } else if (type === 'delete') {
-        this.$confirm('此操作将永久删除该订单, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          order.delete({
-            id: id
-          }).then(res => {
-            if (res.data.status) {
-              this.$message.success('删除成功')
-              setTimeout(() => {
-                window.location.reload()
-              }, 300)
-            } else {
-              this.$message.error(res.data.message)
-            }
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-      } else if (type === 'materialStock') {
-        this.$router.push('/materialStock/materialStockDetail/' + id + '/1')
-      }
+      // order.list({
+      // }).then(res => {
+      //   this.list = res.data.data
+      //   this.list.forEach(item => {
+      //     item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
+      //       return item.image.length > 0 ? item.image.map(itemImg => {
+      //         return {
+      //           ...itemImg,
+      //           product_id: item.product_id
+      //         }
+      //       }) : [{
+      //         image_url: '',
+      //         thumb: '',
+      //         product_id: item.product_id
+      //       }]
+      //     }).reduce((total, item) => {
+      //       return total.concat(item)
+      //     }, [])
+      //     item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+      //       return Number(total) + Number(itemNum)
+      //     }, 0)
+      //   })
+      //   this.total = res.data.meta.total
+      //   this.loading = false
+      // })
     }
   },
   created () {

@@ -20,12 +20,12 @@
         <span class="name">样单财务统计</span>
       </div>
       <div class="cut_item"
-        @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/productStatistics')">
+        @click="$router.push('/newfinancialStatistics/materialStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-chanpinchanliangtongji"></use>
         </svg>
-        <span class="name">产品产量统计</span>
+        <span class="name">物料使用统计</span>
       </div>
       <div class="cut_item"
         @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/settleChargebacks')">
@@ -2286,53 +2286,83 @@
           </el-tab-pane>
           <el-tab-pane label="预订购入库"
             name="预订购入库">
-            <div class="filterCtn2">
-              <div class="leftCtn">
-                <span class="label">筛选条件：</span>
-                <div class="filter_line">
-                  <el-input class="filter_item"
-                    v-model="material_name"
-                    @change="changeRouter(1)"
-                    placeholder="输入物料名称查询">
-                  </el-input>
-                  <el-cascader v-model="client_id"
-                    class="filter_item"
-                    :show-all-levels='false'
-                    placeholder="搜索物料预定购单位名称查询"
-                    :options="clientFilter.matOrder"
-                    :filter-method='searchClient'
-                    clearable
-                    :props="{ expandTrigger: 'hover' }"
-                    @change="changeRouter(1)"
-                    filterable></el-cascader>
-                  <el-select v-model="stock_id"
-                    class="filter_item"
-                    @change="changeRouter(1)"
-                    placeholder="筛选入库仓库"
-                    clearable>
-                    <el-option v-for="(item,index) in stockList"
-                      :key="index"
-                      :label="item.name"
-                      :value="item.id">
-                    </el-option>
-                  </el-select>
-                  <el-date-picker v-model="date"
-                    style="width:250px"
-                    class="filter_item"
-                    type="daterange"
-                    align="right"
-                    unlink-panels
-                    value-format="yyyy-MM-dd"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change="changeRouter(1)">
-                  </el-date-picker>
-                  <div class="resetBtn"
-                    @click="reset">重置</div>
-                </div>
+            <div class="bgGray"
+              style="margin-bottom:8px">当前统计默认值：日期：{{dateCom}}；订单类型：{{orderTypeCom}}；物料名称：{{material_name || '所有'}}；加工单位：{{clientCom}}；下单小组：{{groupCom}}；创建人：{{userCom}}。</div>
+            <div class="tableCtn">
+              <div class="filterCtn">
+                <el-input class="filter_item"
+                  v-model="material_name"
+                  @change="changeRouter(1)"
+                  placeholder="输入物料名称查询">
+                </el-input>
+                <el-cascader v-model="client_id"
+                  class="filter_item"
+                  :show-all-levels='false'
+                  placeholder="搜索物料预定购单位名称查询"
+                  :options="clientFilter.matOrder"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  @change="changeRouter(1)"
+                  filterable></el-cascader>
+                <el-select v-model="stock_id"
+                  class="filter_item"
+                  @change="changeRouter(1)"
+                  placeholder="筛选入库仓库"
+                  clearable>
+                  <el-option v-for="(item,index) in stockList"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+                <el-date-picker v-model="date"
+                  style="width:250px"
+                  class="filter_item"
+                  type="daterange"
+                  align="right"
+                  unlink-panels
+                  value-format="yyyy-MM-dd"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  @change="changeRouter(1)">
+                </el-date-picker>
+                <div class="resetBtn"
+                  @click="reset">重置</div>
               </div>
+              <!-- <div class="row">
+                <div class="item">计划加工总额</div>
+                <div class="item">实际加工总额</div>
+                <div class="item">实际加工总数</div>
+                <div class="item">平均价格</div>
+              </div> -->
+              <!-- <div class="row H58">
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.plan_price ? $formatNum($toFixed(totalInfo.plan_price / 10000)) : 0}}</span>万元
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.real_price ? $formatNum($toFixed(totalInfo.real_price / 10000)) : 0}}</span>万元
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="blue"
+                    style="font-size:28px">{{totalInfo.real_number ? $formatNum($toFixed(totalInfo.real_number / 10000)) : 0}}</span>万
+                </div>
+                <div class="item"
+                  style="font-size:14px">
+                  <span class="green"
+                    style="font-size:28px">{{$toFixed(totalInfo.price || 0)}}</span>元
+                </div>
+              </div> -->
             </div>
+            <v-chart v-if="type==='预订购入库'"
+              class="echarts_bar_container"
+              :options="barOption" />
             <div class="list"
               v-if="type==='预订购入库'">
               <div class="title">
@@ -2754,6 +2784,9 @@ export default {
           break
         case '半成品检验收发':
           clientKey = 'proWeave'
+          break
+        case '预订购入库':
+          clientKey = 'matProcess'
           break
         default:
           break
@@ -3836,6 +3869,79 @@ export default {
                   type: 'line',
                   yAxisIndex: 1,
                   data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.reality_number / 10000)),
+                  itemStyle: {
+                    color: '#25B41F'
+                  }
+                }
+              ]
+            }
+          })
+          break
+        case '预订购入库':
+          newFinance.bookingMaterial({
+            material_name: this.material_name,
+            client_id: this.client_id && this.client_id[1],
+            start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+            end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+            stock_id: this.stock_id
+          }).then(res => {
+            if (res.data.data.status !== false) {
+              // this.totalInfo = {
+              //   plan_price: res.data.data.total_price,
+              //   real_price: res.data.data.reality_price,
+              //   real_number: res.data.data.reality_number,
+              //   price: res.data.data.price
+              // }
+              const clientData = res.data.data.clients.sort((now, next) => {
+                return next.price - now.price
+              })
+              const beforeTwentieth = clientData.splice(0, 20).concat({
+                name: '其它',
+                action_weight: this.$toFixed(clientData.map(itemM => +itemM.action_weight || 0).reduce((total, current) => total + current, 0)),
+                price: this.$toFixed(clientData.map(itemM => +itemM.price || 0).reduce((total, current) => total + current, 0))
+              })
+              this.barOption.legend.data = ['采购金额', '采购数量']
+              this.barOption.xAxis.data = beforeTwentieth.map(itemM => itemM.name)
+              const priceMin = Math.min(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.price / 10000) || 0))
+              const priceMax = Math.max(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.price / 10000) || 0))
+              const weightMin = Math.min(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.action_weight / 10000) || 0))
+              const weightMax = Math.max(...beforeTwentieth.map(itemM => this.$toFixed(+itemM.action_weight / 10000) || 0))
+              this.barOption.yAxis = [
+                {
+                  type: 'value',
+                  name: '采购金额',
+                  min: (priceMin && priceMin < 0) ? priceMin : 0,
+                  max: Math.ceil(Math.ceil(priceMax) / 5) * 5 || 5,
+                  interval: Math.ceil(Math.ceil(priceMax) / 5) || 1,
+                  axisLabel: {
+                    formatter: '{value} 万元'
+                  }
+                },
+                {
+                  type: 'value',
+                  name: '采购数量',
+                  min: (weightMin && weightMin < 0) ? weightMin : 0,
+                  max: Math.ceil(Math.ceil(weightMax) / 5) * 5,
+                  interval: Math.ceil(Math.ceil(weightMax) / 5),
+                  axisLabel: {
+                    formatter: '{value} 万'
+                  }
+                }
+              ]
+              this.barOption.series = [
+                {
+                  name: '采购金额',
+                  type: 'bar',
+                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.price / 10000)),
+                  itemStyle: {
+                    color: '#1F78B4'
+                  }
+                },
+                {
+                  name: '采购数量',
+                  type: 'line',
+                  yAxisIndex: 1,
+                  data: beforeTwentieth.map(itemM => this.$toFixed(+itemM.action_weight / 10000)),
                   itemStyle: {
                     color: '#25B41F'
                   }

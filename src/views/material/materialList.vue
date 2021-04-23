@@ -266,7 +266,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { order, group, client, sampleOrder } from '@/assets/js/api.js'
+import { productionList, group, client } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
 export default {
   data () {
@@ -375,90 +375,115 @@ export default {
     },
     getOrderList () {
       this.loading = true
-      if (this.$route.params.type === '1') {
-        order.list({
-          limit: 10,
-          page: this.pages,
-          product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
-          keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          client_id: this.company_id && this.company_id[1],
-          status_material_plan: this.has_materialPlan === '0' ? 0 : 1,
-          status_material_order: this.has_materialPlan === '2' ? 2 : 0,
-          group_id: this.group_id,
-          status: this.state
-        }).then(res => {
-          this.list = res.data.data.map(item => {
-            item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
-              return item.image.length > 0 ? item.image.map(itemImg => {
-                return {
-                  ...itemImg,
-                  product_id: item.product_id
-                }
-              }) : [{
-                image_url: '',
-                thumb: '',
-                product_id: item.product_id
-              }]
-            }).reduce((total, item) => {
-              return total.concat(item)
-            }, [])
-            item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
-              return Number(total) + Number(itemNum)
-            }, 0)
-            if (this.checkedList.find(itemF => +itemF.id === +item.id)) {
-              item.checked = true
-            } else {
-              item.checked = false
+      productionList.materialOrder({
+        limit: 10,
+        page: this.pages,
+        product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
+        keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
+        start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+        end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+        client_id: this.company_id && this.company_id[1],
+        status_material_plan: this.has_materialPlan === '0' ? 0 : 1,
+        status_material_order: this.has_materialPlan === '2' ? 2 : 0,
+        group_id: this.group_id,
+        status: this.state
+      }, this.$route.params.type !== '1').then(res => {
+        if (res.data.status !== false) {
+          this.list = res.data.data.map(itemM => {
+            const obj = { ...itemM }
+            if (this.$route.params.type !== '1') {
+              obj.order_code = itemM.title
             }
-            return item
+            return obj
           })
           this.total = res.data.meta.total
           this.loading = false
-        })
-      } else {
-        sampleOrder.list({
-          limit: 10,
-          page: this.pages,
-          product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
-          keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
-          start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
-          end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
-          client_id: this.company_id && this.company_id[1],
-          status_material_plan: this.has_materialPlan,
-          group_id: this.group_id
-        }).then(res => {
-          this.list = res.data.data
-          this.list.forEach((item) => {
-            let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })
-            let img = item.image || []
-            img = img.map(itemImg => {
-              return {
-                thumb: itemImg.thumb,
-                image_url: itemImg.image_url,
-                product_id: itemImg.sample_product_id
-              }
-            })
-            proArr.forEach(itemPro => {
-              if (!img.find(itemImg => itemImg.product_id === itemPro.product_id)) {
-                img.push({
-                  thumb: '',
-                  image_url: '',
-                  product_id: itemPro.product_id
-                })
-              }
-            })
-            item.image = img
-            item.number = item.total_number.map(item => Number(item.numbers)).reduce((total, item) => {
-              return total + item
-            })
-            item.order_code = item.title
-          })
-          this.total = res.data.meta.total
-          this.loading = false
-        })
-      }
+        }
+      })
+      // if (this.$route.params.type === '1') {
+      //   order.list({
+      //     limit: 10,
+      //     page: this.pages,
+      //     product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
+      //     keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
+      //     start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+      //     end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+      //     client_id: this.company_id && this.company_id[1],
+      //     status_material_plan: this.has_materialPlan === '0' ? 0 : 1,
+      //     status_material_order: this.has_materialPlan === '2' ? 2 : 0,
+      //     group_id: this.group_id,
+      //     status: this.state
+      //   }).then(res => {
+      //     this.list = res.data.data.map(item => {
+      //       item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
+      //         return item.image.length > 0 ? item.image.map(itemImg => {
+      //           return {
+      //             ...itemImg,
+      //             product_id: item.product_id
+      //           }
+      //         }) : [{
+      //           image_url: '',
+      //           thumb: '',
+      //           product_id: item.product_id
+      //         }]
+      //       }).reduce((total, item) => {
+      //         return total.concat(item)
+      //       }, [])
+      //       item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+      //         return Number(total) + Number(itemNum)
+      //       }, 0)
+      //       if (this.checkedList.find(itemF => +itemF.id === +item.id)) {
+      //         item.checked = true
+      //       } else {
+      //         item.checked = false
+      //       }
+      //       return item
+      //     })
+      //     this.total = res.data.meta.total
+      //     this.loading = false
+      //   })
+      // } else {
+      //   sampleOrder.list({
+      //     limit: 10,
+      //     page: this.pages,
+      //     product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
+      //     keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
+      //     start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+      //     end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+      //     client_id: this.company_id && this.company_id[1],
+      //     status_material_plan: this.has_materialPlan,
+      //     group_id: this.group_id
+      //   }).then(res => {
+      //     this.list = res.data.data
+      //     this.list.forEach((item) => {
+      //       let proArr = this.$mergeData(item.total_number, { mainRule: 'product_id' })
+      //       let img = item.image || []
+      //       img = img.map(itemImg => {
+      //         return {
+      //           thumb: itemImg.thumb,
+      //           image_url: itemImg.image_url,
+      //           product_id: itemImg.sample_product_id
+      //         }
+      //       })
+      //       proArr.forEach(itemPro => {
+      //         if (!img.find(itemImg => itemImg.product_id === itemPro.product_id)) {
+      //           img.push({
+      //             thumb: '',
+      //             image_url: '',
+      //             product_id: itemPro.product_id
+      //           })
+      //         }
+      //       })
+      //       item.image = img
+      //       item.number = item.total_number.map(item => Number(item.numbers)).reduce((total, item) => {
+      //         return total + item
+      //       })
+      //       item.order_code = item.title
+      //     })
+      //     this.total = res.data.meta.total
+      //     this.loading = false
+      //   })
+      // }
     }
   },
   created () {

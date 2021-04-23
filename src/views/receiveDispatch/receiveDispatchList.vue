@@ -168,6 +168,7 @@
 import { companyType } from '@/assets/js/dictionary.js'
 import { getHash } from '@/assets/js/common.js'
 import { order, group, client } from '@/assets/js/api.js'
+import { productionList } from '../../assets/js/api'
 export default {
   data () {
     return {
@@ -265,7 +266,7 @@ export default {
     },
     getOrderList () {
       this.loading = true
-      order.list({
+      productionList.productProcess({
         limit: 10,
         page: this.pages,
         product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
@@ -276,29 +277,46 @@ export default {
         group_id: this.group_id,
         status: this.state
       }).then(res => {
-        this.list = res.data.data
-        this.list.forEach(item => {
-          item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
-            return item.image.length > 0 ? item.image.map(itemImg => {
-              return {
-                ...itemImg,
-                product_id: item.product_id
-              }
-            }) : [{
-              image_url: '',
-              thumb: '',
-              product_id: item.product_id
-            }]
-          }).reduce((total, item) => {
-            return total.concat(item)
-          }, [])
-          item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
-            return Number(total) + Number(itemNum)
-          }, 0)
-        })
-        this.total = res.data.meta.total
-        this.loading = false
+        if (res.data.status !== false) {
+          this.list = res.data.data
+          this.total = res.data.meta.total
+          this.loading = false
+        }
       })
+      // order.list({
+      //   limit: 10,
+      //   page: this.pages,
+      //   product_code: this.searchOrderOrProduct === 'product' ? this.keyword : '',
+      //   keyword: this.searchOrderOrProduct === 'order' ? this.keyword : '',
+      //   start_time: (this.date && this.date.length > 0) ? this.date[0] : '',
+      //   end_time: (this.date && this.date.length > 0) ? this.date[1] : '',
+      //   client_id: this.company_id && this.company_id[1],
+      //   group_id: this.group_id,
+      //   status: this.state
+      // }).then(res => {
+      //   this.list = res.data.data
+      //   this.list.forEach(item => {
+      //     item.image = this.$mergeData(item.product_info, { mainRule: ['product_code', 'product_id'], otherRule: [{ name: 'numbers', type: 'add' }, { name: 'image' }] }).map(item => {
+      //       return item.image.length > 0 ? item.image.map(itemImg => {
+      //         return {
+      //           ...itemImg,
+      //           product_id: item.product_id
+      //         }
+      //       }) : [{
+      //         image_url: '',
+      //         thumb: '',
+      //         product_id: item.product_id
+      //       }]
+      //     }).reduce((total, item) => {
+      //       return total.concat(item)
+      //     }, [])
+      //     item.number = item.product_info.map(itemPro => itemPro.numbers).reduce((total, itemNum) => {
+      //       return Number(total) + Number(itemNum)
+      //     }, 0)
+      //   })
+      //   this.total = res.data.meta.total
+      //   this.loading = false
+      // })
     },
     handleCommand (type, id) {
       if (type === 'change') {

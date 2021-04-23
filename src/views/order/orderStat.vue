@@ -146,12 +146,12 @@
               width="150">
             </el-table-column>
             <el-table-column fixed
-              prop="client_name"
+              prop="order_code"
               label="订单号"
               width="150">
             </el-table-column>
             <el-table-column fixed
-              prop="order_code"
+              prop="client_name"
               label="外贸公司"
               width="150">
             </el-table-column>

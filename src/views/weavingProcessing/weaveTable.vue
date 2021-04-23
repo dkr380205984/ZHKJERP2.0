@@ -107,7 +107,7 @@
         </div>
       </div>
     </div>
-    <div class="printTable"
+    <!-- <div class="printTable"
       v-if="!(materialInfo.length === 0 && $route.query.type === '2')">
       <div class="print_head">
         <div class="left">
@@ -182,7 +182,7 @@
             v-html="remarks"></div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -216,9 +216,9 @@ export default {
             print.detail({
               type: 1
             }),
-            print.detail({
-              type: 3
-            }),
+            // print.detail({
+            //   type: 3
+            // }),
             order.detail({
               id: this.$route.params.id
             }),
@@ -230,13 +230,13 @@ export default {
             this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('full_name') + '生产加工通知单')
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
-            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
-            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-            this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
+            // this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
+            // this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
             // 处理订单信息
-            this.orderInfo = res[2].data.data
+            this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item =>
+            let weaveInfo = res[2].data.data.filter(item =>
               (Number(item.client_id) === Number(this.$route.query.clientId)) &&
               (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
             ).map(item => {
@@ -295,9 +295,9 @@ export default {
             print.detail({
               type: 2
             }),
-            print.detail({
-              type: 4
-            }),
+            // print.detail({
+            //   type: 4
+            // }),
             order.detail({
               id: this.$route.params.id
             }),
@@ -313,13 +313,13 @@ export default {
             this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('full_name') + '生产加工通知单')
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
-            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
-            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-            this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
+            // this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
+            // this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
             // 处理订单信息
-            this.orderInfo = res[2].data.data
+            this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item =>
+            let weaveInfo = res[2].data.data.filter(item =>
               (Number(item.client_id) === Number(this.$route.query.clientId)) &&
               (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
             ).map(item => {
@@ -389,9 +389,9 @@ export default {
             print.detail({
               type: 1
             }),
-            print.detail({
-              type: 3
-            }),
+            // print.detail({
+            //   type: 3
+            // }),
             sampleOrder.detail({
               id: this.$route.params.id
             }),
@@ -403,13 +403,13 @@ export default {
             this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('full_name') + '生产加工通知单')
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
-            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
-            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-            this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
+            // this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
+            // this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
             // 处理订单信息
-            this.orderInfo = res[2].data.data
+            this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item =>
+            let weaveInfo = res[2].data.data.filter(item =>
               (Number(item.client_id) === Number(this.$route.query.clientId)) &&
               (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
             ).map(item => {
@@ -468,9 +468,9 @@ export default {
             print.detail({
               type: 2
             }),
-            print.detail({
-              type: 4
-            }),
+            // print.detail({
+            //   type: 4
+            // }),
             sampleOrder.detail({
               id: this.$route.params.id
             }),
@@ -486,13 +486,13 @@ export default {
             this.title = res[0].data.data ? res[0].data.data.title : (window.sessionStorage.getItem('full_name') + '生产加工通知单')
             this.remark = res[0].data.data ? res[0].data.data.desc : ''
             this.isHideClient = res[0].data.data && res[0].data.data.hide_order_client
-            this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
-            this.remarks = res[1].data.data ? res[1].data.data.desc : ''
-            this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
+            // this.titles = res[1].data.data ? res[1].data.data.title : (window.sessionStorage.getItem('full_name') + '原料调拨单')
+            // this.remarks = res[1].data.data ? res[1].data.data.desc : ''
+            // this.isHideClients = res[1].data.data && res[1].data.data.hide_order_client
             // 处理订单信息
-            this.orderInfo = res[2].data.data
+            this.orderInfo = res[1].data.data
             // 处理织造分配数据
-            let weaveInfo = res[3].data.data.filter(item =>
+            let weaveInfo = res[2].data.data.filter(item =>
               (Number(item.client_id) === Number(this.$route.query.clientId)) &&
               (this.$route.query.logId ? this.$route.query.logId.split(',').map(itemM => Number(itemM)).includes(Number(item.id)) : true)
             ).map(item => {
@@ -539,7 +539,7 @@ export default {
                 ]
               }
             })
-            let materialInfo = this.$mergeData(res[4].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)), {
+            let materialInfo = this.$mergeData(res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)), {
               mainRule: 'material_name',
               childrenName: 'color_info',
               childrenRule: {
@@ -583,22 +583,22 @@ export default {
           this.qrCodeUrl = url
         }
       })
-      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/1/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl2 = url
-        }
-      })
+      // QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/1/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+      //   if (!err) {
+      //     this.qrCodeUrl2 = url
+      //   }
+      // })
     } else {
       QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
           this.qrCodeUrl = url
         }
       })
-      QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/2/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (!err) {
-          this.qrCodeUrl2 = url
-        }
-      })
+      // QRCode.toDataURL(window.location.origin + '/materialStock/materialStockDetail/' + this.$route.params.id + '/2/' + this.$route.params.type, { errorCorrectionLevel: 'H' }, (err, url) => {
+      //   if (!err) {
+      //     this.qrCodeUrl2 = url
+      //   }
+      // })
     }
   },
   filters: {

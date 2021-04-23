@@ -18,12 +18,12 @@
         <span class="name">样单财务统计</span>
       </div>
       <div class="cut_item"
-        @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/productStatistics')">
+        @click="$router.push('/newfinancialStatistics/materialStatistics')">
         <svg class="iconFont"
           aria-hidden="true">
           <use xlink:href="#icon-chanpinchanliangtongji"></use>
         </svg>
-        <span class="name">产品产量统计</span>
+        <span class="name">物料使用统计</span>
       </div>
       <div class="cut_item"
         @click="true ? $message.warning('开发中，敬请期待。。。') : $router.push('/newfinancialStatistics/settleChargebacks')">

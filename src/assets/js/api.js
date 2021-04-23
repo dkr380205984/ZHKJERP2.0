@@ -620,9 +620,25 @@ const newFinance = {
   inspection: (params) => http.get(`${baseUrl}/statistic/production/inspection/detail`, params),
   pack: (params) => http.get(`${baseUrl}/statistic/pack/order/detail`, params),
   semiProcess: (params) => http.get(`${baseUrl}/statistic/production/semi_product/detail`, params),
-  semiInspection: (params) => http.get(`${baseUrl}/statistic/order/product/production/detail`, params)
+  semiInspection: (params) => http.get(`${baseUrl}/statistic/order/product/production/detail`, params),
+  bookingMaterial: (params) => http.get(`${baseUrl}/statistic/stock/reserve/material/detail`, params),
+  materialStore: (params) => http.get(`${baseUrl}/statistic/stock/detail`, params),
+  materialStoreForClient: (params) => http.get(`${baseUrl}/statistic/material/reserve/order/detail`, params)
+}
+// 生产流程列表重构
+const productionList = {
+  /**
+   * @param {*} params 请求参数
+   * @param {*} isSample 是否为样单
+   */
+  materialPlan: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_plan/list' : '/sample/material_plan/list'}`, params),
+  materialOrder: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_order/list' : '/sample/material_order/list'}`, params),
+  materialStock: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_stock/list' : '/sample/material_stock/list'}`, params),
+  weaveing: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/weaveing/list' : '/sample/weaveing/list'}`, params),
+  productProcess: (params) => http.get(`${baseUrl}/order/product_process/list`, params)
 }
 export {
+  productionList,
   newFinance,
   documentsTable,
   documents,
