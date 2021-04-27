@@ -244,7 +244,7 @@
                 <span class="tOpr"
                   @click="updatedOrderInfoEvent(scope.row)">更新进度</span>
                 <span class="tOpr"
-                  @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+                  @click="$router.push('/order/orderDetail/' + scope.row.order_id)">详情</span>
               </template>
             </el-table-column>
           </el-table>
@@ -262,13 +262,15 @@
     </div>
     <div class="popup"
       v-if="updatedOrderInfo">
-      <div class="main">
+      <div class="main"
+        style="width: 800px;">
         <div class="title">
           <span class="text">添加订单最新进度</span>
           <span class="el-icon-close"
             @click="updatedOrderInfo = null"></span>
         </div>
-        <div class="content">
+        <div class="content"
+          style="max-height: 500px;">
           <div class="row">
             <div class="label">当前订单批次：</div>
             <div class="info colCenter">{{`第${updatedOrderInfo.batch_id}批`}}</div>
@@ -288,9 +290,9 @@
               <el-select v-model="updatedOrderInfo.status"
                 placeholder="请选择">
                 <el-option v-for="item in [
-                  { label: '进行中', value: 1 },
-                  { label: '紧急', value: 2 },
-                  { label: '已完成', value: 3 }
+                  { label: '进行中', value: 2 },
+                  { label: '紧急', value: 3 },
+                  { label: '已完成', value: 1 }
                   ]"
                   :key="item.value"
                   :label="item.label"
@@ -303,10 +305,13 @@
             <div class="label">通知成员：</div>
             <div class="info colCenter">
               <div class="groupCtn">
-                <span :class="`group_item ${checkedGroup === itemG.id ? 'active' : ''}`"
+                <!-- <span>{{itemG.name}}</span> -->
+                <el-tag :class="`group_item ${checkedGroup === itemG.id ? 'active' : ''}`"
                   v-for="itemG in groupArrCom"
                   :key="itemG.id"
-                  @click="checkedGroup = itemG.id">{{itemG.name}}</span>
+                  size="small"
+                  :type='checkedGroup === itemG.id ? "" : "info"'
+                  @click="checkedGroup = itemG.id">{{itemG.name}}</el-tag>
               </div>
               <div class="userCtn">
                 <el-checkbox v-model="checkedAll"
@@ -314,9 +319,35 @@
                   label='全选'
                   @change="checkedAllChange" />
                 <el-checkbox v-for="itemU in userArrCom"
+                  @change="isCheckedAll"
                   :key="itemU.id"
                   v-model="itemU.checked"
                   :label='itemU.name' />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">已选成员：</div>
+            <div class="info colCenter">
+              <div class="groupCtn">
+                <!--
+                  不知道为什么 userArr.filter(itemF => itemF.checked) 写在computed中有时会过滤不了
+                   -->
+                <template v-if="userArr.filter(itemF => itemF.checked).length !== 0">
+                  <!-- <span :class="`group_item`"
+                    v-for="itemG in userArr.filter(itemF => itemF.checked)"
+                    :key="itemG.id">{{itemG.name}}</span> -->
+                  <el-tag v-for="itemG in userArr.filter(itemF => itemF.checked)"
+                    class="group_item"
+                    :key="itemG.id"
+                    size="small"
+                    closable
+                    @close='deleteCheckedUser(itemG)'>
+                    {{itemG.name}}
+                  </el-tag>
+                </template>
+                <span style="color:#B9B9B9"
+                  v-else>暂无</span>
               </div>
             </div>
           </div>
@@ -324,7 +355,8 @@
         <div class="opr">
           <div class="btn btnGray"
             @click="updatedOrderInfo = null">取消</div>
-          <div class="btn btnBlue">确定</div>
+          <div class="btn btnBlue"
+            @click="updatedBatchStatus">确定</div>
         </div>
       </div>
     </div>
@@ -512,6 +544,8 @@ export default {
       // 更新订单批次进度字段
       updatedOrderInfo: null, // null的时候关闭弹窗
       checkedGroup: '',
+      checkedAll: false,
+      indeterminate: false,
       userArr: []
 
     }
@@ -521,18 +555,74 @@ export default {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
       this.getOrderList()
+    },
+    checkedGroup () {
+      this.isCheckedAll()
     }
   },
   methods: {
+    deleteCheckedUser (item) {
+      item.checked = false
+      this.$forceUpdate()
+    },
+    updatedBatchStatus () {
+      if (this.$submitLock()) return
+      if (!this.updatedOrderInfo.status) {
+        this.$message.warning('请选择批次状态')
+        return
+      }
+      orderBatch.changeProg({
+        order_batch_id: this.updatedOrderInfo.id,
+        number: this.updatedOrderInfo.batch_id,
+        order_id: this.updatedOrderInfo.order_id,
+        status: this.updatedOrderInfo.status,
+        users: this.userArr.filter(itemM => itemM.checked).map(itemM => itemM.id),
+        description: this.updatedOrderInfo.desc,
+        router_url: `/order/orderDetail/${this.updatedOrderInfo.order_id}`
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('更新成功')
+          this.updatedOrderInfo = null
+          this.getOrderList()
+        }
+      })
+    },
     checkedAllChange (event) {
       this.userArrCom.forEach(itemM => { itemM.checked = event })
+      // this.userArrCom.forEach(itemF => {
+      //   const finded = this.userArr.find(itemFind => itemFind.id === itemF.id)
+      //   if (finded) {
+      //     finded.checked = event
+      //   }
+      // })
+      // this.isCheckedAll()
+      // this.$forceUpdate()
+    },
+    isCheckedAll () {
+      const checkedNum = this.userArrCom.filter(itemF => itemF.checked).length
+      if (checkedNum === 0) {
+        this.checkedAll = false
+        this.indeterminate = false
+      } else if (checkedNum === this.userArrCom.length) {
+        this.checkedAll = true
+        this.indeterminate = false
+      } else {
+        this.checkedAll = false
+        this.indeterminate = true
+      }
+      this.$forceUpdate()
     },
     updatedOrderInfoEvent (item) {
+      this.userArr.forEach(item => {
+        item.checked = false
+      })
+      this.isCheckedAll()
       this.updatedOrderInfo = {
+        order_id: item.order_id,
         id: item.id,
         batch_id: item.batch_id,
         desc: '',
-        status: ''
+        status: item.batch_status || ''
       }
     },
     closeUpdatedOrderInfoPopup () {
@@ -684,10 +774,10 @@ export default {
     }
   },
   created () {
-    this.updatedOrderInfo = {}
-    this.loading = false
-    // this.getFilters()
-    // this.getOrderList()
+    // this.updatedOrderInfo = {}
+    // this.loading = false
+    this.getFilters()
+    this.getOrderList()
     Promise.all([
       group.list(),
       client.list(),
@@ -761,13 +851,6 @@ export default {
     },
     groupArrCom () {
       return [{ id: '', name: '所有' }].concat(this.$unique(this.userArr, 'group_id').map(itemM => ({ id: itemM.group_id, name: itemM.group })))
-    },
-    indeterminate () {
-      const checkedLength = this.userArrCom.filter(itemF => itemF.checked).length
-      if (checkedLength !== 0 && checkedLength !== this.userArrCom.length) {
-        return true
-      }
-      return false
     }
   }
 }

@@ -678,11 +678,11 @@ const routes = [
       component: () => import('../views/transport/transportDetail.vue')
     }]
   }, {
-    path: '/tagProductPrint/:id/:info',
+    path: '/tagProductPrint/:id',
     name: '产品标签',
     component: () => import('../views/product/tagPrint.vue')
   }, {
-    path: '/tagSamplePrint/:id/:info',
+    path: '/tagSamplePrint/:id',
     name: '样品标签',
     component: () => import('../views/sample/tagPrint.vue')
   }, {

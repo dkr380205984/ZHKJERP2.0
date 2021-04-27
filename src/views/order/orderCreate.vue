@@ -818,8 +818,6 @@ export default {
       window.localStorage.setItem('order_tax_prop_default', value)
     },
     filterDate (date) {
-      console.log(this.$getTime(date), ':', new Date(date).getTime() - 1)
-      console.log(this.$getTime(), ':', new Date(this.$getTime()).getTime())
       return new Date(date).getTime() - 1 < new Date(this.$getTime()).getTime()
     },
     searchClient (node, query) {
@@ -1243,6 +1241,7 @@ export default {
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {
           return {
+            id: '',
             batch_info: item.batch_info.map(itemPro => {
               return {
                 product_id: itemPro.id,

@@ -490,8 +490,13 @@ const tutorial = {
   detail: (params) => http.get(`${baseUrl}/admin/system/study/one`, params),
   list: (params) => http.get(`${baseUrl}/admin/system/study/list`, params)
 }
+// 订单批次
 const orderBatch = {
-  list: (params) => http.get(`${baseUrl}/order/batch/list`, params)
+  list: (params) => http.get(`${baseUrl}/order/batch/list`, params),
+  bigScreenShipmentsList: (params) => http.get(`${baseUrl}/order/batch/shipping/list`, params),
+  toDayShippingData: (params) => http.get(`${baseUrl}/order/batch/shipping/statistics`, params),
+  changeProg: (params) => http.post(`${baseUrl}/order/batch/detail/save`, params, 'application/json'),
+  changeProgLog: (params) => http.get(`${baseUrl}/order/batch/detail/list`, params)
 }
 const warnSetting = {
   create: (params) => http.post(`${baseUrl}/order/progress/time/set`, params, 'application/json'),

@@ -629,7 +629,7 @@ export default {
         this.$message.error('检测到未选择配色')
         return
       }
-      this.$openUrl('/tagProductPrint/' + this.$route.params.id + '/' + this.checkedSize.join('&') + '&&' + this.checkedColor.join('&'))
+      this.$openUrl('/tagProductPrint/' + this.$route.params.id + '?size=' + this.checkedSize + '&color=' + this.checkedColor.map(itemM => this.$strToAscII(itemM, false, ['#', '&', '='])))
     },
     // 修改产品判断是否新建订单
     updatePro () {

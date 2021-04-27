@@ -1227,6 +1227,7 @@ export default {
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {
           return {
+            id: item.id || '',
             batch_info: item.batch_info.map(itemPro => {
               return {
                 product_id: itemPro.id,
@@ -1349,6 +1350,7 @@ export default {
           return items
         }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name' }, { name: 'color_name' }] } })
         orderBatch.push({
+          batch_id: itemBatch.id,
           time: itemBatch.delivery_time,
           remark: itemBatch.desc,
           name: itemBatch.batch_title,
@@ -1388,6 +1390,7 @@ export default {
       this.checkedProList = arr
       this.batchDate = orderBatch.map(itemBatch => {
         return {
+          id: itemBatch.batch_id,
           time: itemBatch.time,
           remark: itemBatch.remark,
           name: itemBatch.name,
@@ -1489,7 +1492,6 @@ export default {
       }
     },
     flower_id (newVal) {
-      console.log(newVal)
       this.pages = 1
       this.getList()
     },

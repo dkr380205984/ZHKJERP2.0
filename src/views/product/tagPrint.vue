@@ -68,12 +68,12 @@ export default {
     product.detail({
       id: this.$route.params.id
     }).then(res => {
-      this.size = this.$route.params.info.split('&&')[0].split('&').map(item => {
+      this.size = (this.$route.query.size || []).split(',').map(item => {
         return {
-          size: item
+          size: this.$strToAscII(item, true)
         }
       })
-      this.color = this.$route.params.info.split('&&')[1].split('&')
+      this.color = ((this.$route.query.color && this.$route.query.color.split(',')) || []).map(itemM => this.$strToAscII(itemM, true))
       if (res.data.status !== false) {
         this.detail = res.data.data
         this.size.forEach(itemSize => {

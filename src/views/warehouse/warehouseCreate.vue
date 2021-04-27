@@ -313,7 +313,7 @@ export default {
       }
       let fileUrl = this.$refs.fileUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       warehouse.create({
-        id: this.$route.params.id,
+        // id: this.$route.params.id,
         order_ids: this.checkedList.map(itemM => itemM.id),
         complete_time: this.out_time,
         code: this.code,

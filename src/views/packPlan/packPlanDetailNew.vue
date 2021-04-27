@@ -1356,14 +1356,26 @@ export default {
       }
       let fileUrl = this.$refs.popupUpload.uploadFiles.map((item) => { return (!item.response ? item.url : ('https://file.zwyknit.com/' + item.response.key)) })
       warehouse.create({
-        order_id: this.popupData.order_id,
+        order_ids: [this.popupData.order_id],
         complete_time: this.popupData.out_time,
+        code: '',
         address: JSON.stringify([this.popupData.address_city, this.popupData.address_sup]),
         total_number: this.popupData.total_number,
         total_gross_weight: this.popupData.total_gross_weight,
         cubic_number: this.popupData.total_vol,
         desc: this.popupData.reamrk || '',
         file_url: fileUrl
+
+        // id: this.$route.params.id,
+        // order_ids: this.checkedList.map(itemM => itemM.id),
+        // complete_time: this.out_time,
+        // code: this.code,
+        // address: JSON.stringify([this.address_city, this.address_sup]),
+        // total_number: this.total_number,
+        // total_gross_weight: this.total_gross_weight,
+        // cubic_number: this.total_vol,
+        // desc: this.remark || '',
+        // file_url: fileUrl
       }).then(res => {
         if (res.data.status !== false) {
           this.$message.success('添加成功')

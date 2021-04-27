@@ -23,7 +23,7 @@ const plugin = {
     const year = nowDate.getFullYear()
     const month = nowDate.getMonth() + 1
     const data = nowDate.getDate()
-    return [year, month >= 10 ? month : `0${month}`, data >= 10 ? data : `0{data}`].join('-')
+    return [year, month >= 10 ? month : `0${month}`, data >= 10 ? data : `0${data}`].join('-')
   },
   /**
    * @param {any} data 需要深度克隆的数据
