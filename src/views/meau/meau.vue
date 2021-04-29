@@ -77,7 +77,7 @@ export default {
           {
             name: '芯片读取出入库',
             id: 10,
-            path: '/receiveDispatch/batchXpList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
+            path: '/receiveDispatch/batchXpList',
             icon: 'icon-xinpianguanli'
           },
           {

@@ -337,6 +337,7 @@ const receiveDispatch = {
   // semiDelete: (params) => http.post(`${baseUrl}/semi/product/pop/delete`, params, 'application/json'),
   allCreate: (params) => http.post(`${baseUrl}/order/product/production/save`, params, 'application/json'),
   allDetail: (params) => http.get(`${baseUrl}/order/product/production/list`, params),
+  allDetailStatistics: (params) => http.get(`${baseUrl}/order/product/production/statistics`, params),
   allDelete: (params) => http.post(`${baseUrl}/order/product/production/delete`, params, 'application/json'),
   allDetailById: (params) => http.post(`${baseUrl}/order/product/production/detail`, params, 'application/json')
 }

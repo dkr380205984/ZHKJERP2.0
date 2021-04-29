@@ -12,6 +12,10 @@ VueRouter.prototype.push = function (location) {
 // const newFinancialStatisticsUrl = '../views/newFinancialStatistics/'
 const routes = [
   {
+    path: '/test',
+    component: () => import('@/views/test.vue')
+  },
+  {
     path: '/',
     redirect: '/login'
   }, {
@@ -489,7 +493,7 @@ const routes = [
       },
       component: () => import('../views/receiveDispatch/jysf.vue')
     }, {
-      path: '/receiveDispatch/batchXpList/:params',
+      path: '/receiveDispatch/batchXpList',
       name: '芯片读取出入库列表',
       component: () => import('../views/receiveDispatch/batchXpList.vue')
     }, {

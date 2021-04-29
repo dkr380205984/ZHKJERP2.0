@@ -12,7 +12,7 @@ const plugin = {
    * @param {string} connector 连接符(默认‘-’连接)
    * @returns {string} yyyy-MM-dd
    */
-  getTime: (date, connector = '-') => {
+  getTime: (date, connector = '-', flag = false) => {
     if (date && !new Date(date)) {
       throw new TypeError('The correct format was not obtained for function "getTime"')
     }
@@ -23,7 +23,14 @@ const plugin = {
     const year = nowDate.getFullYear()
     const month = nowDate.getMonth() + 1
     const data = nowDate.getDate()
-    return [year, month >= 10 ? month : `0${month}`, data >= 10 ? data : `0${data}`].join('-')
+    let timeArr = [year, month >= 10 ? month : `0${month}`, data >= 10 ? data : `0${data}`]
+    if (!flag) {
+      return timeArr.join(connector)
+    }
+    const hours = nowDate.getHours()
+    const minutes = nowDate.getMinutes()
+    const seconds = nowDate.getSeconds()
+    return `${timeArr.join(connector)} ${[hours >= 10 ? hours : `0${hours}`, minutes >= 10 ? minutes : `0${minutes}`, seconds >= 10 ? seconds : `0${seconds}`].join(':')}`
   },
   /**
    * @param {any} data 需要深度克隆的数据
