@@ -4017,6 +4017,8 @@ export default {
       } else if (this.type === '织造分配') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.product_code
+          item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+          item.product_title = item.product_info.product_title
           item.sizeColor = item.size_name + '/' + item.color_name
           let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
           item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
@@ -4029,6 +4031,8 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
+          { title: '产品品类', key: 'product_types' },
+          { title: '产品名称', key: 'product_title' },
           { title: '尺码颜色', key: 'sizeColor' },
           { title: '尺码信息', key: 'size_info' },
           { title: '克重', key: 'size_weight' },
@@ -4056,6 +4060,8 @@ export default {
       } else if (this.type === '半成品加工') {
         let data = this.checkList.map((item) => {
           item.product_code = item.product_info.code
+          item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+          item.product_title = item.product_info.product_title
           item.sizeColor = item.size + '/' + item.color
           let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => itemF.size_name === item.size)) || false
           item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
@@ -4069,6 +4075,8 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '出入库单位', key: 'client_name' },
           { title: '产品编号', key: 'product_code' },
+          { title: '产品品类', key: 'product_types' },
+          { title: '产品名称', key: 'product_title' },
           { title: '尺码颜色', key: 'sizeColor' },
           { title: '尺码信息', key: 'size_info' },
           { title: '克重', key: 'size_weight' },
@@ -4119,6 +4127,8 @@ export default {
         let data = this.checkList.map(item => {
           item.process_client_name = item.semi_client_info.map(itemM => itemM.client_name).join('<br />')
           item.product_code = item.product_info.product_code
+          item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+          item.product_title = item.product_info.product_title
           let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
           item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
           item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
@@ -4129,7 +4139,9 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '织造单位', key: 'weave_client_name' },
           { title: '加工单位', key: 'process_client_name' },
-          { title: '产品名称', key: 'product_code' },
+          { title: '产品编号', key: 'product_code' },
+          { title: '产品品类', key: 'product_types' },
+          { title: '产品名称', key: 'product_title' },
           { title: '尺码', key: 'size_name' },
           { title: '尺码信息', key: 'size_info' },
           { title: '克重', key: 'size_weight' },
@@ -4148,6 +4160,7 @@ export default {
           item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
           item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
           item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+          item.product_title = item.product_info.product_title
           if (item.rejects_info !== 0) {
             item.rejects_number = item.rejects_info.number
             item.rejects_infos = item.rejects_info.reason ? item.rejects_info.reason.join(',') : ''
@@ -4164,6 +4177,7 @@ export default {
           { title: '关联单号', key: 'order_code' },
           { title: '产品编号', key: 'product_code' },
           { title: '产品品类', key: 'product_types' },
+          { title: '产品名称', key: 'product_title' },
           { title: '尺码', key: 'size_name' },
           { title: '尺码信息', key: 'size_info' },
           { title: '克重', key: 'size_weight' },
@@ -4414,6 +4428,8 @@ export default {
         }).then((res) => {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
+            item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+            item.product_title = item.product_info.product_title
             item.sizeColor = item.size_name + '/' + item.color_name
             let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
             item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
@@ -4428,6 +4444,8 @@ export default {
               { title: '关联单号', key: 'order_code' },
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
+              { title: '产品品类', key: 'product_types' },
+              { title: '产品名称', key: 'product_title' },
               { title: '尺码颜色', key: 'sizeColor' },
               { title: '尺码信息', key: 'size_info' },
               { title: '克重', key: 'size_weight' },
@@ -4497,6 +4515,8 @@ export default {
         }).then((res) => {
           data.push(...res.data.data.map((item) => {
             item.product_code = item.product_info.code
+            item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+            item.product_title = item.product_info.product_title
             item.sizeColor = item.size + '/' + item.color
             let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => itemF.size_name === item.size)) || false
             item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
@@ -4512,6 +4532,8 @@ export default {
               { title: '关联单号', key: 'order_code' },
               { title: '出入库单位', key: 'client_name' },
               { title: '产品编号', key: 'product_code' },
+              { title: '产品品类', key: 'product_types' },
+              { title: '产品名称', key: 'product_title' },
               { title: '尺码颜色', key: 'sizeColor' },
               { title: '尺码信息', key: 'size_info' },
               { title: '克重', key: 'size_weight' },
@@ -4633,6 +4655,8 @@ export default {
           data.push(...res.data.data.map(item => {
             item.process_client_name = item.semi_client_info.map(itemM => itemM.client_name).join('<br />')
             item.product_code = item.product_info.product_code
+            item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+            item.product_title = item.product_info.product_title
             let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
             item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
             item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
@@ -4647,7 +4671,9 @@ export default {
               { title: '关联单号', key: 'order_code' },
               { title: '织造单位', key: 'weave_client_name' },
               { title: '加工单位', key: 'process_client_name' },
-              { title: '产品名称', key: 'product_code' },
+              { title: '产品编号', key: 'product_code' },
+              { title: '产品品类', key: 'product_types' },
+              { title: '产品名称', key: 'product_title' },
               { title: '尺码', key: 'size_name' },
               { title: '尺码信息', key: 'size_info' },
               { title: '克重', key: 'size_weight' },
@@ -4690,6 +4716,7 @@ export default {
             item.client_or_user_name = item.client_name || item.inspection_user
             item.product_code = item.product_info.product_code
             item.product_types = `${item.product_info.category_name}/${item.product_info.type_name}/${item.product_info.style_name}`
+            item.product_title = item.product_info.product_title
             let flag = (item.product_info && item.product_info.size && item.product_info.size.find(itemF => (itemF.size_id === item.size_id || itemF.size_name === item.size_name))) || false
             item.size_info = (flag && flag.size_info && `${flag.size_info}cm`) || ''
             item.size_weight = (flag && flag.weight && `${flag.weight}g`) || ''
@@ -4711,6 +4738,7 @@ export default {
               { title: '关联单号', key: 'order_code' },
               { title: '产品编号', key: 'product_code' },
               { title: '产品品类', key: 'product_types' },
+              { title: '产品名称', key: 'product_title' },
               { title: '尺码', key: 'size_name' },
               { title: '尺码信息', key: 'size_info' },
               { title: '克重', key: 'size_weight' },

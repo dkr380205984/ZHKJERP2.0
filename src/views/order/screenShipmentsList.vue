@@ -50,29 +50,29 @@
             <div class="tb_row flex15">
               <span class="text">{{itemOrder.order.client.name}}</span>
             </div>
-            <div class="tb_row flex15 center">{{itemOrder.order_info[itemOrder.batchShowProductIndex].product.product_code}}</div>
+            <div class="tb_row flex15 center">{{itemOrder.product_info[itemOrder.batchShowProductIndex].product_code.product_code}}</div>
             <div class="tb_row center">
-              <zh-img-list :list="itemOrder.order_info[itemOrder.batchShowProductIndex].product.images"
+              <zh-img-list :list="itemOrder.product_info[itemOrder.batchShowProductIndex].image"
                 type='open'></zh-img-list>
             </div>
-            <div class="tb_row right">{{itemOrder.order_info[itemOrder.batchShowProductIndex].numbers}}</div>
+            <div class="tb_row right">{{itemOrder.product_info[itemOrder.batchShowProductIndex].number}}</div>
             <div class="tb_row center flex02">
               <div class="cutCtn">
                 <span :class="`el-icon-caret-top ${itemOrder.batchShowProductIndex === 0 && 'disabled'}`"
                   @click="changeShowIndex(itemOrder,-1)"></span>
-                <span class="index">{{`${itemOrder.batchShowProductIndex + 1}/${itemOrder.order_info.length}`}}</span>
-                <span :class="`el-icon-caret-bottom ${(itemOrder.batchShowProductIndex === itemOrder.order_info.length - 1) && 'disabled'}`"
+                <span class="index">{{`${itemOrder.batchShowProductIndex + 1}/${itemOrder.product_info.length}`}}</span>
+                <span :class="`el-icon-caret-bottom ${(itemOrder.batchShowProductIndex === itemOrder.product_info.length - 1) && 'disabled'}`"
                   @click="changeShowIndex(itemOrder,1)"></span>
               </div>
             </div>
             <div class="tb_row flex2 center">
               <div class="statusCtn">
-                <span :class="`statusItem ${itemOrder.order.material_plan_progress_status > 0 && 'green'}`">计</span>
-                <span :class="`statusItem ${itemOrder.order.material_status > 0 && 'orange'} ${itemOrder.order.material_status >= 100 && 'green'}`">入</span>
-                <span :class="`statusItem ${itemOrder.order.material_push_progress_status > 0 && 'orange'} ${itemOrder.order.material_push_progress_status >= 100 && 'green'}`">出</span>
-                <span :class="`statusItem ${itemOrder.order.product_push_progress_status > 0 && 'orange'} ${itemOrder.order.product_push_progress_status >= 100 && 'green'}`">检</span>
-                <span :class="`statusItem ${itemOrder.order.semi_product_push_progress_status > 0 && 'orange'} ${itemOrder.order.semi_product_push_progress_status >= 100 && 'green'}`">回</span>
-                <span :class="`statusItem ${itemOrder.order.pack_push_progress_status > 0 && 'orange'} ${itemOrder.order.pack_push_progress_status >= 100 && 'green'}`">箱</span>
+                <span :class="`statusItem ${itemOrder.order.has_plan > 0 && 'green'}`">计</span>
+                <span :class="`statusItem ${itemOrder.order.material_order_progress.y_percent > 0 && 'orange'} ${itemOrder.order.material_order_progress.y_percent >= 100 && 'green'}`">入</span>
+                <span :class="`statusItem ${itemOrder.order.material_push_progress.r_pop > 0 && 'orange'} ${itemOrder.order.material_push_progress.r_pop >= 100 && 'green'}`">出</span>
+                <span :class="`statusItem ${itemOrder.order.product_push_progress > 0 && 'orange'} ${itemOrder.order.product_push_progress >= 100 && 'green'}`">检</span>
+                <span :class="`statusItem ${itemOrder.order.semi_push_progress > 0 && 'orange'} ${itemOrder.order.semi_push_progress >= 100 && 'green'}`">回</span>
+                <span :class="`statusItem ${itemOrder.order.pack_real_progress > 0 && 'orange'} ${itemOrder.order.pack_real_progress >= 100 && 'green'}`">箱</span>
               </div>
             </div>
             <div class="tb_row center">{{itemOrder.order.group.name}}</div>
@@ -98,7 +98,7 @@
                 style="color:#AAA"
                 v-else>暂无描述信息</span>
             </div>
-            <div class="tb_row center">{{$getTime(itemOrder.updated_at)}}</div>
+            <div class="tb_row center">{{$getTime(itemOrder.updated_at.date)}}</div>
           </div>
         </el-carousel-item>
       </el-carousel>
@@ -156,7 +156,7 @@ export default {
   methods: {
     changeShowIndex (item, type) {
       const nextIndex = item.batchShowProductIndex + type
-      if (nextIndex >= 0 && nextIndex < item.order_info.length) {
+      if (nextIndex >= 0 && nextIndex < item.product_info.length) {
         item.batchShowProductIndex = nextIndex
       }
     },
@@ -184,7 +184,7 @@ export default {
         surplusDay: null
       }
       if (item.status === 1) {
-        returnObj.workDay = new Date(item.updated_at) - new Date(item.order.order_time)
+        returnObj.workDay = new Date(item.updated_at.date) - new Date(item.order.order_time)
         returnObj.status = 1
       } else if (item.status === 3) {
         returnObj.status = 2
@@ -217,6 +217,7 @@ export default {
      * @param {bool} isPushReverseShowKey 判断是否反向showKey
     */
     getShowData ({ pages, data, limit, total } = { pages: 1, data: [], limit: this.limit * 2, total: null }, interval = 2000, getNewDataFlag = true, isPushReverseShowKey = false) {
+      if (total === 0) return
       if (total && pages > Math.ceil(total / limit)) {
         if (getNewDataFlag) {
           this.getShowData(undefined, undefined, false, true) // 获取最新数据已待轮播最后一页后及时更新数据
@@ -244,21 +245,21 @@ export default {
           'end_time': this.queryInfo.end_time
         }).then(res => {
           if (res.data.status !== false) {
-            data.push(...res.data.data.data.map(itemM => {
+            data.push(...res.data.data.map(itemM => {
               return {
                 ...itemM,
                 timeInfoCom: this.getUseWorkTime(itemM),
                 batchShowProductIndex: 0
               }
             }))
-            this.total = res.data.data.total
+            this.total = res.data.meta.total
             this.showData[isPushReverseShowKey ? !this.showKey : this.showKey].push(data.splice(0, this.limit))
             setTimeout(() => {
               this.getShowData({
                 pages: ++pages,
                 data,
                 limit,
-                total: res.data.data.total
+                total: res.data.meta.total
               }, interval, getNewDataFlag, isPushReverseShowKey)
             }, interval)
           }

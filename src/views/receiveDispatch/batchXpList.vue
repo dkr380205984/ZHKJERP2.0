@@ -75,7 +75,7 @@
         </div>
         <div class="filteCtn2"
           style="margin-bottom:8px">
-          <div class="leftCtn"
+          <!-- <div class="leftCtn"
             style="display:flex;flex-direction:row;justify-content:flex-end">
             <div class="btn btnWhiteBlue"
               @click="$router.push('/receiveDispatch/batchXpOpration/1')">芯片入库</div>
@@ -83,7 +83,7 @@
               @click="$router.push('/receiveDispatch/batchXpOpration/2')">芯片出库</div>
             <div class="btn btnWhiteBlue"
               @click="$router.push('/receiveDispatch/batchXpOpration/3')">芯片回库</div>
-          </div>
+          </div> -->
         </div>
         <div class="list">
           <div class="title">
@@ -209,7 +209,7 @@
               </div>
             </div> -->
             <div class="col middle">
-              <span class="text">{{(item.statusInfoArr[item.showIndex].time && item.statusInfoArr[item.showIndex].status === 1) ? $getTime(item.statusInfoArr[item.showIndex].time,'-',true) : '未操作'}}</span>
+              <span class="text">{{(item.statusInfoArr[item.showIndex].time && item.statusInfoArr[item.showIndex].status === 1) ? $getTime(item.statusInfoArr[item.showIndex].time) : '未操作'}}</span>
             </div>
           </div>
         </div>

@@ -497,10 +497,10 @@ const routes = [
       name: '芯片读取出入库列表',
       component: () => import('../views/receiveDispatch/batchXpList.vue')
     }, {
-      path: '/receiveDispatch/batchXpOpration/:type',
-      name: '芯片读取',
-      component: () => import('../views/receiveDispatch/batchXpOpration.vue')
-    }, {
+      //   path: '/receiveDispatch/batchXpOpration/:type',
+      //   name: '芯片读取',
+      //   component: () => import('../views/receiveDispatch/batchXpOpration.vue')
+      // }, {
       path: '/inspection/inspectionList/:params',
       name: '产品检验列表',
       component: () => import('../views/inspection/inspectionList.vue')

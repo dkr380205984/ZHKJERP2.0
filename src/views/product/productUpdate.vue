@@ -160,10 +160,9 @@
               v-show="index===0">
             </div>
             <div class="content">
-              <zh-input type="number"
-                placeholder="请输入克重信息"
+              <zh-input placeholder="请输入克重信息"
                 v-model="item.weight">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </div>
           </div>
@@ -174,7 +173,7 @@
             <div class="content">
               <zh-input placeholder="请输入尺寸信息"
                 v-model="item.desc">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </div>
             <div class="editBtn"
@@ -326,9 +325,8 @@
             </span>
             <span class="content">
               <zh-input v-model="itemSize.weight"
-                type="number"
                 placeholder="请输入克重">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </span>
           </div>
@@ -340,7 +338,7 @@
             <span class="content">
               <zh-input v-model="itemSize.desc"
                 placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </span>
           </div>
