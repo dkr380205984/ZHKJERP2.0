@@ -109,7 +109,7 @@
         <el-pagination background
           layout="prev, pager, next"
           :page-size="limit"
-          :current-page="pages"
+          :current-page.sync="pages"
           :total="total"
           @current-change='changePages'>
         </el-pagination>
@@ -150,7 +150,8 @@ export default {
       cutPagesInterval: 120,
       pages: 1,
       limit: 12, // 修改该值需要去修改tb_content的高度
-      total: 1
+      total: 1,
+      isDestroy: false // 页面销毁时禁止继续轮询操作
     }
   },
   methods: {
@@ -217,7 +218,7 @@ export default {
      * @param {bool} isPushReverseShowKey 判断是否反向showKey
     */
     getShowData ({ pages, data, limit, total } = { pages: 1, data: [], limit: this.limit * 2, total: null }, interval = 2000, getNewDataFlag = true, isPushReverseShowKey = false) {
-      if (total === 0) return
+      if (total === 0 || this.isDestroy) return
       if (total && pages > Math.ceil(total / limit)) {
         if (getNewDataFlag) {
           this.getShowData(undefined, undefined, false, true) // 获取最新数据已待轮播最后一页后及时更新数据
@@ -267,6 +268,10 @@ export default {
       }
     },
     changePages (pages) { // 切换pages事件
+      if (pages > this.showData[this.showKey].length) {
+        this.$message.warning('加载中...')
+        pages = 1
+      }
       if (this.pages !== pages) {
         if (pages > this.lastPage) {
           this.pages = 1
@@ -362,6 +367,7 @@ export default {
     }
   },
   beforeDestroy () {
+    this.isDestroy = true
     document.removeEventListener('keydown', this.escEvent, false) // 页面销毁前清除下 全局keydown监听
     cancelAnimationFrame(this.date.id) // 页面销毁前清除下 requestAnimationFrame
   }
