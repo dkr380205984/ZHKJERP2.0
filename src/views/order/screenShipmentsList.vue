@@ -224,16 +224,18 @@ export default {
           this.getShowData(undefined, undefined, false, true) // 获取最新数据已待轮播最后一页后及时更新数据
           getNewDataFlag = false
         }
-        this.showData[isPushReverseShowKey ? !this.showKey : this.showKey].push(data.splice(0, this.limit))
         if (data.length > 0) {
-          setTimeout(() => {
-            this.getShowData({
-              pages,
-              data,
-              limit,
-              total
-            }, interval, getNewDataFlag, isPushReverseShowKey)
-          }, interval)
+          this.showData[isPushReverseShowKey ? !this.showKey : this.showKey].push(data.splice(0, this.limit))
+          if (data.length > 0) {
+            setTimeout(() => {
+              this.getShowData({
+                pages,
+                data,
+                limit,
+                total
+              }, interval, getNewDataFlag, isPushReverseShowKey)
+            }, interval)
+          }
         }
       } else {
         orderBatch.bigScreenShipmentsList({
@@ -268,7 +270,7 @@ export default {
       }
     },
     changePages (pages) { // 切换pages事件
-      if (pages > this.showData[this.showKey].length) {
+      if (pages > this.showData[this.showKey].length && pages <= this.lastPage) {
         this.$message.warning('加载中...')
         pages = 1
       }
@@ -323,7 +325,7 @@ export default {
     countDown (newVal) {
       if (newVal <= 0) { // 当倒计时为0时
         this.setLastCutPagesTime()
-        this.changePages(this.pages + 1)
+        if (this.pages) { this.changePages(this.pages + 1) }
       }
     },
     showKey (newVal) {
@@ -341,8 +343,8 @@ export default {
     queryInfo () {
       return {
         keyword: this.$route.query.keyword || '',
-        start_time: this.$route.query.start_time || this.$getTime(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)),
-        end_time: this.$route.query.end_time || this.$getTime(new Date().getTime() + (20 * 24 * 60 * 60 * 1000)),
+        start_time: this.$route.query.start_time || this.$getTime(new Date().getTime() - (3 * 24 * 60 * 60 * 1000)),
+        end_time: this.$route.query.end_time || this.$getTime(new Date().getTime() + (7 * 24 * 60 * 60 * 1000)),
         group_id: this.$route.query.group_id || '',
         company_id: (this.$route.query.company_id && this.$route.query.company_id.split(',') && this.$route.query.company_id.split(',')[1]) || ''
       }
