@@ -793,9 +793,10 @@
           <div class="row">
             <span class="label">每捆数量：</span>
             <span class="info">
-              <el-input style="height:32px;"
+              <zh-input style="height:32px;"
+                :keyBoard="keyBoard"
                 v-model="formData.batchData.number"
-                placeholder="每捆数量"></el-input>
+                placeholder="每捆数量"></zh-input>
             </span>
           </div>
           <div class="row">
