@@ -3591,7 +3591,7 @@ export default {
                 price: res.data.data.price // 均价
               }
               const clientData = res.data.data.clients.sort((now, next) => {
-                return next.number - now.number
+                return next.total_price - now.total_price
               })
               const beforeTwentieth = clientData.splice(0, 20).concat({
                 name: '其它',
