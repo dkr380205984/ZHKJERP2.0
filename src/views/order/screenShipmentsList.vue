@@ -22,8 +22,9 @@
         <div class="tb_row flex15">订单公司</div>
         <div class="tb_row flex15 center">产品编号</div>
         <div class="tb_row center">产品图片</div>
-        <div class="tb_row right">下单总数</div>
+        <div class="tb_row right">下单数量</div>
         <div class="tb_row center flex02"></div>
+        <div class="tb_row right">下单总数</div>
         <div class="tb_row flex2 center">系统流程进度</div>
         <div class="tb_row center">负责小组</div>
         <div class="tb_row center">下单日期</div>
@@ -65,6 +66,7 @@
                   @click="changeShowIndex(itemOrder,1)"></span>
               </div>
             </div>
+            <div class="tb_row right">{{itemOrder.total_number}}</div>
             <div class="tb_row flex2 center">
               <div class="statusCtn">
                 <span :class="`statusItem ${itemOrder.order.has_plan > 0 && 'green'}`">计</span>
@@ -251,6 +253,7 @@ export default {
             data.push(...res.data.data.map(itemM => {
               return {
                 ...itemM,
+                total_number: this.$toFixed(itemM.product_info.map(itemM => itemM.number).reduce((a, b) => a + b, 0)),
                 timeInfoCom: this.getUseWorkTime(itemM),
                 batchShowProductIndex: 0
               }

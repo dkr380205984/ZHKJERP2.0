@@ -223,6 +223,17 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column label="批次状态"
+              width="120">
+              <template slot-scope="scope">
+                <div class="stateCtn rowFlex"
+                  :class="{'red':scope.row.batch_status === 3 || scope.row.batch_status === 4,'green':scope.row.batch_status === 1,'blue':scope.row.batch_status === 2,'orange':scope.row.batch_status === 0}">
+                  <div class="state"
+                    style="margin-left:0"></div>
+                  <span class="name">{{scope.row.batch_status|filterBatchStatus}}</span>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="order_time"
               label="下单日期"
               width="120">
@@ -842,6 +853,19 @@ export default {
         return '已完成'
       } else if (status === 2005) {
         return '已延期'
+      }
+    },
+    filterBatchStatus (status) {
+      if (status === 0) {
+        return '已创建'
+      } else if (status === 2) {
+        return '进行中'
+      } else if (status === 4) {
+        return '已取消'
+      } else if (status === 1) {
+        return '已完成'
+      } else if (status === 3) {
+        return '紧急'
       }
     }
   },

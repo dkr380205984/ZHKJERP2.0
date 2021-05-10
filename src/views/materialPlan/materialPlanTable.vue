@@ -3,7 +3,8 @@
     id="materialPlanTable"
     @click="showRMeau = false"
     @click.right="showRMeau = false">
-    <div class="printTable">
+    <div class="printTable"
+      v-if="defaultModel === 1">
       <div class="print_head">
         <div class="left">
           <span class="title"> {{`${title || company_name + ($route.query.type === '1' ? '原' : '辅') + '料计划单'}`}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
@@ -93,6 +94,100 @@
         </div>
       </div>
     </div>
+    <template v-else>
+      <div class="printTable"
+        v-for="(item,index) in materialInfo"
+        :key="index">
+        <div class="print_head">
+          <div class="left">
+            <span class="title"> {{`${title || company_name + ($route.query.type === '1' ? '原' : '辅') + '料计划单'}`}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
+            <span class="item">
+              <span class="label">联系人：</span>
+              <span>{{contact_name}}</span>
+            </span>
+            <span class="item">
+              <span class="label">联系人电话：</span>
+              <span>{{contact_tel}}</span>
+            </span>
+            <span class="item">
+              <span class="label">创建时间：</span>
+              <span>
+                <printTime :data-time='$getTime()' />
+              </span>
+            </span>
+          </div>
+          <div class="right">
+            <span class="text">
+              扫一扫
+              <br />
+              查看物料计划单
+            </span>
+            <span class="qrCode_box">
+              <img :src="qrCodeUrl"
+                alt="">
+            </span>
+          </div>
+        </div>
+        <div class="print_body">
+          <div class="print_row">
+            <span class="row_item center w180">订单号</span>
+            <span class="row_item left">{{orderInfo.order_code}}</span>
+            <span class="row_item center w180">下单日期</span>
+            <span class="row_item left">{{orderInfo.order_time}}</span>
+          </div>
+          <div class="print_row">
+            <span class="row_item center w180">订单公司</span>
+            <span class="row_item left">{{ isHideClient !== 1 ? orderInfo.client_name : ''}}</span>
+            <span class="row_item center w180">负责小组</span>
+            <span class="row_item left">{{orderInfo.group_name}}</span>
+          </div>
+          <div class="print_row has_marginBottom">
+            <span class="row_item center w180">产品详情</span>
+            <span class="row_item col">
+              <span class="print_row"
+                :class="{noBorder:indexPro === 0 ? true : false}"
+                v-for="(itemPro,indexPro) in productInfo"
+                :key="indexPro">
+                <span class="row_item noBorder left w180">{{itemPro.product_code}}</span>
+                <span class="row_item noBorder left">{{itemPro.category_info|filterType}}</span>
+                <span class="row_item noBorder left">{{itemPro.order_number + itemPro.category_info.unit}}</span>
+              </span>
+            </span>
+          </div>
+          <template>
+            <div class="print_row bgGray">
+              <div class="row_item center w180">{{$route.query.type === '1' ? '原' : '辅'}}料名称</div>
+              <div class="row_item center">{{item.material_name}}</div>
+              <div class="row_item center w180">合计</div>
+              <div class="row_item center">{{item.type === 1 ? $toFixed(item.total_weight/1000) + 'kg' : $toFixed(item.total_weight) + item.unit}}</div>
+            </div>
+            <div class="print_row"
+              v-for="(itemColor,indexColor) in item.color_info"
+              :key='indexColor'
+              @click.right="handleClickRight">
+              <span class="row_item w180 center"
+                :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">颜色重量{{indexColor+1}}</span>
+              <span class="row_item left">
+                <span class="print_row noBorder">
+                  <span class="row_item noBorder w180"
+                    :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">{{itemColor.color}}</span>
+                  <span class="row_item noBorder"
+                    :style="`min-height:${50 * (Number(defaultMultiple) || 1)}px`">{{ item.type === 1 ? $toFixed(itemColor.weight/1000) + 'kg' : $toFixed(itemColor.weight) + item.unit}}</span>
+                </span>
+              </span>
+            </div>
+          </template>
+        </div>
+        <div class="print_remark">
+          <div class="print_row noBorder">
+            <span class="row_item w180 center">合同备注</span>
+            <span class="row_item left remark_span"
+              v-html="desc"></span>
+          </div>
+        </div>
+      </div>
+
+    </template>
     <div class="setting_row_height"
       v-if="showRMeau"
       :style="`left:${X_position || 0}px;top:${Y_position}px`"
@@ -106,6 +201,10 @@
           :min='1'
           :max="3"
           @change="setDefaultMultiple"></el-input-number>
+      </div>
+      <div class="setting_item"
+        @click="setDefaultModel">
+        切到{{defaultModel === 1 ? '拆分' : '合并'}}模式
       </div>
     </div>
   </div>
@@ -130,10 +229,16 @@ export default {
       showRMeau: false,
       X_position: 0,
       Y_position: 0,
-      defaultMultiple: window.localStorage.getItem('default_multiple') || 1
+      defaultMultiple: window.localStorage.getItem('default_multiple') || 1,
+      defaultModel: window.localStorage.getItem('default_module') || 1 // 1原料合并模式  2原料拆分模式
     }
   },
   methods: {
+    setDefaultModel () {
+      this.defaultModel = this.defaultModel === 1 ? 2 : 1
+      window.localStorage.setItem('default_module', this.defaultModel)
+      this.showRMeau = false
+    },
     handleClickRight (e) {
       this.showRMeau = true
       this.X_position = e.clientX
