@@ -133,8 +133,13 @@
       title_has_border
       canChange />
     <div class="module">
-      <div class="titleCtn">
-        <span class="title hasBorder">发货信息</span>
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between;align-items: center;">
+        <span>
+          <span class="title hasBorder">发货信息</span>
+        </span>
+        <span class="btn btnBlue"
+          @click="showHistoryProg()">查看历史进度</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -1695,12 +1700,54 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showHistoryProgFlag">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <span class="text">查看历史进度</span>
+          <span class="el-icon-close"
+            @click="showHistoryProgFlag = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:500px">
+          <div class="block"
+            v-for="(itemLog,indexLog) in historyProgData || []"
+            :key="indexLog">
+            <div class="block_item">
+              <span class="block_label">订单批次：</span>
+              <span class="block_text">{{`第${itemLog.number}批`}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">进度描述：</span>
+              <span class="block_text">{{itemLog.description || '暂无'}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">创建时间：</span>
+              <span class="block_text">{{itemLog.created_at}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">创建人：</span>
+              <span class="block_text">{{itemLog.user.name}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">通知人员:</span>
+              <span class="block_text">{{itemLog.users|filterUsers}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnBlue"
+            @click="showHistoryProgFlag = false">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { moneyArr, isHasPermissions } from '@/assets/js/dictionary.js'
-import { price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { orderBatch, price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1878,10 +1925,30 @@ export default {
           label: '成品确认',
           status: false
         }
-      ]
+      ],
+      showHistoryProgFlag: false,
+      historyProgData: null
     }
   },
   methods: {
+    showHistoryProg () {
+      if (!this.historyProgData || this.historyProgData.length === 0) {
+        orderBatch.changeProgLog({
+          order_id: this.$route.params.id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.historyProgData = res.data.data
+            if (res.data.data.length === 0) {
+              this.$message.warning('暂无历史进度')
+              return
+            }
+            this.showHistoryProgFlag = true
+          }
+        })
+      } else {
+        this.showHistoryProgFlag = true
+      }
+    },
     isHasPermissions,
     // 取消绑定初始化数据
     canclePrice () {
@@ -3566,6 +3633,9 @@ export default {
       } else {
         return '￥'
       }
+    },
+    filterUsers (users) {
+      return users.map(itemM => itemM.name).join('，') || '无'
     }
   }
 }
