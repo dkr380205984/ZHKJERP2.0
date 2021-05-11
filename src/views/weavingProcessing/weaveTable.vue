@@ -366,7 +366,7 @@ export default {
                 ]
               }
             })
-            let materialInfo = this.$mergeData(res[4].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)), {
+            let materialInfo = this.$mergeData(res[3].data.data.filter(item => Number(item.client_id) === Number(this.$route.query.clientId)), {
               mainRule: 'material_name',
               childrenName: 'color_info',
               childrenRule: {
