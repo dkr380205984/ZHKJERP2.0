@@ -706,15 +706,23 @@
               :style="{'visibility':index>0?'hidden':'inhert'}">补纱信息：</div>
             <div class="info"
               style="display:flex">
-              <el-select v-model="item.yarn"
+              <!-- <el-select v-model="item.yarn"
                 filterable
                 placeholder="请选择纱线">
                 <el-option v-for="item in replenish_yarn"
                   :key="item.name"
                   :value="item.name"
                   :label="item.name"></el-option>
-              </el-select>
-              <el-input style="margin-left:5px;max-width:50%"
+              </el-select> -->
+              <el-autocomplete v-model="item.yarn"
+                :fetch-suggestions="querySearchReplenishYarn"
+                placeholder="请选择纱线"></el-autocomplete>
+              <el-autocomplete style="margin-left:5px;max-width:30%"
+                v-model="item.yarn_attr"
+                :disabled='!item.yarn'
+                :fetch-suggestions="querySearchReplenishAttr(item)"
+                placeholder="请选择纱线属性"></el-autocomplete>
+              <el-input style="margin-left:5px;max-width:30%"
                 v-model="item.weight"
                 placeholder="请输入重量">
                 <template slot="append">kg</template>
@@ -1049,7 +1057,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
+import { yarn, order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1124,7 +1132,8 @@ export default {
         loss: 5,
         print_number: ''
       },
-      showPrintPopup: false
+      showPrintPopup: false,
+      yarnArr: []
     }
   },
   computed: {
@@ -1140,6 +1149,36 @@ export default {
     }
   },
   methods: {
+    querySearchReplenishAttr (item) {
+      return (queryString, cb) => {
+        const replenishAttrFind = this.replenish_yarn.find(itemF => itemF.value === item.yarn)
+        const returnData = replenishAttrFind ? (queryString ? replenishAttrFind.attr_info.filter(itemF => itemF.value.indexOf(queryString) !== -1) : replenishAttrFind.attr_info) : []
+        cb(returnData)
+      }
+    },
+    querySearchReplenishYarn (queryString, cb, flag) { // flag用于判定不需要获取远端数据
+      if (this.yarnArr.length === 0 && !flag && queryString) {
+        yarn.list().then(res => {
+          if (res.data.status !== false) {
+            this.yarnArr = res.data.data.map(itemM => {
+              return {
+                value: itemM.name,
+                label: itemM.name
+              }
+            })
+            this.querySearchReplenishYarn(queryString, cb, true)
+          }
+        })
+        return
+      }
+      const returnData = queryString ? this.yarnArr.filter(itemF => itemF.value.indexOf(queryString) !== -1).map(itemM => {
+        return {
+          value: itemM.value,
+          label: itemM.label
+        }
+      }) : this.replenish_yarn
+      cb(returnData)
+    },
     printChecked (item) {
       if (item.childrenMergeInfo.some(itemS => itemS.checked)) {
         this.$openUrl(`/weaveTable/${this.$route.params.id}/${this.$route.params.orderType}?type=1&clientId=${item.client_id}&logId=${item.childrenMergeInfo.filter(itemF => itemF.checked).map(itemM => itemM.id)}`)
@@ -1549,15 +1588,32 @@ export default {
       })
     },
     replenishFn (data) {
+      const arr = []
       data.childrenMergeInfo.forEach((item) => {
         item.material_assign.forEach((itemMat) => {
           let name = itemMat.material_name + '/' + itemMat.material_attribute
           if (!this.replenish_yarn.find((itemFind) => itemFind.name === name)) {
-            this.replenish_yarn.push({
-              name: name
+            arr.push({
+              label: itemMat.material_name,
+              value: itemMat.material_name,
+              attr_value: itemMat.material_attribute,
+              attr_label: itemMat.material_attribute
             })
           }
         })
+      })
+      this.replenish_yarn = this.$mergeData(arr, {
+        mainRule: 'value',
+        otherRule: [
+          { name: 'label' }
+        ],
+        childrenName: 'attr_info',
+        childrenRule: {
+          mainRule: 'attr_value/value',
+          otherRule: [
+            { name: 'attr_label/label' }
+          ]
+        }
       })
       this.replenish_data.yarn_info = [{
         yarn: '',
@@ -1574,6 +1630,7 @@ export default {
     addReplenish () {
       this.replenish_data.yarn_info.push({
         yarn: '',
+        yarn_attr: '',
         weight: ''
       })
     },
@@ -1592,6 +1649,9 @@ export default {
         if (!item.yarn) {
           errorFlag = true
           errMsg = '你有未选择的纱线原料'
+        } else if (!item.yarn_attr) {
+          errorFlag = true
+          errMsg = '你有未选择的纱线原料属性'
         } else if (!item.weight) {
           errorFlag = true
           errMsg = '你有未填写的补纱重量'
@@ -1609,8 +1669,8 @@ export default {
         yarn_info: this.replenish_data.yarn_info.map((item) => {
           return {
             weight: item.weight,
-            name: item.yarn.split('/')[0],
-            color: item.yarn.split('/')[1]
+            name: item.yarn,
+            color: item.yarn_attr
           }
         }),
         client_info: this.replenish_data.client_info,
