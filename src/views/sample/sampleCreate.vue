@@ -70,6 +70,12 @@
           <div class="colCtn flex3">
             <div class="label">
               <span class="text">样品品类</span>
+              <el-tooltip class="item"
+                effect="dark"
+                content="该品类内容无法自行添加。如果您选不到您需要的品类，请联系我们工作人员进行添加。"
+                placement="top-start">
+                <span class="el-icon-question"></span>
+              </el-tooltip>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
@@ -168,10 +174,9 @@
               v-show="index===0">
             </div>
             <div class="content">
-              <zh-input type="number"
-                placeholder="请输入克重信息"
+              <zh-input placeholder="请输入克重信息"
                 v-model="item.weight">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </div>
           </div>
@@ -182,7 +187,7 @@
             <div class="content">
               <zh-input placeholder="请输入尺寸信息"
                 v-model="item.desc">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </div>
             <div class="editBtn"
@@ -335,9 +340,8 @@
             </span>
             <span class="content">
               <zh-input v-model="itemSize.weight"
-                type="number"
                 placeholder="请输入克重">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </span>
           </div>
@@ -349,7 +353,7 @@
             <span class="content">
               <zh-input v-model="itemSize.desc"
                 placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </span>
           </div>
@@ -473,6 +477,19 @@
             </span>
           </div>
           <div class="row">
+            <span class="label">负责小组：</span>
+            <span class="info">
+              <el-select v-model="orderInfo.group_id"
+                placeholder="请选择负责小组">
+                <el-option v-for="item in groupArr"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          <div class="row">
             <span class="label">打样类型：</span>
             <span class="info">
               <el-select v-model="orderInfo.type"
@@ -561,7 +578,7 @@
 
 <script>
 import { letterArr, chinaNum, companyType } from '@/assets/js/dictionary.js'
-import { productType, flower, ingredient, colour, getToken, material, sample, client, auth, sampleOrder, orderType } from '@/assets/js/api.js'
+import { productType, flower, ingredient, colour, getToken, material, sample, client, auth, sampleOrder, orderType, group } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -916,12 +933,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        data_color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: null
-          }
-        }),
+        data_color: {
+          delete_data: null,
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: null
+            }
+          })
+        },
         data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
         data_size: this.size.map(item => {
           return {
@@ -979,7 +999,8 @@ export default {
       this.activeId = info.id
       Promise.all([
         client.list(),
-        auth.list()
+        auth.list(),
+        group.list()
       ]).then(res => {
         this.clientList = this.$getClientOptions(res[0].data.data, companyType, { type: [1, 2] })
         let flagC = this.clientList.find(itemF => itemF.children.find(itemC => itemC.value === this.$route.query.clientId))
@@ -994,6 +1015,7 @@ export default {
         if (flag) {
           this.orderInfo.group_id = flag.group_id
         }
+        this.groupArr = res[2].data.data
         this.loading = false
       })
     },
@@ -1071,7 +1093,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let productInfo = res.data.data
-          this.sample_product_code = productInfo.product_code
+          // this.sample_product_code = productInfo.product_code //去除导入时导入产品编号 2020-03-26
           this.product_code = productInfo.product_code
           this.model_code = productInfo.style_code
           this.sampleName = productInfo.name

@@ -54,6 +54,12 @@
           <div class="colCtn">
             <div class="label">
               <span class="text">样品品类</span>
+              <el-tooltip class="item"
+                effect="dark"
+                content="该品类内容无法自行添加。如果您选不到您需要的品类，请联系我们工作人员进行添加。"
+                placement="top-start">
+                <span class="el-icon-question"></span>
+              </el-tooltip>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
@@ -152,10 +158,9 @@
               v-show="index===0">
             </div>
             <div class="content">
-              <zh-input type="number"
-                placeholder="请输入克重信息"
+              <zh-input placeholder="请输入克重信息"
                 v-model="item.weight">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </div>
           </div>
@@ -166,7 +171,7 @@
             <div class="content">
               <zh-input placeholder="请输入尺寸信息"
                 v-model="item.desc">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </div>
             <div class="editBtn"
@@ -319,9 +324,8 @@
             </span>
             <span class="content">
               <zh-input v-model="itemSize.weight"
-                type="number"
                 placeholder="请输入克重">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </span>
           </div>
@@ -333,7 +337,7 @@
             <span class="content">
               <zh-input v-model="itemSize.desc"
                 placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </span>
           </div>
@@ -449,6 +453,7 @@ export default {
       }],
       sizeArr: [],
       colour: [{ colour: '' }],
+      deleteColorId: null,
       colourArr: [],
       desc: '',
       postData: { token: '' },
@@ -557,7 +562,10 @@ export default {
       this.colour.push({ colour: '' })
     },
     deleteColour (index) {
-      this.colour.splice(index, 1)
+      const deleteArr = this.colour.splice(index, 1)
+      if (deleteArr[0].color_id) {
+        this.deleteColorId ? (this.deleteColorId.push(deleteArr[0].color_id)) : (this.deleteColorId = [deleteArr[0].color_id])
+      }
     },
     searchIngredient (queryString, cb) {
       let result = queryString ? this.ingredientArr.filter((item) => item.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1) : this.ingredientArr
@@ -763,12 +771,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        data_color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: item.color_id || null
-          }
-        }),
+        data_color: {
+          delete_data: this.deleteColorId || [],
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: item.color_id || null
+            }
+          })
+        },
         data_component: this.ingredient.map(item => { return { component_name: item.ingredient_name, number: item.ingredient_value } }),
         data_size: this.size.map(item => {
           return {

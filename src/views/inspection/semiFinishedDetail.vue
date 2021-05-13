@@ -755,7 +755,7 @@ export default {
         }
       }), 'client_id')
       this.inspection_product = this.$mergeData(res[1].data.data, { mainRule: 'product_id', otherRule: [{ name: 'category_info' }, { name: 'product_info' }] })
-      this.companyArr = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14] })
+      this.companyArr = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14, 39] })
       this.inspection_log = res[3].data.data
       this.inspection_log.forEach((item) => {
         let flag = false

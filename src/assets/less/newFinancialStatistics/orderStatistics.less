@@ -1,0 +1,123 @@
+@import '../common.less';
+@borderColor: #CCC;
+@border: 1px solid @borderColor;
+#orderStatistics{
+  .bgGray{
+    font-size: 18px;
+    width: 100%;
+    background-color: rgba(0,0,0,.1);
+    line-height: 40px;
+    text-align: center;
+    padding: 0 32px;
+    box-sizing: border-box;
+  }
+  .tableCtn{
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    font-size: 22px;
+    .filterCtn{
+      margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      height: auto;
+      justify-content: flex-start;
+      .filter_item{
+        width: 200px;
+        margin-right: 16px;
+        margin-bottom: 8px;
+        &:last-child{
+          margin-right: 0;
+        }
+      }
+      .resetBtn{
+        font-size: @fontMiddle;
+        padding: 0 16px; 
+        margin-bottom: 8px;
+        line-height: 30px;
+        border: 1px solid #DCDFE6;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+    .row{
+      display: flex;
+      align-items: center;
+      border-top: @border;
+      &:last-child{
+        border-bottom: @border;
+      }
+      &.H58{
+        .item{
+          min-height: 58px;
+        }
+      }
+      .item{
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        border-right: @border;
+        &:first-child{
+          border-left: @border;
+        }
+        &.col{
+          flex-direction: column;
+          &>.row{
+            width: 100%;
+            &:first-child{
+              border-top: none;
+            }
+            &:last-child{
+              border-bottom: none;
+            }
+            &>.item{
+              &:first-child{
+                border-left: none;
+              }
+              &:last-child{
+                border-right: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .blue{
+    color: @blue;
+  }
+  .orange{
+    color: @orange;
+  }
+  .green{
+    color: @green;
+  }
+  .echarts_bar_container,
+  .echarts_pie_treemap_container{
+    margin: 0 32px;
+    width: calc(100% - 64px);
+    height: 400px;
+    margin-top: 16px;
+    &.echarts_pie_treemap_container{
+      display: flex;
+      justify-content: space-between;
+      .echarts_pie_container{
+        width: 40%;
+        height: 100%;
+      }
+    }
+  }
+  .flex5{
+    flex: 5!important;
+  }
+  .flexTb{
+    margin: 0;
+    .tbody{
+      border: 1px solid #E9E9E9;
+      border-bottom: none;
+    }
+  }
+}

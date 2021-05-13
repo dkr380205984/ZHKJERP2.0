@@ -129,7 +129,7 @@
                           <div class="tcolumn">
                             <span class="btn noBorder"
                               style="padding:0;margin:0"
-                              @click="normalWeaving(item.product_code,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
+                              @click="normalWeaving(item.product_id,itemSize.size_id,itemSize.color_id,itemChild.id,itemChild.number - itemChild.weavingNum)">织造分配</span>
                           </div>
                         </div>
                       </div>
@@ -173,7 +173,7 @@
                         @change="selectPart(index,$event)">
                         <el-option v-for="item in productArr"
                           :key="item.name"
-                          :value="item.code"
+                          :value="item.id"
                           :label="item.name"></el-option>
                       </el-select>
                     </div>
@@ -344,9 +344,11 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">
-                        <span>{{itemChild.product_info.product_code}}</span>
-                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
+                      <div class="tcolumn"
+                        style="flex-direction:row;align-items:center;justify-content:flex-start">
+                        <el-checkbox style="margin-right:4px"
+                          v-model="itemChild.checked" />
+                        <span>{{itemChild.product_info.product_code}}<br />{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.price}}</div>
@@ -358,10 +360,13 @@
                   </div>
                   <div class="tcolumn">
                     <span class="btn noBorder"
-                      style="padding:0;margin:0"
+                      style="padding:0;margin:0 0 8px 0;height:1em;line-height:1em"
                       @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=1&clientId=' + item.client_id)">打印分配单</span>
                     <span class="btn noBorder"
-                      style="padding:0;margin:0"
+                      style="padding:0;margin:0 0 8px 0;height:1em;line-height:1em"
+                      @click="printChecked(item)">打印勾选</span>
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0;height:1em;line-height:1em"
                       @click="openPrintQrCode(item)">打印二维码</span>
                   </div>
                 </div>
@@ -701,15 +706,23 @@
               :style="{'visibility':index>0?'hidden':'inhert'}">补纱信息：</div>
             <div class="info"
               style="display:flex">
-              <el-select v-model="item.yarn"
+              <!-- <el-select v-model="item.yarn"
                 filterable
                 placeholder="请选择纱线">
                 <el-option v-for="item in replenish_yarn"
                   :key="item.name"
                   :value="item.name"
                   :label="item.name"></el-option>
-              </el-select>
-              <el-input style="margin-left:5px;max-width:50%"
+              </el-select> -->
+              <el-autocomplete v-model="item.yarn"
+                :fetch-suggestions="querySearchReplenishYarn"
+                placeholder="请选择纱线"></el-autocomplete>
+              <el-autocomplete style="margin-left:5px;max-width:30%"
+                v-model="item.yarn_attr"
+                :disabled='!item.yarn'
+                :fetch-suggestions="querySearchReplenishAttr(item)"
+                placeholder="请选择纱线属性"></el-autocomplete>
+              <el-input style="margin-left:5px;max-width:30%"
                 v-model="item.weight"
                 placeholder="请输入重量">
                 <template slot="append">kg</template>
@@ -1044,7 +1057,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
+import { yarn, order, materialPlan, client, weave, replenish, sampleOrder, materialStock } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1119,7 +1132,8 @@ export default {
         loss: 5,
         print_number: ''
       },
-      showPrintPopup: false
+      showPrintPopup: false,
+      yarnArr: []
     }
   },
   computed: {
@@ -1135,6 +1149,43 @@ export default {
     }
   },
   methods: {
+    querySearchReplenishAttr (item) {
+      return (queryString, cb) => {
+        const replenishAttrFind = this.replenish_yarn.find(itemF => itemF.value === item.yarn)
+        const returnData = replenishAttrFind ? (queryString ? replenishAttrFind.attr_info.filter(itemF => itemF.value.indexOf(queryString) !== -1) : replenishAttrFind.attr_info) : []
+        cb(returnData)
+      }
+    },
+    querySearchReplenishYarn (queryString, cb, flag) { // flag用于判定不需要获取远端数据
+      if (this.yarnArr.length === 0 && !flag && queryString) {
+        yarn.list().then(res => {
+          if (res.data.status !== false) {
+            this.yarnArr = res.data.data.map(itemM => {
+              return {
+                value: itemM.name,
+                label: itemM.name
+              }
+            })
+            this.querySearchReplenishYarn(queryString, cb, true)
+          }
+        })
+        return
+      }
+      const returnData = queryString ? this.yarnArr.filter(itemF => itemF.value.indexOf(queryString) !== -1).map(itemM => {
+        return {
+          value: itemM.value,
+          label: itemM.label
+        }
+      }) : this.replenish_yarn
+      cb(returnData)
+    },
+    printChecked (item) {
+      if (item.childrenMergeInfo.some(itemS => itemS.checked)) {
+        this.$openUrl(`/weaveTable/${this.$route.params.id}/${this.$route.params.orderType}?type=1&clientId=${item.client_id}&logId=${item.childrenMergeInfo.filter(itemF => itemF.checked).map(itemM => itemM.id)}`)
+      } else {
+        this.$message.warning('请先勾选')
+      }
+    },
     printQrCode () {
       const QRCode = require('qrcode')
       QRCode.toDataURL(`${window.location.origin}/receiveDispatch/jysf/${this.$route.params.id}?client_id=${this.qrCodePrintInfo.client_id}&product_id=${this.qrCodePrintInfo.product_id}`, { errorCorrectionLevel: 'H' }, (err, url) => {
@@ -1277,7 +1328,7 @@ export default {
       }
       this.$openUrl('/replenishTable/' + this.$route.params.id + '/' + this.$route.params.orderType + '?id=' + idArr.join(','))
     },
-    normalWeaving (code, size, color, id, number) {
+    normalWeaving (proId, size, color, id, number) {
       // if (number !== 'undefined' && number <= 0) {
       //   this.$message.warning('该部件已分配完毕')
       //   return
@@ -1285,7 +1336,7 @@ export default {
       this.weaving_flag = true
       this.weaving_data.push({
         company_id: '',
-        product_name: code || '',
+        product_name: proId || '',
         mixedData: [{
           partColorSize: id ? id + '/' + size + '/' + color : '',
           price: '',
@@ -1296,8 +1347,8 @@ export default {
         part_data: [],
         desc: ''
       })
-      if (code) {
-        this.selectPart(this.weaving_data.length - 1, code)
+      if (proId) {
+        this.selectPart(this.weaving_data.length - 1, proId)
       }
     },
     easyWeaving () {
@@ -1441,7 +1492,7 @@ export default {
       })
     },
     selectPart (index, name) {
-      this.weaving_data[index].part_data = this.productArr.find((item) => item.code === name).part_data
+      this.weaving_data[index].part_data = this.productArr.find((item) => item.id === name).part_data
     },
     addMixedData (index) {
       this.weaving_data[index].mixedData.push({
@@ -1473,11 +1524,11 @@ export default {
         if (mixedData.length > 0) {
           this.weaving_data.push({
             company_id: '',
-            product_name: item.product_code,
+            product_name: item.product_id,
             mixedData: mixedData,
             order_time: this.$getTime(),
             complete_time: '',
-            part_data: this.productArr.find((itemFind) => itemFind.code === item.product_code).part_data,
+            part_data: this.productArr.find((itemFind) => itemFind.id === item.product_id).part_data,
             desc: ''
           })
         }
@@ -1537,15 +1588,32 @@ export default {
       })
     },
     replenishFn (data) {
+      const arr = []
       data.childrenMergeInfo.forEach((item) => {
         item.material_assign.forEach((itemMat) => {
           let name = itemMat.material_name + '/' + itemMat.material_attribute
           if (!this.replenish_yarn.find((itemFind) => itemFind.name === name)) {
-            this.replenish_yarn.push({
-              name: name
+            arr.push({
+              label: itemMat.material_name,
+              value: itemMat.material_name,
+              attr_value: itemMat.material_attribute,
+              attr_label: itemMat.material_attribute
             })
           }
         })
+      })
+      this.replenish_yarn = this.$mergeData(arr, {
+        mainRule: 'value',
+        otherRule: [
+          { name: 'label' }
+        ],
+        childrenName: 'attr_info',
+        childrenRule: {
+          mainRule: 'attr_value/value',
+          otherRule: [
+            { name: 'attr_label/label' }
+          ]
+        }
       })
       this.replenish_data.yarn_info = [{
         yarn: '',
@@ -1562,6 +1630,7 @@ export default {
     addReplenish () {
       this.replenish_data.yarn_info.push({
         yarn: '',
+        yarn_attr: '',
         weight: ''
       })
     },
@@ -1580,6 +1649,9 @@ export default {
         if (!item.yarn) {
           errorFlag = true
           errMsg = '你有未选择的纱线原料'
+        } else if (!item.yarn_attr) {
+          errorFlag = true
+          errMsg = '你有未选择的纱线原料属性'
         } else if (!item.weight) {
           errorFlag = true
           errMsg = '你有未填写的补纱重量'
@@ -1590,14 +1662,15 @@ export default {
         return
       }
       let formData = {
+        order_type: this.$route.params.orderType,
         type: 1,
         id: null,
         order_id: this.$route.params.id,
         yarn_info: this.replenish_data.yarn_info.map((item) => {
           return {
             weight: item.weight,
-            name: item.yarn.split('/')[0],
-            color: item.yarn.split('/')[1]
+            name: item.yarn,
+            color: item.yarn_attr
           }
         }),
         client_info: this.replenish_data.client_info,
@@ -1728,21 +1801,24 @@ export default {
           size_id: item.size_id
         })
       })
-      this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_code/product_code', otherRule: [{ name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }] })
+      this.weaving_info = this.$mergeData(productInfo, { mainRule: 'product_id', otherRule: [{ name: 'product_code' }, { name: 'category_name' }, { name: 'type_name' }, { name: 'style_name' }] })
       this.weaving_info.forEach((item) => {
         let mixedData = []
         item.childrenMergeInfo.forEach((itemChild) => {
+          itemChild.product_id = item.product_id // 后加的
           itemChild.part_data.forEach((itemPart) => {
             mixedData.push(itemPart)
           })
         })
         this.productArr.push({
+          id: item.product_id,
           name: item.product_code + '(' + item.category_name + '/' + item.type_name + '/' + item.style_name + ')',
           code: item.product_code,
           part_data: mixedData
         })
       })
-      this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14] })
+      this.productArr = this.$mergeData(this.productArr, { mainRule: 'id', otherRule: [{ name: 'name' }, { name: 'code' }, { name: 'part_data', type: 'concat' }] })
+      this.clientArrReal = this.$getClientOptions(res[2].data.data, companyType, { type: [13, 14, 39] })
       this.weaving_log = res[3].data.data.map((item) => {
         item.check = false
         return item

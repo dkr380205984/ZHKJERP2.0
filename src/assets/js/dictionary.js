@@ -92,6 +92,9 @@ const permissions = [{
 }, {
   module: '成品加工',
   id: 20
+}, {
+  module: '单证管理',
+  id: 21
 }]
 const moneyArr = [{
   name: '元',
@@ -166,6 +169,10 @@ const companyType = [
   }, {
     value: 14,
     label: '针织织造单位',
+    type: '生产织造单位'
+  }, {
+    value: 39,
+    label: '精编织造单位',
     type: '生产织造单位'
   }, {
     value: 15,
@@ -276,9 +283,19 @@ const isHasPermissions = (id) => {
   if (!moduleId.includes(id)) return
   return true
 }
+const cityArr = [
+  { value: '上海市' },
+  { value: '杭州市' },
+  { value: '宁波市' },
+  { value: '义乌市' },
+  { value: '天津市' },
+  { value: '青岛市' }
+]
 // 物料的批缸号及色号的默认值
 const VATCODE_COLORCODE_DEFAULT = 'NOT_SET'
+const ECHARTS_COLOR = ['#16A085', '#2980B9', '#8E44AD', '#2C3E50', '#27AE60', '#F39C12', '#D35400', '#1ABC9C', '#BDC3C7', '#7F8C8D', '#25B41E', '#2ECC71', '#3498DB', '#9B59B6', '#34495E', '#F1C40F', '#E67E22', '#E74C3C']
 export {
+  cityArr,
   companyType,
   moneyArr,
   permissions,
@@ -286,5 +303,6 @@ export {
   chinaNum,
   letterArr,
   countries,
-  VATCODE_COLORCODE_DEFAULT
+  VATCODE_COLORCODE_DEFAULT,
+  ECHARTS_COLOR
 }

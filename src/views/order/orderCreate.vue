@@ -147,7 +147,8 @@
                 v-model="tax_prop"
                 type="number"
                 errorPosition='bottom'
-                errorMsg="请输入数字">
+                errorMsg="请输入数字"
+                @change="changeTaxProp">
                 <template slot="append">%</template>
               </zh-input>
             </span>
@@ -163,6 +164,9 @@
               <el-date-picker v-model="order_time"
                 value-format="yyyy-MM-dd"
                 type="date"
+                :picker-options="{
+                  disabledDate
+                }"
                 placeholder="请选择下单日期">
               </el-date-picker>
             </span>
@@ -731,6 +735,7 @@
 </template>
 
 <script>
+import { disabledDate } from '@/assets/js/common.js'
 import { companyType, chinaNum, moneyArr } from '@/assets/js/dictionary.js'
 import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
@@ -751,7 +756,7 @@ export default {
       unit: '元',
       unitArr: moneyArr,
       exchange_rate: 100,
-      tax_prop: 12,
+      tax_prop: window.localStorage.getItem('order_tax_prop_default') || 12,
       order_time: this.$getTime(),
       searchCode: '',
       date: '',
@@ -808,8 +813,12 @@ export default {
     }
   },
   methods: {
+    disabledDate,
+    changeTaxProp (value) {
+      window.localStorage.setItem('order_tax_prop_default', value)
+    },
     filterDate (date) {
-      return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
+      return new Date(date).getTime() - 1 < new Date(this.$getTime()).getTime()
     },
     searchClient (node, query) {
       let flag = true
@@ -1232,6 +1241,7 @@ export default {
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {
           return {
+            id: '',
             batch_info: item.batch_info.map(itemPro => {
               return {
                 product_id: itemPro.id,

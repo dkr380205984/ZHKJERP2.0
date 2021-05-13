@@ -61,6 +61,8 @@
         </div>
         <div class="addCtn">
           <div class="btn btnWhiteBlue"
+            @click="$router.push(`/warehouse/warehouseCreate`)">+ 添加进仓单</div>
+          <div class="btn btnWhiteBlue"
             @click="addTransportTable">+ 添加运输货款</div>
         </div>
         <div class="list">
@@ -108,7 +110,7 @@
             </div>
             <div class="col middle">{{itemOrder.complete_time}}</div>
             <div class="col">{{itemOrder.code}}</div>
-            <div class="col">{{itemOrder.order_code}}</div>
+            <div class="col ellipsis">{{itemOrder.orders.map(itemM=>itemM.order_code).join(';')}}</div>
             <div class="col middle">
               <zh-img-list :list='itemOrder.image'></zh-img-list>
             </div>
@@ -129,7 +131,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -281,7 +283,7 @@
 <script>
 import { warehouse, client, transport } from '@/assets/js/api.js'
 import { getHash } from '@/assets/js/common.js'
-import { chinaNum, companyType } from '@/assets/js/dictionary.js'
+import { chinaNum, companyType, cityArr } from '@/assets/js/dictionary.js'
 export default {
   data () {
     return {
@@ -307,18 +309,10 @@ export default {
         total_price: '',
         remark: ''
       },
-      cityArr: [
-        { value: '上海市' },
-        { value: '杭州市' },
-        { value: '宁波市' },
-        { value: '义乌市' }
-      ]
+      cityArr
     }
   },
   watch: {
-    pages (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -384,6 +378,10 @@ export default {
       })
     },
     addTransportTable () {
+      if (this.checkedList.length === 0) {
+        this.$message.warning('请先勾选进仓单')
+        return
+      }
       if (this.clientList.length === 0) {
         client.list().then(res => {
           this.clientList = this.$getClientOptions(res.data.data, companyType, { type: [35, 36] })

@@ -133,25 +133,18 @@
         <div class="list">
           <el-table :data="list"
             style="width: 100%">
-            <!-- <el-table-column fixed
-              width="55">
-              <template slot-scope="scope">
-                <el-checkbox v-model="scope.row.checked"
-                  @change="checkedChange($event,scope.row)"></el-checkbox>
-              </template>
-            </el-table-column> -->
             <el-table-column fixed
               prop="delivery_time"
               label="发货日期"
               width="150">
             </el-table-column>
             <el-table-column fixed
-              prop="client_name"
+              prop="order_code"
               label="订单号"
               width="150">
             </el-table-column>
             <el-table-column fixed
-              prop="order_code"
+              prop="client_name"
               label="外贸公司"
               width="150">
             </el-table-column>
@@ -171,13 +164,6 @@
                   type='open'></zh-img-list>
               </template>
             </el-table-column>
-            <!-- <el-table-column prop="product_code"
-              label="产品编号"
-              width="150">
-              <template slot-scope="scope">
-                {{scope.row.product_info.}}
-              </template>
-            </el-table-column> -->
             <el-table-column prop="numbers"
               label="下单数量"
               width="120">
@@ -237,6 +223,17 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column label="批次状态"
+              width="120">
+              <template slot-scope="scope">
+                <div class="stateCtn rowFlex"
+                  :class="{'red':scope.row.batch_status === 3 || scope.row.batch_status === 4,'green':scope.row.batch_status === 1,'blue':scope.row.batch_status === 2,'orange':scope.row.batch_status === 0}">
+                  <div class="state"
+                    style="margin-left:0"></div>
+                  <span class="name">{{scope.row.batch_status|filterBatchStatus}}</span>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="order_time"
               label="下单日期"
               width="120">
@@ -256,102 +253,12 @@
               width="150">
               <template slot-scope="scope">
                 <span class="tOpr"
-                  @click="$router.push('/order/orderDetail/' + scope.row.id)">详情</span>
+                  @click="updatedOrderInfoEvent(scope.row)">更新进度</span>
+                <span class="tOpr"
+                  @click="$router.push('/order/orderDetail/' + scope.row.order_id)">详情</span>
               </template>
             </el-table-column>
           </el-table>
-          <!-- <div class="title">
-            <div class="col">
-              <span class="text">发货日期</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">订单号</span>
-            </div>
-            <div class="col flex12">
-              <span class="text">外贸公司</span>
-            </div>
-            <div class="col middle flex12">
-              <span class="text">产品图片</span>
-            </div>
-            <div class="col flex08">
-              <span class="text"
-                style="line-height:1.2em">批次<br />订单数量</span>
-            </div>
-            <div class="col flex08">
-              <span class="text">负责小组</span>
-            </div>
-            <div class="col flex16">
-              <span class="text">流程进度</span>
-            </div>
-            <div class="col">
-              <span class="text"
-                style="line-height:1.2em">已用工时<br />下单日期</span>
-            </div>
-            <div class="col">
-              <span class="text">当前状态</span>
-            </div>
-            <div class="col">
-              <span class="text">操作</span>
-            </div>
-          </div>
-          <div class="row"
-            v-for="(itemOrder,indexOrder) in list"
-            :key="indexOrder">
-            <div class="col"> {{itemOrder.delivery_time}} </div>
-            <div class="col flex12">{{itemOrder.order_code}}</div>
-            <div class="col flex12">{{itemOrder.client_name}}</div>
-            <div class="col middle flex12">
-              <zh-img-list :list="itemOrder.image"
-                type='open'></zh-img-list>
-            </div>
-            <div class="col flex08"> {{'第' + itemOrder.batch_id + '批'}}<br />{{itemOrder.numbers}}</div>
-            <div class="col flex08"> {{itemOrder.group_name}} </div>
-            <div class="col flex16">
-              <div class="stateCtn"
-                :class="{'green':itemOrder.has_plan===1}">
-                <div class="state"></div>
-                <span class="name">计</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_push>0,'green':itemOrder.material_push_progress.r_push>=100}">
-                <div class="state"></div>
-                <span class="name">入</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.material_push_progress.r_pop>0,'green':itemOrder.material_push_progress.r_pop>=100}">
-                <div class="state"></div>
-                <span class="name">出</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.product_push_progress>0,'green':itemOrder.product_push_progress>=100}">
-                <div class="state"></div>
-                <span class="name">检</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.semi_push_progress>0,'green':itemOrder.semi_push_progress>=100}">
-                <div class="state"></div>
-                <span class="name">回</span>
-              </div>
-              <div class="stateCtn"
-                :class="{'orange':itemOrder.pack_real_progress>0,'green':itemOrder.pack_real_progress>=100}">
-                <div class="state"></div>
-                <span class="name">箱</span>
-              </div>
-            </div>
-            <div class="col"
-              :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]"> {{itemOrder.order_time|filterTime}}<br />{{itemOrder.order_time}} </div>
-            <div class="col">
-              <div class="stateCtn rowFlex"
-                :class="filterStatus([itemOrder.delivery_time,itemOrder.status])[1]">
-                <div class="state"></div>
-                <span class="name">{{filterStatus([itemOrder.delivery_time,itemOrder.status])[0]}}</span>
-              </div>
-            </div>
-            <div class="col">
-              <span class="opr"
-                @click="$router.push('/order/orderDetail/' + itemOrder.order_id)">详情</span>
-            </div>
-          </div> -->
         </div>
         <div class="pageCtn">
           <el-pagination background
@@ -359,8 +266,108 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="changeRouter(pages)">
+            @current-change="changeRouter">
           </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="popup"
+      v-if="updatedOrderInfo">
+      <div class="main"
+        style="width: 800px;">
+        <div class="title">
+          <span class="text">添加订单最新进度</span>
+          <span class="el-icon-close"
+            @click="updatedOrderInfo = null"></span>
+        </div>
+        <div class="content"
+          style="max-height: 500px;">
+          <div class="row">
+            <div class="label">当前订单批次：</div>
+            <div class="info colCenter">{{`第${updatedOrderInfo.batch_id}批`}}</div>
+          </div>
+          <div class="row">
+            <div class="label">最新进度描述：</div>
+            <div class="info colCenter">
+              <el-input v-model="updatedOrderInfo.desc"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">切换批次状态：</div>
+            <div class="info colCenter">
+              <el-select v-model="updatedOrderInfo.status"
+                placeholder="请选择">
+                <el-option v-for="item in [
+                  { label: '进行中', value: 2 },
+                  { label: '紧急', value: 3 },
+                  { label: '已完成', value: 1 }
+                  ]"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">通知成员：</div>
+            <div class="info colCenter">
+              <div class="groupCtn">
+                <!-- <span>{{itemG.name}}</span> -->
+                <el-tag :class="`group_item ${checkedGroup === itemG.id ? 'active' : ''}`"
+                  v-for="itemG in groupArrCom"
+                  :key="itemG.id"
+                  size="small"
+                  :type='checkedGroup === itemG.id ? "" : "info"'
+                  @click="checkedGroup = itemG.id">{{itemG.name}}</el-tag>
+              </div>
+              <div class="userCtn">
+                <el-checkbox v-model="checkedAll"
+                  :indeterminate="indeterminate"
+                  label='全选'
+                  @change="checkedAllChange" />
+                <el-checkbox v-for="itemU in userArrCom"
+                  @change="isCheckedAll"
+                  :key="itemU.id"
+                  v-model="itemU.checked"
+                  :label='itemU.name' />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">已选成员：</div>
+            <div class="info colCenter">
+              <div class="groupCtn">
+                <!--
+                  不知道为什么 userArr.filter(itemF => itemF.checked) 写在computed中有时会过滤不了
+                   -->
+                <template v-if="userArr.filter(itemF => itemF.checked).length !== 0">
+                  <!-- <span :class="`group_item`"
+                    v-for="itemG in userArr.filter(itemF => itemF.checked)"
+                    :key="itemG.id">{{itemG.name}}</span> -->
+                  <el-tag v-for="itemG in userArr.filter(itemF => itemF.checked)"
+                    class="group_item"
+                    :key="itemG.id"
+                    size="small"
+                    closable
+                    @close='deleteCheckedUser(itemG)'>
+                    {{itemG.name}}
+                  </el-tag>
+                </template>
+                <span style="color:#B9B9B9"
+                  v-else>暂无</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="updatedOrderInfo = null">取消</div>
+          <div class="btn btnBlue"
+            @click="updatedBatchStatus">确定</div>
         </div>
       </div>
     </div>
@@ -369,8 +376,7 @@
 
 <script>
 import { companyType } from '@/assets/js/dictionary.js'
-import { getHash } from '@/assets/js/common.js'
-import { orderBatch, group, client, chartsAPI } from '@/assets/js/api.js'
+import { orderBatch, group, client, chartsAPI, auth } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -525,40 +531,115 @@ export default {
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [end, start])
           }
         }, {
           text: '最近一个月',
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 30)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [end, start])
           }
         }, {
           text: '最近三个月',
           onClick (picker) {
             const end = new Date()
             const start = new Date()
-            end.setTime(end.getTime() + 3600 * 1000 * 24 * 90)
-            picker.$emit('pick', [start, end])
+            end.setTime(end.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [end, start])
           }
         }]
-      }
+      },
+      // 更新订单批次进度字段
+      updatedOrderInfo: null, // null的时候关闭弹窗
+      checkedGroup: '',
+      checkedAll: false,
+      indeterminate: false,
+      userArr: []
+
     }
   },
   watch: {
-    pages (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
       this.getOrderList()
+    },
+    checkedGroup () {
+      this.isCheckedAll()
     }
   },
   methods: {
+    deleteCheckedUser (item) {
+      item.checked = false
+      this.$forceUpdate()
+    },
+    updatedBatchStatus () {
+      if (this.$submitLock()) return
+      if (!this.updatedOrderInfo.status) {
+        this.$message.warning('请选择批次状态')
+        return
+      }
+      orderBatch.changeProg({
+        order_batch_id: this.updatedOrderInfo.id,
+        number: this.updatedOrderInfo.batch_id,
+        order_id: this.updatedOrderInfo.order_id,
+        status: this.updatedOrderInfo.status,
+        users: this.userArr.filter(itemM => itemM.checked).map(itemM => itemM.id),
+        description: this.updatedOrderInfo.desc,
+        router_url: `/order/orderDetail/${this.updatedOrderInfo.order_id}`
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('更新成功')
+          this.updatedOrderInfo = null
+          this.getOrderList()
+        }
+      })
+    },
+    checkedAllChange (event) {
+      this.userArrCom.forEach(itemM => { itemM.checked = event })
+      // this.userArrCom.forEach(itemF => {
+      //   const finded = this.userArr.find(itemFind => itemFind.id === itemF.id)
+      //   if (finded) {
+      //     finded.checked = event
+      //   }
+      // })
+      // this.isCheckedAll()
+      // this.$forceUpdate()
+    },
+    isCheckedAll () {
+      const checkedNum = this.userArrCom.filter(itemF => itemF.checked).length
+      if (checkedNum === 0) {
+        this.checkedAll = false
+        this.indeterminate = false
+      } else if (checkedNum === this.userArrCom.length) {
+        this.checkedAll = true
+        this.indeterminate = false
+      } else {
+        this.checkedAll = false
+        this.indeterminate = true
+      }
+      this.$forceUpdate()
+    },
+    updatedOrderInfoEvent (item) {
+      this.userArr.forEach(item => {
+        item.checked = false
+      })
+      this.isCheckedAll()
+      this.updatedOrderInfo = {
+        order_id: item.order_id,
+        id: item.id,
+        batch_id: item.batch_id,
+        desc: '',
+        status: item.batch_status || ''
+      }
+    },
+    closeUpdatedOrderInfoPopup () {
+      this.updatedOrderInfo = null
+      this.userArr.forEach(itemM => { itemM.checked = false })
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -577,23 +658,23 @@ export default {
       return flag
     },
     getFilters () {
-      let params = getHash(this.$route.params.params)
-      this.pages = Number(params.page)
-      this.keyword = params.keyword
-      if (params.date !== 'null' && params.date !== '') {
+      let params = this.$route.query
+      this.pages = Number(params.page) || 1
+      this.keyword = params.keyword || ''
+      if (params.date && params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
         this.date = ''
       }
       this.group_id = params.group_id ? Number(params.group_id) : ''
-      this.company_id = params.company_id.split(',')
+      this.company_id = (params.company_id && params.company_id.split(',')) || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderStat/page=' + pages + '&&keyword=' + this.keyword + '&&date=' + this.date + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id)
+      this.$router.push('/order/orderStat?page=' + pages + '&keyword=' + this.keyword + '&date=' + this.date + '&group_id=' + this.group_id + '&company_id=' + this.company_id)
     },
     reset () {
-      this.$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')
+      this.$router.push('/order/orderStat')
     },
     getOrderList () {
       this.loading = true
@@ -704,14 +785,18 @@ export default {
     }
   },
   created () {
+    // this.updatedOrderInfo = {}
+    // this.loading = false
     this.getFilters()
     this.getOrderList()
     Promise.all([
       group.list(),
-      client.list()
+      client.list(),
+      auth.list()
     ]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
+      this.userArr = res[2].data.data
     })
     let today = new Date()
     let todayMore14 = [this.$getTime(today)]
@@ -769,11 +854,32 @@ export default {
       } else if (status === 2005) {
         return '已延期'
       }
+    },
+    filterBatchStatus (status) {
+      if (status === 0) {
+        return '已创建'
+      } else if (status === 2) {
+        return '进行中'
+      } else if (status === 4) {
+        return '已取消'
+      } else if (status === 1) {
+        return '已完成'
+      } else if (status === 3) {
+        return '紧急'
+      }
+    }
+  },
+  computed: {
+    userArrCom () {
+      return this.checkedGroup ? this.userArr.filter(itemF => itemF.group_id === this.checkedGroup) : this.userArr
+    },
+    groupArrCom () {
+      return [{ id: '', name: '所有' }].concat(this.$unique(this.userArr, 'group_id').map(itemM => ({ id: itemM.group_id, name: itemM.group })))
     }
   }
 }
 </script>
 
 <style scoped lang='less'>
-@import "~@/assets/less/order/orderList.less";
+@import "~@/assets/less/order/orderStat.less";
 </style>

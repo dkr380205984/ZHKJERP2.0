@@ -1,7 +1,8 @@
 <template>
   <div class='printHtml'
     id='packOrderTable'>
-    <div class="printTable">
+    <div class="printTable"
+      v-if="$route.params.type === '1'">
       <div class="print_head">
         <div class="left">
           <span class="title">{{title}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
@@ -71,6 +72,83 @@
         </div>
       </div>
     </div>
+    <div class="printTable crosswise"
+      v-for="(itemPage,indexPage) in packOrderInfoCom"
+      :key="indexPage">
+      <div class="print_head">
+        <div class="top">
+          <span class="title">{{title}}{{orderInfo.inside_order_code ? '-' + orderInfo.inside_order_code : ''}}</span>
+        </div>
+      </div>
+      <div class="print_body"
+        style="display:flex;flex-direction:column">
+        <div class="print_row">
+          <div class="row_item center w180">订购单位</div>
+          <div class="row_item center">{{printInfo.clientName}}</div>
+          <div class="row_item center w180">交货日期</div>
+          <div class="row_item center">{{printInfo.time}}</div>
+          <div class="row_item center w180">订购编号</div>
+          <div class="row_item center"></div>
+        </div>
+        <div class="print_row">
+          <div class="row_item center flex02">序号</div>
+          <div class="row_item center flex2">包装辅料名称</div>
+          <div class="row_item center">规格</div>
+          <div class="row_item center">属性</div>
+          <div class="row_item center">订购数量</div>
+          <div class="row_item center">单价</div>
+          <div class="row_item center">总价</div>
+        </div>
+        <div class="print_row"
+          v-for="(item,index) in itemPage"
+          :key='index'>
+          <div class="row_item center flex02">{{index+1}}</div>
+          <div class="row_item center flex2">{{item.material_name}}</div>
+          <div class="row_item center">{{JSON.parse(item.size).filter(item=>item).join('*') || item.pack_size}}cm</div>
+          <div class="row_item center">{{item.attribute}}</div>
+          <div class="row_item center">{{item.number}}{{item.unit || '个'}}</div>
+          <div class="row_item center">{{item.price}}{{'元/' + (item.unit || '个') }}</div>
+          <div class="row_item center">{{item.total_price}}元</div>
+        </div>
+        <template v-if="itemPage.length < 6">
+          <div class="print_row"
+            v-for="item in 6 - itemPage.length"
+            :key="item">
+            <div class="row_item center flex02"></div>
+            <div class="row_item center flex2"></div>
+            <div class="row_item center"></div>
+            <div class="row_item center"></div>
+            <div class="row_item center"></div>
+            <div class="row_item center"></div>
+            <div class="row_item center"></div>
+          </div>
+        </template>
+        <div class="print_row"
+          style="flex:1">
+          <div class="row_item center w180">备注</div>
+          <div class="row_item center"
+            style="flex:2.05"></div>
+          <div class="row_item"
+            style="flex:4">
+            <div class="print_row noBorder">
+              <div class="row_item center">合计</div>
+              <div class="row_item center">{{totalInfoCom.number}}</div>
+              <div class="row_item center">{{$toFixed(totalInfoCom.total_price / totalInfoCom.number)}}</div>
+              <div class="row_item center">{{totalInfoCom.total_price}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="print_row"
+          style="border-bottom:0">
+          <div class="row_item center w180">页码</div>
+          <div class="row_item center">{{indexPage+1}}/{{packOrderInfoCom.length}}</div>
+          <div class="row_item center w180">打印人/时间</div>
+          <div class="row_item center">{{user_name}}/{{$getTime()}}</div>
+          <div class="row_item center w180">负责人签字</div>
+          <div class="row_item center"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,8 +168,22 @@ export default {
       isHideClient: false
     }
   },
-  methods: {
-
+  computed: {
+    packOrderInfoCom () {
+      if (this.$route.params.type === '1') {
+        return this.packOrderInfo
+      } else if (this.$route.params.type === '2') {
+        return this.$newSplice(this.$clone(this.packOrderInfo), 6)
+      } else {
+        return []
+      }
+    },
+    totalInfoCom () {
+      return {
+        number: this.packOrderInfo.map(itemM => +itemM.number || 0).reduce((total, current) => total + current, 0),
+        total_price: this.packOrderInfo.map(itemM => +itemM.total_price || 0).reduce((total, current) => total + current, 0)
+      }
+    }
   },
   created () {
     this.printInfo = this.$route.query
@@ -120,12 +212,14 @@ export default {
     })
   },
   mounted () {
-    const QRCode = require('qrcode')
-    QRCode.toDataURL(window.location.origin + '/packPlan/packOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
-      if (!err) {
-        this.qrCodeUrl = url
-      }
-    })
+    if (this.$route.params.type === '1') {
+      const QRCode = require('qrcode')
+      QRCode.toDataURL(window.location.origin + '/packPlan/packOrderDetail/' + this.$route.params.id, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (!err) {
+          this.qrCodeUrl = url
+        }
+      })
+    }
   }
 }
 </script>

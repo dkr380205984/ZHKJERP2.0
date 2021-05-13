@@ -103,8 +103,19 @@
                 :filter-method='searchClient'
                 clearable
                 :props="{ expandTrigger: 'hover' }"
-                @change="changeRouter(1)"
+                @change="setContactsData"
                 filterable></el-cascader>
+              <el-select v-model="contacts"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选联系人">
+                <el-option v-for="(item,index) in contactsArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
               <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -157,7 +168,7 @@
           style="justify-content:space-between">
           <span class="btn noBorder listCutBtn"
             style="padding:0;margin:0"
-            @click="$router.push('/order/orderStat/page=1&&keyword=&&date=&&group_id=&&company_id=')">订单发货列表</span>
+            @click="$router.push('/order/orderStat')">订单发货列表</span>
           <div class="btn btnBlue"
             @click="$router.push('/order/orderCreate')">新建订单</div>
         </div>
@@ -165,7 +176,13 @@
           <el-table :data="list"
             style="width: 100%">
             <el-table-column fixed
-              width="55">
+              width="70">
+              <template slot="header"
+                slot-scope="scope">
+                <el-checkbox v-model="checkedAll"
+                  ref="checkedAllEl"
+                  @change="checkedChange($event,null,'all',scope)"></el-checkbox>全选
+              </template>
               <template slot-scope="scope">
                 <el-checkbox v-model="scope.row.checked"
                   @change="checkedChange($event,scope.row)"></el-checkbox>
@@ -178,7 +195,7 @@
             </el-table-column>
             <el-table-column prop="client_name"
               fixed
-              label="外贸公司"
+              label="订单公司"
               width="150">
             </el-table-column>
             <el-table-column label="产品图片"
@@ -291,6 +308,10 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column prop="contacts"
+              label="联系人"
+              width="120">
+            </el-table-column>
             <el-table-column label="操作"
               fixed="right"
               width="150">
@@ -311,7 +332,7 @@
               <span class="text">订单号</span>
             </div>
             <div class="col flex12">
-              <span class="text">外贸公司</span>
+              <span class="text">订单公司</span>
             </div>
             <div class="col flex08">
               <span class="text">产品编号</span>
@@ -458,13 +479,15 @@
             </div>
           </div> -->
         </div>
-        <div class="pageCtn">
+        <div class="pageCtn"
+          :style="pages === Math.ceil(total / 10) && 'justify-content: space-between;align-items: center;'">
+          <span style="color: #1A95FF;"
+            v-if="pages === Math.ceil(total / 10)">当前已是最后一页，如需查询更多订单，请使用时间筛选功能查询更早的记录</span>
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
-            @current-change="getOrderList">
+            :current-page.sync="pages">
           </el-pagination>
         </div>
       </div>
@@ -473,7 +496,7 @@
       v-if="checkedList.length > 0">
       <div class="main">
         <div class="checkedInfo"
-          style="float:left">
+          style="float:left;flex:1">
           已选择
           <span class="blue">{{checkedList.length}}</span>
           个订单：
@@ -677,7 +700,10 @@ export default {
           id: '2005'
         }
       ],
-      checkedList: []
+      checkedAll: false,
+      checkedList: [],
+      contacts: '',
+      contactsArr: []
     }
   },
   watch: {
@@ -691,22 +717,33 @@ export default {
     }
   },
   methods: {
+    setContactsData () {
+      this.contacts = ''
+      this.changeRouter(1)
+    },
     cancelChecked () {
       this.list.forEach(itemF => {
         itemF.checked = false
       })
       this.checkedList = []
     },
-    checkedChange (e, item) {
-      let finded = this.checkedList.findIndex(itemF => itemF.id === item.id)
-      if (e && finded < 0) {
-        this.checkedList.push({
-          id: item.id,
-          order_code: item.order_code
+    checkedChange (e, item, type) {
+      if (type === 'all') {
+        this.list.forEach(itemF => {
+          itemF.checked = e
+          this.checkedChange(e, itemF)
         })
-      } else if (!e && finded >= 0) {
-        item.checked = false
-        this.checkedList.splice(finded, 1)
+      } else {
+        let finded = this.checkedList.findIndex(itemF => itemF.id === item.id)
+        if (e && finded < 0) {
+          this.checkedList.push({
+            id: item.id,
+            order_code: item.order_code
+          })
+        } else if (!e && finded >= 0) {
+          item.checked = false
+          this.checkedList.splice(finded, 1)
+        }
       }
     },
     downLoadExcel () {
@@ -803,17 +840,28 @@ export default {
       this.has_boxing = params.has_boxing
       this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id.split(',')
+      if (this.company_id) {
+        const finded = this.companyArr.find(itemF => itemF.value === this.company_id[0]) && this.companyArr.find(itemF => itemF.value === this.company_id[0]).children.find(itemF => itemF.value === this.company_id[1])
+        console.log(finded)
+        if (finded) {
+          this.contactsArr = finded.contacts
+        } else {
+          this.contactsArr = []
+        }
+        this.contacts = +params.contacts || ''
+      }
       this.state = params.state
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_materialOrder=' + this.has_materialOrder + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&has_productInOut=' + this.has_productInOut + '&&has_inspection=' + this.has_inspection + '&&has_boxing=' + this.has_boxing + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/order/orderList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_materialOrder=' + this.has_materialOrder + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&has_productInOut=' + this.has_productInOut + '&&has_inspection=' + this.has_inspection + '&&has_boxing=' + this.has_boxing + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&contacts=' + this.contacts + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
       this.$router.push('/order/orderList/page=1&&keyword=&&date=&&has_materialOrder=&&has_materialPlan=&&has_materialStock=&&has_weave=&&has_productInOut=&&has_inspection=&&has_boxing=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
     },
     getOrderList () {
       this.loading = true
+      this.checkedAll = true
       order.list({
         limit: 10,
         page: this.pages,
@@ -830,7 +878,8 @@ export default {
         status_weave: this.has_weave,
         status_product_push: this.has_productInOut,
         status_product_inspection: this.has_inspection,
-        status_stock_out: this.has_boxing
+        status_stock_out: this.has_boxing,
+        contacts: this.contacts || null
       }).then(res => {
         this.list = res.data.data.map(item => {
           const finded = this.checkedList.find(itemF => itemF.id === item.id)
@@ -845,6 +894,9 @@ export default {
           this.checkTime(item, 'init')
           return item
         })
+        if (this.list.some(itemF => !itemF.checked)) {
+          this.checkedAll = false
+        }
         this.total = res.data.meta.total
         this.loading = false
       })
@@ -963,12 +1015,23 @@ export default {
     }
   },
   created () {
-    window.aaa = require('@/assets/js/common.js')
+    // window.aaa = require('@/assets/js/common.js')
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
+    Promise.all([
+      group.list(),
+      client.list()
+    ]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
+      if (this.company_id) {
+        const finded = this.companyArr.find(itemF => itemF.value === this.company_id[0]) && this.companyArr.find(itemF => itemF.value === this.company_id[0]).children.find(itemF => itemF.value === this.company_id[1])
+        if (finded) {
+          this.contactsArr = finded.contacts
+        } else {
+          this.contactsArr = []
+        }
+      }
     })
     let today = new Date()
     let todayMore14 = [this.$getTime(today)]

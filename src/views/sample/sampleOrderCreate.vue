@@ -56,6 +56,9 @@
               <el-date-picker v-model="order_time"
                 value-format="yyyy-MM-dd"
                 type="date"
+                :picker-options="{
+                  disabledDate
+                }"
                 placeholder="请选择下单日期">
               </el-date-picker>
             </span>
@@ -325,7 +328,7 @@
                 v-model="itemCheck.sample_product_code">
               </zh-input>
               <div class="editBtn deleteBtn"
-                :style="indexCheck === 0 ? 'top:38px' : 'top:0'"
+                style="top:0"
                 @click="cancleChecked(itemCheck)">删除</div>
             </span>
           </div>
@@ -459,6 +462,7 @@
 </template>
 
 <script>
+import { disabledDate } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
 import { sample, client, group, sampleOrder, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
@@ -508,6 +512,7 @@ export default {
     }
   },
   methods: {
+    disabledDate,
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
     },

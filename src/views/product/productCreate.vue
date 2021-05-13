@@ -64,6 +64,12 @@
           <div class="colCtn">
             <div class="label">
               <span class="text">产品品类</span>
+              <el-tooltip class="item"
+                effect="dark"
+                content="该品类内容无法自行添加。如果您选不到您需要的品类，请联系我们工作人员进行添加。"
+                placement="top-start">
+                <span class="el-icon-question"></span>
+              </el-tooltip>
               <span class="explanation">(必填)</span>
             </div>
             <div class="content">
@@ -163,10 +169,9 @@
               v-show="index===0">
             </div>
             <div class="content">
-              <zh-input type="number"
-                placeholder="请输入克重信息"
+              <zh-input placeholder="请输入克重信息"
                 v-model="item.weight">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </div>
           </div>
@@ -177,7 +182,7 @@
             <div class="content">
               <zh-input placeholder="请输入尺寸信息"
                 v-model="item.desc">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </div>
             <div class="editBtn"
@@ -329,9 +334,8 @@
             </span>
             <span class="content">
               <zh-input v-model="itemSize.weight"
-                type="number"
                 placeholder="请输入克重">
-                <template slot="append">g</template>
+                <!-- <template slot="append">g</template> -->
               </zh-input>
             </span>
           </div>
@@ -343,7 +347,7 @@
             <span class="content">
               <zh-input v-model="itemSize.desc"
                 placeholder="请输入尺寸信息">
-                <template slot="append">cm</template>
+                <!-- <template slot="append">cm</template> -->
               </zh-input>
             </span>
           </div>
@@ -784,12 +788,15 @@ export default {
           file_data: this.addArr,
           delete_data: this.deleteArr
         },
-        color: this.colour.map((item) => {
-          return {
-            color_name: item.colour,
-            color_id: null
-          }
-        }),
+        color: {
+          delete_data: null,
+          add_data: this.colour.map((item) => {
+            return {
+              color_name: item.colour,
+              color_id: null
+            }
+          })
+        },
         component: this.ingredient.map((item) => {
           return {
             component_name: item.ingredient_name,
@@ -841,7 +848,7 @@ export default {
       }).then(res => {
         if (res.data.status !== false) {
           let productInfo = res.data.data
-          this.product_code_user = productInfo.product_code
+          // this.product_code_user = productInfo.product_code  // 去除导入时导入产品编号 2020-03-26
           this.model_code = productInfo.style_code
           this.name = productInfo.name
           this.fileArr = productInfo.image.map(item => {

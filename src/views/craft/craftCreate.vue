@@ -1641,6 +1641,17 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
+              <span class="text">其它信息</span>
+            </div>
+            <div class="content">
+              <el-input v-model="others_info"
+                placeholder="请输入其它信息"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
               <span class="text">备注信息</span>
             </div>
             <div class="content">
@@ -1652,7 +1663,14 @@
       </div>
     </div>
     <div class="bottomFixBar">
-      <div class="main">
+      <div class="main"
+        style="display:flex;align-items:center;justify-content:space-between">
+        <div class="leftCtn">
+          <craft-course>
+            <div class="btn btnBlue"
+              slot="show">使用教程</div>
+          </craft-course>
+        </div>
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
@@ -3078,7 +3096,8 @@ export default {
         designWeftBack: ''
       },
       chuankouDetail: [],
-      weaveNumber: [],//新增字段用于填写机织数量
+      weaveNumber: [], //新增字段用于填写机织数量
+      others_info: '' //新增字段其它信息
     }
   },
   watch: {
@@ -3334,6 +3353,7 @@ export default {
         this.colourArr = product.color
         this.chooseId = product.id
         this.chooseType = this.product_type ? 1 : 2
+        this.ZDYMC = product.name
         // this.productInfo = {
         //   product_code:product.product_code,
         //   name:product.name,
@@ -4007,6 +4027,7 @@ export default {
         this.ZDYMC = data.title
         this.DSGG = data.size
         this.DSKZ = data.weight
+        this.others_info = data.other_info
         this.warpInfo = data.warp_data
         this.weftInfo = data.weft_data
         this.warpInfo.additional_data = this.warpInfo.additional_data ? this.warpInfo.additional_data.split(',') : []
@@ -4511,7 +4532,7 @@ export default {
     submit (ifCaogao) {
       // 获取合并单元格信息
       let errorInput = false
-      if (ifCaogao === '草稿' && !this.chooseId && this.$router.params.id === 'noProId') {
+      if (ifCaogao === '草稿' && !this.chooseId && this.$route.params.id === 'noProId') {
         this.$message.error('请选择产品后保存草稿')
         return
       }
@@ -4964,7 +4985,8 @@ export default {
           GLFlag: this.GLFlag,
           desc: this.remarkPM,
           GLRepeat: this.GLRepeat
-        }
+        },
+        other_info: this.others_info
       }
       // this.loading = true
       craft.create(formData).then((res) => {
@@ -5078,6 +5100,7 @@ export default {
         }).then((res) => {
           this.productInfo = res.data.data
           this.colourArr = this.productInfo.color
+          this.ZDYMC = this.productInfo.name
           this.loading = false
         })
       }

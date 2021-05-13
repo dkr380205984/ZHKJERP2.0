@@ -433,6 +433,8 @@ export default {
         } else {
           return this.$toFixed(number)
         }
+      } else if (isNaN(num)) {
+        return ''
       } else {
         throw new TypeError('“' + num + '”is not a number')
       }

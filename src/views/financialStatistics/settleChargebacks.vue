@@ -211,9 +211,6 @@ export default {
     type (newVal) {
       this.changeRouter()
     },
-    page (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -263,7 +260,7 @@ export default {
           this.list = res.data.data.map(itemM => {
             return {
               ...itemM,
-              methods: '付款',
+              methods: '开票',
               order_code_str: itemM.order_code.map(itemM => itemM.order_code).join(';')
             }
           })

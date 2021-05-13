@@ -511,8 +511,8 @@ export default {
         })
       } else if (this.$route.params.oprType === '收款' || this.$route.params.oprType === '付款') {
         collection.log({
-          client_id: this.$route.params.clientId,
-          order_id: this.$route.query.orderId || ''
+          // client_id: this.$route.params.clientId
+          // order_id: this.$route.query.orderId || ''
         }).then((res) => {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
           this.updateInfo = this.$clone(this.info)

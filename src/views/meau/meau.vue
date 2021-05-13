@@ -77,7 +77,7 @@ export default {
           {
             name: '芯片读取出入库',
             id: 10,
-            path: '/receiveDispatch/batchXpList/page=1&&keyword=&&date=&&group_id=&&company_id=&&searchOrderOrProduct=',
+            path: '/receiveDispatch/batchXpList',
             icon: 'icon-xinpianguanli'
           },
           {
@@ -105,6 +105,12 @@ export default {
             id: 7,
             path: '/materialOrder/materialOrderList/page=1&&client_id=&&date=',
             icon: 'icon-wuliaoyudinggou'
+          },
+          {
+            name: '单证管理',
+            id: 21,
+            path: '/document/index/list',
+            icon: 'icon-danzheng'
           },
           {
             name: '报销单管理',

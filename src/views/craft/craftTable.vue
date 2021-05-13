@@ -1,8 +1,8 @@
 <template>
-  <div class='printHtml'
+  <div class='printHtml indexMain'
     id="craftTable"
     @click="showRMeau = false"
-    @click.right="showRMeau = false">
+    @click.right="handleClickRight">
     <div class="printTable">
       <div class="print_head">
         <div class="left">
@@ -45,7 +45,7 @@
           <span class="row_item w100 center">客户款号</span>
           <span class="row_item left">{{craftDetail.product_info.style_code || ''}}</span>
           <span class="row_item w100 center">其它信息</span>
-          <span class="row_item left"></span>
+          <span class="row_item left">{{craftDetail.other_info}}</span>
         </div>
         <div class="print_row">
           <span class="row_item w100 center">工艺单名称</span>
@@ -82,8 +82,7 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">经向排列</span>
-              <span class="row_item col"
-                @click.right="handleClickRight">
+              <span class="row_item col">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -251,8 +250,7 @@
                   <span class="row_item w130 center noBorder">穿综法循环：</span>
                   <span class="row_item left">{{craftDetail.draft_method|filterThroughMethod}}</span>
                 </span>
-                <span class="print_row maxHeight"
-                  @click.right="handleClickRight($event,2)">
+                <span class="print_row maxHeight">
                   <template v-for="(itemOut,indexOut) in craftDetail.draft_method.GLShow">
                     <span class="row_item noBorder center WBXHSIGN"
                       v-for="(item,index) in itemOut"
@@ -283,8 +281,7 @@
                 </span>
               </span>
               <span class="row_item center"
-                v-else
-                @click.right="handleClickRight($event,2)">见附件</span>
+                v-else>见附件</span>
             </span>
           </span>
         </div>
@@ -350,8 +347,7 @@
             </span>
             <span class="print_row maxHeight">
               <span class="col_title">纬向排列</span>
-              <span class="row_item col"
-                @click.right="handleClickRight">
+              <span class="row_item col">
                 <template v-if="warp_data.length_is < 17 && weft_data.length_is < 17  && !warp_data.back_status && !weft_data.back_status">
                   <span class="print_row h31 noBorder">
                     <span class="row_item_span"
@@ -462,8 +458,7 @@
         </div>
         <!-- 配色 -->
         <div class="print_row h261"
-          v-if="colourInfoType === '1'"
-          @click.right="handleClickRight($event,3)">
+          v-if="colourInfoType === '1'">
           <span class="col_title">配色工艺</span>
           <span class="row_item col"
             v-if="zhujia_info.length < 6 && color_data.length < 4">
@@ -551,8 +546,7 @@
             v-else>见附件</span>
         </div>
         <div class="print_row h261"
-          v-else-if="colourInfoType === '2'"
-          @click.right="handleClickRight($event,3)">
+          v-else-if="colourInfoType === '2'">
           <span class="col_title">配色工艺</span>
           <span class="row_item col"
             v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) <= 10 && color_data.length < 4">
@@ -727,8 +721,7 @@
             v-else>见附件</span>
         </div>
         <div class="print_row h261"
-          v-else-if="colourInfoType === '3'"
-          @click.right="handleClickRight($event,3)">
+          v-else-if="colourInfoType === '3'">
           <span class="col_title">配色工艺</span>
           <span class="row_item col"
             v-if="(zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) <= 3 && color_data.length < 4">
@@ -916,8 +909,7 @@
         <span class="label">经向排列-正：</span>
         <span class="print_body"
           v-for="(items,indexs) in Math.ceil(warp_data.warp_rank[0].length / 16)"
-          :key="indexs"
-          @click.right="handleClickRight">
+          :key="indexs">
           <span class="print_row h31 noBorder">
             <span class="row_item_span"
               v-for="(item,index) in splitData(warp_data.warp_rank[0],indexs)"
@@ -1039,8 +1031,7 @@
         <span class="label">经向排列-反：</span>
         <span class="print_body"
           v-for="(items,indexs) in Math.ceil(warp_data.warp_rank_back[0].length / 16)"
-          :key="indexs"
-          @click.right="handleClickRight">
+          :key="indexs">
           <span class="print_row h31 noBorder">
             <span class="row_item_span"
               v-for="(item,index) in splitData(warp_data.warp_rank_back[0],indexs)"
@@ -1161,8 +1152,7 @@
         <span class="label">纬向排列-正：</span>
         <span class="print_body"
           v-for="(items,indexs) in Math.ceil(weft_data.weft_rank[0].length / 16)"
-          :key="indexs"
-          @click.right="handleClickRight">
+          :key="indexs">
           <span class="print_row h31 noBorder">
             <span class="row_item_span"
               v-for="(item,index) in splitData(weft_data.weft_rank[0],indexs)"
@@ -1284,8 +1274,7 @@
         <span class="label">纬向排列-反：</span>
         <span class="print_body"
           v-for="(items,indexs) in Math.ceil(weft_data.weft_rank_back[0].length / 16)"
-          :key="indexs"
-          @click.right="handleClickRight">
+          :key="indexs">
           <span class="print_row h31 noBorder">
             <span class="row_item_span"
               v-for="(item,index) in splitData(weft_data.weft_rank_back[0],indexs)"
@@ -1407,8 +1396,7 @@
     <template v-if="colourInfoType === '1'">
       <div class="printTable outTable"
         style="break-inside: avoid;"
-        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || zhujia_info.length >= 6 || color_data.length >= 4"
-        @click.right="handleClickRight($event,3)">
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || zhujia_info.length >= 6 || color_data.length >= 4">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}
@@ -1509,8 +1497,7 @@
     <template v-else-if="colourInfoType === '2'">
       <div class="printTable outTable"
         style="break-inside: avoid;"
-        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4"
-        @click.right="handleClickRight($event,3)">
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 10 || color_data.length >= 4">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}
@@ -1980,8 +1967,7 @@
     <template v-else-if="colourInfoType === '3'">
       <div class="printTable outTable"
         style="break-inside: avoid;"
-        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 3 || color_data.length >= 4"
-        @click.right="handleClickRight($event,3)">
+        v-if="warp_data.length_is >= 17 || weft_data.length_is >= 17  || warp_data.back_status || weft_data.back_status || (zhujiaInfoCom.warp.length + zhujiaInfoCom.weft.length) > 3 || color_data.length >= 4">
         <div class="outItem">
           <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
           {{craftDetail.product_info.product_code}}
@@ -2385,7 +2371,6 @@
     <!-- 穿综法超出时 -->
     <div class="printTable outTable"
       style="break-inside: avoid;"
-      @click.right="handleClickRight($event,2)"
       v-if="(WBL || 5) < craftDetail.draft_method.GLShow.map(itemG=>itemG.length).reduce((total,current)=>total+current,0)">
       <div class="outItem">
         <span class="label">{{$route.params.type==='1'?'产':'样'}}品编号：</span>
@@ -2393,7 +2378,7 @@
       </div>
       <div class="outItem">
         <span class="label">穿综法循环：</span>
-        {{craftDetail.draft_method|filterThroughMethod}}
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{craftDetail.draft_method|filterThroughMethod}}</span>
       </div>
       <div class="outItem"
         v-for="(items,indexs) in craftDetail.draft_method.GLShow"
@@ -2436,23 +2421,25 @@
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">穿综备注：</span>
-        {{craftDetail.draft_method.desc}}
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{craftDetail.draft_method.desc}}</span>
       </div>
       <div class="outItem"
         style="word-break: break-all;">
         <span class="label">纹版备注：</span>
-        {{weft_data.contract_ratio}}
+        <span :style="`font-size:${FONTSIZE}px;line-height: 1em;`">{{weft_data.contract_ratio}}</span>
       </div>
     </div>
     <div class="setting_sign_style"
       v-if="showRMeau"
       :style="`left:${X_position || 0}px;top:${Y_position}px`"
-      @click="noCloseRMeau">
+      @click.stop>
       <div class="setting_item"
         @click="windowMethod(1)">刷新</div>
       <div class="setting_item"
         @click="windowMethod(2)">打印</div>
-      <template v-if="showRMeau === 1">
+      <div class="setting_item"
+        @click="windowMethod(3)">打印设置</div>
+      <!-- <template v-if="showRMeau === 1">
         <div class="setting_item"
           :class="{'checked':signType === '1'}"
           @click.stop="changeModeType('sign_type_craft_table_setting','signType','1')">模式一</div>
@@ -2473,6 +2460,15 @@
             :max="6"
             @change="changeWBL"></el-input-number>
         </div>
+        <div class="setting_item">
+          {{`字体大小(×${FONTSIZE})`}}
+          <el-input-number v-model="FONTSIZE"
+            size='small'
+            :step="2"
+            :min='18'
+            :max="36"
+            @change="changeFONTSIZE"></el-input-number>
+        </div>
       </template>
       <template v-else-if="showRMeau === 3">
         <div class="setting_item"
@@ -2484,7 +2480,108 @@
         <div class="setting_item"
           :class="{'checked':colourInfoType === '3'}"
           @click.stop="changeModeType('colour_info_craft_table_setting','colourInfoType','3')">模式三</div>
-      </template>
+      </template> -->
+    </div>
+    <div class="popup"
+      v-if="showPrintSettingFlag"
+      @click.right.stop.prevent>
+      <div class="main">
+        <div class="title">
+          <span class="text">打印设置</span>
+          <span class="el-icon-close"
+            @click="showPrintSettingFlag = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label"
+              style="width:8em;">表格遍数模式：</span>
+            <span class="info">
+              <el-radio-group v-model="signType"
+                @change="changeModeType('sign_type_craft_table_setting','signType',$event)"
+                style="display:flex;flex-direction:column;height:60px;justify-content:space-between">
+                <el-radio label="1">
+                  <span style="width:150px;display:inline-flex;align-items:center;position: relative;">
+                    <span style="margin-right:20px">模式一</span>
+                    <span class="sign style1 right"
+                      style="height:1.2em"></span>
+                    <span class="value_span"
+                      style="width:40px;order:1"></span>
+                    <span class="sign style1 left"
+                      style="height:1.2em"></span>
+                  </span>
+                </el-radio>
+                <el-radio label="2">
+                  <span style="width:150px;display:inline-flex;align-items:center;position: relative;">
+                    <span style="margin-right:20px">模式二</span>
+                    <span class="sign style2 right"
+                      style="height:1.2em"></span>
+                    <span class="value_span"
+                      style="width:40px;order:1"></span>
+                    <span class="sign style2 left"
+                      style="height:1.2em"></span>
+                  </span>
+                </el-radio>
+                <el-radio label="3">
+                  <span style="width:150px;display:inline-flex;align-items:center;position: relative;">
+                    <span style="margin-right:20px">模式三</span>
+                    <span class="sign style3 right"
+                      style="height:1.2em">
+                      <span class="auto_long_arrow right_to_left"></span>
+                    </span>
+                    <span class="value_span"
+                      style="width:40px;order:1"></span>
+                    <span class="sign style3 left"
+                      style="height:1.2em">
+                      <span class="auto_long_arrow left_to_right"></span>
+                    </span>
+                  </span>
+                </el-radio>
+              </el-radio-group>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label"
+              style="width:8em;">配色工艺排列：</span>
+            <span class="info">
+              <el-radio-group v-model="colourInfoType"
+                @change="changeModeType('colour_info_craft_table_setting','colourInfoType',$event)"
+                style="display:flex;flex-direction:column;height:60px;justify-content:space-between">
+                <el-radio label="1">按主夹排列 </el-radio>
+                <el-radio label="2">按经纬排列 </el-radio>
+                <el-radio label="3">按经纬排列，且不缩小字体 </el-radio>
+              </el-radio-group>
+            </span>
+          </div>
+          <div class="row">
+            <span class="label"
+              style="width:8em;">纹版图列数：</span>
+            <span class="info">
+              每行
+              <el-input-number v-model="WBL"
+                size='small'
+                :step="1"
+                :min='1'
+                :max="6"
+                @change="changeWBL"></el-input-number>
+              列
+            </span>
+          </div>
+          <div class="row">
+            <span class="label"
+              style="width:8em;">穿综法字体：</span>
+            <span class="info">
+              字号
+              <el-input-number v-model="FONTSIZE"
+                size='small'
+                :step="2"
+                :min='18'
+                :max="36"
+                @change="changeFONTSIZE"></el-input-number>
+              号
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -2544,10 +2641,12 @@ export default {
       // yarn_coefficient: [],
       letterArr: letterArr,
       showRMeau: false,
+      showPrintSettingFlag: false,
       X_position: 0,
       Y_position: 0,
       signType: window.localStorage.getItem('sign_type_craft_table_setting') || '1',
       WBL: window.localStorage.getItem('WBL_craft_table_setting') || 5,
+      FONTSIZE: window.localStorage.getItem('FONTSIZE_craft_table_setting') || 18,
       colourInfoType: window.localStorage.getItem('colour_info_craft_table_setting') || '1',
       zhujiaInfoCom: {
         warp: [],
@@ -2568,11 +2667,14 @@ export default {
     },
     windowMethod (type) {
       this.showRMeau = false
+      this.showPrintSetting = false
       window.requestAnimationFrame(() => {
         if (type === 1) {
           window.location.reload()
         } else if (type === 2) {
           window.print()
+        } else if (type === 3) {
+          this.showPrintSettingFlag = true
         }
       })
     },
@@ -2583,9 +2685,6 @@ export default {
       e.preventDefault()
       e.stopPropagation()
     },
-    noCloseRMeau (e) {
-      e.stopPropagation()
-    },
     changeModeType (key, index, e) {
       window.localStorage.setItem(key, e)
       this[index] = window.localStorage.getItem(key) || '1'
@@ -2593,6 +2692,9 @@ export default {
     },
     changeWBL (e) {
       window.localStorage.setItem('WBL_craft_table_setting', e)
+    },
+    changeFONTSIZE (e) {
+      window.localStorage.setItem('FONTSIZE_craft_table_setting', e)
     },
     // 给合并规则里添加value
     pushValue (item, key, index) {
@@ -3125,7 +3227,7 @@ export default {
           weft: this.colorWeight.weft.filter(itemF => itemF.number)
         }
         setTimeout(() => {
-          window.print()
+          // window.print()
         }, 1000)
       }
     })
@@ -3166,13 +3268,15 @@ export default {
       } else if (items.PMFlag === 'complex') {
         items.PM.forEach((item, key) => {
           str += (romanNum[key] || (key + 1))
+          str += `【${item.total}根`
           item.children.forEach((value, index) => {
-            str += ('【' + value.number + '根')
+            str += ('{' + value.number + '根')
             value.children.forEach((val, ind) => {
               str += '（' + val.value + '）' + (val.repeat && val.repeat !== 1 ? 'x' + val.repeat + '遍' : '') + (ind !== value.children.length - 1 ? '，' : '')
             })
-            str += ('】' + (item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : '') + (index !== item.children.length - 1 ? '。' : ''))
+            str += ('}' + (index !== item.children.length - 1 ? '+' : ''))
           })
+          str += `】${item.repeat && item.repeat !== 1 ? 'x' + item.repeat + '遍' : ''}`
         })
       }
       return str

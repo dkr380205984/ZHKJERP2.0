@@ -1164,23 +1164,24 @@ export default {
       })
     },
     goLog (item, type) {
-      if (type === 'yarn') {
-        this.searchYarnLog = item.material_name
-        this.getYarnLog(1)
-      } else if (type === 'material') {
-        this.searchMaterialLog = item.material_name
-        this.getMaterialLog(1)
-      } else if (type === 'pack') {
-        this.searchPackLog = item.material_name
-        this.getPackLog(1)
-      } else if (type === 'product') {
-        this.searchProductLog = item.product_code
-        this.getProductLog(1)
-      } else {
-        this.$message.error('出现未知错误，请尝试刷新页面')
-        return
-      }
-      document.getElementById(type).scrollIntoView(true)
+      this.$message.warning('暂未开放日志查询')
+      // return
+      // if (type === 'yarn') {
+      //   this.searchYarnLog = item.material_name
+      //   this.getYarnLog(1)
+      // } else if (type === 'material') {
+      //   this.searchMaterialLog = item.material_name
+      //   this.getMaterialLog(1)
+      // } else if (type === 'pack') {
+      //   this.searchPackLog = item.material_name
+      //   this.getPackLog(1)
+      // } else if (type === 'product') {
+      //   this.searchProductLog = item.product_code
+      //   this.getProductLog(1)
+      // } else {
+      //   this.$message.error('出现未知错误，请尝试刷新页面')
+      // }
+      // document.getElementById(type).scrollIntoView(true)
     }
   },
   created () {

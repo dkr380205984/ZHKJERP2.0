@@ -79,6 +79,16 @@
           </div>
         </div>
         <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{orderInfo.user_name}}</span>
+          </div>
+          <div class="colCtn">
+            <span class="label">备注信息：</span>
+            <span class="text">{{orderInfo.remark}}</span>
+          </div>
+        </div>
+        <div class="rowCtn">
           <div class="colCtn">
             <span class="label">文件信息：</span>
             <span class="text text-warp">
@@ -117,20 +127,19 @@
             </span>
           </div>
         </div>
-        <div class="rowCtn">
-          <div class="colCtn">
-            <span class="label">备注信息：</span>
-            <span class="text">{{orderInfo.remark}}</span>
-          </div>
-        </div>
       </div>
     </div>
     <zh-file-module :orderId='$route.params.id'
       title_has_border
       canChange />
     <div class="module">
-      <div class="titleCtn">
-        <span class="title hasBorder">发货信息</span>
+      <div class="titleCtn"
+        style="display:flex;justify-content: space-between;align-items: center;">
+        <span>
+          <span class="title hasBorder">发货信息</span>
+        </span>
+        <span class="btn btnBlue"
+          @click="showHistoryProg()">查看历史进度</span>
       </div>
       <div class="detailCtn">
         <div class="rowCtn">
@@ -1639,6 +1648,11 @@
               <div class="info text">{{priceInfo.price_name||'无'}}</div>
             </div>
             <div class="row">
+              <div class="label">报价总价：</div>
+              <div class="info text"
+                style="color:#1A95FF">{{priceInfo.price||'无'}}</div>
+            </div>
+            <div class="row">
               <div class="label">外贸公司：</div>
               <div class="info text">{{priceInfo.client_name}}</div>
             </div>
@@ -1686,12 +1700,54 @@
         </div>
       </div>
     </div>
+    <div class="popup"
+      v-if="showHistoryProgFlag">
+      <div class="main"
+        style="width:800px">
+        <div class="title">
+          <span class="text">查看历史进度</span>
+          <span class="el-icon-close"
+            @click="showHistoryProgFlag = false"></span>
+        </div>
+        <div class="content"
+          style="max-height:500px">
+          <div class="block"
+            v-for="(itemLog,indexLog) in historyProgData || []"
+            :key="indexLog">
+            <div class="block_item">
+              <span class="block_label">订单批次：</span>
+              <span class="block_text">{{`第${itemLog.number}批`}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">进度描述：</span>
+              <span class="block_text">{{itemLog.description || '暂无'}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">创建时间：</span>
+              <span class="block_text">{{itemLog.created_at}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">创建人：</span>
+              <span class="block_text">{{itemLog.user.name}}</span>
+            </div>
+            <div class="block_item">
+              <span class="block_label">通知人员:</span>
+              <span class="block_text">{{itemLog.users|filterUsers}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnBlue"
+            @click="showHistoryProgFlag = false">确定</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { moneyArr, isHasPermissions } from '@/assets/js/dictionary.js'
-import { price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import { orderBatch, price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -1831,6 +1887,7 @@ export default {
         price_code: '待选择',
         price_name: '待选择',
         client_name: '待选择',
+        price: '待选择',
         imgArr: []
       },
       nativePriceInfo: {}, // 报价单重新提交一份给后台
@@ -1868,10 +1925,30 @@ export default {
           label: '成品确认',
           status: false
         }
-      ]
+      ],
+      showHistoryProgFlag: false,
+      historyProgData: null
     }
   },
   methods: {
+    showHistoryProg () {
+      if (!this.historyProgData || this.historyProgData.length === 0) {
+        orderBatch.changeProgLog({
+          order_id: this.$route.params.id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.historyProgData = res.data.data
+            if (res.data.data.length === 0) {
+              this.$message.warning('暂无历史进度')
+              return
+            }
+            this.showHistoryProgFlag = true
+          }
+        })
+      } else {
+        this.showHistoryProgFlag = true
+      }
+    },
     isHasPermissions,
     // 取消绑定初始化数据
     canclePrice () {
@@ -2121,6 +2198,7 @@ export default {
           price_name: data.name,
           price_code: data.quotation_code,
           client_name: data.client_name,
+          price: data.total_price,
           imgArr: data.file_url || [require('@/assets/image/index/noPic.jpg')]
         }
         // 保存一份原始报价单信息
@@ -3555,6 +3633,9 @@ export default {
       } else {
         return '￥'
       }
+    },
+    filterUsers (users) {
+      return users.map(itemM => itemM.name).join('，') || '无'
     }
   }
 }

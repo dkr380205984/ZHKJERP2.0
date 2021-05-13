@@ -276,7 +276,6 @@ export default {
                   this.submitXp()
                 }, 10000)
               }
-              this.xpFlag = true
               if (this.findBuffer(resultdata.CardNo)) {
                 clearTimeout(this.timer)
                 this.timer = null
@@ -289,9 +288,13 @@ export default {
       })
     },
     findBuffer (CardNo) {
+      console.log(CardNo)
       let flag = false
       let cardNoArr = CardNo.trim().split(/\s+\n/).filter((item) => item && item.length >= 16 && item.substring(0, 8) === 'ABABABAB').map((item) => Number(item.substring(8)))
-      console.log(cardNoArr)
+      // console.log(cardNoArr)
+      if (cardNoArr.length > 0) { // 判断是否扫到本系统的芯片
+        this.xpFlag = true
+      }
       cardNoArr.forEach((itemChild) => {
         if (this.dataBuffer.indexOf(itemChild) === -1) {
           flag = true

@@ -183,8 +183,125 @@ const downloadOrderProductionExcel = ({ data, titleInfo }, excelName) => {
   aLink.download = (excelName ? excelName + '-' : '') + new Date().getTime() + '.xls'
   aLink.click()
 }
+class VerificationCode {
+  // 下一行有一个报错constructor前需要有个空格 但自动调整代码格式会去除 故关闭下一行eslint验证
+  // eslint-disable-next-line
+  constructor({ W, H }) {
+    this.canvas = ''
+    this.W = W
+    this.H = H
+    this.createdCanvas(W, H)
+  }
+  static code = Math.floor(Math.random() * 1679615).toString(36)
+  updatedCode () {
+    VerificationCode.code = Math.floor(Math.random() * 1679615).toString(36)
+    this.createdCanvas(this.W, this.H)
+  }
+  createdCanvas (W, H) {
+    const codeCanvas = document.createElement('canvas')
+    codeCanvas.width = W
+    codeCanvas.height = H
+    const ctx = codeCanvas.getContext('2d')
+    ctx.fillStyle = '#ccc'
+    ctx.fillRect(0, 0, W, H)
+    ctx.fillStyle = '#F40'
+    ctx.textAlign = 'center'
+    ctx.font = '46px Roboto Slab'
+    VerificationCode.code.split('').forEach((item, index) => {
+      ctx.setTransform(1, -0.12, 0.2, 1, 0, 12)
+      ctx.fillText(item, W / 4 * index + W / 8, H / 2 + 20)
+    })
+    this.canvas = codeCanvas.toDataURL()
+  }
+  checkCode (code) {
+    if (code.toLocaleLowerCase() === VerificationCode.code.toLocaleLowerCase()) {
+      return true
+    }
+    return false
+  }
+}
+/**
+ *
+ * @param {number} num //转换英文的金额
+ * @param {boolean} moneyType // 转换金额的类型 true 为人民币 false 为美元
+ * @returns {String}
+ */
+const numberToEnglish = (num, moneyType) => {
+  let arr1 = ['', ' thousand', ' million', ' billion']
+  let arr2 = ['zero', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+  let arr3 = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+  let arr4 = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+  const englist = (num) => {
+    let strRet = ''
+    if ((num.length === 3) && (num.substr(0, 3) !== '000')) {
+      if ((num.substr(0, 1) !== '0')) {
+        strRet += arr3[num.substr(0, 1)] + ' hundred'
+        if (num.substr(1, 2) !== '00') {
+          strRet += ' and '
+        }
+      }
+      num = num.substring(1)
+    }
+    if ((num.length === 2)) {
+      if ((num.substr(0, 1) === '0')) {
+        num = num.substring(1)
+      } else if ((num.substr(0, 1) === '1')) {
+        strRet += arr4[num.substr(1, 2)]
+      } else {
+        strRet += arr2[num.substr(0, 1)]
+        if (num.substr(1, 1) !== '0') strRet += '-'
+        num = num.substring(1)
+      }
+    }
+    if ((num.length === 1) && (num.substr(0, 1) !== '0')) {
+      strRet += arr3[num.substr(0, 1)]
+    }
+    return strRet
+  }
+  const translate = (num) => {
+    let len = num.length
+    let j = 0
+    let strRet = ''
+    let cols = Math.ceil(len / 3)
+    let first = len - cols * 3
+    for (let i = first; i < len; i += 3) {
+      ++j
+      let num3 = ''
+      if (i >= 0) {
+        num3 = num.substring(i, i + 3)
+      } else {
+        num3 = num.substring(0, first + 3)
+      }
+      let strEng = englist(num3)
+      if (strEng !== '') {
+        if (strRet !== '') {
+          strRet += ','
+        }
+        strRet += englist(num3) + arr1[cols - j]
+      }
+    }
+    return strRet
+  }
+  const numArr = String(num).split('.')
+  if (numArr.length > 2) {
+    return 'NAN'
+  } else if (numArr.length === 1) {
+    return translate(numArr[0])
+  } else if (numArr.length === 2 && +numArr[0] > 0) {
+    return `${translate(numArr[0])} and ${!moneyType ? 'cents' : ''} ${translate(numArr[1])}`
+  } else if (numArr.length === 2 && +numArr[0] === 0) {
+    return moneyType ? `zero point ${translate(numArr[1])}` : `${translate(numArr[1])} cents`
+  }
+}
+// element-ui date 组件设置禁用状态
+const disabledDate = (date) => {
+  return new Date().getTime() < new Date(date).getTime()
+}
 export {
   getHash,
   downloadExcel,
-  downloadOrderProductionExcel
+  downloadOrderProductionExcel,
+  VerificationCode,
+  numberToEnglish,
+  disabledDate
 }

@@ -343,6 +343,7 @@ export default {
       for (let i = 0, len = this.files.length; i < len; i++) { this.read(this.files[i]) }
     },
     elInFile (f, fs) {
+      console.log(f)
       this.read(f.raw)
     },
     read (f) {

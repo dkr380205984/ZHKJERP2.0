@@ -385,9 +385,15 @@
                     <div class="trow"
                       v-for="(itemChild,indexChild) in item.childrenMergeInfo"
                       :key="indexChild">
-                      <div class="tcolumn">
-                        <span>{{itemChild.product_info.product_code}}</span>
-                        <span>{{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}</span>
+                      <div class="tcolumn"
+                        style="flex-direction:row;align-items:center;justify-content:flex-start">
+                        <el-checkbox style="margin-right:4px"
+                          v-model="itemChild.checked" />
+                        <span>
+                          {{itemChild.product_info.product_code}}
+                          <br />
+                          {{itemChild.product_info.category_name?itemChild.product_info.category_name+'/'+ itemChild.product_info.type_name+'/'+ itemChild.product_info.style_name:itemChild.product_info.product_title}}
+                        </span>
                       </div>
                       <div class="tcolumn">{{itemChild.size_name}}/{{itemChild.color_name}}</div>
                       <div class="tcolumn">{{itemChild.type}}</div>
@@ -406,8 +412,11 @@
                     style="flex:0.8">
                     <!-- v-if="havePartMaterial(item.childrenMergeInfo)" -->
                     <span class="btn noBorder"
-                      style="padding:0;margin:0"
-                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=2&clientId=' + item.client_id)">打印</span>
+                      style="padding:0;margin:0;height:1.4em"
+                      @click="$openUrl('/weaveTable/' + $route.params.id + '/' + $route.params.orderType + '?type=2&clientId=' + item.client_id)">打印全部</span>
+                    <span class="btn noBorder"
+                      style="padding:0;margin:0;height:1.4em"
+                      @click="printChecked(item)">打印勾选</span>
                     <!-- <span class="btn noBorder"
                       v-else
                       style="padding:0;margin:0;color:rgba(0,0,0,0.4);cursor: not-allowed;">无辅料信息</span> -->
@@ -538,6 +547,7 @@
                       <div class="tcolumn">物料名称</div>
                       <div class="tcolumn">物料颜色</div>
                       <div class="tcolumn">物料数量</div>
+                      <div class="tcolumn">操作</div>
                     </div>
                   </div>
                 </div>
@@ -556,6 +566,10 @@
                       <div class="tcolumn">{{itemMat.material_attribute}}</div>
                       <div class="tcolumn"
                         style="color:#01B48C">{{$toFixed(itemMat.material_type===1 ? itemMat.weight/1000 : itemMat.weight)}}{{itemMat.material_type===1?'kg':itemMat.unit}}</div>
+                      <div class="tcolumn">
+                        <div style="color:#F5222D;cursor:pointer"
+                          @click="deleteMatOut(itemMat.id)">删除</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -769,7 +783,7 @@
                       </div>
                       <div class="tcolumn"
                         style="flex-direction: row;align-items: center;flex:0.5">
-                        <div style="color:#1a95ff;cursor:pointer;"
+                        <div style="color:#1a95ff;cursor:pointer;margin-right:8px"
                           v-if="indexChild===0"
                           @click="item.material_info.push({
                             material_type: 2,
@@ -779,7 +793,7 @@
                             total_weight: ''
                           })">增加</div>
                         <div style="color:#F5222D;cursor:pointer"
-                          v-if="indexChild>0"
+                          v-if="indexChild>=0"
                           @click="deleteMat(item,itemChild,indexChild)">删除</div>
                       </div>
                     </div>
@@ -955,6 +969,34 @@ export default {
     }
   },
   methods: {
+    deleteMatOut (id) {
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        processing.matDelete({
+          id
+        }).then((res) => {
+          if (res.data.status !== false) {
+            this.$message.success('删除成功')
+            this.init()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    printChecked (item) {
+      if (item.childrenMergeInfo.some(itemS => itemS.checked)) {
+        this.$openUrl(`/weaveTable/${this.$route.params.id}/${this.$route.params.orderType}?type=2&clientId=${item.client_id}&logId=${item.childrenMergeInfo.filter(itemF => itemF.checked).map(itemM => itemM.id)}`)
+      } else {
+        this.$message.warning('请先勾选')
+      }
+    },
     filterDate (date) {
       return new Date(this.$getTime(date)).getTime() < new Date(this.$getTime()).getTime()
     },
@@ -980,7 +1022,7 @@ export default {
         if (res.data.status !== false) {
           this.$message.success('修改成功')
           this.showChangeRealityProcessPopup = false
-          this.$winReload()
+          this.init()
         }
       })
     },
@@ -1016,11 +1058,14 @@ export default {
         processing.matDelete({
           id: itemChild.id
         }).then((res) => {
-          item.material_info.splice(item, index)
+          if (res.data.status !== false) {
+            item.material_info.splice(item, index)
+          }
         })
       } else {
         item.material_info.splice(item, index)
       }
+      this.$forceUpdate()
     },
     searchClient (node, query) {
       let flag = true
@@ -1453,7 +1498,7 @@ export default {
                 type: 'success',
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
-              this.$winReload()
+              this.init()
             }
           })
         } else {
@@ -1466,7 +1511,7 @@ export default {
                 message: '删除成功!请刷新页面后查看分配信息变化'
               })
               this.process_log.splice(index, 1)
-              this.$winReload()
+              this.init()
             }
           })
         }

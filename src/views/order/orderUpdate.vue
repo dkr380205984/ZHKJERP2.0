@@ -153,6 +153,9 @@
               <el-date-picker v-model="order_time"
                 value-format="yyyy-MM-dd"
                 type="date"
+                :picker-options="{
+                  disabledDate
+                }"
                 placeholder="请选择下单日期">
               </el-date-picker>
             </span>
@@ -713,6 +716,7 @@
 </template>
 
 <script>
+import { disabledDate } from '@/assets/js/common.js'
 import { chinaNum, moneyArr, companyType } from '@/assets/js/dictionary.js'
 import { product, client, group, order, getToken, warnSetting, orderType } from '@/assets/js/api.js'
 export default {
@@ -791,6 +795,7 @@ export default {
     }
   },
   methods: {
+    disabledDate,
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -1222,6 +1227,7 @@ export default {
         order_time: this.order_time,
         order_info: this.batchDate.map((item, index) => {
           return {
+            id: item.id || '',
             batch_info: item.batch_info.map(itemPro => {
               return {
                 product_id: itemPro.id,
@@ -1344,6 +1350,7 @@ export default {
           return items
         }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name' }, { name: 'color_name' }] } })
         orderBatch.push({
+          batch_id: itemBatch.id,
           time: itemBatch.delivery_time,
           remark: itemBatch.desc,
           name: itemBatch.batch_title,
@@ -1383,6 +1390,7 @@ export default {
       this.checkedProList = arr
       this.batchDate = orderBatch.map(itemBatch => {
         return {
+          id: itemBatch.batch_id,
           time: itemBatch.time,
           remark: itemBatch.remark,
           name: itemBatch.name,
@@ -1484,7 +1492,6 @@ export default {
       }
     },
     flower_id (newVal) {
-      console.log(newVal)
       this.pages = 1
       this.getList()
     },

@@ -44,6 +44,13 @@
       flex: 1;
       padding: 20px;
       overflow: auto;
+      .btnCtn{
+        display: flex;
+        justify-content: flex-end;
+        .addBtn{
+          margin-left: 16px;
+        }
+      }
       .addBtn{
         line-height: 32px;
         width: 6em;
@@ -81,6 +88,14 @@
           }
           .blue{
             color: @blue;
+            cursor: pointer;
+          }
+          .orange{
+            color: @orange;
+            cursor: pointer;
+          }
+          .green{
+            color: @green;
             cursor: pointer;
           }
           .border{
@@ -255,6 +270,42 @@
             cursor: pointer;
           }
         }
+      }
+    }
+  }
+  .documentSetting{
+    .row{
+      flex-direction: column;
+      margin: 16px 0;
+      &:first-child{
+        margin-top: 0;
+      }
+      .label{
+        width: 100%;
+      }
+      .content{
+        margin-top: 8px;
+        max-width: 600px;
+      }
+    }
+    .companySignatureUpload{
+      width: 360px;
+      height: 180px;
+      // border: 1px dashed #d9d9d9;
+      border-radius: 6px;cursor: pointer;
+      .showImg{
+        display: block;
+        width: 360px;
+        height: 180px;
+        object-fit: contain;
+      }
+      .addIcon{
+        font-size: 28px;
+        color: #8c939d;
+        width: 360px;
+        height: 180px;
+        line-height: 180px;
+        text-align: center;
       }
     }
   }

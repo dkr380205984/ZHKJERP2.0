@@ -102,10 +102,24 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
+            <span class="label">工艺单编号：</span>
+            <span class="text">{{productInfo.craft_code}}</span>
+          </div>
+          <div class="colCtn">
             <span class="label">配件名称：</span>
             <span class="text">{{productInfo.title}}</span>
           </div>
+          <div class="colCtn flex3">
+            <span class="label">创建人：</span>
+            <span class="text">{{productInfo.user_name}}</span>
+          </div>
         </div>
+        <!-- <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">创建时间：</span>
+            <span class="text">{{$getTIme(productInfo.create_time)}}</span>
+          </div>
+        </div> -->
       </div>
     </div>
     <div class="module"
@@ -671,6 +685,12 @@
         </div>
         <div class="rowCtn">
           <div class="colCtn">
+            <div class="label">其它信息：</div>
+            <div class="text">{{others_info?others_info:'无'}}</div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
             <div class="label">备注信息：</div>
             <div class="text"
               :class="{'blue':desc}">{{desc?desc:'无'}}</div>
@@ -1144,7 +1164,8 @@ export default {
       desc: '',
       ZDYMC: '',
       DSGG: '',
-      DSKZ: ''
+      DSKZ: '',
+      others_info: ''
     }
   },
   filters: {
@@ -1720,6 +1741,7 @@ export default {
       this.ZDYMC = data.title
       this.DSGG = data.size
       this.DSKZ = data.weight
+      this.others_info = data.other_info
       this.productInfo = data.product_info
       this.productInfo.craft_code = data.craft_code
       this.productInfo.user_name = data.user_name

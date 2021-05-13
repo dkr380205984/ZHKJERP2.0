@@ -244,8 +244,7 @@
             :page-size="10"
             layout="prev, pager, next"
             :total="total"
-            :current-page.sync="pages"
-            @current-change="getClientList">
+            :current-page.sync="pages">
           </el-pagination>
         </div>
       </div>

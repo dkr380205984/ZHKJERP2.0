@@ -2877,9 +2877,6 @@ export default {
       this.openHiddleFilter = false
       this.changeRouter(1)
     },
-    page (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -4275,7 +4272,7 @@ export default {
         matOrder: this.$getClientOptions(this.clientList, companyType, { typeScope: [3, 4] }),
         matProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [9, 12] }),
         matStock: this.$getClientOptions(this.clientList, companyType, { hasFirstType: true, typeScope: [9, 28] }),
-        proWeave: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14] }),
+        proWeave: this.$getClientOptions(this.clientList, companyType, { typeScope: [13, 14, 39] }),
         proProcess: this.$getClientOptions(this.clientList, companyType, { typeScope: [15, 28] }),
         matOther: this.$getClientOptions(this.clientList, companyType, { typeScope: [7, 8] }),
         finishedProcess: [{

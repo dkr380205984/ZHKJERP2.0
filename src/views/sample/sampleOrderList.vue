@@ -103,8 +103,19 @@
                 :filter-method='searchClient'
                 clearable
                 :props="{ expandTrigger: 'hover' }"
-                @change="changeRouter(1)"
+                @change="setContactsData"
                 filterable></el-cascader>
+              <el-select v-model="contacts"
+                class="filter_item"
+                @change="changeRouter(1)"
+                clearable
+                placeholder="筛选联系人">
+                <el-option v-for="(item,index) in contactsArr"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
               <el-select v-model="group_id"
                 class="filter_item"
                 @change="changeRouter(1)"
@@ -372,6 +383,10 @@
             label="交货时间"
             width="120">
           </el-table-column>
+          <el-table-column prop="client_contacts"
+            label="联系人"
+            width="120">
+          </el-table-column>
           <el-table-column label="操作"
             fixed="right"
             width="130">
@@ -390,7 +405,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="pages"
-            @current-change="getOrderList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>
@@ -598,13 +613,12 @@ export default {
       }, {
         name: '已取消',
         id: '3003'
-      }]
+      }],
+      contacts: '',
+      contactsArr: []
     }
   },
   watch: {
-    pages (newVal) {
-      this.changeRouter(newVal)
-    },
     $route (newVal) {
       // 点击返回的时候更新下筛选条件
       this.getFilters()
@@ -612,6 +626,10 @@ export default {
     }
   },
   methods: {
+    setContactsData () {
+      this.contacts = ''
+      this.changeRouter(1)
+    },
     searchClient (node, query) {
       let flag = true
       if (query) {
@@ -647,11 +665,21 @@ export default {
       this.has_materialPlan = params.has_materialPlan
       this.group_id = params.group_id ? Number(params.group_id) : ''
       this.company_id = params.company_id.split(',')
+      if (this.company_id) {
+        const finded = this.companyArr.find(itemF => itemF.value === this.company_id[0]) && this.companyArr.find(itemF => itemF.value === this.company_id[0]).children.find(itemF => itemF.value === this.company_id[1])
+        console.log(finded)
+        if (finded) {
+          this.contactsArr = finded.contacts
+        } else {
+          this.contactsArr = []
+        }
+        this.contacts = +params.contacts || ''
+      }
       this.state = params.state
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/sample/sampleOrderList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_material=' + this.has_material + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
+      this.$router.push('/sample/sampleOrderList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&has_materialPlan=' + this.has_materialPlan + '&&has_material=' + this.has_material + '&&has_materialStock=' + this.has_materialStock + '&&has_weave=' + this.has_weave + '&&group_id=' + this.group_id + '&&company_id=' + this.company_id + '&&contacts=' + this.contacts + '&&state=' + this.state + '&&searchOrderOrProduct=' + this.searchOrderOrProduct)
     },
     reset () {
       this.$router.push('/sample/sampleOrderList/page=1&&keyword=&&date=&&has_material=&&has_materialPlan=&&has_materialStock=&&has_weave=&&group_id=&&company_id=&&state=&&searchOrderOrProduct=')
@@ -671,7 +699,8 @@ export default {
         status_material_plan: this.has_materialPlan,
         status_material_order: this.has_material,
         status_weave: this.has_weave,
-        status_material_push: this.has_materialStock
+        status_material_push: this.has_materialStock,
+        contacts: this.contacts || null
       }).then(res => {
         this.list = res.data.data.map(item => {
           item.nowIndex = 0
@@ -767,9 +796,20 @@ export default {
   created () {
     this.getFilters()
     this.getOrderList()
-    Promise.all([group.list(), client.list()]).then((res) => {
+    Promise.all([
+      group.list(),
+      client.list()
+    ]).then((res) => {
       this.groupArr = res[0].data.data
       this.companyArr = this.$getClientOptions(res[1].data.data, companyType, { type: [1, 2] })
+      if (this.company_id) {
+        const finded = this.companyArr.find(itemF => itemF.value === this.company_id[0]) && this.companyArr.find(itemF => itemF.value === this.company_id[0]).children.find(itemF => itemF.value === this.company_id[1])
+        if (finded) {
+          this.contactsArr = finded.contacts
+        } else {
+          this.contactsArr = []
+        }
+      }
     })
     let today = new Date()
     let todayMore14 = [this.$getTime(today)]

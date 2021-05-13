@@ -218,7 +218,160 @@
             style="margin-right:0">
             <div style="padding:16px 32px;width:1272px;background:#FAFAFA;box-sizing:border-box"
               v-if="formData.tableData.length > 0">
-              <el-table :data="formData.tableData"
+              <div class="rowScrollTable">
+                <div class="tb_fixed">
+                  <div class="tb_column">
+                    <div class="header">产品名称</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-select v-model="item.product_id"
+                        @change="selectProduct($event,index)"
+                        placeholder="选择产品">
+                        <el-option v-for="itemI in selectData.productArr"
+                          :key="itemI.product_id"
+                          :value="itemI.product_id"
+                          :label="itemI.product_code + '('+itemI.category_info.category_name+'/'+ itemI.category_info.type_name+'/'+ itemI.category_info.style_name+')'"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">尺码颜色</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-select v-model="item.colorSize"
+                        no-data-text="请先选择产品"
+                        placeholder="选择尺码颜色">
+                        <el-option v-for="itemI in item.colorSizeArr"
+                          :key="itemI.id"
+                          :value="itemI.id"
+                          :label="itemI.name"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                </div>
+                <div class="tb_box"
+                  @scroll="scrollEvent"
+                  style='padding-left:400px'>
+                  <div class="tb_column">
+                    <div class="header">织造分配单位</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-cascader v-model="item.weave_client_id"
+                        placeholder="选择织造单位"
+                        :options="selectData.weaveClient">
+                      </el-cascader>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">数量</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <zh-input :keyBoard="keyBoard"
+                        v-model="item.number"
+                        placeholder="数量"></zh-input>
+
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">捆数</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <zh-input :keyBoard="keyBoard"
+                        v-model="item.count"
+                        placeholder="捆数"></zh-input>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">次品数量</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <zh-input :keyBoard="keyBoard"
+                        v-model="item.cpNum"
+                        placeholder="次品数量"></zh-input>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">次品原因</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-select v-model="item.reason"
+                        placeholder="选择次品原因"
+                        collapse-tags
+                        multiple>
+                        <el-option v-for="(itemI,index) in selectData.defectiveType"
+                          :key="index"
+                          :label="itemI"
+                          :value="itemI"></el-option>
+                      </el-select>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">出库单位</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-cascader v-model="item.semi_client_id"
+                        placeholder="选择出库单位"
+                        collapse-tags
+                        :disabled="item.back_client_id.length>0"
+                        :props="{multiple:true}"
+                        :options="selectData.semiClient">
+                      </el-cascader>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">回库单位</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-cascader v-model="item.back_client_id"
+                        placeholder="选择回库单位"
+                        collapse-tags
+                        :disabled="item.semi_client_id.length>0"
+                        :props="{multiple:true}"
+                        :options="selectData.backClient">
+                      </el-cascader>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">备注信息</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-input v-model="item.desc"
+                        placeholder="输入备注"></el-input>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">绑定芯片</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <el-switch v-model="item.is_xp"
+                        active-text="绑定"
+                        inactive-text="不绑定">
+                      </el-switch>
+                    </div>
+                  </div>
+                  <div class="tb_column w100">
+                    <div class="header">操作</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <div style="cursor:pointer;color:#F5222D"
+                        @click="formData.tableData.splice(index,1)">删除</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <el-table :data="formData.tableData"
                 style="width:100%">
                 <el-table-column fixed
                   label="产品名称"
@@ -342,7 +495,7 @@
                       @click="formData.tableData.splice(scope.$index,1)">删除</div>
                   </template>
                 </el-table-column>
-              </el-table>
+              </el-table> -->
             </div>
             <div class="addRows"
               style="margin:0 32px">
@@ -536,6 +689,14 @@
                     style="color:#ccc">暂无</span>
                 </template>
               </el-table-column>
+              <el-table-column label="操作时间"
+                prop="updated_at"
+                width="200">
+              </el-table-column>
+              <el-table-column label="操作人"
+                prop="user_name"
+                width="200">
+              </el-table-column>
               <el-table-column label="备注信息"
                 width="200">
                 <template slot-scope="scope">
@@ -632,37 +793,41 @@
           <div class="row">
             <span class="label">每捆数量：</span>
             <span class="info">
-              <el-input style="height:32px;"
+              <zh-input style="height:32px;"
+                :keyBoard="keyBoard"
                 v-model="formData.batchData.number"
-                placeholder="每捆数量"></el-input>
+                placeholder="每捆数量"></zh-input>
             </span>
           </div>
           <div class="row">
             <span class="label">捆数：</span>
             <span class="info">
-              <el-input style="height:32px;"
+              <zh-input :keyBoard="keyBoard"
+                style="height:32px;"
                 v-model="formData.batchData.count"
                 placeholder="捆数">
                 <template slot="append">捆</template>
-              </el-input>
+              </zh-input>
             </span>
           </div>
           <div class="row">
             <span class="label">尾捆数量：</span>
             <span class="info">
-              <el-input style="height:32px;"
+              <zh-input style="height:32px;"
+                keyBoard
                 v-model="formData.batchData.lastNumber"
-                placeholder="尾捆每捆数量"></el-input>
+                placeholder="尾捆每捆数量"></zh-input>
             </span>
           </div>
           <div class="row">
             <span class="label">尾捆捆数：</span>
             <span class="info">
-              <el-input style="height:32px;"
+              <zh-input keyBoard
+                style="height:32px;"
                 v-model="formData.batchData.lastCount"
                 placeholder="尾捆捆数">
                 <template slot="append">捆</template>
-              </el-input>
+              </zh-input>
             </span>
           </div>
         </div>
@@ -725,8 +890,8 @@
             <div class="icon"></div>
             <div class="message">
               <span v-if="otherData.xpState===1">请放入芯片</span>
-              <span v-if="otherData.xpState===2">正在上传数据...</span>
-              <span v-if="otherData.xpState===3">正在写入数据...</span>
+              <span v-if="otherData.xpState===2">正在上传数据,请勿拿开芯片...</span>
+              <span v-if="otherData.xpState===3">正在写入数据,请勿拿开芯片...</span>
               <span v-if="otherData.xpState===4">写入成功，请放入下一个芯片</span>
               <span v-if="otherData.xpState===5"
                 style="color:#F5222D">写入失败，请换一个芯片</span>
@@ -1003,7 +1168,9 @@
 <script>
 import { YOWORFIDReader } from '@/assets/js/YOWOCloudRFIDReader.js'
 import { order, weave, processing, client, process, receiveDispatch, compare } from '@/assets/js/api.js'
+import zhInput from '../../components/zhInput/zhInput.vue'
 export default {
+  components: { zhInput },
   data () {
     return {
       rfidreader: null,
@@ -1187,6 +1354,14 @@ export default {
     }
   },
   methods: {
+    scrollEvent (e) {
+      if (e.target.previousElementSibling) {
+        e.target.previousElementSibling.style.boxShadow = e.target.scrollLeft === 0 ? '' : '2px 0px 10px rgba(3,3,3,.2)'
+      }
+      if (e.target.nextElementSibling) {
+        e.target.nextElementSibling.style.boxShadow = e.target.scrollLeft === 0 ? '' : '-2px 0px 10px rgba(3,3,3,.2)'
+      }
+    },
     getConfirmDetail () {
       this.loading = true
       compare.detail({
@@ -1476,7 +1651,9 @@ export default {
           chip_time: item.chip_time,
           inspection_time: item.inspection_time,
           weave_time: item.weave_time,
-          desc: item.desc
+          desc: item.desc,
+          updated_at: (item.updated_at.date && this.$getTime(item.updated_at.date)) || '',
+          user_name: item.user_name
         }
       })
       // 根据日志统计数据

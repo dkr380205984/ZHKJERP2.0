@@ -11,7 +11,7 @@
             <div class="filter_line">
               <el-select class="filter_item"
                 v-model="type"
-                @change="getList(1)"
+                @change="changeRouter(1)"
                 placeholder="请选择搜索方式">
                 <el-option label="按产品编号搜索"
                   value="product_code"></el-option>
@@ -262,10 +262,11 @@ export default {
       }
       this.user_id = params.user_id || ''
       this.product_code = params.product_code || ''
+      this.type = params.type || ''
     },
     changeRouter (page) {
       let pages = page || 1
-      this.$router.push('/craft/craftList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&user_id=' + this.user_id + '&&material_name=' + this.material_name + '&&product_code=' + this.product_code)
+      this.$router.push('/craft/craftList/page=' + pages + '&&keyword=' + this.$changeSpecialWord(this.keyword, true) + '&&date=' + this.date + '&&user_id=' + this.user_id + '&&material_name=' + this.material_name + '&&product_code=' + this.product_code + '&&type=' + this.type)
     },
     reset () {
       this.$router.push('/craft/craftList/page=1&&keyword=&&date=&&user_id=&&material_name=&&product_code=')

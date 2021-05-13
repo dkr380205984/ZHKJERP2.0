@@ -149,7 +149,8 @@ const group = {
   create: (params) => http.post(`${baseUrl}/user/group/save`, params, 'application/json'),
   delete: (params) => http.post(`${baseUrl}/user/group/delete`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/client/one`, params),
-  list: (params) => http.get(`${baseUrl}/user/group/list`, params)
+  list: (params) => http.get(`${baseUrl}/user/group/list`, params),
+  ban: (params) => http.post(`${baseUrl}/user/group/status/check`, params, 'application/json')
 }
 // 部门 和小组公用的表和接口，type=2 ,前端做一下区分
 const station = {
@@ -256,7 +257,7 @@ const order = {
 // 样品订单
 const sampleOrder = {
   create: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
-  // delete: (params) => http.post(`${baseUrl}/sample/orders/save`, params, 'application/json'),
+  delete: (params) => http.post(`${baseUrl}/sample/order/delete`, params, 'application/json'),
   editDetail: (params) => http.get(`${baseUrl}/sample/orders/edit`, params),
   list: (params) => http.get(`${baseUrl}/sample/orders/all`, params),
   detail: (params) => http.get(`${baseUrl}/sample/orders/one`, params),
@@ -336,6 +337,7 @@ const receiveDispatch = {
   // semiDelete: (params) => http.post(`${baseUrl}/semi/product/pop/delete`, params, 'application/json'),
   allCreate: (params) => http.post(`${baseUrl}/order/product/production/save`, params, 'application/json'),
   allDetail: (params) => http.get(`${baseUrl}/order/product/production/list`, params),
+  allDetailStatistics: (params) => http.get(`${baseUrl}/order/product/production/statistics`, params),
   allDelete: (params) => http.post(`${baseUrl}/order/product/production/delete`, params, 'application/json'),
   allDetailById: (params) => http.post(`${baseUrl}/order/product/production/detail`, params, 'application/json')
 }
@@ -444,6 +446,11 @@ const changeUserPasd = {
   updated: (params) => http.post(`${baseUrl}/user/password/change`, params, 'application/json'),
   sendVerificationCode: (params) => http.post(`${baseUrl}/user/password/change/send/code`, params, 'application/json')
 }
+// 忘记密码
+const forgetPasd = {
+  updated: (params) => http.post(`${baseUrl}/user/password/forget`, params, 'application/json'),
+  sendVerificationCode: (params) => http.post(`${baseUrl}/user/password/forget/send/code`, params, 'application/json')
+}
 // 报价单预加载
 const priceLoading = {
   create: (params) => http.post(`${baseUrl}/product/quotation/demo/save`, params, 'application/json'),
@@ -484,8 +491,13 @@ const tutorial = {
   detail: (params) => http.get(`${baseUrl}/admin/system/study/one`, params),
   list: (params) => http.get(`${baseUrl}/admin/system/study/list`, params)
 }
+// 订单批次
 const orderBatch = {
-  list: (params) => http.get(`${baseUrl}/order/batch/list`, params)
+  list: (params) => http.get(`${baseUrl}/order/batch/list`, params),
+  bigScreenShipmentsList: (params) => http.get(`${baseUrl}/order/batch/shipping/list`, params),
+  toDayShippingData: (params) => http.get(`${baseUrl}/order/batch/shipping/statistics`, params),
+  changeProg: (params) => http.post(`${baseUrl}/order/batch/detail/save`, params, 'application/json'),
+  changeProgLog: (params) => http.get(`${baseUrl}/order/batch/detail/list`, params)
 }
 const warnSetting = {
   create: (params) => http.post(`${baseUrl}/order/progress/time/set`, params, 'application/json'),
@@ -527,7 +539,8 @@ const reimbursement = {
 }
 // 进仓单
 const warehouse = {
-  create: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  oldCreate: (params) => http.post(`${baseUrl}/stock/card/save`, params, 'application/json'),
+  create: (params) => http.post(`${baseUrl}/stock/card/batch`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/stock/card/detail`, params),
   list: (params) => http.get(`${baseUrl}/stock/card/list`, params),
   delete: (params) => http.post(`${baseUrl}/stock/card/delete`, params, 'application/json')
@@ -557,7 +570,85 @@ const compare = {
   create: (params) => http.post(`${baseUrl}/order/module/confirm`, params, 'application/json'),
   detail: (params) => http.get(`${baseUrl}/order/detail`, params)
 }
+// 单证设置
+const documentSetting = {
+  companyDetail: (params) => http.get(`${baseUrl}/document/company/detail`, params),
+  companySave: (params) => http.post(`${baseUrl}/document/company/save`, params, 'application/json'),
+  bankDetail: (params) => http.get(`${baseUrl}/document/bank/detail`, params),
+  bankSave: (params) => http.post(`${baseUrl}/document/bank/save`, params, 'application/json'),
+  clientList: (params) => http.get(`${baseUrl}/document/common/company/list`, params),
+  clientDetail: (params) => http.get(`${baseUrl}/document/common/company/detail`, params),
+  clientSave: (params) => http.post(`${baseUrl}/document/common/company/save`, params, 'application/json'),
+  clientDelete: (params) => http.post(`${baseUrl}/document/common/company/delete`, params, 'application/json'),
+  portList: (params) => http.get(`${baseUrl}/document/port/list`, params),
+  portDetail: (params) => http.get(`${baseUrl}/document/port/detail`, params),
+  portSave: (params) => http.post(`${baseUrl}/document/port/save`, params, 'application/json'),
+  portDelete: (params) => http.post(`${baseUrl}/document/port/delete`, params, 'application/json'),
+  typeList: (params) => http.get(`${baseUrl}/document/product/list`, params),
+  // typeDetail: (params) => http.get(`${baseUrl}/document/product/detail`, params),
+  typeSave: (params) => http.post(`${baseUrl}/document/product/save`, params, 'application/json'),
+  typeDelete: (params) => http.post(`${baseUrl}/document/product/delete`, params, 'application/json'),
+  payTypeList: (params) => http.get(`${baseUrl}/document/payment/list`, params),
+  // payTypeDetail: (params) => http.get(`${baseUrl}/document/payment/detail`, params),
+  payTypeSave: (params) => http.post(`${baseUrl}/document/payment/save`, params, 'application/json'),
+  payTypeDelete: (params) => http.post(`${baseUrl}/document/payment/delete`, params, 'application/json'),
+  HSList: (params) => http.get(`${baseUrl}/document/hscode/list`, params)
+}
+// 单证管理
+const documents = {
+  create: (params) => http.post(`${baseUrl}/document/save`, params, 'application/json'),
+  detail: (params) => http.get(`${baseUrl}/document/detail`, params),
+  list: (params) => http.get(`${baseUrl}/document/list`, params),
+  delete: (params) => http.post(`${baseUrl}/document/delete`, params, 'application/json')
+}
+// 单证单据
+const documentsTable = {
+  CISave: (params) => http.post(`${baseUrl}/document/invoice/save`, params, 'application/json'),
+  CIDetail: (params) => http.get(`${baseUrl}/document/invoice/detail`, params),
+  PLSave: (params) => http.post(`${baseUrl}/document/box/save`, params, 'application/json'),
+  PLDetail: (params) => http.get(`${baseUrl}/document/box/detail`, params),
+  ETSave: (params) => http.post(`${baseUrl}/document/freight/save`, params, 'application/json'),
+  ETDetail: (params) => http.get(`${baseUrl}/document/freight/detail`, params),
+  EDSave: (params) => http.post(`${baseUrl}/document/custom/save`, params, 'application/json'),
+  EDDetail: (params) => http.get(`${baseUrl}/document/custom/detail`, params),
+  DESave: (params) => http.post(`${baseUrl}/document/element/save`, params, 'application/json'),
+  DEDetail: (params) => http.get(`${baseUrl}/document/element/detail`, params)
+}
+// 财务新接口
+const newFinance = {
+  order: (params) => http.get(`${baseUrl}/statistic/order/detail`, params),
+  sample: (params) => http.get(`${baseUrl}/statistic/sample/order/detail`, params),
+  materialOrder: (params) => http.get(`${baseUrl}/statistic/material/order/detail`, params),
+  materialProcess: (params) => http.get(`${baseUrl}/statistic/material/process/detail`, params),
+  materialStock: (params) => http.get(`${baseUrl}/statistic/material/push/detail`, params),
+  weave: (params) => http.get(`${baseUrl}/statistic/production/weave/detail`, params),
+  replenish: (params) => http.get(`${baseUrl}/statistic/production/yarn/replenish/detail`, params),
+  inspection: (params) => http.get(`${baseUrl}/statistic/production/inspection/detail`, params),
+  pack: (params) => http.get(`${baseUrl}/statistic/pack/order/detail`, params),
+  semiProcess: (params) => http.get(`${baseUrl}/statistic/production/semi_product/detail`, params),
+  semiInspection: (params) => http.get(`${baseUrl}/statistic/order/product/production/detail`, params),
+  bookingMaterial: (params) => http.get(`${baseUrl}/statistic/stock/reserve/material/detail`, params),
+  materialStore: (params) => http.get(`${baseUrl}/statistic/stock/detail`, params),
+  materialStoreForClient: (params) => http.get(`${baseUrl}/statistic/material/reserve/order/detail`, params)
+}
+// 生产流程列表重构
+const productionList = {
+  /**
+   * @param {*} params 请求参数
+   * @param {*} isSample 是否为样单
+   */
+  materialPlan: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_plan/list' : '/sample/material_plan/list'}`, params),
+  materialOrder: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_order/list' : '/sample/material_order/list'}`, params),
+  materialStock: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/material_stock/list' : '/sample/material_stock/list'}`, params),
+  weaveing: (params, isSample = false) => http.get(`${baseUrl}${!isSample ? '/order/weaving/list' : '/sample/weaving/list'}`, params),
+  productProcess: (params) => http.get(`${baseUrl}/order/product_process/list`, params)
+}
 export {
+  productionList,
+  newFinance,
+  documentsTable,
+  documents,
+  documentSetting,
   priceRemark,
   compare,
   productProcess,
@@ -584,6 +675,7 @@ export {
   collection,
   statistics,
   changeUserPasd,
+  forgetPasd,
   indexCount,
   globleSearch,
   print,

@@ -1,0 +1,159 @@
+@import '../common.less';
+@keyframes goActiveB{
+  0%{
+    transform: translate(-50%,50%);
+    opacity: 0;
+  }
+  99%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+  100%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+}
+@keyframes goActiveT{
+  0%{
+    transform: translate(-50%,-150%);
+    opacity: 0;
+  }
+  99%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+  100%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+}
+@keyframes outActiveB{
+  0%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+  99%{
+    transform: translate(-50%,-150%);
+    opacity: 1;
+  }
+  100%{
+    transform: translate(-50%,-150%);
+    opacity: 0;
+    display: none;
+  }
+}
+@keyframes outActiveT{
+  0%{
+    transform: translate(-50%,-50%);
+    opacity: 1;
+  }
+  99%{
+    transform: translate(-50%,50%);
+    opacity: 1;
+  }
+  100%{
+    transform: translate(-50%,50%);
+    opacity: 0;
+    display: none;
+  }
+}
+#documentCreate{
+  .flex04{
+    flex: 0.4;
+  }
+  .flex08{
+    flex: 0.8;
+  }
+  .flex12{
+    flex: 1.2;
+  }
+  .flex16{
+    flex: 1.6;
+  }
+  .showProItem{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    opacity: 0;
+    z-index: 1;
+    border-bottom: none;
+    &.activeB{
+      animation: goActiveB 0.5s forwards;
+    }
+    &.activeT{
+      animation: goActiveT 0.5s forwards;
+    }
+    &.outActiveB{
+      animation: outActiveB 0.5s forwards;
+    }
+    &.outActiveT{
+      animation: outActiveT 0.5s forwards;
+    }
+  }
+  .tb_row_icon{
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 99;
+    &:hover{
+      color: @blue;
+    }
+    &.tb_row_icon_top{
+      transform: translateY(-80%);
+    }
+    &.tb_row_icon_bottom{
+      transform: translateY(-20%);
+    }
+  }
+  .selectOrderCtn{
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 32px;
+    position: relative;
+    .label{
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 16px;
+    }
+    .selectOrderItem{
+      position: relative;
+      width: calc(100% / 4);
+      padding-right: 64px;
+      height: 32px;
+      box-sizing: border-box;
+      .deleteBtn{
+        position: absolute;
+        width: 64px;
+        line-height: 32px;
+        text-align: center;
+        right: 0;
+        cursor: pointer;
+        font-size: 20px;
+        color: @font45;
+        &:hover{
+          color: @red;
+        }
+      }
+      &:nth-child(n + 6){
+        margin-top: 16px;
+      }
+    }
+  }
+  .red{
+    color: @red;
+  }
+  .blue{
+    color: @blue;
+  }
+  .green{
+    color: @green;
+  }
+  .orange{
+    color: @orange;
+  }
+}

@@ -1,0 +1,120 @@
+@borderColor:#E9E9E9;
+
+@fontSize:18px;
+@fontMiddle:16px;
+
+@font85:rgba(0,0,0,0.85);
+@font65:rgba(0,0,0,.65);
+
+@blue:#1a95ff;
+@red:#F5222D;
+@green:#01B48C;
+@orange:#E6A23C;
+
+@minH: 600px;
+@minW: 1200px;
+@titleH: 56px;
+@leftCtnW: 221px;
+
+.craftCourse{
+  .popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    .main{
+      display: flex;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: @minW;
+      height: @minH;
+      transform: translate(-50%,-50%);
+      background-color: #FFF;
+      box-shadow: 0 0 10px #DDD;
+      border-radius: 4px;
+      user-select: none;
+      &>.close{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 28px;
+        color: @red;
+        cursor: pointer;
+      }
+      .leftCtn,
+      .rightCtn{
+        font-size: @fontMiddle;
+        color: @font65;
+        &>.title{
+          height: @titleH;
+          line-height: @titleH;
+          text-align: center;
+          font-size: @fontSize;
+          color: @font85;
+        }
+        &>.content{
+          height: calc(@minH - @titleH);
+          overflow: auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          box-shadow: 0 -2px 0 #EEE;
+        }
+      }
+      &>.leftCtn{
+        width: @leftCtnW;
+        border-right: 1px solid @borderColor;
+        .out_item{
+          width: 100%;
+          .label,
+          .inner_item{
+            min-height: 36px;
+            line-height: 36px;
+            padding: 0 16px;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .label{
+            background-color: #CCC;
+            text-align: center;
+          }
+          .inner_item{
+            cursor: pointer;
+            &::before{
+              display: inline-block;
+              content: attr(number);
+              background-color: @blue;
+              min-width: 1.2em;
+              min-height: 1.2em;
+              line-height: 1.2em;
+              border-radius: 50%;
+              color: #FFF;
+              margin-right: 8px;
+              text-align: center;
+            }
+            &:hover,
+            &.active{
+              background-color: rgba(26,149,255,.8);
+              color: #FFF;
+            }
+          }
+        }
+      }
+      &>.rightCtn{
+        width: calc(@minW - @leftCtnW);
+        .content{          
+          padding: 0 60px;
+        }
+        .content_el_image{
+          width: 100%;
+          overflow: visible;
+        }
+      }
+    }
+  }
+}

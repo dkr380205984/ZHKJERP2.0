@@ -115,7 +115,7 @@
             layout="prev, pager, next"
             :total="total"
             :current-page.sync="page"
-            @current-change="getList">
+            @current-change="changeRouter">
           </el-pagination>
         </div>
       </div>

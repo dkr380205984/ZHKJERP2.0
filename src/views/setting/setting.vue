@@ -38,8 +38,14 @@
           </template> -->
           <template v-if="cName==='产品花型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加花型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('flower')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('flower')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加花型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -71,8 +77,14 @@
           </template>
           <template v-if="cName==='产品成分'">
             <div class="ingredientCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加成分</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('ingredient')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('ingredient')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加成分</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -104,8 +116,14 @@
           </template>
           <template v-if="cName==='产品配色'">
             <div class="ingredientCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加配色</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('colour')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('colour')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加配色</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -170,8 +188,8 @@
               <el-pagination background
                 :page-size="5"
                 layout="prev, pager, next"
-                :total="colourTotal"
-                :current-page.sync="colourPage">
+                :total="sizeTotal"
+                :current-page.sync="sizePage">
               </el-pagination>
             </div>
           </template>
@@ -283,8 +301,14 @@
           </template> -->
           <template v-if="cName==='边型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加边型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('side')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('side')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加边型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -316,8 +340,14 @@
           </template>
           <template v-if="cName==='机型'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加机型</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('machine')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('machine')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加机型</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -349,9 +379,15 @@
           </template>
           <template v-if="cName==='组织法'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true"
-                style="width:6em">添加组织法</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('methods')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('methods')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true"
+                  style="width:6em">添加组织法</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -398,9 +434,14 @@
                   <div class="btn btnGreen"
                     v-if="updatedBatchFlag"
                     @click="updatedBatchSubmit">提交修改</div>
-                  <div class="btn btnBlue"
-                    v-if="!updatedBatchFlag"
-                    @click="updataYarns">批量添加纱线</div>
+                  <template v-if="!updatedBatchFlag">
+                    <div class="btn btnBlue"
+                      @click="downLoadTemplete('yarn')">下载模板</div>
+                    <div class="btn btnBlue"
+                      @click="importExcelData('yarn')">导入数据</div>
+                    <div class="btn btnBlue"
+                      @click="updataYarns">批量添加纱线</div>
+                  </template>
                 </div>
                 <!-- <div class="addBtn"
                   @click="updataYarn('add')"
@@ -469,9 +510,15 @@
           </template>
           <template v-if="cName==='纱线颜色'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true"
-                style="width:7em">添加纱线颜色</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('yarnColor')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('yarnColor')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true"
+                  style="width:7em">添加纱线颜色</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -508,9 +555,15 @@
           </template>
           <template v-if="cName==='装饰辅料'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="updataMaterial('add')"
-                style="width:6em">添加辅料</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('material')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('material')">导入数据</div>
+                <div class="addBtn"
+                  @click="updataMaterial('add')"
+                  style="width:6em">添加辅料</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -532,8 +585,6 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0 && item.unit) ? '元/' + item.unit : ''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <!-- <span class="blue"
-                          @click="getDetailInfo('material',item)">详情</span> -->
                         <span class="blue"
                           @click="updataMaterial('updata',item)">更新</span>
                         <span class="red"
@@ -555,9 +606,15 @@
           </template>
           <template v-if="cName==='包装辅料'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="updataPack('add')"
-                style="width:6em">添加包装</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('pack')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('pack')">导入数据</div>
+                <div class="addBtn"
+                  @click="updataPack('add')"
+                  style="width:6em">添加包装</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -576,8 +633,6 @@
                     <div class="tcolumn padding40">{{comPrice(item)}}{{(item.price && item.price.length > 0) ? (item.type === 1 ? '元/㎡' : (item.unit ? '元/' + item.unit : '')):''}}</div>
                     <div class="tcolumn padding40">
                       <span class="trow middle handleBtnCtn">
-                        <!-- <span class="blue"
-                          @click="getDetailInfo('pack',item)">详情</span> -->
                         <span class="blue"
                           @click="updataPack('updata',item)">更新</span>
                         <span class="red"
@@ -599,8 +654,14 @@
           </template>
           <template v-if="cName==='原料工序'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('yarnProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('yarnProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -632,8 +693,14 @@
           </template>
           <template v-if="cName==='半成品加工'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('semiProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('semiProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -665,8 +732,14 @@
           </template>
           <template v-if="cName==='结算工序'">
             <div class="flowerCtn">
-              <div class="addBtn"
-                @click="showPopup=true">添加工序</div>
+              <div class="btnCtn">
+                <div class="addBtn"
+                  @click="downLoadTemplete('staffProcess')">下载模板</div>
+                <div class="addBtn"
+                  @click="importExcelData('staffProcess')">导入数据</div>
+                <div class="addBtn"
+                  @click="showPopup=true">添加工序</div>
+              </div>
               <div class="normalTb">
                 <div class="thead">
                   <div class="trow">
@@ -812,6 +885,8 @@
                           v-if="!item.updateFlag">修改</span>
                         <span class="red"
                           @click="deleteGroup(item.id)">删除</span>
+                        <span :class="item.status === 1 ? 'orange' : 'green'"
+                          @click="banGroup(item)">{{item.status === 1 ? '禁用' : '启用'}}</span>
                       </span>
                     </div>
                   </div>
@@ -1151,6 +1226,535 @@
                   layout="prev, pager, next"
                   :total="priceTotal"
                   :current-page.sync="pricePages">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='英文工厂信息'">
+            <div class="documentSetting"
+              v-loading='documentCompanyInfo.loading'>
+              <div class="row">
+                <div class="label">公司英文名称(Company Name)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入公司英文名称(Company Name)"
+                    class="input-item"
+                    v-model="documentCompanyInfo.name"
+                    :disabled='!documentCompanyInfo.is_updated'>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">公司统一社会信用代码(Company Social Credit Code)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入公司统一社会信用代码(Company Social Credit Code)"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    class="input-item"
+                    v-model="documentCompanyInfo.code">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司英文地址(Company Address)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    placeholder="请输入公司英文地址(Company Address)"
+                    v-model="documentCompanyInfo.address">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司电话(Telephone)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    placeholder="请输入公司电话(Telephone)"
+                    v-model="documentCompanyInfo.tel">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司传真(Fax)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    placeholder="请输入公司传真(Fax)"
+                    v-model="documentCompanyInfo.fax">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">公司签章(Company Signature)：</span>
+                <div class="content">
+                  <!-- <el-upload :before-upload="beforeUpload"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    :data="postData"
+                    :file-list="documentCompanyInfo.signature_img"
+                    drag
+                    action="https://upload.qiniup.com/"
+                    ref="companySignatureUpload">
+                    <i class="el-icon-upload"></i>
+                    <div class="el-upload__text">
+                      将文件拖到此处，或
+                      <em>点击上传</em>
+                      <br />
+                      只能上传jpg/png文件，且不超过6MB
+                    </div>
+                  </el-upload> -->
+                  <el-upload :before-upload="beforeUpload"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    class="companySignatureUpload"
+                    ref="companySignatureUpload"
+                    action="https://upload.qiniup.com/"
+                    drag
+                    :data="postData"
+                    :file-list="documentCompanyInfo.signature ? [{url:documentCompanyInfo.signature}] : []"
+                    :show-file-list="false"
+                    :on-success="uploadSignatureSuccess">
+                    <el-image class="showImg"
+                      v-if="documentCompanyInfo.signature"
+                      :src="documentCompanyInfo.signature"
+                      fit="fill"></el-image>
+                    <i v-else
+                      class="el-icon-plus addIcon"></i>
+                  </el-upload>
+                  <div class="prompt">点击或拖拽至上传框,只能上传jpg/png文件，且不超过6MB</div>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">报关专用章：</span>
+                <div class="content">
+                  <el-upload :before-upload="beforeUpload"
+                    :disabled='!documentCompanyInfo.is_updated'
+                    class="companySignatureUpload"
+                    ref="companyCustomsUpload"
+                    action="https://upload.qiniup.com/"
+                    drag
+                    :data="postData"
+                    :file-list="documentCompanyInfo.special_seal ? [{url:documentCompanyInfo.special_seal}] : []"
+                    :show-file-list="false"
+                    :on-success="uploadCustomsSuccess">
+                    <el-image class="showImg"
+                      v-if="documentCompanyInfo.special_seal"
+                      :src="documentCompanyInfo.special_seal"
+                      fit="fill"></el-image>
+                    <i v-else
+                      class="el-icon-plus addIcon"></i>
+                  </el-upload>
+                  <div class="prompt">点击或拖拽至上传框,只能上传jpg/png文件，且不超过6MB</div>
+                </div>
+              </div>
+              <div class="btnCtn">
+                <div class="btn btnOrange"
+                  v-if="!documentCompanyInfo.is_updated"
+                  @click="documentCompanyInfo.is_updated = true">修改</div>
+                <template v-else>
+                  <div class="btn btnGray"
+                    @click="documentCompanyInfo.is_updated = false">取消</div>
+                  <div class="btn btnBlue"
+                    @click="saveDocumentCompanyInfo">提交</div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='英文银行信息'">
+            <div class="documentSetting"
+              v-loading='documentBankInfo.loading'>
+              <div class="row">
+                <div class="label">开户银行(Bank Name)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入开户银行(Bank Name)"
+                    class="input-item"
+                    v-model="documentBankInfo.name"
+                    :disabled='!documentBankInfo.is_updated'>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">开户地址(Bank Address)：</div>
+                <div class="content">
+                  <el-input placeholder="请输入开户地址(Bank Address)"
+                    :disabled='!documentBankInfo.is_updated'
+                    class="input-item"
+                    v-model="documentBankInfo.address"
+                    clearable>
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">银行SWIFT码(SWIFT Code)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入银行SWIFT码(SWIFT Code)"
+                    v-model="documentBankInfo.code">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">收款人(Beneficiary)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入收款人(Beneficiary)"
+                    v-model="documentBankInfo.beneficiary">
+                  </el-input>
+                </div>
+              </div>
+              <div class="row">
+                <span class="label">开户账号(Account No)：</span>
+                <div class="content">
+                  <el-input class="input-item"
+                    :disabled='!documentBankInfo.is_updated'
+                    placeholder="请输入开户账号(Account No)"
+                    v-model="documentBankInfo.account_no">
+                  </el-input>
+                </div>
+              </div>
+              <div class="btnCtn">
+                <div class="btn btnOrange"
+                  v-if="!documentBankInfo.is_updated"
+                  @click="documentBankInfo.is_updated = true">修改</div>
+                <template v-else>
+                  <div class="btn btnGray"
+                    @click="documentBankInfo.is_updated = false">取消</div>
+                  <div class="btn btnBlue"
+                    @click="saveDocumentBankInfo">提交</div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='HS编码设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="HSCode"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索HS编码"
+                    @change="getDocumentHSCodeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="HSCode = '';getDocumentHSCodeInfo(1)">重置</div>
+                </div>
+                <!-- <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加HS编码</div> -->
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentHSCodeInfo.loading'>
+                <el-table :data="documentHSCodeList"
+                  style="width: 100%"
+                  max-height='400'>
+                  <el-table-column fixed
+                    prop="hs_code"
+                    label="HS编码"
+                    width="100">
+                  </el-table-column>
+                  <el-table-column fixed
+                    prop="product_name"
+                    label="商品名称"
+                    width="200">
+                  </el-table-column>
+                  <el-table-column prop="export"
+                    width="50"
+                    label="出口税率">
+                  </el-table-column>
+                  <el-table-column prop="export_rebate"
+                    width="50"
+                    label="出口退税税率">
+                  </el-table-column>
+                  <el-table-column prop="temporary_export"
+                    width="50"
+                    label="出口暂定税率">
+                  </el-table-column>
+                  <el-table-column prop="vat_rate"
+                    width="50"
+                    label="增值税率">
+                  </el-table-column>
+                  <el-table-column prop="most_favored_nation"
+                    width="50"
+                    label="最惠国进口税率">
+                  </el-table-column>
+                  <el-table-column prop="provisional_import_tariff"
+                    width="50"
+                    label="进口暂定税率">
+                  </el-table-column>
+                  <el-table-column prop="import_general_duty"
+                    width="50"
+                    label="进口普通税率">
+                  </el-table-column>
+                  <el-table-column prop="consumption"
+                    width="50"
+                    label="消费税率">
+                  </el-table-column>
+                  <el-table-column prop="first_legal_unit"
+                    width="50"
+                    label="第一法定单位">
+                  </el-table-column>
+                  <el-table-column prop="second_statutory_unit"
+                    width="50"
+                    label="第二法定单位">
+                  </el-table-column>
+                  <el-table-column prop="first_legal_unit_code"
+                    width="50"
+                    label="第一法定单位代码">
+                  </el-table-column>
+                  <el-table-column prop="second_legal_unit_code"
+                    width="50"
+                    label="第二法定单位代码">
+                  </el-table-column>
+                  <el-table-column prop="regulatory_condition_info"
+                    width="200"
+                    label="监管条件详细信息">
+                  </el-table-column>
+                  <el-table-column prop="quarantine_category_code"
+                    width="80"
+                    label="检验检疫类别代码缩写">
+                  </el-table-column>
+                  <el-table-column prop="quarantine_category_details"
+                    width="80"
+                    label="检验检疫类别详细信息">
+                  </el-table-column>
+                  <el-table-column prop="declaration_elements"
+                    width="300"
+                    label="申报要素">
+                  </el-table-column>
+                </el-table>
+                <!-- <div class="tb_header">
+                  <div class="tb_row">HS编码</div>
+                  <div class="tb_row">商品名称</div>
+                  <div class="tb_row">进口优惠税</div>
+                  <div class="tb_row">出口税率</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentHSCodeList"
+                  :key="index">
+                  <div class="tb_row">{{item.hs_code}}</div>
+                  <div class="tb_row">{{item.product_name}}</div>
+                  <div class="tb_row">{{'进口优惠税'}}</div>
+                  <div class="tb_row">出口税率</div>
+                  <div class="tb_row middle">
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentHSCode(item.id)">删除</span>
+                  </div>
+                </div> -->
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentHSCodeTotal"
+                  :current-page.sync="documentHSCodePages"
+                  @current-change="getDocumentHSCodeInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用公司设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="clientName"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索公司名称"
+                    @change="getDocumentClientInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="clientName = '';getDocumentClientInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加公司</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentClientInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">公司名称</div>
+                  <div class="tb_row">公司地址</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentClientList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">{{item.address}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span>
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentClient(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentClientTotal"
+                  :current-page.sync="documentClientPages"
+                  @current-change="getDocumentClientInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用城市设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="portName"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索城市名称"
+                    @change="getDocumentPortInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="portName = '';getDocumentPortInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加城市</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentPortInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">常用国家(Country)</div>
+                  <div class="tb_row">常用城市 (City Name)</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentPortList"
+                  :key="index">
+                  <div class="tb_row">{{item.country}}</div>
+                  <div class="tb_row">{{item.port_name}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span>
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentPort(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentPortTotal"
+                  :current-page.sync="documentPortPages"
+                  @current-change="getDocumentPortInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用品名设置'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="documentType"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索品名名称"
+                    @change="getDocumentTypeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="documentType = '';getDocumentTypeInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加品名</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentTypeInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">中文品类</div>
+                  <div class="tb_row">英文品名</div>
+                  <div class="tb_row">单位</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentTypeList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">{{item.english}}</div>
+                  <div class="tb_row">{{item.unit || '-'}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <!-- <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span> -->
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentType(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentTypeTotal"
+                  :current-page.sync="documentTypePages"
+                  @current-change="getDocumentTypeInfo">
+                </el-pagination>
+              </div>
+            </div>
+          </template>
+          <template v-if="cName==='常用付款方式'">
+            <div class="flowerCtn">
+              <div class="filterCtn"
+                style="justify-content: space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center">
+                  <span>筛选条件：</span>
+                  <el-input v-model="documentPayType"
+                    clearable
+                    style="width:200px;height:32px"
+                    placeholder="搜索付款方式名称"
+                    @change="getDocumentPayTypeInfo(1)"></el-input>
+                  <div class="btn btnGray"
+                    @click="documentPayType = '';getDocumentPayTypeInfo(1)">重置</div>
+                </div>
+                <div class="addBtn"
+                  @click="addDocument()"
+                  style="width:6em">添加付款方式</div>
+              </div>
+              <div class="tableCtnLv2 minHeight5"
+                v-loading='documentPayTypeInfo.loading'>
+                <div class="tb_header">
+                  <div class="tb_row">中文名称</div>
+                  <div class="tb_row">英文代号</div>
+                  <div class="tb_row">添加日期</div>
+                  <div class="tb_row middle">操作</div>
+                </div>
+                <div class="tb_content"
+                  v-for="(item,index) in documentPayTypeList"
+                  :key="index">
+                  <div class="tb_row">{{item.name}}</div>
+                  <div class="tb_row">{{item.english}}</div>
+                  <div class="tb_row">{{$getTime(item.created_at)}}</div>
+                  <div class="tb_row middle">
+                    <!-- <span class="tb_handle_btn orange"
+                      @click="addDocument(item)">修改</span> -->
+                    <span class="tb_handle_btn red"
+                      @click="deleteDocumentPayType(item.id)">删除</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pageCtn">
+                <el-pagination background
+                  :page-size="5"
+                  layout="prev, pager, next"
+                  :total="documentPayTypeTotal"
+                  :current-page.sync="documentPayTypePages"
+                  @current-change="getDocumentPayTypeInfo">
                 </el-pagination>
               </div>
             </div>
@@ -1589,14 +2193,15 @@
               </div>
             </div>
             <div class="row"
-              v-for="(item,index) in changePackMaterialInfo.packPriceArr"
+              v-for="(item,index) in changePackMaterialInfo.packMaterialPriceArr"
               :key="index">
               <div class="label">报价信息：</div>
               <div class="info flex">
                 <el-select v-model="item.company"
                   style="margin-right:16px"
                   filterable
-                  placeholder="请选择公司">
+                  placeholder="请选择公司"
+                  @change='$forceUpdate()'>
                   <el-option v-for="item in clientList"
                     :key="item.id"
                     :label="item.name"
@@ -2409,6 +3014,186 @@
           </div>
         </div>
       </template>
+      <!-- <template v-if="cName==='HS编码设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">添加HS编码</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">HS编码：</div>
+              <div class="info">
+                <el-input placeholder="请输入HS编码"
+                  v-model="documentHSCodeInfo.HSCode"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">商品名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入商品名称"
+                  v-model="documentHSCodeInfo.name"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">进口优惠税：</div>
+              <div class="info">
+                <el-input placeholder="请输入进口优惠税"
+                  v-model="documentHSCodeInfo.importTax">
+                  <template slot="append">%</template>
+                </el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">出口税率：</div>
+              <div class="info">
+                <el-input placeholder="请输入出口税率"
+                  v-model="documentHSCodeInfo.exportTax">
+                  <template slot="append">%</template>
+                </el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentHSCodeInfo">确定</div>
+          </div>
+        </div>
+      </template> -->
+      <template v-if="cName==='常用公司设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{documentClientInfo.id ? '修改' : '添加'}}常用公司</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">公司名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入公司名称"
+                  v-model="documentClientInfo.name"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">公司地址：</div>
+              <div class="info">
+                <el-input placeholder="请输入公司地址"
+                  v-model="documentClientInfo.address"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentClientInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用城市设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{documentPortInfo.id ? '修改' : '添加'}}常用城市</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">常用国家：</div>
+              <div class="info">
+                <el-input placeholder="请输入常用国家 (Country)"
+                  v-model="documentPortInfo.country"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">常用城市：</div>
+              <div class="info">
+                <el-input placeholder="请输入常用城市 (City Name)"
+                  v-model="documentPortInfo.port"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentPortInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用品名设置'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{documentTypeInfo.id ? '修改' : '添加'}}常用品名</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">中文品类：</div>
+              <div class="info">
+                <el-input placeholder="请输入中文品类"
+                  v-model="documentTypeInfo.CNName"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">英文品名：</div>
+              <div class="info">
+                <el-input placeholder="请输入英文品名"
+                  v-model="documentTypeInfo.USName"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">单位名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入单位名称"
+                  v-model="documentTypeInfo.unit"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentTypeInfo">确定</div>
+          </div>
+        </div>
+      </template>
+      <template v-if="cName==='常用付款方式'">
+        <div class="main">
+          <div class="title">
+            <div class="text">{{documentPayTypeInfo.id ? '修改' : '添加'}}付款方式</div>
+            <i class="el-icon-close"
+              @click="showPopup=false"></i>
+          </div>
+          <div class="content">
+            <div class="row">
+              <div class="label">中文名称：</div>
+              <div class="info">
+                <el-input placeholder="请输入中文名称"
+                  v-model="documentPayTypeInfo.CNName"></el-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">英文代号：</div>
+              <div class="info">
+                <el-input placeholder="请输入英文代号"
+                  v-model="documentPayTypeInfo.USName"></el-input>
+              </div>
+            </div>
+          </div>
+          <div class="opr">
+            <div class="btn btnGray"
+              @click="showPopup=false">取消</div>
+            <div class="btn btnBlue"
+              @click="saveDocumentPayTypeInfo">确定</div>
+          </div>
+        </div>
+      </template>
     </div>
     <!-- 删除尺码 -->
     <div class="popup"
@@ -2604,7 +3389,8 @@ export default {
         '系统账户管理': ['系统账户管理'],
         '打印设置': ['打印设置'],
         '报价单设置': ['报价预加载', '报价说明'],
-        '预警设置': ['订单预警', '样单预警']
+        '预警设置': ['订单预警', '样单预警'],
+        '单证设置': ['英文工厂信息', '英文银行信息', 'HS编码设置', '常用公司设置', '常用城市设置', '常用品名设置', '常用付款方式']
       },
       pName: '',
       cName: '',
@@ -3021,8 +3807,81 @@ export default {
         id: '',
         remark: ''
       },
-      priceRemarkEditor: null
-
+      priceRemarkEditor: null,
+      // 单证设置
+      documentLoading: false,
+      documentCompanyInfo: {
+        is_updated: false,
+        loading: true,
+        name: '',
+        code: '',
+        address: '',
+        signature: '',
+        special_seal: '',
+        tel: '',
+        fax: ''
+      },
+      documentBankInfo: {
+        is_updated: false,
+        loading: true,
+        name: '',
+        address: '',
+        code: '',
+        beneficiary: '',
+        account_no: ''
+      },
+      HSCode: '',
+      documentHSCodeList: [],
+      documentHSCodeInfo: {
+        loading: true,
+        id: null,
+        HSCode: '',
+        name: '',
+        importTax: '',
+        exportTax: ''
+      },
+      documentHSCodePages: 1,
+      documentHSCodeTotal: 1,
+      clientName: '',
+      documentClientList: [],
+      documentClientInfo: {
+        loading: true,
+        id: null,
+        name: '',
+        address: ''
+      },
+      documentClientPages: 1,
+      documentClientTotal: 1,
+      portName: '',
+      documentPortList: [],
+      documentPortInfo: {
+        loading: true,
+        id: null,
+        country: '',
+        port: ''
+      },
+      documentPortPages: 1,
+      documentPortTotal: 1,
+      documentType: '',
+      documentTypeList: [],
+      documentTypeInfo: {
+        loading: true,
+        id: null,
+        CNName: '',
+        USName: ''
+      },
+      documentTypePages: 1,
+      documentTypeTotal: 1,
+      documentPayType: '',
+      documentPayTypeList: [],
+      documentPayTypeInfo: {
+        loading: true,
+        id: null,
+        CNName: '',
+        USName: ''
+      },
+      documentPayTypePages: 1,
+      documentPayTypeTotal: 1
     }
   },
   watch: {
@@ -3083,6 +3942,20 @@ export default {
         this.getOrderSampleWarn()
       } else if (val === '样单预警') {
         this.getOrderSampleWarn()
+      } else if (val === '英文工厂信息') {
+        this.getDocumentCompanyInfo()
+      } else if (val === '英文银行信息') {
+        this.getDocumentBankInfo()
+      } else if (val === 'HS编码设置') {
+        this.getDocumentHSCodeInfo()
+      } else if (val === '常用公司设置') {
+        this.getDocumentClientInfo()
+      } else if (val === '常用城市设置') {
+        this.getDocumentPortInfo()
+      } else if (val === '常用品名设置') {
+        this.getDocumentTypeInfo()
+      } else if (val === '常用付款方式') {
+        this.getDocumentPayTypeInfo()
       }
     },
     filterYarnKeyword (val) {
@@ -3158,8 +4031,761 @@ export default {
     }
   },
   methods: {
-    permissionsDetailChange (e) {
-      console.log(e)
+    // 单证模块
+    uploadSignatureSuccess () {
+      const fileArr = this.$refs.companySignatureUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
+      this.documentCompanyInfo.signature = fileArr[1] || fileArr[0]
+    },
+    uploadCustomsSuccess () {
+      const fileArr = this.$refs.companyCustomsUpload.uploadFiles.map((item) => { return (item.response ? 'https://file.zwyknit.com/' + item.response.key : item.url) })
+      this.documentCompanyInfo.special_seal = fileArr[1] || fileArr[0]
+    },
+    getDocumentCompanyInfo () { // 获取英文工厂信息
+      this.documentCompanyInfo.loading = true
+      if (!this.postData.token) {
+        getToken().then(res => {
+          if (res.data.status !== false) {
+            this.postData.token = res.data.data
+          }
+        })
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.companyDetail().then(res => {
+        if (res.data.status !== false) {
+          this.documentCompanyInfo = {
+            is_updated: false,
+            ...res.data.data
+          }
+        }
+        this.documentCompanyInfo.loading = false
+      })
+    },
+    saveDocumentCompanyInfo () {
+      if (!this.documentCompanyInfo.is_updated) return
+      if (this.$submitLock()) return
+      const { documentSetting } = require('@/assets/js/api.js')
+      if (!this.documentCompanyInfo.name) {
+        this.$message.warning('请输入公司英文名称(Company Name)')
+        return
+      }
+      if (!this.documentCompanyInfo.code) {
+        this.$message.warning('请输入公司统一社会信用代码(Company Social Credit Code)')
+        return
+      }
+      if (!this.documentCompanyInfo.address) {
+        this.$message.warning('请输入公司英文地址(Company Address)')
+        return
+      }
+      if (!this.documentCompanyInfo.tel) {
+        this.$message.warning('请输入电话号(Tel)')
+        return
+      }
+      if (!this.documentCompanyInfo.fax) {
+        this.$message.warning('请输入传真号(Fax)')
+        return
+      }
+      if (!this.documentCompanyInfo.signature) {
+        this.$message.warning('检测到未上传公司签章，请先上传')
+        return
+      }
+      const data = {
+        name: this.documentCompanyInfo.name,
+        code: this.documentCompanyInfo.code,
+        address: this.documentCompanyInfo.address,
+        signature: this.documentCompanyInfo.signature,
+        tel: this.documentCompanyInfo.tel,
+        fax: this.documentCompanyInfo.fax,
+        special_seal: this.documentCompanyInfo.special_seal
+      }
+      documentSetting.companySave(data).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('提交成功')
+          this.getDocumentCompanyInfo()
+        }
+      })
+    },
+    getDocumentBankInfo () { // 获取英文银行信息
+      this.documentBankInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.bankDetail().then(res => {
+        if (res.data.status !== false) {
+          this.documentBankInfo = {
+            is_updated: false,
+            ...res.data.data
+          }
+        }
+        this.documentBankInfo.loading = false
+      })
+    },
+    saveDocumentBankInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentBankInfo.name) {
+        this.$message.warning('请输入开户银行(Bank Name)')
+        return
+      }
+      if (!this.documentBankInfo.address) {
+        this.$message.warning('请输入开户地址(Bank Address)')
+        return
+      }
+      if (!this.documentBankInfo.code) {
+        this.$message.warning('请输入银行SWIFT码(SWIFT Code)')
+        return
+      }
+      if (!this.documentBankInfo.beneficiary) {
+        this.$message.warning('请输入收款人(Beneficiary)')
+        return
+      }
+      if (!this.documentBankInfo.account_no) {
+        this.$message.warning('请输入开户账号(Account No)')
+        return
+      }
+
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.bankSave({
+        name: this.documentBankInfo.name,
+        address: this.documentBankInfo.address,
+        code: this.documentBankInfo.code,
+        beneficiary: this.documentBankInfo.beneficiary,
+        account_no: this.documentBankInfo.account_no
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('提交成功')
+          this.getDocumentBankInfo()
+        }
+      })
+    },
+    getDocumentHSCodeInfo (pages = 1, limit = 5) {
+      this.documentHSCodeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.HSList({
+        page: pages,
+        limit: limit,
+        hs_code: this.HSCode || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentHSCodeList = res.data.data
+          this.documentHSCodeTotal = res.data.total
+          if (this.documentHSCodePages !== pages) { // 更新页码
+            this.documentHSCodePages = pages
+          }
+        }
+        this.documentHSCodeInfo.loading = false
+      })
+    },
+    deleteDocumentHSCode (id) {
+      // if (!id) {
+      //   this.$message.error(`删除失败，ID：${id}未知`)
+      //   return
+      // }
+      // this.$confirm('此操作将永久删除该HS编码, 是否继续?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   this.$message({
+      //     type: 'success',
+      //     message: '删除成功!'
+      //   })
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '已取消删除'
+      //   })
+      // })
+    },
+    saveDocumentHSCodeInfo () {
+      // this.$message.success('添加成功')
+      // this.getDocumentHSCodeInfo(1)
+      // this.showPopup = false
+    },
+    getDocumentClientInfo (pages = 1, limit = 5) {
+      this.documentClientInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.clientList({
+        page: pages,
+        limit: limit,
+        name: this.clientName || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentClientList = res.data.data
+          this.documentClientTotal = res.data.total
+          if (this.documentClientPages !== pages) { // 更新页码
+            this.documentClientPages = pages
+          }
+        }
+        this.documentClientInfo.loading = false
+      })
+    },
+    deleteDocumentClient (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该公司, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.clientDelete({
+          id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentClientInfo()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentClientInfo () {
+      if (!this.documentClientInfo.name) {
+        this.$message.warning('请输入公司名称')
+        return
+      }
+      if (!this.documentClientInfo.address) {
+        this.$message.warning('请输入公司地址')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.clientSave({
+        id: this.documentClientInfo.id || null,
+        name: this.documentClientInfo.name,
+        address: this.documentClientInfo.address
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.showPopup = false
+          this.getDocumentClientInfo(1)
+        }
+      })
+    },
+    getDocumentPortInfo (pages = 1, limit = 5) {
+      this.documentPortInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.portList({
+        page: pages,
+        limit: limit,
+        country: this.portName || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentPortList = res.data.data
+          this.documentPortTotal = res.data.total
+          if (this.documentPortPages !== pages) { // 更新页码
+            this.documentPortPages = pages
+          }
+        }
+        this.documentPortInfo.loading = false
+      })
+    },
+    deleteDocumentPort (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该城市, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.portDelete({
+          id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentPortInfo()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentPortInfo () {
+      if (!this.documentPortInfo.country) {
+        this.$message.warning('请输入常用国家名称')
+        return
+      }
+      if (!this.documentPortInfo.port) {
+        this.$message.warning('请输入常用城市名称')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.portSave({
+        id: this.documentPortInfo.id || null,
+        country: this.documentPortInfo.country,
+        port_name: this.documentPortInfo.port
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.showPopup = false
+          this.getDocumentPortInfo(1)
+        }
+      })
+    },
+    getDocumentTypeInfo (pages = 1, limit = 5) {
+      this.documentTypeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.typeList({
+        page: pages,
+        limit: limit,
+        name: this.documentType || ''
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.documentTypeList = res.data.data
+          this.documentTypeTotal = res.data.total
+          if (this.documentTypePages !== pages) { // 更新页码
+            this.documentTypePages = pages
+          }
+        }
+        this.documentTypeInfo.loading = false
+      })
+    },
+    deleteDocumentType (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该品名, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.typeDelete({
+          id
+        }).then(res => {
+          if (res.data.statu !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentTypeInfo()
+            this.showPopup = false
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentTypeInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentTypeInfo.CNName) {
+        this.$messag.warning('请输入中文品类')
+        return
+      }
+      if (!this.documentTypeInfo.USName) {
+        this.$messag.warning('请输入英文品名')
+        return
+      }
+      if (!this.documentTypeInfo.unit) {
+        this.$messag.warning('请输入单位名称')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.typeSave({
+        id: this.documentTypeInfo.id || null,
+        name: this.documentTypeInfo.CNName,
+        english: this.documentTypeInfo.USName,
+        unit: this.documentTypeInfo.unit
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.getDocumentTypeInfo(1)
+          this.showPopup = false
+        }
+      })
+    },
+    getDocumentPayTypeInfo (pages = 1, limit = 5) {
+      this.documentPayTypeInfo.loading = true
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.payTypeList({
+        page: pages,
+        limit,
+        name: this.documentPayType || ''
+      }).then(res => {
+        if (res.data.statu !== false) {
+          this.documentPayTypeList = res.data.data
+          this.documentPayTypeTotal = res.data.total
+          if (this.documentPayTypePages !== pages) { // 更新页码
+            this.documentPayTypePages = pages
+          }
+        }
+        this.documentPayTypeInfo.loading = false
+      })
+    },
+    deleteDocumentPayType (id) {
+      if (!id) {
+        this.$message.error(`删除失败，ID：${id}未知`)
+        return
+      }
+      this.$confirm('此操作将永久删除该付款方式, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const { documentSetting } = require('@/assets/js/api.js')
+        documentSetting.payTypeDelete({
+          id
+        }).then(res => {
+          if (res.data.statu !== false) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getDocumentPayTypeInfo()
+            this.showPopup = false
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    saveDocumentPayTypeInfo () {
+      if (this.$submitLock()) return
+      if (!this.documentPayTypeInfo.CNName) {
+        this.$messag.warning('请输入中文名称')
+        return
+      }
+      if (!this.documentPayTypeInfo.USName) {
+        this.$messag.warning('请输入英文代号')
+        return
+      }
+      const { documentSetting } = require('@/assets/js/api.js')
+      documentSetting.payTypeSave({
+        id: this.documentPayTypeInfo.id || null,
+        name: this.documentPayTypeInfo.CNName,
+        english: this.documentPayTypeInfo.USName
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('添加成功')
+          this.getDocumentPayTypeInfo(1)
+          this.showPopup = false
+        }
+      })
+    },
+    addDocument (item) {
+      switch (this.cName) {
+        case 'HS编码设置':
+          this.documentHSCodeInfo = {
+            id: (item && item.id) || null,
+            HSCode: (item && item.HSCode) || '',
+            name: (item && item.name) || '',
+            importTax: (item && item.importTax) || '',
+            exportTax: (item && item.exportTax) || ''
+          }
+          break
+        case '常用公司设置':
+          this.documentClientInfo = {
+            id: (item && item.id) || null,
+            name: (item && item.name) || '',
+            address: (item && item.address) || ''
+          }
+          break
+        case '常用城市设置':
+          this.documentPortInfo = {
+            id: (item && item.id) || null,
+            country: (item && item.country) || '',
+            port: (item && item.port_name) || ''
+          }
+          break
+        case '常用品名设置':
+          this.documentTypeInfo = {
+            id: (item && item.id) || null,
+            CNName: (item && item.CNName) || '',
+            USName: (item && item.USName) || '',
+            unit: (item && item.unit) || ''
+          }
+          break
+        case '常用付款方式':
+          this.documentPayTypeInfo = {
+            id: (item && item.id) || null,
+            CNName: (item && item.CNName) || '',
+            USName: (item && item.USName) || ''
+          }
+          break
+        default:
+          break
+      }
+      this.showPopup = true
+    },
+    // 单证模块结束
+    downLoadTemplete (type) {
+      const { downloadExcel } = require('@/assets/js/common.js')
+      switch (type) {
+        case 'flower':
+          downloadExcel([], [
+            { title: '花型名称', key: 'name' }
+          ], null, '产品花型模板')
+          break
+        case 'ingredient':
+          downloadExcel([], [
+            { title: '成分名称', key: 'name' }
+          ], null, '产品成分模板')
+          break
+        case 'colour':
+          downloadExcel([], [
+            { title: '配色名称', key: 'name' }
+          ], null, '产品配色模板')
+          break
+        case 'side':
+          downloadExcel([], [
+            { title: '边型名称', key: 'name' }
+          ], null, '边型模板')
+          break
+        case 'machine':
+          downloadExcel([], [
+            { title: '机型名称', key: 'name' }
+          ], null, '机型模板')
+          break
+        case 'methods':
+          downloadExcel([], [
+            { title: '组织法名称', key: 'name' }
+          ], null, '组织法模板')
+          break
+        case 'yarn':
+          downloadExcel([], [
+            { title: '纱线原料名称', key: 'name' }
+          ], null, '纱线原料模板')
+          break
+        case 'yarnColor':
+          downloadExcel([], [
+            { title: '纱线颜色名称', key: 'name' },
+            { title: '色块', key: 'color_code' }
+          ], null, '纱线颜色模板')
+          break
+        case 'material':
+          downloadExcel([], [
+            { title: '装饰辅料名称', key: 'name' },
+            { title: '计量单位', key: 'unit' },
+            { title: `是否需要织造(注:'是'填'1','否'填'0',默认为'0')`, key: 'need_weave' }
+          ], null, '装饰辅料模板')
+          break
+        case 'pack':
+          downloadExcel([], [
+            { title: '包装辅料名称', key: 'name' },
+            { title: '计量单位', key: 'unit' },
+            { title: `计价方式(注:'面积'填'1','其它'填'2',默认为'2')`, key: 'type' }
+          ], null, '包装辅料模板')
+          break
+        case 'yarnProcess':
+          downloadExcel([], [
+            { title: '原料工序名称', key: 'name' }
+          ], null, '原料工序模板')
+          break
+        case 'semiProcess':
+          downloadExcel([], [
+            { title: '半成品加工工序名称', key: 'name' }
+          ], null, '半成品加工工序模板')
+          break
+        case 'staffProcess':
+          downloadExcel([], [
+            { title: '结算工序名称', key: 'name' }
+          ], null, '结算工序模板')
+          break
+        default:
+          this.$message.error('未知模板类型，下载失败！！！')
+          break
+      }
+    },
+    importExcelData (type) {
+      const inputFile = document.createElement('input')
+      inputFile.type = 'file'
+      inputFile.accept = '.xlsx,.xls'
+      inputFile.addEventListener('change', (e) => {
+        this.getExcelData(e, this.saveImportData, type)
+      })
+      let click = document.createEvent('MouseEvents')
+      click.initEvent('click', true, true)
+      inputFile.dispatchEvent(click)
+    },
+    getExcelData (file, callBack, type) {
+      const XLSX = require('xlsx')
+      const files = file.target.files
+      const fileReader = new FileReader()
+      fileReader.onload = function (e) {
+        try {
+          const data = e.target.result
+          const bytes = new Uint8Array(data) // 无符号整型数组
+          const len = bytes.byteLength
+          const binarys = new Array(len) // 创建定长数组，存储文本
+          for (let i = 0; i < len; i++) { binarys[i] = String.fromCharCode(bytes[i]) }
+          const workbook = XLSX.read(binarys.join(''), { type: 'binary' })
+          if (!workbook) { return null }
+          const r = {}
+          workbook.SheetNames.forEach(name => { // 遍历每张纸数据
+            r[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name])
+          })
+          callBack && callBack(r, type)
+        } catch (e) {
+          console.log('文件类型不正确')
+        }
+      }
+      fileReader.readAsArrayBuffer(files[0])
+    },
+    saveImportData (data, type) {
+      console.log(data, type)
+      let typeObj = null
+      let api = null
+      switch (type) {
+        case 'flower':
+          typeObj = {
+            id: [false, null],
+            name: ['花型名称']
+          }
+          api = flower.create
+          break
+        case 'ingredient':
+          typeObj = {
+            id: [false, null],
+            name: ['成分名称']
+          }
+          api = ingredient.create
+          break
+        case 'colour':
+          typeObj = {
+            id: [false, null],
+            name: ['配色名称'],
+            color_code: [false, null]
+          }
+          api = colour.create
+          break
+        case 'side':
+          typeObj = {
+            id: [false, null],
+            name: ['边型名称']
+          }
+          api = craftSetting.createSide
+          break
+        case 'machine':
+          typeObj = {
+            id: [false, null],
+            name: ['机型名称']
+          }
+          api = craftSetting.createMachine
+          break
+        case 'methods':
+          typeObj = {
+            id: [false, null],
+            name: ['组织法名称']
+          }
+          api = craftSetting.createMethods
+          break
+        case 'yarn':
+          typeObj = {
+            id: [false, null],
+            name: ['纱线原料名称'],
+            price_data: [false, []]
+          }
+          api = yarn.create
+          break
+        case 'yarnColor':
+          typeObj = {
+            id: [false, null],
+            name: ['纱线颜色名称'],
+            color_code: ['色块', null]
+          }
+          api = yarnColor.create
+          break
+        case 'material':
+          typeObj = {
+            id: [false, null],
+            name: ['装饰辅料名称'],
+            unit: ['计量单位'],
+            need_weave: [`是否需要织造(注:'是'填'1','否'填'0',默认为'0')`, 0],
+            price_data: [false, []]
+          }
+          api = material.create
+          break
+        case 'pack':
+          typeObj = {
+            id: [false, null],
+            name: ['包装辅料名称'],
+            unit: ['计量单位'],
+            type: [`计价方式(注:'面积'填'1','其它'填'2',默认为'2')`, 2],
+            price_data: [false, []]
+          }
+          api = packag.create
+          break
+        case 'yarnProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['原料工序名称'],
+            type: [false, 1]
+          }
+          api = process.create
+          break
+        case 'semiProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['半成品加工工序名称'],
+            type: [false, 2]
+          }
+          api = process.create
+          break
+        case 'staffProcess':
+          typeObj = {
+            id: [false, null],
+            name: ['结算工序名称'],
+            type: [false, 3]
+          }
+          api = process.create
+          break
+        default:
+          this.$message.error('未知模板类型，导入失败！！！')
+          return
+      }
+      let submitData = []
+      for (const prop in data) {
+        for (const key in data[prop]) {
+          let obj = {}
+          for (const indexType in typeObj) {
+            if (typeObj[indexType][0]) {
+              obj[indexType] = data[prop][key][typeObj[indexType][0]] || data[prop][key][typeObj[indexType][1]]
+              if (obj[indexType] === undefined) {
+                this.$message.error('解析失败，请使用标准模板或检测必填数据是否存在空的情况！！！')
+                return
+              }
+            } else {
+              obj[indexType] = typeObj[indexType][1]
+            }
+          }
+          submitData.push(obj)
+        }
+      }
+      if (submitData.length === 0) {
+        this.$message.warning('未读取到可用参数')
+        return
+      }
+      api({
+        data: submitData
+      }).then(res => {
+        if (res.data.status !== false) {
+          this.$message.success('导入成功,即将刷新数据')
+          setTimeout(() => {
+            this.$winReload()
+          }, 1000)
+        }
+      })
     },
     // 批量修改
     updatedBatchSubmit () {
@@ -3204,8 +4830,11 @@ export default {
       }
       if (this.staffProcess) {
         process.create({
-          type: 3,
-          name: this.staffProcess
+          data: [{
+            id: null,
+            type: 3,
+            name: this.staffProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -3892,7 +5521,10 @@ export default {
     saveFlower () {
       if (this.flower) {
         flower.create({
-          name: this.flower
+          data: [{
+            id: null,
+            name: this.flower
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -3943,7 +5575,10 @@ export default {
     saveIngredient () {
       if (this.ingredient) {
         ingredient.create({
-          name: this.ingredient
+          data: [{
+            id: null,
+            name: this.ingredient
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -3994,8 +5629,11 @@ export default {
     saveColour () {
       if (this.colour && this.colour.indexOf('/') === -1) {
         colour.create({
-          name: this.colour,
-          color_code: ''
+          data: [{
+            id: null,
+            name: this.colour,
+            color_code: ''
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success({
@@ -4132,7 +5770,10 @@ export default {
     saveSide () {
       if (this.side) {
         craftSetting.createSide({
-          name: this.side
+          data: [{
+            id: null,
+            name: this.side
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4177,7 +5818,10 @@ export default {
     saveMachine () {
       if (this.machine) {
         craftSetting.createMachine({
-          name: this.machine
+          data: [{
+            id: null,
+            name: this.machine
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4222,7 +5866,10 @@ export default {
     saveMethods () {
       if (this.methods) {
         craftSetting.createMethods({
-          name: this.methods
+          data: [{
+            id: null,
+            name: this.methods
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4379,8 +6026,11 @@ export default {
     saveYarnColor () {
       if (this.yarnColor && this.yarnColorCode) {
         yarnColor.create({
-          name: this.yarnColor,
-          color_code: this.yarnColorCode
+          data: [{
+            id: null,
+            name: this.yarnColor,
+            color_code: this.yarnColorCode
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4453,16 +6103,18 @@ export default {
     saveMaterial () {
       if (this.changeMaterialInfo.materialName && this.changeMaterialInfo.unit) {
         material.create({
-          id: this.changeMaterialInfo.id,
-          unit: this.changeMaterialInfo.unit,
-          name: this.changeMaterialInfo.materialName,
-          need_weave: this.changeMaterialInfo.need_weave,
-          price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
-            return {
-              client_id: itemPrice.company,
-              price: itemPrice.price
-            }
-          })
+          data: [{
+            id: this.changeMaterialInfo.id,
+            unit: this.changeMaterialInfo.unit,
+            name: this.changeMaterialInfo.materialName,
+            need_weave: this.changeMaterialInfo.need_weave,
+            price_data: this.changeMaterialInfo.materialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+              return {
+                client_id: itemPrice.company,
+                price: itemPrice.price
+              }
+            })
+          }]
         }).then(res => {
           if (res.data.status !== false) {
             this.$message.success(this.changeMaterialInfo.id ? '修改成功' : '添加成功')
@@ -4515,14 +6167,15 @@ export default {
         this.changePackMaterialInfo.packName = item.name
         this.changePackMaterialInfo.id = item.id
         this.changePackMaterialInfo.unit = item.unit
-        this.changePackMaterialInfo.packPriceArr = item.price.map(itemPrice => {
+        this.changePackMaterialInfo.type = item.type === 1 ? 'area' : 'other'
+        this.changePackMaterialInfo.packMaterialPriceArr = item.price.map(itemPrice => {
           return {
             company: itemPrice.client_id.toString(),
             price: itemPrice.price
           }
         })
-        if (this.changePackMaterialInfo.packPriceArr.length === 0) {
-          this.changePackMaterialInfo.packPriceArr = [{
+        if (this.changePackMaterialInfo.packMaterialPriceArr.length === 0) {
+          this.changePackMaterialInfo.packMaterialPriceArr = [{
             company: '',
             price: ''
           }]
@@ -4566,17 +6219,19 @@ export default {
     savePack () {
       if (this.changePackMaterialInfo.packName && this.changePackMaterialInfo.unit) {
         packag.create({
-          id: this.changePackMaterialInfo.id,
-          unit: this.changePackMaterialInfo.unit,
-          name: this.changePackMaterialInfo.packName,
-          type: this.changePackMaterialInfo.type === 'area' ? 1 : 2,
-          price_data: this.changePackMaterialInfo.packMaterialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
-            return {
-              client_id: itemPrice.company,
-              price: itemPrice.price,
-              unit: this.changePackMaterialInfo.type === 'area' ? '元/㎡' : '元/' + this.changePackMaterialInfo.unit
-            }
-          })
+          data: [{
+            id: this.changePackMaterialInfo.id,
+            unit: this.changePackMaterialInfo.unit,
+            name: this.changePackMaterialInfo.packName,
+            type: this.changePackMaterialInfo.type === 'area' ? 1 : 2,
+            price_data: this.changePackMaterialInfo.packMaterialPriceArr.filter(itemPrice => itemPrice.company).map(itemPrice => {
+              return {
+                client_id: itemPrice.company,
+                price: itemPrice.price,
+                unit: this.changePackMaterialInfo.type === 'area' ? '元/㎡' : '元/' + this.changePackMaterialInfo.unit
+              }
+            })
+          }]
         }).then(res => {
           if (res.data.status === false) {
             this.$message.error('添加失败，' + res.data.message)
@@ -4624,8 +6279,11 @@ export default {
     saveMaterialProcess () {
       if (this.materialProcess) {
         process.create({
-          type: 1,
-          name: this.materialProcess
+          data: [{
+            id: null,
+            type: 1,
+            name: this.materialProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4672,8 +6330,11 @@ export default {
     saveHalfProcess () {
       if (this.halfProcess) {
         process.create({
-          type: 2,
-          name: this.halfProcess
+          data: [{
+            id: null,
+            type: 2,
+            name: this.halfProcess
+          }]
         }).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
@@ -4710,7 +6371,9 @@ export default {
       })
     },
     getGroup () {
-      group.list().then((res) => {
+      group.list({
+        is_check: 0
+      }).then((res) => {
         this.groupList = res.data.data
         this.groupTotal = this.groupList.length
       })
@@ -4757,6 +6420,36 @@ export default {
             this.$message({
               type: 'success',
               message: '删除成功!'
+            })
+            this.getGroup()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    banGroup (item) {
+      let msg = ''
+      if (item.status === 1) {
+        msg = '是否禁用该小组，请确认'
+      } else {
+        msg = '是否启用该小组'
+      }
+      this.$confirm(msg, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        group.ban({
+          id: item.id
+        }).then((res) => {
+          if (res.data.status !== false) {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
             })
             this.getGroup()
           }
@@ -4932,7 +6625,8 @@ export default {
       }
       auth.list({
         page: this.authPage,
-        limit: 5
+        limit: 5,
+        is_check: 0
       }).then((res) => {
         this.authList = res.data.data
         this.authTotal = res.data.meta.total
@@ -5001,47 +6695,6 @@ export default {
       } else {
         return ''
       }
-    },
-    getDetailInfo (type, item) {
-      // console.log(type, item)
-      // if (type === 'yarn') {
-      //   yarn.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-      //     }
-      //   })
-      // } else if (type === 'material') {
-      //   material.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-
-      //     }
-      //   })
-      // } else if (type === 'pack') {
-      //   packag.priceLog({
-      //     id: item.id
-      //   }).then(res => {
-      //     if (res.data.status === false) {
-      //       this.$message.error('获取历史价格失败，' + res.data.message)
-      //     } else {
-
-      //     }
-      //   })
-      // } else {
-      //   this.$message.error('未知错误，请尝试刷新页面')
-      //   return
-      // }
-      // this.detailType = type
-      // this.detailInfo.name = item.name
-      // this.detailInfo.unit = item.unit
-      // this.detailInfo.price = item.price
-      // this.showDetailPopup = true
     },
     getSemiList () {
       course.list({

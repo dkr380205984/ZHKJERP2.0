@@ -1258,6 +1258,17 @@
         <div class="rowCtn">
           <div class="colCtn">
             <div class="label">
+              <span class="text">其它信息</span>
+            </div>
+            <div class="content">
+              <el-input v-model="others_info"
+                placeholder="请输入其它信息"></el-input>
+            </div>
+          </div>
+        </div>
+        <div class="rowCtn">
+          <div class="colCtn">
+            <div class="label">
               <span class="text">备注信息</span>
             </div>
             <div class="content">
@@ -1269,7 +1280,14 @@
       </div>
     </div>
     <div class="bottomFixBar">
-      <div class="main">
+      <div class="main"
+        style="display:flex;align-items:center;justify-content:space-between">
+        <div class="leftCtn">
+          <craft-course>
+            <div class="btn btnBlue"
+              slot="show">使用教程</div>
+          </craft-course>
+        </div>
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
@@ -1949,7 +1967,8 @@ export default {
         warp: [],
         weft: []
       },
-      chuankouDetail: []
+      chuankouDetail: [],
+      others_info: '' // 新增字段，其它信息
     }
   },
   watch: {
@@ -3378,7 +3397,8 @@ export default {
           GLFlag: this.GLFlag,
           desc: this.remarkPM,
           GLRepeat: this.GLRepeat
-        }
+        },
+        other_info: this.others_info
       }
       this.loading = true
       craft.update(formData).then((res) => {
