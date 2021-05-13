@@ -79,9 +79,12 @@
           </template>
           <template slot="opr"
             slot-scope="scope">
-            <div class="col">
+            <div class="col"
+              style="width:200px">
               <span class="opr"
-                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/receiveDispatch/jysf/' + scope.itemOrder.id)">检验收发</span>
+                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/receiveDispatch/jysf/' + scope.itemOrder.id)">梭织</span>
+              <span class="opr"
+                @click="$saveHistoryOrder(scope.itemOrder);$router.push('/receiveDispatch/jysfZZ/' + scope.itemOrder.id)">针织</span>
             </div>
           </template>
         </order-list>

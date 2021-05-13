@@ -486,7 +486,19 @@ export default {
       this.warpInfo = data.warp_data
       this.weftInfo = data.weft_data
       this.weftCmp = this.warpInfo.weight_calculate_formula
-      this.GL = data.draft_method.GL
+      this.GL = data.draft_method.GL.map((item) => {
+        return item.map((item2) => {
+          return item2.map((item3) => {
+            if (typeof (item3) === 'string') {
+              return item3
+            } else if (!item3) {
+              return ''
+            } else {
+              return item3.value
+            }
+          })
+        })
+      })
       this.GLFlag = data.draft_method.GLFlag
       this.PM = data.draft_method.PM
       this.PMFlag = data.draft_method.PMFlag

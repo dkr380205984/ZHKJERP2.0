@@ -367,12 +367,20 @@ const routes = [
       component: () => import('../views/receiveDispatch/receiveDispatchDetail.vue')
     }, {
       path: '/receiveDispatch/jysf/:id',
-      name: '检验收发详情',
+      name: '检验收发详情-梭织',
       meta: {
         showAboutCom: true,
         orderId: 'id'
       },
       component: () => import('../views/receiveDispatch/jysf.vue')
+    }, {
+      path: '/receiveDispatch/jysfZZ/:id',
+      name: '检验收发详情-针织',
+      meta: {
+        showAboutCom: true,
+        orderId: 'id'
+      },
+      component: () => import('../views/receiveDispatch/jysfZZ.vue')
     }, {
       path: '/receiveDispatch/batchXpList/:params',
       name: '芯片读取出入库列表',
@@ -738,7 +746,8 @@ router.beforeEach((to, from, next) => {
     '包装订购详情': ['织为云', '装箱管理列表', '包装订购详情'],
     '产品收发列表': ['织为云', '产品收发列表'],
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
-    '检验收发详情': ['织为云', '检验收发列表', '检验收发详情'],
+    '检验收发详情-针织': ['织为云', '检验收发列表', '检验收发详情-针织'],
+    '检验收发详情-梭织': ['织为云', '检验收发列表', '检验收发详情-梭织'],
     '产品检验列表': ['织为云', '产品检验列表'],
     '成品检验详情': ['织为云', '产品检验列表', '成品检验详情'],
     '半成品检验详情': ['织为云', '产品检验列表', '半成品检验详情'],

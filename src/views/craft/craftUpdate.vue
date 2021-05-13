@@ -534,12 +534,27 @@
                     @click="changeState(GLMapArr[index1][index2],index1,index2)">{{index2+1}}</span>
                 </div>
                 <div class="rightCtn">
-                  <el-input placeholder="数字间用逗号分隔"
-                    v-model="item2[0]"></el-input>
-                  <el-input placeholder="数字间用逗号分隔"
-                    v-model="item2[1]"></el-input>
-                  <el-input placeholder="非必填项"
-                    v-model="item2[2]"></el-input>
+                  <div class="hehe">
+                    <el-input placeholder="数字间用逗号分隔"
+                      v-model="item2[0].value"></el-input>
+                    <div class="normal"
+                      :class="item2[0].mark"
+                      @click="changeStateChild(item2[0])">{{!item2[0].mark?'停撬':''}}</div>
+                  </div>
+                  <div class="hehe">
+                    <el-input placeholder="数字间用逗号分隔"
+                      v-model="item2[1].value"></el-input>
+                    <div class="normal"
+                      :class="item2[1].mark"
+                      @click="changeStateChild(item2[1])">{{!item2[1].mark?'停撬':''}}</div>
+                  </div>
+                  <div class="hehe">
+                    <el-input placeholder="非必填项"
+                      v-model="item2[2].value"></el-input>
+                    <div class="normal"
+                      :class="item2[2].mark"
+                      @click="changeStateChild(item2[2])">{{!item2[2].mark?'停撬':''}}</div>
+                  </div>
                 </div>
               </div>
               <div class="specialBtn position"
@@ -1897,7 +1912,7 @@ export default {
         repeat: ''
       }]],
       // GL:graphic layout 纹版图缩写
-      GL: [[['', '', '']]],
+      GL: [[[{ value: '', mark: '' }, { value: '', mark: '' }, { value: '', mark: '' }]]],
       GLFlag: 'normal',
       alphabet: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
       romanNum: ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'],
@@ -2047,6 +2062,16 @@ export default {
         this.GLMapArr[index1][index2] = this.markArr[index + 1]
       } else {
         this.GLMapArr[index1][index2] = ''
+      }
+      this.$forceUpdate()
+    },
+    // 修改子项停撬状态
+    changeStateChild (item) {
+      const index = this.markArr.indexOf(item.mark)
+      if (index < this.markArr.length - 1) {
+        item.mark = this.markArr[index + 1]
+      } else {
+        item.mark = ''
       }
       this.$forceUpdate()
     },
@@ -3097,7 +3122,7 @@ export default {
         }
         this.GL.forEach((item1) => {
           item1.forEach((item2) => {
-            if (!item2[0] || !item2[1]) {
+            if (!item2[0].value || !item2[1].value) {
               errorInput = true
             }
           })
@@ -3336,10 +3361,16 @@ export default {
           GL: this.GL.map((item) => {
             return item.map((item2) => {
               return item2.map((item3) => {
-                if (item3) {
-                  return item3.replace(/，|\./g, ',')
+                if (item3.value) {
+                  return {
+                    value: item3.value.replace(/，|\./g, ','),
+                    mark: item3.mark
+                  }
                 } else {
-                  return item3
+                  return {
+                    value: '',
+                    mark: ''
+                  }
                 }
               })
             })
@@ -3520,7 +3551,25 @@ export default {
         this.tableHot.weftBack = new Handsontable(this.$refs.weftBack, this.tableData.weftBack)
       })
 
-      this.GL = data.draft_method.GL
+      this.GL = data.draft_method.GL.map((item) => {
+        return item.map((item2) => {
+          return item2.map((item3) => {
+            if (typeof (item3) === 'string') {
+              return {
+                value: item3,
+                mark: ''
+              }
+            } else if (!item3) {
+              return {
+                value: '',
+                mark: ''
+              }
+            } else {
+              return item3
+            }
+          })
+        })
+      })
       this.GLFlag = data.draft_method.GLFlag
       this.repeatPM = data.draft_method.PM
       this.PMFlag = data.draft_method.PMFlag

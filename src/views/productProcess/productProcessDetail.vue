@@ -306,14 +306,24 @@
         </el-switch>
       </div>
       <div class="editCtn hasBorderTop">
+        <div style="margin-bottom:18px;overflow:hidden;padding:0 64px">
+          <div class="filterCtn"
+            style="float:right">
+            <div class="btnCtn">
+              <div class="btn btnBlue"
+                @click="addChoose">批量新增单位/人员</div>
+            </div>
+          </div>
+        </div>
         <div class="rowCtn">
           <div class="colCtn"
-            style="margin-right:32px">
+            style="margin-right:0px">
             <div class="filterCtn">
-              <div class="label">选择产品：</div>
+              <div class="label"
+                style="width:5em">选择产品：</div>
               <!-- 切换产品需要询问是否切换，并初始化尺码颜色 -->
               <el-select class="inputs"
-                style="width:200px"
+                style="width:205px"
                 v-model="inspectionForm.product_id"
                 placeholder="请选择产品"
                 @change="getInspectionPro">
@@ -324,11 +334,11 @@
               </el-select>
             </div>
             <div class="filterCtn">
-              <div class="label">成品工序：</div>
+              <div class="label">统一成品工序：</div>
               <el-select class="inputs"
                 multiple
                 collapse-tags
-                style="width:200px"
+                style="width:190px"
                 v-model="inspectionForm.product_flow"
                 @change="changeClientAuthArr($event)"
                 placeholder="请选择工序">
@@ -340,21 +350,23 @@
             </div>
             <!-- 选择人员模块重做 -->
             <div class="filterCtn">
-              <div class="label">结算单价：</div>
+              <div class="label">统一结算单价：</div>
               <zh-input class="inputs"
-                style="width:200px"
+                style="width:190px"
                 :keyBoard="keyBoard"
                 v-model="inspectionForm.price"
-                placeholder="请输入人员结算单价">
+                placeholder="人员统一结算单价">
                 <template slot="append">元</template>
               </zh-input>
             </div>
-            <div class="filterCtn"
-              style="float:right">
-              <div class="btnCtn">
-                <div class="btn btnBlue"
-                  @click="addChoose">批量新增单位/人员</div>
-              </div>
+            <div class="filterCtn">
+              <div class="label">自动分配数量：</div>
+              <zh-input class="inputs"
+                style="width:185px"
+                :keyBoard="keyBoard"
+                v-model="inspectionForm.number"
+                placeholder="自动分配数量">
+              </zh-input>
             </div>
           </div>
         </div>
@@ -411,6 +423,7 @@
                       style="height:32px!important"
                       v-model="item.product_flow"
                       collapse-tags
+                      :disabled="inspectionForm.product_flow.length>0"
                       placeholder="请选择工序"
                       clearable>
                       <el-option v-for="item in processArrCom"
@@ -429,7 +442,8 @@
                           <el-select class="inputs"
                             v-model="itemChild.colorSize"
                             no-data-text="请先选择产品"
-                            placeholder="请选择配色/尺码">
+                            placeholder="请选择配色/尺码"
+                            :disabled="!!inspectionForm.number">
                             <el-option v-for="item in inspectionForm.colorSizeArr"
                               :key="item.value"
                               :label="item.label"
@@ -442,6 +456,7 @@
                         <div style="height:32px">
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.number"
+                            :disabled="!!inspectionForm.number"
                             placeholder="加工数"></zh-input>
                         </div>
                       </div>
@@ -449,7 +464,8 @@
                         <div style="height:32px">
                           <zh-input :keyBoard="keyBoard"
                             v-model="itemChild.singlePrice"
-                            placeholder="单价">
+                            placeholder="单价"
+                            :disabled="!!inspectionForm.price">
                             <template slot="append">元</template>
                           </zh-input>
                         </div>
@@ -1046,10 +1062,11 @@ export default {
       processType: '',
       processArr: [],
       inspectionForm: {
-        process: '',
+        product_flow: [],
         product_id: '',
         colorSizeArr: [],
         clientAuth: [],
+        number: '', // 自动分配数量
         detail: [{
           client_auth: '',
           colorSize: [{
@@ -1346,6 +1363,8 @@ export default {
           color_id: item.color_id,
           size_name: item.size_name,
           size_id: item.size_id,
+          production_number: item.production_number,
+          inspectionNum: item.inspectionNum,
           value: item.color_id + '/' + item.size_id,
           label: item.color_name + '/' + item.size_name
         }
@@ -1437,44 +1456,97 @@ export default {
         if (item.client_auth.length === 0) {
           error = '请选择来源工序人员/单位'
         }
-        if (!item.product_flow || item.product_flow.length === 0) {
+        if (this.inspectionForm.product_flow.length === 0 && (!item.product_flow || item.product_flow.length === 0)) {
           error = '请选择加工工序'
         }
         item.colorSize.forEach((itemChild) => {
-          if (!itemChild.colorSize) {
+          if (!itemChild.colorSize && !this.inspectionForm.number) {
             error = '请选择尺码颜色'
           }
-          if (!itemChild.number) {
+          if (!this.inspectionForm.number && !itemChild.number) {
             error = '请输入检验数量'
           }
         })
       })
-
+      if (this.inspectionForm.number && this.inspectionForm.detail.length > 1) {
+        error = '自动分配只能选择一个来源单位/人员，如需手动分配请删除自动分配数量手动填写'
+      }
       if (error) {
         this.$message.error(error)
         return
       }
       this.loading = true
       let formData = []
-      this.inspectionForm.detail.forEach((item) => {
-        item.colorSize.forEach((itemChild) => {
-          formData.push({
-            order_type: this.$route.params.orderType,
-            product_flow: item.product_flow.join('/'),
-            order_id: this.$route.params.id,
-            product_id: this.inspectionForm.product_id,
-            size_id: itemChild.colorSize.split('/')[1],
-            color_id: itemChild.colorSize.split('/')[0],
-            client_id: (item.client_auth[0] !== '所有人员' && item.client_auth[0] !== '常用人员' && item.client_auth[0] !== '工序负责人员' && item.client_auth[0] !== '已检验人员') ? item.client_auth[1] : '',
-            inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' || item.client_auth[0] === '工序负责人员' || item.client_auth[0] === '已检验人员' ? item.client_auth[1] : '',
-            number: itemChild.number,
-            rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
-            complete_time: this.$getTime(new Date()),
-            price: itemChild.singlePrice || this.inspectionForm.price,
-            desc: ''
+      // 自动分配流程
+      if (this.inspectionForm.number) {
+        this.$message.success('正在为您自动分配数量')
+        let allNum = this.inspectionForm.number
+        this.inspectionForm.colorSizeArr.some((item) => {
+          if (allNum > 0) {
+            if (item.production_number - item.inspectionNum > 0) {
+              if (allNum > item.production_number - item.inspectionNum) {
+                formData.push({
+                  order_type: this.$route.params.orderType,
+                  product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+                  order_id: this.$route.params.id,
+                  product_id: this.inspectionForm.product_id,
+                  size_id: item.size_id,
+                  color_id: item.color_id,
+                  client_id: (this.inspectionForm.detail[0].client_auth[0] !== '所有人员' && this.inspectionForm.detail[0].client_auth[0] !== '常用人员' && this.inspectionForm.detail[0].client_auth[0] !== '工序负责人员' && this.inspectionForm.detail[0].client_auth[0] !== '已检验人员') ? this.inspectionForm.detail[0].client_auth[1] : '',
+                  inspection_user: this.inspectionForm.detail[0].client_auth[0] === '所有人员' || this.inspectionForm.detail[0].client_auth[0] === '常用人员' || this.inspectionForm.detail[0].client_auth[0] === '工序负责人员' || this.inspectionForm.detail[0].client_auth[0] === '已检验人员' ? this.inspectionForm.detail[0].client_auth[1] : '',
+                  number: item.production_number - item.inspectionNum,
+                  rejects_info: JSON.stringify({ reason: '', number: 0 }),
+                  complete_time: this.$getTime(new Date()),
+                  price: '',
+                  desc: ''
+                })
+                allNum = allNum - (item.production_number - item.inspectionNum)
+                return false
+              } else {
+                formData.push({
+                  order_type: this.$route.params.orderType,
+                  product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+                  order_id: this.$route.params.id,
+                  product_id: this.inspectionForm.product_id,
+                  size_id: item.size_id,
+                  color_id: item.color_id,
+                  client_id: (this.inspectionForm.detail[0].client_auth[0] !== '所有人员' && this.inspectionForm.detail[0].client_auth[0] !== '常用人员' && this.inspectionForm.detail[0].client_auth[0] !== '工序负责人员' && this.inspectionForm.detail[0].client_auth[0] !== '已检验人员') ? this.inspectionForm.detail[0].client_auth[1] : '',
+                  inspection_user: this.inspectionForm.detail[0].client_auth[0] === '所有人员' || this.inspectionForm.detail[0].client_auth[0] === '常用人员' || this.inspectionForm.detail[0].client_auth[0] === '工序负责人员' || this.inspectionForm.detail[0].client_auth[0] === '已检验人员' ? this.inspectionForm.detail[0].client_auth[1] : '',
+                  number: allNum,
+                  rejects_info: JSON.stringify({ reason: '', number: 0 }),
+                  complete_time: this.$getTime(new Date()),
+                  price: this.inspectionForm.price || this.inspectionForm.detail[0].colorSize[0].price,
+                  desc: ''
+                })
+                return true
+              }
+            }
+          } else {
+            return true
+          }
+        })
+        formData[0].rejects_info = JSON.stringify({ reason: this.inspectionForm.detail[0].colorSize[0].reason, number: this.inspectionForm.detail[0].colorSize[0].substandard })
+      } else {
+        this.inspectionForm.detail.forEach((item) => {
+          item.colorSize.forEach((itemChild) => {
+            formData.push({
+              order_type: this.$route.params.orderType,
+              product_flow: item.product_flow.join('/'),
+              order_id: this.$route.params.id,
+              product_id: this.inspectionForm.product_id,
+              size_id: itemChild.colorSize.split('/')[1],
+              color_id: itemChild.colorSize.split('/')[0],
+              client_id: (item.client_auth[0] !== '所有人员' && item.client_auth[0] !== '常用人员' && item.client_auth[0] !== '工序负责人员' && item.client_auth[0] !== '已检验人员') ? item.client_auth[1] : '',
+              inspection_user: item.client_auth[0] === '所有人员' || item.client_auth[0] === '常用人员' || item.client_auth[0] === '工序负责人员' || item.client_auth[0] === '已检验人员' ? item.client_auth[1] : '',
+              number: itemChild.number,
+              rejects_info: JSON.stringify({ reason: itemChild.reason, number: itemChild.substandard }),
+              complete_time: this.$getTime(new Date()),
+              price: itemChild.singlePrice || this.inspectionForm.price,
+              desc: ''
+            })
           })
         })
-      })
+      }
       inspection.finishedCreate({ data: formData }).then((res) => {
         if (res.data.status) {
           let payArr = formData.filter((item) => item.inspection_user).map((item) => {

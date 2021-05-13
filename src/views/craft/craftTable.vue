@@ -262,9 +262,9 @@
                         :class="GLMapArr[indexOut][index]"
                         :content="`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`">{{`${letterArr[indexOut]}${craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)}`}}</span>
                       <span class="detail">
-                        <span class="item">{{item[0]}}</span>
-                        <span class="item">{{item[1]}}</span>
-                        <span class="item">{{item[2]}}</span>
+                        <span class="item">{{item[0].value}}{{item[0].mark}}</span>
+                        <span class="item">{{item[1].value}}{{item[1].mark}}</span>
+                        <span class="item">{{item[2].value}}{{item[2].mark}}</span>
                         <div class="WBXHSIGN__right"
                           v-if="findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).right">
                           <span class="repeat">X{{findWBXHItem(indexOut,craftDetail.draft_method.GLXuhao[indexOut] && craftDetail.draft_method.GLXuhao[indexOut][index] || (index + 1)).value}}遍</span>
@@ -2410,9 +2410,9 @@
                 :class="GLMapArr[indexs][index]"
                 :content="`${letterArr[indexs]}${craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}`">{{letterArr[indexs]}}{{craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)}}</span>
               <span class="detail">
-                <span class="item">{{item[0]}}</span>
-                <span class="item">{{item[1]}}</span>
-                <span class="item">{{item[2]}}</span>
+                <span class="item">{{item[0].value}}{{item[0].mark}}</span>
+                <span class="item">{{item[1].value}}{{item[1].mark}}</span>
+                <span class="item">{{item[2].value}}{{item[2].mark}}</span>
                 <div class="WBXHSIGN__right"
                   v-if="findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).right">
                   <span class="repeat">X{{findWBXHItem(indexs,craftDetail.draft_method.GLXuhao[indexs] && craftDetail.draft_method.GLXuhao[indexs][index] || (index + 1)).value}}遍</span>
@@ -2886,7 +2886,25 @@ export default {
         data.weft_data.weft_rank = JSON.parse(data.weft_data.weft_rank)
         data.weft_data.weft_rank_back = JSON.parse(data.weft_data.weft_rank_back)
         this.craftDetail = this.$clone(data)
-        this.craftDetail.draft_method.GLShow = this.$clone(data.draft_method.GL)
+        this.craftDetail.draft_method.GLShow = this.$clone(data.draft_method.GL).map((item) => {
+          return item.map((item2) => {
+            return item2.map((item3) => {
+              if (typeof (item3) === 'string') {
+                return {
+                  value: item3,
+                  mark: ''
+                }
+              } else if (!item3) {
+                return {
+                  value: '',
+                  mark: ''
+                }
+              } else {
+                return item3
+              }
+            })
+          })
+        })
         this.craftDetail.draft_method.GLRepeat = this.$clone(data.draft_method.GLRepeat) || []
         this.craftDetail.draft_method.GLXuhao = []
         this.craftDetail.draft_method.GLRepeat.forEach((item) => {

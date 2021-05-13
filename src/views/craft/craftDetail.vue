@@ -294,7 +294,7 @@
             style="display:block">
             <div class="label">纹版图：</div>
             <div class="GLCtn"
-              v-for="(item1,index1) in GLShow"
+              v-for="(item1,index1) in GLFuck"
               :key="index1"
               style="overflow:hidden">
               <div class="mark"
@@ -310,15 +310,28 @@
                     :content="GLXuhao[index1] ? GLXuhao[index1][index2] : index2+1">{{GLXuhao[index1] ? GLXuhao[index1][index2] : ''}}</span>
                 </div>
                 <div class="rightCtn">
-                  <el-input placeholder="数字间用逗号分隔"
-                    v-model="item2[0]"
-                    disabled></el-input>
-                  <el-input placeholder="数字间用逗号分隔"
-                    v-model="item2[1]"
-                    disabled></el-input>
-                  <el-input placeholder=""
-                    v-model="item2[2]"
-                    disabled></el-input>
+                  <div class="hehe">
+                    <el-input style="margin-bottom:0"
+                      placeholder="数字间用逗号分隔"
+                      v-model="item2[0].value"
+                      disabled></el-input>
+                    <div class="normal"
+                      :class="item2[0].mark">{{!item2[0].mark?'停撬':''}}</div>
+                  </div>
+                  <div class="hehe">
+                    <el-input placeholder="数字间用逗号分隔"
+                      v-model="item2[1].value"
+                      disabled></el-input>
+                    <div class="normal"
+                      :class="item2[1].mark">{{!item2[1].mark?'停撬':''}}</div>
+                  </div>
+                  <div class="hehe">
+                    <el-input placeholder="非必填项"
+                      v-model="item2[2].value"
+                      disabled></el-input>
+                    <div class="normal"
+                      :class="item2[2].mark">{{!item2[2].mark?'停撬':''}}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1104,6 +1117,7 @@ export default {
         end: '',
         repeat: ''
       }]],
+      GLFuck: [[[{ value: '', mark: '' }, { value: '', mark: '' }, { value: '', mark: '' }]]], // 这个对象用于存储新的纹版图数据结构
       GLMapArr: [['']],
       GLShow: [], // 原先的纹版图复制到这里了，原先的纹版图被结合GLRepeat改造掉了
       GLXuhao: [],
@@ -1527,7 +1541,6 @@ export default {
           }
           secondArr.push(realStorage)
           // 在这里倒一遍，根据py暗号state = special
-          console.log(forNum, realStorage)
           if (forNum.state === 'special') {
             secondArr.push(this.$clone(realStorage).map((item) => {
               return item.reverse()
@@ -1745,8 +1758,38 @@ export default {
       this.tableData.weft.mergeCells = JSON.parse(this.weftInfo.merge_data)
       this.tableData.warpBack.mergeCells = JSON.parse(this.warpInfo.merge_data_back)
       this.tableData.weftBack.mergeCells = JSON.parse(this.weftInfo.merge_data_back)
-      // this.GL = data.draft_method.GL
-      this.GLShow = this.$clone(data.draft_method.GL)
+      this.GLFuck = this.$clone(data.draft_method.GL).map((item) => {
+        return item.map((item2) => {
+          return item2.map((item3) => {
+            if (typeof (item3) === 'string') {
+              return {
+                value: item3,
+                mark: ''
+              }
+            } else if (!item3) {
+              return {
+                value: '',
+                mark: ''
+              }
+            } else {
+              return item3
+            }
+          })
+        })
+      })
+      this.GLShow = this.$clone(data.draft_method.GL).map((item) => {
+        return item.map((item2) => {
+          return item2.map((item3) => {
+            if (typeof (item3) === 'string') {
+              return item3
+            } else if (!item3) {
+              return ''
+            } else {
+              return item3.value
+            }
+          })
+        })
+      })
       this.GLFlag = data.draft_method.GLFlag
       this.PM = data.draft_method.PM
       this.PMFlag = data.draft_method.PMFlag
@@ -1825,7 +1868,6 @@ export default {
           return this.GLMapArr[index] ? (this.GLMapArr[index][indexChild] || '') : ''
         })
       })
-      console.log(this.GLMapArr)
       // 计算克重信息
       this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
@@ -3107,12 +3149,6 @@ export default {
 </style>
 <style lang="less">
 #craftDetail {
-  .GLCtn {
-    .el-input.is-disabled .el-input__inner {
-      height: 32px !important;
-      margin-bottom: 15px;
-    }
-  }
   .el-input.is-disabled .el-input__inner {
     color: rgba(0, 0, 0, 0.65);
     background: #fff;
