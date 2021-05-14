@@ -542,8 +542,12 @@ const routes = [
       component: () => import('../views/other/chartIndex.vue')
     }, {
       path: '/client/clientList/:params',
-      name: '客户列表',
+      name: '客户结算列表',
       component: () => import('../views/client/clientList.vue')
+    }, {
+      path: '/client/clientListEasy/:params',
+      name: '客户列表',
+      component: () => import('../views/client/clientListEasy.vue')
     }, {
       path: '/client/clientCreate',
       name: '客户添加',

@@ -259,8 +259,9 @@
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
                       :key="index">
-                      <el-cascader v-model="item.weave_client_id"
-                        placeholder="选择织造单位"
+                      <el-cascader :show-all-levels="false"
+                        v-model="item.weave_client_id"
+                        placeholder="选择织造分配单位"
                         :options="selectData.weaveClient">
                       </el-cascader>
                     </div>
@@ -273,7 +274,6 @@
                       <zh-input :keyBoard="keyBoard"
                         v-model="item.number"
                         placeholder="数量"></zh-input>
-
                     </div>
                   </div>
                   <div class="tb_column">
@@ -287,7 +287,7 @@
                     </div>
                   </div>
                   <div class="tb_column">
-                    <div class="header">次品数量</div>
+                    <div class="header">次品数量(不填则未检验)</div>
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
                       :key="index">
@@ -317,12 +317,13 @@
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
                       :key="index">
-                      <el-cascader v-model="item.semi_client_id"
+                      <el-cascader :show-all-levels="false"
+                        v-model="item.semi_client_id"
                         placeholder="选择出库单位"
                         collapse-tags
                         :disabled="item.back_client_id.length>0"
-                        :props="{multiple:true}"
-                        :options="selectData.semiClient">
+                        :props="propCasSemi"
+                        :options="selectData.semiClientRender">
                       </el-cascader>
                     </div>
                   </div>
@@ -331,12 +332,13 @@
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
                       :key="index">
-                      <el-cascader v-model="item.back_client_id"
+                      <el-cascader :show-all-levels="false"
+                        v-model="item.back_client_id"
                         placeholder="选择回库单位"
                         collapse-tags
                         :disabled="item.semi_client_id.length>0"
-                        :props="{multiple:true}"
-                        :options="selectData.backClient">
+                        :props="propCasBack"
+                        :options="selectData.backClientRender">
                       </el-cascader>
                     </div>
                   </div>
@@ -371,131 +373,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <el-table :data="formData.tableData"
-                style="width:100%">
-                <el-table-column fixed
-                  label="产品名称"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.product_id"
-                      @change="selectProduct($event,scope.$index)"
-                      placeholder="选择产品">
-                      <el-option v-for="item in selectData.productArr"
-                        :key="item.product_id"
-                        :value="item.product_id"
-                        :label="item.product_code + '('+item.category_info.category_name+'/'+ item.category_info.type_name+'/'+ item.category_info.style_name+')'"></el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column fixed
-                  label="尺码颜色"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.colorSize"
-                      no-data-text="请先选择产品"
-                      placeholder="选择尺码颜色">
-                      <el-option v-for="item in scope.row.colorSizeArr"
-                        :key="item.id"
-                        :value="item.id"
-                        :label="item.name"></el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column label="织造分配单位"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-cascader v-model="scope.row.weave_client_id"
-                      placeholder="选择织造单位"
-                      :options="selectData.weaveClient">
-                    </el-cascader>
-                  </template>
-                </el-table-column>
-                <el-table-column label="数量"
-                  width="200">
-                  <template slot-scope="scope">
-                    <zh-input :keyBoard="keyBoard"
-                      v-model="scope.row.number"
-                      placeholder="数量"></zh-input>
-                  </template>
-                </el-table-column>
-                <el-table-column label="捆数"
-                  width="200">
-                  <template slot-scope="scope">
-                    <zh-input :keyBoard="keyBoard"
-                      v-model="scope.row.count"
-                      placeholder="捆数"></zh-input>
-                  </template>
-                </el-table-column>
-                <el-table-column label="次品数量"
-                  width="200">
-                  <template slot-scope="scope">
-                    <zh-input :keyBoard="keyBoard"
-                      v-model="scope.row.cpNum"
-                      placeholder="次品数量"></zh-input>
-                  </template>
-                </el-table-column>
-                <el-table-column label="次品原因"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-select v-model="scope.row.reason"
-                      placeholder="选择次品原因"
-                      collapse-tags
-                      multiple>
-                      <el-option v-for="(item,index) in selectData.defectiveType"
-                        :key="index"
-                        :label="item"
-                        :value="item"></el-option>
-                    </el-select>
-                  </template>
-                </el-table-column>
-                <el-table-column label="出库单位"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-cascader v-model="scope.row.semi_client_id"
-                      placeholder="选择出库单位"
-                      collapse-tags
-                      :disabled="scope.row.back_client_id.length>0"
-                      :props="{multiple:true}"
-                      :options="selectData.semiClient">
-                    </el-cascader>
-                  </template>
-                </el-table-column>
-                <el-table-column label="回库单位"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-cascader v-model="scope.row.back_client_id"
-                      placeholder="选择回库单位"
-                      collapse-tags
-                      :disabled="scope.row.semi_client_id.length>0"
-                      :props="{multiple:true}"
-                      :options="selectData.backClient">
-                    </el-cascader>
-                  </template>
-                </el-table-column>
-                <el-table-column label="备注信息"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-input v-model="scope.row.desc"
-                      placeholder="输入备注"></el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column label="绑定芯片"
-                  width="200">
-                  <template slot-scope="scope">
-                    <el-switch v-model="scope.row.is_xp"
-                      active-text="绑定"
-                      inactive-text="不绑定">
-                    </el-switch>
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作"
-                  width="100">
-                  <template slot-scope="scope">
-                    <div style="cursor:pointer;color:#F5222D"
-                      @click="formData.tableData.splice(scope.$index,1)">删除</div>
-                  </template>
-                </el-table-column>
-              </el-table> -->
             </div>
             <div class="addRows"
               style="margin:0 32px">
@@ -664,7 +541,8 @@
               <el-table-column label="织造分配单位"
                 width="200">
                 <template slot-scope="scope">
-                  <el-cascader v-if="scope.row.isEdit"
+                  <el-cascader :show-all-levels="false"
+                    v-if="scope.row.isEdit"
                     v-model="scope.row.weave_client_id"
                     placeholder="选择织造单位"
                     :options="selectData.weaveClient">
@@ -675,7 +553,8 @@
               <el-table-column label="半成品加工单位"
                 width="200">
                 <template slot-scope="scope">
-                  <el-cascader v-if="scope.row.isEdit"
+                  <el-cascader :show-all-levels="false"
+                    v-if="scope.row.isEdit"
                     v-model="scope.row.semi_client_id"
                     placeholder="选择半成品加工单位"
                     collapse-tags
@@ -772,7 +651,8 @@
           <div class="row">
             <span class="label">织造单位：</span>
             <span class="info">
-              <el-cascader v-model="formData.batchData.weave_client_id"
+              <el-cascader :show-all-levels="false"
+                v-model="formData.batchData.weave_client_id"
                 placeholder="选择单位"
                 collapse-tags
                 :options="selectData.weaveClient">
@@ -782,7 +662,8 @@
           <div class="row">
             <span class="label">加工单位：</span>
             <span class="info">
-              <el-cascader v-model="formData.batchData.semi_client_id"
+              <el-cascader :show-all-levels="false"
+                v-model="formData.batchData.semi_client_id"
                 placeholder="选择单位"
                 collapse-tags
                 :options="selectData.semiClient"
@@ -922,7 +803,8 @@
           <div class="row">
             <span class="label">织造单位：</span>
             <span class="info">
-              <el-cascader v-model="otherData.commonInfo.weave_client_id"
+              <el-cascader :show-all-levels="false"
+                v-model="otherData.commonInfo.weave_client_id"
                 placeholder="选择单位"
                 collapse-tags
                 :options="selectData.weaveClient">
@@ -932,7 +814,8 @@
           <div class="row">
             <span class="label">加工单位：</span>
             <span class="info">
-              <el-cascader v-model="otherData.commonInfo.semi_client_id"
+              <el-cascader :show-all-levels="false"
+                v-model="otherData.commonInfo.semi_client_id"
                 placeholder="选择单位"
                 collapse-tags
                 :disabled="otherData.commonInfo.back_client_id.length>0"
@@ -944,7 +827,8 @@
           <div class="row">
             <span class="label">回库单位：</span>
             <span class="info">
-              <el-cascader v-model="otherData.commonInfo.back_client_id"
+              <el-cascader :show-all-levels="false"
+                v-model="otherData.commonInfo.back_client_id"
                 placeholder="选择单位"
                 collapse-tags
                 :disabled="otherData.commonInfo.semi_client_id.length>0"
@@ -1172,10 +1056,77 @@ import zhInput from '../../components/zhInput/zhInput.vue'
 export default {
   components: { zhInput },
   data () {
+    const _self = this
     return {
       rfidreader: null,
       keyBoard: true,
       // 渲染层，用于渲染页面的数据
+      propCasSemi: {
+        multiple: true,
+        lazy: true,
+        lazyLoad (node, resolve) {
+          let nodes = []
+          if (node.label === '已分配单位') {
+            nodes = _self.selectData.semiClient[0].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          } else {
+            nodes = _self.selectData.semiClient[1].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          }
+          resolve(nodes)
+        }
+      },
+      propCasBack: {
+        multiple: true,
+        lazy: true,
+        lazyLoad (node, resolve) {
+          let nodes = []
+          if (node.label === '已分配单位') {
+            nodes = _self.selectData.backClient[0].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          } else if (node.label === '半成品加工单位') {
+            nodes = _self.selectData.backClient[1].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          } else if (node.label === '针织织造单位') {
+            nodes = _self.selectData.backClient[2].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          } else {
+            nodes = _self.selectData.backClient[3].children.map((item) => {
+              return {
+                label: item.label,
+                value: item.value,
+                leaf: true
+              }
+            })
+          }
+          resolve(nodes)
+        }
+      },
       renderData: {
         orderInfo: {
           order_code: '',
@@ -1215,7 +1166,7 @@ export default {
           colorSize: '',
           colorSizeArr: [],
           weave_client_id: '',
-          semi_client_id: '',
+          semi_client_id: [],
           number: '',
           count: '',
           ifXp: false,
@@ -1264,6 +1215,49 @@ export default {
         }, {
           value: '半成品加工单位',
           label: '半成品加工单位',
+          children: []
+        }],
+        semiClientRender: [{
+          value: '已分配单位',
+          label: '已分配单位',
+          children: []
+        }, {
+          value: '半成品加工单位',
+          label: '半成品加工单位',
+          children: []
+        }],
+        backClient: [{
+          value: '已分配单位',
+          label: '已分配单位',
+          children: []
+        }, {
+          value: '半成品加工单位',
+          label: '半成品加工单位',
+          children: []
+        }, {
+          value: '针织织造单位',
+          label: '针织织造单位',
+          children: []
+        }, {
+          label: '梭织织造单位',
+          value: '梭织织造单位',
+          children: []
+        }],
+        backClientRender: [{
+          value: '已分配单位',
+          label: '已分配单位',
+          children: []
+        }, {
+          value: '半成品加工单位',
+          label: '半成品加工单位',
+          children: []
+        }, {
+          value: '针织织造单位',
+          label: '针织织造单位',
+          children: []
+        }, {
+          label: '梭织织造单位',
+          value: '梭织织造单位',
           children: []
         }],
         defectiveType: ['跳线', '污迹', '经纬断线', '严重破损', '边型问题', '流苏问题', '颜色问题', '花型问题', '款型问题', '克重问题', '长度问题', '工序问题', '质量问题', '加工问题', '其他问题']
@@ -1410,6 +1404,34 @@ export default {
     },
     init (api) {
       let apiArr = api || this.otherData.otherApi
+      this.propCasSemi.lazy = true
+      this.selectData.semiClientRender = [{
+        value: '已分配单位',
+        label: '已分配单位',
+        children: []
+      }, {
+        value: '半成品加工单位',
+        label: '半成品加工单位',
+        children: []
+      }]
+      this.propCasBack.lazy = true
+      this.selectData.backClientRender = [{
+        value: '已分配单位',
+        label: '已分配单位',
+        children: []
+      }, {
+        value: '半成品加工单位',
+        label: '半成品加工单位',
+        children: []
+      }, {
+        value: '针织织造单位',
+        label: '针织织造单位',
+        children: []
+      }, {
+        label: '梭织织造单位',
+        value: '梭织织造单位',
+        children: []
+      }]
       this.otherData.loading = true
       Promise.all(apiArr.map((item) => {
         return item.api.call(null, item.params)
@@ -1742,6 +1764,38 @@ export default {
       this.otherData.batchAddFlag = true
     },
     commonFn () {
+      this.selectData.semiClientRender[0] = {
+        value: '已分配单位',
+        label: '已分配单位',
+        children: this.$clone(this.selectData.semiClient[0].children)
+      }
+      this.otherData.commonInfo.semi_client_id.map((item) => {
+        if (item[0] === '半成品加工单位') {
+          const finded = this.selectData.semiClient[1].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[1].children.push(finded)
+        }
+      })
+      this.propCasSemi.lazy = false
+      this.selectData.backClientRender[0] = {
+        value: '已分配单位',
+        label: '已分配单位',
+        children: this.$clone(this.selectData.backClient[0].children)
+      }
+      this.otherData.commonInfo.back_client_id.map((item) => {
+        if (item[0] === '半成品加工单位') {
+          const finded = this.selectData.backClient[1].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[1].children.push(finded)
+        }
+        if (item[0] === '针织织造单位') {
+          const finded = this.selectData.backClient[2].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[2].children.push(finded)
+        }
+        if (item[0] === '梭织织造单位') {
+          const finded = this.selectData.backClient[3].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[3].children.push(finded)
+        }
+      })
+      this.propCasBack.lazy = false
       this.formData.tableData.forEach((item) => {
         item.weave_client_id = this.$clone(this.otherData.commonInfo.weave_client_id)
         item.semi_client_id = this.$clone(this.otherData.commonInfo.semi_client_id)
@@ -1804,7 +1858,35 @@ export default {
           desc: ''
         }
       })
-      console.log(this.formData.tableData)
+      this.selectData.semiClientRender[0] = {
+        value: '已分配单位',
+        label: '已分配单位',
+        children: this.$clone(this.selectData.semiClient[0].children)
+      }
+      if (this.formData.batchData.weave_client_id[0] === '半成品加工单位') {
+        const finded = this.selectData.semiClient[1].children.find((itemFind) => itemFind.value === this.formData.batchData.weave_client_id[1])
+        this.selectData.semiClientRender[1].children.push(finded)
+      }
+      this.propCasSemi.lazy = false
+      this.selectData.backClientRender[0] = {
+        value: '已分配单位',
+        label: '已分配单位',
+        children: this.$clone(this.selectData.backClient[0].children)
+      }
+      this.formData.batchData.semi_client_id.map((item) => {
+        if (item[0] === '半成品加工单位') {
+          const finded = this.selectData.backClient[1].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[1].children.push(finded)
+        }
+        if (item[0] === '针织织造单位') {
+          const finded = this.selectData.backClient[2].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[2].children.push(finded)
+        }
+        if (item[0] === '梭织织造单位') {
+          const finded = this.selectData.backClient[3].children.find((itemFind) => itemFind.value === item[1])
+          this.selectData.semiClientRender[3].children.push(finded)
+        }
+      })
       this.otherData.batchFlag = false
     },
     deleteLog (id) {
@@ -2242,7 +2324,7 @@ export default {
     goNext () {
       if (this.otherData.xpLoop < (this.formData.xpformArr.length - 1)) {
         this.otherData.xpLoop++
-        this.otherData.xpState = 1
+        this.otherData.xpState = 4
         this.formData.xpform = this.changeDataToXp(this.formData.xpformArr[this.otherData.xpLoop])
         this.startRead()
       } else {
@@ -2297,6 +2379,7 @@ export default {
           // 读EPC
           case 23:
             if (resultdata.Result > 0) {
+              console.log(this.otherData.dataBuffer, Number(resultdata.CardNo.substring(8)), resultdata.CardNo)
               // 我也不知道为什么ABABABAB0000001.length等于18，我母鸡呀
               if (resultdata.CardNo && resultdata.CardNo.length >= 16 && resultdata.CardNo.substring(0, 8) === 'ABABABAB' && this.otherData.dataBuffer.includes(Number(resultdata.CardNo.substring(8)))) {
                 this.otherData.xpState = 7
@@ -2313,6 +2396,8 @@ export default {
           // 写EPC
           case 26:
             if (resultdata.Result > 0) {
+              console.log(resultdata)
+              console.log('写入成功')
               this.xpState = 4
               this.goNext()
             } else {

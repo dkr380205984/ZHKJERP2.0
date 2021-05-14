@@ -1,7 +1,8 @@
 <template>
   <div class="keyBoard"
     @click.stop
-    :style="{'left':left+'px','top':top+'px'}">
+    :style="{'left':left+'px','top':top+'px'}"
+    v-show="show">
     <div class="rowNum">
       <div class="colNum"
         :class="{'active':activeNum==='1'}"
@@ -76,7 +77,7 @@
 <script>
 import './zhBoarderkey.less'
 export default {
-  props: ['left', 'top'],
+  props: ['left', 'top', 'show'],
   data () {
     return {
       activeNum: ''

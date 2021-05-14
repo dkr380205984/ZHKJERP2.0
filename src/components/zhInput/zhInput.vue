@@ -284,6 +284,13 @@ export default {
     this.errorRegExp(this.nativeInputValue)
     document.body.removeEventListener('click', this.closeNum)
     document.body.addEventListener('click', this.closeNum)
+  },
+  beforeDestroy () {
+    // 组件销毁，销毁所有keyboard
+    const keyBoard = document.getElementsByClassName('keyBoard')
+    for (let i = 0; i < keyBoard.length; i++) {
+      keyBoard[i].parentNode.removeChild(keyBoard[i])
+    }
   }
 }
 </script>

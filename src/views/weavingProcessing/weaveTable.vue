@@ -576,9 +576,11 @@ export default {
     })
   },
   mounted () {
+    console.log(this.$route)
+    console.log('hahaha')
     const QRCode = require('qrcode')
     if (+this.$route.query.type === 1) {
-      QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
+      QRCode.toDataURL(window.location.origin + '/weavingProcessing/weavingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
           this.qrCodeUrl = url
         }
@@ -589,7 +591,7 @@ export default {
       //   }
       // })
     } else {
-      QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.type + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
+      QRCode.toDataURL(window.location.origin + '/weavingProcessing/processingDetail/' + this.$route.params.id + '/' + this.$route.params.orderType + '?showRouterPopup=true', { errorCorrectionLevel: 'H' }, (err, url) => {
         if (!err) {
           this.qrCodeUrl = url
         }

@@ -95,6 +95,9 @@ const permissions = [{
 }, {
   module: '单证管理',
   id: 21
+}, {
+  module: '客户单据管理',
+  id: 22
 }]
 const moneyArr = [{
   name: '元',

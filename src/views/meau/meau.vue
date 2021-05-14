@@ -126,8 +126,14 @@ export default {
           },
           {
             name: '客户添加结算',
-            id: 13,
+            id: 22,
             path: '/client/clientList/page=1&&keyword=&&clientType=',
+            icon: 'icon-kehuguanli'
+          },
+          {
+            name: '客户管理',
+            id: 13,
+            path: '/client/clientListEasy/page=1&&keyword=&&clientType=',
             icon: 'icon-kehuguanli'
           },
           {
