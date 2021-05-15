@@ -3394,10 +3394,9 @@ export default {
     },
     // 计算下筘幅
     cmpReedWidth () {
+      console.log(this.warpInfo.reed_width_data)
       this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
-        return total + cur.split('+').reduce((totalChild, curChild) => {
-          return totalChild + (Number(curChild || 0))
-        }, 0)
+        return total + cur
       }, 0).toFixed(2)
     },
     // 预览纹版图
@@ -3958,7 +3957,26 @@ export default {
       let value = this.commonPMArr.find((item) => item.id === id)
       const flag = JSON.parse(value.data)
       const data = JSON.parse(value.pattern_loop)
-      this.GL = data.GL
+      // 兼容旧工艺单纹版图
+      this.GL = data.GL.map((item) => {
+        return item.map((item2) => {
+          return item2.map((item3) => {
+            if (typeof (item3) === 'string') {
+              return {
+                value: item3,
+                mark: ''
+              }
+            } else if (!item3) {
+              return {
+                value: '',
+                mark: ''
+              }
+            } else {
+              return item3
+            }
+          })
+        })
+      })
       this.repeatPM = data.PM
       this.GLFlag = flag.GLFlag
       this.PMFlag = flag.PMFlag
