@@ -1525,6 +1525,29 @@ export default {
             return true
           }
         })
+        if (allNum > 0) {
+          this.$message.warning('检测到有溢出数量，以为您自动分配到第一项')
+          console.log(formData)
+          if (formData.length > 0) {
+            formData[0].number = Number(formData[0].number) + allNum
+          } else {
+            formData.push({
+              order_type: this.$route.params.orderType,
+              product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+              order_id: this.$route.params.id,
+              product_id: this.inspectionForm.product_id,
+              size_id: this.inspectionForm.colorSizeArr[0].size_id,
+              color_id: this.inspectionForm.colorSizeArr[0].color_id,
+              client_id: (this.inspectionForm.detail[0].client_auth[0] !== '所有人员' && this.inspectionForm.detail[0].client_auth[0] !== '常用人员' && this.inspectionForm.detail[0].client_auth[0] !== '工序负责人员' && this.inspectionForm.detail[0].client_auth[0] !== '已检验人员') ? this.inspectionForm.detail[0].client_auth[1] : '',
+              inspection_user: this.inspectionForm.detail[0].client_auth[0] === '所有人员' || this.inspectionForm.detail[0].client_auth[0] === '常用人员' || this.inspectionForm.detail[0].client_auth[0] === '工序负责人员' || this.inspectionForm.detail[0].client_auth[0] === '已检验人员' ? this.inspectionForm.detail[0].client_auth[1] : '',
+              number: allNum,
+              rejects_info: JSON.stringify({ reason: '', number: 0 }),
+              complete_time: this.$getTime(new Date()),
+              price: '',
+              desc: ''
+            })
+          }
+        }
         formData[0].rejects_info = JSON.stringify({ reason: this.inspectionForm.detail[0].colorSize[0].reason, number: this.inspectionForm.detail[0].colorSize[0].substandard })
       } else {
         this.inspectionForm.detail.forEach((item) => {

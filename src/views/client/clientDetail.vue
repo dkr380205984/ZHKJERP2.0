@@ -50,37 +50,15 @@
         </div>
       </div>
     </div>
-    <div class="module"
-      v-if="clientInfo.contacts.length > 0">
-      <div class="titleCtn">
-        <span class="title">客户联系人</span>
-      </div>
-      <div class="detailCtn">
-        <div class="rowCtn">
-          <div class="tableCtnLv2">
-            <div class="tb_header">
-              <span class="tb_row middle">姓名</span>
-              <span class="tb_row middle">职务</span>
-              <span class="tb_row middle">联系电话</span>
-            </div>
-            <div class="tb_content"
-              v-for="(item,index) in clientInfo.contacts"
-              :key="index">
-              <span class="tb_row middle">{{item.name}}</span>
-              <span class="tb_row middle">{{item.station}}</span>
-              <span class="tb_row middle">{{item.phone}} </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="module">
       <div class="titleCtn">财务统计信息</div>
       <div class="detailCtn">
         <div class="rowCtn"
           style="flex-direction:column">
-          <div class="tableTopSelec">
-            <div class="left">
+          <div class="tableTopSelec"
+            style="margin-bottom:18px">
+            <div class="left"
+              style="display:flex">
               <el-date-picker v-model="countYear"
                 :picker-options="{
                   disabledDate
@@ -90,26 +68,24 @@
                 type="year"
                 placeholder="选择年">
               </el-date-picker>
-            </div>
-            <div class="right"
-              v-if="typeNum === 9">
-              <el-dropdown @command="(e)=>{
-                    if(e === 'NULL'){
-                      countType = null
-                    }else{
-                      countType = e
-                    }
-                      getCountDetail()
-                  }">
-                <span class="el-dropdown-link blue">
-                  {{!countType ? "默认" : countType === 'RMB' ? '人民币' : '美元'}}<i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="NULL">默认</el-dropdown-item>
-                  <el-dropdown-item command="RMB">只统计人民币</el-dropdown-item>
-                  <el-dropdown-item command="USD">只统计美元</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <el-select style="width:240px;margin-left:20px"
+                v-if="typeNum === 9"
+                v-model="countType"
+                @change="getCountDetail">
+                <el-option label="默认"
+                  :value="null"></el-option>
+                <el-option label="只统计人民币"
+                  value="RMB"></el-option>
+                <el-option label="只统计美元"
+                  value="USD"></el-option>
+              </el-select>
+              <el-tooltip style="margin-left:12px;line-height:32px"
+                class="item"
+                effect="dark"
+                content="以下统计已默认将美元按汇率转成了人民币，如需单独显示，请单独筛选人民币或者美元币种。"
+                placement="right">
+                <i class="el-icon-question"></i>
+              </el-tooltip>
             </div>
           </div>
           <div class="tableCtnLv2 countInfo">
@@ -121,91 +97,20 @@
               <div class="tb_row middle">已扣款金额</div>
             </div>
             <div class="tb_content">
-              <div class="tb_row middle">{{detailCount && detailCount.plan_price || 0}}</div>
-              <div class="tb_row middle">{{detailCount && detailCount.total_price || 0}}</div>
-              <div class="tb_row middle">{{detailCount && detailCount.settle_price_invoice || 0}}</div>
-              <div class="tb_row middle">{{detailCount && detailCount.transfer_count || 0}}</div>
-              <div class="tb_row middle">{{detailCount && detailCount.deduct_price || 0}}</div>
+              <div class="tb_row middle"
+                style="color:#1a95ff">{{detailCount && $formatNum($toFixed(detailCount.plan_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+              <div class="tb_row middle"
+                style="color:#1a95ff">{{detailCount &&$formatNum($toFixed(detailCount.total_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+              <div class="tb_row middle"
+                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.settle_price_invoice/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+              <div class="tb_row middle"
+                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.transfer_count/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+              <div class="tb_row middle"
+                style="color:#F5222D">{{detailCount &&$formatNum($toFixed(detailCount.deduct_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
             </div>
-            <!-- <div class="tb_content">
-              <div class="tb_row middle">上一年：{{}}万元</div>
-              <div class="tb_row middle">实际发货产值</div>
-              <div class="tb_row middle">已开票金额</div>
-              <div class="tb_row middle">已收款金额</div>
-              <div class="tb_row middle">已扣款金额</div>
-            </div>
-            <div class="tb_content">
-              <div class="tb_row middle">订单下单产值</div>
-              <div class="tb_row middle">实际发货产值</div>
-              <div class="tb_row middle">已开票金额</div>
-              <div class="tb_row middle">已收款金额</div>
-              <div class="tb_row middle">已扣款金额</div>
-            </div> -->
           </div>
         </div>
       </div>
-      <!-- <div class="titleCtn rightBtn">
-        <span class="title">财务信息统计</span>
-        <div class="cut_type"
-          v-if="typeNum === 9">
-          <el-dropdown @command="(e)=>{
-            countType = e
-            }">
-            <span class="el-dropdown-link blue">
-              {{countType === 'financial_data' ? "默认" : countType === 'financial_data_RMB' ? '人民币' : '美元'}}<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="financial_data">默认</el-dropdown-item>
-              <el-dropdown-item command="financial_data_RMB">只统计人民币</el-dropdown-item>
-              <el-dropdown-item command="financial_data_USD">只统计美元</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-      </div>
-      <div class="listHead">
-        <div class="box">
-          <div class="boxTop blue">{{DDXDCZCOM}}</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].plan_price || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop green">{{SJFHCZCOM}}</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].total_price || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop green">已开票金额</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].settle_price || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop red">{{YSKJECOM}}</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].settle_price_invoice || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop orange">已扣款金额</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].deduct_price || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-        <div class="box">
-          <div class="boxTop green">待开票</div>
-          <div class="boxBottom">
-            <span class="num">{{$formatNum($toFixed(clientInfo[countType || 'financial_data'].wait_settle_price || 0))}}</span>
-            <span class="em">{{countType !== 'financial_data_USD' ? '元' : '美元'}}</span>
-          </div>
-        </div>
-      </div> -->
     </div>
     <div class="listCutCtn">
       <div class="cut_item"
@@ -302,10 +207,20 @@
     <div class="module">
       <div class="titleCtn rightBtn">
         <span class="title">相关财务明细</span>
-        <span class="btnCtn">
-          <span class="btn noBorder"
-            @click="oprFlag=true;log_date=log_order_code=log_type=''">查看所有开票、扣款、{{typeNum === 9 ? '收款' : '付款'}}记录</span>
-        </span>
+        <div class="btnCtn"
+          style="display:flex">
+          <div class="btn btnWhiteBlue"
+            :class="{'btnWhiteGray':order_type === 0}"
+            @click="goSettle()">开票</div>
+          <div class="btn btnWhiteRed"
+            :class="{'btnWhiteGray':order_type === 0}"
+            @click="goChargebacks()">扣款</div>
+          <div class="btn btnWhiteGreen"
+            :class="{'btnWhiteGray':order_type === 0}"
+            @click="goCollection()">{{typeNum === 9 ? '收款' : '付款'}}</div>
+          <div class="btn btnBlue"
+            @click="oprFlag=true;log_date=log_order_code=log_type=''">查看操作记录</div>
+        </div>
       </div>
       <div class="listCtn hasBorderTop"
         v-loading='loadingStatistics'>
@@ -486,14 +401,6 @@
             <div class="leftCtn">
               <span class="label">筛选条件：</span>
               <div class="filter_line">
-                <!-- <div class="cutBox">
-                  <div class="item"
-                    :class="{'active':order_type === 1}"
-                    @click="cutOrderType(1)">订单</div>
-                  <div class="item"
-                    :class="{'active':order_type === 2}"
-                    @click="cutOrderType(2)">样单</div>
-                </div> -->
                 <el-select class="filter_item"
                   v-model="order_type"
                   style="width:120px"
@@ -2006,6 +1913,368 @@
         </div>
       </div>
     </div>
+    <div class="module">
+      <div class="titleCtn rightBtn">
+        <span class="title">开票列表</span>
+        <div class="btn btnBlue"
+          @click="goSettle(true)">新增开票</div>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="settleCode"
+                @change="getSettle(1)"
+                placeholder="输入开票编号查询">
+              </el-input>
+              <el-input class="filter_item"
+                v-model="settleOrderCode"
+                @change="getSettle(1)"
+                placeholder="输入订单编号查询">
+              </el-input>
+              <el-date-picker v-model="settleDate"
+                style="width:250px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="getSettle(1)">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <div class="list">
+          <div class="title">
+            <div class="col">
+              <span class="text">开票编号</span>
+            </div>
+            <div class="col">
+              <span class="text">关联订单</span>
+            </div>
+            <div class="col">
+              <span class="text">开票日期</span>
+            </div>
+            <div class="col">
+              <span class="text">开票号码</span>
+            </div>
+            <div class="col">
+              <span class="text">开票金额</span>
+            </div>
+            <div class="col">
+              <span class="text">开票合计</span>
+            </div>
+            <div class="col">
+              <span class="text">图片信息</span>
+            </div>
+            <div class="col">
+              <span class="text">审核状态</span>
+            </div>
+            <div class="col">
+              <span class="text">操作</span>
+            </div>
+          </div>
+          <div class="row"
+            v-for="item in settleList"
+            :key="item.id">
+            <div class="col">
+              <span class="text">{{item.settle_code}}</span>
+            </div>
+            <div class="col">
+              <span class="text">
+                <span style="cursor:pointer;color:#1a95ff"
+                  v-for="order in item.order_code"
+                  :key="order.order_id"
+                  @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}};</span>
+              </span>
+            </div>
+            <div class="col">
+              <span class="text">{{$getTime(item.complete_time)}}</span>
+            </div>
+            <div class="col">
+              <div style="display:flex;justify-content:space-between;padding-right:15px">
+                <span style="line-height:28px">{{item.invoiceNum}}</span>
+                <div class="jtCtn"
+                  v-show="item.invoice_info&&item.invoice_info.length>1">
+                  <div class="jt el-icon-caret-top"
+                    @click="checkWhich(item,'last',index)"></div>
+                  <div class="jt el-icon-caret-bottom"
+                    @click="checkWhich(item,'next',index)"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <span class="text">{{item.invoicePrice}}元</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.allPrice}}元</span>
+            </div>
+            <div class="col">
+              <el-image style="width: 50px; height: 50px;line-height:50px;text-align:center;font-size:22px"
+                :src="item.file_url"
+                :preview-src-list="[item.file_url]">
+                <div slot="error"
+                  class="image-slot">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
+            </div>
+            <div class="col">
+              <span class="text">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span>
+            </div>
+            <div class="col">
+              <span class="text">
+                <span class="opr"
+                  @click="goSettleDeductDetail(item)">详情</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="settleTotal"
+            :current-page.sync="settlePage"
+            @current-change="getSettle()">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn rightBtn">
+        <span class="title">{{typeNum === 9 ?'收款':'付款'}}列表</span>
+        <div class="btn btnBlue"
+          @click="goCollection(true)">{{typeNum === 9 ? '新增收款' : '新增付款'}}</div>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="collectionCode"
+                @change="getCollection(1)"
+                :placeholder="'输入'+typeNum === 9 ?'收款':'付款'+'编号查询'">
+              </el-input>
+              <el-input class="filter_item"
+                v-model="collectionOrderCode"
+                @change="getCollection(1)"
+                placeholder="输入订单编号查询">
+              </el-input>
+              <el-date-picker v-model="collectionDate"
+                style="width:250px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="getCollection(1)">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <div class="list">
+          <div class="title">
+            <div class="col">
+              <span class="text">{{typeNum === 9 ?'收款':'付款'}}编号</span>
+            </div>
+            <div class="col">
+              <span class="text">关联订单</span>
+            </div>
+            <div class="col">
+              <span class="text">{{typeNum === 9 ?'收款':'付款'}}日期</span>
+            </div>
+            <div class="col">
+              <span class="text">{{typeNum === 9 ?'收款':'付款'}}方式</span>
+            </div>
+            <div class="col">
+              <span class="text">{{typeNum === 9 ?'收款':'付款'}}金额</span>
+            </div>
+            <div class="col">
+              <span class="text">图片信息</span>
+            </div>
+            <div class="col">
+              <span class="text">操作</span>
+            </div>
+          </div>
+          <div class="row"
+            v-for="item in collectionList"
+            :key="item.id">
+            <div class="col">
+              <span class="text">{{item.deduct_code}}</span>
+            </div>
+            <div class="col">
+              <span class="text"> <span style="cursor:pointer;color:#1a95ff"
+                  v-for="order in item.order_code"
+                  :key="order.order_id"
+                  @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}};</span></span>
+            </div>
+            <div class="col">
+              <span class="text">{{$getTime(item.complete_time)}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.type}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.price}}元</span>
+            </div>
+            <div class="col">
+              <el-image style="width: 50px; height: 50px;line-height:50px;text-align:center;font-size:22px"
+                :src="item.file_url"
+                :preview-src-list="[item.file_url]">
+                <div slot="error"
+                  class="image-slot">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
+            </div>
+
+            <div class="col">
+              <span class="text">
+                <span class="opr"
+                  @click="goSettleDeductDetail(item)">详情</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="collectionTotal"
+            :current-page.sync="collectionPage"
+            @current-change="getCollection()">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
+    <div class="module">
+      <div class="titleCtn rightBtn">
+        <span class="title">扣款列表</span>
+        <div class="btn btnBlue"
+          @click="goChargebacks(true)">新增扣款</div>
+      </div>
+      <div class="listCtn hasBorderTop">
+        <div class="filterCtn2">
+          <div class="leftCtn">
+            <span class="label">筛选条件：</span>
+            <div class="filter_line">
+              <el-input class="filter_item"
+                v-model="chargebacksCode"
+                @change="getChargeBack(1)"
+                placeholder="输入扣款编号查询">
+              </el-input>
+              <el-input class="filter_item"
+                v-model="chargebacksOrderCode"
+                @change="getChargeBack(1)"
+                placeholder="输入订单编号查询">
+              </el-input>
+              <el-date-picker v-model="chargebacksDate"
+                style="width:250px"
+                class="filter_item"
+                type="daterange"
+                align="right"
+                unlink-panels
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="getChargeBack(1)">
+              </el-date-picker>
+            </div>
+          </div>
+        </div>
+        <div class="list">
+          <div class="title">
+            <div class="col">
+              <span class="text">扣款编号</span>
+            </div>
+            <div class="col">
+              <span class="text">关联订单</span>
+            </div>
+            <div class="col">
+              <span class="text">扣款日期</span>
+            </div>
+            <div class="col">
+              <span class="text">扣款金额</span>
+            </div>
+            <div class="col">
+              <span class="text">扣款原因</span>
+            </div>
+            <div class="col">
+              <span class="text">图片信息</span>
+            </div>
+            <div class="col">
+              <span class="text">审核状态</span>
+            </div>
+            <div class="col">
+              <span class="text">操作</span>
+            </div>
+          </div>
+          <div class="row"
+            v-for="item in chargebacksList"
+            :key="item.id">
+            <div class="col">
+              <span class="text">{{item.deduct_code}}</span>
+            </div>
+            <div class="col">
+              <span class="text"> <span style="cursor:pointer;color:#1a95ff"
+                  v-for="order in item.order_code"
+                  :key="order.order_id"
+                  @click="$openUrl(item.order_type === 2 ? `/sample/sampleOrderDetail/${order.order_id}` : `/order/orderDetail/${order.order_id}`)">{{order.order_code}};</span></span>
+            </div>
+            <div class="col">
+              <span class="text">{{$getTime(item.complete_time)}}</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.deduct_price}}元</span>
+            </div>
+            <div class="col">
+              <span class="text">{{item.desc}}</span>
+            </div>
+            <div class="col">
+              <el-image style="width: 50px; height: 50px;line-height:50px;text-align:center;font-size:22px"
+                :src="item.file_url"
+                :preview-src-list="[item.file_url]">
+                <div slot="error"
+                  class="image-slot">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
+            </div>
+            <div class="col">
+              <span class="text"><span class="text">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span></span>
+            </div>
+            <div class="col">
+              <span class="text">
+                <span class="opr green"
+                  @click.stop="$openUrl(`/deductTable/${item.client_id}/${item.type}/${item.id}/扣款`)">打印</span>
+                <span class="opr"
+                  @click="goSettleDeductDetail(item)">详情</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="pageCtn">
+          <el-pagination background
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="chargebacksTotal"
+            :current-page.sync="chargebacksPage"
+            @current-change="getChargeBack()">
+          </el-pagination>
+        </div>
+      </div>
+    </div>
     <!-- 开票 -->
     <div class="popup"
       v-show="settleFlag">
@@ -2013,13 +2282,15 @@
         <div class="title">
           <div class="text">单位开票</div>
           <i class="el-icon-close"
-            @click="settleFlag=false"></i>
+            @click="settleFlag=false;resetAll()"></i>
         </div>
         <div class="content">
-          <div class="row">
+          <div class="row"
+            v-if="checkOrder.length>0&& !noOrder">
             <div class="label">订单编号：</div>
             <div class="info">
-              <el-tag v-for="(item,index) in checkOrder"
+              <el-tag style="margin-right:8px"
+                v-for="(item,index) in checkOrder"
                 :key="index">
                 {{item.order_code}}
               </el-tag>
@@ -2075,6 +2346,30 @@
             </div>
           </div>
           <div class="row">
+            <div class="label">票据信息：</div>
+            <div class="info">
+              <el-upload class="upload"
+                action="https://upload.qiniup.com/"
+                accept="image/jpeg,image/gif,image/png,image/bmp"
+                :before-upload="beforeAvatarUpload"
+                :before-remove="beforeRemove"
+                :file-list="fileArr"
+                :data="postData"
+                :on-success="successFile"
+                ref="uploada"
+                :multiple="false"
+                :limit="1"
+                list-type="picture">
+                <div class="uploadBtn">
+                  <i class="el-icon-upload"></i>
+                  <span>上传文件</span>
+                </div>
+                <div slot="tip"
+                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+              </el-upload>
+            </div>
+          </div>
+          <div class="row">
             <div class="label">备注信息：</div>
             <div class="info">
               <el-input type="textarea"
@@ -2085,7 +2380,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="settleFlag=false">取消</div>
+            @click="settleFlag=false;resetAll()">取消</div>
           <div class="btn btnBlue"
             @click="settleFn">确定</div>
         </div>
@@ -2098,13 +2393,15 @@
         <div class="title">
           <div class="text">订单扣款</div>
           <i class="el-icon-close"
-            @click="chargebacksFlag=false"></i>
+            @click="chargebacksFlag=false;resetAll()"></i>
         </div>
         <div class="content">
-          <div class="row">
+          <div class="row"
+            v-if="checkOrder.length>0&& !noOrder">
             <div class="label">订单编号：</div>
             <div class="info">
-              <el-tag v-for="(item,index) in checkOrder"
+              <el-tag style="margin-right:8px"
+                v-for="(item,index) in checkOrder"
                 :key="index">
                 {{item.order_code}}
               </el-tag>
@@ -2139,10 +2436,34 @@
                 v-model="chargebacks.desc"></el-input>
             </div>
           </div>
+          <div class="row">
+            <div class="label">票据信息：</div>
+            <div class="info">
+              <el-upload class="upload"
+                action="https://upload.qiniup.com/"
+                accept="image/jpeg,image/gif,image/png,image/bmp"
+                :before-upload="beforeAvatarUpload"
+                :before-remove="beforeRemove"
+                :file-list="fileArr"
+                :data="postData"
+                :on-success="successFile"
+                ref="uploada"
+                :multiple="false"
+                :limit="1"
+                list-type="picture">
+                <div class="uploadBtn">
+                  <i class="el-icon-upload"></i>
+                  <span>上传文件</span>
+                </div>
+                <div slot="tip"
+                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+              </el-upload>
+            </div>
+          </div>
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="chargebacksFlag=false">取消</div>
+            @click="chargebacksFlag=false;resetAll()">取消</div>
           <div class="btn btnBlue"
             @click="chargebacksFn">确定</div>
         </div>
@@ -2155,10 +2476,11 @@
         <div class="title">
           <div class="text">单位{{typeNum === 9 ? '收款' : '付款'}}</div>
           <i class="el-icon-close"
-            @click="collectionFlag=false"></i>
+            @click="collectionFlag=false;resetAll()"></i>
         </div>
         <div class="content">
-          <div class="row">
+          <div class="row"
+            v-if="checkOrder.length>0 && !noOrder">
             <div class="label">订单编号：</div>
             <div class="info">
               <el-tag v-for="(item,index) in checkOrder"
@@ -2199,6 +2521,30 @@
             </div>
           </div>
           <div class="row">
+            <div class="label">票据信息：</div>
+            <div class="info">
+              <el-upload class="upload"
+                action="https://upload.qiniup.com/"
+                accept="image/jpeg,image/gif,image/png,image/bmp"
+                :before-upload="beforeAvatarUpload"
+                :before-remove="beforeRemove"
+                :file-list="fileArr"
+                :data="postData"
+                :on-success="successFile"
+                ref="uploada"
+                :multiple="false"
+                :limit="1"
+                list-type="picture">
+                <div class="uploadBtn">
+                  <i class="el-icon-upload"></i>
+                  <span>上传文件</span>
+                </div>
+                <div slot="tip"
+                  class="el-upload__tip">只能上传jpg/png图片文件，且不超过10M</div>
+              </el-upload>
+            </div>
+          </div>
+          <div class="row">
             <div class="label">备注信息：</div>
             <div class="info">
               <el-input type="textarea"
@@ -2209,7 +2555,7 @@
         </div>
         <div class="opr">
           <div class="btn btnGray"
-            @click="collectionFlag=false">取消</div>
+            @click="collectionFlag=false;resetAll()">取消</div>
           <div class="btn btnBlue"
             @click="collectionFn">确定</div>
         </div>
@@ -2366,22 +2712,9 @@
     </div>
     <div class="bottomFixBar">
       <div class="main">
-        <div class="leftCtn">
-          <div class="btn btnWhiteBlue"
-            :class="{'btnWhiteGray':order_type === 0}"
-            @click="goSettle">开票</div>
-          <div class="btn btnWhiteRed"
-            :class="{'btnWhiteGray':order_type === 0}"
-            @click="goChargebacks">扣款</div>
-          <div class="btn btnWhiteGreen"
-            :class="{'btnWhiteGray':order_type === 0}"
-            @click="goCollection">{{typeNum === 9 ? '收款' : '付款'}}</div>
-        </div>
         <div class="btnCtn">
           <div class="btn btnGray"
             @click="$router.go(-1)">返回</div>
-          <div class="btn btnOrange"
-            @click="$router.push('/client/clientUpdate/' + $route.params.id)">修改</div>
           <div class="btn btnBlue"
             @click="openDownLoadAllProp">导出所有相关日志</div>
         </div>
@@ -2452,7 +2785,7 @@
 <script>
 import { downloadExcel } from '@/assets/js/common.js'
 import { companyType } from '@/assets/js/dictionary.js'
-import { group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, collection, statistics, inspection } from '@/assets/js/api.js'
+import { getToken, group, client, auth, process, stock, materialManage, materialOrder, materialProcess, weave, processing, packPlan, settle, chargebacks, collection, statistics, inspection } from '@/assets/js/api.js'
 export default {
   data () {
     return {
@@ -2571,11 +2904,75 @@ export default {
       isDownLoading: 0, // 导出状态 0窗口关闭1窗口打开2正在导出3导出完毕
       downLoadInfoArr: [],
       detailCount: null,
-      countType: '',
-      countYear: ''
+      countType: null,
+      countYear: (new Date().getFullYear() - 1).toString(),
+      chargebacksList: [],
+      chargebacksPage: 1,
+      chargebacksTotal: 1,
+      chargebacksCode: '',
+      chargebacksOrderCode: '',
+      chargebacksDate: '',
+      settleList: [],
+      settlePage: 1,
+      settleTotal: 1,
+      settleCode: '',
+      settleOrderCode: '',
+      settleDate: '',
+      collectionList: [],
+      collectionPage: 1,
+      collectionTotal: 1,
+      collectionCode: '',
+      collectionOrderCode: '',
+      collectionDate: '',
+      collectionMethod: '',
+      noOrder: false, // 标记是否是无单号提交
+      postData: { token: '' },
+      fileArr: [],
+      fileUrl: ''
     }
   },
   methods: {
+    resetAll () {
+      this.noOrder = false
+      this.fileArr = []
+      this.fileUrl = ''
+    },
+    checkWhich (item, opr, index) {
+      if (item.invoice_info.length > 0) {
+        if (opr === 'init' || !opr) {
+          item.invoicePrice = item.invoice_info[item.nowIndex || 0].invoicePrice
+          item.invoiceNum = item.invoice_info[item.nowIndex || 0].invoiceNum
+          this.$set(this.settleList, index, item)
+        }
+        if (opr === 'next') {
+          if (item.nowIndex === item.invoice_info.length - 1) {
+            item.nowIndex = 0
+            this.$set(this.settleList, index, item)
+            this.checkWhich(item)
+          } else {
+            item.nowIndex += 1
+            this.$set(this.settleList, index, item)
+            this.checkWhich(item)
+          }
+          this.$forceUpdate()
+        }
+        if (opr === 'last') {
+          if (item.nowIndex === 0) {
+            item.nowIndex = item.product_info.length - 1
+            this.$set(this.settleList, index, item)
+            this.checkWhich(item)
+          } else {
+            item.nowIndex -= 1
+            this.$set(this.settleList, index, item)
+            this.checkWhich(item)
+          }
+          this.$forceUpdate()
+        }
+      } else {
+        item.invoicePrice = 0
+        item.invoiceNum = '无票号'
+      }
+    },
     disabledDate (e) {
       if (new Date(e).getFullYear() > (new Date().getFullYear() - 1)) return true
     },
@@ -3335,7 +3732,8 @@ export default {
         auth.list(),
         process.list(),
         stock.list(),
-        group.list()
+        group.list(),
+        getToken()
       ]).then(res => {
         // 初始化客户详情
         this.clientInfo = this.$clone(res[0].data.data)
@@ -3372,6 +3770,7 @@ export default {
         // 初始化仓库筛选数据
         this.stockList = res[3].data.data
         this.groupList = res[4].data.data
+        this.postData.token = res[5].data.data
         this.getSettleChargbacksLog()
         this.loading = false
       })
@@ -3712,10 +4111,14 @@ export default {
       this.order_code = ''
       this.getList(1)
     },
-    goSettle () {
+    goSettle (noOrder) {
       if (this.order_type === 0) {
-        this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
-        return
+        if (noOrder) {
+          this.noOrder = true
+        } else {
+          this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
+          return
+        }
       }
       this.settleFlag = true
     },
@@ -3723,14 +4126,15 @@ export default {
       settle.create({
         id: null,
         client_id: this.$route.params.id,
-        order_id: JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
+        order_id: this.noOrder ? null : JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
         complete_time: this.settle.date,
         settle_price: this.settle.price,
         is_invoice: this.settle.ifInvoice,
         invoice_info: JSON.stringify(this.settle.invoiceDetail),
         desc: this.settle.desc,
         order_type: this.order_type,
-        type: this.typeNum
+        type: this.typeNum,
+        file_url: this.fileUrl
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('开票成功')
@@ -3750,10 +4154,14 @@ export default {
         }
       })
     },
-    goChargebacks () {
+    goChargebacks (noOrder) {
       if (this.order_type === 0) {
-        this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
-        return
+        if (noOrder) {
+          this.noOrder = true
+        } else {
+          this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
+          return
+        }
       }
       this.chargebacksFlag = true
     },
@@ -3761,12 +4169,13 @@ export default {
       chargebacks.create({
         id: null,
         client_id: this.$route.params.id,
-        order_id: JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
+        order_id: this.noOrder ? null : JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
         complete_time: this.chargebacks.date,
         deduct_price: this.chargebacks.price,
         desc: this.chargebacks.desc,
         order_type: this.order_type,
-        type: this.typeNum
+        type: this.typeNum,
+        file_url: this.fileUrl
       }).then((res) => {
         if (res.data.status) {
           this.$message.success('扣款成功')
@@ -3782,8 +4191,10 @@ export default {
       })
     },
     // 收款
-    goCollection () {
-      if (this.order_type === 0) {
+    goCollection (noOrder) {
+      if (noOrder) {
+        this.noOrder = true
+      } else {
         this.$message.warning('请将筛选条件中的所有日志修改为订单或者样单，然后使用')
         return
       }
@@ -3794,13 +4205,14 @@ export default {
         id: null,
         client_id: this.$route.params.id,
         complete_time: this.collection.date,
-        order_id: JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
+        order_id: this.noOrder ? null : JSON.stringify(this.$unique(this.checkOrder.map((item) => item.order_id))),
         price: this.collection.price,
         desc: this.collection.desc,
         type: this.collection.type,
         order_type: this.order_type,
         // 加一个字段区分收款(1)付款(0)
-        transfer_type: this.typeNum === 9 ? 1 : 0
+        transfer_type: this.typeNum === 9 ? 1 : 0,
+        file_url: this.fileUrl
       }).then((res) => {
         if (res.data.status !== false) {
           this.$message.success(`${this.typeNum === 9 ? '收款' : '付款'}成功`)
@@ -3829,15 +4241,75 @@ export default {
       list = queryString ? list.filter(itemF => itemF.value.indexOf(queryString) !== -1) : list
       cb(list)
     },
+    getChargeBack (page) {
+      if (page) {
+        this.settlePage = page
+      }
+      chargebacks.log({
+        limit: 5,
+        page: this.chargebacksPage,
+        client_id: this.$route.params.id,
+        order_code: this.chargebacksOrderCode,
+        code: this.chargebacksCode,
+        start_time: (this.chargebacksDate && this.chargebacksDate[0]) || '',
+        end_time: (this.chargebacksDate && this.chargebacksDate[1]) || ''
+      }).then((res) => {
+        this.chargebacksList = res.data.data
+        this.chargebacksTotal = res.data.meta.total
+      })
+    },
+    getSettle (page) {
+      if (page) {
+        this.settlePage = page
+      }
+      settle.log({
+        limit: 5,
+        page: this.settlePage,
+        client_id: this.$route.params.id,
+        order_code: this.settleOrderCode,
+        code: this.settleCode,
+        start_time: (this.settleDate && this.settleDate[0]) || '',
+        end_time: (this.settleDate && this.settleDate[1]) || ''
+      }).then((res) => {
+        this.settleList = res.data.data
+        this.settleTotal = res.data.meta.total
+        this.settleList.forEach((item) => {
+          this.checkWhich(item, 'init')
+          item.allPrice = item.invoice_info.reduce((total, current) => {
+            return total + Number(current.invoicePrice)
+          }, 0)
+        })
+      })
+    },
+    getCollection () {
+      collection.log({
+        limit: 5,
+        page: this.collectionPage,
+        client_id: this.$route.params.id,
+        order_code: this.collectionOrderCode,
+        code: this.collectionCode,
+        start_time: (this.collectionDate && this.collectionDate[0]) || '',
+        end_time: (this.collectionDate && this.collectionDate[1]) || ''
+      }).then((res) => {
+        this.collectionList = res.data.data
+        this.collectionTotal = res.data.meta.total
+      })
+    },
     getSettleChargbacksLog () {
       Promise.all([
         chargebacks.log({
+          page: 1,
+          limit: 5,
           client_id: this.$route.params.id
         }),
         settle.log({
+          page: 1,
+          limit: 5,
           client_id: this.$route.params.id
         }),
         collection.log({
+          page: 1,
+          limit: 5,
           client_id: this.$route.params.id
         })
       ]).then(res => {
@@ -3853,6 +4325,18 @@ export default {
         })).sort((a, b) => {
           return new Date(a.complete_time) - new Date(b.complete_time)
         })
+        this.chargebacksList = res[0].data.data
+        this.settleList = res[1].data.data
+        this.collectionList = res[2].data.data
+        this.settleList.forEach((item) => {
+          this.checkWhich(item, 'init')
+          item.allPrice = item.invoice_info.reduce((total, current) => {
+            return total + Number(current.invoicePrice)
+          }, 0)
+        })
+        this.chargebacksTotal = res[0].data.meta.total
+        this.settleTotal = res[1].data.meta.total
+        this.collectionTotal = res[2].data.meta.total
       })
     },
     addInvoice () {
@@ -3867,6 +4351,63 @@ export default {
     cutOrderType (type) {
       this.order_type = type
       this.getList()
+    },
+    beforeAvatarUpload (file) {
+      let fileName = file.name.lastIndexOf('.')// 取到文件名开始到最后一个点的长度
+      let fileNameLength = file.name.length// 取到文件名长度
+      let fileFormat = file.name.substring(fileName + 1, fileNameLength)// 截
+      this.postData.key = Date.parse(new Date()) + '.' + fileFormat
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 10
+      if (!isJPG && !isPNG) {
+        this.$message.error('图片只能是 JPG/PNG 格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 10MB!')
+        return false
+      }
+    },
+    successFile (response, file, fileList) {
+      this.fileUrl = 'https://file.zwyknit.com/' + response.key
+    },
+    beforeRemove (file, fileList) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteArr.push({
+          id: file.id ? file.id : null,
+          file_name: file.response ? file.response.key : file.url.split('https://file.zwyknit.com/')[1]
+        })
+        let deleteIndex = 0
+        fileList.forEach((item, index) => {
+          if (file.response) {
+            if (item.response && (item.response.key === file.response.key)) {
+              deleteIndex = index
+            }
+          } else {
+            if (item.url === file.url) {
+              deleteIndex = index
+            }
+          }
+        })
+        fileList.splice(deleteIndex, 1)
+        this.$forceUpdate()
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+      // return false 禁用自带的删除功能
+      return false
     }
   },
   watch: {

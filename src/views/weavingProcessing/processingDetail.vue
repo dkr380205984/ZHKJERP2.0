@@ -681,6 +681,15 @@
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id +'/1/' + $route.params.orderType)">原料出入库</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id +'/1/' + $route.params.orderType)">辅料出入库</div>
+          </div>
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
               @click="$router.push('/inspection/semiFinishedDetail/' + $route.params.id)">半成品检验</div>
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
@@ -713,9 +722,17 @@
               </div>
             </div>
             <div class="ctn">
-              <div class="label">选择物料</div>
+              <div class="label">选择原料</div>
               <div class="checkCtn">
                 <el-checkbox v-for="item in needMaterialArr.wuliao"
+                  v-model="item.checked"
+                  :key="item.value">{{item.value}}</el-checkbox>
+              </div>
+            </div>
+            <div class="ctn">
+              <div class="label">选择辅料</div>
+              <div class="checkCtn">
+                <el-checkbox v-for="item in needMaterialArr.fuliao"
                   v-model="item.checked"
                   :key="item.value">{{item.value}}</el-checkbox>
               </div>
@@ -808,7 +825,7 @@
             @click="step=1"
             v-if="step===2">上一步</div>
           <div class="btn btnGray"
-            @click="cancleMaterial()">取消</div>
+            @click="cancleMaterial()">取消分配物料</div>
           <div class="btn btnBlue"
             @click="step===1?cmpMaterial():saveMaterial()">{{step===1?'计算所需物料':'确认分配'}}</div>
         </div>
@@ -931,7 +948,8 @@ export default {
       step: 1,
       needMaterialArr: {
         peijian: [], // 配件
-        wuliao: [] // 物料
+        wuliao: [], // 原料
+        fuliao: []
       },
       materialTable: [{
         client_name: '',
@@ -1238,7 +1256,7 @@ export default {
         this.submitProcess()
       }
       if (this.material_flag) {
-        if (this.needMaterialArr.peijian.length === 0 && this.needMaterialArr.wuliao.length === 0) {
+        if (this.needMaterialArr.peijian.length === 0 && this.needMaterialArr.wuliao.length === 0 && this.needMaterialArr.fuliao.length) {
           this.materialTable = []
           this.process_data.forEach((item, index) => {
             this.materialTable.push({
@@ -1324,11 +1342,12 @@ export default {
     cmpMaterial () {
       let filterPeijian = this.needMaterialArr.peijian.filter((item) => item.checked)
       let filterWuliao = this.needMaterialArr.wuliao.filter((item) => item.checked)
-      if (filterPeijian.length > 0 && filterWuliao.length > 0) {
+      let filterFuliao = this.needMaterialArr.fuliao.filter((item) => item.checked)
+      if (filterPeijian.length > 0 && (filterWuliao.length > 0 || filterFuliao.length > 0)) {
         this.$message.error('只能选择配件或物料其中一种')
         return
       }
-      if (filterPeijian.length === 0 && filterWuliao.length === 0) {
+      if (filterPeijian.length === 0 && filterWuliao.length === 0 && filterFuliao.length === 0) {
         this.$message.error('你未选择任何物料，请自行填写分配物料')
         this.materialTable = []
         this.process_data.forEach((item, index) => {
@@ -1392,7 +1411,7 @@ export default {
           }
         })
       }
-      if (filterWuliao.length > 0) {
+      if (filterWuliao.length > 0 || filterFuliao.length > 0) {
         this.process_data.forEach((item, index) => {
           this.materialTable.push({
             client_name: this.clientArrReal.find((itemFind) => itemFind.value === item.company_id[0]).children.find(itemF => itemF.value === item.company_id[1]).label,
@@ -1406,7 +1425,8 @@ export default {
                 return itemFind.product_id === item.product_id &&
                   itemFind.size_id === Number(itemChild.colorSize.split('/')[0]) &&
                   itemFind.color_id === Number(itemChild.colorSize.split('/')[1]) &&
-                  !!filterWuliao.find((itemFuck) => itemFuck.value.split('/')[0] === itemFind.material_name && itemFuck.value.split('/')[1] === itemFind.material_attribute)
+                  (filterWuliao.find((itemFuck) => itemFuck.value.split('/')[0] === itemFind.material_name && itemFuck.value.split('/')[1] === itemFind.material_attribute) ||
+                    filterFuliao.find((itemFuck) => itemFuck.value.split('/')[0] === itemFind.material_name && itemFuck.value.split('/')[1] === itemFind.material_attribute))
               })
               flatMaterialFilter.forEach((itemSon) => {
                 itemSon.total_weight = itemSon.single_weight * itemChild.number
@@ -1563,7 +1583,8 @@ export default {
             })
           })
         })
-        this.needMaterialArr.wuliao = res[5].data.data.detail_data.map((itemMat) => itemMat.material_name + '/' + itemMat.material_attribute)
+        this.needMaterialArr.wuliao = res[5].data.data.detail_data.filter((item) => item.material_type === 1).map((itemMat) => itemMat.material_name + '/' + itemMat.material_attribute)
+        this.needMaterialArr.fuliao = res[5].data.data.detail_data.filter((item) => item.material_type === 2).map((itemMat) => itemMat.material_name + '/' + itemMat.material_attribute)
         this.needMaterialArr.peijian = Array.from(new Set(this.needMaterialArr.peijian)).map((item) => {
           return {
             value: item,
@@ -1571,6 +1592,12 @@ export default {
           }
         })
         this.needMaterialArr.wuliao = Array.from(new Set(this.needMaterialArr.wuliao)).map((item) => {
+          return {
+            value: item,
+            check: false
+          }
+        })
+        this.needMaterialArr.fuliao = Array.from(new Set(this.needMaterialArr.fuliao)).map((item) => {
           return {
             value: item,
             check: false

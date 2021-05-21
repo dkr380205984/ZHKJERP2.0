@@ -1250,7 +1250,8 @@ export default {
                     size_id: itemSize.size_color[0],
                     color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
-                    unit_price: itemSize.price
+                    unit_price: itemSize.price,
+                    id: ''// 新增字段，添加不需要
                   }
                 })
               }

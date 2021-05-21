@@ -28,6 +28,19 @@
           <p class="name">{{item.name}}</p>
         </div>
       </div>
+      <div class="titleLine">财务管理</div>
+      <div class="meauList">
+        <div class="meau_item"
+          v-for="(item,index) in meauList.finance"
+          :key="index"
+          @click="$router.push(item.path)">
+          <svg class="iconFont"
+            aria-hidden="true">
+            <use :xlink:href="'#' + item.icon"></use>
+          </svg>
+          <p class="name">{{item.name}}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -113,22 +126,10 @@ export default {
             icon: 'icon-danzheng'
           },
           {
-            name: '报销单管理',
-            id: 18,
-            path: '/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=',
-            icon: 'icon-baoxiaodanguanli'
-          },
-          {
             name: '员工管理',
             id: 17,
             path: '/staff/staffList/page=1&&keyword=&&date=&&department=&&type=&&state=',
             icon: 'icon-yuangongguanli'
-          },
-          {
-            name: '客户添加结算',
-            id: 22,
-            path: '/client/clientList/page=1&&keyword=&&clientType=',
-            icon: 'icon-kehuguanli'
           },
           {
             name: '客户管理',
@@ -148,6 +149,26 @@ export default {
             path: '/setting/setting',
             icon: 'icon-xitongshezhi'
           }
+        ],
+        finance: [
+          {
+            name: '客户结算管理',
+            id: 22,
+            path: '/client/clientList/page=1&&keyword=&&clientType=',
+            icon: 'icon-kehujiesuanguanli'
+          },
+          {
+            name: '报销单管理',
+            id: 18,
+            path: '/reimbursement/reimbursementList/page=1&&keyword=&&date=&&applyUser=&&status=',
+            icon: 'icon-baoxiaodanguanli'
+          },
+          {
+            name: '票据管理',
+            id: 23,
+            path: '/financialStatistics/ticketStatistics/page=1&&keyword=&&date=',
+            icon: 'icon-caiwushoujuguanli'
+          }
         ]
       }
     }
@@ -156,6 +177,7 @@ export default {
     let modules = window.sessionStorage.getItem('module_id') ? JSON.parse(window.sessionStorage.getItem('module_id')) : []
     this.meauList.production = this.meauList.production.filter(itemF => modules.indexOf(itemF.id) !== -1)
     this.meauList.other = this.meauList.other.filter(itemF => modules.indexOf(itemF.id) !== -1)
+    this.meauList.finance = this.meauList.finance.filter(itemF => modules.indexOf(itemF.id) !== -1)
   }
 }
 </script>

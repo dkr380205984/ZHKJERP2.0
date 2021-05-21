@@ -1890,8 +1890,9 @@ export default {
           return this.GLMapArr[index] ? (this.GLMapArr[index][indexChild] || '') : ''
         })
       })
+      // 高度计算，不包含让位，计算克重的时候需要包汉让位
+      this.canvasHeight = (this.weftInfo.neichang) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 计算克重信息
-      this.canvasHeight = (this.weftInfo.neichang + this.weftInfo.rangwei) / (Number(this.weftCmp) === 1 ? this.warpInfo.reed_width : this.weftInfo.peifu) * 600 * 4
       // 展平合并信息
       let warpTable = this.getFlatTable(this.warpInfo.warp_rank, 'warpInfo', 'merge_data').map((item) => {
         if (!item.GLorPM) {

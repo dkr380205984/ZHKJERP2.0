@@ -20,6 +20,7 @@ import orderAbout from './orderAbout/orderAbout.vue'
 import zhSort from './zhSort/zhSort.vue'
 import printTime from './printTime/printTime.vue'
 import craftCourse from './craftCourse/craftCourse.vue'
+import oprHistory from './oprHistory/oprHistory.vue'
 export default {
   install: function (vue) {
     vue.component('zhInput', zhInput)
@@ -44,5 +45,6 @@ export default {
     vue.component('zhSort', zhSort)
     vue.component('printTime', printTime)
     vue.component('craftCourse', craftCourse)
+    vue.component('oprHistory', oprHistory)
   }
 }

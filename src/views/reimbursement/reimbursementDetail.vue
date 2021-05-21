@@ -254,12 +254,12 @@ export default {
     filterApplyTotal (item) {
       return item.map(itemM => (+itemM.apply_price || 0)).reduce((a, b) => {
         return a + b
-      }, 0)
+      }, 0).toFixed(2)
     },
     filterRealityTotal (item) {
       return item.map(itemM => (+itemM.reality_price || 0)).reduce((a, b) => {
         return a + b
-      }, 0)
+      }, 0).toFixed(2)
     },
     filterStatus (item) {
       return +item === 1 ? '通过' : +item === 2 ? '驳回' : '待审核'

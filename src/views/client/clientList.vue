@@ -2,86 +2,25 @@
   <div id='clientList'
     class='indexMain'
     v-loading='loading'>
-    <!-- <div class="chartsCtn"> -->
-    <!-- <div class="charts">
-        <div class="title">
-          <span>订单产值</span>
-          <el-tooltip class="item"
-            effect="dark"
-            content="图表显示：当年所有订单总产值"
-            placement="top">
-            <i class="el-icon-info"
-              style="float:right;line-height:42px;font-size:16px"></i>
-          </el-tooltip>
-        </div>
-        <div class="number">{{productionTotal}}</div>
-        <v-chart style="width:320px;height:120px"
-          :options="monthData" />
+    <div class="listCutCtn">
+      <div class="cut_item"
+        :class="{'active':clientBigType==='应收款单位'}"
+        @click="client_type='';clientBigType='应收款单位';changeRouter(1)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yingshoukuandanwei"></use>
+        </svg>
+        <span class="name">应收款客户</span>
       </div>
-      <div class="charts">
-        <div class="title">
-          <span>工厂成本</span>
-          <el-tooltip class="item"
-            effect="dark"
-            content="图表显示：当年工厂总成本"
-            placement="top">
-            <i class="el-icon-info"
-              style="float:right;line-height:42px;font-size:16px"></i>
-          </el-tooltip>
-        </div>
-        <div class="number">{{costTotal}}</div>
-        <v-chart style="width:320px;height:120px"
-          :options="processData" />
-      </div> -->
-    <!-- <div class="charts listHard">
-        <div class="box">
-          <span class="title">合计</span>
-          <span class="number">{{1000.79}}万元</span>
-          <span class="info">
-            <span class="info_item">订单：{{2000}}万元 </span>
-            <span class="info_item">成本：{{1000.90}}万元</span>
-          </span>
-        </div>
-        <div class="box">
-          <span class="title">已结算(已开票)</span>
-          <span class="number">{{1000.79}}万元</span>
-          <span class="info">
-            <span class="info_item">订单：{{2000}}万元 </span>
-            <span class="info_item">成本：{{1000.90}}万元</span>
-          </span>
-        </div>
-        <div class="box">
-          <span class="title">已结算(未开票)</span>
-          <span class="number">{{1000.79}}万元</span>
-          <span class="info">
-            <span class="info_item">订单：{{2000}}万元 </span>
-            <span class="info_item">成本：{{1000.90}}万元</span>
-          </span>
-        </div>
-        <div class="box">
-          <span class="title">待结算</span>
-          <span class="number">{{1000.79}}万元</span>
-          <span class="info">
-            <span class="info_item">订单：{{2000}}万元 </span>
-            <span class="info_item">成本：{{1000.90}}万元</span>
-          </span>
-        </div>
-        <div class="box">
-          <span class="title">已扣款</span>
-          <span class="number">{{1000.79}}万元</span>
-          <span class="info">
-            <span class="info_item">订单：{{2000}}万元 </span>
-            <span class="info_item">成本：{{1000.90}}万元</span>
-          </span>
-        </div>
+      <div class="cut_item"
+        :class="{'active':clientBigType==='应付款单位'}"
+        @click="client_type='';clientBigType='应付款单位';changeRouter(1)">
+        <svg class="iconFont"
+          aria-hidden="true">
+          <use xlink:href="#icon-yingfukuandanwei"></use>
+        </svg>
+        <span class="name">应付款单位</span>
       </div>
-    </div> -->
-    <div class="typeCtn">
-      <div class="typeCtn_item"
-        :class="{'active':clientBigType === itemType.value}"
-        v-for="(itemType,indexType) in companyType"
-        :key="indexType"
-        @click="changeCompanyType(itemType)">{{itemType.value}}</div>
     </div>
     <div class="module">
       <div class="listCtn">
@@ -93,13 +32,6 @@
               @change="changeRouter(1)"
               placeholder="输入单位名称按回车查询">
             </el-input>
-            <!-- <el-cascader class="inputs"
-              v-model="client_type"
-              :options="companyType"
-              @change="changeRouter(1)"
-              collapse-tags
-              placeholder="请选择客户类型"
-              clearable></el-cascader> -->
             <el-select v-model="client_type"
               clearable
               placeholder="请选择客户类型"
@@ -152,35 +84,32 @@
             <div class="col flex12">
               <span class="text">客户类型</span>
             </div>
-            <!-- <div class="col flex08">
-              <span class="text">联系电话</span>
-            </div> -->
             <div class="col flex08">
-              <span class="text">{{DDXDCZCOM}}</span>
+              <span class="text">计划总额</span>
               <zh-sort v-model="DDXDCZ"
                 specialKey='plan_price'
                 @change="sortFn($event,'DDXDCZ')" />
             </div>
             <div class="col flex08">
-              <span class="text">{{SJFHCZCOM}}</span>
+              <span class="text">实际总额</span>
               <zh-sort v-model="SJFHCZ"
                 specialKey='total_price'
                 @change="sortFn($event,'SJFHCZ')" />
             </div>
             <div class="col flex08">
-              <span class="text">已开票金额</span>
+              <span class="text">{{clientBigType==='应收款单位'?'我方开票':'对方开票'}}金额</span>
               <zh-sort v-model="YKPJE"
                 specialKey='settle_price_invoice'
                 @change="sortFn($event,'YKPJE')" />
             </div>
             <div class="col flex08">
-              <span class="text">{{YSKJECOM}}</span>
+              <span class="text">{{clientBigType==='应收款单位'?'我方收款':'我方付款'}}金额</span>
               <zh-sort v-model="YSKJE"
                 specialKey='transfer_count'
                 @change="sortFn($event,'YSKJE')" />
             </div>
             <div class="col flex08">
-              <span class="text">已扣款金额</span>
+              <span class="text">{{clientBigType==='应收款单位'?'我方扣款':'对方扣款'}}金额</span>
               <zh-sort v-model="YKKJE"
                 specialKey='deduct_price'
                 @change="sortFn($event,'YKKJE')" />
@@ -201,7 +130,6 @@
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     display: -webkit-box;">{{computedType(itemClient.type)}}</div>
-            <!-- <div class="col flex08">{{itemClient.phone}}</div> -->
             <div class="col flex08">{{$formatNum($toFixed(itemClient.financial_data.plan_price || 0))}}</div>
             <div class="col flex08"
               style="font-weight:bold">{{$formatNum($toFixed(itemClient.financial_data.total_price || 0))}}元</div>
@@ -217,7 +145,6 @@
             <div class="col flex12">合计</div>
             <div class="col"></div>
             <div class="col flex12"></div>
-            <!-- <div class="col flex08"></div> -->
             <div class="col flex08">{{$formatNum($toFixed(count.plan_price/10000 || 0))}}万元</div>
             <div class="col flex08"
               style="font-weight:bold">{{$formatNum($toFixed(count.total_price/10000 || 0))}}万元</div>
@@ -228,11 +155,6 @@
           </div>
         </div>
         <div class="pageCtn">
-          <!-- <div class="timeCtn">
-            <span class="label">统计时间：</span>
-            <span class="text">{{selectTime.join('~')}}</span>
-            <span class="btn noBorder">修改</span>
-          </div> -->
           <el-pagination background
             :page-size="10"
             layout="prev, pager, next"
@@ -242,14 +164,6 @@
         </div>
       </div>
     </div>
-    <!-- 导所有数据蒙层 -->
-    <!-- <div class="popup"
-      v-if="downloading"
-      style="display:flex;flex-direction:column;align-items:center;justify-content: center;color:#1A95FF;font-size:40px">
-      <span>当前进度：{{propgress || 0}}%
-        <span class="el-icon-loading"></span></span>
-      <span>正在下载，请勿刷新页面或关闭页面</span>
-    </div> -->
     <div class="popup"
       v-if="downloading">
       <div class="main"
@@ -291,7 +205,7 @@ export default {
       year: '',
       list: [],
       keyword: '',
-      clientBigType: '订单公司',
+      clientBigType: '应收款单位',
       client_type: '',
       searchTypeFlag: false,
       pages: 1,
@@ -439,8 +353,8 @@ export default {
       let params = getHash(this.$route.params.params)
       this.pages = Number(params.page)
       this.keyword = params.keyword
-      this.clientBigType = params.clientBigType || '订单公司'
-      this.client_type = +params.clientType || ''
+      this.clientBigType = params.clientBigType || '应收款单位'
+      this.client_type = params.clientType || ''
       this[params.sortType] = +params.sortValue || 0
       this.sortKey = params.sortKey
       this.year = params.year || new Date().getFullYear().toString()
@@ -451,12 +365,12 @@ export default {
     },
     getClientList () {
       this.loading = true
-      const api = (this.year >= new Date().getFullYear()) ? client.list : client.listCount
+      const api = (this.year >= new Date().getFullYear()) ? client.caiwuList : client.listCount
       api({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
-        type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
+        type: this.client_type ? this.clientTypeCom.find((item) => item.value === this.client_type).children.map((item) => item.value) : this.clientTypeAll,
         status: this.clientStatus,
         order: (this.sortValue && this.sortKey) || '',
         order_way: this.sortValue === 1 ? '' : 'desc',
@@ -497,8 +411,8 @@ export default {
       }
       this.isDownLoad = true
       client.exportFile({
-        type: this.client_type ? [this.client_type] : this.clientTypeCom.map(itemM => itemM.value),
-        export_type: this.clientBigType === '订单公司' ? '收款' : '付款',
+        type: this.client_type ? this.clientTypeCom.find((item) => item.value === this.client_type).children.map((item) => item.value) : this.clientTypeAll,
+        export_type: this.clientBigType === '应收款单位' ? '收款' : '付款',
         start_time: startTime,
         end_time: endTime
       }).then(res => {
@@ -524,6 +438,7 @@ export default {
         children: itemM.children
       }
     })
+    console.log(this.companyType)
     this.getClientList()
   },
   watch: {
@@ -540,51 +455,21 @@ export default {
   },
   computed: {
     clientTypeCom () {
-      const typeArr = this.companyType.find(itemF => itemF.value === this.clientBigType)
-      return (typeArr && typeArr.children) || []
-    },
-    DDXDCZCOM () {
-      switch (this.clientBigType) {
-        case '订单公司':
-          return '订单下单产值'
-        case '原料纱线单位':
-        case '装饰辅料单位':
-        case '包装辅料单位':
-          return '计划采购总值'
-        case '生产织造单位':
-          return '计划生产总值'
-        case '物料加工单位':
-        case '半成品加工单位':
-        case '成品加工单位':
-          return '计划加工总值'
-        default:
-          return '计划总值'
+      if (this.clientBigType === '应收款单位') {
+        return this.companyType.filter((item) => {
+          return item.value === '订单公司' || item.value === '销售出库单位'
+        })
+      } else {
+        return this.companyType.filter((item) => {
+          return item.value !== '订单公司' && item.value !== '销售出库单位'
+        })
       }
     },
-    SJFHCZCOM () {
-      switch (this.clientBigType) {
-        case '订单公司':
-          return '实际发货产值'
-        case '原料纱线单位':
-        case '装饰辅料单位':
-        case '包装辅料单位':
-          return '实际采购总值'
-        case '生产织造单位':
-          return '实际生产总值'
-        case '物料加工单位':
-        case '半成品加工单位':
-        case '成品加工单位':
-          return '实际加工总值'
-        default:
-          return '实际总值'
-      }
-    },
-    YSKJECOM () {
-      switch (this.clientBigType) {
-        case '订单公司':
-          return '已收款金额'
-        default:
-          return '已付款金额'
+    clientTypeAll () {
+      if (this.clientBigType === '应收款单位') {
+        return [1, 2, 37, 38]
+      } else {
+        return [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
       }
     }
   }

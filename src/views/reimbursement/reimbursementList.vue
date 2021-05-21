@@ -202,7 +202,7 @@ export default {
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
-        this.date = ''
+        this.date = [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())]
       }
       this.user_name = params.applyUser
       this.status = params.status
@@ -267,12 +267,12 @@ export default {
     filterTotal (item) {
       return item ? JSON.parse(item).map(itemM => (+itemM.price || 0)).reduce((a, b) => {
         return a + b
-      }, 0) : 0
+      }, 0).toFixed(2) : 0
     },
     filterRealTotal (item) {
       return item ? JSON.parse(item).map(itemM => (+itemM.price || 0)).reduce((a, b) => {
         return a + b
-      }, 0) : 0
+      }, 0).toFixed(2) : 0
     }
   }
 }

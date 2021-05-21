@@ -851,6 +851,15 @@
             style="display:flex;justify-content:space-around;align-items:center">
             <div class="btn btnWhiteBlue"
               style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id +'/1/' + $route.params.orderType)">原料出入库</div>
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
+              @click="$router.push('/materialStock/materialStockDetail/' + $route.params.id +'/1/' + $route.params.orderType)">辅料出入库</div>
+          </div>
+          <div class="row"
+            style="display:flex;justify-content:space-around;align-items:center">
+            <div class="btn btnWhiteBlue"
+              style="width:6em;text-align:center"
               @click="$router.push('/receiveDispatch/receiveDispatchDetail/' + $route.params.id)">产品收发</div>
             <div style="width:6em;height:32px;text-align:center;margin-right:16px;padding: 0 23px;"></div>
           </div>

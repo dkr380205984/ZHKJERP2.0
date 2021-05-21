@@ -452,18 +452,21 @@
               style="display:flex">
               <zh-input style="flex:0.5;margin-right:15px"
                 placeholder="左边"
+                type="number"
                 v-model="warpInfo.reed_width_data[0]"
                 @input="cmpReedWidth">
                 <template slot="append">cm</template>
               </zh-input>
               <zh-input style="flex:1;margin-right:15px"
                 placeholder="中间"
+                type="number"
                 v-model="warpInfo.reed_width_data[1]"
                 @input="cmpReedWidth">
                 <template slot="append">cm</template>
               </zh-input>
               <zh-input style="flex:0.5;"
                 placeholder="右边"
+                type="number"
                 v-model="warpInfo.reed_width_data[2]"
                 @input="cmpReedWidth">
                 <template slot="append">cm</template>
@@ -2111,9 +2114,7 @@ export default {
     // 计算下筘幅
     cmpReedWidth () {
       this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
-        return total + cur.split('+').reduce((totalChild, curChild) => {
-          return totalChild + (Number(curChild || 0))
-        }, 0)
+        return total + Number(cur)
       }, 0).toFixed(2)
     },
     afterSave (data) {

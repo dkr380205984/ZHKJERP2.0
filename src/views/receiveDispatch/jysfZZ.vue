@@ -217,7 +217,7 @@
               <div class="rowScrollTable">
                 <div class="tb_fixed">
                   <div class="tb_column">
-                    <div class="header">产品名称</div>
+                    <div class="header">工序名称</div>
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
                       :key="index">
@@ -285,16 +285,6 @@
                     </div>
                   </div>
                   <div class="tb_column">
-                    <div class="header">捆数</div>
-                    <div class="tb_row"
-                      v-for="(item,index) in formData.tableData"
-                      :key="index">
-                      <zh-input :keyBoard="keyBoard"
-                        v-model="item.count"
-                        placeholder="捆数"></zh-input>
-                    </div>
-                  </div>
-                  <div class="tb_column">
                     <div class="header">次品数量(不填则未检验)</div>
                     <div class="tb_row"
                       v-for="(item,index) in formData.tableData"
@@ -318,6 +308,16 @@
                           :label="itemI"
                           :value="itemI"></el-option>
                       </el-select>
+                    </div>
+                  </div>
+                  <div class="tb_column">
+                    <div class="header">捆数</div>
+                    <div class="tb_row"
+                      v-for="(item,index) in formData.tableData"
+                      :key="index">
+                      <zh-input :keyBoard="keyBoard"
+                        v-model="item.count"
+                        placeholder="捆数"></zh-input>
                     </div>
                   </div>
                   <div class="tb_column">
@@ -1730,10 +1730,10 @@ export default {
       })
       this.renderData.newAllocation.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
-          itemChild.checkNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemChild.client_id === Number((itemChild.type === 1 ? itemFind.weave_client_old_id : itemFind.semi_client_info[0].client_id))).reduce((total, current) => {
+          itemChild.checkNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
             return total + current.number
           }, 0)
-          itemChild.cpNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemChild.client_id === Number((itemChild.type === 1 ? itemFind.weave_client_old_id : itemFind.semi_client_info[0].client_id))).reduce((total, current) => {
+          itemChild.cpNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
             return total + current.shoddy_number
           }, 0)
         })
@@ -1757,8 +1757,8 @@ export default {
         product_code: '',
         colorSize: productId ? sizeId + '/' + colorId : '',
         colorSizeArr: [],
-        weave_client_id: itemChild && itemChild.type === 1 ? ['已分配单位', itemChild.client_id + '/' + process] : [],
-        semi_client_id: itemChild && itemChild.type === 2 ? [['已分配单位', itemChild.client_id + '/' + process]] : [],
+        weave_client_id: itemChild ? ['已分配单位', itemChild.client_id + '/' + process] : [],
+        semi_client_id: [],
         back_client_id: [],
         number: number || '',
         cpNum: '',
@@ -2103,6 +2103,13 @@ export default {
     saveAll () {
       if (this.formData.tableData.length === 0) {
         this.$message.error('请至少提交一条记录')
+        return
+      }
+      const error = this.formData.tableData.some((item) => {
+        return !item.product_id || !item.colorSize || !item.number
+      })
+      if (error) {
+        this.$message.error('请完善产品必填信息')
         return
       }
       // 数据分类，分成不需要绑定芯片的数据和需要绑定芯片的数据

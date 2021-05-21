@@ -1236,7 +1236,8 @@ export default {
                     size_id: itemSize.size_color[0],
                     color_id: itemSize.size_color[1],
                     numbers: itemSize.number,
-                    unit_price: itemSize.price
+                    unit_price: itemSize.price,
+                    id: itemSize.id
                   }
                 })
               }
@@ -1260,6 +1261,7 @@ export default {
         others_info: JSON.stringify([]),
         time_progress: warnData
       }
+      console.log(data)
       order.create(data).then(res => {
         if (res.data.status) {
           this.$message.success('修改成功')
@@ -1331,6 +1333,8 @@ export default {
       let arr = [] // 存储产品id
       orderInfo.order_batch.forEach(itemBatch => {
         let productInfo = this.$mergeData(this.$clone(itemBatch.product_info).map(items => {
+          // product_id就product_id，强行改成id，save的时候又把id的key改成product_id，现在人家要保存一个id我还得把id保存为fuckyourMohter
+          items.fuckYourMother = items.id
           items.id = items.product_id.toString()
           items.unit = items.category_info.unit
           items.sizeColor = items.all_size.map(valSize => {
@@ -1348,7 +1352,7 @@ export default {
           delete items.product_info
           delete items.image
           return items
-        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name' }, { name: 'color_name' }] } })
+        }), { mainRule: 'id', otherRule: [{ name: 'unit' }, { name: 'sizeColor' }], childrenName: 'product_info', childrenRule: { mainRule: ['size_id', 'color_id', 'unit_price/price'], otherRule: [{ name: 'numbers/number', type: 'add' }, { name: 'size_name' }, { name: 'color_name' }, { name: 'fuckYourMother' }] } })
         orderBatch.push({
           batch_id: itemBatch.id,
           time: itemBatch.delivery_time,
@@ -1388,6 +1392,7 @@ export default {
         })
       })
       this.checkedProList = arr
+      console.log(orderBatch)
       this.batchDate = orderBatch.map(itemBatch => {
         return {
           id: itemBatch.batch_id,
@@ -1402,7 +1407,8 @@ export default {
                 return {
                   size_color: [itemSize.size_id, itemSize.color_id],
                   number: itemSize.number,
-                  price: this.canSeePriceFlag ? itemSize.price : ''
+                  price: this.canSeePriceFlag ? itemSize.price : '',
+                  id: itemSize.fuckYourMother
                 }
               }),
               sizeColor: itemPro.sizeColor,
@@ -1411,6 +1417,7 @@ export default {
           })
         }
       })
+      console.log(this.batchDate)
       this.order_file_arr = orderInfo.order_contract ? JSON.parse(orderInfo.order_contract).map(items => {
         return {
           name: items.replace('https://file.zwyknit.com/', ''),

@@ -28,18 +28,6 @@
                 :value="item.value">
               </el-option>
             </el-select>
-            <el-date-picker v-model="year"
-              class="inputs"
-              :picker-options="{
-                disabledDate(e){
-                  if (new Date(e).getFullYear() > new Date().getFullYear()) return true
-                }
-              }"
-              value-format="yyyy"
-              type="year"
-              @change='changeRouter(1)'
-              placeholder="筛选年">
-            </el-date-picker>
             <div class="btn btnGray"
               style="margin-left:0"
               @click="reset">重置</div>
@@ -60,6 +48,9 @@
             <div class="col flex12">
               <span class="text">客户类型</span>
             </div>
+            <div class="col flex12">
+              <span class="text">客户状态</span>
+            </div>
             <div class="col flex08">
               <span class="text">联系电话</span>
             </div>
@@ -79,6 +70,10 @@
                     -webkit-line-clamp: 2;
                     -webkit-box-orient: vertical;
                     display: -webkit-box;">{{computedType(itemClient.type)}}</div>
+            <div class="col flex12">
+              <span class="text"
+                :style="{'color':itemClient.status===1?'#01B48C':'#F5222D'}">{{itemClient.status===1?'合作中':'已禁用'}}</span>
+            </div>
             <div class="col flex08">{{itemClient.phone}}</div>
             <div class="col middle flex12">
               <span class="opr orange"
@@ -119,6 +114,7 @@ export default {
       searchTypeFlag: false,
       pages: 1,
       total: 0,
+      fuckCompanyType: [],
       companyType: [],
       clientStatus: 1,
       statusArr: [
@@ -274,16 +270,12 @@ export default {
     },
     getClientList () {
       this.loading = true
-      const api = (this.year >= new Date().getFullYear()) ? client.list : client.listCount
-      api({
+      client.list({
         limit: 10,
         page: this.pages,
         keyword: this.keyword,
         type: this.client_type ? [this.client_type.split(',')[1]] : [],
-        status: this.clientStatus,
-        order: (this.sortValue && this.sortKey) || '',
-        order_way: this.sortValue === 1 ? '' : 'desc',
-        year: this.year
+        status: this.clientStatus
       }).then(res => {
         if (res.data.status !== false) {
           this.list = res.data.data
@@ -301,12 +293,12 @@ export default {
     },
     computedType (type) {
       return this.$unique(type.map(item => {
-        let flag = this.companyType.find(value => value.children.find(itemF => +itemF.value === +item))
-        return flag ? (flag.label || '') : ''
+        let flag = companyType.find(value => value.value === item)
+        return flag ? `${flag.type}/${flag.label}` : ''
       })).join(',')
     },
     reset () {
-      this.$router.push('/client/clientList/page=1&&keyword=&&clientType=')
+      this.$router.push('/client/clientListEasy/page=1&&keyword=&&clientType=')
     },
     changeCompanyType (item) {
       this.clientBigType = item.value

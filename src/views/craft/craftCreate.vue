@@ -3394,9 +3394,8 @@ export default {
     },
     // 计算下筘幅
     cmpReedWidth () {
-      console.log(this.warpInfo.reed_width_data)
       this.warpInfo.reed_width = this.warpInfo.reed_width_data.reduce((total, cur) => {
-        return total + cur
+        return total + Number(cur)
       }, 0).toFixed(2)
     },
     // 预览纹版图

@@ -692,6 +692,10 @@ const routes = [
       path: '/transport/transportDetail/:id',
       name: '运输货款详情',
       component: () => import('../views/transport/transportDetail.vue')
+    }, {
+      path: '/financialStatistics/ticketStatistics/:params',
+      name: '票据列表',
+      component: () => import('../views/financialStatistics/ticketStatistics.vue')
     }]
   }, {
     path: '/tagProductPrint/:id',
@@ -921,7 +925,19 @@ router.beforeEach((to, from, next) => {
     '芯片读取出入库列表': ['织为云', '芯片读取出入库列表'],
     '芯片读取': ['织为云', '芯片读取'],
     '结算扣款统计': ['织为云', '结算扣款统计'],
-    '工艺单列表': ['织为云', '工艺单列表']
+    '工艺单列表': ['织为云', '工艺单列表'],
+    '订单财务统计-新版': ['织为云', '订单财务统计'],
+    '样单财务统计-新版': ['织为云', '样单财务统计'],
+    '物料使用统计-新版': ['织为云', '物料使用统计'],
+    '结算扣款统计-新版': ['织为云', '结算扣款统计'],
+    '年度财务统计-新版': ['织为云', '年度财务统计'],
+    '生产记录统计-新版': ['织为云', '生产记录统计'],
+    '客户结算列表': ['织为云', '客户结算列表'],
+    '单证列表': ['织为云', '单证列表'],
+    '添加单证': ['织为云', '添加单证'],
+    '修改单证': ['织为云', '修改单证'],
+    '单证详情': ['织为云', '单证列表', '单证详情'],
+    '票据列表': ['织为云', '票据列表']
   }
   store.commit('getRoute', routerTable[to.name])
   next()
