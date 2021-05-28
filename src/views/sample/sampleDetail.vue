@@ -554,13 +554,17 @@
         </div>
       </div>
     </div>
+    <opr-history :id="$route.params.id"
+      type='sample'></opr-history>
   </div>
 </template>
 
 <script>
 import { chinaNum } from '@/assets/js/dictionary.js'
 import { sample } from '@/assets/js/api.js'
+import oprHistory from '../../components/oprHistory/oprHistory.vue'
 export default {
+  components: { oprHistory },
   data () {
     return {
       canSeeUpdate: false,

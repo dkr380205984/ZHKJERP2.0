@@ -43,7 +43,6 @@
 export default {
   props: {
     list: {
-      type: Array,
       required: true
     },
     pro_id: [String, Number],
@@ -140,7 +139,7 @@ export default {
     }
   },
   mounted () {
-    if (this.list.length === 1 || this.list.length === 0) {
+    if (this.list && (this.list.length === 1 || this.list.length === 0)) {
       this.firstFlag = true
       this.lastFlag = true
     }

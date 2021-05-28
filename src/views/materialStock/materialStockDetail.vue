@@ -1105,6 +1105,8 @@
         </div>
       </div>
     </div>
+    <opr-history :id="$route.params.id"
+      type='order'></opr-history>
   </div>
 </template>
 

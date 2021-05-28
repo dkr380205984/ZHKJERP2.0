@@ -976,6 +976,8 @@
       </div>
     </div>
     <history-pendant prefix="/productProcess/productProcessDetail"></history-pendant>
+    <opr-history :id="$route.params.id"
+      :type="this.$route.params.orderType===1?'order':'sampleOrder'"></opr-history>
   </div>
 </template>
 

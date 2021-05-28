@@ -11,6 +11,13 @@ const deleteFile = (params) => http.post(`${baseUrl}/file/delete`, params, 'appl
 // 潘通色号
 const pantongList = (params) => http.get(`${baseUrl}/pan/color/list`, params)
 
+// 操作记录
+const oprHistory = {
+  product: (params) => http.get(`${baseUrl}/product/operation/record/list`, params),
+  order: (params) => http.get(`${baseUrl}/order/operation/record/list`, params),
+  sampleOrder: (params) => http.get(`${baseUrl}/sample/order/operation/record/list`, params),
+  sample: (params) => http.get(`${baseUrl}/sample/product/operation/record/list`, params)
+}
 // 样品管理
 const sample = {
   create: (params) => http.post(`${baseUrl}/sample/product/save`, params, 'application/json'),
@@ -327,6 +334,16 @@ const processing = {
   matDetail: (params) => http.get(`${baseUrl}/material/distribute/detail`, params),
   matDelete: (params) => http.post(`${baseUrl}/material/distribute/delete`, params, 'application/json'),
   setRealityNumber: (params) => http.post(`${baseUrl}/production/update/reality/number`, params, 'application/json')
+}
+// 产品收发数据报表
+const receiveDispatchSJBB = {
+  list: (params) => http.get(`${baseUrl}/order/product/production/day`, params),
+  history: (params) => http.get(`${baseUrl}/order/product/production/history`, params)
+}
+// 成品加工数据报表
+const productProcessSJBB = {
+  list: (params) => http.get(`${baseUrl}/production/inspection/day`, params),
+  history: (params) => http.get(`${baseUrl}/production/inspection/history`, params)
 }
 // 产品收发出入库
 const receiveDispatch = {
@@ -645,6 +662,9 @@ const productionList = {
   productProcess: (params) => http.get(`${baseUrl}/order/product_process/list`, params)
 }
 export {
+  productProcessSJBB,
+  receiveDispatchSJBB,
+  oprHistory,
   productionList,
   newFinance,
   documentsTable,

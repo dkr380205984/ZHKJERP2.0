@@ -488,7 +488,8 @@
         </div>
       </div>
     </div>
-    <!-- <opr-history></opr-history> -->
+    <opr-history type="product"
+      :id="$route.params.id"></opr-history>
   </div>
 </template>
 

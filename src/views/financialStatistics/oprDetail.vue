@@ -375,7 +375,7 @@ export default {
       let api = this.$route.params.oprType === '开票' ? settle : chargebacks
       if (this.ifPass) {
         api.check({
-          id: this.$route.params.oprId
+          id: [this.$route.params.oprId]
         }).then((res) => {
           if (res.data.status) {
             let title = '您有一条消息通知'
@@ -491,7 +491,7 @@ export default {
       if (this.$route.params.oprType === '扣款') {
         chargebacks.log({
           client_id: this.$route.params.clientId,
-          type: [this.$route.params.type],
+          // type: this.$route.params.type ? [this.$route.params.type] : [],
           order_id: this.$route.query.orderId || ''
         }).then((res) => {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))
@@ -502,7 +502,7 @@ export default {
       } else if (this.$route.params.oprType === '开票') {
         settle.log({
           client_id: this.$route.params.clientId,
-          type: [this.$route.params.type],
+          // type: this.$route.params.type ? [this.$route.params.type] : [],
           order_id: this.$route.query.orderId || ''
         }).then((res) => {
           this.info = res.data.data.find((item) => item.id === Number(this.$route.params.oprId))

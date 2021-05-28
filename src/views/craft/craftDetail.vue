@@ -830,6 +830,8 @@
         </div>
       </div>
     </div>
+    <opr-history :type="$route.params.type==='1'?'product':'sample'"
+      :id="$route.params.id"></opr-history>
     <!-- <div v-show="show3D"
       id="threeCtn"
       style="position:fixed;left:0;right:50%;top:0;bottom:50%;background:rgba(0,0,0,0.8);z-index:999;"></div> -->

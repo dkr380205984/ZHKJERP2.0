@@ -1742,13 +1742,17 @@
         </div>
       </div>
     </div>
+    <opr-history :id="$route.params.id"
+      type='order'></opr-history>
   </div>
 </template>
 
 <script>
 import { moneyArr, isHasPermissions } from '@/assets/js/dictionary.js'
 import { orderBatch, price, order, materialPlan, materialStock, weave, processing, receiveDispatch, inspection, packPlan, finance, materialManage, materialProcess, yarn, material, packag, stock, warnSetting, replenish, chargebacks } from '@/assets/js/api.js'
+import oprHistory from '../../components/oprHistory/oprHistory.vue'
 export default {
+  components: { oprHistory },
   data () {
     return {
       loading: true,

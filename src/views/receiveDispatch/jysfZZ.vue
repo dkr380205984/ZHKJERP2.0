@@ -1041,6 +1041,8 @@
       </div>
     </div>
     <history-pendant prefix="/receiveDispatch/jysf"></history-pendant>
+    <opr-history :id="$route.params.id"
+      type="order"></opr-history>
   </div>
 </template>
 
@@ -1794,8 +1796,8 @@ export default {
                 name: itemChild.size_name + '/' + itemChild.color_name,
                 id: itemChild.size_id + '/' + itemChild.color_id
               }],
-              weave_client_id: itemChild.type === 1 ? ['已分配单位', itemChild.client_id + '/' + itemPro.process] : [],
-              semi_client_id: itemChild.type === 2 ? [['已分配单位', itemChild.client_id + '/' + itemPro.process]] : [],
+              weave_client_id: ['已分配单位', itemChild.client_id + '/' + itemPro.process],
+              semi_client_id: [],
               back_client_id: [],
               number: itemChild.numbers,
               cpNum: '',

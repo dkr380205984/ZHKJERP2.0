@@ -269,6 +269,8 @@
         </div>
       </div>
     </div>
+    <opr-history :id="$route.params.id"
+      :type="this.$route.params.type===1?'order':'sampleOrder'"></opr-history>
   </div>
 </template>
 

@@ -1248,6 +1248,8 @@
         </div>
       </div>
     </div>
+    <opr-history :id="$route.params.id"
+      type='sampleOrder'></opr-history>
   </div>
 </template>
 

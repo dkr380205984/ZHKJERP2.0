@@ -166,7 +166,7 @@ export default {
           {
             name: '票据管理',
             id: 23,
-            path: '/financialStatistics/ticketStatistics/page=1&&keyword=&&date=',
+            path: '/financialStatistics/ticketStatistics/page=1&&code=&&order_code=&&client_name=&&date=&&type=开票管理',
             icon: 'icon-caiwushoujuguanli'
           }
         ]

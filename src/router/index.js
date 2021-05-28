@@ -481,6 +481,10 @@ const routes = [
       name: '产品收发列表',
       component: () => import('../views/receiveDispatch/receiveDispatchList.vue')
     }, {
+      path: '/receiveDispatch/SJBB/:params',
+      name: '产品收发-数据报表',
+      component: () => import('../views/receiveDispatch/SJBB.vue')
+    }, {
       path: '/receiveDispatch/receiveDispatchDetail/:id',
       name: '产品收发详情',
       component: () => import('../views/receiveDispatch/receiveDispatchDetail.vue')
@@ -524,6 +528,10 @@ const routes = [
       path: '/productProcess/productProcessList/:params',
       name: '成品加工列表',
       component: () => import('../views/productProcess/productProcessList.vue')
+    }, {
+      path: '/productProcess/SJBB/:params',
+      name: '成品加工-数据报表',
+      component: () => import('../views/productProcess/SJBB.vue')
     }, {
       path: '/productProcess/productProcessDetail/:id',
       name: '成品加工详情',
@@ -880,6 +888,8 @@ router.beforeEach((to, from, next) => {
     '包装入库': ['织为云', '包装订购列表', '包装入库'],
     '包装订购详情': ['织为云', '装箱管理列表', '包装订购详情'],
     '产品收发列表': ['织为云', '产品收发列表'],
+    '产品收发-数据报表': ['织为云', '产品收发-数据报表'],
+    '成品加工-数据报表': ['织为云', '成品加工-数据报表'],
     '产品收发详情': ['织为云', '产品收发列表', '产品收发详情'],
     '检验收发详情-针织': ['织为云', '检验收发列表', '检验收发详情-针织'],
     '检验收发详情-梭织': ['织为云', '检验收发列表', '检验收发详情-梭织'],

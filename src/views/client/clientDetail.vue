@@ -97,16 +97,17 @@
               <div class="tb_row middle">已扣款金额</div>
             </div>
             <div class="tb_content">
+              <!-- {{(!countType||countType === 'RMB') ? '万元' : '万美元'}} 所有货币已经转成RMB -->
               <div class="tb_row middle"
                 style="color:#1a95ff">{{detailCount && $formatNum($toFixed(detailCount.plan_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
               <div class="tb_row middle"
                 style="color:#1a95ff">{{detailCount &&$formatNum($toFixed(detailCount.total_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
               <div class="tb_row middle"
-                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.settle_price_invoice/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.settle_price_invoice/10000 || 0))}}万元</div>
               <div class="tb_row middle"
-                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.transfer_count/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+                style="color:#01B48C">{{detailCount &&$formatNum($toFixed(detailCount.transfer_count/10000 || 0))}}万元</div>
               <div class="tb_row middle"
-                style="color:#F5222D">{{detailCount &&$formatNum($toFixed(detailCount.deduct_price/10000 || 0))}}{{(!countType||countType === 'RMB') ? '万元' : '万美元'}}</div>
+                style="color:#F5222D">{{detailCount &&$formatNum($toFixed(detailCount.deduct_price/10000 || 0))}}万元</div>
             </div>
           </div>
         </div>
@@ -2025,7 +2026,8 @@
               </el-image>
             </div>
             <div class="col">
-              <span class="text">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span>
+              <span class="text"
+                :class="item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue'">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span>
             </div>
             <div class="col">
               <span class="text">
@@ -2110,7 +2112,7 @@
             v-for="item in collectionList"
             :key="item.id">
             <div class="col">
-              <span class="text">{{item.deduct_code}}</span>
+              <span class="text">{{item.code}}</span>
             </div>
             <div class="col">
               <span class="text"> <span style="cursor:pointer;color:#1a95ff"
@@ -2224,7 +2226,7 @@
             v-for="item in chargebacksList"
             :key="item.id">
             <div class="col">
-              <span class="text">{{item.deduct_code}}</span>
+              <span class="text">{{item.code}}</span>
             </div>
             <div class="col">
               <span class="text"> <span style="cursor:pointer;color:#1a95ff"
@@ -2252,7 +2254,8 @@
               </el-image>
             </div>
             <div class="col">
-              <span class="text"><span class="text">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span></span>
+              <span class="text"><span class="text"
+                  :class="item.status === 2 ? 'green' : item.status === 3 ? 'red' : 'blue'">{{item.status === 1 ? '待审核' : item.status === 2 ? '已通过' : '已驳回'}}</span></span>
             </div>
             <div class="col">
               <span class="text">
@@ -2812,7 +2815,7 @@ export default {
       material_name: '',
       operate_user: '',
       stock_id: '',
-      date: '',
+      date: [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())],
       product_code: '',
       order_code: '',
       // 列表下方统计数据
@@ -2905,25 +2908,25 @@ export default {
       downLoadInfoArr: [],
       detailCount: null,
       countType: null,
-      countYear: (new Date().getFullYear() - 1).toString(),
+      countYear: (new Date().getFullYear()).toString(),
       chargebacksList: [],
       chargebacksPage: 1,
       chargebacksTotal: 1,
       chargebacksCode: '',
       chargebacksOrderCode: '',
-      chargebacksDate: '',
+      chargebacksDate: [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())],
       settleList: [],
       settlePage: 1,
       settleTotal: 1,
       settleCode: '',
       settleOrderCode: '',
-      settleDate: '',
+      settleDate: [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())],
       collectionList: [],
       collectionPage: 1,
       collectionTotal: 1,
       collectionCode: '',
       collectionOrderCode: '',
-      collectionDate: '',
+      collectionDate: [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())],
       collectionMethod: '',
       noOrder: false, // 标记是否是无单号提交
       postData: { token: '' },
@@ -2974,7 +2977,7 @@ export default {
       }
     },
     disabledDate (e) {
-      if (new Date(e).getFullYear() > (new Date().getFullYear() - 1)) return true
+      if (new Date(e).getFullYear() > (new Date().getFullYear())) return true
     },
     setCardData (item) {
       return {
@@ -4133,6 +4136,7 @@ export default {
         invoice_info: JSON.stringify(this.settle.invoiceDetail),
         desc: this.settle.desc,
         order_type: this.order_type,
+        transfer_type: this.typeNum === 9 ? 1 : 0,
         type: this.typeNum,
         file_url: this.fileUrl
       }).then((res) => {
@@ -4300,17 +4304,23 @@ export default {
         chargebacks.log({
           page: 1,
           limit: 5,
-          client_id: this.$route.params.id
+          client_id: this.$route.params.id,
+          start_time: (this.chargebacksDate && this.chargebacksDate[0]) || '',
+          end_time: (this.chargebacksDate && this.chargebacksDate[1]) || ''
         }),
         settle.log({
           page: 1,
           limit: 5,
-          client_id: this.$route.params.id
+          client_id: this.$route.params.id,
+          start_time: (this.settleDate && this.settleDate[0]) || '',
+          end_time: (this.settleDate && this.settleDate[1]) || ''
         }),
         collection.log({
           page: 1,
           limit: 5,
-          client_id: this.$route.params.id
+          client_id: this.$route.params.id,
+          start_time: (this.collectionDate && this.collectionDate[0]) || '',
+          end_time: (this.collectionDate && this.collectionDate[1]) || ''
         })
       ]).then(res => {
         this.oprList = res[0].data.data.map((item) => {

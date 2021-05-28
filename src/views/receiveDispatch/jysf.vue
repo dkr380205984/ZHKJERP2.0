@@ -1046,6 +1046,8 @@
       </div>
     </div>
     <history-pendant prefix="/receiveDispatch/jysf"></history-pendant>
+    <opr-history :id="$route.params.id"
+      type="order"></opr-history>
   </div>
 </template>
 

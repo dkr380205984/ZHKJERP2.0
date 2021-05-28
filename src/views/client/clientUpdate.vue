@@ -234,7 +234,7 @@ export default {
         if (res.data.status !== false) {
           this.$message.success('保存成功，即将跳转至客户列表')
           setTimeout(() => {
-            this.$router.push('/client/clientList/page=1&&keyword=&&date==&&clientType=')
+            this.$router.push('/client/clientListEasy/page=1&&keyword=&&date==&&clientType=')
           }, 300)
         }
       })

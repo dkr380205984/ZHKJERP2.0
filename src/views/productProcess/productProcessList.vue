@@ -60,6 +60,11 @@
             </div>
           </div>
         </div>
+        <div class="filterCtn2"
+          style="justify-content:flex-end">
+          <div class="btn btnBlue"
+            @click="$router.push('/productProcess/SJBB/page=1&&order_code=&&client_name=&&date=')">数据报表</div>
+        </div>
         <order-list :list="list"
           oprWidth="120">
           <template slot="state"

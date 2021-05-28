@@ -81,6 +81,9 @@
           </div>
         </div>
         <div class="addCtn">
+          <div class="btn"
+            :class="{'btnGray':checkList.length===0,'btnBlue':checkList.length>0}"
+            @click="batchBan">批量离职</div>
           <div class="btn btnBlue"
             @click="$router.push('/staff/staffCreate')">添加员工</div>
         </div>
@@ -115,7 +118,11 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">
-              <span class="text">{{item.staff_code}}</span>
+              <span class="text">
+                <el-checkbox v-model="item.check">
+                  {{item.staff_code}}
+                </el-checkbox>
+              </span>
             </div>
             <div class="col">
               <span class="text">{{item.name}}</span>
@@ -148,8 +155,13 @@
                     <el-dropdown-item @click.native="$router.push('/staff/staffUpdate/'+ item.id)">
                       <span class="updated">修改</span>
                     </el-dropdown-item>
-                    <el-dropdown-item @click.native="showBan(item.id)">
+                    <el-dropdown-item @click.native="showBan(item.id)"
+                      v-if="item.status===1">
                       <span class="create">离职</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item @click.native="banStaff(item.id)"
+                      v-if="item.status!==1">
+                      <span class="create">复职</span>
                     </el-dropdown-item>
                     <el-dropdown-item @click.native="deleteStaff(item.id)">
                       <span class="delete">删除</span>
@@ -202,7 +214,7 @@
             <div class="btn btnGray"
               @click="banFlag = false">取消</div>
             <div class="btn btnBlue"
-              @click="banStaff">确定</div>
+              @click="banStaff()">确定</div>
           </div>
         </div>
       </div>
@@ -284,7 +296,19 @@ export default {
       this.getList()
     }
   },
+  computed: {
+    checkList () {
+      return this.list.filter((item) => item.check)
+    }
+  },
   methods: {
+    batchBan () {
+      if (this.checkList.length === 0) {
+        this.$message.warning('请选择需要离职的员工')
+      } else {
+        this.showBan()
+      }
+    },
     getList () {
       this.loading = true
       staff.list({
@@ -351,17 +375,40 @@ export default {
       this.staffId = id
       this.banFlag = true
     },
-    banStaff () {
-      console.log(this.banDate)
-      staff.ban({
-        id: this.staffId,
-        leave_reason: this.banReason,
-        leave_time: this.banDate
-      }).then((res) => {
-        this.banFlag = false
-        this.$message.success('修改成功')
-        this.getList()
-      })
+    banStaff (id) {
+      if (id) {
+        this.$confirm('是否复职该员工?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          staff.ban({
+            id: id,
+            type: 2
+          }).then((res) => {
+            this.$message.success('复职成功')
+            this.getList()
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      } else {
+        const idArr = this.staffId ? [this.staffId] : this.checkList.map((item) => item.id)
+        staff.ban({
+          id: idArr,
+          leave_reason: this.banReason,
+          leave_time: this.banDate,
+          type: 1
+        }).then((res) => {
+          this.banFlag = false
+          this.staffId = false
+          this.$message.success('修改成功')
+          this.getList()
+        })
+      }
     }
   },
   created () {

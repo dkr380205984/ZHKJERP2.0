@@ -530,7 +530,7 @@ export default {
         isChecked: false,
         opr: '客户列表',
         icon: 'icon-kehuguanli',
-        url: '/client/clientList/page=1&&keyword=&&clientType='
+        url: '/client/clientListEasy/page=1&&keyword=&&clientType='
       }, {
         id: 18,
         isChecked: false,

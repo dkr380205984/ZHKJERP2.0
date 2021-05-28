@@ -178,6 +178,8 @@
         </div>
       </div>
     </div>
+    <opr-history :type="$route.params.type==='1'?'product':'sample'"
+      :id="$route.params.id"></opr-history>
   </div>
 </template>
 
