@@ -2214,7 +2214,7 @@ export default {
       }
     },
     addGL () {
-      this.GL.push([['', '', '']])
+      this.GL.push([[{ value: '', mark: '' }, { value: '', mark: '' }, { value: '', mark: '' }]])
       this.GLRepeat.push([{
         start: '',
         end: '',
