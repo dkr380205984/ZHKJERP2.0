@@ -1489,7 +1489,7 @@ export default {
               if (allNum > item.production_number - item.inspectionNum) {
                 formData.push({
                   order_type: this.$route.params.orderType,
-                  product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+                  product_flow: this.inspectionForm.product_flow.length > 0 ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
                   order_id: this.$route.params.id,
                   product_id: this.inspectionForm.product_id,
                   size_id: item.size_id,
@@ -1507,7 +1507,7 @@ export default {
               } else {
                 formData.push({
                   order_type: this.$route.params.orderType,
-                  product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+                  product_flow: this.inspectionForm.product_flow.length > 0 ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
                   order_id: this.$route.params.id,
                   product_id: this.inspectionForm.product_id,
                   size_id: item.size_id,
@@ -1535,7 +1535,7 @@ export default {
           } else {
             formData.push({
               order_type: this.$route.params.orderType,
-              product_flow: this.inspectionForm.product_flow ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
+              product_flow: this.inspectionForm.product_flow.length > 0 ? this.inspectionForm.product_flow.join('/') : this.inspectionForm.detail[0].product_flow.join('/'),
               order_id: this.$route.params.id,
               product_id: this.inspectionForm.product_id,
               size_id: this.inspectionForm.colorSizeArr[0].size_id,
@@ -1556,7 +1556,7 @@ export default {
           item.colorSize.forEach((itemChild) => {
             formData.push({
               order_type: this.$route.params.orderType,
-              product_flow: item.product_flow.join('/'),
+              product_flow: this.inspectionForm.product_flow.length > 0 ? this.inspectionForm.product_flow.join('/') : item.product_flow.join('/'),
               order_id: this.$route.params.id,
               product_id: this.inspectionForm.product_id,
               size_id: itemChild.colorSize.split('/')[1],

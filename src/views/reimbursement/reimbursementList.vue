@@ -89,7 +89,7 @@
             v-for="(item,index) in list"
             :key="index">
             <div class="col">{{item.code}}</div>
-            <div class="col">{{item.create_time}}</div>
+            <div class="col">{{item.create_time.slice(0,10)}}</div>
             <div class="col">{{item.reimburse_user}}</div>
             <div class="col">{{item.detail_data|filterTotal}}</div>
             <div class="col">{{item.real_data|filterRealTotal}}</div>
@@ -202,7 +202,7 @@ export default {
       if (params.date !== 'null' && params.date !== '') {
         this.date = params.date.split(',')
       } else {
-        this.date = [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date())]
+        this.date = [this.$getTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 365)), this.$getTime(new Date().setTime(new Date().getTime() + 3600 * 1000 * 24 * 1))]
       }
       this.user_name = params.applyUser
       this.status = params.status

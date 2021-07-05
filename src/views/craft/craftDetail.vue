@@ -1697,7 +1697,7 @@ export default {
         this.warpCanvasBack.reduce((totalWarp, itemWarp) => {
           let warpWidth = warpWidthPJ * warpCK[itemWarp.color]// 重新计算经向，用穿筘法
           let reverseWeftBack = [...this.weftCanvasBack].reverse() // 纬向要反着画,我也不知道为啥,注意reverse会改变原数组,所以修改下指向
-          reverseWeftBack.reverse().reduce((totalWeft, itemWeft) => {
+          reverseWeftBack.reduce((totalWeft, itemWeft) => {
             canvasMatrixBack.push({
               x: totalWarp,
               y: totalWeft,

@@ -3314,13 +3314,24 @@ export default {
     },
     // 修改批次状态
     changeBatchStatus (itemBatch) {
-      order.changeBatchStatus({
-        id: itemBatch.id
-      }).then(res => {
-        if (res.data.status !== false) {
-          this.$message.success('确认完成成功')
-          this.init()
-        }
+      this.$confirm('您是否确认完成该批次？确认后，该批次状态将变为已完成，且状态无法回退', '提示', {
+        confirmButtonText: '确认发货',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        order.changeBatchStatus({
+          id: itemBatch.id
+        }).then(res => {
+          if (res.data.status !== false) {
+            this.$message.success('确认完成成功')
+            this.init()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
       })
     },
     // 取消时初始化原料、辅料、包装和产品信息

@@ -106,6 +106,14 @@
                     <template slot="append"
                       v-if="itemPro.unit">{{itemPro.unit}}</template>
                   </zh-input>
+                  <el-tooltip v-if="itemPro.order_num!==itemPro.production_num"
+                    class="item"
+                    effect="dark"
+                    :content="'该产品生产数量'+(itemPro.order_num<itemPro.production_num?'超出':'小于')+'下单数量，请仔细确认'"
+                    placement="top">
+                    <i class="el-icon-warning"
+                      style="color:#F5222D;font-size:18px;margin-left:4px"></i>
+                  </el-tooltip>
                 </span>
               </div>
               <div class="tableCtnLv2">

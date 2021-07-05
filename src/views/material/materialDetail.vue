@@ -152,7 +152,7 @@
                         style="flex-direction:row;line-height:54px;justify-content:start">
                         <a href="#order"
                           class="blue"
-                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight)">订购</a>
+                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight,false,itemChild.unit)">订购</a>
                         <!-- <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                           v-if="type==='1'"></span>
@@ -234,7 +234,7 @@
                         style="flex-direction:row;line-height:54px;justify-content:start">
                         <a href="#order"
                           class="blue"
-                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight,true)">订购</a>
+                          @click="normalOrder(item.material_name,itemChild.material_attribute,itemChild.id,itemChild.reality_weight - itemChild.order_weight,true,itemChild.unit)">订购</a>
                         <span class="border"
                           style="width: 1px;height: 14px;background: #E9E9E9;margin: 20px 5px;"
                           v-if="type==='1'"></span>
@@ -409,7 +409,7 @@
                             text-align: center;
                             outline: none;"
                             v-model="itemMat.unit"
-                            placeholder="个">
+                            placeholder="单位">
                         </template>
                       </zh-input>
                     </div>
@@ -1312,7 +1312,7 @@
               v-loading="searchYarnLoading"
               v-show="step===0">
               <div class="serachCtn">
-                <div style="height:32px;margin:20px 32px;width:300px">
+                <div style="height:32px;display:flex;margin-bottom:24px">
                   <el-input class="inputs"
                     v-model="searchYarnWord"
                     @change="searchYarnFn"
@@ -1322,10 +1322,14 @@
                         @click="searchYarnFn"></i>
                     </template>
                   </el-input>
+                  <el-checkbox v-model="searchYarnWeight"
+                    style="margin-left:24px"
+                    @change="searchYarnFn">只看库存数量大于所需数量的物料</el-checkbox>
                 </div>
               </div>
               <div class="li">
                 <span class="once">物料名称</span>
+                <span class="once">物料颜色</span>
                 <span class="once">库存数量</span>
                 <span class="once right">操作</span>
               </div>
@@ -1337,13 +1341,15 @@
                 v-for="(item,index) in searchYarnList"
                 :key="index">
                 <span class="once">{{item.material_name}}</span>
+                <span class="once">{{item.material_color}}</span>
                 <span class="once">{{item.total_weight}}</span>
                 <span class="once right">
                   <span class="once right blue"
                     v-if="item.total_weight>=stockMatTotalNum"
                     @click="chooseMat(item.material_name)">调取</span>
-                  <span class="once right"
-                    v-if="item.total_weight<stockMatTotalNum">库存不足</span>
+                  <span class="once right orange"
+                    v-if="item.total_weight<stockMatTotalNum"
+                    @click="chooseMat(item.material_name,'showToast')">库存不足</span>
                 </span>
               </div>
             </div>
@@ -1368,8 +1374,9 @@
                 <span class="once right blue"
                   v-if="item.total_weight>=stockMatTotalNum"
                   @click="easyStockBatch(item)">调取</span>
-                <span class="once right"
-                  v-if="item.total_weight<stockMatTotalNum">库存不足</span>
+                <span class="once right orange"
+                  v-if="item.total_weight<stockMatTotalNum"
+                  @click="easyStockBatch(item,'showToast')">库存不足</span>
               </div>
             </div>
             <div class="list"
@@ -1385,13 +1392,15 @@
                 <span class="once">{{item.material_name}}</span>
                 <span class="once">
                   <el-input placeholder="请输入数量"
-                    v-model="item.stock[0].weight">
+                    v-model="item.stock[0].weight"
+                    style="margin:0 12px;width:auto">
                     <template slot="append">kg</template>
                   </el-input>
                 </span>
                 <span class="once">
                   <el-input placeholder="请输入价格"
-                    v-model="item.stock[0].price">
+                    v-model="item.stock[0].price"
+                    style="margin:0 12px;width:auto">
                     <template slot="append">元/kg</template>
                   </el-input>
                 </span>
@@ -1409,10 +1418,10 @@
                 :key="index">
                 <span class="once">{{item.material_name}}</span>
                 <span class="once">
-                  {{item.stock[0].weight}}
+                  {{item.stock[0].weight}}kg
                 </span>
                 <span class="once">
-                  {{item.stock[0].price}}
+                  {{item.stock[0].price}}元/kg
                 </span>
               </div>
             </div>
@@ -1674,6 +1683,7 @@ export default {
         from: '',
         material: ''
       },
+      searchYarnWeight: true,
       yarnWord: '', // 仓库物料搜索keyword
       searchYarnWord: '', // 调取弹窗物料搜索keyword
       searchYarnLoading: false,
@@ -1923,14 +1933,15 @@ export default {
       data.name = finded.material_name
       data.unit = finded.unit
     },
-    normalOrder (name, color, id, number, replenishFlag) {
+    normalOrder (name, color, id, number, replenishFlag, unit) {
+      console.log(unit)
       this.order_flag = true
       this.order_data.push({
         material: [{
           name: name,
           color: color,
           number: number,
-          unit: '',
+          unit: unit || '',
           id: id || null
         }],
         replenishFlag: replenishFlag,
@@ -2105,37 +2116,80 @@ export default {
       }
     },
     // 批量调取
-    easyStockBatch (whiteYarn) {
-      // 调取白胚
-      this.stock_data = []
-      this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
-        let needNumChild = item.reality_weight - item.order_weight
-        let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
-        if (stockWeight > 0) {
-          this.stock_data.push({
-            replenishFlag: this.checkWhichYarn[0].replenishFlag,
-            material_id: item.id,
-            material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
-            desc: '',
-            stock: [{
-              stock_id: whiteYarn.stock_id,
-              stock_name: whiteYarn.stock_name,
-              weight: stockWeight,
-              color: whiteYarn.material_color,
-              name: this.checkWhichYarn[0].material_name,
-              price: ''
-            }]
+    easyStockBatch (whiteYarn, showToast) {
+      if (showToast) {
+        this.$confirm('该纱线库存数量小于所需物料，是否确认调取?', '提示', {
+          confirmButtonText: '确认调取',
+          cancelButtonText: '换其他纱线',
+          type: 'warning'
+        }).then(() => {
+          this.stock_data = []
+          this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
+            let needNumChild = item.reality_weight - item.order_weight
+            let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
+            if (stockWeight > 0) {
+              this.stock_data.push({
+                replenishFlag: this.checkWhichYarn[0].replenishFlag,
+                material_id: item.id,
+                material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
+                desc: '',
+                stock: [{
+                  stock_id: whiteYarn.stock_id,
+                  stock_name: whiteYarn.stock_name,
+                  weight: stockWeight,
+                  color: whiteYarn.material_color,
+                  name: this.checkWhichYarn[0].material_name,
+                  price: ''
+                }]
+              })
+            }
           })
+          this.stockYarnInfo = {
+            from: whiteYarn.stock_name,
+            material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
+            material_color: whiteYarn.material_color,
+            color_number: whiteYarn.color_number,
+            vat_code: whiteYarn.vat_code
+          }
+          this.step = 2
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
+      } else {
+        // 调取白胚
+        this.stock_data = []
+        this.checkWhichYarn[0].childrenMergeInfo.forEach((item, index) => {
+          let needNumChild = item.reality_weight - item.order_weight
+          let stockWeight = whiteYarn.total_weight > needNumChild ? (needNumChild > 0 ? needNumChild : 0) : whiteYarn.total_weight
+          if (stockWeight > 0) {
+            this.stock_data.push({
+              replenishFlag: this.checkWhichYarn[0].replenishFlag,
+              material_id: item.id,
+              material_name: this.checkWhichYarn[0].material_name + '/' + item.material_attribute,
+              desc: '',
+              stock: [{
+                stock_id: whiteYarn.stock_id,
+                stock_name: whiteYarn.stock_name,
+                weight: stockWeight,
+                color: whiteYarn.material_color,
+                name: this.checkWhichYarn[0].material_name,
+                price: ''
+              }]
+            })
+          }
+        })
+        this.stockYarnInfo = {
+          from: whiteYarn.stock_name,
+          material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
+          material_color: whiteYarn.material_color,
+          color_number: whiteYarn.color_number,
+          vat_code: whiteYarn.vat_code
         }
-      })
-      this.stockYarnInfo = {
-        from: whiteYarn.stock_name,
-        material_name: whiteYarn.material_name || this.checkWhichYarn[0].material_name,
-        material_color: whiteYarn.material_color,
-        color_number: whiteYarn.color_number,
-        vat_code: whiteYarn.vat_code
+        this.step = 2
       }
-      this.step = 2
     },
     // 批量调取搜索物料
     searchYarnFn () {
@@ -2143,7 +2197,7 @@ export default {
       yarnStock.list({
         limit: 10,
         page: 1,
-        weight: this.stockMatTotalNum,
+        weight: this.searchYarnWeight ? this.stockMatTotalNum : 0,
         material_name: this.searchYarnWord,
         type: this.$route.params.type
       }).then((res) => {
@@ -2151,18 +2205,43 @@ export default {
         this.searchYarnLoading = false
       })
     },
-    chooseMat (name) {
-      this.searchYarnLoading = true
-      yarnStock.list({
-        material_name: name,
-        type: this.$route.params.type,
-        page: 1,
-        limit: 10
-      }).then((res) => {
-        this.stockSelectList = res.data.data
-        this.step = 1
-        this.searchYarnLoading = false
-      })
+    chooseMat (name, showToast) {
+      if (showToast) {
+        this.$confirm('该纱线库存数量小于所需物料，是否确认调取?', '提示', {
+          confirmButtonText: '确认调取',
+          cancelButtonText: '换其他纱线',
+          type: 'warning'
+        }).then(() => {
+          this.searchYarnLoading = true
+          yarnStock.list({
+            material_name: name,
+            type: this.$route.params.type,
+            page: 1,
+            limit: 10
+          }).then((res) => {
+            this.stockSelectList = res.data.data
+            this.step = 1
+            this.searchYarnLoading = false
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消调取'
+          })
+        })
+      } else {
+        this.searchYarnLoading = true
+        yarnStock.list({
+          material_name: name,
+          type: this.$route.params.type,
+          page: 1,
+          limit: 10
+        }).then((res) => {
+          this.stockSelectList = res.data.data
+          this.step = 1
+          this.searchYarnLoading = false
+        })
+      }
     },
     // 关闭弹窗
     resetStock () {
