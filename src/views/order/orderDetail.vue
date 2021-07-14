@@ -375,14 +375,20 @@
                     <span class="trow">
                       <div class="tcolumn">产品信息</div>
                       <div class="tcolumn noPad"
-                        style="flex:6">
+                        style="flex:7">
                         <div class="trow">
                           <div class="tcolumn">尺码颜色</div>
-                          <div class="tcolumn">下单数量</div>
-                          <div class="tcolumn">入库数量</div>
-                          <div class="tcolumn">次品数量</div>
-                          <div class="tcolumn">出库数量</div>
-                          <div class="tcolumn">回库数量</div>
+                          <div class="tcolumn noPad"
+                            style="flex:6">
+                            <div class="trow">
+                              <div class="tcolumn">工序名称</div>
+                              <div class="tcolumn">下单数量</div>
+                              <div class="tcolumn">入库数量</div>
+                              <div class="tcolumn">次品数量</div>
+                              <div class="tcolumn">出库数量</div>
+                              <div class="tcolumn">回库数量</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </span>
@@ -397,22 +403,30 @@
                         <span>({{itemPro.category_info.category_name+'/'+ itemPro.category_info.type_name+'/'+ itemPro.category_info.style_name}})</span>
                       </div>
                       <div class="tcolumn noPad"
-                        style="flex:6">
+                        style="flex:7">
                         <div class="trow"
                           v-for="(itemChild,indexChild) in itemPro.childrenMergeInfo"
                           :key="indexChild">
                           <div class="tcolumn">
                             {{itemChild.size_name}}/{{itemChild.color_name}}
                           </div>
-                          <div class="tcolumn">{{itemChild.numbers}}</div>
-                          <div class="tcolumn"
-                            :style="{'color':itemChild.inNum===0?'#ccc':'#01B48C'}">{{itemChild.inNum}}</div>
-                          <div class="tcolumn"
-                            :style="{'color':itemChild.cpNum===0?'#ccc':'#F5222D'}">{{itemChild.cpNum}}</div>
-                          <div class="tcolumn"
-                            :style="{'color':itemChild.outNum===0?'#ccc':'#01B48C'}">{{itemChild.outNum}}</div>
-                          <div class="tcolumn"
-                            :style="{'color':itemChild.backNum===0?'#ccc':'#01B48C'}">{{itemChild.backNum}}</div>
+                          <div class="tcolumn noPad"
+                            style="flex:6">
+                            <div class="trow"
+                              v-for="(itemSon,indexSon) in itemChild.childrenMergeInfo"
+                              :key="indexSon">
+                              <div class="tcolumn">{{itemSon.process||'未选择工序'}}</div>
+                              <div class="tcolumn">{{itemSon.numbers}}</div>
+                              <div class="tcolumn"
+                                :style="{'color':itemSon.inNum===0?'#ccc':'#01B48C'}">{{itemSon.inNum}}</div>
+                              <div class="tcolumn"
+                                :style="{'color':itemSon.cpNum===0?'#ccc':'#F5222D'}">{{itemSon.cpNum}}</div>
+                              <div class="tcolumn"
+                                :style="{'color':itemSon.outNum===0?'#ccc':'#01B48C'}">{{itemSon.outNum}}</div>
+                              <div class="tcolumn"
+                                :style="{'color':itemSon.backNum===0?'#ccc':'#01B48C'}">{{itemSon.backNum}}</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </span>
@@ -2633,18 +2647,31 @@ export default {
         })
         this.orderDetailInfo.production.forEach((itemPro) => {
           itemPro.childrenMergeInfo.forEach((itemChild) => {
-            itemChild.inNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_weave_push === 1).reduce((total, current) => {
-              return total + current.number
-            }, 0)
-            itemChild.outNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_pop === 1).reduce((total, current) => {
-              return total + current.number
-            }, 0)
-            itemChild.cpNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id).reduce((total, current) => {
-              return total + current.shoddy_number
-            }, 0)
-            itemChild.backNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_push === 1).reduce((total, current) => {
-              return total + current.number
-            }, 0)
+            itemChild.childrenMergeInfo = []
+            itemChild.childrenMergeInfo = this.$mergeData(res.data.data, { mainRule: 'process' }).map((item) => {
+              return {
+                process: item.process,
+                inNum: 0,
+                outNum: 0,
+                cpNum: 0,
+                backNum: 0,
+                numbers: itemChild.numbers
+              }
+            })
+            itemChild.childrenMergeInfo.forEach((itemSon) => {
+              itemSon.inNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_weave_push === 1 && itemFind.process === itemSon.process).reduce((total, current) => {
+                return total + current.number
+              }, 0)
+              itemSon.outNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_pop === 1 && itemFind.process === itemSon.process).reduce((total, current) => {
+                return total + current.number
+              }, 0)
+              itemSon.cpNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.process === itemSon.process).reduce((total, current) => {
+                return total + current.shoddy_number
+              }, 0)
+              itemSon.backNum = res.data.data.filter((itemFind) => itemFind.product_id === itemPro.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && itemFind.is_semi_push === 1 && itemFind.process === itemSon.process).reduce((total, current) => {
+                return total + current.number
+              }, 0)
+            })
           })
         })
         this.showFlag2.showWeave = true
