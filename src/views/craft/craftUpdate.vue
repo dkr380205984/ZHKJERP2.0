@@ -2232,7 +2232,7 @@ export default {
       }
     },
     addGLChildren (index) {
-      this.GL[index].push(['', '', ''])
+      this.GL[index].push([{ value: '', mark: '' }, { value: '', mark: '' }, { value: '', mark: '' }])
     },
     deleteGLChildren (index) {
       if (this.GL[index].length > 1) {

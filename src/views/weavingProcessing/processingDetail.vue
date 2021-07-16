@@ -465,7 +465,8 @@
                   <div class="tcolumn">实际数量</div>
                   <div class="tcolumn">总价(元)</div>
                   <div class="tcolumn">其它信息</div>
-                  <div class="tcolumn">操作</div>
+                  <div class="tcolumn"
+                    style="flex:1.2">操作</div>
                 </div>
               </div>
               <div class="tbody">
@@ -510,9 +511,14 @@
                         style="margin:0;padding:0">查看</div>
                     </el-popover>
                   </div>
-                  <div class="tcolumn">
-                    <span style="color:#F5222D;cursor:pointer"
-                      @click="deleteLog(item.id,index)">删除</span>
+                  <div class="tcolumn"
+                    style="flex:1.2">
+                    <div style="display:flex">
+                      <span style="color:rgb(230, 162, 60);cursor:pointer;margin-right:8px"
+                        @click="spliceLog(item)">拆分</span>
+                      <span style="color:#F5222D;cursor:pointer"
+                        @click="deleteLog(item.id,index)">删除</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -831,6 +837,91 @@
         </div>
       </div>
     </div>
+    <!-- 拆分日志 -->
+    <div class="popup"
+      v-if="showSplice">
+      <div class="main">
+        <div class="title">
+          <span class="text">拆分数量</span>
+          <span class="el-icon-close"
+            @click="showSplice = false"></span>
+        </div>
+        <div class="content">
+          <div class="row">
+            <span class="label">拆分单位：</span>
+            <div class="info"> <span class="text">{{spliceLogInfo.client_name}}</span></div>
+          </div>
+          <div class="row">
+            <span class="label">拆分总量：</span>
+            <div class="info">
+              <span class="text">{{spliceLogInfo.number}}
+                <span style="color:rgb(230, 162, 60)"
+                  v-if="spliceRest>=0">(剩余{{spliceRest}})</span>
+                <span style="color:#F5222D"
+                  v-if="spliceRest<0">(超过分配值！)</span>
+              </span>
+            </div>
+          </div>
+          <div v-for="(item,index) in spliceInfo"
+            :key="index">
+            <div class="row">
+              <span class="label">选择公司：</span>
+              <div class="info">
+                <el-cascader v-model="item.client_id"
+                  :show-all-levels='false'
+                  placeholder="请选择加工单位"
+                  :options="clientArrReal"
+                  :filter-method='searchClient'
+                  clearable
+                  :props="{ expandTrigger: 'hover' }"
+                  filterable></el-cascader>
+              </div>
+              <div class="editBtn red"
+                @click="spliceInfo.length>1?spliceInfo.splice(index,1):$message.error('至少有一项')">删除</div>
+            </div>
+            <div class="row">
+              <span class="label">数量单价：</span>
+              <div class="info"
+                style="display:flex;justify-content:space-between">
+                <zh-input style="width:155px"
+                  v-model="item.number"
+                  placeholder="拆分数量">
+                </zh-input>
+                <zh-input style="width:165px"
+                  v-model="item.price"
+                  placeholder="单价">
+                  <template slot="append">元</template>
+                </zh-input>
+              </div>
+            </div>
+            <div class="row">
+              <span class="label">完成日期：</span>
+              <div class="info">
+                <el-date-picker v-model="item.date"
+                  value-format="yyyy-MM-dd"
+                  style="width:100%"
+                  type="date"
+                  placeholder="选择完成日期">
+                </el-date-picker>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="opr">
+          <div class="btn btnGray"
+            @click="showSplice = false">取消</div>
+          <div class="btn btnOrange"
+            @click="spliceInfo.push({
+              client_id:'',
+              number:'',
+              date:'',
+              price:''
+            })">继续拆分</div>
+          <div class="btn btnBlue"
+            @click="saveSpliceLog">确认拆分</div>
+        </div>
+      </div>
+    </div>
     <!-- 修改实际值 -->
     <div class="popup"
       v-if='showChangeRealityProcessPopup'>
@@ -973,7 +1064,15 @@ export default {
       // 扣款数据
       deductPopupType: true,
       deductPopupFlag: false,
-      clientArr: []
+      clientArr: [],
+      showSplice: false,
+      spliceInfo: [{
+        client_id: '',
+        number: '',
+        date: '',
+        price: ''
+      }],
+      spliceLogInfo: {}
     }
   },
   watch: {
@@ -986,9 +1085,85 @@ export default {
   computed: {
     checkProcessList () {
       return this.process_info.filter((item) => item.checked)
+    },
+    spliceRest () {
+      return this.spliceLogInfo.number - this.spliceInfo.reduce((total, current) => {
+        return total + Number(current.number)
+      }, 0)
     }
   },
   methods: {
+    // 拆分日志
+    spliceLog (info) {
+      this.spliceLogInfo = {
+        id: info.id,
+        order_id: this.$route.params.id,
+        order_type: this.$route.params.orderType,
+        product_id: info.product_info.product_id,
+        client_id: info.client_id,
+        client_name: info.client_name, // 这个字段不用于提交
+        complete_time: info.complete_time,
+        deliver_time: info.deliver_time,
+        desc: info.desc,
+        price: info.price,
+        number: info.number,
+        reality_number: info.reality_number, // 默认实际生产值默认等于计划值
+        size_id: info.size_id,
+        color_id: info.color_id,
+        type: info.type
+      }
+      this.showSplice = true
+    },
+    saveSpliceLog () {
+      let errMsg = ''
+      this.spliceInfo.forEach((item) => {
+        if (!item.date) {
+          errMsg = '请选择完成日期'
+        }
+        if (!item.client_id) {
+          errMsg = '请选择公司'
+        }
+        if (!item.price) {
+          errMsg = '请输入单价'
+        }
+        if (!item.number) {
+          errMsg = '请输入数量'
+        }
+      })
+      if (errMsg) {
+        this.$message.error(errMsg)
+        return
+      }
+      const formData = [this.$clone(this.spliceLogInfo)]
+      formData[0].number = this.spliceRest
+      formData[0].reality_number = this.spliceRest
+      this.spliceInfo.forEach((item) => {
+        let data = this.$clone(this.spliceLogInfo)
+        data.client_name = ''
+        data.id = ''
+        data.number = item.number
+        data.reality_number = item.number
+        data.price = item.price
+        data.deliver_time = item.date
+        data.client_id = item.client_id[1]
+        formData.push(data)
+      })
+      processing.create({
+        data: formData
+      }).then((res) => {
+        if (res.data.status) {
+          this.$message.success('重新分配成功，请手动分配物料信息')
+          this.spliceInfo = [{
+            client_id: '',
+            number: '',
+            date: '',
+            price: ''
+          }]
+          this.showSplice = false
+          this.init()
+        }
+      })
+    },
     deleteMatOut (id) {
       this.$confirm('此操作将永久删除, 是否继续?', '提示', {
         confirmButtonText: '确定',

@@ -102,7 +102,7 @@
       <div class="detailCtn">
         <div class="rowCtn">
           <div class="colCtn">
-            <span class="label">工艺单编号：</span>
+            <span class="label">工艺编号：</span>
             <span class="text">{{productInfo.craft_code}}</span>
           </div>
           <div class="colCtn">

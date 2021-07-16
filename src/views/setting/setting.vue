@@ -6673,6 +6673,7 @@ export default {
         if (this.authInfo.is_admin === 1) {
           this.authInfo.module_id = this.permissions.map((item) => item.id)
           this.authInfo.module_id_detail = ['02-01', '02-02', '02-03', '02-04', '02-05', '02-06', '05-01']
+          this.authInfo.has_check = 1
         }
         auth.create(this.authInfo).then((res) => {
           if (res.data.status) {

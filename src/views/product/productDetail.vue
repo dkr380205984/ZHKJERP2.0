@@ -212,7 +212,7 @@
                     @click="$router.push('/craft/craftCreate/'+ $route.params.id + '/1')">添加</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
-                    @click="$router.push('/craft/craftDetail/'+ $route.params.id + '/1')">预览</span>
+                    @click="$router.push('/craft/craftUpdate/'+ + detail.craft_info[craft_index].id + '/1')">修改</span>
                   <span v-if="detail.craft_info&&detail.craft_info.length>0"
                     class="opration"
                     @click="openWin('/craftTable/'+ $route.params.id + '/1/' + detail.craft_info[craft_index].id)">打印</span>
@@ -412,7 +412,7 @@
                     @click="$router.push('/craft/craftCreate/'+ item.id + '/1')">添加</span>
                   <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft===1"
                     class="opration"
-                    @click="$router.push('/craft/craftDetail/'+ item.id + '/1')">预览</span>
+                    @click="$router.push('/craft/craftUpdate/'+ item.id + '/1')">修改</span>
                   <span v-if="detail.order_info.length !== 0&&item.need_weave===1 && item.has_craft===1"
                     class="opration"
                     @click="openWin('/craftTable/' + item.id +'/1/'+ detail.craft_info.id)">打印</span>
@@ -672,6 +672,7 @@ export default {
     }).then((res) => {
       console.log(res)
       if (res.data.status) {
+        console.log(res.data.data)
         this.detail = res.data.data
         this.detail.size.forEach((itemSize, indexSize) => {
           if (indexSize === 0) {
