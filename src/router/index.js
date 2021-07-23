@@ -12,10 +12,12 @@ VueRouter.prototype.push = function (location) {
 // const newFinancialStatisticsUrl = '../views/newFinancialStatistics/'
 const routes = [
   {
+    name: '工艺单分享——PC端',
     path: '/craft/sharePc/:id',
     component: () => import('@/views/craft/sharePc.vue')
   },
   {
+    name: '工艺单分享——移动端',
     path: '/craft/sharePhone/:id',
     component: () => import('@/views/craft/sharePhone.vue')
   },

@@ -1,0 +1,205 @@
+
+@blue:#1A95FF;
+@red:#F5222D;
+@orange:rgb(230, 162, 60);
+@green:#01B48C;
+@font85:rgba(0,0,0,0.85);
+@font65:rgba(0,0,0,0.65);
+@font45:rgba(0,0,0,0.45);
+@font25:rgba(0,0,0,0.25);
+@fontBig:16px;
+@fontMiddle:14px;
+@fontSmall:12px;
+#sharePhone{
+  padding-bottom: 40px;
+  .colorCtn{
+    padding-left: 6em;
+    position: relative;
+    margin: 6px 0;
+    &:nth-last-child(1){
+      margin-bottom: 0;
+    }
+    .label{
+      color:@font65;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      line-height: 20px;
+    }
+    .colorOnce{
+      display: inline-flex;
+      line-height: 20px;
+      margin-right: 6px;
+      margin-bottom: 8px;
+      .colorBox{
+        width: 40px;
+        height: 20px;
+        color:#fff;
+        text-align: center;
+      }
+      .colorName{
+        vertical-align: middle;
+        font-size: 12px;
+        margin-left: 4px;
+      }
+    }
+  }
+  .popup{
+    z-index: 199;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(64,64,64,0.6);
+    &.toast{
+      .main{
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 70%;
+        margin: 0 auto;
+        top: 50%;
+        transform: translate(0,-50%);
+        background: #fff;
+        border-radius: 4px;
+        .title{
+          line-height: 30px;
+          padding:0 8px;
+          font-size: @fontMiddle;
+          border-bottom: 1px solid #f0f0f0;
+          color: @font85;
+        }
+        .content{
+          padding: 12px 8px;
+          p{
+            font-size: @fontSmall;
+            color: @font65;
+            margin: 4px 0;
+          }
+        }
+        .btnCtn{
+          line-height: 30px;
+          display: flex;
+          border-top: 1px solid #f0f0f0;
+          .btn{
+            flex: 1;
+            text-align: center;
+            &:nth-child(1){
+              border-bottom-left-radius: 4px;
+            }
+            &:nth-last-child(1){
+              border-bottom-right-radius: 4px;
+            }
+          }
+        }
+      }
+    }
+    .searchCtn{
+      background: #fff;
+      padding: 6px;
+      position: relative;
+      .searchInput{
+        height: 28px;
+        line-height: 26px;
+        background:none;  
+        outline:none;  
+        border:1px solid #f1f1f1;
+        width: calc(100%);
+        border-radius: 13px;
+        box-sizing: border-box;
+        padding: 0 13px;
+        color: @font65;
+      }
+      .el-icon-search{
+        position: absolute;
+        right: 16px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        line-height: 40px;
+        color: @blue;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+    .resultCtn{
+      background: #fff;
+      padding: 12px 6px;
+      .colorCtn{
+        margin: 0;
+        margin-bottom: 12px;
+      }
+    }
+    .canvasCtn{
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      overflow: auto;
+    }
+    .closeBtn{
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      margin: 8px auto; 
+      background:rgba(64,64,64,0.8);
+      color: #fff;
+      text-align: center;
+      line-height: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      &.canvas{
+        z-index: 999;
+        color: #fff;
+        background: rgba(0,0,0,.85);
+      }
+    }
+  }
+  .bottomNav{
+    position: fixed;
+    z-index: 99;
+    height: 40px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    box-shadow: 0 2px 8px #ccc;
+    display: flex;
+    .btn{
+      flex: 1;
+      border-right: 1px solid #ccc;
+      line-height: 40px;
+      text-align: center;
+      &:nth-last-child(1){
+        border-right: 0;
+      }
+    }
+  }
+  .question{
+    z-index: 1;
+    position: fixed;
+    bottom: 80px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    line-height: 16px;
+    background: @green;
+    color: #fff;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .blueBack{
+    background: @blue;
+    color: #fff;
+  }
+  .orangeBack{
+    background: @orange;
+    color: #fff;
+  }
+}

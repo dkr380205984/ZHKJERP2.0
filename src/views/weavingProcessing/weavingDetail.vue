@@ -2046,7 +2046,7 @@ export default {
         })
         this.weaving_detail = this.$mergeData(this.weaving_log, { mainRule: 'client_name', otherRule: [{ name: 'client_id' }] })
         // 处理统计数据
-        this.materialPlanTotalInfo = this.$mergeData(res[6].data.data.total_data.filter(itemNum => Number(itemNum.reality_weight)), { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
+        this.materialPlanTotalInfo = this.$mergeData(res[6].data.data.total_data, { mainRule: 'material_name', otherRule: [{ name: 'unit' }, { name: 'material_type/type' }], childrenName: 'color_info', childrenRule: { mainRule: 'material_attribute/color', otherRule: [{ name: 'reality_weight/number', type: 'add' }] } })
         this.materialPlanTotalInfo = this.materialPlanTotalInfo.map(itemMa => {
           return {
             material_name: itemMa.material_name,

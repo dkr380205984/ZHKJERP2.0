@@ -11,6 +11,8 @@ const deleteFile = (params) => http.post(`${baseUrl}/file/delete`, params, 'appl
 // 潘通色号
 const pantongList = (params) => http.get(`${baseUrl}/pan/color/list`, params)
 
+// 修改意见
+const shareEditList = (params) => http.get(`${baseUrl}/product/share/idea/list`, params)
 // 操作记录
 const oprHistory = {
   product: (params) => http.get(`${baseUrl}/product/operation/record/list`, params),
@@ -131,7 +133,9 @@ const craft = {
   createCloth: (params) => http.post(`${baseUrl}/dress/craft/save`, params, 'application/json'),
   detailCloth: (params) => http.get(`${baseUrl}/dress/craft/detail`, params),
   deleteCloth: (params) => http.post(`${baseUrl}/dress/craft/delete`, params, 'application/json'),
-  uploadImg: (params) => http.post(`${baseUrl}/craft/image/save`, params, 'application/json')
+  uploadImg: (params) => http.post(`${baseUrl}/craft/image/save`, params, 'application/json'),
+  share: (params) => http.post(`${baseUrl}/product/craft/share`, params, 'application/json'),
+  getEdit: (params) => http.post(`${baseUrl}/product/color/data/save`, params, 'application/json')
 }
 // 客户管理
 const client = {
@@ -662,6 +666,7 @@ const productionList = {
   productProcess: (params) => http.get(`${baseUrl}/order/product_process/list`, params)
 }
 export {
+  shareEditList,
   productProcessSJBB,
   receiveDispatchSJBB,
   oprHistory,

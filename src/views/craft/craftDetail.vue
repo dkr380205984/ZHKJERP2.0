@@ -94,6 +94,70 @@
       </div>
     </div>
     <div class="module"
+      v-if="edit_idea.length>0">
+      <div class="titleCtn"
+        style="display: flex;justify-content: space-between;align-items: center;">
+        <span class="title hasBorder">修改意见</span>
+      </div>
+      <div class="detailCtn">
+        <div class="normalTb">
+          <div class="thead">
+            <div class="trow">
+              <div class="tcolumn">修改人</div>
+              <div class="tcolumn">修改日期</div>
+              <div class="tcolumn"
+                style="flex:6">修改方案</div>
+              <div class="tcolumn">操作</div>
+            </div>
+          </div>
+          <div class="tbody">
+            <div class="trow"
+              v-for="(item,index) in edit_idea"
+              :key="index">
+              <div class="tcolumn">{{item.platform_user.name}}</div>
+              <div class="tcolumn">{{item.created_at}}</div>
+              <div class="tcolumn"
+                style="flex:6; display:flex;flex-direction:coloum">
+                <div class="line"
+                  style="margin:12px 0"
+                  v-for="(itemChild,indexChild) in item.edit_idea.warp_info.color_data"
+                  :key="indexChild + 'warp'">
+                  <span class="circle">经</span>
+                  <span>{{itemChild.product_color}}：</span>
+                  <div class="colorBox"
+                    v-for="(itemColor,indexColor) in itemChild.color_scheme"
+                    :key="indexColor">
+                    <span class="colorText"
+                      :style="{'background':itemColor.value}">{{filterMethods(indexColor)}}</span>
+                    <span class="name">{{itemColor.name}}</span>
+                  </div>
+                </div>
+                <div class="line"
+                  style="margin:12px 0"
+                  v-for="(itemChild,indexChild) in item.edit_idea.weft_info.color_data"
+                  :key="indexChild + 'weft'">
+                  <span class="circle">纬</span>
+                  <span>{{itemChild.product_color}}：</span>
+                  <div class="colorBox"
+                    v-for="(itemColor,indexColor) in itemChild.color_scheme"
+                    :key="indexColor">
+                    <span class="colorText"
+                      :style="{'background':itemColor.value}">{{filterMethods(indexColor)}}</span>
+                    <span class="name">{{itemColor.name}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tcolumn">
+                <div class="opr"
+                  style="color:#1a95ff;cursor:pointer"
+                  @click="getEdit(item.edit_idea)">采纳</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="module"
       v-if="!productInfo.category_info">
       <div class="titleCtn"
         style="display: flex;justify-content: space-between;align-items: center;">
@@ -825,6 +889,21 @@
             @click="$openUrl('/craftTable/' + $route.params.id + '/' + $route.params.type + '/' + craftId)">打印</div>
           <div class="btn btnBlue"
             @click="goPDF">转为设计稿</div>
+          <el-popover placement="top"
+            width="160"
+            v-model="visible">
+            <div class="btn btnGreen"
+              slot="reference">分享链接</div>
+            <p>是否分享该工艺单给其他人？（目前仅支持在移动端打开此分享链接）</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini"
+                type="text"
+                @click="visible = false">取消分享</el-button>
+              <el-button type="primary"
+                size="mini"
+                @click="shareLink">复制链接</el-button>
+            </div>
+          </el-popover>
           <div class="btn btnRed"
             @click="deleteCraft">删除</div>
         </div>
@@ -840,7 +919,7 @@
 
 <script>
 import * as THREE from 'three'
-import { craft, getToken, product } from '@/assets/js/api.js'
+import { craft, getToken, product, shareEditList } from '@/assets/js/api.js'
 import { HotTable } from '@handsontable/vue'
 import enCH from '@/assets/js/language.js'
 import Handsontable from 'handsontable'
@@ -852,6 +931,9 @@ export default {
   },
   data () {
     return {
+      edit_data: {},
+      edit_idea: [],
+      visible: false,
       updateFlag: false,
       showImageLoading: false,
       showImageUrl: require('../../assets/image/craft/loading.png'),
@@ -1184,6 +1266,72 @@ export default {
     }
   },
   methods: {
+    // 采纳配色方案
+    getEdit (Info) {
+      this.$confirm('是否采用该配色方案替代现有的配色方案?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const formData = {
+          id: this.data[this.craftIndex].id,
+          product_id: this.$route.params.id,
+          product_type: this.$route.params.type,
+          warp_data: Info.warp_info,
+          weft_data: Info.weft_info
+        }
+        craft.getEdit(formData).then((res) => {
+          if (res.data.code === 200) {
+            this.$message.success('采纳成功')
+            craft.getByProduct({
+              product_id: this.$route.params.id,
+              product_type: this.$route.params.type
+            }).then((res) => {
+              if (res.data.status) {
+                this.edit_data = this.$clone(res.data.data)
+                this.data = res.data.data
+                this.data.forEach((item, index) => {
+                  if (item.is_default === 1) {
+                    this.craftIndex = index
+                  }
+                })
+                if (this.data[this.craftIndex].is_draft === 2) {
+                  this.$router.replace('/craft/craftUpdate/' + this.data[this.craftIndex].id + '/' + this.$route.params.type)
+                }
+                this.init(this.data[this.craftIndex], this.craftIndex)
+                this.loading = false
+              }
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+    },
+    // 分享链节
+    shareLink () {
+      craft.share({
+        id: this.data[this.craftIndex].id,
+        is_share: 1
+      }).then((res) => {
+        if (res.data.status) {
+          const input = document.createElement('input')
+          document.body.appendChild(input)
+          input.setAttribute('value', 'https://share.zwyknit.com/craft/sharePhone/' + this.data[this.craftIndex].id)
+          input.select()
+          if (document.execCommand('copy')) {
+            document.execCommand('copy')
+            console.log('复制成功')
+          }
+          document.body.removeChild(input)
+          this.$message.success('复制成功')
+          this.visible = false
+        }
+      })
+    },
     saveProcode () {
       if (!this.productInfo.product_code) {
         this.$message.error('请输入产品编号')
@@ -1216,7 +1364,7 @@ export default {
       let uploadData = {
         product_id: this.$route.params.id,
         product_type: this.$route.params.type,
-        craft_id: _this.$route.params.type === '1' ? _this.data.id : _this.data[_this.craftIndex].id,
+        craft_id: this.data[this.craftIndex].id,
         is_back: 1,
         color_id: _this.warpInfo.color_data[_this.selectColour].color_id,
         file_url: null
@@ -1224,7 +1372,7 @@ export default {
       let uploadDataBack = {
         product_id: this.$route.params.id,
         product_type: this.$route.params.type,
-        craft_id: _this.$route.params.type === '1' ? _this.data.id : _this.data[_this.craftIndex].id,
+        craft_id: this.data[this.craftIndex].id,
         is_back: 2,
         color_id: _this.warpInfo.color_data[_this.selectColour].color_id,
         file_url: null
@@ -2256,6 +2404,7 @@ export default {
       product_type: this.$route.params.type
     }).then((res) => {
       if (res.data.status) {
+        this.edit_data = this.$clone(res.data.data)
         this.data = res.data.data
         this.data.forEach((item, index) => {
           if (item.is_default === 1) {
@@ -2266,6 +2415,18 @@ export default {
           this.$router.replace('/craft/craftUpdate/' + this.data[this.craftIndex].id + '/' + this.$route.params.type)
         }
         this.init(this.data[this.craftIndex], this.craftIndex)
+        shareEditList({
+          share_id: this.data[this.craftIndex].id,
+          type: 1,
+          limit: 99,
+          page: 1
+        }).then((res) => {
+          console.log(res)
+          this.edit_idea = res.data.data.data
+          this.edit_idea.forEach((item) => {
+            item.edit_idea = JSON.parse(JSON.parse(item.edit_idea))
+          })
+        })
         this.loading = false
       }
     })
