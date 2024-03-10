@@ -2402,12 +2402,21 @@
               </div>
             </div>
             <div class="row">
-              <div class="label">管理账号：</div>
+              <div class="label">管理权限：</div>
+              <div class="info">
+                <el-radio v-model="authInfo.is_admin"
+                  :label="1">超级管理员</el-radio>
+                <el-radio v-model="authInfo.is_admin"
+                  :label="0">普通权限</el-radio>
+              </div>
+            </div>
+            <div class="row">
+              <div class="label">审核权限：</div>
               <div class="info">
                 <el-radio v-model="authInfo.has_check"
-                  :label="1">有管理权限</el-radio>
+                  :label="1">有审核权限</el-radio>
                 <el-radio v-model="authInfo.has_check"
-                  :label="0">没有管理权限</el-radio>
+                  :label="0">没有审核权限</el-radio>
               </div>
             </div>
             <div class="row">
@@ -3382,8 +3391,8 @@ export default {
       yarn_handle_type: '',
       nav: {
         '产品设置': ['产品花型', '产品成分', '产品配色', '产品尺码', '样单类型', '订单类型'],
-        '工艺单设置': ['边型', '机型', '组织法'],
-        '物料设置': ['纱线原料', '纱线颜色', '装饰辅料', '包装辅料'],
+        '工艺单设置': ['边型', '机型', '组织法', '纱线颜色'],
+        '物料设置': ['纱线原料', '装饰辅料', '包装辅料'],
         '工序设置': ['原料工序', '半成品加工', '结算工序'],
         '工厂信息设置': ['工厂信息设置', '工厂小组管理', '工厂部门管理', '员工标签管理'],
         '系统账户管理': ['系统账户管理'],
@@ -3532,6 +3541,7 @@ export default {
       authInfo: {
         id: null,
         user_name: '',
+        is_admin: 0,
         status: 1,
         telephone: '',
         group_id: '',
@@ -6607,6 +6617,7 @@ export default {
       this.authInfo = {
         id: null,
         user_name: '',
+        is_admin: 0,
         status: 1,
         telephone: '',
         group_id: '',
@@ -6653,17 +6664,22 @@ export default {
           type: 'error',
           message: '小组不能为空'
         })
-      } else if (this.authInfo.module_id.length === 0) {
+      } else if (this.authInfo.module_id.length === 0 && this.authInfo.is_admin === 0) {
         this.$message({
           type: 'error',
           message: '管理模块不能为空'
         })
       } else {
+        if (this.authInfo.is_admin === 1) {
+          this.authInfo.module_id = this.permissions.map((item) => item.id)
+          this.authInfo.module_id_detail = ['02-01', '02-02', '02-03', '02-04', '02-05', '02-06', '05-01']
+        }
         auth.create(this.authInfo).then((res) => {
           if (res.data.status) {
             this.$message.success('添加成功')
             this.authInfo = {
               id: null,
+              is_admin: 0,
               user_name: '',
               status: 1,
               telephone: '',

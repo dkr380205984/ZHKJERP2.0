@@ -1079,11 +1079,15 @@ export default {
           id: itemChild.id
         }).then((res) => {
           if (res.data.status !== false) {
-            item.material_info.splice(item, index)
+            item.material_info.splice(index, 1)
           }
         })
       } else {
-        item.material_info.splice(item, index)
+        if (item.material_info.length === 1) {
+          this.$message.error('至少包含一项')
+        } else {
+          item.material_info.splice(index, 1)
+        }
       }
       this.$forceUpdate()
     },
@@ -1218,7 +1222,7 @@ export default {
       this.process_data.forEach((item) => {
         // 这个part_id实际上是是否需要物料的flag
         if (item.part_id) {
-          this.material_flag = true
+          this.material_flag = true // 打开弹窗
         }
         if (!item.company_id || !item.company_id[1]) {
           errorFlag = true
@@ -1257,26 +1261,7 @@ export default {
       if (!this.material_flag) {
         this.submitProcess()
       }
-      if (this.material_flag) {
-        if (this.needMaterialArr.peijian.length === 0 && this.needMaterialArr.wuliao.length === 0 && this.needMaterialArr.fuliao.length) {
-          this.materialTable = []
-          this.process_data.forEach((item, index) => {
-            this.materialTable.push({
-              client_name: this.clientArrReal.find((itemFind) => itemFind.id === item.company_id).name,
-              client_id: item.company_id && item.company_id[1],
-              process: item.process_type.join('/'),
-              material_info: [{
-                material_type: 2,
-                material_name: '',
-                material_attribute: '',
-                unit: 'kg',
-                total_weight: ''
-              }]
-            })
-          })
-          this.step = 2
-        }
-      }
+      // 如果没有勾选需要物料，直接提交掉，不然就打开弹窗
     },
     submitProcess () {
       let formData = []
@@ -1361,7 +1346,7 @@ export default {
               aterial_type: 2,
               material_name: '',
               material_attribute: '',
-              unit: 'kg',
+              unit: '',
               total_weight: ''
             }]
           })
@@ -1419,7 +1404,8 @@ export default {
             client_name: this.clientArrReal.find((itemFind) => itemFind.value === item.company_id[0]).children.find(itemF => itemF.value === item.company_id[1]).label,
             client_id: item.company_id[1],
             process: item.process_type.join('/'),
-            material_info: []
+            material_info: [],
+            material_info_copy: []
           })
           if (item.part_id) {
             item.product_info.forEach((itemChild) => {
@@ -1433,9 +1419,27 @@ export default {
               flatMaterialFilter.forEach((itemSon) => {
                 itemSon.total_weight = itemSon.single_weight * itemChild.number
               })
-              this.materialTable[index].material_info = this.materialTable[index].material_info.concat(flatMaterialFilter)
+              this.materialTable[index].material_info_copy = this.materialTable[index].material_info_copy.concat(flatMaterialFilter)
             })
           }
+          // 在这里加一层逻辑，把生成的重复性的物料给他合并,然后把g这个单位单独处理成kg
+          this.materialTable.forEach((item) => {
+            item.material_info_copy.forEach((itemChild) => {
+              if (itemChild.unit === 'g') {
+                itemChild.unit = 'kg'
+                itemChild.total_weight = this.$toFixed(itemChild.total_weight / 1000)
+              }
+              const finded = item.material_info.find((itemFind) => {
+                return itemFind.material_attribute === itemChild.material_attribute && itemFind.material_name === itemChild.material_name
+              })
+              if (!finded) {
+                item.material_info.push(itemChild)
+              } else {
+                finded.total_weight += itemChild.total_weight
+              }
+            })
+          })
+
           if (this.materialTable[index].material_info.length === 0) {
             this.materialTable[index].material_info = [{
               material_type: 2,

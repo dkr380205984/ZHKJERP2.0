@@ -1730,12 +1730,14 @@ export default {
           }
         })
       })
+      console.log(this.renderData.newAllocation)
+      console.log(this.nativeData.log)
       this.renderData.newAllocation.forEach((item) => {
         item.childrenMergeInfo.forEach((itemChild) => {
-          itemChild.checkNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
+          itemChild.checkNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_old_id || itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
             return total + current.number
           }, 0)
-          itemChild.cpNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
+          itemChild.cpNum = this.nativeData.log.filter((itemFind) => itemFind.process === item.process && itemFind.product_id === itemChild.product_id && itemFind.size_id === itemChild.size_id && itemFind.color_id === itemChild.color_id && Number((itemChild.client_id === itemFind.weave_client_old_id || itemChild.client_id === itemFind.weave_client_id || (itemFind.semi_client_info[0] && itemChild.client_id === itemFind.semi_client_info[0].client_id)))).reduce((total, current) => {
             return total + current.shoddy_number
           }, 0)
         })

@@ -459,18 +459,19 @@ export default {
         })
         return json
       })
+      console.log(this.list, this.productInfo)
       this.productInfo.size_measurement.forEach((itemSize) => {
         this.productInfo.color.forEach((itemColour) => {
           this.list.forEach((itemList) => {
             let finded = itemList.colourSizeArr.find((itemFind) => {
-              return itemFind.color_id === itemColour.color_id && itemFind.size_id === itemSize.size_id
+              return itemFind.color_id === itemColour.id && itemFind.size_id === itemSize.size_id // 源代码color_id，现改为id，不知道是不是后台改的字段名称
             })
             if (!finded) {
               itemList.colourSizeArr.push({
                 size_name: itemSize.size_name,
                 size_id: itemSize.size_id,
                 colour_name: itemColour.color_name,
-                color_id: itemColour.color_id,
+                color_id: itemColour.id, // 源代码color_id，现改为id，不知道是不是后台改的字段名称
                 materials: []
               })
             }

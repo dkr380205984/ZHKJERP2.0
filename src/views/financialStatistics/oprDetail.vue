@@ -45,6 +45,17 @@
             <span class="text">{{info.complete_time}}</span>
           </div>
         </div>
+        <div class="rowCtn">
+          <div class="colCtn flex3">
+            <span class="label">{{$route.params.oprType}}图片：</span>
+            <span class="text">
+              <el-image style="width:150px;height:150px;margin-right:16px"
+                :src="info.file_url || ''"
+                :preview-src-list="[info.info]">
+              </el-image>
+            </span>
+          </div>
+        </div>
         <div class="rowCtn"
           v-if="info.is_invoice===1">
           <div class="colCtn">

@@ -84,12 +84,14 @@
     </div>
     <div class="breadCtn">
       <div class="bread">
-        <el-breadcrumb separator="/">
+        <!-- 这组件太拉跨了 -->
+        <!-- <el-breadcrumb separator="/">
           <el-breadcrumb-item v-for="(item,index) in breadUrl"
             :key="index"><span class="breadText"
               @click="goBack(index)">{{item}}</span>
           </el-breadcrumb-item>
-        </el-breadcrumb>
+        </el-breadcrumb> -->
+        <zh-bread></zh-bread>
       </div>
     </div>
     <div class="titleCtn">
