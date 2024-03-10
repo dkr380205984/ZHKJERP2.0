@@ -3279,7 +3279,7 @@ export default {
               }
             }
           }),
-          merge_data_back: this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data_back: (this.ifDouble.warp === 1) ? this.tableHot.warpBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells : '',
           weft: this.warpInfo.weft,
           side_id: this.warpInfo.side_id,
           machine_id: this.warpInfo.machine_id,
@@ -3367,7 +3367,7 @@ export default {
               }
             }
           }),
-          merge_data_back: this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells,
+          merge_data_back: (this.ifDouble.weft === 1) ? this.tableHot.weftBack.getPlugin('MergeCells').mergedCellsCollection.mergedCells : '',
           organization_id: this.weftInfo.organization_id,
           peifu: this.weftInfo.peifu,
           peifu_data: this.weftInfo.peifu_data,

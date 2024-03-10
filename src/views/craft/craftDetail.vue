@@ -1577,6 +1577,9 @@ export default {
     },
     // 合并项信息处理
     getMergeInfo (mergeTable, row, length) {
+      if (!mergeTable) {
+        return []
+      }
       let mergeArr = mergeTable.filter(item => item.row === row).sort((a, b) => { return a.col - b.col })
       let saveMerge = []
       let col = 0
