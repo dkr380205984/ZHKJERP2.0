@@ -2699,18 +2699,21 @@ export default {
     // 给合并规则里添加value
     pushValue (item, key, index) {
       let valueArr = item[key] // value来源数组
-      item[index].forEach(val => {
-        val.value = this.$clone(valueArr[val.row]).splice(val.col, val.colspan).filter(num => num)[0]
-        if (val.row === 3) {
-          val.totalNumber = this.getValue(val, valueArr[2])
-        } else if (val.row === 4) {
-          let data = this.getFlatTable(valueArr, item[index]).filter(itemF => (itemF.order > val.col) && (itemF.order <= (val.col + val.colspan)))
-          val.totalNumber = data.map(itemM => (+itemM.number || 1)).reduce((total, current) => {
-            return total + current
-          }, 0)
-        }
-      })
-      this.changeMergeMethod(item[index], Math.ceil(item[key][0].length / 16)) // 处理合并规则
+      if (item[index] && item[index].length) {
+        item[index].forEach(val => {
+          val.value = this.$clone(valueArr[val.row]).splice(val.col, val.colspan).filter(num => num)[0]
+          if (val.row === 3) {
+            val.totalNumber = this.getValue(val, valueArr[2])
+          } else if (val.row === 4) {
+            let data = this.getFlatTable(valueArr, item[index]).filter(itemF => (itemF.order > val.col) && (itemF.order <= (val.col + val.colspan)))
+            val.totalNumber = data.map(itemM => (+itemM.number || 1)).reduce((total, current) => {
+              return total + current
+            }, 0)
+          }
+        })
+        this.changeMergeMethod(item[index], Math.ceil(item[key][0].length / 16)) // 处理合并规则
+      }
+
     },
     // 计算梭数
     getValue (valueData, dataArr) {
